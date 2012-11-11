@@ -62,13 +62,7 @@ def detect_version(port):
                     print 'server terminated'
 
             connection.close()
-            c, addr = s.accept()
-            print 'Got connection from', addr
-            run=subprocess.Popen(['dhcpd', '--version'],stderr=subprocess.PIPE)
-            version= str(run.communicate()[1])[:-1]
-            c.send(version)
-            c.close()
-            
+
     except KeyboardInterrupt:
         print 'Program Interrupted by user'
         sys.exit()
