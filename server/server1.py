@@ -38,7 +38,6 @@ def detect_version(port):
     try:
         s.listen(5)
         while True:
-<<<<<<< HEAD
             connection, addr = s.accept()
             print 'Got connection from', addr
             check_version=subprocess.Popen(['dhcpd', '--version'],stderr=subprocess.PIPE)
@@ -62,17 +61,14 @@ def detect_version(port):
                     run_server.kill()
                     print 'server terminated'
 
-            
-            
             connection.close()
-=======
             c, addr = s.accept()
             print 'Got connection from', addr
             run=subprocess.Popen(['dhcpd', '--version'],stderr=subprocess.PIPE)
             version= str(run.communicate()[1])[:-1]
             c.send(version)
             c.close()
->>>>>>> c3728bf36cf1185bd0f58a3204cd761c89f83d43
+            
     except KeyboardInterrupt:
         print 'Program Interrupted by user'
         sys.exit()
