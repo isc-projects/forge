@@ -25,14 +25,7 @@ def option_parser():
 
     #detect_version(opts.port)
     return=opts.port
-def run_server(DHCP_config):
-    if DHCP_config:
-        pass
-        #wypełnij
-    else:
-        check_version=subprocess.Popen(['dhcpd', '--version'],stderr=subprocess.PIPE)
-        return str(check_version.communicate()[1])[:-1]
-    
+
 def detect_version(port):
     s = socket.socket()
 
