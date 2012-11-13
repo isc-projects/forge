@@ -62,9 +62,11 @@ def detect_version(port):
                     print 'server terminated'
 
             connection.close()
-
+            config_file.close()
+            
     except KeyboardInterrupt:
         print 'Program Interrupted by user'
+        s.cloase()
         sys.exit()
 
 if __name__ == "__main__":
