@@ -49,20 +49,23 @@ def detect_version(port):
             config_file.write(DHCP_config)
             
             if DHCP_config: 
-                command="dhcpd -6 -f -cf config eth0"
-                run_server=subprocess.Popen(shlex.split(command),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                command="dhcpd -6 -f -cf config eth0" 
+                print DHCP_config
+                run_server=subprocess.Popen(shlex.split(command),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)#server nie rusza tak jak powinien :/jaka jest różnica między taką formą a bezpośrednią z konsoli?
                 connection.send("DHCP_server_running")
                 code=connection.recv(1024)
 
                 if code=='KILL':
-                    run_server.kill()
+                    
+                    #run_server.kill()
                     print 'server terminated'
-
+                    
             connection.close()
             config_file.close()
             
     except KeyboardInterrupt:
         print 'Program Interrupted by user'
+        print run_server.communicate()[1]
         s.close()
         sys.exit()
 
