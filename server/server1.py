@@ -51,10 +51,10 @@ def detect_version(port):
             if DHCP_config: 
                 command="dhcpd -6 -f -cf config eth0" 
                 print DHCP_config
-                run_server=subprocess.Popen(shlex.split(command),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)#server nie rusza tak jak powinien :/jaka jest różnica między taką formą a bezpośrednią z konsoli?
+                run_server=subprocess.Popen(shlex.split(command),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)#server nie rusza tak jak powinien :/jaka jest roznica miedzy taka forma a bezposrednia z konsoli?
                 connection.send("DHCP_server_running")
                 code=connection.recv(1024)
-
+                
                 if code=='KILL':
                     
                     #run_server.kill()
