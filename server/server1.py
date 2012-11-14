@@ -17,18 +17,17 @@ PORT = 9999
 import socket,subprocess,sys,optparse,shlex
 
 def option_parser():
-    desc="""Sending version number of DHCP server. PORT number need to be the same in client and server. Keep this working in testing time.
-    """
+    
+    desc="Sending version number of DHCP server. PORT number need to be the same in client and server. Keep this working in testing time."
     parser = optparse.OptionParser(description=desc)
     parser.add_option('-p', '--port', help='on witch port listening for question, default 9999', dest='port', type='int', default=9999, action='store')
     (opts, args) = parser.parse_args()
 
-    #detect_version(opts.port)
-    return=opts.port
+    return opts.port
 
 def detect_version(port):
-    s = socket.socket()
 
+    s = socket.socket()
     try:
         s.bind((HOST, port))
     except socket.error , msg:
@@ -40,20 +39,18 @@ def detect_version(port):
         while True:
             connection, addr = s.accept()
             print 'Got connection from', addr
-            check_version=subprocess.Popen(['dhcpd', '--version'],stderr=subprocess.PIPE)
+            command="dhcpd --version"
+            check_version=subprocess.Popen(shlex.split(command),stderr=subprocess.PIPE)
             version= str(check_version.communicate()[1])[:-1]
             connection.send(version)
 
             DHCP_config=connection.recv(4096)
             config_file=open('config','w')
             config_file.write(DHCP_config)
-            if DHCP_config:
-                #uruchomienie DHCP 
-                print DHCP_config
+            
+            if DHCP_config: 
                 command="dhcpd -6 -f -cf config eth0"
-                cmd=shlex.split(command)
-                run_server=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                #out=str(run_server.communicate()[0])
+                run_server=subprocess.Popen(shlex.split(command),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 connection.send("DHCP_server_running")
                 code=connection.recv(1024)
 
@@ -66,7 +63,7 @@ def detect_version(port):
             
     except KeyboardInterrupt:
         print 'Program Interrupted by user'
-        s.cloase()
+        s.close()
         sys.exit()
 
 if __name__ == "__main__":
