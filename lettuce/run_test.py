@@ -50,8 +50,6 @@ def option_parser():
     
     (opts, args) = parser.parse_args()
 
-    print opts
-    print args
     if not opts.version6 and not opts.version4:
         parser.print_help()
         parser.error("You must choose between -4 or -6")
@@ -69,7 +67,7 @@ def option_parser():
 
     runner = Runner(base_path,
                     verbosity=VERBOSITY,
-                    tags=tag)#TUTAJ PROBLEM, wybierac testy można wedlugo tagow, podobno...
+                    tags=tag)#TUTAJ PROBLEM, wybierac testy mozna wedlugo tagow, podobno...
     result = runner.run()
     
 def main():
