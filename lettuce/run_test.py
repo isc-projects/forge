@@ -69,7 +69,7 @@ def option_parser():
 
     runner = Runner(base_path,
                     verbosity=VERBOSITY,
-                    tags=tag)
+                    tags=tag)#tagownaie nie dziala poprawnie, a niby wedlugo dokumentacji... :/
     result = runner.run()
     
 def main():
