@@ -22,32 +22,35 @@ import optparse
 
 from lettuce import Runner
 
-VERBOSITY = 4
-
 def option_parser():
     desc='''
     Let us decide witch version
     '''
     parser = optparse.OptionParser(description=desc)
-    
     parser.add_option("-4","--version4",
                       dest="version4",
                       action="store_true",
                       default=False,
                       help='Declare IP version 4 tests')
-    
     parser.add_option("-6", "--version6",
                       dest="version6",
                       action="store_true",
                       default=False,
                       help="Declare IP version 6 tests")
-    
+    parser.add_option("-v", "--verbosity",
+                      dest="verbosity",
+                      default=4,
+                      help="Level of the lettuce verbosity")
     parser.add_option("-s", "--scenarios",
                       dest="scenario",
                       action="append",
                       default=None,
                       help="specific tests scenarios")
-    
+    parser.add_option("-t", "--tags",
+                      dest="tag",
+                      action="append",
+                      default=None,
+                      help="specific tests tags")   
     (opts, args) = parser.parse_args()
 
     if not opts.version6 and not opts.version4:
@@ -57,17 +60,18 @@ def option_parser():
     if opts.version6 and opts.version4:
         parser.print_help()
         parser.error("options -4 and -6 are exclusive")
-        
-    base_path = os.getcwd()
 
+    base_path = os.getcwd()
+    '''
     if opts.version6:
         tag="v6"
     if opts.version4:
         tag="v4"
-
+    '''
     runner = Runner(base_path,
-                    verbosity=VERBOSITY,
-                    tags=tag)
+                    verbosity=opts.verbosity,
+                    failfast=False,
+                    tags=opts.tag)
     '''
     Aby tagowanie dzialalo (?) trzeba tagowac przez @ mniej wiecej tak:
 
