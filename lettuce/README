@@ -1,0 +1,15 @@
+Ostatnio dodane:
+ - tagowanie (trzeba startować przez run_test.py)
+ - automatyczne startowanie binda (instalacja w defaultowej ścieżce)
+ - czyszczenie konfiguracji kea
+ - uruchamianie danego konfiga
+ 
+ TODO:
+ - czyszczenie pustej konfiguracji zwraca błąd, nie wpływa to na prace ale słabo wyglada 
+ - dodać możliwość mniejszego levelu gadatliwości fabrica 
+ - 
+ 
+ 
+ 
+ 
+ masz propozycje co do instniejącego kodu?:) to wpisuj chętnie się tym zajmę.
