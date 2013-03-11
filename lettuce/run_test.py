@@ -15,7 +15,6 @@
 #
 # author: Wlodzimierz Wencel
 
-
 import os
 import sys
 import optparse
@@ -73,11 +72,11 @@ def option_parser():
     '''
     Aby tagowanie dzialalo (?) trzeba tagowac przez @ mniej wiecej tak:
 
-        @v6
+
         Feature: DHCPv6 custom options
             This is a simple DHCPv6 options validation. Its purpose is to check if
             requested options are assigned properly.
-        
+            @v6        
             Scenario: v6.options.preference
                 # Checks that server is able to serve sntp-servers option to clients.
         
