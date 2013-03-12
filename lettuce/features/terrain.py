@@ -356,9 +356,9 @@ class RunningProcesses:
         return self.processes[process_name].wait_for_stdout_str(strings,
                                                                 only_new)
 
-def start_bind10 (host, cmd): 
+def bind10 (host, cmd): 
     """
-    Start bind10
+    Start/kill bind10
     """
     with settings(host_string=host, user=USERNAME, password=PASSWORD):
         sudo(cmd, pty=True)
@@ -373,7 +373,8 @@ def server_start():
     print ('------------ starting bind10 ----------')
     if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
         try:
-            start_bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
+            pass
+            #bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
         except :
             print "\nSomething go wrong with connection\nPlease make sure it's configured properly"
             print "IP address: %s\nMac address: %s\nNetwork interface: %s" %(IP_ADDRESS, CLI_MAC, IFACE)
@@ -439,6 +440,6 @@ def say_goodbye(total):
         total.scenarios_passed
     )
     print ('------------ kill the bind! ----------')
-    world.processes.start_bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
+    #bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
 
     print "Goodbye!"

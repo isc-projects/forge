@@ -260,8 +260,6 @@ def fabric_send_file (file_local):
     except OSError:
         print ('File %s cannot be removed' % file_local)
         
-
-
 def fabric_run_bindctl (opt):
     """
     Run bindctl with prepered config file
@@ -283,7 +281,8 @@ def fabric_run_bindctl (opt):
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
-    
+    if opt == "restart":
+        pass
     cmd='(echo "execute file '+cfg_file+'_processed" | bindctl ); sleep 1'
     with settings(host_string=IP_ADDRESS, user=USERNAME, password=PASSWORD):
         sudo(cmd)
@@ -292,12 +291,10 @@ def start_srv_kea(step):
     """
     Start kea with generated config
     """
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start clean
-    fabric_run_bindctl ('conf')#conf
+    #fabric_run_bindctl ('clean')#clean and stop
+    #fabric_run_bindctl ('start')#start
+    #fabric_run_bindctl ('conf')#conf
     
-    
-
 #@step('have bind10 running(?: with configuration ([\S]+))?' +\
 #      '(?: with cmdctl port (\d+))?' +\
 #      '(?: as ([\S]+))?')
@@ -383,7 +380,6 @@ def config_srv(step, option_name, subnet, option_value):
 
 @step('Server is started.')
 def start_srv(step):
-
     # Write prepared config to a file
     cfg_write(step)
 
@@ -398,7 +394,10 @@ def start_srv(step):
 
 @step('Restart DHCPv6 server')
 def restart_srv(step):
-    pass
+    """
+    Restart DHCPv6 without changing server configuration
+    """
+    fabric_run_bindctl ('restart')
 
 @step('stop DHCPv6 server')
 def stop_srv(step):

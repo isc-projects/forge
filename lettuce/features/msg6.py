@@ -22,9 +22,8 @@ from lettuce import *
 import os
 import sys
 import random
-import scapy
-from scapy.sendrecv import send,sendp,sniff
 from scapy.all import *
+from scapy.sendrecv import send,sendp,sniff
 from scapy.layers.dhcp6 import *
 
 #IPv6,UDP,DHCP6
@@ -73,16 +72,15 @@ def client_send_msg(step, msgname, opt_type, unknown):
         msg = create_infrequest()
     else:
         assert False, "Invalid message type: %s" % msgname
-    
 
     if (world.oro is not None):
         msg = add_option(msg, world.oro)
 
 #    if msg:
-#        world.climsg.append(msg) 
+#        world.climsg.append(msg)  #wysyla powiekszajacy sie zestaw :/
     if msg:
         world.climsg = msg  
-    print("IRID %d" %IRID)
+
     print("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
 def add_option(msg, option):
@@ -105,13 +103,15 @@ def send_wait_for_message(step, yes_or_no, message):
     ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=2, multi=True, verbose=1)
     print "ans:"
     ans.show()
+    xx=print_reply("DHCPv6",unans)
     print "\nunans:"
     unans.show()
     world.srvmsg = []
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        
+        c=get_option(world.srvmsg[0], 2)
+        #c.show()
     print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
 
     if yes_or_no == None:
@@ -219,8 +219,11 @@ def create_request(trid):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/DHCP6_Request()
     x.trid = trid
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
+    serverid = DHCP6OptServerId()
+    #DUID_LLT(timeval = int(time.time()), lladdr = CLI_MAC)
     ia = DHCP6OptIA_NA(iaid = 1)
     x /= clientid
+    x /= serverid
     x /= ia
 
     return x
