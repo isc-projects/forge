@@ -292,9 +292,9 @@ def start_srv_kea(step):
     """
     Start kea with generated config
     """
-    #fabric_run_bindctl ('clean')#clean and stop
-    #fabric_run_bindctl ('start')#start clean
-    #fabric_run_bindctl ('conf')#conf
+    fabric_run_bindctl ('clean')#clean and stop
+    fabric_run_bindctl ('start')#start clean
+    fabric_run_bindctl ('conf')#conf
     
     
 
