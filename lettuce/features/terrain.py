@@ -29,8 +29,11 @@ import os.path
 import shutil
 import re
 import time
+import sys
 from scapy.all import *
 from fabric.api import sudo, settings
+from uuid import getnode as get_mac
+
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
 # files, and removing generated data files.
@@ -251,8 +254,6 @@ class RunningProcess:
         """
         return self._wait_for_output_str(self.stdout_filename, self.stdout,
                                          strings, only_new)
-        
-
             
 # Container class for a number of running processes
 # i.e. servers like bind10, etc
@@ -355,24 +356,30 @@ class RunningProcesses:
         return self.processes[process_name].wait_for_stdout_str(strings,
                                                                 only_new)
 
-    def start_bind10 (self, host, cmd): #, username=USERNAME, password=PASSWORD
-         with settings(host_string=host, user=USERNAME, password=PASSWORD):
-            sudo(cmd, pty=True)
+def start_bind10 (host, cmd): 
+    """
+    Start bind10
+    """
+    with settings(host_string=host, user=USERNAME, password=PASSWORD):
+        sudo(cmd, pty=True)
 
 @before.all
 def server_start():
     """
     Server starting before testing
     """
+    #tu jednak zmiana, world.processes wraca do @before.each_scenario 
     
-    world.processes = RunningProcesses()
     print ('------------ starting bind10 ----------')
-    try:
-        world.processes.start_bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
-    except:
-        print "sth go wrong with conncetion"
- 
-    
+    if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
+        try:
+            start_bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
+        except :
+            print "\nSomething go wrong with connection\nPlease make sure it's configured properly"
+            print "IP address: %s\nMac address: %s\nNetwork interface: %s" %(IP_ADDRESS, CLI_MAC, IFACE)
+            sys.exit()
+    else:
+        print "Server other than kea not implemented yet"
     
 @before.each_scenario
 def initialize(scenario):
@@ -381,7 +388,8 @@ def initialize(scenario):
     """
     #Keep track of running processes
     #world.processes = RunningProcesses()
-
+    world.processes = RunningProcesses()
+    
     world.climsg = []
     world.srvmsg = []
 
