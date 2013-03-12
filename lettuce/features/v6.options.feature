@@ -24,7 +24,6 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3315 section 22.8, 
 
 
-
     @v6
     Scenario: v6.options.sip-domains
     	# Checks that server is able to serve SIP domains option to clients.

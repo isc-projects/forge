@@ -188,6 +188,7 @@ def start_srv_isc_dhcp(step, config_file):
                                                      ["Accepting connections.",
                                                       "exiting"])
     assert message == "Accepting connections.", "Got: " + str(line)
+    
 def pepere_config_file(cfg):
     """
     Prepere config file from generated world.cfg["cfg_file"] or START/STOP
@@ -291,10 +292,11 @@ def start_srv_kea(step):
     """
     Start kea with generated config
     """
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start clean
-    fabric_run_bindctl ('conf')#conf
-
+    #fabric_run_bindctl ('clean')#clean and stop
+    #fabric_run_bindctl ('start')#start clean
+    #fabric_run_bindctl ('conf')#conf
+    
+    
 
 #@step('have bind10 running(?: with configuration ([\S]+))?' +\
 #      '(?: with cmdctl port (\d+))?' +\
@@ -394,13 +396,20 @@ def start_srv(step):
     else:
         assert false, "Unsupported server type: %s" % world.cfg["server_type"]
 
+@step('Restart DHCPv6 server')
+def restart_srv(step):
+    pass
+
 @step('stop DHCPv6 server')
 def stop_srv(step):
     """
     For test that demands turinig off server in the middle
     """
-    pepere_config_file('kea6-stop.cfg')#prepere start!
-    fabric_send_file ('kea6-stop.cfg.expanded', 'kea6-stop.cfg.expanded')#send start
-    fabric_run_bindctl ('kea6-stop.cfg.expanded')#start start
-    world.processes.stop_process('dhcpv6-server')
-    
+    if (world.cfg["server_type"] == "dibbler"):
+        pass
+    elif (world.cfg["server_type"] == "isc-dhcp"):
+        pass
+    elif (world.cfg["server_type"] in ['kea', 'kea4', 'kea6']):
+        start_srv_kea(step)
+    else:
+        assert false, "Unsupported server type: %s" % world.cfg["server_type"]

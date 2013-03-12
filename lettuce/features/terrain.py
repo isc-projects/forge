@@ -368,7 +368,7 @@ def server_start():
     world.processes = RunningProcesses()
     print ('------------ starting bind10 ----------')
     try:
-        world.processes.start_bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 1' )
+        world.processes.start_bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
     except:
         print "sth go wrong with conncetion"
  
