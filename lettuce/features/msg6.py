@@ -26,13 +26,24 @@ from scapy.all import *
 from scapy.sendrecv import send,sendp,sniff
 from scapy.layers.dhcp6 import *
 
-#IPv6,UDP,DHCP6
+SRV_DIUD = None
 
 #change later for non global
 IRID = random.randint(0, 256*256*256)
-SRV_DUID = None
 
-
+def get_serv_diud(msg):
+    """
+    Get server diud based on recived message
+    moze pozniej przerobic na cos w stylu world.srvcfg["diud"]..  
+    """
+    global SRV_DIUD
+    if SRV_DIUD is None:
+        try:
+            SRV_DIUD = DUID_LLT(timeval = msg[DUID_LLT].timeval, lladdr = msg[DUID_LLT].lladdr)
+        except:
+            print "\tOther DIUD types not implemented yet!"
+    else:
+        pass
 @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
     # TODO: check if ORO is not there yet
@@ -43,8 +54,8 @@ def client_requests_option(step, opt_type):
         world.oro.reqopts = [] # don't request anything by default
     world.oro.reqopts.append(int(opt_type))
 
-@step('Client sends (\w+) message( with (\w+) option)?')
-def client_send_msg(step, msgname, opt_type, unknown):
+@step('Client sends (INVALID )?(\w+) message( with (\w+) option)?')
+def client_send_msg(step, valid_msg, msgname, opt_type, unknown):
     """
     Sends specified message with defined options.
     Parameters:
@@ -52,24 +63,26 @@ def client_send_msg(step, msgname, opt_type, unknown):
     num_opts: number of options to send.
     opt_type: option type
     """
+
+    valid_msg = True if valid_msg is None else False 
     msg = None
 
     if (msgname == "SOLICIT"):
-        msg = create_solicit(IRID)
+        msg = create_solicit(IRID, valid_msg)
     elif (msgname == "REQUEST"):
-        msg = create_request(IRID)
+        msg = create_request(IRID, valid_msg)
     elif (msgname == "renew"):
-        msg = create_renew()
+        msg = create_renew(valid_msg)
     elif (msgname == "rebind"):
-        msg = create_rebind()
+        msg = create_rebind(valid_msg)
     elif (msgname == "release"):
-        msg = create_release()
+        msg = create_release(valid_msg)
     elif (msgname == "decline"):
-        msg = create_decline()
+        msg = create_decline(valid_msg)
     elif (msgname == "confirm"):
-        msg = create_confirm()
+        msg = create_confirm(valid_msg)
     elif (msgname == "infrequest"):
-        msg = create_infrequest()
+        msg = create_infrequest(valid_msg)
     else:
         assert False, "Invalid message type: %s" % msgname
 
@@ -100,24 +113,25 @@ def send_wait_for_message(step, yes_or_no, message):
     Fails if the message is not found after 10 seconds.
     """
 
-    ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=2, multi=True, verbose=1)
-    print "ans:"
-    ans.show()
-    xx=print_reply("DHCPv6",unans)
-    print "\nunans:"
-    unans.show()
+    ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=3, multi=True, verbose=1)
     world.srvmsg = []
+#    ans.show()
+#    unans.show()
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        c=get_option(world.srvmsg[0], 2)
-        #c.show()
+        get_serv_diud(get_option(world.srvmsg[0], 2))
     print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
 
     if yes_or_no == None:
-        assert len(world.srvmsg) != 0, "No response received."
+        if (message == "ADVERTISE"):
+            pass
+        elif (message == "REPLY"):
+            pass
+        else:
+            assert len(world.srvmsg) != 0, "No response received."
     else:
-        pass
+        assert len(world.srvmsg) == 0, "Response received. :/"
 
 # Returns option of specified type
 def get_option(msg, opt_code):
@@ -205,7 +219,7 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
     for x in ans:
         x.show()
 
-def create_solicit(trid):
+def create_solicit(trid, valid):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/DHCP6_Solicit()
     x.trid = trid
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
@@ -215,15 +229,18 @@ def create_solicit(trid):
 
     return x
 
-def create_request(trid):
+def create_request(trid, valid):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/DHCP6_Request()
     x.trid = trid
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    serverid = DHCP6OptServerId()
-    #DUID_LLT(timeval = int(time.time()), lladdr = CLI_MAC)
     ia = DHCP6OptIA_NA(iaid = 1)
     x /= clientid
-    x /= serverid
+    if valid:
+        x /= DHCP6OptServerId(duid = SRV_DIUD)
+    else:
+        x /= DHCP6OptServerId()
     x /= ia
 
     return x
+ 
+

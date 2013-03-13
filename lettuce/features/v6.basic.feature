@@ -5,8 +5,8 @@ Feature: Standard DHCPv6 message types
     Scenario: v6.basic.message.advertise
 
     	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 48.
@@ -17,37 +17,35 @@ Feature: Standard DHCPv6 message types
 
 	References: RFC3315 section 5.3
 
- 
-    Scenario: v6.basic.message.reply.invalid
-
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message and expect ADVERTISE response.
-	Server MUST respond with ADVERTISE message.
-	Client requests option 7.
-	Client sends REQUEST message and expect REPLY response.
-
-	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
-
-	References: RFC3315 section 5.3
-
-    @nowe  
+    @nowe  	
     Scenario: v6.basic.message.reply.valid
 
     	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message and expect ADVERTISE response.
 	Server MUST respond with ADVERTISE message.
-	Client requests option 46.
+	Client sends REQUEST message and expect REPLY response.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	References: RFC3315 section 5.3
+
+  
+    Scenario: v6.basic.message.reply.invalid
+
+    	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message and expect ADVERTISE response.
+	Server MUST respond with ADVERTISE message.
+	Client requests option 7.
 	Client sends REQUEST message and expect REPLY response.
 
 	Pass Criteria:
