@@ -1,7 +1,7 @@
 
 Feature: Standard DHCPv6 message types
     This is a simple DHCPv6 message validation. Its purpose is to check if presence of message types from RFC 3315 section 5.3
-
+    @nowe
     Scenario: v6.basic.message.advertise
 
     	Test Setup:
@@ -17,7 +17,7 @@ Feature: Standard DHCPv6 message types
 
 	References: RFC3315 section 5.3
 
-    @nowe  	
+
     Scenario: v6.basic.message.reply.valid
 
     	Test Setup:

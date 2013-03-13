@@ -37,11 +37,10 @@ def get_serv_diud(msg):
     moze pozniej przerobic na cos w stylu world.srvcfg["diud"]..  
     """
     global SRV_DIUD
-    if SRV_DIUD is None:
-        try:
-            SRV_DIUD = DUID_LLT(timeval = msg[DUID_LLT].timeval, lladdr = msg[DUID_LLT].lladdr)
-        except:
-            print "\tOther DIUD types not implemented yet!"
+    try:
+        SRV_DIUD = DUID_LLT(timeval = msg[DUID_LLT].timeval, lladdr = msg[DUID_LLT].lladdr)
+    except:
+        print "\tOther DIUD types not implemented yet!"
     else:
         pass
 @step('Client requests option (\d+).')
@@ -66,7 +65,8 @@ def client_send_msg(step, valid_msg, msgname, opt_type, unknown):
 
     valid_msg = True if valid_msg is None else False 
     msg = None
-
+    world.climsg = msg
+    
     if (msgname == "SOLICIT"):
         msg = create_solicit(IRID, valid_msg)
     elif (msgname == "REQUEST"):
@@ -120,16 +120,19 @@ def send_wait_for_message(step, yes_or_no, message):
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
+    if SRV_DIUD is None:
         get_serv_diud(get_option(world.srvmsg[0], 2))
+        
     print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
 
+    #dorobic parsowanie 
+
     if yes_or_no == None:
+        assert len(world.srvmsg) != 0, "No response received."
         if (message == "ADVERTISE"):
-            pass
+            pass 
         elif (message == "REPLY"):
             pass
-        else:
-            assert len(world.srvmsg) != 0, "No response received."
     else:
         assert len(world.srvmsg) == 0, "Response received. :/"
 
@@ -152,7 +155,6 @@ def response_check_include_option(step, yes_or_no, opt_code):
     opt = get_option(world.srvmsg[0], opt_code)
 
     assert opt, "Expected option " + opt_code + " not present in the message."
-
 
 # Returns text represenation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
@@ -233,12 +235,12 @@ def create_request(trid, valid):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/DHCP6_Request()
     x.trid = trid
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    ia = DHCP6OptIA_NA(iaid = 1)
-    x /= clientid
     if valid:
         x /= DHCP6OptServerId(duid = SRV_DIUD)
     else:
         x /= DHCP6OptServerId()
+    ia = DHCP6OptIA_NA(iaid = 1)
+    x /= clientid
     x /= ia
 
     return x
