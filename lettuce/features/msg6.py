@@ -54,21 +54,91 @@ def client_send_msg(step, msgname, opt_type, unknown):
     world.climsg = []
 
     if (msgname == "SOLICIT"):
+        """
+        RFC 3315 15.2 
+        Servers MUST discard any Solicit messages that do not include a
+        Client Identifier option or that do include a Server Identifier
+        option.
+        """
         msg = msg_add_defaults(DHCP6_Solicit())
+        
     elif (msgname == "REQUEST"):
+        """
+        RFC 3315 15.4 
+        Servers MUST discard any received Request message that meet any of
+        the following conditions:
+           -  the message does not include a Server Identifier option.
+           -  the contents of the Server Identifier option do not match the
+              server's DUID.
+           -  the message does not include a Client Identifier option.
+        """
         msg = msg_add_defaults(DHCP6_Request())
-    elif (msgname == "RENEW"):
-        msg = msg_add_defaults(DHCP6_Renew())
-    elif (msgname == "REBIND"):
-        msg = msg_add_defaults(DHCP6_Rebind())
-    elif (msgname == "RELEASE"):
-        msg = msg_add_defaults(DHCP6_Release())
-    elif (msgname == "DECLINE"):
-        msg = msg_add_defaults(DHCP6_Decline())
+        
     elif (msgname == "CONFIRM"):
+        """
+        RFC 3315 15.5 
+        Servers MUST discard any received Confirm messages that do not
+        include a Client Identifier option or that do include a Server
+        Identifier option.
+        """
         msg = msg_add_defaults(DHCP6_Confirm())
+        
+    elif (msgname == "RENEW"):
+        """
+        RFC 3315 15.6
+        Servers MUST discard any received Renew message that meets any of the
+        following conditions:
+           -  the message does not include a Server Identifier option.
+           -  the contents of the Server Identifier option does not match the
+              server's identifier.
+           -  the message does not include a Client Identifier option.
+        """
+        msg = msg_add_defaults(DHCP6_Renew())
+        
+    elif (msgname == "REBIND"):
+        """
+        RFC 3315 15.7
+        Servers MUST discard any received Rebind messages that do not include
+        a Client Identifier option or that do include a Server Identifier
+        option.
+        """
+        msg = msg_add_defaults(DHCP6_Rebind())
+
+    elif (msgname == "DECLINE"):
+        """
+        RFC 3315 15.8
+        Servers MUST discard any received Decline message that meets any of
+        the following conditions:
+           -  the message does not include a Server Identifier option.
+           -  the contents of the Server Identifier option does not match the
+              server's identifier.
+           -  the message does not include a Client Identifier option.
+        """
+        msg = msg_add_defaults(DHCP6_Decline())
+                
+    elif (msgname == "RELEASE"):
+        """
+        RFC 3315 15.9
+        Servers MUST discard any received Release message that meets any of
+        the following conditions:
+           -  the message does not include a Server Identifier option.
+           -  the contents of the Server Identifier option does not match the
+              server's identifier.
+           -  the message does not include a Client Identifier option.
+        """
+        msg = msg_add_defaults(DHCP6_Release())
+        
     elif (msgname == "INF-REQUEST"):
+        """
+        RFC 3315 15.12
+        Servers MUST discard any received Information-request message that
+        meets any of the following conditions:
+           -  The message includes a Server Identifier option and the DUID in
+              the option does not match the server's DUID.
+           -  The message includes an IA option.
+        """
         msg = msg_add_defaults(DHCP6_InfoRequest())
+        
     else:
         assert False, "Invalid message type: %s" % msgname
     
@@ -103,13 +173,13 @@ def send_wait_for_message(step, exp_message):
     process_name ('<name> stderr'): Name of the process to check the output of.
     message ('message <message>'): Output (part) to wait for.
     """
-
+    world.cliopts = [] #clear options, always build new message, also possible make it in client_send_msg
     debug.recv = []
 
     conf.use_pcap = True
 
     # Uncomment this to get debug.recv filled with all received messages
-    # conf.debug_match = True
+    conf.debug_match = True
     ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=1, nofilter=1, verbose=99)
 
     expected_type_found = False
@@ -118,13 +188,13 @@ def send_wait_for_message(step, exp_message):
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        print("Debug: Received packet type=%s" % get_msg_type(b))
+        print("Debug: Received packet type = %s" % get_msg_type(b))
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
 
     for x in unans:
-        print("Unmatched packet type=%s" % get_msg_type(x))
+        print("Unmatched packet type = %s" % get_msg_type(x))
 
     print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
 
