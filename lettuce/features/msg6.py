@@ -22,39 +22,24 @@ from lettuce import *
 import os
 import sys
 import random
-from scapy.all import *
+import scapy
 from scapy.sendrecv import send,sendp,sniff
+from scapy.all import *
 from scapy.layers.dhcp6 import *
+from srv_control import kea_options6
 
-SRV_DIUD = None
-
-#change later for non global
-IRID = random.randint(0, 256*256*256)
-
-def get_serv_diud(msg):
-    """
-    Get server diud based on recived message
-    moze pozniej przerobic na cos w stylu world.srvcfg["diud"]..  
-    """
-    global SRV_DIUD
-    try:
-        SRV_DIUD = DUID_LLT(timeval = msg[DUID_LLT].timeval, lladdr = msg[DUID_LLT].lladdr)
-    except:
-        print "\tOther DIUD types not implemented yet!"
-    else:
-        pass
-@step('Client requests option (\d+).')
+# @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
-    # TODO: check if ORO is not there yet
     if not hasattr(world, 'oro'):
         # There was no ORO at all, create new one
         world.oro = DHCP6OptOptReq()
         # Scapy creates ORO with 23, 24 options request. Let's get rid of them
         world.oro.reqopts = [] # don't request anything by default
+
     world.oro.reqopts.append(int(opt_type))
 
-@step('Client sends (INVALID )?(\w+) message( with (\w+) option)?')
-def client_send_msg(step, valid_msg, msgname, opt_type, unknown):
+@step('Client sends (\w+) message( with (\w+) option)?')
+def client_send_msg(step, msgname, opt_type, unknown):
     """
     Sends specified message with defined options.
     Parameters:
@@ -63,45 +48,53 @@ def client_send_msg(step, valid_msg, msgname, opt_type, unknown):
     opt_type: option type
     """
 
-    valid_msg = True if valid_msg is None else False 
-    msg = None
-    world.climsg = msg
-    
+    # Remove previous message waiting to be sent, just in case this is a
+    # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
+    # the second time.
+    world.climsg = []
+
     if (msgname == "SOLICIT"):
-        msg = create_solicit(IRID, valid_msg)
+        msg = msg_add_defaults(DHCP6_Solicit())
     elif (msgname == "REQUEST"):
-        msg = create_request(IRID, valid_msg)
-    elif (msgname == "renew"):
-        msg = create_renew(valid_msg)
-    elif (msgname == "rebind"):
-        msg = create_rebind(valid_msg)
-    elif (msgname == "release"):
-        msg = create_release(valid_msg)
-    elif (msgname == "decline"):
-        msg = create_decline(valid_msg)
-    elif (msgname == "confirm"):
-        msg = create_confirm(valid_msg)
-    elif (msgname == "infrequest"):
-        msg = create_infrequest(valid_msg)
+        msg = msg_add_defaults(DHCP6_Request())
+    elif (msgname == "RENEW"):
+        msg = msg_add_defaults(DHCP6_Renew())
+    elif (msgname == "REBIND"):
+        msg = msg_add_defaults(DHCP6_Rebind())
+    elif (msgname == "RELEASE"):
+        msg = msg_add_defaults(DHCP6_Release())
+    elif (msgname == "DECLINE"):
+        msg = msg_add_defaults(DHCP6_Decline())
+    elif (msgname == "CONFIRM"):
+        msg = msg_add_defaults(DHCP6_Confirm())
+    elif (msgname == "INF-REQUEST"):
+        msg = msg_add_defaults(DHCP6_InfoRequest())
     else:
         assert False, "Invalid message type: %s" % msgname
+    
+    assert msg, "Message preparation failed"
+
+    if world.oro is not None and len(world.cliopts):
+        for opt in world.cliopts:
+            msg = add_option_to_msg(msg, opt)
 
     if (world.oro is not None):
-        msg = add_option(msg, world.oro)
+        msg = add_option_to_msg(msg, world.oro)
 
-#    if msg:
-#        world.climsg.append(msg)  #wysyla powiekszajacy sie zestaw :/
     if msg:
-        world.climsg = msg  
+        world.climsg.append(msg)
 
     print("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
-def add_option(msg, option):
+def add_option_to_msg(msg, option):
     msg /= option
     return msg
 
-@step('Server MUST (NOT )?respond with (\w+) message')
-def send_wait_for_message(step, yes_or_no, message):
+def add_client_option(option):
+    world.cliopts.append(option)
+
+# @step('Server MUST respond with (\w+) message')
+def send_wait_for_message(step, exp_message):
     """
     Block until the given message is (not) received.
     Parameter:
@@ -109,32 +102,56 @@ def send_wait_for_message(step, yes_or_no, message):
                              this step was used for this process.
     process_name ('<name> stderr'): Name of the process to check the output of.
     message ('message <message>'): Output (part) to wait for.
-    not_message ('not <message>'): Output (part) to wait for, and fail
-    Fails if the message is not found after 10 seconds.
     """
 
-    ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=3, multi=True, verbose=1)
+    debug.recv = []
+
+    conf.use_pcap = True
+
+    # Uncomment this to get debug.recv filled with all received messages
+    # conf.debug_match = True
+    ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=1, nofilter=1, verbose=99)
+
+    expected_type_found = False
+    received_names = ""
     world.srvmsg = []
-#    ans.show()
-#    unans.show()
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-    if SRV_DIUD is None:
-        get_serv_diud(get_option(world.srvmsg[0], 2))
-        
+        print("Debug: Received packet type=%s" % get_msg_type(b))
+        received_names = get_msg_type(b) + " " + received_names
+        if (get_msg_type(b) == exp_message):
+            expected_type_found = True
+
+    for x in unans:
+        print("Unmatched packet type=%s" % get_msg_type(x))
+
     print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
 
-    #dorobic parsowanie 
+    assert len(world.srvmsg) != 0, "No response received."
 
-    if yes_or_no == None:
-        assert len(world.srvmsg) != 0, "No response received."
-        if (message == "ADVERTISE"):
-            pass 
-        elif (message == "REPLY"):
-            pass
-    else:
-        assert len(world.srvmsg) == 0, "Response received. :/"
+    assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
+
+def get_last_response():
+    assert len(world.srvmsg), "No response received."
+
+    return world.srvmsg[len(world.srvmsg) - 1]
+
+def get_msg_type(msg):
+    msg_types = { "SOLICIT": DHCP6_Solicit,
+                  "ADVERTISE": DHCP6_Advertise,
+                  "REQUEST": DHCP6_Request,
+                  "REPLY": DHCP6_Reply
+    }
+
+    # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
+    dhcp = msg.getlayer(2)
+
+    for msg_name in msg_types.keys():
+        if type(dhcp) == msg_types[msg_name]:
+            return msg_name
+
+    return "UNKNOWN-TYPE"
 
 # Returns option of specified type
 def get_option(msg, opt_code):
@@ -147,14 +164,33 @@ def get_option(msg, opt_code):
         x = x.payload
     return None
 
-@step('Response MUST (NOT )?include option (\d+).')
-def response_check_include_option(step, yes_or_no, opt_code):
+def client_copy_option(step, option_name):
+
+    assert world.srvmsg
+
+    assert option_name in kea_options6, "Unsupported option name " + option_name
+    opt_code = kea_options6.get(option_name)
+
+    opt = get_option(get_last_response(), opt_code)
+
+    assert opt, "Received message does not contain option " + opt_name
+
+    opt.payload = None
+
+    add_client_option(opt)
+
+# @step('Response MUST (NOT )?include option (\d+).')
+def response_check_include_option(step, must_include, opt_code):
 
     assert len(world.srvmsg) != 0, "No response received."
 
     opt = get_option(world.srvmsg[0], opt_code)
 
-    assert opt, "Expected option " + opt_code + " not present in the message."
+    if must_include:
+        assert opt, "Expected option " + opt_code + " not present in the message."
+    else:
+        assert opt == None, "Unexpected option " + opt_code + " found in the message."
+
 
 # Returns text represenation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
@@ -166,7 +202,7 @@ def unknown_option_to_str(data_type, opt):
         assert False, "Parsing of option format " + data_type + " not implemented."
 
 # Option 23 MUST contain addresses 2001:db8::1,2001:db8::2
-@step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
+# @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(step, opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
@@ -221,28 +257,12 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
     for x in ans:
         x.show()
 
-def create_solicit(trid, valid):
-    x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/DHCP6_Solicit()
-    x.trid = trid
+def msg_add_defaults(msg):
+    x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
+    x.trid = random.randint(0, 256*256*256)
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
     ia = DHCP6OptIA_NA(iaid = 1)
     x /= clientid
     x /= ia
 
     return x
-
-def create_request(trid, valid):
-    x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/DHCP6_Request()
-    x.trid = trid
-    clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    if valid:
-        x /= DHCP6OptServerId(duid = SRV_DIUD)
-    else:
-        x /= DHCP6OptServerId()
-    ia = DHCP6OptIA_NA(iaid = 1)
-    x /= clientid
-    x /= ia
-
-    return x
- 
-

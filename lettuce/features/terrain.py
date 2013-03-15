@@ -21,7 +21,6 @@
 # tests can safely assume they are present.
 #
 # We also use it to provide scenario invariants, such as resetting data.
-#
 
 from lettuce import *
 import subprocess
@@ -60,6 +59,23 @@ CLI_MAC="08:00:27:58:f1:e8"
 
 # defined client DUID
 CLI_DUID = None
+
+copylist = [ ]
+
+SRV4_ADDR = "192.168.1.1"
+REL4_ADDR = "192.168.1.2"
+
+# In order to make sure we start all tests with a 'clean' environment,
+# We perform a number of initialization steps, like restoring configuration
+# files, and removing generated data files.
+
+# This approach may not scale; if so we should probably provide specific
+# initialization steps for scenarios. But until that is shown to be a problem,
+# It will keep the scenarios cleaner.
+
+# This is a list of files that are freshly copied before each scenario
+# The first element is the original, the second is the target that will be
+# used by the tests that need them
 
 copylist = [ ]
 
@@ -391,8 +407,9 @@ def initialize(scenario):
     #world.processes = RunningProcesses()
     world.processes = RunningProcesses()
     
-    world.climsg = []
-    world.srvmsg = []
+    world.cliopts = [] # Option(s) to be included in the next message sent
+    world.climsg = []  # Message(s) to be sent
+    world.srvmsg = []  # Server's response(s)
 
     world.cfg = {}
     world.cfg["iface"] = IFACE
@@ -401,9 +418,21 @@ def initialize(scenario):
     world.cfg["cli_mac"] = CLI_MAC
     world.cfg["cli_duid"] = CLI_DUID
 
-    # Setup scapy
+    world.cfg["srv4_addr"] = SRV4_ADDR
+    world.cfg["rel4_addr"] = REL4_ADDR
+
+    # Setup scapy for v6
     conf.iface6 = IFACE
     conf.use_pcap = True
+
+    # Setup scapy for v4
+    conf.iface = IFACE
+    conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
+
+    if (SERVER_TYPE == "kea4" or SERVER_TYPE == "isc-dhcp4"):
+        world.proto = "v4"
+    elif (SERVER_TYPE == "kea6" or SERVER_TYPE == "isc-dhcp6" or SERVER_TYPE == "dibbler"):
+        world.proto = "v6"
 
     if (world.cfg["cli_duid"] is None):
         world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = CLI_MAC)
@@ -428,7 +457,7 @@ def cleanup(scenario):
         world.processes.keep_files()
     # Stop any running processes we may have had around
     world.processes.stop_all_processes()
-    #fabric_run_bindctl ('a')
+    
 @after.all
 def say_goodbye(total):
     """
@@ -436,8 +465,8 @@ def say_goodbye(total):
     """
     print "AFTER ALL"
     print "%d of %d scenarios passed!" % (
-        total.scenarios_ran,
-        total.scenarios_passed
+        total.scenarios_passed,
+        total.scenarios_ran
     )
     print ('------------ kill the bind! ----------')
     bind10(IP_ADDRESS, cmd='pkill -f b10-*' )

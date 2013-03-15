@@ -1,9 +1,7 @@
 
-
 Feature: DHCPv6 options defined in subnet
-
     This is a simple DHCPv6 options validation. Its purpose is to check if
-    requested options are assigned properly. TESTOWY TEKST!
+    requested options are assigned properly.
 
     Scenario: v6.options.preference
     	# Checks that server is able to serve sntp-servers option to clients.
@@ -37,7 +35,7 @@ Feature: DHCPv6 options defined in subnet
 	Test Procedure:
 	Client requests option 23.
 	Client sends SOLICIT message and expect ADVERTISE response.
-	
+
 	Pass Criteria:
 	Server MUST respond with advertise message.
 	Response MUST include option 23.
@@ -67,6 +65,7 @@ Feature: DHCPv6 options defined in subnet
 	References: v6.options, v6.oro, RFC3646 
 
 	Tags: v6 options domain automated
+
 
     Scenario: v6.options.override
     	# Checks that server uses the option defined in subnet, if both subnet and global

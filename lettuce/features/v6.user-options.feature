@@ -1,7 +1,8 @@
 
 Feature: DHCPv6 custom options
     This is a simple DHCPv6 options validation. Its purpose is to check if
-    requested options are assigned properly. 
+    requested options are assigned properly.
+
     Scenario: v6.options.preference
     	# Checks that server is able to serve sntp-servers option to clients.
 
@@ -12,10 +13,10 @@ Feature: DHCPv6 custom options
 
 	Test Procedure:
 	Client requests option 100.
-	Client sends SOLICIT message and expect ADVERTISE response.
+	Client sends SOLICIT message.
 
 	Pass Criteria:
-	Server MUST respond with advertise message.
+	Server MUST respond with ADVERTISE message.
 	Response MUST include option 100.
 	Response option 100 MUST contain uint8 123.
 

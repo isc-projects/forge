@@ -12,13 +12,12 @@
 # FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-#
 
 from lettuce import *
 import re
 import subprocess
-#import StringIO
 import os
+#import StringIO
 #from subprocess import call, Popen, PIPE, STDOUT
 from textwrap import dedent
 from fabric.api import run, sudo, settings, put
@@ -59,7 +58,9 @@ def prepare_cfg_kea6_subnet(step, subnet, pool):
         '''.format(**locals())
    
     #world.cfg["conf"] = dedent(world.cfg["conf"])
-kea_options6 = { "preference": 7,
+kea_options6 = { "client-id": 1,
+                 "server-id" : 2,
+                 "preference": 7,
                  "sip-server-dns": 21,
                  "sip-server-addr": 22,
                  "dns-servers": 23,
@@ -87,6 +88,7 @@ def prepare_cfg_kea6_add_option(step, option_name, option_value):
         config commit
         '''.format(**locals())
     #world.cfg["conf"] = dedent(world.cfg["conf"])
+    world.kea["option_cnt"] = world.kea["option_cnt"] + 1
     
 def prepare_cfg_kea6_add_custom_option(step, opt_name, opt_code, opt_type, opt_value):
     if (not "conf" in world.cfg):
@@ -115,6 +117,7 @@ def prepare_cfg_kea6_add_option_subnet(step, option_name, subnet, option_value):
 
     assert option_name in kea_options6, "Unsupported option name " + option_name
     option_code = kea_options6.get(option_name)
+    
     world.cfg["conf"] += '''
         config add Dhcp6/subnet6[{subnet}]/option-data
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/name "{option_name}"
@@ -291,6 +294,7 @@ def start_srv_kea(step):
     """
     Start kea with generated config
     """
+    print "Bind10, dhcp6 configuration procedure:"
     fabric_run_bindctl ('clean')#clean and stop
     fabric_run_bindctl ('start')#start
     fabric_run_bindctl ('conf')#conf

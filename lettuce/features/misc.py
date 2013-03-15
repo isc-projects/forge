@@ -19,7 +19,7 @@
 #
 
 from lettuce import *
-
+from scapy.layers.dhcp6 import DHCP6OptOptReq
 
 @step('Pass Criteria:')
 def pass_criteria(step):
@@ -28,10 +28,23 @@ def pass_criteria(step):
 
 @step('Test Setup:')
 def test_setup(step):
-    # Do nothing, "Test Setup:" line i there as text bautification only
+    # Do nothing, "Test Setup:" line is there as text bautification only
+    if not hasattr(world, 'kea'):
+        world.kea = {}
+    else:
+        world.kea.clear()
+    world.kea["option_cnt"] = 0
     pass
 
 @step('Test Procedure:')
 def test_procedure(step):
-    # Do nothing, "Test Setup:" line i there as text bautification only
-    pass
+
+    # Start with fresh, empty ORO (v6)
+    if hasattr(world, 'oro'):
+        world.oro = DHCP6OptOptReq()
+        # Scapy creates ORO with 23, 24 options request. Let's get rid of them
+        world.oro.reqopts = [] # don't request anything by default
+
+    # Start with fresh, empty PRL (v4)
+    if hasattr(world, 'prl'):
+        world.prl = "" # don't request anything by default
