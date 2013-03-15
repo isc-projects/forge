@@ -338,11 +338,13 @@ def msg_add_defaults(msg):
         print world.cliopts[0].optcode
         if world.cliopts[0].optcode == 3:
             print world.cliopts
-            x /= world.cliopts
+            x /= world.cliopts[0]
             world.cliopts = []
+        else:
+            x /= DHCP6OptIA_NA(iaid = 1)
+            return x
+
     else:
         x /= DHCP6OptIA_NA(iaid = 1)
-    
-    
-
+       
     return x

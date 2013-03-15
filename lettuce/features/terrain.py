@@ -385,18 +385,18 @@ def server_start():
     """
     Server starting before testing
     """
-#    if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
-#        print "--- Starting Bind:"
-#        try:
-#            bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
-#            print "----- Bind10 successfully started"
-#        except :
-#            print "----- Bind10 start failed"
-#            print "\nSomething go wrong with connection\nPlease make sure it's configured properly"
-#            print "IP address: %s\nMac address: %s\nNetwork interface: %s" %(IP_ADDRESS, CLI_MAC, IFACE)
-#            sys.exit()
-#    else:
-#        print "Server other than kea not implemented yet"
+    if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
+        print "--- Starting Bind:"
+        try:
+            bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
+            print "----- Bind10 successfully started"
+        except :
+            print "----- Bind10 start failed"
+            print "\nSomething go wrong with connection\nPlease make sure it's configured properly"
+            print "IP address: %s\nMac address: %s\nNetwork interface: %s" %(IP_ADDRESS, CLI_MAC, IFACE)
+            sys.exit()
+    else:
+        print "Server other than kea not implemented yet"
     
 @before.each_scenario
 def initialize(scenario):
@@ -468,6 +468,6 @@ def say_goodbye(total):
         total.scenarios_ran
     )
 
-    #bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
+    bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
 
     print "Goodbye!"
