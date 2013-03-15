@@ -30,7 +30,7 @@ import re
 import time
 import sys
 from scapy.all import *
-from fabric.api import sudo, settings
+from fabric.api import sudo, settings, hide
 from uuid import getnode as get_mac
 
 # In order to make sure we start all tests with a 'clean' environment,
@@ -377,21 +377,21 @@ def bind10 (host, cmd):
     Start/kill bind10
     """
     with settings(host_string=host, user=USERNAME, password=PASSWORD):
-        sudo(cmd, pty=True)
-
+        with hide('running', 'stdout', 'stderr'):
+            sudo(cmd, pty=True)
+            
 @before.all
 def server_start():
     """
     Server starting before testing
     """
-    #tu jednak zmiana, world.processes wraca do @before.each_scenario 
-    
-    print ('------------ starting bind10 ----------')
     if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
+        print "--- Starting Bind:"
         try:
-            pass
             bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
+            print "----- Bind10 successfully started"
         except :
+            print "----- Bind10 start failed"
             print "\nSomething go wrong with connection\nPlease make sure it's configured properly"
             print "IP address: %s\nMac address: %s\nNetwork interface: %s" %(IP_ADDRESS, CLI_MAC, IFACE)
             sys.exit()
@@ -463,12 +463,11 @@ def say_goodbye(total):
     """
     Server stopping after whole work
     """
-    print "AFTER ALL"
     print "%d of %d scenarios passed!" % (
         total.scenarios_passed,
         total.scenarios_ran
     )
-    print ('------------ kill the bind! ----------')
+
     bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
 
     print "Goodbye!"

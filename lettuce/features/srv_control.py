@@ -19,8 +19,7 @@ import subprocess
 import os
 #import StringIO
 #from subprocess import call, Popen, PIPE, STDOUT
-from textwrap import dedent
-from fabric.api import run, sudo, settings, put
+from fabric.api import run, sudo, settings, put, hide
 
 USERNAME='root'
 PASSWORD='m'
@@ -57,7 +56,6 @@ def prepare_cfg_kea6_subnet(step, subnet, pool):
         config commit
         '''.format(**locals())
    
-    #world.cfg["conf"] = dedent(world.cfg["conf"])
 kea_options6 = { "client-id": 1,
                  "server-id" : 2,
                  "preference": 7,
@@ -87,7 +85,7 @@ def prepare_cfg_kea6_add_option(step, option_name, option_value):
         config set Dhcp6/option-data[0]/data "{option_value}"
         config commit
         '''.format(**locals())
-    #world.cfg["conf"] = dedent(world.cfg["conf"])
+
     world.kea["option_cnt"] = world.kea["option_cnt"] + 1
     
 def prepare_cfg_kea6_add_custom_option(step, opt_name, opt_code, opt_type, opt_value):
@@ -109,7 +107,6 @@ def prepare_cfg_kea6_add_custom_option(step, opt_name, opt_code, opt_type, opt_v
         config set Dhcp6/option-data[0]/data "{opt_value}"
         config commit
         '''.format(**locals())
-    #world.cfg["conf"] = dedent(world.cfg["conf"])
 
 def prepare_cfg_kea6_add_option_subnet(step, option_name, subnet, option_value):
     if (not "conf" in world.cfg):
@@ -127,8 +124,6 @@ def prepare_cfg_kea6_add_option_subnet(step, option_name, subnet, option_value):
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/data "{option_value}"
         config commit
         '''.format(**locals())
-    #world.cfg["conf"] = dedent(world.cfg["conf"])
-
 
 def prepare_cfg_kea6_for_kea6_start():
     """
@@ -257,7 +252,8 @@ def fabric_send_file (file_local):
     """
     file_remote = file_local
     with settings(host_string=IP_ADDRESS, user=USERNAME, password=PASSWORD):
-        put(file_local, file_remote)
+        with hide('running', 'stdout'):
+            put(file_local, file_remote)
     try:
         os.remove(file_local)
     except OSError:
@@ -268,19 +264,19 @@ def fabric_run_bindctl (opt):
     Run bindctl with prepered config file
     """    
     if opt == "clean":
-        print ('------------ cleaning kea configuration ----------')
+        print ('------------ cleaning kea configuration')
         prepare_cfg_kea6_for_kea6_stop()
         cfg_file = 'kea6-stop.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
     if opt == "start":
-        print ('------------ starting fresh kea ------------------')
+        print ('------------ starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
         cfg_file = 'kea6-start.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
     if opt == "conf":
-        print ('------------ kea configuration -------------------')
+        print ('------------ kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
@@ -294,7 +290,7 @@ def start_srv_kea(step):
     """
     Start kea with generated config
     """
-    print "Bind10, dhcp6 configuration procedure:"
+    print "------ Bind10, dhcp6 configuration procedure:"
     fabric_run_bindctl ('clean')#clean and stop
     fabric_run_bindctl ('start')#start
     fabric_run_bindctl ('conf')#conf
