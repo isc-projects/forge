@@ -16,7 +16,7 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with ADVERTISE message.
 
 	References: RFC3315 section 5.3
-@a @stare
+
     Scenario: v6.basic.message.request-reply
 
     	Test Setup:
@@ -37,7 +37,7 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-@a @nowe
+@teraz
     Scenario: v6.basic.message.confirm-reply
 
     	Test Setup:
@@ -60,6 +60,7 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client sends CONFIRM message.
 
 	Pass Criteria:

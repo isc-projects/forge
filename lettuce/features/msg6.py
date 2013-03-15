@@ -227,6 +227,16 @@ def get_msg_type(msg):
 def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
+#    if opt_code == 5:
+#        print "IA_address"
+#        x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+#        while x:
+#            if x.optcode == int(opt_code):
+#                return x.ianaopts
+#            x = x.payload
+#        return None
+    
+    
     x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
     while x:
         if x.optcode == int(opt_code):
@@ -240,10 +250,10 @@ def client_copy_option(step, option_name):
 
     assert option_name in kea_options6, "Unsupported option name " + option_name
     opt_code = kea_options6.get(option_name)
-
+    print opt_code
     opt = get_option(get_last_response(), opt_code)
-
-    assert opt, "Received message does not contain option " + opt_name
+    
+    assert opt, "Received message does not contain option " + option_name
 
     opt.payload = None
 
@@ -260,7 +270,6 @@ def response_check_include_option(step, must_include, opt_code):
         assert opt, "Expected option " + opt_code + " not present in the message."
     else:
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
-
 
 # Returns text represenation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
@@ -331,6 +340,7 @@ def msg_add_defaults(msg):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
+
     ia = DHCP6OptIA_NA(iaid = 1)
     x /= clientid
     x /= ia

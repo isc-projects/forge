@@ -17,8 +17,6 @@ from lettuce import *
 import re
 import subprocess
 import os
-#import StringIO
-#from subprocess import call, Popen, PIPE, STDOUT
 from fabric.api import run, sudo, settings, put, hide
 
 USERNAME='root'
@@ -58,6 +56,8 @@ def prepare_cfg_kea6_subnet(step, subnet, pool):
    
 kea_options6 = { "client-id": 1,
                  "server-id" : 2,
+                 "IA_NA" : 3,
+                 "IA_address" : 5,
                  "preference": 7,
                  "sip-server-dns": 21,
                  "sip-server-addr": 22,
@@ -291,9 +291,9 @@ def start_srv_kea(step):
     Start kea with generated config
     """
     print "------ Bind10, dhcp6 configuration procedure:"
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start
-    fabric_run_bindctl ('conf')#conf
+#    fabric_run_bindctl ('clean')#clean and stop
+#    fabric_run_bindctl ('start')#start
+#    fabric_run_bindctl ('conf')#conf
     
 #@step('have bind10 running(?: with configuration ([\S]+))?' +\
 #      '(?: with cmdctl port (\d+))?' +\
