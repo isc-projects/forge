@@ -227,16 +227,7 @@ def get_msg_type(msg):
 def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
-#    if opt_code == 5:
-#        print "IA_address"
-#        x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
-#        while x:
-#            if x.optcode == int(opt_code):
-#                return x.ianaopts
-#            x = x.payload
-#        return None
-    
-    
+
     x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
     while x:
         if x.optcode == int(opt_code):
@@ -340,9 +331,18 @@ def msg_add_defaults(msg):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-
-    ia = DHCP6OptIA_NA(iaid = 1)
+    #ia = DHCP6OptIA_NA(iaid = 1)
     x /= clientid
-    x /= ia
+    print world.cliopts
+    if len(world.cliopts)>0:
+        print world.cliopts[0].optcode
+        if world.cliopts[0].optcode == 3:
+            print world.cliopts
+            x /= world.cliopts
+            world.cliopts = []
+    else:
+        x /= DHCP6OptIA_NA(iaid = 1)
+    
+    
 
     return x

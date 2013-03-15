@@ -61,6 +61,7 @@ Feature: Standard DHCPv6 message types
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
+
 	Client sends CONFIRM message.
 
 	Pass Criteria:
