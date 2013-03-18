@@ -28,7 +28,11 @@ def pass_criteria(step):
 @step('Test Setup:')
 def test_setup(step):
     # Do nothing, "Test Setup:" line is there as text bautification only
-    pass
+    if not hasattr(world, 'kea'):
+        world.kea = {}
+    else:
+        world.kea.clear()
+    world.kea["option_cnt"] = 0
 
 @step('Test Procedure:')
 def test_procedure(step):

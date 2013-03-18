@@ -16,4 +16,10 @@ def config_srv_subnet(step, subnet, pool):
         subnet = world.cfg["default_subnet_v4"]
     if (pool == "default"):
         pool = world.cfg["default_pool_v4"]
-    dhcpfun.prepare_cfg(step, subnet, pool)
+    dhcpfun.prepare_cfg_subnet(step, subnet, pool)
+    
+@step('Server is configured with (\S+) option with value (\S+).')
+def config_srv_opt(step, option_name, option_value):
+    dhcpfun.prepare_cfg_add_option(step, option_name, option_value)
+
+

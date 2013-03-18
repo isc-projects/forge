@@ -23,7 +23,7 @@ Feature: DHCPv4 options
 
         Test Setup:
         Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-        #Server is configured with subnet-mask option with value 255.255.255.0.
+        Server is configured with subnet-mask option with value 255.255.255.0.
         #Server is started.
 
     Test Procedure:
