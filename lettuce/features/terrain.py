@@ -8,10 +8,8 @@ PROTO = "v4"
 # Defines name of the interface
 IFACE="eth1"
 
-SRV4_ADDR = "192.168.1.1"
-REL4_ADDR = "192.168.1.2"
-DEFAULT_SUBNET_V4 = "192.0.2.0/24"
-DEFAULT_POOL_V4 = "192.0.2.1 - 192.0.2.10"
+SRV4_ADDR = "172.16.0.1"
+REL4_ADDR = "172.16.0.2"
 
 @before.each_scenario
 def initialize(scenario):    
@@ -21,8 +19,6 @@ def initialize(scenario):
     world.cfg["server_type"] = SERVER_TYPE    
     world.cfg["srv4_addr"] = SRV4_ADDR
     world.cfg["rel4_addr"] = REL4_ADDR
-    world.cfg["default_subnet_v4"] = DEFAULT_SUBNET_V4
-    world.cfg["default_pool_v4"] = DEFAULT_POOL_V4
     world.proto = PROTO
 
 initialize(None)

@@ -31,8 +31,8 @@ Feature: DHCPv4 options
     Client sends DISCOVER message and expect OFFER response.
 
     Pass Criteria:
-    #Server MUST respond with OFFER message.
-    #Response MUST include option 1.
+    Server MUST respond with OFFER message.
+    Response MUST include option 1.
     #Response option 1 MUST contain value 255.255.255.0.
 
     #References: v4.options, v4.prl, RFC2131

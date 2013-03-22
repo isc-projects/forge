@@ -1,9 +1,12 @@
 from lettuce import world
-from scapy.arch.linux import get_if_raw_hwaddr
+from scapy.all import get_if_raw_hwaddr, Ether, srp
 from scapy.config import conf
-from scapy.layers.dhcp import BOOTP, DHCP
+from scapy.fields import Field
+from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
 from scapy.layers.inet import IP, UDP
-from scapy.layers.l2 import Ether
+from scapy.sendrecv import send, sendp, sniff
+
+
 
 def client_requests_option(step, opt_type):
     if not hasattr(world, 'prl'):
@@ -69,3 +72,62 @@ def create_discover(options):
     dhcp = DHCP(options=opts)
     discover /= dhcp
     return discover
+
+def send_wait_for_message(step, message):
+    """
+    Block until the given message is (not) received.
+    Parameter:
+    new: (' new', optional): Only check the output printed since last time
+                             this step was used for this process.
+    process_name ('<name> stderr'): Name of the process to check the output of.
+    message ('message <message>'): Output (part) to wait for.
+    not_message ('not <message>'): Output (part) to wait for, and fail
+    Fails if the message is not found after 10 seconds.
+    """
+
+    # We need to use srp() here (send and receive on layer 2)
+
+    ans,unans = srp(world.climsg, iface=world.cfg["iface"], timeout=2, multi=True, verbose=1)
+
+    world.srvmsg = []
+    for x in ans:
+        a,b = x
+        world.srvmsg.append(b)
+
+    print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
+
+    assert len(world.srvmsg) != 0, "No response received."
+
+# Returns option of specified type
+def get_option(msg, opt_code):
+    # We need to iterate over all options and see
+    # if there's one we're looking for
+    
+    opt_name = DHCPOptions[int(opt_code)]
+
+    # dhcpv4 implementation in Scapy is a mess. The options array contains mix of 
+    # strings, IPField, ByteEnumField and who knows what else. In each case the
+    # values are accessed differenty
+    if (isinstance(opt_name, Field)):
+        opt_name = opt_name.name
+
+    x = msg.getlayer(4) # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
+    for opt in x.options:
+        if opt[0] == opt_name:
+            return opt
+    return None
+
+def response_check_include_option(step, yes_or_no, opt_code):
+    assert len(world.srvmsg) != 0, "No response received."
+    opt = get_option(world.srvmsg[0], opt_code)
+    assert opt, "Expected option " + opt_code + " not present in the message."
+    
+    
+def response_check_option_content(step, opt_code, expect, data_type, expected):
+    opt_code = int(opt_code)
+    assert len(world.srvmsg) != 0, "No response received."
+    opt_name, received = get_option(world.srvmsg[0], opt_code)
+    assert opt_name, "Expected option {opt_code} not present in the message.".format(**locals())
+    assert expected == received, "Invalid {opt_code} option received: {received}"\
+                                 " but expected {expected}".format(**locals())
+
