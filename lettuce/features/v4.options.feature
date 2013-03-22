@@ -24,7 +24,7 @@ Feature: DHCPv4 options
         Test Setup:
         Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
         Server is configured with subnet-mask option with value 255.255.255.0.
-        #Server is started.
+        Server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -33,7 +33,7 @@ Feature: DHCPv4 options
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 1.
-    #Response option 1 MUST contain value 255.255.255.0.
+    Response option 1 MUST contain value 255.255.255.0.
 
     #References: v4.options, v4.prl, RFC2131
 

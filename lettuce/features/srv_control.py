@@ -19,3 +19,6 @@ def config_srv_opt(step, option_name, option_value):
     dhcpfun.prepare_cfg_add_option(step, option_name, option_value)
 
 
+@step('Server is started.')
+def start_srv(step):
+    dhcpfun.start_srv()

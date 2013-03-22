@@ -19,6 +19,7 @@ def initialize(scenario):
     world.cfg["server_type"] = SERVER_TYPE    
     world.cfg["srv4_addr"] = SRV4_ADDR
     world.cfg["rel4_addr"] = REL4_ADDR
+    world.cfg["cfg_file"] = "server.cfg"
     world.proto = PROTO
 
 initialize(None)

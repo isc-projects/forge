@@ -1,15 +1,15 @@
 from lettuce import world
 from textwrap import dedent
-
+from lettuce import world
 
 def prepare_cfg_subnet(step, subnet, pool):
 
-    subnetcfg ='''\
     # subnet defintion Kea4
+    subnetcfg ='''\
     config add Dhcp4/subnet4
     config set Dhcp4/subnet4[0]/subnet "{subnet}"
-    config set Dhcp4/subnet4[0]/pool "[{pool}]"
-    config commit\n"
+    config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
+    config commit\n
     '''.format(**locals())
     
     world.cfg["conf"] += dedent(subnetcfg) 
@@ -53,4 +53,15 @@ def prepare_cfg_add_option(step, option_name, option_value):
     world.kea["option_cnt"] += 1
 
 
+def start_srv():
+    print("Automatic start for Kea is not implemented yet. Please start Kea")
+    print("manually and run the following config (also stored in %s):" % world.cfg["cfg_file"])
+    print("------")
+    print (world.cfg["conf"])
+
+    configfile = open(world.cfg["cfg_file"], 'w')
+    configfile.write(world.cfg["conf"])
+    configfile.close()
+    print("------")
+    raw_input("Press ENTER when ready")
     

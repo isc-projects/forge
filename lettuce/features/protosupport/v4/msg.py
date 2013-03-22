@@ -1,10 +1,15 @@
 from lettuce import world
-from scapy.all import get_if_raw_hwaddr, Ether, srp
-from scapy.config import conf
-from scapy.fields import Field
-from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
-from scapy.layers.inet import IP, UDP
-from scapy.sendrecv import send, sendp, sniff
+import scapy
+from scapy.sendrecv import send,sendp,sniff
+from scapy.all import *
+from scapy.layers.dhcp import *
+
+#from scapy.all import get_if_raw_hwaddr, Ether, srp
+#from scapy.config import conf
+#from scapy.fields import Field
+#from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
+#from scapy.layers.inet import IP, UDP
+#from scapy.sendrecv import send, sendp, sniff
 
 
 
@@ -76,13 +81,6 @@ def create_discover(options):
 def send_wait_for_message(step, message):
     """
     Block until the given message is (not) received.
-    Parameter:
-    new: (' new', optional): Only check the output printed since last time
-                             this step was used for this process.
-    process_name ('<name> stderr'): Name of the process to check the output of.
-    message ('message <message>'): Output (part) to wait for.
-    not_message ('not <message>'): Output (part) to wait for, and fail
-    Fails if the message is not found after 10 seconds.
     """
 
     # We need to use srp() here (send and receive on layer 2)
