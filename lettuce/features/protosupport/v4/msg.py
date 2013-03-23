@@ -1,15 +1,11 @@
 from lettuce import world
-import scapy
-from scapy.sendrecv import send,sendp,sniff
-from scapy.all import *
-from scapy.layers.dhcp import *
 
-#from scapy.all import get_if_raw_hwaddr, Ether, srp
-#from scapy.config import conf
-#from scapy.fields import Field
-#from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
-#from scapy.layers.inet import IP, UDP
-#from scapy.sendrecv import send, sendp, sniff
+from scapy.all import get_if_raw_hwaddr, Ether, srp
+from scapy.config import conf
+from scapy.fields import Field
+from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
+from scapy.layers.inet import IP, UDP
+from scapy.sendrecv import send, sendp, sniff
 
 
 
@@ -71,6 +67,7 @@ def create_discover(options):
 
     conf.checkIPaddr = False
     fam,hw = get_if_raw_hwaddr(conf.iface)
+
 
     discover = Ether(dst="ff:ff:ff:ff:ff:ff")/IP(src=world.cfg["rel4_addr"],dst=world.cfg["srv4_addr"])
     discover /= UDP(sport=68,dport=67)/BOOTP(chaddr=hw, giaddr="192.0.2.1")

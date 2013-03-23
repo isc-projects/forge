@@ -12,6 +12,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
 @step('Server MUST respond with (\w+) message')
 def send_wait_for_message(step, message):
+    print "client_send_msg:{message}.\n".format(**locals())
     dhcpmsg.send_wait_for_message(step, message)
 
 @step('Response MUST (NOT )?include option (\d+).')
