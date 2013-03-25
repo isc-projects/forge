@@ -16,11 +16,11 @@ The framework is written in Python and uses the following libraries:
 
 Participants
 ============
-Włodzimierz Wencel (Gdansk University, DHCPv6 validation)
-Rafał Jankowski (Gdansk University, DHCPv4 validation)
-Tomek Mrugalski (ISC, technical consultant)
-Marcin Siodelski (ISC, technical consultant)
-Stephen Morris (ISC, engineering manager)
+- Włodzimierz Wencel (Gdansk University, DHCPv6 validation)
+- Rafał Jankowski (Gdansk University, DHCPv4 validation)
+- Tomek Mrugalski (ISC, technical consultant)
+- Marcin Siodelski (ISC, technical consultant)
+- Stephen Morris (ISC, engineering manager)
 
 Project homepage
 ================
