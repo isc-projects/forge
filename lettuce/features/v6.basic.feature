@@ -1,7 +1,7 @@
 
 Feature: Standard DHCPv6 message types
     This is a simple DHCPv6 message exchange validation. Its purpose is to check if presence of message types from RFC 3315 section 5.3
-@a
+@basic
     Scenario: v6.basic.message.advertise
 
     	Test Setup:
@@ -16,12 +16,12 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with ADVERTISE message.
 
 	References: RFC3315 section 5.3
-
+@basic
     Scenario: v6.basic.message.request-reply
 
     	Test Setup:
-      Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-      Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -37,12 +37,12 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-@teraz
+@basic
     Scenario: v6.basic.message.confirm-reply
-
+#nie dziala, nie wspierane!
     	Test Setup:
-      Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-      Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -66,12 +66,12 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	
+@basic
     Scenario: v6.basic.message.renew-reply
 
     	Test Setup:
-      Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-      Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -89,17 +89,17 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	#dokonczyc
+	Client copies server-id option from received message.
 	Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
+@basic	
     Scenario: v6.basic.message.rebind-reply
-
+#nie dziala, nie wspierane!
     	Test Setup:
-      Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-      Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -117,17 +117,16 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	#dokonczyc
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
+@basic
     Scenario: v6.basic.message.release-reply
 
     	Test Setup:
-      Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-      Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -145,17 +144,17 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	#dokonczyc
+	Client copies server-id option from received message.
 	Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+@basic
     Scenario: v6.basic.message.decline-reply
-
+#decline tez nie wspierany, ale test dziala
     	Test Setup:
-      Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-      Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -173,21 +172,29 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	#dokonczyc
+	Client copies server-id option from received message.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+@basic
     Scenario: v6.basic.message.information_request-reply
 
     	Test Setup:
-      Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-      Server is started.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
 
 	Test Procedure:
-	Client sends INFORMATION_REQUEST message.
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends INFREQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#oczywiscie tez zrobic do konca
+

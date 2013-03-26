@@ -18,15 +18,18 @@
 # By a lot of feature files.
 #
 
-from lettuce import *
-import os
-import sys
-import random
-import scapy
-from scapy.sendrecv import send,sendp,sniff
-from scapy.all import *
-from scapy.layers.dhcp6 import *
+from cookielib import debug
 from srv_control import kea_options6
+from lettuce.decorators import step
+from lettuce.registry import world
+from scapy.config import conf
+from scapy.layers.dhcp6 import *
+from scapy.layers.inet import UDP
+from scapy.layers.inet6 import IPv6
+from scapy.sendrecv import sr
+import random
+import subprocess
+import time
 
 # @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
@@ -61,6 +64,8 @@ def client_send_msg(step, msgname, opt_type, unknown):
         option.
         """
         msg = msg_add_defaults(DHCP6_Solicit())
+        if (world.oro is not None):
+                msg = add_option_to_msg(msg, world.oro)
         
     elif (msgname == "REQUEST"):
         """
@@ -73,6 +78,8 @@ def client_send_msg(step, msgname, opt_type, unknown):
            -  the message does not include a Client Identifier option.
         """
         msg = msg_add_defaults(DHCP6_Request())
+        if (world.oro is not None):
+                msg = add_option_to_msg(msg, world.oro)
         
     elif (msgname == "CONFIRM"):
         """
@@ -128,7 +135,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         """
         msg = msg_add_defaults(DHCP6_Release())
         
-    elif (msgname == "INF-REQUEST"):
+    elif (msgname == "INFREQUEST"):
         """
         RFC 3315 15.12
         Servers MUST discard any received Information-request message that
@@ -147,9 +154,10 @@ def client_send_msg(step, msgname, opt_type, unknown):
     if world.oro is not None and len(world.cliopts):
         for opt in world.cliopts:
             msg = add_option_to_msg(msg, opt)
-
-    if (world.oro is not None):
-        msg = add_option_to_msg(msg, world.oro)
+            
+#    if any(world.cliopts):
+#        if world.cliopts[0].optcode != 3:
+#            #dodawanie czystej opcji tylko gdy nie chcemy dodac IA_address  tylko w przypadku wiadomosci CONFIRM, wiec raczej nie potrzeba wiekszych zabiegow
 
     if msg:
         world.climsg.append(msg)
@@ -174,12 +182,12 @@ def send_wait_for_message(step, exp_message):
     message ('message <message>'): Output (part) to wait for.
     """
     world.cliopts = [] #clear options, always build new message, also possible make it in client_send_msg
-    debug.recv = []
+    #debug.recv = []
 
     conf.use_pcap = True
 
     # Uncomment this to get debug.recv filled with all received messages
-    conf.debug_match = True
+    #conf.debug_match = True
     ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=1, nofilter=1, verbose=99)
 
     expected_type_found = False
@@ -334,11 +342,14 @@ def msg_add_defaults(msg):
     #ia = DHCP6OptIA_NA(iaid = 1)
     x /= clientid
     print world.cliopts
+    
+    #blok zamienic na funkcje 
     if len(world.cliopts)>0:
         print world.cliopts[0].optcode
         if world.cliopts[0].optcode == 3:
-            print world.cliopts
-            x /= world.cliopts[0]
+            print world.cliopts[0].ianaopts
+            x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
+            #x /= DHCP6OptIA_NA (world.cliopts[0].ianaopts)
             world.cliopts = []
         else:
             x /= DHCP6OptIA_NA(iaid = 1)

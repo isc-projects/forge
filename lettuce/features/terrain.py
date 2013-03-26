@@ -22,16 +22,6 @@
 #
 # We also use it to provide scenario invariants, such as resetting data.
 
-from lettuce import *
-import subprocess
-import os.path
-import shutil
-import re
-import time
-import sys
-from scapy.all import *
-from fabric.api import sudo, settings, hide
-from uuid import getnode as get_mac
 
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
@@ -76,6 +66,19 @@ REL4_ADDR = "192.168.1.2"
 # This is a list of files that are freshly copied before each scenario
 # The first element is the original, the second is the target that will be
 # used by the tests that need them
+from IPython.core.release import name
+from fabric.context_managers import settings, hide
+from fabric.operations import sudo
+from lettuce.registry import world
+from lettuce.terrain import before, after
+from scapy.config import conf
+from scapy.layers.dhcp6 import DUID_LLT
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
 
 copylist = [ ]
 
@@ -388,7 +391,7 @@ def server_start():
     if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
         print "--- Starting Bind:"
         try:
-            bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
+            #bind10(IP_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
             print "----- Bind10 successfully started"
         except :
             print "----- Bind10 start failed"
@@ -468,6 +471,6 @@ def say_goodbye(total):
         total.scenarios_ran
     )
 
-    bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
+    #bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
 
     print "Goodbye!"

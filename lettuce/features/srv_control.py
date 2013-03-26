@@ -291,9 +291,9 @@ def start_srv_kea(step):
     Start kea with generated config
     """
     print "------ Bind10, dhcp6 configuration procedure:"
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start
-    fabric_run_bindctl ('conf')#conf
+#    fabric_run_bindctl ('clean')#clean and stop
+#    fabric_run_bindctl ('start')#start
+#    fabric_run_bindctl ('conf')#conf
     
 #@step('have bind10 running(?: with configuration ([\S]+))?' +\
 #      '(?: with cmdctl port (\d+))?' +\
