@@ -23,3 +23,13 @@ def response_check_include_option(step, yes_or_no, opt_code):
 @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(step, opt_code, expect, data_type, expected):
     dhcpmsg.response_check_option_content(step, opt_code, expect, data_type, expected)
+
+@step('Client sends (\w+) message( with (\w+) option)?')
+def client_send_msg(step, msgname, opt_type, unknown):
+    dhcpmsg.client_send_msg(step, msgname, opt_type, unknown)
+
+@step('Client copies (\S+) option from received message.')
+def client_copy_option(step, option_name):
+    assert len(world.srvmsg), "No messages received, nothing to copy."
+
+    dhcpmsg.client_copy_option(step, option_name)

@@ -18,7 +18,7 @@
 # By a lot of feature files.
 #
 from lettuce import step, world
-
+from scapy.layers.dhcp6 import DHCP6OptOptReq
 
 @step('Pass Criteria:')
 def pass_criteria(step):
@@ -40,3 +40,10 @@ def test_procedure(step):
         # Start with fresh, empty PRL (v4)
         if hasattr(world, 'prl'):
             world.prl = "" # don't request anything by default
+
+    if worl.proto == "v6":
+        # Start with fresh, empty ORO (v6)
+        if hasattr(world, 'oro'):
+            world.oro = DHCP6OptOptReq()
+            # Scapy creates ORO with 23, 24 options request. Let's get rid of them
+            world.oro.reqopts = [] # don't request anything by default

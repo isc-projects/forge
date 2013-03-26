@@ -64,4 +64,6 @@ def start_srv():
     configfile.close()
     print("------")
     raw_input("Press ENTER when ready")
-    
+
+def restart_srv():
+    # @todo: Implement this
