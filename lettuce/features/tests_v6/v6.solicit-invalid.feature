@@ -11,7 +11,8 @@ Feature: Standard DHCPv6 solicit message
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends INVALID SOLICIT message.
+	Client DONT include user-id.
+	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
