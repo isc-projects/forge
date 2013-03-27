@@ -41,7 +41,7 @@ def test_procedure(step):
         if hasattr(world, 'prl'):
             world.prl = "" # don't request anything by default
 
-    if worl.proto == "v6":
+    if world.proto == "v6":
         # Start with fresh, empty ORO (v6)
         if hasattr(world, 'oro'):
             world.oro = DHCP6OptOptReq()

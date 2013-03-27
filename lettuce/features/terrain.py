@@ -12,7 +12,7 @@ SERVER_TYPE="kea4"
 PROTO = "v4"
 
 # Defines name of the interface
-IFACE="eth2"
+IFACE="eth0"
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = "192.168.56.2"
@@ -90,6 +90,8 @@ def initialize(scenario):
     world.cfg["mgmt_addr"] = MGMT_ADDRESS
     world.cfg["mgmt_user"] = MGMT_USERNAME
     world.cfg["mgmt_pass"] = MGMT_PASSWORD
+
+    world.cfg["conf"] = "" # Just empty config for now
 
     world.proto = PROTO
 

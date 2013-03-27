@@ -1,6 +1,5 @@
 from lettuce import world
 from textwrap import dedent
-from lettuce import world
 
 def prepare_cfg_subnet(step, subnet, pool):
 
