@@ -1,6 +1,6 @@
 
 Feature: Standard DHCPv6 message types
-    This is a simple DHCPv6 message exchange validation. Its purpose is to check if presence of message types from RFC 3315 section 5.3 and 15
+    This is a simple DHCPv6 message exchange validation. Its purpose is to check if presence of message types from RFC 3315 section 5.3
     
 @basic @v6
     Scenario: v6.basic.message.advertise
@@ -16,7 +16,7 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
-	References: RFC3315 section 5.3 and 15.3
+	References: RFC3315 section 5.3
 	
 @basic @v6
     Scenario: v6.basic.message.request-reply
@@ -40,7 +40,7 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 and 15.4
+	References: RFC3315 section 5.3 
 	
 @basic @v6
     Scenario: v6.basic.message.confirm-reply
@@ -71,7 +71,7 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 and 15.5
+	References: RFC3315 section 5.3 
 	
 @basic @v6
     Scenario: v6.basic.message.renew-reply
@@ -102,7 +102,7 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 and 15.6
+	References: RFC3315 section 5.3 
 	
 @basic @v6
     Scenario: v6.basic.message.rebind-reply
@@ -132,7 +132,7 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 and 15.7
+	References: RFC3315 section 5.3 
 	
 @basic @v6
     Scenario: v6.basic.message.release-reply
@@ -163,7 +163,7 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 and 15.9
+	References: RFC3315 section 5.3 
 	
 @basic @v6
     Scenario: v6.basic.message.decline-reply
@@ -194,7 +194,7 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 and 15.8
+	References: RFC3315 section 5.3
 	
 @basic @v6
     Scenario: v6.basic.message.information_request-reply
@@ -216,4 +216,4 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 and 15.12
+	References: RFC3315 section 5.3 
