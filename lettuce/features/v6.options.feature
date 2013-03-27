@@ -63,9 +63,9 @@ Feature: Standard DHCPv6 options
 	Response option 21 MUST contain domains srv1.example.com,srv2.isc.org.
 
 	References: v6.options RFC3319
-@v6
+	
 	Tags: v6 options SIP sip-domain automated
-
+@v6
     Scenario: v6.options.sip-servers
 	# Checks that server is able to serve SIP servers option to clients.
 
@@ -161,7 +161,7 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3646 
 
 	Tags: v6 options domain automated
-
+@v6
     Scenario: v6.options.nis-servers
 	# Checks that server is able to serve NIS server option to clients.
 
@@ -193,6 +193,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nis nis-server automated
 
+@v6
     Scenario: v6.options.nisp-servers
 	# Checks that server is able to serve NIS+ servers option to clients.
 
@@ -213,7 +214,8 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3898
 
 	Tags: v6 options nisplus nisp nis+ nisp-servers automated
-
+	
+@v6
     Scenario: v6.options.nisdomain
 	# Checks that server is able to serve NIS domain option to clients.
 
@@ -245,6 +247,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nis-domain nis automated
 
+@v6
     Scenario: v6.options.nispdomain
 	# Checks that server is able to serve NIS+ domain option to clients.
 
@@ -275,7 +278,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nisplus nis+ nisp-domain nis automated
 
-
+@v6
     Scenario: v6.options.sntp-servers
 	# Checks that server is able to serve sntp-servers option to clients.
 
@@ -309,7 +312,8 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC4075
 
 	Tags: v6 options sntp servers automated
-
+	
+@v6
     Scenario: v6.options.info-refresh
 	# Checks that server is able to serve sntp-servers option to clients.
 
@@ -340,6 +344,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options info-refresh-time automated
 
+@v6
     Scenario: v6.options.multiple
 	# Checks that server is able to serve many options to clients.
 
@@ -385,7 +390,8 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
 	Tags: v6 options many automated
-@sprawdz
+
+@v6
     Scenario: v6.options.negative
 	# Checks that server does not return option that it was not configured
 	# to return.
