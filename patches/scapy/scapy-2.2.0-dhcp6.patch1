@@ -6,7 +6,7 @@
      def answers(self, other):
 -        return (isinstance(other, DHCP6_InfoRequest) and
 +
-+        types = (DHCP6_InfoRequest, DHCP6_Request, DHCP6_Release)
++        types = (DHCP6_InfoRequest, DHCP6_Request, DHCP6_Release, DHCP6_Renew)
 +
 +        return (isinstance(other, types) and
                  self.trid == other.trid)
