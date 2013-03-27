@@ -14,10 +14,8 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 from lettuce import *
-import re
-import subprocess
 import os
-from fabric.api import run, sudo, settings, put, hide
+from fabric.api import sudo, settings, put, hide
 
 
 def restart_srv():
@@ -183,42 +181,6 @@ def pepere_config_file(cfg):
     except OSError:
         print ('File %s cannot be removed' % cfg)
         
-#    tmpfile = cfg + ".c"
-#    fin = open(cfg, "rt")
-#    fphase1 = open(tmpfile, "w")
-#    # Copy input line by line, but skip empty and comment lines
-#    for line in fin:
-#        if len(line)<1:
-#            continue
-#        if (line[:2] == "# "):
-#            continue
-#        fphase1.write(line)
-#    fin.close()
-#    fphase1.close()
-#    # tmpfile (*.c) now contains our script with # comments removed
-#    # This will be out output file with all #include expanded
-#    outfile = cfg + ".expanded"
-#    # Create the gcc command line.
-#    gcc_cmd_line = ["gcc", "-E", tmpfile];
-#    # Run gcc preprocessor.
-#    preproc = subprocess.Popen(gcc_cmd_line, stdin=PIPE, stdout=PIPE)
-#    tmp = StringIO.StringIO(preproc.communicate()[0])
-#    # tmp now contains gcc preprocessor output. It contains some garbage
-#    # comments starting with #. We'll get rid of those. Empty lines have
-#    # to go as well.
-#    fout = open(outfile, "w")
-#    for line in tmp:
-#        if len(line)<1:
-#            continue
-#        if line[:1] == "#":
-#            continue
-#        fout.write(line)
-#    fout.close()
-#
-#    try:
-#        os.remove(tmpfile)
-#    except OSError:
-#        print ('File %s cannot be removed' % tmpfile)
 
 def fabric_send_file (file_local):
     """
@@ -269,26 +231,7 @@ def start_srv():
     Start kea with generated config
     """
     print "------ Bind10, dhcp6 configuration procedure:"
-#    fabric_run_bindctl ('clean')#clean and stop
-#    fabric_run_bindctl ('start')#start
-#    fabric_run_bindctl ('conf')#conf
+    fabric_run_bindctl ('clean')#clean and stop
+    fabric_run_bindctl ('start')#start
+    fabric_run_bindctl ('conf')#conf
     
-#@step('have bind10 running(?: with configuration ([\S]+))?' +\
-#      '(?: with cmdctl port (\d+))?' +\
-#      '(?: as ([\S]+))?')
-#def have_bind10_running(step, config_file, cmdctl_port, process_name):
-#    """
-#    Compound convenience step for running bind10, which consists of
-#    start_bind10 and wait_for_auth.
-#    Currently only supports the 'with configuration' option.
-#    """
-#    start_step = 'start bind10 with configuration ' + config_file
-#    wait_step = 'wait for bind10 auth to start'
-#    if cmdctl_port is not None:
-#        start_step += ' with cmdctl port ' + str(cmdctl_port)
-#   if process_name is not None:
-#        start_step += ' as ' + process_name
-#        wait_step = 'wait for bind10 auth of ' + process_name + ' to start'
-#    step.given(start_step)
-#    step.given(wait_step)
-
