@@ -1,10 +1,11 @@
 
 Feature: Standard DHCPv6 message types
-    This is a simple DHCPv6 message exchange validation. Its purpose is to check if presence of message types from RFC 3315 section 5.3
-@basic
+    This is a simple DHCPv6 message exchange validation. Its purpose is to check if presence of message types from RFC 3315 section 5.3 and 15
+    
+@basic @v6
     Scenario: v6.basic.message.advertise
 
-    	Test Setup:
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -15,11 +16,12 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
-	References: RFC3315 section 5.3
-@basic
+	References: RFC3315 section 5.3 and 15.3
+	
+@basic @v6
     Scenario: v6.basic.message.request-reply
 
-    	Test Setup:
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -37,10 +39,13 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-@basic
+	
+	References: RFC3315 section 5.3 and 15.4
+	
+@basic @v6
     Scenario: v6.basic.message.confirm-reply
-#nie dziala, nie wspierane!
-    	Test Setup:
+	#nie dziala, nie wspierane!
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -66,10 +71,12 @@ Feature: Standard DHCPv6 message types
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-@basic
+	References: RFC3315 section 5.3 and 15.5
+	
+@basic @v6
     Scenario: v6.basic.message.renew-reply
 
-    	Test Setup:
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -94,10 +101,13 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-@basic	
+	
+	References: RFC3315 section 5.3 and 15.6
+	
+@basic @v6
     Scenario: v6.basic.message.rebind-reply
-#nie dziala, nie wspierane!
-    	Test Setup:
+	#nie dziala, nie wspierane!
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -121,10 +131,13 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-@basic
+	
+	References: RFC3315 section 5.3 and 15.7
+	
+@basic @v6
     Scenario: v6.basic.message.release-reply
 
-    	Test Setup:
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -149,10 +162,13 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-@basic
+	
+	References: RFC3315 section 5.3 and 15.9
+	
+@basic @v6
     Scenario: v6.basic.message.decline-reply
-#decline tez nie wspierany, ale test dziala
-    	Test Setup:
+	#decline tez nie wspierany, ale test dziala
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -177,10 +193,12 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-@basic
+	
+	References: RFC3315 section 5.3 and 15.8
+	
+@basic @v6
     Scenario: v6.basic.message.information_request-reply
-
-    	Test Setup:
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -197,4 +215,5 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	
+	References: RFC3315 section 5.3 and 15.12
