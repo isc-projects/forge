@@ -175,11 +175,6 @@ def client_send_msg(step, msgname, opt_type, unknown):
     if world.oro is not None and len(world.cliopts):
         for opt in world.cliopts:
             msg = add_option_to_msg(msg, opt)
-            
-#    if any(world.cliopts):
-#        if world.cliopts[0].optcode != 3:
-# @todo: Please remove polish comments
-#            #dodawanie czystej opcji tylko gdy nie chcemy dodac IA_address  tylko w przypadku wiadomosci CONFIRM, wiec raczej nie potrzeba wiekszych zabiegow
 
     if msg:
         world.climsg.append(msg)
@@ -361,7 +356,7 @@ def msg_add_defaults(msg):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    #ia = DHCP6OptIA_NA(iaid = 1)
+
     x /= clientid
     print world.cliopts
     
