@@ -1,6 +1,13 @@
 from lettuce import world, step
+from terrain import PROTO
 import importlib
-dhcpmsg = importlib.import_module("protosupport.%s.msg"  % (world.proto)) 
+
+# Tomek: For some reason importing terrain does not help, as the
+# @before.each_scenario is not called, so the world do not have proto set up.
+# Therefore I imported PROTO constant and use it directly. It's a hack, but it
+# works. If you know how to fix is properly, plese do so.
+
+dhcpmsg = importlib.import_module("protosupport.%s.msg"  % (PROTO))
 
 @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
@@ -23,10 +30,6 @@ def response_check_include_option(step, yes_or_no, opt_code):
 @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(step, opt_code, expect, data_type, expected):
     dhcpmsg.response_check_option_content(step, opt_code, expect, data_type, expected)
-
-@step('Client sends (\w+) message( with (\w+) option)?')
-def client_send_msg(step, msgname, opt_type, unknown):
-    dhcpmsg.client_send_msg(step, msgname, opt_type, unknown)
 
 @step('Client copies (\S+) option from received message.')
 def client_copy_option(step, option_name):
