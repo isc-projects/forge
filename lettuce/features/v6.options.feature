@@ -2,14 +2,14 @@
 Feature: Standard DHCPv6 options
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly.
-@test
+@v6
     Scenario: v6.options.preference
-    	# Checks that server is able to serve preference option to clients.
+	# Checks that server is able to serve preference option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with preference option with value 123.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with preference option with value 123.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -34,14 +34,14 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options preference automated
 
-
+@v6
     Scenario: v6.options.sip-domains
-    	# Checks that server is able to serve SIP domains option to clients.
+	# Checks that server is able to serve SIP domains option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 21.
@@ -63,16 +63,16 @@ Feature: Standard DHCPv6 options
 	Response option 21 MUST contain domains srv1.example.com,srv2.isc.org.
 
 	References: v6.options RFC3319
-
+@v6
 	Tags: v6 options SIP sip-domain automated
 
     Scenario: v6.options.sip-servers
-    	# Checks that server is able to serve SIP servers option to clients.
+	# Checks that server is able to serve SIP servers option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with sip-server-addr option with value 2001:db8::1,2001:db8::2.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with sip-server-addr option with value 2001:db8::1,2001:db8::2.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 22.
@@ -97,14 +97,14 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options sip-servers automated
 
-    
+  @v6  
     Scenario: v6.options.dns-servers
-    	# Checks that server is able to serve dns-servers option to clients.
+	# Checks that server is able to serve dns-servers option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 23.
@@ -130,14 +130,14 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3646
 
 	Tags: v6 options dns-servers automated
-
+@v6
     Scenario: v6.options.domains
-    	# Checks that server is able to serve domains option to clients.
+	# Checks that server is able to serve domains option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 24.
@@ -163,12 +163,12 @@ Feature: Standard DHCPv6 options
 	Tags: v6 options domain automated
 
     Scenario: v6.options.nis-servers
-    	# Checks that server is able to serve NIS server option to clients.
+	# Checks that server is able to serve NIS server option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 27.
@@ -194,12 +194,12 @@ Feature: Standard DHCPv6 options
 	Tags: v6 options nis nis-server automated
 
     Scenario: v6.options.nisp-servers
-    	# Checks that server is able to serve NIS+ servers option to clients.
+	# Checks that server is able to serve NIS+ servers option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with nisp-servers option with value 2001:db8::abc,3000::1,2000::1234.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with nisp-servers option with value 2001:db8::abc,3000::1,2000::1234.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 28.
@@ -215,12 +215,12 @@ Feature: Standard DHCPv6 options
 	Tags: v6 options nisplus nisp nis+ nisp-servers automated
 
     Scenario: v6.options.nisdomain
-    	# Checks that server is able to serve NIS domain option to clients.
+	# Checks that server is able to serve NIS domain option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with nis-domain-name option with value ntp.example.com.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with nis-domain-name option with value ntp.example.com.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 29.
@@ -246,12 +246,12 @@ Feature: Standard DHCPv6 options
 	Tags: v6 options nis-domain nis automated
 
     Scenario: v6.options.nispdomain
-    	# Checks that server is able to serve NIS+ domain option to clients.
+	# Checks that server is able to serve NIS+ domain option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with nisp-domain-name option with value ntp.example.com.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with nisp-domain-name option with value ntp.example.com.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 30.
@@ -277,12 +277,12 @@ Feature: Standard DHCPv6 options
 
 
     Scenario: v6.options.sntp-servers
-    	# Checks that server is able to serve sntp-servers option to clients.
+	# Checks that server is able to serve sntp-servers option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with sntp-servers option with value 2001:db8::abc,3000::1,2000::1234.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with sntp-servers option with value 2001:db8::abc,3000::1,2000::1234.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 31.
@@ -311,12 +311,12 @@ Feature: Standard DHCPv6 options
 	Tags: v6 options sntp servers automated
 
     Scenario: v6.options.info-refresh
-    	# Checks that server is able to serve sntp-servers option to clients.
+	# Checks that server is able to serve sntp-servers option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with information-refresh-time option with value 12345678.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with information-refresh-time option with value 12345678.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 32.
@@ -341,15 +341,15 @@ Feature: Standard DHCPv6 options
 	Tags: v6 options info-refresh-time automated
 
     Scenario: v6.options.multiple
-    	# Checks that server is able to serve many options to clients.
+	# Checks that server is able to serve many options to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with preference option with value 123.
-        Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
-        Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-        Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with preference option with value 123.
+    Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
+    Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
+    Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -387,13 +387,13 @@ Feature: Standard DHCPv6 options
 	Tags: v6 options many automated
 @sprawdz
     Scenario: v6.options.negative
-    	# Checks that server does not return option that it was not configured
+	# Checks that server does not return option that it was not configured
 	# to return.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
+    Server is started.
 
 	Test Procedure:
 	# dns-servers is option 23. 24 is domain.

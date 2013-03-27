@@ -125,9 +125,9 @@ def prepare_cfg_kea6_for_kea6_start():
         config set Init/components/b10-dhcp6/kind dispensable
         config commit
         '''
-    file = open("kea6-start.cfg", "w")
-    file.write(config)
-    file.close()
+    cfg_file = open("kea6-start.cfg", "w")
+    cfg_file.write(config)
+    cfg_file.close()
 
 
 def prepare_cfg_kea6_for_kea6_stop():
@@ -148,17 +148,15 @@ def prepare_cfg_kea6_for_kea6_stop():
         # And stop it
         Dhcp6 shutdown
         '''
-    file = open("kea6-stop.cfg", "w")
-    file.write(config)
-    file.close()
+    cfg_file = open("kea6-stop.cfg", "w")
+    cfg_file.write(config)
+    cfg_file.close()
 
 def cfg_write(step):
-    file = open(world.cfg["cfg_file"], 'w')
-    file.write(world.cfg["conf"])
-    file.close()
-
-
-    
+    cfg_file = open(world.cfg["cfg_file"], 'w')
+    cfg_file.write(world.cfg["conf"])
+    cfg_file.close()
+ 
 def pepere_config_file(cfg):
     """
     Prepere config file from generated world.cfg["cfg_file"] or START/STOP
@@ -176,10 +174,10 @@ def pepere_config_file(cfg):
         process.write(line+"\n")
     conf.close()
     process.close()
-    try:
-        os.remove(cfg)
-    except OSError:
-        print ('File %s cannot be removed' % cfg)
+#     try:
+#         os.remove(cfg)
+#     except OSError:
+#         print ('File %s cannot be removed' % cfg)
         
 
 def fabric_send_file (file_local):
@@ -219,6 +217,7 @@ def fabric_run_bindctl (opt):
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
     if opt == "restart":
+        #implement this
         pass
     cmd='(echo "execute file '+cfg_file+'_processed" | bindctl ); sleep 1'
     with settings(host_string=world.cfg["mgmt_addr"],

@@ -1,18 +1,19 @@
-from lettuce import world, before, after
-from scapy.config import conf
-import time
-import shutil
-import os
 from fabric.context_managers import settings, hide
 from fabric.operations import sudo
+from lettuce import world, before, after
+from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
+import os
+import shutil
+import sys
+import time
 
 # Defines server type. Supported values are: isc-dhcp4, isc-dhcp6, kea4, kea6, dibbler
-SERVER_TYPE="kea4"
-PROTO = "v4"
+SERVER_TYPE="kea6"
+PROTO = "v6"
 
 # Defines name of the interface
-IFACE="eth0"
+IFACE="eth7"
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = "192.168.56.2"
@@ -73,10 +74,19 @@ def server_start():
     """
     Server starting before testing
     """
-
-    # todo: Implement this. There's a commented out code in wlodek repo
-    # Perhaps we can reuse something from there.
-
+    if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
+        print "--- Starting Bind:"
+        try:
+            #comment line below to turn off starting bind
+            bind10(MGMT_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
+            print "----- Bind10 successfully started"
+        except :
+            print "----- Bind10 start failed"
+            print "\nSomething go wrong with connection\nPlease make sure it's configured properly"
+            print "IP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE)
+            sys.exit()
+    else:
+        print "Server other than kea not implemented yet"
 @before.each_scenario
 def initialize(scenario):    
 
@@ -139,6 +149,6 @@ def say_goodbye(total):
         total.scenarios_ran
     )
 
-    #bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
+    bind10(MGMT_ADDRESS, cmd='pkill -f b10-*' )
 
     print "Goodbye."
