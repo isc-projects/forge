@@ -264,7 +264,7 @@ def fabric_run_bindctl (opt):
                   password=world.cfg["mgmt_pass"]):
         sudo(cmd)
 
-def start_srv(step):
+def start_srv():
     """
     Start kea with generated config
     """

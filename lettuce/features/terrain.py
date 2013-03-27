@@ -81,6 +81,9 @@ def server_start():
 def initialize(scenario):    
 
     world.climsg = []  # Message(s) to be sent
+    world.cliopts = [] # Option(s) to be included in the next message sent
+    world.srvmsg = []  # Server's response(s)
+
     world.cfg = {}
     world.cfg["iface"] = IFACE
     world.cfg["server_type"] = SERVER_TYPE    
@@ -125,11 +128,6 @@ def cleanup(scenario):
     """
     Global cleanup for each scenario.
     """
-    # Keep output files if the scenario failed
-    if not scenario.passed:
-        world.processes.keep_files()
-    # Stop any running processes we may have had around
-    world.processes.stop_all_processes()
     
 @after.all
 def say_goodbye(total):
