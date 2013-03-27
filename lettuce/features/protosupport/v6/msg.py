@@ -19,7 +19,6 @@
 #
 
 from cookielib import debug
-from srv_control import kea_options6
 from lettuce.decorators import step
 from lettuce.registry import world
 from scapy.config import conf
@@ -30,6 +29,28 @@ from scapy.sendrecv import sr
 import random
 import subprocess
 import time
+
+# @todo: this is a copy of the same list from serversupport.kea6.functions
+# The following line doesn't seem to work as it gives the following error:
+# ValueError: Attempted relative import in non-package
+# from ...serversupport.kea6.functions import kea_options6
+# For now, the kea_options6 is just duplicated here.
+kea_options6 = { "client-id": 1,
+                 "server-id" : 2,
+                 "IA_NA" : 3,
+                 "IA_address" : 5,
+                 "preference": 7,
+                 "sip-server-dns": 21,
+                 "sip-server-addr": 22,
+                 "dns-servers": 23,
+                 "domain-search": 24,
+                 "nis-servers": 27,
+                 "nisp-servers": 28,
+                 "nis-domain-name": 29,
+                 "nisp-domain-name": 30,
+                 "sntp-servers": 31,
+                 "information-refresh-time": 32 }
+
 
 # @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
