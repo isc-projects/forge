@@ -1,5 +1,11 @@
-from lettuce import world, before
+from lettuce import world, before, after
 from scapy.config import conf
+import time
+import shutil
+import os
+from fabric.context_managers import settings, hide
+from fabric.operations import sudo
+from scapy.layers.dhcp6 import DUID_LLT
 
 # Defines server type. Supported values are: isc-dhcp4, isc-dhcp6, kea4, kea6, dibbler
 SERVER_TYPE="kea4"
@@ -58,7 +64,7 @@ def bind10 (host, cmd):
     """
     Start/kill bind10
     """
-    with settings(host_string=host, user=USERNAME, password=PASSWORD):
+    with settings(host_string=host, user=MGMT_USERNAME, password=MGMT_PASSWORD):
         with hide('running', 'stdout', 'stderr'):
             sudo(cmd, pty=True)
 
@@ -73,6 +79,7 @@ def server_start():
 
 @before.each_scenario
 def initialize(scenario):    
+
     world.climsg = []  # Message(s) to be sent
     world.cfg = {}
     world.cfg["iface"] = IFACE
@@ -95,7 +102,7 @@ def initialize(scenario):
     conf.use_pcap = True
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
-    if (world.cfg["cli_duid"] is None):
+    if (not hasattr(world.cfg, "cli_duid")):
         world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = CLI_MAC)
 
     # Some tests can modify the settings. If the tests fail half-way, or
@@ -109,22 +116,7 @@ def initialize(scenario):
         if os.path.exists(item):
             os.remove(item)
 
-
 initialize(None)
-
-from IPython.core.release import name
-from fabric.context_managers import settings, hide
-from fabric.operations import sudo
-from lettuce.registry import world
-from lettuce.terrain import before, after
-from scapy.config import conf
-from scapy.layers.dhcp6 import DUID_LLT
-import os
-import re
-import shutil
-import subprocess
-import sys
-import time
 
 @after.each_scenario
 def cleanup(scenario):
@@ -142,11 +134,11 @@ def say_goodbye(total):
     """
     Server stopping after whole work
     """
-    print "%d of %d scenarios passed!" % (
+    print "%d of %d scenarios passed." % (
         total.scenarios_passed,
         total.scenarios_ran
     )
 
     #bind10(IP_ADDRESS, cmd='pkill -f b10-*' )
 
-    print "Goodbye!"
+    print "Goodbye."
