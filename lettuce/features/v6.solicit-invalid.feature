@@ -25,7 +25,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2
 	
-@basic @solicit_invalid
+@basic @solicit_invalid @teraz
     Scenario: v6.solicit.invalid.with_server_id
 
 	Test Setup:
@@ -55,17 +55,5 @@ Feature: Standard DHCPv6 solicit message
 	Server MUST respond with ADVERTISE message.
 
 	References: RFC3315 section 15.2 
-	
-@basic  @solicit_invalid
-    Scenario: 
 
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
-	Test Procedure:
-
-	Pass Criteria:
-
-	References: RFC3315 section 15.2 
 	
