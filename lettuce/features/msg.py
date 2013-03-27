@@ -20,7 +20,6 @@ def client_send_msg(step, msgname, opt_type, unknown):
 @step('Server MUST (NOT )?respond with (\w+) message')
 def send_wait_for_message(step, yes_or_no, message):
     print "client_send_msg:{message}.\n".format(**locals())
-    print yes_or_no
     presence = True if yes_or_no == None else False 
     dhcpmsg.send_wait_for_message(step, presence ,message)
 
@@ -38,3 +37,8 @@ def client_copy_option(step, option_name):
     assert len(world.srvmsg), "No messages received, nothing to copy."
 
     dhcpmsg.client_copy_option(step, option_name)
+
+@step('Client DONT include (\S+).')
+def client_dont_include(step, opt_type):
+    print "Client DONT include...."
+    dhcpmsg.client_dont_include(step, opt_type)
