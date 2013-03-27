@@ -25,7 +25,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2
 	
-@basic @solicit_invalid @teraz
+@basic @solicit_invalid
     Scenario: v6.solicit.invalid.with_server_id
 
 	Test Setup:

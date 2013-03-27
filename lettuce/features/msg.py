@@ -17,10 +17,12 @@ def client_requests_option(step, opt_type):
 def client_send_msg(step, msgname, opt_type, unknown):
     dhcpmsg.client_send_msg(step, msgname, opt_type, unknown)
 
-@step('Server MUST respond with (\w+) message')
-def send_wait_for_message(step, message):
+@step('Server MUST (NOT )?respond with (\w+) message')
+def send_wait_for_message(step, yes_or_no, message):
     print "client_send_msg:{message}.\n".format(**locals())
-    dhcpmsg.send_wait_for_message(step, message)
+    print yes_or_no
+    presence = True if yes_or_no == None else False 
+    dhcpmsg.send_wait_for_message(step, presence ,message)
 
 @step('Response MUST (NOT )?include option (\d+).')
 def response_check_include_option(step, yes_or_no, opt_code):

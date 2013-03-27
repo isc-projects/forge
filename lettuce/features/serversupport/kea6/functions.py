@@ -13,9 +13,10 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-from lettuce import *
-import os
+
 from fabric.api import sudo, settings, put, hide
+from lettuce.registry import world
+import os
 
 
 def restart_srv():
@@ -174,10 +175,10 @@ def pepere_config_file(cfg):
         process.write(line+"\n")
     conf.close()
     process.close()
-#     try:
-#         os.remove(cfg)
-#     except OSError:
-#         print ('File %s cannot be removed' % cfg)
+    try:
+        os.remove(cfg)
+    except OSError:
+        print ('File %s cannot be removed' % cfg)
         
 
 def fabric_send_file (file_local):

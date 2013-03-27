@@ -26,9 +26,7 @@ from scapy.layers.dhcp6 import *
 from scapy.layers.inet import UDP
 from scapy.layers.inet6 import IPv6
 from scapy.sendrecv import sr
-import random
-import subprocess
-import time
+
 
 # @todo: this is a copy of the same list from serversupport.kea6.functions
 # The following line doesn't seem to work as it gives the following error:
@@ -189,7 +187,7 @@ def add_client_option(option):
     world.cliopts.append(option)
 
 # @step('Server MUST respond with (\w+) message')
-def send_wait_for_message(step, exp_message):
+def send_wait_for_message(step, presence, exp_message):
     """
     Block until the given message is (not) received.
     Parameter:
@@ -200,7 +198,7 @@ def send_wait_for_message(step, exp_message):
     """
     world.cliopts = [] #clear options, always build new message, also possible make it in client_send_msg
     #debug.recv = []
-
+    print presence
     conf.use_pcap = True
 
     # Uncomment this to get debug.recv filled with all received messages
@@ -222,10 +220,12 @@ def send_wait_for_message(step, exp_message):
         print("Unmatched packet type = %s" % get_msg_type(x))
 
     print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
-
-    assert len(world.srvmsg) != 0, "No response received."
-
-    assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
+    
+    if presence:
+        assert len(world.srvmsg) != 0, "No response received."
+        assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
+    if not presence:
+        assert len(world.srvmsg) == 0, "Response received, not expected"
 
 def get_last_response():
     assert len(world.srvmsg), "No response received."
@@ -356,11 +356,9 @@ def msg_add_defaults(msg):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-
     x /= clientid
     # rewrite whole creating message
     if len(world.cliopts)>0:
-        print world.cliopts[0].optcode
         if world.cliopts[0].optcode == 3:
             x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
             #x /= DHCP6OptIA_NA (world.cliopts[0].ianaopts)
@@ -368,8 +366,6 @@ def msg_add_defaults(msg):
         else:
             x /= DHCP6OptIA_NA(iaid = 1)
             return x
-
     else:
         x /= DHCP6OptIA_NA(iaid = 1)
-       
     return x
