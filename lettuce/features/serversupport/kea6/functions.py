@@ -28,7 +28,7 @@ def stop_srv():
 
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# Default server config for Kea6 is just empty string\n"
-
+    
 def prepare_cfg_subnet(step, subnet, pool):
     print("#### subnet")
     if (not "conf" in world.cfg):
@@ -44,7 +44,9 @@ def prepare_cfg_subnet(step, subnet, pool):
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
         config commit
         '''.format(**locals())
-   
+        
+    
+  
 kea_options6 = { "client-id": 1,
                  "server-id" : 2,
                  "IA_NA" : 3,
@@ -232,7 +234,7 @@ def start_srv():
     """
     cfg_write() 
     print "------ Bind10, dhcp6 configuration procedure:"
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start
-    fabric_run_bindctl ('conf')#conf
-    
+#     fabric_run_bindctl ('clean')#clean and stop
+#     fabric_run_bindctl ('start')#start
+#     fabric_run_bindctl ('conf')#conf
+#     

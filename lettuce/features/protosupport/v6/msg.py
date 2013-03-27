@@ -49,8 +49,8 @@ kea_options6 = { "client-id": 1,
                  "sntp-servers": 31,
                  "information-refresh-time": 32 }
 
-
-# @step('Client requests option (\d+).')
+world.cfg["client_id"] = True
+    
 def client_requests_option(step, opt_type):
     if not hasattr(world, 'oro'):
         # There was no ORO at all, create new one
@@ -74,7 +74,8 @@ def client_send_msg(step, msgname, opt_type, unknown):
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
     # the second time.
     world.climsg = []
-
+    world.cfg["client_id"] = True
+    
     if (msgname == "SOLICIT"):
         """
         RFC 3315 15.2 
@@ -179,6 +180,13 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
     print("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
+def client_dont_include(step, opt_type):
+    """
+    Remove client-id from message, maybe more if there will be need for that
+    """
+    print "...works"
+    world.cfg["client_id"] = False
+
 def add_option_to_msg(msg, option):
     msg /= option
     return msg
@@ -186,7 +194,6 @@ def add_option_to_msg(msg, option):
 def add_client_option(option):
     world.cliopts.append(option)
 
-# @step('Server MUST respond with (\w+) message')
 def send_wait_for_message(step, presence, exp_message):
     """
     Block until the given message is (not) received.
@@ -198,7 +205,6 @@ def send_wait_for_message(step, presence, exp_message):
     """
     world.cliopts = [] #clear options, always build new message, also possible make it in client_send_msg
     #debug.recv = []
-    print presence
     conf.use_pcap = True
 
     # Uncomment this to get debug.recv filled with all received messages
@@ -356,7 +362,8 @@ def msg_add_defaults(msg):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    x /= clientid
+    if world.cfg["client_id"] == True:
+        x /= clientid
     # rewrite whole creating message
     if len(world.cliopts)>0:
         if world.cliopts[0].optcode == 3:
