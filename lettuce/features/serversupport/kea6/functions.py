@@ -152,7 +152,7 @@ def prepare_cfg_kea6_for_kea6_stop():
     cfg_file.write(config)
     cfg_file.close()
 
-def cfg_write(step):
+def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf"])
     cfg_file.close()
@@ -229,6 +229,7 @@ def start_srv():
     """
     Start kea with generated config
     """
+    cfg_write() 
     print "------ Bind10, dhcp6 configuration procedure:"
     fabric_run_bindctl ('clean')#clean and stop
     fabric_run_bindctl ('start')#start

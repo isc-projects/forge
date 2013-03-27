@@ -358,13 +358,10 @@ def msg_add_defaults(msg):
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
 
     x /= clientid
-    print world.cliopts
-    
-    #blok zamienic na funkcje 
+    # rewrite whole creating message
     if len(world.cliopts)>0:
         print world.cliopts[0].optcode
         if world.cliopts[0].optcode == 3:
-            print world.cliopts[0].ianaopts
             x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
             #x /= DHCP6OptIA_NA (world.cliopts[0].ianaopts)
             world.cliopts = []
