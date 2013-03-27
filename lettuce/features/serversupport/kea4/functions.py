@@ -66,4 +66,5 @@ def start_srv():
     raw_input("Press ENTER when ready")
 
 def restart_srv():
+    pass
     # @todo: Implement this
