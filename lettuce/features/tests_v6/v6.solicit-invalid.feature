@@ -11,7 +11,7 @@ Feature: Standard DHCPv6 solicit message
 
 	Test Procedure:
 	Client requests option 7.
-	Client DONT include user-id.
+	Client does NOT include user-id.
 	Client sends SOLICIT message.
 
 	Pass Criteria:

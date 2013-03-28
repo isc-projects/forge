@@ -38,7 +38,6 @@ def client_copy_option(step, option_name):
 
     dhcpmsg.client_copy_option(step, option_name)
 
-@step('Client DONT include (\S+).')
-def client_dont_include(step, opt_type):
-    print "Client DONT include...."
-    dhcpmsg.client_dont_include(step, opt_type)
+@step('Client does NOT include (\S+).')
+def client_doesnt_include(step, opt_type):
+    dhcpmsg.client_doesnt_include(step, opt_type)

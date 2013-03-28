@@ -162,7 +162,7 @@ def cfg_write():
  
 def pepere_config_file(cfg):
     """
-    Prepere config file from generated world.cfg["cfg_file"] or START/STOP
+    Prepare config file from generated world.cfg["cfg_file"] or START/STOP
     """
     tmpfile = cfg + "_processed"
     conf = open(cfg, "rt")
@@ -234,7 +234,7 @@ def start_srv():
     """
     cfg_write() 
     print "------ Bind10, dhcp6 configuration procedure:"
-#     fabric_run_bindctl ('clean')#clean and stop
-#     fabric_run_bindctl ('start')#start
-#     fabric_run_bindctl ('conf')#conf
+    fabric_run_bindctl ('clean')#clean and stop
+    fabric_run_bindctl ('start')#start
+    fabric_run_bindctl ('conf')#conf
 #     

@@ -49,7 +49,7 @@ kea_options6 = { "client-id": 1,
                  "sntp-servers": 31,
                  "information-refresh-time": 32 }
 
-world.cfg["client_id"] = True
+
     
 def client_requests_option(step, opt_type):
     if not hasattr(world, 'oro'):
@@ -59,7 +59,7 @@ def client_requests_option(step, opt_type):
         world.oro.reqopts = [] # don't request anything by default
 
     world.oro.reqopts.append(int(opt_type))
-
+    world.cfg["client_id"] = True
 # @step('Client sends (\w+) message( with (\w+) option)?')
 def client_send_msg(step, msgname, opt_type, unknown):
     """
@@ -180,12 +180,15 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
     print("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
-def client_dont_include(step, opt_type):
+def client_doesnt_include(step, opt_type):
     """
     Remove client-id from message, maybe more if there will be need for that
     """
+
     print "...works"
+    
     world.cfg["client_id"] = False
+    assert "wtf?"
 
 def add_option_to_msg(msg, option):
     msg /= option
