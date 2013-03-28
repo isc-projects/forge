@@ -59,7 +59,7 @@ def client_requests_option(step, opt_type):
         world.oro.reqopts = [] # don't request anything by default
 
     world.oro.reqopts.append(int(opt_type))
-    world.cfg["client_id"] = True
+    
 # @step('Client sends (\w+) message( with (\w+) option)?')
 def client_send_msg(step, msgname, opt_type, unknown):
     """
@@ -69,12 +69,10 @@ def client_send_msg(step, msgname, opt_type, unknown):
     num_opts: number of options to send.
     opt_type: option type
     """
-
     # Remove previous message waiting to be sent, just in case this is a
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
     # the second time.
     world.climsg = []
-    world.cfg["client_id"] = True
     
     if (msgname == "SOLICIT"):
         """
@@ -184,11 +182,7 @@ def client_doesnt_include(step, opt_type):
     """
     Remove client-id from message, maybe more if there will be need for that
     """
-
-    print "...works"
-    
     world.cfg["client_id"] = False
-    assert "wtf?"
 
 def add_option_to_msg(msg, option):
     msg /= option
@@ -367,8 +361,10 @@ def msg_add_defaults(msg):
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
     if world.cfg["client_id"] == True:
         x /= clientid
+    else:
+        world.cfg["client_id"] = True
     # rewrite whole creating message
-    if len(world.cliopts)>0:
+    if len(world.cliopts) > 0:
         if world.cliopts[0].optcode == 3:
             x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
             #x /= DHCP6OptIA_NA (world.cliopts[0].ianaopts)

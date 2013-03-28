@@ -56,7 +56,7 @@ def initialize(scenario):
     world.cfg["mgmt_addr"] = MGMT_ADDRESS
     world.cfg["mgmt_user"] = MGMT_USERNAME
     world.cfg["mgmt_pass"] = MGMT_PASSWORD
-
+    world.cfg["client_id"] = True
     world.cfg["conf"] = "" # Just empty config for now
 
     world.proto = PROTO
