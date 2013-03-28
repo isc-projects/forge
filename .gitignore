@@ -1,4 +1,5 @@
 *.py[co]
+init_all.py
 
 # Packages
 *.egg
