@@ -8,7 +8,52 @@ import shutil
 import sys
 import time
 
-from init_all import *
+# Defines server type. Supported values are: isc-dhcp4, isc-dhcp6, kea4, kea6, dibbler
+SERVER_TYPE="kea6"
+PROTO = "v6"
+
+# Defines name of the interface
+IFACE="eth7"
+
+# Parameters specific to DHCPv4 tests
+SRV4_ADDR = "192.168.56.2"
+REL4_ADDR = "192.168.56.3"
+
+# defines client MAC (used for DUID generation)
+CLI_MAC="08:00:27:58:f1:e8"
+
+# defines path to configuration file
+CFG_FILE="kea.conf"
+
+# In order to make sure we start all tests with a 'clean' environment,
+# We perform a number of initialization steps, like restoring configuration
+# files, and removing generated data files.
+
+# This approach may not scale; if so we should probably provide specific
+# initialization steps for scenarios. But until that is shown to be a problem,
+# It will keep the scenarios cleaner.
+
+# This is a list of files that are freshly copied before each scenario
+# The first element is the original, the second is the target that will be
+# used by the tests that need them
+copylist = [ ]
+
+# This is a list of files that, if present, will be removed before each scenario
+removelist = [ ]
+
+# When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
+# as the interval in which to check again if it has not been found yet.
+# If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an
+# error (so as not to hang indefinitely)
+OUTPUT_WAIT_INTERVAL = 0.5
+OUTPUT_WAIT_MAX_INTERVALS = 20
+
+# This are required management information about device under test (the one that
+# tested server will be running on) root privileges are required!
+#ip address and port. ssh port default 22
+MGMT_ADDRESS='192.168.50.50:22'
+MGMT_USERNAME='root'
+MGMT_PASSWORD='m'
 
 # @todo: There were RunningProcess and RunningProcesses classes here, but they
 # were removed. They were used to start and stop processes on a local machine.
