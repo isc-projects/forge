@@ -182,7 +182,10 @@ def client_doesnt_include(step, opt_type):
     """
     Remove client-id from message, maybe more if there will be need for that
     """
-    world.cfg["client_id"] = False
+    if opt_type == "client-id":
+        world.cfg["client_id"] = False
+    if opt_type == "wrong-server-id":
+        world.cfg["wrong_server_id"] = True
 
 def add_option_to_msg(msg, option):
     msg /= option
@@ -358,11 +361,17 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
 def msg_add_defaults(msg):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
+    #server id
+    if world.cfg["wrong_server_id"] == True:
+        x /= DHCP6OptServerId()
+        world.cfg["wrong_server_id"] = False
+    #client id
     clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
     if world.cfg["client_id"] == True:
         x /= clientid
     else:
         world.cfg["client_id"] = True
+        
     # rewrite whole creating message
     if len(world.cliopts) > 0:
         if world.cliopts[0].optcode == 3:
