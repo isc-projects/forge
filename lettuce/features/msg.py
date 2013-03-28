@@ -1,5 +1,5 @@
 from lettuce import world, step
-from terrain import PROTO
+from init_all import PROTO
 import importlib
 
 # Tomek: For some reason importing terrain does not help, as the
