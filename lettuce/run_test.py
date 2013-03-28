@@ -18,6 +18,9 @@
 from lettuce import Runner
 import optparse
 import os
+import sys
+import importlib
+
 
 def option_parser():
     desc='''
@@ -71,7 +74,16 @@ def option_parser():
     result = runner.run()
     
 def main():
+    try :
+        config = importlib.import_module("features.init_all")
+    except ImportError:
+        print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_default)"
+        sys.exit()
+    if config.SERVER_TYPE == "":
+        print "Please make sure your configuration is valid\nProject Forge shutting down."
+        sys.exit()       
     option_parser()
+
 
 if __name__ == '__main__':
     main()
