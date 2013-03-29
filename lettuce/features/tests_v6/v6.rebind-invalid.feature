@@ -1,6 +1,6 @@
 
 Feature: Standard DHCPv6 rebind message 
-    This feature is designed for checking server response for invalid rebind messages. RFC 3315 section 15.5 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
+    This feature is designed for checking server response for invalid rebind messages. RFC 3315 section 15.7 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @rebind_invalid @teraz
     Scenario: v6.rebind.invalid.without_client_id
