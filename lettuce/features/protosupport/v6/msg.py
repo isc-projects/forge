@@ -178,6 +178,12 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
     print("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
+def unicast_addres(step):
+    """
+    Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address. 
+    """
+    world.cfg["unicast"] = True
+
 def client_doesnt_include(step, opt_type):
     """
     Remove client-id, or place invalid(blank) client-id/server-id 
@@ -363,7 +369,14 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
         x.show()
 
 def msg_add_defaults(msg):
-    x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
+    if world.cfg["unicast"] == False:
+        address = All_DHCP_Relay_Agents_and_Servers
+    elif world.cfg["unicast"] == True:
+        #address = IPv6_address
+        pass
+        world.cfg["unicast"] = False
+    
+    x = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
     
     #server id

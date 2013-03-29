@@ -41,3 +41,7 @@ def client_copy_option(step, option_name):
 @step('Client does (NOT )?include (\S+).')
 def client_doesnt_include(step, yes_or_not, opt_type):
     dhcpmsg.client_doesnt_include(step, opt_type)
+
+@step('Client chooses UNICAST address.')
+def unicast_addres(step):
+    dhcpmsg.unicast_addres(step)

@@ -60,10 +60,11 @@ def initialize(scenario):
 
     world.proto = PROTO
 
-    # server/client_id for v6 DO NOT CHANGE THIS!
+    # messages validation for v6 DO NOT CHANGE THIS!
     world.cfg["client_id"] = True
     world.cfg["wrong_server_id"] = False
     world.cfg["wrong_client_id"] = False
+    world.cfg["unicast"] = False
     
     # Setup scapy for v4
     conf.iface = IFACE
