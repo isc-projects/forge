@@ -4,12 +4,12 @@ Feature: DHCPv6 options defined in subnet
     requested options are assigned properly.
 
     Scenario: v6.options.preference
-    	# Checks that server is able to serve sntp-servers option to clients.
+	# Checks that server is able to serve sntp-servers option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with preference option in subnet 0 with value 123.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with preference option in subnet 0 with value 123.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -25,12 +25,12 @@ Feature: DHCPv6 options defined in subnet
 	Tags: v6 options preference automated
 
     Scenario: v6.options.dns-servers
-    	# Checks that server is able to serve dns-servers option to clients.
+	# Checks that server is able to serve dns-servers option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with dns-servers option in subnet 0 with value 2001:db8::1,2001:db8::2.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with dns-servers option in subnet 0 with value 2001:db8::1,2001:db8::2.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 23.
@@ -46,12 +46,12 @@ Feature: DHCPv6 options defined in subnet
 	Tags: v6 options dns-servers automated
 
     Scenario: v6.options.domains
-    	# Checks that server is able to serve domains option to clients.
+	# Checks that server is able to serve domains option to clients.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with domain-search option in subnet 0 with value domain1.example.com,domain2.isc.org.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with domain-search option in subnet 0 with value domain1.example.com,domain2.isc.org.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 24.
@@ -68,14 +68,14 @@ Feature: DHCPv6 options defined in subnet
 
 
     Scenario: v6.options.override
-    	# Checks that server uses the option defined in subnet, if both subnet and global
+	# Checks that server uses the option defined in subnet, if both subnet and global
 	# options are defined.
 
-    	Test Setup:
-        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-        Server is configured with domain-search option with value global.example.com.
-        Server is configured with domain-search option in subnet 0 with value subnet.example.com.
-        Server is started.
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with domain-search option with value global.example.com.
+    Server is configured with domain-search option in subnet 0 with value subnet.example.com.
+    Server is started.
 
 	Test Procedure:
 	Client requests option 24.
