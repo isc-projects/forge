@@ -1,11 +1,12 @@
-Ostatnio dodane:
- - basic testy gotowe
- - budowanie wszystich wiadomosci v6
- - tagowanie (trzeba startować przez run_test.py)
- - automatyczne startowanie binda (instalacja w defaultowej ścieżce)
- - czyszczenie konfiguracji kea
- - uruchamianie danego konfiga
+Recently added:
+ - configuration checker (when starting by run_test.py)
+ - configuration in different file
+ - basic tests
+ - building all dhcpv6 messages and scapy patch
+ - test tags
+ - automatic start/stop/configure bind10 - dhcp
+ 
  
  TODO:
- - testy testy testy ;)
- 
+ - new tests ;)
+ - rewrite run_test.py  
