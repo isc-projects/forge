@@ -102,7 +102,7 @@ Feature: Standard DHCPv6 renew message
 
 	References: RFC3315 section 15.6
 
-@v6 @renew_invalid @teraz
+@v6 @renew_invalid
     Scenario: v6.renew.invalid.wrong_client_id
 
 	Test Setup:
