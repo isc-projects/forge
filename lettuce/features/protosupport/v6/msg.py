@@ -153,7 +153,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         """
         msg = msg_add_defaults(DHCP6_Release())
         
-    elif (msgname == "INFREQUEST"):
+    elif (msgname == "INFOREQUEST"):
         """
         RFC 3315 15.12
         Servers MUST discard any received Information-request message that
@@ -188,6 +188,8 @@ def client_doesnt_include(step, opt_type):
         world.cfg["wrong_client_id"] = True
     elif opt_type == "wrong-server-id":
         world.cfg["wrong_server_id"] = True
+    else:
+        assert "unsupported option: " + opt_type
         
 def add_option_to_msg(msg, option):
     msg /= option

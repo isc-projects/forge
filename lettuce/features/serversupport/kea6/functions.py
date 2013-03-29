@@ -234,7 +234,7 @@ def start_srv():
     """
     cfg_write() 
     print "------ Bind10, dhcp6 configuration procedure:"
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start
-    fabric_run_bindctl ('conf')#conf
+#     fabric_run_bindctl ('clean')#clean and stop
+#     fabric_run_bindctl ('start')#start
+#     fabric_run_bindctl ('conf')#conf
 #     
