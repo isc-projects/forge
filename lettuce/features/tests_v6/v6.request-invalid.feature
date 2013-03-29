@@ -1,5 +1,5 @@
 
-Feature: Standard DHCPv6 solicit message 
+Feature: Standard DHCPv6 request message 
     This feature is designed for checking server response for invalid request messages. RFC 3315 section 15.4 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @request_invalid 
@@ -105,7 +105,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.4 
 	
-@v6 @request_invalid @teraz
+@v6 @request_invalid
     Scenario: v6.request.invalid.wrong_client_id
 
 	Test Setup:
