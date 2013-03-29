@@ -2,7 +2,7 @@ Recently added:
  - configuration checker (when starting by run_test.py)
  - configuration in different file
  - basic tests
- - building all dhcpv6 messages and scapy patch
+ - building all dhcpv6 messages and scapy patch (InforRequest it's still problem )
  - test tags
  - automatic start/stop/configure bind10 - dhcp
  
@@ -10,3 +10,4 @@ Recently added:
  TODO:
  - new tests ;)
  - rewrite run_test.py  
+ - repair InfoRequest
