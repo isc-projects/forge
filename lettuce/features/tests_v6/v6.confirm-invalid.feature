@@ -1,5 +1,5 @@
 
-Feature: Standard DHCPv6 solicit message 
+Feature: Standard DHCPv6 confirm message 
     This feature is designed for checking server response for invalid confirm messages. RFC 3315 section 15.5 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @confirm_invalid 
