@@ -60,7 +60,7 @@ def initialize(scenario):
 
     world.proto = PROTO
 
-    # server client_id for v6 DO NOT CHANGE THIS!
+    # server/client_id for v6 DO NOT CHANGE THIS!
     world.cfg["client_id"] = True
     world.cfg["wrong_server_id"] = False
     world.cfg["wrong_client_id"] = False
@@ -107,5 +107,5 @@ def say_goodbye(total):
     )
 
     bind10(MGMT_ADDRESS, cmd='pkill -f b10-*' )
-
+    
     print "Goodbye."
