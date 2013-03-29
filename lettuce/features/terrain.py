@@ -63,6 +63,8 @@ def initialize(scenario):
     # server /slient id for v6 DO NOT CHANGE THIS!
     world.cfg["client_id"] = True
     world.cfg["wrong_server_id"] = False
+    world.cfg["wrong_client_id"] = False
+    
     # Setup scapy for v4
     conf.iface = IFACE
     conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy

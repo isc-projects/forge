@@ -180,13 +180,15 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
 def client_doesnt_include(step, opt_type):
     """
-    Remove client-id from message, maybe more if there will be need for that
+    Remove client-id, or place invalid(blank) client-id/server-id 
     """
     if opt_type == "client-id":
         world.cfg["client_id"] = False
-    if opt_type == "wrong-server-id":
+    elif opt_type == "wrong-client-id":
+        world.cfg["wrong_client_id"] = True
+    elif opt_type == "wrong-server-id":
         world.cfg["wrong_server_id"] = True
-
+        
 def add_option_to_msg(msg, option):
     msg /= option
     return msg
@@ -365,18 +367,20 @@ def msg_add_defaults(msg):
     if world.cfg["wrong_server_id"] == True:
         x /= DHCP6OptServerId()
         world.cfg["wrong_server_id"] = False
-    #client id
-    clientid = DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    if world.cfg["client_id"] == True:
-        x /= clientid
-    else:
-        world.cfg["client_id"] = True
         
+    #client id
+    if world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == False:
+        x /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
+    elif world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == True:
+        x /= DHCP6OptClientId()
+        world.cfg["wrong_client_id"] = False
+    elif world.cfg["client_id"] == False:
+        world.cfg["client_id"] = True
+
     # rewrite whole creating message
     if len(world.cliopts) > 0:
         if world.cliopts[0].optcode == 3:
             x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
-            #x /= DHCP6OptIA_NA (world.cliopts[0].ianaopts)
             world.cliopts = []
         else:
             x /= DHCP6OptIA_NA(iaid = 1)
