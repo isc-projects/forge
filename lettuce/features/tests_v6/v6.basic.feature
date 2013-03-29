@@ -210,7 +210,7 @@ Feature: Standard DHCPv6 message types
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client sends INFREQUEST message.
+	Client sends INFOREQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
