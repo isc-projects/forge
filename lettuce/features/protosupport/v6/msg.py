@@ -363,6 +363,7 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
 def msg_add_defaults(msg):
     x = IPv6(dst=All_DHCP_Relay_Agents_and_Servers)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
+    
     #server id
     if world.cfg["wrong_server_id"] == True:
         x /= DHCP6OptServerId()
