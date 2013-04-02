@@ -1,7 +1,6 @@
 #Configuration file, please copy this to the init_all.py and fill it with your variables. init_all.py is added to gitignore.
 
 
-
 SERVER_TYPE = ""
 PROTO = ""
 # Defines name of the interface
@@ -45,5 +44,6 @@ MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
 
-
+# scope link server address for testing unicast messages  
+SRV_IPV6_ADDR = ""
 
