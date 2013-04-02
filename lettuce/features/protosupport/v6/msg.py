@@ -28,6 +28,7 @@ from scapy.layers.inet6 import IPv6
 from scapy.sendrecv import sr
 
 
+
 # @todo: this is a copy of the same list from serversupport.kea6.functions
 # The following line doesn't seem to work as it gives the following error:
 # ValueError: Attempted relative import in non-package
@@ -219,7 +220,7 @@ def send_wait_for_message(step, presence, exp_message):
 
     # Uncomment this to get debug.recv filled with all received messages
     #conf.debug_match = True
-    ans,unans = sr(world.climsg, iface=world.cfg["iface"], timeout=1, nofilter=1, verbose=99)
+    ans,unans = sr(world.climsg, iface = world.cfg["iface"], timeout=1, nofilter=1, verbose=99)
 
     expected_type_found = False
     received_names = ""
@@ -372,8 +373,8 @@ def msg_add_defaults(msg):
     if world.cfg["unicast"] == False:
         address = All_DHCP_Relay_Agents_and_Servers
     elif world.cfg["unicast"] == True:
-        #address = IPv6_address
-        pass
+        from features.init_all import SRV_IPV6_ADDR
+        address = SRV_IPV6_ADDR
         world.cfg["unicast"] = False
     
     x = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
