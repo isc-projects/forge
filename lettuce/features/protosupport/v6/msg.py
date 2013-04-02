@@ -27,29 +27,7 @@ from scapy.layers.inet import UDP
 from scapy.layers.inet6 import IPv6
 from scapy.sendrecv import sr
 
-
-
-# @todo: this is a copy of the same list from serversupport.kea6.functions
-# The following line doesn't seem to work as it gives the following error:
-# ValueError: Attempted relative import in non-package
-# from ...serversupport.kea6.functions import kea_options6
-# For now, the kea_options6 is just duplicated here.
-kea_options6 = { "client-id": 1,
-                 "server-id" : 2,
-                 "IA_NA" : 3,
-                 "IA_address" : 5,
-                 "preference": 7,
-                 "sip-server-dns": 21,
-                 "sip-server-addr": 22,
-                 "dns-servers": 23,
-                 "domain-search": 24,
-                 "nis-servers": 27,
-                 "nisp-servers": 28,
-                 "nis-domain-name": 29,
-                 "nisp-domain-name": 30,
-                 "sntp-servers": 31,
-                 "information-refresh-time": 32 }
-
+from features.serversupport.kea6.functions import kea_options6
 
     
 def client_requests_option(step, opt_type):
@@ -304,7 +282,7 @@ def response_check_include_option(step, must_include, opt_code):
     else:
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
 
-# Returns text represenation of the option, interpreted as specified by data_type
+# Returns text representation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
     if data_type=="uint8":
         assert len(opt.data) == 1, "Received option " + opt.optcode + " contains " + len(opt.data) + \
@@ -328,6 +306,8 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     received = ""
     if opt_code == 7:
         received = str(x.prefval)
+    if opt_code == 13:
+        received = str(x.statuscode)
     elif opt_code == 21:
         received = ",".join(x.sipdomains)
     elif opt_code == 22:
