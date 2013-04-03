@@ -1,0 +1,33 @@
+4.	[doc]	tomek
+        Initial documentation added. Many overlapping and redundant copies
+        of readme/todo/notes sorted out.
+
+3.	[func]	wlodek
+        - configuration checker (when starting by run_test.py)
+        - configuration in different file
+        - basic tests
+        - building all dhcpv6 messages and scapy patch (InforRequest is
+          still a problem)
+        - test tags
+        - automatic start/stop/configure bind10 - dhcp
+
+2.      [func]	rafal
+        Refactoring: generic code with dynamically loaded modules for
+        specific server or protocol
+
+1.	[func]	rafal, wlodek, tomek
+        Initial code merged in. This is a result of a common development
+        on separate private repos.
+
+LEGEND
+[bug] general bug fix.  This is generally a backward compatible change,
+        unless it's deemed to be impossible or very hard to keep
+        compatibility to fix the bug.
+[build] compilation and installation infrastructure change.
+[doc] update to documentation. This shouldn't change run time behavior.
+[func] new feature.  In some cases this may be a backward incompatible
+        change, which would require a bump of major version.
+[security] security hole fix. This is no different than a general bug
+        fix except that it will be handled as confidential and will cause
+        security patch releases.
+*: Backward incompatible or operational change.
