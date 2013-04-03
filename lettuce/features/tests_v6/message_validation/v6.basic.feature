@@ -41,7 +41,7 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 section 5.3 
 	
-@basic @v6
+@basic @v6 @sprawdz
     Scenario: v6.basic.message.confirm-reply
 
 	Test Setup:
@@ -49,22 +49,6 @@ Feature: Standard DHCPv6 message types
 	Server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
-	Client requests option 7.
-	Client sends REQUEST message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-
-	Test Procedure:
-	Client copies IA_NA option from received message.
 	Client sends CONFIRM message.
 
 	Pass Criteria:
@@ -177,14 +161,6 @@ Feature: Standard DHCPv6 message types
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
-	Client requests option 7.
-	Client sends REQUEST message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client copies server-id option from received message.

@@ -144,3 +144,42 @@ Feature: Standard DHCPv6 request message
 	Server MUST respond with REPLY message.
 
 	References: RFC3315 section 15.4 
+	
+@v6 @request_invalid @wrong_option @test
+    Scenario: v6.request.invalid.wrong_option
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 0.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15, 15.4 

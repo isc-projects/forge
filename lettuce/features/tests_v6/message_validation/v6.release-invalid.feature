@@ -140,3 +140,42 @@ Feature: Standard DHCPv6 release message
 	Server MUST respond with REPLY message.
 
 	References: RFC3315 section 15.9
+	
+	
+@v6 @release_invalid @wrong_option
+    Scenario: v6.release.invalid.wrong_option
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 0.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15, 15.9

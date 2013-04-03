@@ -105,3 +105,26 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5 
 	
+@v6 @confirm_invalid 
+    Scenario: v6.confirm.invalid.wrong_option
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does include wrong-server-id.
+	Client sends CONFIRM message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends CONFIRM message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	
+	References: RFC3315 section 15, 15.5 
