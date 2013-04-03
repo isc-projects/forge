@@ -47,7 +47,8 @@ def prepare_cfg_subnet(step, subnet, pool):
         
     
   
-kea_options6 = { "client-id": 1,
+kea_options6 = { "blank": 0, 
+                 "client-id": 1,
                  "server-id" : 2,
                  "IA_NA" : 3,
                  "IA_address" : 5,

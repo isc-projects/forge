@@ -359,6 +359,7 @@ def msg_add_defaults(msg):
     
     x = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
+    world.cfg["tr_id"] = x.trid
     
     #server id
     if world.cfg["wrong_server_id"] == True:
@@ -374,7 +375,7 @@ def msg_add_defaults(msg):
     elif world.cfg["client_id"] == False:
         world.cfg["client_id"] = True
 
-    # rewrite whole creating message
+    # rewrite that with "for" loop
     if len(world.cliopts) > 0:
         if world.cliopts[0].optcode == 3:
             x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
