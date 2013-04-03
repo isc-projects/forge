@@ -114,7 +114,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15
 	
 	
-@basic @v6 @unicast @teraz
+@basic @v6 @unicast 
     Scenario: v6.basic.message.unicast.request	
 	
 	Test Setup:
