@@ -1,0 +1,6 @@
+ TODO:
+ - new tests ;)
+ - rewrite run_test.py
+ - repair InfoRequest
+
+ - Write more reasonable documentation (tomek)
