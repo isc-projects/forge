@@ -386,3 +386,4 @@ def msg_add_defaults(msg):
     else:
         x /= DHCP6OptIA_NA(iaid = 1)
     return x
+
