@@ -2,7 +2,7 @@
 Feature: Standard DHCPv6 options
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly.
-@v6
+
     Scenario: v6.options.preference
 	# Checks that server is able to serve preference option to clients.
 
@@ -34,7 +34,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options preference automated
 
-@v6
+
     Scenario: v6.options.sip-domains
 	# Checks that server is able to serve SIP domains option to clients.
 
@@ -65,7 +65,7 @@ Feature: Standard DHCPv6 options
 	References: v6.options RFC3319
 	
 	Tags: v6 options SIP sip-domain automated
-@v6
+
     Scenario: v6.options.sip-servers
 	# Checks that server is able to serve SIP servers option to clients.
 
@@ -97,7 +97,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options sip-servers automated
 
-  @v6  
+
     Scenario: v6.options.dns-servers
 	# Checks that server is able to serve dns-servers option to clients.
 
@@ -130,7 +130,7 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3646
 
 	Tags: v6 options dns-servers automated
-@v6
+
     Scenario: v6.options.domains
 	# Checks that server is able to serve domains option to clients.
 
@@ -161,7 +161,7 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3646 
 
 	Tags: v6 options domain automated
-@v6
+
     Scenario: v6.options.nis-servers
 	# Checks that server is able to serve NIS server option to clients.
 
@@ -193,7 +193,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nis nis-server automated
 
-@v6
+
     Scenario: v6.options.nisp-servers
 	# Checks that server is able to serve NIS+ servers option to clients.
 
@@ -215,7 +215,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nisplus nisp nis+ nisp-servers automated
 	
-@v6
+
     Scenario: v6.options.nisdomain
 	# Checks that server is able to serve NIS domain option to clients.
 
@@ -247,7 +247,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nis-domain nis automated
 
-@v6
+
     Scenario: v6.options.nispdomain
 	# Checks that server is able to serve NIS+ domain option to clients.
 
@@ -278,7 +278,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nisplus nis+ nisp-domain nis automated
 
-@v6
+
     Scenario: v6.options.sntp-servers
 	# Checks that server is able to serve sntp-servers option to clients.
 
@@ -313,7 +313,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options sntp servers automated
 	
-@v6
+
     Scenario: v6.options.info-refresh
 	# Checks that server is able to serve sntp-servers option to clients.
 
@@ -344,7 +344,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options info-refresh-time automated
 
-@v6
+
     Scenario: v6.options.multiple
 	# Checks that server is able to serve many options to clients.
 
@@ -391,7 +391,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options many automated
 
-@v6
+
     Scenario: v6.options.negative
 	# Checks that server does not return option that it was not configured
 	# to return.
