@@ -29,8 +29,31 @@ from scapy.sendrecv import sr
 
 from features.serversupport.kea6.functions import kea_options6
 
+message_include_option = {"DHCP6OptClientId", #added by default
+                          "DHCP6OptServerId", 
+                          "DHCP6OptIA_NA",
+                          "DHCP6OptIA_TA",
+                          "DHCP6OptIAAddress",
+                          "DHCP6OptOptReq", #added by default
+                          "DHCP6OptPref",
+                          "DHCP6OptElapsedTime",
+                          "DHCP6OptRelayMsg",
+                          "DHCP6OptAuth",
+                          "DHCP6OptServerUnicast",
+                          "DHCP6OptStatusCode",
+                          "DHCP6OptRapidCommit",
+                          "DHCP6OptUserClass",
+                          "DHCP6OptVendorClass",
+                          "DHCP6OptVendorSpecificInfo",
+                          "DHCP6OptIfaceId",
+                          "DHCP6OptReconfMsg",
+                          "DHCP6OptReconfAccept",
+                          }
     
 def client_requests_option(step, opt_type):
+    """
+    Add RequestOption to message.
+    """
     if not hasattr(world, 'oro'):
         # There was no ORO at all, create new one
         world.oro = DHCP6OptOptReq()
@@ -59,6 +82,8 @@ def client_send_msg(step, msgname, opt_type, unknown):
         Servers MUST discard any Solicit messages that do not include a
         Client Identifier option or that do include a Server Identifier
         option.
+        
+        Also we can include IA options, Option Request, Rapid Commit and Reconfigure Accept.
         """
         msg = msg_add_defaults(DHCP6_Solicit())
         if (world.oro is not None):
@@ -256,7 +281,9 @@ def get_option(msg, opt_code):
     return None
 
 def client_copy_option(step, option_name):
-
+    """
+    Copy option from received message 
+    """
     assert world.srvmsg
 
     assert option_name in kea_options6, "Unsupported option name " + option_name
@@ -270,9 +297,10 @@ def client_copy_option(step, option_name):
 
     add_client_option(opt)
 
-# @step('Response MUST (NOT )?include option (\d+).')
 def response_check_include_option(step, must_include, opt_code):
-
+    """
+    Checking presence of expected option.
+    """
     assert len(world.srvmsg) != 0, "No response received."
 
     opt = get_option(world.srvmsg[0], opt_code)
