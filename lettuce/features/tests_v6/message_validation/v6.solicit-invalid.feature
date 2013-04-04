@@ -81,7 +81,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2, 17.2.1
 	
-@v6 @solicit_invalid 
+@v6 @solicit_invalid @wrong_option
     Scenario: v6.solicit.invalid.with_wrong_option
 
 	Test Setup:
@@ -89,7 +89,8 @@ Feature: Standard DHCPv6 solicit message
 	Server is started.
 
 	Test Procedure:
-	Client requests option 0.
+	Client requests option 7.
+	Client does include preference.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
