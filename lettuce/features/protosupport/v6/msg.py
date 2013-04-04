@@ -29,27 +29,8 @@ from scapy.sendrecv import sr
 
 from features.serversupport.kea6.functions import kea_options6
 
-message_include_option = {"DHCP6OptClientId", #added by default
-                          "DHCP6OptServerId", 
-                          "DHCP6OptIA_NA",
-                          "DHCP6OptIA_TA",
-                          "DHCP6OptIAAddress",
-                          "DHCP6OptOptReq", #added by default
-                          "DHCP6OptPref",
-                          "DHCP6OptElapsedTime",
-                          "DHCP6OptRelayMsg",
-                          "DHCP6OptAuth",
-                          "DHCP6OptServerUnicast",
-                          "DHCP6OptStatusCode",
-                          "DHCP6OptRapidCommit",
-                          "DHCP6OptUserClass",
-                          "DHCP6OptVendorClass",
-                          "DHCP6OptVendorSpecificInfo",
-                          "DHCP6OptIfaceId",
-                          "DHCP6OptReconfMsg",
-                          "DHCP6OptReconfAccept",
-                          }
-    
+include = ["client-id"]
+
 def client_requests_option(step, opt_type):
     """
     Add RequestOption to message.
@@ -188,19 +169,7 @@ def unicast_addres(step):
     """
     world.cfg["unicast"] = True
 
-def client_doesnt_include(step, opt_type):
-    """
-    Remove client-id, or place invalid(blank) client-id/server-id 
-    """
-    if opt_type == "client-id":
-        world.cfg["client_id"] = False
-    elif opt_type == "wrong-client-id":
-        world.cfg["wrong_client_id"] = True
-    elif opt_type == "wrong-server-id":
-        world.cfg["wrong_server_id"] = True
-    else:
-        assert "unsupported option: " + opt_type
-        
+##TUTAJ WKLEJ       
 def add_option_to_msg(msg, option):
     msg /= option
     return msg
@@ -377,7 +346,58 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
     for x in ans:
         x.show()
 
+def client_does_include(step, opt_type):
+    """
+    Include options to message.  
+    """
+    global include 
+    
+    #If you want to use parts of received message to include it, please use 'Client copies (\S+) option from received message.' step.
+    if opt_type == "client-id":
+        world.cfg["client_id"] = False
+    elif opt_type == "wrong-client-id":
+        world.cfg["wrong_client_id"] = True
+    elif opt_type == "wrong-server-id":
+        world.cfg["wrong_server_id"] = True
+        include.append("server-id")
+    elif opt_type == "preference":
+        include.append("preference")
+    else:
+        assert "unsupported option: " + opt_type
+
+##functions to build specific message
+def server_id(msg):
+    """
+    Add server id to message
+    """
+    if world.cfg["wrong_server_id"] == True:
+        msg /= DHCP6OptServerId()
+        world.cfg["wrong_server_id"] = False
+    return msg
+
+def client_id(msg):
+    """
+    Add client id to message
+    """
+    if world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == False:
+        msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
+    elif world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == True:
+        msg /= DHCP6OptClientId()
+        world.cfg["wrong_client_id"] = False
+    elif world.cfg["client_id"] == False:
+        world.cfg["client_id"] = True
+    return msg
+
+def preference(msg):
+    """
+    Add preference to message
+    """
+    #make more then just blank preference
+    msg /= DHCP6OptPref()
+    return msg
+
 def msg_add_defaults(msg):
+    global include
     if world.cfg["unicast"] == False:
         address = All_DHCP_Relay_Agents_and_Servers
     elif world.cfg["unicast"] == True:
@@ -387,23 +407,21 @@ def msg_add_defaults(msg):
     
     x = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
+    
+    print include
+    #for adding some include option create case in 'client_does_include' and def
+    for y in include:
+        x = {
+         'server-id': server_id(x),
+         'client-id': client_id(x),
+         'preference': preference(x)
+         }[y]
+    #set global include for defaults
+    include = ['client-id']
+   
     world.cfg["tr_id"] = x.trid
     
-    #server id
-    if world.cfg["wrong_server_id"] == True:
-        x /= DHCP6OptServerId()
-        world.cfg["wrong_server_id"] = False
-        
-    #client id
-    if world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == False:
-        x /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    elif world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == True:
-        x /= DHCP6OptClientId()
-        world.cfg["wrong_client_id"] = False
-    elif world.cfg["client_id"] == False:
-        world.cfg["client_id"] = True
-
-    # rewrite that with "for" loop
+    # rewrite that ... 
     if len(world.cliopts) > 0:
         if world.cliopts[0].optcode == 3:
             x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
