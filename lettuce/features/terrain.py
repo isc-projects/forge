@@ -40,6 +40,7 @@ def server_start():
             sys.exit()
     else:
         print "Server other than kea not implemented yet"
+
 @before.each_scenario
 def initialize(scenario):    
 

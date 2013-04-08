@@ -1,9 +1,17 @@
-#Configuration file, please copy this to the init_all.py and fill it with your variables. init_all.py is added to gitignore.
+#Configuration file, please copy this to the init_all.py and fill it with your
+#variables. init_all.py is added to gitignore.
 
-
+# This defines server type. Allowed values are:
+# kea4, kea6, isc-dhcp4, isc-dhcp6, dibbler
+# Not all of those are functional yet. This is essentailly
+# name of the subdirectory in lettuce/features/serversupport
 SERVER_TYPE = ""
+
+# This defines protocol family. Currently two are
+# supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
 PROTO = ""
-# Defines name of the interface
+
+# Defines name of the DUT-facing network interface
 IFACE = ""
 
 # Parameters specific to DHCPv4 tests
@@ -12,7 +20,6 @@ REL4_ADDR = ""
 
 # defines client MAC (used for DUID generation)
 CLI_MAC = ""
-
 
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
