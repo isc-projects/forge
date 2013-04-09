@@ -16,6 +16,7 @@
 
 from fabric.api import sudo, settings, put, hide
 from lettuce.registry import world
+from init_all import SERVER_INSTALL_DIR
 import os
 
 
@@ -224,7 +225,7 @@ def fabric_run_bindctl (opt):
     if opt == "restart":
         #implement this
         pass
-    cmd='(echo "execute file '+cfg_file+'_processed" | bindctl ); sleep 1'
+    cmd='(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bindctl ); sleep 1'
     with settings(host_string=world.cfg["mgmt_addr"],
                   user=world.cfg["mgmt_user"],
                   password=world.cfg["mgmt_pass"]):

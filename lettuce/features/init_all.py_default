@@ -51,6 +51,11 @@ MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
 
+# Specifies path to the server installation directory on DUT. This must
+# point to specific directory and must end with /. If all binaries are
+# available in PATH, leave this empty.
+SERVER_INSTALL_DIR = ""
+
 # scope link server address for testing unicast messages  
 SRV_IPV6_ADDR = ""
 
