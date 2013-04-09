@@ -41,8 +41,8 @@ removelist = [ ]
 # as the interval in which to check again if it has not been found yet.
 # If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an
 # error (so as not to hang indefinitely)
-OUTPUT_WAIT_INTERVAL = 
-OUTPUT_WAIT_MAX_INTERVALS = 
+OUTPUT_WAIT_INTERVAL = 3
+OUTPUT_WAIT_MAX_INTERVALS = 5
 
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required!

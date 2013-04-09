@@ -1,6 +1,7 @@
 from lettuce import world, step
+from init_all import SERVER_TYPE
 import importlib
-dhcpfun = importlib.import_module("serversupport.%s.functions"  % (world.cfg["server_type"])) 
+dhcpfun = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
 
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(step, subnet, pool):
