@@ -52,8 +52,9 @@ MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
 
 # Specifies path to the server installation directory on DUT. This must
-# point to specific directory and must end with /. If all binaries are
-# available in PATH, leave this empty.
+# point to root directory of server installation and must end with /.
+# The framework appends subdirectories to this path to run applications.
+# For example, it appends "bin/" to obtain path to the bindctl.
 SERVER_INSTALL_DIR = ""
 
 # scope link server address for testing unicast messages  

@@ -33,7 +33,8 @@ def server_start():
         print "--- Starting Bind:"
         try:
             #comment line below to turn off starting bind
-            bind10(MGMT_ADDRESS, cmd='(rm nohup.out; nohup bind10 &); sleep 2' )
+            bind10(MGMT_ADDRESS, cmd='(rm nohup.out; nohup ' + SERVER_INSTALL_DIR
+                   + 'sbin/bind10 &); sleep 2' )
             print "----- Bind10 successfully started"
         except :
             print "----- Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE)
