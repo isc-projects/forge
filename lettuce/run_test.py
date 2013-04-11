@@ -39,6 +39,7 @@ def option_parser():
                       help="Declare IP version 6 tests")
     parser.add_option("-v", "--verbosity",
                       dest="verbosity",
+                      action="store",
                       default=4,
                       help="Level of the lettuce verbosity")
     parser.add_option("-s", "--scenarios",
@@ -50,7 +51,13 @@ def option_parser():
                       dest="tag",
                       action="append",
                       default=None,
-                      help="specific tests tags, multiple tags after ',' e.g. -t v6,v4")   
+                      help="specific tests tags, multiple tags after ',' e.g. -t v6,v4")
+    parser.add_option("-x", "--with-xunit",
+                      dest="enable_xunit",
+                      action="store_true",
+                      default=False,
+                      help="Generate results file in xUnit format")
+
     (opts, args) = parser.parse_args()
 
     if not opts.version6 and not opts.version4:
@@ -69,7 +76,8 @@ def option_parser():
     runner = Runner(base_path,
                     verbosity=opts.verbosity,
                     failfast=False,
-                    tags=tag)
+                    tags=tag,
+                    enable_xunit=opts.enable_xunit)
 
     result = runner.run()
     
