@@ -39,6 +39,7 @@ def option_parser():
                       help="Declare IP version 6 tests")
     parser.add_option("-v", "--verbosity",
                       dest="verbosity",
+                      type="int",
                       action="store",
                       default=4,
                       help="Level of the lettuce verbosity")
