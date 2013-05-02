@@ -1,6 +1,6 @@
 def prepare_cfg_isc_dhcp(step):
     # TODO: Implement me
-    print("TODO: Config generation for ISC DHCP is not implemented yet.")
+    get_common_logger().error("TODO: Config generation for ISC DHCP is not implemented yet.")
 
 def start_srv_isc_dhcp(step, config_file):
     args = ['dhcpd' , '-d', '-cf', config_file ]

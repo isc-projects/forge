@@ -15,6 +15,7 @@
 
 
 from fabric.api import sudo, run, settings, put, hide
+from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR
 import os
@@ -31,7 +32,7 @@ def prepare_cfg_default(step):
     world.cfg["conf"] = "# Default server config for Kea6 is just empty string\n"
     
 def prepare_cfg_subnet(step, subnet, pool):
-    print("#### subnet")
+    get_common_logger().debug("Configure subnet...")
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
     if (subnet == "default"):
@@ -183,7 +184,7 @@ def pepere_config_file(cfg):
     try:
         os.remove(cfg)
     except OSError:
-        print ('File %s cannot be removed' % cfg)
+        get_common_logger().error('File %s cannot be removed' % cfg)
         
 
 def fabric_send_file (file_local):
@@ -199,26 +200,26 @@ def fabric_send_file (file_local):
     try:
         os.remove(file_local)
     except OSError:
-        print ('File %s cannot be removed' % file_local)
+        get_common_logger().error('File %s cannot be removed' % file_local)
         
 def fabric_run_bindctl (opt):
     """
     Run bindctl with prepered config file
     """    
     if opt == "clean":
-        print ('------------ cleaning kea configuration')
+        get_common_logger().debug('------------ cleaning kea configuration')
         prepare_cfg_kea6_for_kea6_stop()
         cfg_file = 'kea6-stop.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
     if opt == "start":
-        print ('------------ starting fresh kea')
+        get_common_logger().debug('------------ starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
         cfg_file = 'kea6-start.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
     if opt == "conf":
-        print ('------------ kea configuration')
+        get_common_logger().debug('------------ kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file+"_processed")
@@ -236,7 +237,7 @@ def start_srv():
     Start kea with generated config
     """
     cfg_write() 
-    print "------ Bind10, dhcp6 configuration procedure:"
+    get_common_logger().debug("------ Bind10, dhcp6 configuration procedure:")
     fabric_run_bindctl ('clean')#clean and stop
     fabric_run_bindctl ('start')#start
     fabric_run_bindctl ('conf')#conf

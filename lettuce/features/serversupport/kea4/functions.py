@@ -53,15 +53,15 @@ def prepare_cfg_add_option(step, option_name, option_value):
 
 
 def start_srv():
-    print("Automatic start for Kea is not implemented yet. Please start Kea")
-    print("manually and run the following config (also stored in %s):" % world.cfg["cfg_file"])
-    print("------")
-    print (world.cfg["conf"])
+    get_common_logger().info("Automatic start for Kea is not implemented yet. Please start Kea")
+    get_common_logger().info("manually and run the following config (also stored in %s):" % world.cfg["cfg_file"])
+    get_common_logger().info("------")
+    get_common_logger().info(world.cfg["conf"])
 
     configfile = open(world.cfg["cfg_file"], 'w')
     configfile.write(world.cfg["conf"])
     configfile.close()
-    print("------")
+    get_common_logger().info("------")
     raw_input("Press ENTER when ready")
 
 def restart_srv():

@@ -1,6 +1,7 @@
 from fabric.context_managers import settings, hide
 from fabric.operations import sudo
 from lettuce import world, before, after
+from logging_facility import *
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 import os
@@ -28,7 +29,7 @@ def kill_bind10(host):
     """
     Kill any running bind10 instance
     """
-    print "--- Killing all running Bind instances"
+    get_common_logger().debug("--- Killing all running Bind instances")
     cmd = 'pkill -f b10-*; sleep 5'
     with settings(host_string=host, user=MGMT_USERNAME, password=MGMT_PASSWORD):
         with settings(warn_only=True):
@@ -39,22 +40,25 @@ def server_start():
     """
     Server starting before testing
     """
+    # Initialize the common logger. The instance of this logger can
+    # be instantiated by get_common_logger()
+    logger_initialize(LOGLEVEL)
 
     # Make sure there is noo garbage instance of bind10 running.
     kill_bind10(MGMT_ADDRESS)
 
     if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
-        print "--- Starting Bind:"
+        get_common_logger().debug("--- Starting Bind:")
         try:
             #comment line below to turn off starting bind
             bind10(MGMT_ADDRESS, cmd='(rm nohup.out; nohup ' + SERVER_INSTALL_DIR
                    + 'sbin/bind10 &); sleep 2' )
-            print "----- Bind10 successfully started"
+            get_common_logger().debug("----- Bind10 successfully started")
         except :
-            print "----- Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE)
+            get_common_logger().error("----- Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
             sys.exit()
     else:
-        print "Server other than kea not implemented yet"
+        get_common_logger().error("Server other than kea not implemented yet")
 
 @before.each_scenario
 def initialize(scenario):    
@@ -118,11 +122,11 @@ def say_goodbye(total):
     """
     Server stopping after whole work
     """
-    print "%d of %d scenarios passed." % (
+    get_common_logger().info("%d of %d scenarios passed." % (
         total.scenarios_passed,
         total.scenarios_ran
-    )
+    ))
 
     kill_bind10(MGMT_ADDRESS)
     
-    print "Goodbye."
+    get_common_logger().info("Goodbye.")

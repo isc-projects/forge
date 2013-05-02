@@ -1,6 +1,7 @@
 from lettuce import world, step
 from init_all import PROTO
 import importlib
+from logging_facility import *
 
 # Tomek: For some reason importing terrain does not help, as the
 # @before.each_scenario is not called, so the world do not have proto set up.
@@ -19,7 +20,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
 @step('Server MUST (NOT )?respond with (\w+) message')
 def send_wait_for_message(step, yes_or_no, message):
-    print "client_send_msg:{message}.\n".format(**locals())
+    get_common_logger().debug("client_send_msg:{message}.\n".format(**locals()))
     presence = True if yes_or_no == None else False 
     dhcpmsg.send_wait_for_message(step, presence ,message)
 

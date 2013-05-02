@@ -19,6 +19,7 @@
 #
 
 from cookielib import debug
+from logging_facility import *
 from lettuce.decorators import step
 from lettuce.registry import world
 from scapy.config import conf
@@ -42,7 +43,7 @@ def client_requests_option(step, opt_type):
         world.oro.reqopts = [] # don't request anything by default
 
     world.oro.reqopts.append(int(opt_type))
-    
+
 # @step('Client sends (\w+) message( with (\w+) option)?')
 def client_send_msg(step, msgname, opt_type, unknown):
     """
@@ -161,7 +162,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
     if msg:
         world.climsg.append(msg)
 
-    print("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
 def unicast_addres(step):
     """
@@ -200,15 +201,16 @@ def send_wait_for_message(step, presence, exp_message):
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        print("Debug: Received packet type = %s" % get_msg_type(b))
+        get_common_logger().info("Received packet type = %s" % get_msg_type(b))
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
 
     for x in unans:
-        print("Unmatched packet type = %s" % get_msg_type(x))
+        get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
 
-    print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
+    get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)." 
+                              % (len(ans), len(unans)))
     
     if presence:
         assert len(world.srvmsg) != 0, "No response received."
@@ -257,7 +259,6 @@ def client_copy_option(step, option_name):
 
     assert option_name in kea_options6, "Unsupported option name " + option_name
     opt_code = kea_options6.get(option_name)
-    print opt_code
     opt = get_option(get_last_response(), opt_code)
     
     assert opt, "Received message does not contain option " + option_name
@@ -334,14 +335,14 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
 def receive_dhcp6_tcpdump(count = 1, timeout = 1):
 
     args = ["tcpdump", "-i", world.cfg["iface"], "-c", str(count), "-w", "test.pcap", "ip6"]
-    print("Running tcpdump for %d seconds:" % timeout,)
-    print(args)
+    get_common_logger().debug("Running tcpdump for %d seconds:" % timeout)
+    get_common_logger().debug(args)
     tcpdump = subprocess.Popen(args)
     time.sleep(timeout)
     tcpdump.terminate()
 
     ans = sniff(count=5, filter="ip6", offline="test.pcap", promisc=True, timeout=3)
-    print("Received traffic: %d packet(s)." % len(ans))
+    get_common_logger().debug("Received traffic: %d packet(s)." % len(ans))
     assert len(ans) != 0, "No response received."
     for x in ans:
         x.show()
@@ -408,7 +409,7 @@ def msg_add_defaults(msg):
     x = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
     x.trid = random.randint(0, 256*256*256)
     
-    print include
+    # print include
     #for adding some include option create case in 'client_does_include' and def
     for y in include:
         x = {

@@ -1,6 +1,11 @@
 #Configuration file, please copy this to the init_all.py and fill it with your
 #variables. init_all.py is added to gitignore.
 
+# This defines the logging level for the common logger used by this framework
+# Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
+# case insensitive.
+LOGLEVEL = "info"
+
 # This defines server type. Allowed values are:
 # kea4, kea6, isc-dhcp4, isc-dhcp6, dibbler
 # Not all of those are functional yet. This is essentailly
