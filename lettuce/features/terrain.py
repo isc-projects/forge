@@ -24,11 +24,25 @@ def bind10 (host, cmd):
         with hide('running', 'stdout', 'stderr'):
             sudo(cmd, pty=True)
 
+def kill_bind10(host):
+    """
+    Kill any running bind10 instance
+    """
+    print "--- Killing all running Bind instances"
+    cmd = 'pkill -f b10-*; sleep 5'
+    with settings(host_string=host, user=MGMT_USERNAME, password=MGMT_PASSWORD):
+        with settings(warn_only=True):
+            sudo(cmd, pty=True)
+
 @before.all
 def server_start():
     """
     Server starting before testing
     """
+
+    # Make sure there is noo garbage instance of bind10 running.
+    kill_bind10(MGMT_ADDRESS)
+
     if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
         print "--- Starting Bind:"
         try:
@@ -109,6 +123,6 @@ def say_goodbye(total):
         total.scenarios_ran
     )
 
-    bind10(MGMT_ADDRESS, cmd='pkill -f b10-*' )
+    kill_bind10(MGMT_ADDRESS)
     
     print "Goodbye."

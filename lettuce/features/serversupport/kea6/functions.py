@@ -14,7 +14,7 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-from fabric.api import sudo, settings, put, hide
+from fabric.api import sudo, run, settings, put, hide
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR
 import os
@@ -229,7 +229,7 @@ def fabric_run_bindctl (opt):
     with settings(host_string=world.cfg["mgmt_addr"],
                   user=world.cfg["mgmt_user"],
                   password=world.cfg["mgmt_pass"]):
-        sudo(cmd)
+        run(cmd)
 
 def start_srv():
     """
