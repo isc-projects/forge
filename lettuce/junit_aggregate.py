@@ -88,8 +88,12 @@ def aggregateTestSuite(doc, testsuite):
                                                                shortClassName(testclass_name))
                 testsuite.appendChild(aggregated_testcase)
 
-        if testcase.getElementsByTagName('failure').length > 0:
+        testcase_failures = testcase.getElementsByTagName('failure')
+        if testcase_failures.length > 0:
             increaseIntegerAttribute(doc, testsuite, 'failures', 1)
+            # For now let's append just one failure. Is it possible to
+            # have more than one?
+            aggregated_testcase.appendChild(testcase_failures[0])
 
         testsuite.removeChild(testcase)
 
