@@ -30,7 +30,7 @@ def kill_bind10(host):
     Kill any running bind10 instance
     """
     get_common_logger().debug("--- Killing all running Bind instances")
-    cmd = 'pkill -f b10-*; sleep 5'
+    cmd = 'pkill b10-*; sleep 5'
     with settings(host_string=host, user=MGMT_USERNAME, password=MGMT_PASSWORD):
         with settings(warn_only=True):
             sudo(cmd, pty=True)
