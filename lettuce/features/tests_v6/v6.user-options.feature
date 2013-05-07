@@ -3,7 +3,8 @@ Feature: DHCPv6 custom options
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly.
 
-    Scenario: v6.options.preference
+@v6 @options @user
+    Scenario: v6.options.user.preference
 	# Checks that server is able to serve sntp-servers option to clients.
 
 	Test Setup:
