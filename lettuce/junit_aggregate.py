@@ -35,18 +35,19 @@ def shortClassName(classname):
     # If it is not expected format of the class name then no-op.
     return classname
 
-def setIntegerAttribute(doc, parent_node, attr_name, new_value):
+def setNumericAttribute(doc, parent_node, attr_name, new_value):
     """
-    Set the tag's attribute to a given integer value
+    Set the tag's attribute to a given numeric value.
     """
     new_attr = doc.createAttribute(attr_name)
     new_attr.nodeValue = str(new_value)
     # Replace any existing attribute with the new one.
     parent_node.setAttributeNodeNS(new_attr)
 
-def increaseIntegerAttribute(doc, parent_node, attr_name, add_value):
+def increaseNumericAttribute(doc, parent_node, attr_name, add_value,
+                             is_float = False):
     """
-    Increase the integer value of the attribute by a specified
+    Increase the numeric value of the attribute by a specified
     value. If an attribute is not present, it is created.
     """
     # We want to increase the value of the attribute so we have to
@@ -55,10 +56,15 @@ def increaseIntegerAttribute(doc, parent_node, attr_name, add_value):
     # If there is no attribute we have to create one, with the
     # initial value equal add_value.
     if not attr:
-        setIntegerAttribute(doc, parent_node, attr_name, add_value)
+        setNumericAttribute(doc, parent_node, attr_name, add_value)
         return
     # If there is an attribute already, increase the value.
-    current_value = int(attr.nodeValue)
+    current_value = 0
+    if (is_float):
+        current_value = float(attr.nodeValue)
+    else:
+        current_value = int(attr.nodeValue)
+
     current_value = current_value + add_value
     attr.nodeValue = str(current_value)
 
@@ -91,8 +97,8 @@ def aggregateTestSuite(doc, testsuite):
     # represent multiple testcases within the input XML.
     aggregated_testcase = None
     # Reset counters in <testsuite> tag.
-    setIntegerAttribute(doc, testsuite, 'failures', 0)
-    setIntegerAttribute(doc, testsuite, 'errors', 0)
+    setNumericAttribute(doc, testsuite, 'failures', 0)
+    setNumericAttribute(doc, testsuite, 'errors', 0)
 
     # Go over all testcases.
     for testcase in testcases:
@@ -124,10 +130,23 @@ def aggregateTestSuite(doc, testsuite):
         # testcase failed.
         testcase_failures = testcase.getElementsByTagName('failure')
         if testcase_failures.length > 0:
-            increaseIntegerAttribute(doc, testsuite, 'failures', 1)
+            increaseNumericAttribute(doc, testsuite, 'failures', 1)
             # For now let's append just one failure. Is it possible to
             # have more than one?
             aggregated_testcase.appendChild(testcase_failures[0])
+
+        # Update aggregated time.
+        testcase_time = testcase.getAttributeNode('time')
+        if not testcase_time:
+            raise JUnitFormatError('testcase lacks time attribute')
+        # The value of 'time' for the currently processed tag is added
+        # to the current 'time' value of the aggregated testcase.
+        increaseNumericAttribute(doc, aggregated_testcase, 'time',
+                                 float(testcase_time.nodeValue), True)
+
+        # testsuite tag holds total time, so we have to update it too.
+        increaseNumericAttribute(doc, testsuite, 'time',
+                                 float(testcase_time.nodeValue), True)
 
         # We have processed single <testcase> tag, we can now remove it from DOM.
         testsuite.removeChild(testcase)
@@ -136,7 +155,7 @@ def aggregateTestSuite(doc, testsuite):
     # which represent aggregated results. Let's count them, and update the
     # corresponding 'tests' counter in <testsuite> tag.
     testcases = testsuite.getElementsByTagName('testcase')
-    setIntegerAttribute(doc, testsuite, 'tests', testcases.length)
+    setNumericAttribute(doc, testsuite, 'tests', testcases.length)
 
 # Parse the XML document
 result_dom = parse('lettucetests.xml')
