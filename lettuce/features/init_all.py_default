@@ -1,9 +1,22 @@
-#Configuration file, please copy this to the init_all.py and fill it with your variables. init_all.py is added to gitignore.
+#Configuration file, please copy this to the init_all.py and fill it with your
+#variables. init_all.py is added to gitignore.
 
+# This defines the logging level for the common logger used by this framework
+# Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
+# case insensitive.
+LOGLEVEL = "info"
 
+# This defines server type. Allowed values are:
+# kea4, kea6, isc-dhcp4, isc-dhcp6, dibbler
+# Not all of those are functional yet. This is essentailly
+# name of the subdirectory in lettuce/features/serversupport
 SERVER_TYPE = ""
+
+# This defines protocol family. Currently two are
+# supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
 PROTO = ""
-# Defines name of the interface
+
+# Defines name of the DUT-facing network interface
 IFACE = ""
 
 # Parameters specific to DHCPv4 tests
@@ -12,7 +25,6 @@ REL4_ADDR = ""
 
 # defines client MAC (used for DUID generation)
 CLI_MAC = ""
-
 
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
@@ -34,8 +46,8 @@ removelist = [ ]
 # as the interval in which to check again if it has not been found yet.
 # If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an
 # error (so as not to hang indefinitely)
-OUTPUT_WAIT_INTERVAL = 
-OUTPUT_WAIT_MAX_INTERVALS = 
+OUTPUT_WAIT_INTERVAL = 3
+OUTPUT_WAIT_MAX_INTERVALS = 5
 
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required!
@@ -43,6 +55,12 @@ OUTPUT_WAIT_MAX_INTERVALS =
 MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
+
+# Specifies path to the server installation directory on DUT. This must
+# point to root directory of server installation and must end with /.
+# The framework appends subdirectories to this path to run applications.
+# For example, it appends "bin/" to obtain path to the bindctl.
+SERVER_INSTALL_DIR = ""
 
 # scope link server address for testing unicast messages  
 SRV_IPV6_ADDR = ""

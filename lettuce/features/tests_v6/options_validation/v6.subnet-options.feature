@@ -3,7 +3,8 @@ Feature: DHCPv6 options defined in subnet
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly.
 
-    Scenario: v6.options.preference
+@v6 @options @subnet
+    Scenario: v6.options.subnet.preference
 	# Checks that server is able to serve sntp-servers option to clients.
 
 	Test Setup:
@@ -24,7 +25,8 @@ Feature: DHCPv6 options defined in subnet
 
 	Tags: v6 options preference automated
 
-    Scenario: v6.options.dns-servers
+@v6 @options @subnet
+    Scenario: v6.options.subnet.dns-servers
 	# Checks that server is able to serve dns-servers option to clients.
 
 	Test Setup:
@@ -45,7 +47,8 @@ Feature: DHCPv6 options defined in subnet
 
 	Tags: v6 options dns-servers automated
 
-    Scenario: v6.options.domains
+@v6 @options @subnet
+    Scenario: v6.options.subnet.domains
 	# Checks that server is able to serve domains option to clients.
 
 	Test Setup:
@@ -66,8 +69,8 @@ Feature: DHCPv6 options defined in subnet
 
 	Tags: v6 options domain automated
 
-
-    Scenario: v6.options.override
+@v6 @options @subnet
+    Scenario: v6.options.subnet.override
 	# Checks that server uses the option defined in subnet, if both subnet and global
 	# options are defined.
 

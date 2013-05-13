@@ -1,5 +1,5 @@
 from lettuce import world
-
+from logging_facility import *
 from scapy.all import get_if_raw_hwaddr, Ether, srp
 from scapy.config import conf
 from scapy.fields import Field
@@ -54,7 +54,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
     if msg:
         world.climsg.append(msg)
 
-    print("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
     
 
 def create_discover(options):
@@ -89,7 +89,8 @@ def send_wait_for_message(step, message):
         a,b = x
         world.srvmsg.append(b)
 
-    print("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
+    get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
+                              % (len(ans), len(unans)))
 
     assert len(world.srvmsg) != 0, "No response received."
 
