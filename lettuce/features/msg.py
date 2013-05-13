@@ -35,7 +35,6 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
 @step('Client copies (\S+) option from received message.')
 def client_copy_option(step, option_name):
     assert len(world.srvmsg), "No messages received, nothing to copy."
-
     dhcpmsg.client_copy_option(step, option_name)
 
 @step('Client does (NOT )?include (\S+).')
