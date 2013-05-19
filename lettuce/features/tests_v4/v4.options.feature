@@ -14,6 +14,7 @@
 
 # Author: Tomek Mrugalski
 
+@v4 @options @subnet
 Feature: DHCPv4 options
     This is a simple DHCPv4 options validation. Its purpose is to check
     if requested option are assigned properly.
@@ -37,4 +38,4 @@ Feature: DHCPv4 options
 
     #References: v4.options, v4.prl, RFC2131
 
-    #Tags: v4 options subnet automated
+

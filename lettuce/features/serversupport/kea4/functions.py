@@ -1,5 +1,9 @@
+from fabric.api import sudo, run, settings, put, hide
 from lettuce import world
 from textwrap import dedent
+import serversupport.kea6.functions
+from logging_facility import get_common_logger
+from init_all import SERVER_INSTALL_DIR
 
 def prepare_cfg_subnet(step, subnet, pool):
 
@@ -51,18 +55,95 @@ def prepare_cfg_add_option(step, option_name, option_value):
     world.cfg["conf"] +=  dedent(options)
     world.kea["option_cnt"] += 1
 
+def prepare_cfg_kea4_for_kea4_start(filename):
+    """
+    config file for kea4 start
+    """
+    config = '''
+        # This config file starts b10-dhcp4 server.
+        config add Init/components b10-dhcp4
+        config set Init/components/b10-dhcp4/kind dispensable
+        config commit
+        '''
+    cfg_file = open(filename, "w")
+    cfg_file.write(config)
+    cfg_file.close()
+
+
+def prepare_cfg_kea4_for_kea4_stop(filename):
+    """
+    config file for kea4 clear configuration and stopping
+    """
+    config = '''
+        # This config file stops b10-dhcp4 server and removes its configuration.
+        # Get rid of any subnets
+        config set Dhcp4/subnet4 []
+        # Get rid of any option format definitions
+        config set Dhcp4/option-def []
+        # Get rid of any option values
+        config set Dhcp4/option-data []
+        # Stop b10-dhcp4 server from starting again
+        config remove Init/components b10-dhcp4
+        config commit
+        # And stop it
+        Dhcp4 shutdown
+        '''
+    cfg_file = open(filename, "w")
+    cfg_file.write(config)
+    cfg_file.close()
+
+
+
+def fabric_run_bindctl (opt):
+    """
+    Run bindctl with prepered config file
+    """    
+    if opt == "clean":
+        get_common_logger().debug('------------ cleaning kea configuration')
+        cfg_file = 'kea4-stop.cfg'
+        prepare_cfg_kea4_for_kea4_stop(cfg_file)
+        serversupport.kea6.functions.pepere_config_file(cfg_file)
+        serversupport.kea6.functions.fabric_send_file (cfg_file + "_processed")
+    if opt == "start":
+        get_common_logger().debug('------------ starting fresh kea')
+        cfg_file = 'kea4-start.cfg'
+        prepare_cfg_kea4_for_kea4_start(cfg_file)
+        serversupport.kea6.functions.pepere_config_file(cfg_file)
+        serversupport.kea6.functions.fabric_send_file(cfg_file + "_processed")
+    if opt == "conf":
+        get_common_logger().debug('------------ kea configuration')
+        cfg_file = world.cfg["cfg_file"]
+        serversupport.kea6.functions.pepere_config_file(cfg_file)
+        serversupport.kea6.functions.fabric_send_file (cfg_file+"_processed")
+    if opt == "restart":
+        #implement this
+        pass
+    cmd='(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
+    with settings(host_string=world.cfg["mgmt_addr"],
+                  user=world.cfg["mgmt_user"],
+                  password=world.cfg["mgmt_pass"]):
+        run(cmd)
+
+
 
 def start_srv():
-    get_common_logger().info("Automatic start for Kea is not implemented yet. Please start Kea")
-    get_common_logger().info("manually and run the following config (also stored in %s):" % world.cfg["cfg_file"])
-    get_common_logger().info("------")
-    get_common_logger().info(world.cfg["conf"])
+    serversupport.kea6.functions.cfg_write()
+    get_common_logger().debug("------ Bind10, dhcp4 configuration procedure:")
+    fabric_run_bindctl ('clean')#clean and stop
+    fabric_run_bindctl ('start')#start
+    fabric_run_bindctl ('conf')#conf
 
-    configfile = open(world.cfg["cfg_file"], 'w')
-    configfile.write(world.cfg["conf"])
-    configfile.close()
-    get_common_logger().info("------")
-    raw_input("Press ENTER when ready")
+
+#    get_common_logger().info("Automatic start for Kea is not implemented yet. Please start Kea")
+#    get_common_logger().info("manually and run the following config (also stored in %s):" % world.cfg["cfg_file"])
+#    get_common_logger().info("------")
+#    get_common_logger().info(world.cfg["conf"])
+#
+#    configfile = open(world.cfg["cfg_file"], 'w')
+#    configfile.write(world.cfg["conf"])
+#    configfile.close()
+#    get_common_logger().info("------")
+#    raw_input("Press ENTER when ready")
 
 def restart_srv():
     pass

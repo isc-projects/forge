@@ -6,7 +6,7 @@ from scapy.fields import Field
 from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sendp, sniff
-
+import protosupport.v6.msg
 
 
 def client_requests_option(step, opt_type):
@@ -70,12 +70,12 @@ def create_discover(options):
 
 
     discover = Ether(dst="ff:ff:ff:ff:ff:ff")/IP(src=world.cfg["rel4_addr"],dst=world.cfg["srv4_addr"])
-    discover /= UDP(sport=68,dport=67)/BOOTP(chaddr=hw, giaddr="192.0.2.1")
+    discover /= UDP(sport=68,dport=67)/BOOTP(chaddr=hw, giaddr=world.cfg["giaddr4"])
     dhcp = DHCP(options=opts)
     discover /= dhcp
     return discover
 
-def send_wait_for_message(step, message):
+def send_wait_for_message(step, presence, message):
     """
     Block until the given message is (not) received.
     """
@@ -92,7 +92,7 @@ def send_wait_for_message(step, message):
     get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
                               % (len(ans), len(unans)))
 
-    assert len(world.srvmsg) != 0, "No response received."
+    assert presence == bool(world.srvmsg), "No response received."
 
 # Returns option of specified type
 def get_option(msg, opt_code):

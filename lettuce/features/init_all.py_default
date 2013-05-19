@@ -22,6 +22,7 @@ IFACE = ""
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ""
 REL4_ADDR = ""
+GIADDR = ""
 
 # defines client MAC (used for DUID generation)
 CLI_MAC = ""

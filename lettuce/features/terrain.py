@@ -8,8 +8,11 @@ import os
 import shutil
 import sys
 import time
-
 from init_all import *
+import socket
+import fcntl
+import struct
+
 
 # @todo: There were RunningProcess and RunningProcesses classes here, but they
 # were removed. They were used to start and stop processes on a local machine.
@@ -59,6 +62,15 @@ def server_start():
             sys.exit()
     else:
         get_common_logger().error("Server other than kea not implemented yet")
+        
+    #If relay is used routing needs to be reconfigured on DUT
+    try:
+        if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+            with settings(host_string=MGMT_ADDRESS, user=MGMT_USERNAME, password=MGMT_PASSWORD):
+                sudo("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
+    except:
+        pass # most likely REL4_ADDR caused this exception -> we do not use relay
+       
 
 @before.each_scenario
 def initialize(scenario):    
@@ -69,9 +81,13 @@ def initialize(scenario):
 
     world.cfg = {}
     world.cfg["iface"] = IFACE
-    world.cfg["server_type"] = SERVER_TYPE    
-    world.cfg["srv4_addr"] = SRV4_ADDR
-    world.cfg["rel4_addr"] = REL4_ADDR
+    world.cfg["server_type"] = SERVER_TYPE
+    try:    
+        world.cfg["srv4_addr"] = SRV4_ADDR
+        world.cfg["rel4_addr"] = REL4_ADDR
+        world.cfg["giaddr4"] = GIADDR4
+    except:
+        pass
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["mgmt_addr"] = MGMT_ADDRESS
     world.cfg["mgmt_user"] = MGMT_USERNAME
@@ -128,5 +144,13 @@ def say_goodbye(total):
     ))
 
     kill_bind10(MGMT_ADDRESS)
+
+    try:
+        if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+            with settings(host_string=MGMT_ADDRESS, user=MGMT_USERNAME, password=MGMT_PASSWORD):
+                sudo("route del -host %s" % (GIADDR4))
+    except NameError:
+        pass # most likely REL4_ADDR caused this exception -> we do not use relay
+
     
     get_common_logger().info("Goodbye.")
