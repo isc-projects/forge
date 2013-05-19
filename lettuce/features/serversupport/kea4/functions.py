@@ -134,17 +134,6 @@ def start_srv():
     fabric_run_bindctl ('conf')#conf
 
 
-#    get_common_logger().info("Automatic start for Kea is not implemented yet. Please start Kea")
-#    get_common_logger().info("manually and run the following config (also stored in %s):" % world.cfg["cfg_file"])
-#    get_common_logger().info("------")
-#    get_common_logger().info(world.cfg["conf"])
-#
-#    configfile = open(world.cfg["cfg_file"], 'w')
-#    configfile.write(world.cfg["conf"])
-#    configfile.close()
-#    get_common_logger().info("------")
-#    raw_input("Press ENTER when ready")
-
 def restart_srv():
     pass
     # @todo: Implement this
