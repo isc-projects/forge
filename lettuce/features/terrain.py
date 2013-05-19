@@ -9,9 +9,6 @@ import shutil
 import sys
 import time
 from init_all import *
-import socket
-import fcntl
-import struct
 
 
 # @todo: There were RunningProcess and RunningProcesses classes here, but they
