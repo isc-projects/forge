@@ -65,8 +65,8 @@ patch dhcp6.py <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch2
  Configuration
 ---------------
 Configuration management is not well designed yet. The default configuration
-is stored in the features/init_all.py_default. Please copy this file to
-features/init_all.py and edit relevant values in this file. It contains
+is stored in forge/lettuce/features/init_all.py_default. Please copy this file
+to features/init_all.py and edit relevant values in this file. It contains
 comments for each value so the configuration is not described here in detail.
 
  Usage
@@ -74,7 +74,7 @@ comments for each value so the configuration is not described here in detail.
 cd forge/lettuce
 
 The following command should be executed as root because these tests require
-opening of prvileged ports (DHCP client port):
+opening of privileged ports (DHCP client port):
 
 python run_test.py -6 -t v6
 
