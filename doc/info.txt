@@ -49,11 +49,18 @@ Currently the latest Scapy release seems to be 2.2.0. Its main
 developer left the project and there is noone to carry on with it, so
 the upstream project seems to be in limbo. We need to sort out the
 way we'll deal with fixes in Scapy. For now, we keep the patches in
-forge/patches/scapy
+forge/patches/scapy. The scapy code that needs to be patched is in
+scapy-2.2.0/scapy/layers.
 
 Please apply each patch using the following (or similar) command:
 patch -p0 < name-of-the-patch
 
+For example, if Forge lives in ~/builds/forge, and the Scapy source 
+is in ~/builds/scapy-2.2.0, then you can patch the Scapy file
+"dhcp6.py" with patches 1 and 2 by performing the following:
+cd ~/scapy-2.2.0/scapy/layers
+patch dhcp6.py <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch1
+patch dhcp6.py <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch2
 
  Configuration
 ---------------
