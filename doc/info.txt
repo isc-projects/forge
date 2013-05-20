@@ -68,6 +68,8 @@ Configuration management is not well designed yet. The default configuration
 is stored in forge/lettuce/features/init_all.py_default. Please copy this file
 to features/init_all.py and edit relevant values in this file. It contains
 comments for each value so the configuration is not described here in detail.
+init_all.py is added to gitignore, so any local changes you make to this file
+will be ignored by git.
 
  Usage
 -------
