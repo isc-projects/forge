@@ -4,3 +4,4 @@
  - repair InfoRequest
 
  - Write more reasonable documentation (tomek)
+ - Verify documentation and amend as necessary (jeff)
