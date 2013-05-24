@@ -1,0 +1,69 @@
+#Configuration file, please copy this to the init_all.py and fill it with your
+#variables. init_all.py is added to gitignore.
+
+# This defines the logging level for the common logger used by this framework
+# Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
+# case insensitive.
+LOGLEVEL = "info"
+
+# This defines server type. Allowed values are:
+# kea4, kea6, isc-dhcp4, isc-dhcp6, dibbler
+# Not all of those are functional yet. This is essentailly
+# name of the subdirectory in lettuce/features/serversupport
+SERVER_TYPE = "kea4"
+
+# This defines protocol family. Currently two are
+# supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
+PROTO = "v4"
+
+# Defines name of the DUT-facing network interface
+IFACE = "eth1"
+
+# Parameters specific to DHCPv4 tests
+SRV4_ADDR = "192.168.1.1"
+REL4_ADDR = "192.168.1.2"
+GIADDR4 = "192.0.2.1"
+
+# defines client MAC (used for DUID generation)
+CLI_MAC = ""
+
+# In order to make sure we start all tests with a 'clean' environment,
+# We perform a number of initialization steps, like restoring configuration
+# files, and removing generated data files.
+
+# This approach may not scale; if so we should probably provide specific
+# initialization steps for scenarios. But until that is shown to be a problem,
+# It will keep the scenarios cleaner.
+
+# This is a list of files that are freshly copied before each scenario
+# The first element is the original, the second is the target that will be
+# used by the tests that need them
+copylist = [ ]
+
+# This is a list of files that, if present, will be removed before each scenario
+removelist = [ ]
+
+# When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
+# as the interval in which to check again if it has not been found yet.
+# If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an
+# error (so as not to hang indefinitely)
+OUTPUT_WAIT_INTERVAL = 3
+OUTPUT_WAIT_MAX_INTERVALS = 5
+
+# This are required management information about device under test (the one that
+# tested server will be running on) root privileges are required!
+#ip address and port. ssh port default 22
+#MGMT_ADDRESS could be either IPv4, IPv6 or any resolvable server address
+MGMT_ADDRESS = "192.168.56.3"
+MGMT_USERNAME = "root"
+MGMT_PASSWORD = "termops"
+
+# Specifies path to the server installation directory on DUT. This must
+# point to root directory of server installation and must end with /.
+# The framework appends subdirectories to this path to run applications.
+# For example, it appends "bin/" to obtain path to the bindctl.
+SERVER_INSTALL_DIR = "/home/rafal/local/bind10/"
+
+# scope link server address for testing unicast messages  
+SRV_IPV6_ADDR = ""
+
