@@ -1,4 +1,3 @@
-
   Forge info
  ------------
 
@@ -10,9 +9,13 @@ early stages of development (think "pre-prototype").
  Dependencies Installation
 ---------------------------
 
-Forge requires python 2.x, scapy and lettuce. The following steps are
+Forge requires python 2.x, Scapy and lettuce. The following steps are
 necessary on Debian 6.0. If you use different operating system, your
 steps may be slightly different:
+
+(Note: may have to edit /etc/apt/sources.list and place new mirror entry:
+   deb http://mirror.cse.iitk.ac.in/debian/ testing main contrib
+...then run "sudo apt-get update")
 
 # This will install pip (python package installer)
 sudo apt-get install python-pip
@@ -27,14 +30,14 @@ unzip scapy-latest.zip
 cd scapy-2.2.0
 sudo python setup.py install
 
-As of Feb. 2013 scapy is quite outdated. When starting it may produce
+As of Feb. 2013, Scapy is quite outdated. When starting it may produce
 warnings similar to:
 
 WARNING: No route found for IPv6 destination :: (no default route?)
-/usr/local/lib/python2.6/dist-packages/scapy/crypto/cert.py:10: 
+/usr/local/lib/python2.6/dist-packages/scapy/crypto/cert.py:10:
 DeprecationWarning: the sha module is deprecated; use the hashlib module instead
   import os, sys, math, socket, struct, sha, hmac, string, time
-/usr/local/lib/python2.6/dist-packages/scapy/crypto/cert.py:11: 
+/usr/local/lib/python2.6/dist-packages/scapy/crypto/cert.py:11:
 DeprecationWarning: The popen2 module is deprecated.  Use the subprocess module.
   import random, popen2, tempfile
 
@@ -46,47 +49,40 @@ Currently the latest Scapy release seems to be 2.2.0. Its main
 developer left the project and there is noone to carry on with it, so
 the upstream project seems to be in limbo. We need to sort out the
 way we'll deal with fixes in Scapy. For now, we keep the patches in
-dhcp-val/patches/scapy
+forge/patches/scapy. The scapy code that needs to be patched is in
+scapy-2.2.0/scapy/layers.
 
 Please apply each patch using the following (or similar) command:
 patch -p0 < name-of-the-patch
 
+For example, if Forge lives in ~/builds/forge, and the Scapy source 
+is in ~/builds/scapy-2.2.0, then you can patch the Scapy file
+"dhcp6.py" with patches 1 and 2 by performing the following:
+cd ~/scapy-2.2.0/scapy/layers
+patch dhcp6.py <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch1
+patch dhcp6.py <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch2
 
  Configuration
 ---------------
-Configuration management is not well designed yet. Currently it is
-stored in features/terrain.py. There are couple constants that should
-be modified:
-
-Generic (applies both to DHCPv4 and DHCPv6)
-SERVER_TYPE - designates tested server type, e.g. kea4 or kea6
-IFACE - name of the interface the test machine should use to reach the
-        server. Expected responses are received over that interface.
-
-DHCPv4 only:
-SRV4_ADDR - IPv4 address of the server under test. Make sure that the
-        server has this address assigned before starting server.
-REL4_ADDR - Lettuce tests generate DHCPv4 packets as if the were passed
-        via relay. This is the address of this simulated relay. Make sure
-	that the server under test has routing to this address configured.
+Configuration management is not well designed yet. The default configuration
+is stored in forge/lettuce/features/init_all.py_default. Please copy this file
+to features/init_all.py and edit relevant values in this file. It contains
+comments for each value so the configuration is not described here in detail.
+init_all.py is added to gitignore, so any local changes you make to this file
+will be ignored by git.
 
  Usage
 -------
-cd dhcp-val/scripts/lettuce
-lettuce features/[name-of-the-test-suite].feature
+cd forge/lettuce
 
-Make sure to run lettuce as root. Otherwise packet sending and
-reception will fail.
+The following command should be executed as root because these tests require
+opening of privileged ports (DHCP client port):
 
-To get list of features, type: ls -l features/*.feature
+python run_test.py -6 -t v6
 
-For example to run tests for DHCPv6 options:
-lettuce features/v6.options.feature
-
-For example to run tests for DHCPv4 options:
-lettuce features/v4.options.feature
-
-
+The command above will execute the all existing DHCPv6 tests (as all of them
+are tagged "v6"). It is possible to run selected tests only, using appropriate
+tags which can be found in the test scenarios.
 
 This is an example of running test:
 Feature: DHCPv6 options                                                              # features/v6.options.feature:3
@@ -138,7 +134,7 @@ Received 2 packets, got 1 answers, remaining 0 packets
 1 scenario (1 passed)
 13 steps (13 passed)
 (finished within 3 seconds)
-root@debian64:/home/thomson/devel/dhcp-val/scripts/lettuce# 
+root@debian64:/home/thomson/devel/dhcp-val/scripts/lettuce#
 
  Writing new tests
 -------------------
@@ -152,7 +148,7 @@ content:
 Feature: DHCPv6 options
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly.
-    
+
     Scenario: v6.options.dns-servers
     	# Checks that server is able to serve dns-servers option to clients.
 
@@ -170,7 +166,7 @@ Feature: DHCPv6 options
 	Response MUST include option 23.
 	Response option 23 MUST contain addresses 2001:db8::1,2001:db8::2.
 
-	References: v6.options 
+	References: v6.options
 
 	Tags: v6 options dns-servers automated
 

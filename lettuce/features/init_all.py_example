@@ -10,19 +10,19 @@ LOGLEVEL = "info"
 # kea4, kea6, isc-dhcp4, isc-dhcp6, dibbler
 # Not all of those are functional yet. This is essentailly
 # name of the subdirectory in lettuce/features/serversupport
-SERVER_TYPE = ""
+SERVER_TYPE = "kea4"
 
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
-PROTO = ""
+PROTO = "v4"
 
 # Defines name of the DUT-facing network interface
-IFACE = ""
+IFACE = "eth1"
 
 # Parameters specific to DHCPv4 tests
-SRV4_ADDR = ""
-REL4_ADDR = ""
-GIADDR = ""
+SRV4_ADDR = "192.168.1.1"
+REL4_ADDR = "192.168.1.2"
+GIADDR4 = "192.0.2.1"
 
 # defines client MAC (used for DUID generation)
 CLI_MAC = ""
@@ -53,15 +53,16 @@ OUTPUT_WAIT_MAX_INTERVALS = 5
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required!
 #ip address and port. ssh port default 22
-MGMT_ADDRESS = ""
-MGMT_USERNAME = ""
-MGMT_PASSWORD = ""
+#MGMT_ADDRESS could be either IPv4, IPv6 or any resolvable server address
+MGMT_ADDRESS = "192.168.56.3"
+MGMT_USERNAME = "root"
+MGMT_PASSWORD = "termops"
 
 # Specifies path to the server installation directory on DUT. This must
 # point to root directory of server installation and must end with /.
 # The framework appends subdirectories to this path to run applications.
 # For example, it appends "bin/" to obtain path to the bindctl.
-SERVER_INSTALL_DIR = ""
+SERVER_INSTALL_DIR = "/home/rafal/local/bind10/"
 
 # scope link server address for testing unicast messages  
 SRV_IPV6_ADDR = ""
