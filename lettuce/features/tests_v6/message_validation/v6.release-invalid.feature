@@ -158,7 +158,7 @@ Feature: Standard DHCPv6 release message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client requests option 0.
+	Client does include preference.
 	Client sends RELEASE message.
 
 	Pass Criteria:
@@ -178,4 +178,4 @@ Feature: Standard DHCPv6 release message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-	References: RFC3315 section 15, 15.9
+	References: RFC3315 section 15.9

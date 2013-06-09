@@ -145,7 +145,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4 
 	
-@v6 @request_invalid @wrong_option @test
+@v6 @request_invalid 
     Scenario: v6.request.invalid.wrong_option
 
 	Test Setup:
@@ -161,7 +161,8 @@ Feature: Standard DHCPv6 request message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client requests option 0.
+	Client requests option 7.
+	Client does include preference.
 	Client sends REQUEST message.
 
 	Pass Criteria:
@@ -182,4 +183,4 @@ Feature: Standard DHCPv6 request message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-	References: RFC3315 section 15, 15.4 
+	References: RFC3315 section 15.4 

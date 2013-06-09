@@ -157,7 +157,8 @@ Feature: Standard DHCPv6 renew message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client requests option 0.
+	Client does include preference.
+	Client requests option 7.
 	Client sends RENEW message.
 
 	Pass Criteria:
@@ -177,4 +178,4 @@ Feature: Standard DHCPv6 renew message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-	References: RFC3315 section 15, 15.6
+	References: RFC3315 section 15.6

@@ -143,10 +143,13 @@ Feature: Standard DHCPv6 decline message
 	
 @v6 @decline_invalid @wrong_option
     Scenario: v6.decline.invalid.wrong_option
-
+	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client requests option 7.
@@ -157,7 +160,21 @@ Feature: Standard DHCPv6 decline message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client requests option 0.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include preference.
 	Client sends DECLINE message.
 
 	Pass Criteria:
@@ -177,4 +194,4 @@ Feature: Standard DHCPv6 decline message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-	References: RFC3315 section 15, 15.8
+	References: RFC3315 section 15.8 22.8.

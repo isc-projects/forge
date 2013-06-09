@@ -82,7 +82,8 @@ Feature: Standard DHCPv6 rebind message
 	Server is started.
 
 	Test Procedure:
-	Client requests option 0.
+	Client requests option 7.
+	Client does include preference.
 	Client sends REBIND message.
 
 	Pass Criteria:

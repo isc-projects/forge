@@ -105,7 +105,7 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5 
 	
-@v6 @confirm_invalid 
+@v6 @confirm_invalid @wrong_option 
     Scenario: v6.confirm.invalid.wrong_option
 
 	Test Setup:
@@ -113,8 +113,7 @@ Feature: Standard DHCPv6 confirm message
 	Server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client does include wrong-server-id.
+	Client does include preference.
 	Client sends CONFIRM message.
 
 	Pass Criteria:
@@ -127,4 +126,4 @@ Feature: Standard DHCPv6 confirm message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 15, 15.5 
+	References: RFC3315 section 15.5. 22.8.

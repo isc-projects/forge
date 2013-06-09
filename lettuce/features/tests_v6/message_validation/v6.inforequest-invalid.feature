@@ -76,7 +76,7 @@ Feature: Standard DHCPv6 information request message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client requests option 0.
+	Client does include preference.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
@@ -98,7 +98,7 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15, 15.12 
 
-@v6 @inforequest_invalid
+@v6 @inforequest_invalid 
     Scenario: v6.inforequest.invalid.with_IA
 
 	Test Setup:
