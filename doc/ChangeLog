@@ -1,3 +1,7 @@
+5. [func] wlodek
+		- building basic relay-forward message 
+		- relay-forward message tests
+		 
 4.	[doc]	tomek
         Initial documentation added. Many overlapping and redundant copies
         of readme/todo/notes sorted out.

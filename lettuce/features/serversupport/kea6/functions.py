@@ -49,17 +49,21 @@ def prepare_cfg_subnet(step, subnet, pool):
         
     
   
-kea_options6 = { "blank": 0, 
-                 "client-id": 1,
+kea_options6 = { "client-id": 1,
                  "server-id" : 2,
                  "IA_NA" : 3,
+                 "IN_TA": 4,
                  "IA_address" : 5,
                  "preference": 7,
+                 "relay-msg": 9,
                  "status-code": 13,
+                 "rapid_commit": 14,
                  "sip-server-dns": 21,
                  "sip-server-addr": 22,
                  "dns-servers": 23,
                  "domain-search": 24,
+                 "IA_PD": 25,
+                 "IA-Prefix": 26,
                  "nis-servers": 27,
                  "nisp-servers": 28,
                  "nis-domain-name": 29,

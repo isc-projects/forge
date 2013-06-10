@@ -15,7 +15,7 @@ from init_all import *
 # were removed. They were used to start and stop processes on a local machine.
 # We should either use fabric directly or copy those classes over and modify
 # their methods to use fabric for remote process management.
-
+LOGLEVEL = 'INFO'
 # @todo: This must be moved to serversupport/ dir.
 def bind10 (host, cmd): 
     """
@@ -30,7 +30,7 @@ def kill_bind10(host):
     Kill any running bind10 instance
     """
     get_common_logger().debug("--- Killing all running Bind instances")
-    cmd = 'pkill b10-*; sleep 5'
+    cmd = 'pkill b10-*; sleep 3'
     with settings(host_string=host, user=MGMT_USERNAME, password=MGMT_PASSWORD):
         with settings(warn_only=True):
             sudo(cmd, pty=True)
@@ -53,9 +53,9 @@ def server_start():
             #comment line below to turn off starting bind
             bind10(MGMT_ADDRESS, cmd='(rm nohup.out; nohup ' + SERVER_INSTALL_DIR
                    + 'sbin/bind10 &); sleep 2' )
-            get_common_logger().debug("----- Bind10 successfully started")
+            get_common_logger().debug("Bind10 successfully started")
         except :
-            get_common_logger().error("----- Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
+            get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
             sys.exit()
     else:
         get_common_logger().error("Server other than kea not implemented yet")
@@ -97,6 +97,8 @@ def initialize(scenario):
     world.cfg["client_id"] = True
     world.cfg["wrong_server_id"] = False
     world.cfg["wrong_client_id"] = False
+    world.cfg["preference"] = False
+    world.cfg["rapid_commit"] = False
     world.cfg["unicast"] = False
     
     # Setup scapy for v4

@@ -30,7 +30,6 @@ from scapy.sendrecv import sr
 
 from features.serversupport.kea6.functions import kea_options6
 
-include = ["client-id"]
 
 def client_requests_option(step, opt_type):
     """
@@ -68,8 +67,11 @@ def client_send_msg(step, msgname, opt_type, unknown):
         Also we can include IA options, Option Request, Rapid Commit and Reconfigure Accept.
         """
         msg = msg_add_defaults(DHCP6_Solicit())
-        if (world.oro is not None):
-                msg = add_option_to_msg(msg, world.oro)
+        try:
+            if (world.oro is not None):
+                    msg = add_option_to_msg(msg, world.oro)
+        except:
+            pass
         
     elif (msgname == "REQUEST"):
         """
@@ -82,8 +84,11 @@ def client_send_msg(step, msgname, opt_type, unknown):
            -  the message does not include a Client Identifier option.
         """
         msg = msg_add_defaults(DHCP6_Request())
-        if (world.oro is not None):
-                msg = add_option_to_msg(msg, world.oro)
+        try:
+            if (world.oro is not None):
+                    msg = add_option_to_msg(msg, world.oro)
+        except:
+            pass
         
     elif (msgname == "CONFIRM"):
         """
@@ -93,6 +98,11 @@ def client_send_msg(step, msgname, opt_type, unknown):
         Identifier option.
         """
         msg = msg_add_defaults(DHCP6_Confirm())
+        try:
+            if (world.oro is not None):
+                    msg = add_option_to_msg(msg, world.oro)
+        except:
+            pass
         
     elif (msgname == "RENEW"):
         """
@@ -155,10 +165,13 @@ def client_send_msg(step, msgname, opt_type, unknown):
     
     assert msg, "Message preparation failed"
 
-    if world.oro is not None and len(world.cliopts):
-        for opt in world.cliopts:
-            msg = add_option_to_msg(msg, opt)
-
+    try:
+        if world.oro is not None and len(world.cliopts):
+            for opt in world.cliopts:
+                msg = add_option_to_msg(msg, opt)
+    except:
+        pass
+    
     if msg:
         world.climsg.append(msg)
 
@@ -170,13 +183,21 @@ def unicast_addres(step):
     """
     world.cfg["unicast"] = True
 
-##TUTAJ WKLEJ       
 def add_option_to_msg(msg, option):
     msg /= option
     return msg
 
 def add_client_option(option):
     world.cliopts.append(option)
+
+def create_relay_forward(step, level):
+    """
+    Encapsulate message in relay-forward message.
+    """
+    address = All_DHCP_Relay_Agents_and_Servers
+    msg = world.climsg.pop().getlayer(2)
+    relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/DHCP6_RelayForward(peeraddr = "fc00::9", hopcount = 5)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()/msg
+    world.climsg.append(relay_msg)
 
 def send_wait_for_message(step, presence, exp_message):
     """
@@ -191,10 +212,10 @@ def send_wait_for_message(step, presence, exp_message):
     #debug.recv = []
     conf.use_pcap = True
 
-    # Uncomment this to get debug.recv filled with all received messages
+    #Uncomment this to get debug.recv filled with all received messages
     #conf.debug_match = True
     ans,unans = sr(world.climsg, iface = world.cfg["iface"], timeout=1, nofilter=1, verbose=99)
-
+    
     expected_type_found = False
     received_names = ""
     world.srvmsg = []
@@ -227,7 +248,8 @@ def get_msg_type(msg):
     msg_types = { "SOLICIT": DHCP6_Solicit,
                   "ADVERTISE": DHCP6_Advertise,
                   "REQUEST": DHCP6_Request,
-                  "REPLY": DHCP6_Reply
+                  "REPLY": DHCP6_Reply,
+                  "RELAYREPLY": DHCP6_RelayReply
     }
 
     # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
@@ -349,10 +371,8 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
 
 def client_does_include(step, opt_type):
     """
-    Include options to message.  
+    Include options to message. This function refers to @step in lettuce
     """
-    global include 
-    
     #If you want to use parts of received message to include it, please use 'Client copies (\S+) option from received message.' step.
     if opt_type == "client-id":
         world.cfg["client_id"] = False
@@ -360,26 +380,24 @@ def client_does_include(step, opt_type):
         world.cfg["wrong_client_id"] = True
     elif opt_type == "wrong-server-id":
         world.cfg["wrong_server_id"] = True
-        include.append("server-id")
     elif opt_type == "preference":
-        include.append("preference")
+        world.cfg["preference"] = True
+    elif opt_type == "rapid-commit":
+        world.cfg["rapid_commit"] = True
     else:
         assert "unsupported option: " + opt_type
 
-##functions to build specific message
-def server_id(msg):
+
+def client_option (msg):
     """
-    Add server id to message
+    Add options (like server-id, rapid commit) to message. This function refers to building message
     """
+    #server id with mistake
     if world.cfg["wrong_server_id"] == True:
         msg /= DHCP6OptServerId()
         world.cfg["wrong_server_id"] = False
-    return msg
-
-def client_id(msg):
-    """
-    Add client id to message
-    """
+        
+    #client id
     if world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == False:
         msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
     elif world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == True:
@@ -387,18 +405,22 @@ def client_id(msg):
         world.cfg["wrong_client_id"] = False
     elif world.cfg["client_id"] == False:
         world.cfg["client_id"] = True
+        
+    #preference option
+    if world.cfg["preference"] == True:
+        msg /= DHCP6OptPref()
+        world.cfg["preference"] = False
+        
+    #rapid commit
+    if world.cfg["rapid_commit"] == True:
+        msg /= DHCP6OptRapidCommit()
+        world.cfg["rapid_commit"] = False
+        
     return msg
 
-def preference(msg):
-    """
-    Add preference to message
-    """
-    #make more then just blank preference
-    msg /= DHCP6OptPref()
-    return msg
 
 def msg_add_defaults(msg):
-    global include
+    
     if world.cfg["unicast"] == False:
         address = All_DHCP_Relay_Agents_and_Servers
     elif world.cfg["unicast"] == True:
@@ -407,22 +429,13 @@ def msg_add_defaults(msg):
         world.cfg["unicast"] = False
     
     x = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
+    #transaction id
     x.trid = random.randint(0, 256*256*256)
-    
-    # print include
-    #for adding some include option create case in 'client_does_include' and def
-    for y in include:
-        x = {
-         'server-id': server_id(x),
-         'client-id': client_id(x),
-         'preference': preference(x)
-         }[y]
-    #set global include for defaults
-    include = ['client-id']
-   
     world.cfg["tr_id"] = x.trid
+    #add all options to message. 
+    x = client_option (x)
     
-    # rewrite that ... 
+    
     if len(world.cliopts) > 0:
         if world.cliopts[0].optcode == 3:
             x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
