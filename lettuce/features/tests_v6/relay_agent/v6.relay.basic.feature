@@ -3,7 +3,7 @@ Feature: DHCPv6 Relay Agent
     This is a simple DHCPv6 message exchange between server and relay-agent.  
 
 @v6 @relay @basic @teraz
-    Scenario: v6.realy.message.solicit-advertise
+    Scenario: v6.relay.message.solicit-advertise
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

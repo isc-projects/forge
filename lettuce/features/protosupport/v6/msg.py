@@ -196,7 +196,9 @@ def create_relay_forward(step, level):
     """
     address = All_DHCP_Relay_Agents_and_Servers
     msg = world.climsg.pop().getlayer(2)
-    relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/DHCP6_RelayForward(peeraddr = "fc00::9", hopcount = 5)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()/msg
+    from features.init_all import SRV_IPV6_ADDR
+    #all three values: linkaddr, peeraddr and hopcount must be filled 
+    relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = 5)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()/msg
     world.climsg.append(relay_msg)
 
 def send_wait_for_message(step, presence, exp_message):
