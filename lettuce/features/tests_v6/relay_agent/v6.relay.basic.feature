@@ -16,10 +16,11 @@ Feature: DHCPv6 Relay Agent
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
-
+	#Response MUST include message ADVERTISE.
+	
 	References: RFC3315 section 18.2.8
-
-@v6 @relay @basic
+	
+@v6 @relay @basic  
     Scenario: v6.relay.message.solicit-reply
 
 	Test Setup:
@@ -36,7 +37,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @basic
+@v6 @relay @basic @teraz
     Scenario: v6.basic.message.request-reply
 
 	Test Setup:
@@ -60,3 +61,163 @@ Feature: DHCPv6 Relay Agent
 	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
+	
+	
+@v6 @relay @basic 
+    Scenario: v6.basic.message.confirm-reply
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client sends CONFIRM message.
+	...using relay-agent encapsulated in 1 level.
+
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	
+	References: RFC3315 section 18.2.8
+	
+@v6 @relay @basic 
+    Scenario: v6.basic.message.renew-reply
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RENEW message.
+	...using relay-agent encapsulated in 1 level.
+
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	
+	References: RFC3315 section 18.2.8 
+	
+@v6 @relay @basic 
+    Scenario: v6.basic.message.rebind-reply
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client sends REBIND message.
+	...using relay-agent encapsulated in 1 level.
+
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	
+	References: RFC3315 section 18.2.8
+	 
+@v6 @relay @basic 
+    Scenario: v6.basic.message.release-reply
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+	...using relay-agent encapsulated in 1 level.
+
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	
+	References: RFC3315 section 18.2.8 
+	
+@v6 @relay @basic 
+    Scenario: v6.basic.message.decline-reply
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+	...using relay-agent encapsulated in 1 level.
+
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	
+	References: RFC3315 section 18.2.8
+	
+@v6 @relay @basic 
+    Scenario: v6.basic.message.information_request-reply
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends INFOREQUEST message.
+	...using relay-agent encapsulated in 1 level.
+
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	
+	References: RFC3315 section 18.2.8
+	

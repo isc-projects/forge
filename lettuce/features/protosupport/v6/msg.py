@@ -304,6 +304,16 @@ def response_check_include_option(step, must_include, opt_code):
     else:
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
 
+def response_check_include_message(step, must_include, msg_type):
+    
+    assert len(world.srvmsg) != 0, "No response received."
+
+    type = get_msg_type(world.srvmsg[0])
+    if must_include:
+        assert opt, "Expected message " + msg_type + " not present in the message."
+    else:
+        assert opt == None, "Unexpected message" + msg_type + " found in the message."    
+    
 # Returns text representation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
     if data_type=="uint8":
