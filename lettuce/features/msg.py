@@ -28,8 +28,8 @@ def client_does_include(step, yes_or_not, opt_type):
 def unicast_addres(step):
     dhcpmsg.unicast_addres(step)
 
-@step('...using relay-agent encapsulated in (\w+) level(s)?.')
-def create_relay_forward(step, level, s):
+@step('...using relay-agent encapsulated in (\d+) level(s)?.')
+def create_relay_forward(step, level, s ):
     dhcpmsg.create_relay_forward(step, level)
 
 #checking respond
@@ -39,13 +39,15 @@ def send_wait_for_message(step, yes_or_no, message):
     presence = True if yes_or_no == None else False 
     dhcpmsg.send_wait_for_message(step, presence ,message)
 
-@step('Response MUST (NOT )?include (\w+) (\d+).')
-def response_check_include_option(step, yes_or_no, type, opt_code):
+@step('Response MUST (NOT )?include option (\d+).')
+def response_check_include_option(step, yes_or_no, opt_code):
     include = not (yes_or_no == "NOT ")
-    if type == "option":
-        dhcpmsg.response_check_include_option(step, include, opt_code)
-    elif type == "message":
-        dhcpmsg.response_check_include_message(step, include, opt_code)
+    dhcpmsg.response_check_include_option(step, include, opt_code)
+
+@step('Response MUST (NOT )?include (\w+) message.')
+def response_check_include_message(step, yes_or_no, message):
+    include = not (yes_or_no == "NOT ")
+    dhcpmsg.response_check_include_message(step, include, message)
 
 @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(step, opt_code, expect, data_type, expected):

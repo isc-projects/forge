@@ -15,7 +15,7 @@ from init_all import *
 # were removed. They were used to start and stop processes on a local machine.
 # We should either use fabric directly or copy those classes over and modify
 # their methods to use fabric for remote process management.
-LOGLEVEL = 'INFO'
+
 # @todo: This must be moved to serversupport/ dir.
 def bind10 (host, cmd): 
     """
