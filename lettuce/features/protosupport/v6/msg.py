@@ -19,16 +19,14 @@
 #
 
 from cookielib import debug
-from logging_facility import *
-from lettuce.decorators import step
+from features.serversupport.kea6.functions import kea_options6
+from features.logging_facility import get_common_logger
 from lettuce.registry import world
-from scapy.config import conf
 from scapy.layers.dhcp6 import *
 from scapy.layers.inet import UDP
 from scapy.layers.inet6 import IPv6
 from scapy.sendrecv import sr
 
-from features.serversupport.kea6.functions import kea_options6
 
 
 def client_requests_option(step, opt_type):
@@ -199,12 +197,12 @@ def create_relay_forward(step, level):
     from features.init_all import SRV_IPV6_ADDR
     level = int(level)
     #all three values: linkaddr, peeraddr and hopcount must be filled
-    tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+    tmp = DHCP6_RelayForward(linkaddr="2000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
     #message encapsulation 
     while True:
         level -= 1
         if not level: break;
-        tmp /= DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+        tmp /= DHCP6_RelayForward(linkaddr="2000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
     relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/tmp/msg
     world.climsg.append(relay_msg)
 
@@ -235,7 +233,7 @@ def send_wait_for_message(step, presence, exp_message):
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
-
+    
     for x in unans:
         get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
 
@@ -312,11 +310,35 @@ def response_check_include_option(step, must_include, opt_code):
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
 
 def response_check_include_message(step, must_include, msg_type):
-
+    #UNDER CONSTRUCTION :)
+    #UNDER CONSTRUCTION :)
 #    assert len(world.srvmsg) != 0, "No response received."
-    pass
+    x = world.srvmsg[0].getlayer(2)
 
+    msg_types = { "ADVERTISE": DHCP6_Advertise,
+                  "REPLY": DHCP6_Reply,
+    }
     
+    x.show()
+    while x:
+        print "!"
+        #if x.optcode == 9:
+            #if type(x.payload) == msg_types[msg_type]:
+        print type(x.payload.data)
+        print x.payload.data
+        x = x.payload
+    
+#      0th is IPv6, 1st is UDP, 2nd should be DHCP6
+  
+#     while x:
+#         for msg_name in msg_types.keys():
+#             if type(x) == msg_types[msg_name]:
+#                 assert "Expected message " + msg_type + " present in the message."
+#         x = x.payload
+#          
+#         x.show()
+
+#     assert "Expected message " + msg_type + " not present in the message."
 #     if must_include:
 #         assert opt, "Expected message " + msg_type + " not present in the message."
 #     else:
@@ -332,7 +354,6 @@ def unknown_option_to_str(data_type, opt):
         assert False, "Parsing of option format " + data_type + " not implemented."
 
 # Option 23 MUST contain addresses 2001:db8::1,2001:db8::2
-# @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(step, opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
