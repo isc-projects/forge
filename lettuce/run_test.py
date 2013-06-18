@@ -15,16 +15,18 @@
 #
 # author: Wlodzimierz Wencel
 
+
 from lettuce import Runner
+
+import importlib
 import optparse
 import os
 import sys
-import importlib
 
 
 def option_parser():
     desc='''
-    Let us decide which version
+    Forge version .... ? :)
     '''
     parser = optparse.OptionParser(description=desc, usage="%prog or type %prog -h (--help) for help")
     parser.add_option("-4","--version4",
@@ -43,16 +45,21 @@ def option_parser():
                       action="store",
                       default=4,
                       help="Level of the lettuce verbosity")
-    parser.add_option("-s", "--scenarios",
-                      dest="scenario",
-                      action="append",
+    parser.add_option("-l","--list",
+                      dest="list",
+                      action="store_true",
+                      default=False,
+                      help='List all features (test sets) please choose also IP version')
+    parser.add_option("-s", "--test_set",
+                      dest="test_set",
+                      action="store",
                       default=None,
-                      help="specific tests scenarios")
+                      help="Specific tests sets")
     parser.add_option("-t", "--tags",
                       dest="tag",
                       action="append",
                       default=None,
-                      help="specific tests tags, multiple tags after ',' e.g. -t v6,v4")
+                      help="Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.")
     parser.add_option("-x", "--with-xunit",
                       dest="enable_xunit",
                       action="store_true",
@@ -60,27 +67,47 @@ def option_parser():
                       help="Generate results file in xUnit format")
 
     (opts, args) = parser.parse_args()
-
+    
     if not opts.version6 and not opts.version4:
         parser.print_help()
-        parser.error("You must choose between -4 or -6")
-
+        parser.error("You must choose between -4 or -6.\n")
+        
     if opts.version6 and opts.version4:
         parser.print_help()
-        parser.error("options -4 and -6 are exclusive")
+        parser.error("options -4 and -6 are exclusive.\n")
+        
+    number = '6' if opts.version6 else '4'
+    
+    if opts.list:
+        print "\n IPv"+ number+ " Tests:\n"
+        print "features/tests_v"+number+"/"
+        for path, dirs, files in os.walk("features/tests_v"+number+"/"):
+            if len(path[18:])>1: print path[18:] 
+            for each_file in files:
+                print "\t", each_file[:-8]
+        print "You can use first names as test sets, and second as test features (it's silly, how I can write it better?:D)"
+        sys.exit()
+        
+    tag = None
 
-    tag=None
-    if opts.tag:
+    if opts.tag is not None:
         tag = opts.tag[0].split(',')
-    #TO DO - scenarios, dodac multi.
-    base_path = os.getcwd()
-    runner = Runner(base_path,
-                    verbosity=opts.verbosity,
-                    failfast=False,
-                    tags=tag,
-                    enable_xunit=opts.enable_xunit)
+    else:
+        tag = 'v6' if opts.version6 else 'v4'
+        
+    if opts.test_set is not None:
+        base_path = os.getcwd()+"/features/tests_v"+number+"/"+opts.test_set+"/"
+    else:
+        base_path = os.getcwd()+"/features/tests_v"+number+"/"
 
-    result = runner.run()
+    runner = Runner(
+                    base_path,
+                    verbosity = opts.verbosity,
+                    failfast = False,
+                    tags = tag,
+                    enable_xunit = opts.enable_xunit)
+    runner.run()
+    print "used tags: ", tag
     
 def main():
     try :
