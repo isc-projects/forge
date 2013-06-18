@@ -79,13 +79,13 @@ def option_parser():
     number = '6' if opts.version6 else '4'
     
     if opts.list:
-        print "\n IPv"+ number+ " Tests:\n"
-        print "features/tests_v"+number+"/"
+        print "\n IPv" + number + " Tests:\n"
+        print "features/tests_v" + number + "/"
         for path, dirs, files in os.walk("features/tests_v"+number+"/"):
-            if len(path[18:])>1: print path[18:] 
+            if len(path[18:]) > 1: print "\t" + path[18:] 
             for each_file in files:
-                print "\t", each_file[:-8]
-        print "You can use first names as test sets, and second as test features (it's silly, how I can write it better?:D)"
+                print "\t\t", each_file[:-8]
+        print "Root tree is main directory, names of first parents you can use first as test sets, child names as test features (single feature not yet operational"
         sys.exit()
         
     tag = None
@@ -96,9 +96,9 @@ def option_parser():
         tag = 'v6' if opts.version6 else 'v4'
         
     if opts.test_set is not None:
-        base_path = os.getcwd()+"/features/tests_v"+number+"/"+opts.test_set+"/"
+        base_path = os.getcwd() + "/features/tests_v" + number + "/" + opts.test_set + "/"
     else:
-        base_path = os.getcwd()+"/features/tests_v"+number+"/"
+        base_path = os.getcwd() + "/features/tests_v" + number + "/"
 
     runner = Runner(
                     base_path,
