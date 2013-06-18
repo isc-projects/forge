@@ -1,7 +1,7 @@
 import logging
 import sys
 
-def logger_initialize(loglevel='INFO'):
+def logger_initialize(loglevel):
     """
     Initialize logger instance common to the framework
     """
@@ -12,7 +12,7 @@ def logger_initialize(loglevel='INFO'):
     numeric_level = getattr(logging, loglevel.upper(), None)
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % loglevel)
-    logger_handler.setLevel(numeric_level)
+    logger.setLevel(numeric_level)
     logger.addHandler(logger_handler)
     # This is the only message that is logged using the 'print' function because we
     # always want to have this message printed. Further log messages should go through
