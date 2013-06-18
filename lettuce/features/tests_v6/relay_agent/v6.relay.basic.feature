@@ -2,7 +2,7 @@
 Feature: DHCPv6 Relay Agent 
     This is a simple DHCPv6 message exchange between server and relay-agent.  
 
-@v6 @relay @basic 
+@v6 @relay @teraz
     Scenario: v6.relay.message.solicit-advertise
 
 	Test Setup:
@@ -12,15 +12,15 @@ Feature: DHCPv6 Relay Agent
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
-	...using relay-agent encapsulated in 1 levels.
+	...using relay-agent encapsulated in 15 levels.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
-	#Response MUST include ADVERTISE message.
+	Response MUST include ADVERTISE message.
 	
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @basic 
+@v6 @relay 
     Scenario: v6.relay.message.solicit-advertise.31lvl
 
 	Test Setup:
@@ -36,10 +36,10 @@ Feature: DHCPv6 Relay Agent
 	Server MUST respond with RELAYREPLY message.
 	#Response MUST include ADVERTISE message.
 	
-	References: RFC3315 section 18.2.8
+	References: RFC3315 section 18.2.8 20.
 
 
-@v6 @relay @basic  
+@v6 @relay 
     Scenario: v6.relay.message.solicit-reply
 
 	Test Setup:
@@ -53,10 +53,11 @@ Feature: DHCPv6 Relay Agent
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
-
+	#Response MUST include REPLY message.
+	
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @basic
+@v6 @relay
     Scenario: v6.basic.message.request-reply
 
 	Test Setup:
@@ -78,11 +79,12 @@ Feature: DHCPv6 Relay Agent
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
-
+	#Response MUST include REPLY message.
+	
 	References: RFC3315 section 18.2.8
 	
 	
-@v6 @relay @basic 
+@v6 @relay 
     Scenario: v6.basic.message.confirm-reply
 
 	Test Setup:
@@ -95,10 +97,11 @@ Feature: DHCPv6 Relay Agent
 
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+	#Response MUST include REPLY message.
 	
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @basic 
+@v6 @relay
     Scenario: v6.basic.message.renew-reply
 
 	Test Setup:
@@ -127,10 +130,11 @@ Feature: DHCPv6 Relay Agent
 
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+	#Response MUST include REPLY message.
 	
 	References: RFC3315 section 18.2.8 
 	
-@v6 @relay @basic 
+@v6 @relay
     Scenario: v6.basic.message.rebind-reply
 
 	Test Setup:
@@ -158,10 +162,11 @@ Feature: DHCPv6 Relay Agent
 
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+	#Response MUST include REPLY message.
 	
 	References: RFC3315 section 18.2.8
 	 
-@v6 @relay @basic 
+@v6 @relay 
     Scenario: v6.basic.message.release-reply
 
 	Test Setup:
@@ -190,10 +195,11 @@ Feature: DHCPv6 Relay Agent
 
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+	#Response MUST include REPLY message.
 	
 	References: RFC3315 section 18.2.8 
 	
-@v6 @relay @basic 
+@v6 @relay 
     Scenario: v6.basic.message.decline-reply
 
 	Test Setup:
@@ -214,10 +220,11 @@ Feature: DHCPv6 Relay Agent
 
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+	#Response MUST include REPLY message.
 	
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @basic 
+@v6 @relay  
     Scenario: v6.basic.message.information_request-reply
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -237,6 +244,7 @@ Feature: DHCPv6 Relay Agent
 
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+	#Response MUST include REPLY message.
 	
 	References: RFC3315 section 18.2.8
 	
