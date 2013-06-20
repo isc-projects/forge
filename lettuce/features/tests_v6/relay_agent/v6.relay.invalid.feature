@@ -1,6 +1,6 @@
 
 Feature: DHCPv6 Relay Agent 
-    This is test for DHCPv6 message exchange between server and relay-agent with not permitted options in Reply-Forward message.  
+    This is test for DHCPv6 message exchange between server and relay-agent with not permitted options in Relay-Forward message.  
 
 @v6 @relay @relay_invalid
     Scenario: v6.relay.wrongoption.preference
@@ -81,7 +81,6 @@ Feature: DHCPv6 Relay Agent
 	Server MUST NOT respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
-	
 	
 @v6 @relay @relay_invalid
     Scenario: v6.relay.wrongoption.time
