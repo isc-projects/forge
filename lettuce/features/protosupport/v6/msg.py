@@ -192,19 +192,38 @@ def create_relay_forward(step, level):
     """
     Encapsulate message in relay-forward message.
     """
+    #set flag for adding client option client-id which is added by default
+    world.cfg["relay"] = True
+    
     address = All_DHCP_Relay_Agents_and_Servers
+    
+    #get only DHCPv6 part of the message
     msg = world.climsg.pop().getlayer(2)
     from features.init_all import SRV_IPV6_ADDR
     level = int(level)
+
     #all three values: linkaddr, peeraddr and hopcount must be filled
-    tmp = DHCP6_RelayForward(linkaddr="2000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+    tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
+
+    #add options (used only when checking "wrong option" test for relay-forward message. to add some options to relay-forward 
+    #you need to put "Client does include opt_name." before "...using relay-agent encapsulated in 1 level." and after "Client sends SOLICIT message."
+    tmp = client_option(tmp)
+    
+    #add RelayMsg option 
+
+    tmp /= DHCP6OptRelayMsg()
     #message encapsulation 
     while True:
         level -= 1
         if not level: break;
-        tmp /= DHCP6_RelayForward(linkaddr="2000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+        tmp /= DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+
+    #build full message
     relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/tmp/msg
+    
     world.climsg.append(relay_msg)
+    
+    world.cfg["relay"] = False
 
 def send_wait_for_message(step, presence, exp_message):
     """
@@ -425,6 +444,8 @@ def client_does_include(step, opt_type):
         world.cfg["preference"] = True
     elif opt_type == "rapid-commit":
         world.cfg["rapid_commit"] = True
+    elif opt_type == "time":
+        world.cfg["time"] = True
     else:
         assert "unsupported option: " + opt_type
 
@@ -440,7 +461,8 @@ def client_option (msg):
         
     #client id
     if world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == False:
-        msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
+        if world.cfg["relay"] == False:
+            msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
     elif world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == True:
         msg /= DHCP6OptClientId()
         world.cfg["wrong_client_id"] = False
@@ -456,7 +478,11 @@ def client_option (msg):
     if world.cfg["rapid_commit"] == True:
         msg /= DHCP6OptRapidCommit()
         world.cfg["rapid_commit"] = False
-        
+    
+    if world.cfg["time"] == True:
+        msg /= DHCP6OptElapsedTime()
+        world.cfg["time"] = False
+    
     return msg
 
 

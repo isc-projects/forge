@@ -100,7 +100,8 @@ def initialize(scenario):
     world.cfg["preference"] = False
     world.cfg["rapid_commit"] = False
     world.cfg["unicast"] = False
-    
+    world.cfg["relay"] = False
+    world.cfg["time"] = False
     # Setup scapy for v4
     conf.iface = IFACE
     conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy

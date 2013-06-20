@@ -78,6 +78,7 @@ def option_parser():
         
     number = '6' if opts.version6 else '4'
     
+    #Generate list of set tests.
     if opts.list:
         print "\n IPv" + number + " Tests:\n"
         print "features/tests_v" + number + "/"
@@ -90,23 +91,27 @@ def option_parser():
         
     tag = None
 
+    #adding tags for lettuce
     if opts.tag is not None:
         tag = opts.tag[0].split(',')
     else:
         tag = 'v6' if opts.version6 else 'v4'
-        
+    
+    #path for tests, all for specified IP version or only one set
     if opts.test_set is not None:
         base_path = os.getcwd() + "/features/tests_v" + number + "/" + opts.test_set + "/"
     else:
         base_path = os.getcwd() + "/features/tests_v" + number + "/"
-
+    
+    #lettuce starter, adding options
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
                     failfast = False,
                     tags = tag,
-                    enable_xunit = opts.enable_xunit)
-    runner.run()
+                    enable_xunit = opts.enable_xunit)\
+                     
+    runner.run() #start lettuce
     print "used tags: ", tag
     
 def main():

@@ -12,7 +12,7 @@ Feature: DHCPv6 Relay Agent
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
-	...using relay-agent encapsulated in 1 levels.
+	...using relay-agent encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
