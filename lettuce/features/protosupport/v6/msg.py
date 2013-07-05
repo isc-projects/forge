@@ -363,6 +363,8 @@ def response_check_include_message(step, opt_code, expect, data_type, expected):
             print "str payload.data: \n", str(x.payload.data)
             print "payload.data:\n", x.payload.data
             
+            
+            print "\n\n", str(x.payload.data).decode("hex")
             y1 = str(z1)
             z1 = DHCP6(y1)
             z1.show()
@@ -419,7 +421,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     if opt_code == 3:
         #needs more work
         x.show()
-        received = str(x.ianaopts[0].optcode)
+        #received = str(x.ianaopts[0].optcode)
         #test_option_code(x.ianaopts[0])
     elif opt_code == 7:
         received = str(x.prefval)
