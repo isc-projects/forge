@@ -112,7 +112,7 @@ def option_parser():
                     enable_xunit = opts.enable_xunit)\
                      
     runner.run() #start lettuce
-    print "used tags: ", tag
+    print "used tags:", tag, "\npath:", base_path
     
 def main():
     try :
