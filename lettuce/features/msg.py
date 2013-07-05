@@ -48,14 +48,12 @@ def response_check_include_option(step, yes_or_no, opt_code):
     include = not (yes_or_no == "NOT ")
     dhcpmsg.response_check_include_option(step, include, opt_code)
 
-@step('Response MUST (NOT )?include (\w+) message.')
-def response_check_include_message(step, yes_or_no, message):
-    include = not (yes_or_no == "NOT ")
-    dhcpmsg.response_check_include_message(step, include, message)
-
 @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(step, opt_code, expect, data_type, expected):
-    dhcpmsg.response_check_option_content(step, opt_code, expect, data_type, expected)
+    if str(data_type) == "message":
+        dhcpmsg.response_check_include_message(step, opt_code, expect, data_type, expected)
+    else:
+        dhcpmsg.response_check_option_content(step, opt_code, expect, data_type, expected)
 
 #save option from received message
 @step('Client copies (\S+) option from received message.')

@@ -329,16 +329,18 @@ def response_check_include_option(step, must_include, opt_code):
     else:
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
 
-def response_check_include_message(step, must_include, msg_type):
+def response_check_include_message(step, opt_code, expect, data_type, expected):
     """
-    Checking included messages in relay-reply message.
+    Checking included messages in relay-reply message.  
     still not operational :/
     """
     #UNDER CONSTRUCTION :)
     #UNDER CONSTRUCTION :)
 #    assert len(world.srvmsg) != 0, "No response received."
     x = world.srvmsg[0].getlayer(2)
-
+    print "cala wiadomosc:"
+    x.show()
+    
     msg_types = { "ADVERTISE": DHCP6_Advertise,
                   "REPLY": DHCP6_Reply,
     }
@@ -349,8 +351,29 @@ def response_check_include_message(step, must_include, msg_type):
         if x.optcode == 9:
             #if type(x.payload) == msg_types[msg_type]:
             x.show()
-            print type(x.payload)
-            pay = x.payload
+            print "\npayload type: ",type(x.payload)
+            #z = DHCP6(x.payload.data)
+            #z.show()
+            print "hex payload: "
+            z1 = hexdump(x.payload)
+            print "str payload: \n", str(x.payload)
+            print "payload:\n", x.payload
+            print "hex payload.data: "
+            z2 = hexdump(x.payload.data)
+            print "str payload.data: \n", str(x.payload.data)
+            print "payload.data:\n", x.payload.data
+            
+            y1 = str(z1)
+            z1 = DHCP6(y1)
+            z1.show()
+
+            y2 = str(z2)
+            z2 = DHCP6(y2)
+            z2.show()
+            
+            #a.show()
+            #print "\n\n", type(x.payload.data), "\n\n"
+            #pay = x.payload
         x = x.payload
     
 #      0th is IPv6, 1st is UDP, 2nd should be DHCP6

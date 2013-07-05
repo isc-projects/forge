@@ -33,7 +33,8 @@ Feature: DHCPv6 Relay Agent
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 3.
-	#Response option 3 MUST contain option 13. Scapy bug 
+	Response option 3 MUST contain option 13. 
+	#Scapy bug 
 	
 	References: RFC3315 section 5.3
 	
