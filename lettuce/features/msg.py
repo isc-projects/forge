@@ -28,6 +28,10 @@ def client_does_include(step, yes_or_not, opt_type):
 def unicast_addres(step):
     dhcpmsg.unicast_addres(step)
 
+@step('Generate new client-id.')
+def new_client_id(step):
+    dhcpmsg.new_client_id(step)
+
 @step('...using relay-agent encapsulated in (\d+) level(s)?.')
 def create_relay_forward(step, level, s ):
     dhcpmsg.create_relay_forward(step, level)

@@ -1,5 +1,7 @@
+from Crypto.Random.random import randint
 from fabric.context_managers import settings, hide
 from fabric.operations import sudo
+from init_all import *
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.config import conf
@@ -8,7 +10,6 @@ import os
 import shutil
 import sys
 import time
-from init_all import *
 
 
 # @todo: There were RunningProcess and RunningProcesses classes here, but they
@@ -21,9 +22,9 @@ def bind10 (host, cmd):
     """
     Start/kill bind10
     """
-    with settings(host_string=host, user=MGMT_USERNAME, password=MGMT_PASSWORD):
+    with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with hide('running', 'stdout', 'stderr'):
-            sudo(cmd, pty=True)
+            sudo(cmd, pty = True)
 
 def kill_bind10(host):
     """
@@ -31,9 +32,15 @@ def kill_bind10(host):
     """
     get_common_logger().debug("--- Killing all running Bind instances")
     cmd = 'pkill b10-*; sleep 2'
-    with settings(host_string=host, user=MGMT_USERNAME, password=MGMT_PASSWORD):
-        with settings(warn_only=True):
-            sudo(cmd, pty=True)
+    with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
+        with settings(warn_only = True):
+            sudo(cmd, pty = True)
+
+def client_id (mac):
+    world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac )
+
+def ia_id ():
+    world.cfg["ia_id"] = randint(1,99999)
 
 @before.all
 def server_start():
@@ -51,7 +58,7 @@ def server_start():
         get_common_logger().debug("--- Starting Bind:")
         try:
             #comment line below to turn off starting bind
-            bind10(MGMT_ADDRESS, cmd='(rm nohup.out; nohup ' + SERVER_INSTALL_DIR
+            bind10(MGMT_ADDRESS, cmd = '(rm nohup.out; nohup ' + SERVER_INSTALL_DIR
                    + 'sbin/bind10 &); sleep 2' )
             get_common_logger().debug("Bind10 successfully started")
         except :
@@ -63,7 +70,7 @@ def server_start():
     #If relay is used routing needs to be reconfigured on DUT
     try:
         if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
-            with settings(host_string=MGMT_ADDRESS, user=MGMT_USERNAME, password=MGMT_PASSWORD):
+            with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
                 sudo("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
     except:
         pass # most likely REL4_ADDR caused this exception -> we do not use relay
@@ -112,8 +119,10 @@ def initialize(scenario):
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if (not hasattr(world.cfg, "cli_duid")):
-        world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = CLI_MAC)
-
+        client_id (CLI_MAC)
+        
+    if (not hasattr(world.cfg, "ia_id")):
+        ia_id ()
     # Some tests can modify the settings. If the tests fail half-way, or
     # don't clean up, this can leave configurations or data in a bad state,
     # so we copy them from originals before each scenario
@@ -147,7 +156,7 @@ def say_goodbye(total):
 
     try:
         if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
-            with settings(host_string=MGMT_ADDRESS, user=MGMT_USERNAME, password=MGMT_PASSWORD):
+            with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
                 sudo("route del -host %s" % (GIADDR4))
     except NameError:
         pass # most likely REL4_ADDR caused this exception -> we do not use relay

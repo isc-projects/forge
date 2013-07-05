@@ -203,20 +203,21 @@ def create_relay_forward(step, level):
     level = int(level)
 
     #all three values: linkaddr, peeraddr and hopcount must be filled
-    tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
-
+    
+    tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
+    #tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)
+    
     #add options (used only when checking "wrong option" test for relay-forward message. to add some options to relay-forward 
     #you need to put "Client does include opt_name." before "...using relay-agent encapsulated in 1 level." and after "Client sends SOLICIT message."
     tmp = client_option(tmp)
     
     #add RelayMsg option 
-
     tmp /= DHCP6OptRelayMsg()
     #message encapsulation 
     while True:
         level -= 1
         if not level: break;
-        tmp /= DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr=SRV_IPV6_ADDR, hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+        tmp /= DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
 
     #build full message
     relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/tmp/msg
@@ -252,7 +253,7 @@ def send_wait_for_message(step, presence, exp_message):
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
-    
+            
     for x in unans:
         get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
 
@@ -311,7 +312,7 @@ def client_copy_option(step, option_name):
     
     assert opt, "Received message does not contain option " + option_name
 
-    opt.payload = None
+    #opt.payload = None
 
     add_client_option(opt)
 
@@ -329,6 +330,10 @@ def response_check_include_option(step, must_include, opt_code):
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
 
 def response_check_include_message(step, must_include, msg_type):
+    """
+    Checking included messages in relay-reply message.
+    still not operational :/
+    """
     #UNDER CONSTRUCTION :)
     #UNDER CONSTRUCTION :)
 #    assert len(world.srvmsg) != 0, "No response received."
@@ -338,13 +343,14 @@ def response_check_include_message(step, must_include, msg_type):
                   "REPLY": DHCP6_Reply,
     }
     
-    x.show()
+    
     while x:
         print "!"
-        #if x.optcode == 9:
+        if x.optcode == 9:
             #if type(x.payload) == msg_types[msg_type]:
-        print type(x.payload.data)
-        print x.payload.data
+            x.show()
+            print type(x.payload)
+            pay = x.payload
         x = x.payload
     
 #      0th is IPv6, 1st is UDP, 2nd should be DHCP6
@@ -365,14 +371,17 @@ def response_check_include_message(step, must_include, msg_type):
     
 # Returns text representation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
-    if data_type=="uint8":
+    if data_type == "uint8":
         assert len(opt.data) == 1, "Received option " + opt.optcode + " contains " + len(opt.data) + \
                                    " bytes, but expected exactly 1"
         return str(ord(opt.data[0:1]))
     else:
         assert False, "Parsing of option format " + data_type + " not implemented."
 
-# Option 23 MUST contain addresses 2001:db8::1,2001:db8::2
+def test_option_code(msg):
+    print msg.statuscode
+
+        
 def response_check_option_content(step, opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
@@ -381,13 +390,19 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
 
     x = get_option(world.srvmsg[0], opt_code)
 
-    assert x, "Expected option " + opt_code + " not present in the message."
+    assert x, "Expected option " + str(opt_code) + " not present in the message."
 
     received = ""
-    if opt_code == 7:
+    if opt_code == 3:
+        #needs more work
+        x.show()
+        received = str(x.ianaopts[0].optcode)
+        #test_option_code(x.ianaopts[0])
+    elif opt_code == 7:
         received = str(x.prefval)
-    if opt_code == 13:
-        received = str(x.statuscode)
+    elif opt_code == 9:
+        pass
+        #received = str(x.optcode)
     elif opt_code == 21:
         received = ",".join(x.sipdomains)
     elif opt_code == 22:
@@ -411,8 +426,8 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     else:
         received = unknown_option_to_str(data_type, x)
 
-    assert expected == received, "Invalid " + opt_code + " option received:" + received + \
-                                 ", but expected " + expected
+    assert expected == received, "Invalid " + str(opt_code) + " option received:" + received + \
+                                 ", but expected " + str(expected)
 
 def receive_dhcp6_tcpdump(count = 1, timeout = 1):
 
@@ -448,7 +463,14 @@ def client_does_include(step, opt_type):
         world.cfg["time"] = True
     else:
         assert "unsupported option: " + opt_type
-
+        
+def new_client_id (step):
+    """
+    Generate new client id with random MAC address.
+    """
+    from features.terrain import client_id, ia_id
+    client_id(RandMAC())
+    ia_id()
 
 def client_option (msg):
     """
@@ -502,15 +524,14 @@ def msg_add_defaults(msg):
     #add all options to message. 
     x = client_option (x)
     
-    
     if len(world.cliopts) > 0:
         if world.cliopts[0].optcode == 3:
-            x /= DHCP6OptIA_NA(iaid = 1, ianaopts = world.cliopts[0].ianaopts)
+            x /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], ianaopts = world.cliopts[0].ianaopts)
             world.cliopts = []
         else:
-            x /= DHCP6OptIA_NA(iaid = 1)
+            x /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])
             return x
     else:
-        x /= DHCP6OptIA_NA(iaid = 1)
+        x /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])
     return x
 
