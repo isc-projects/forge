@@ -104,6 +104,7 @@ def option_parser():
         base_path = os.getcwd() + "/features/tests_v" + number + "/"
     
     #lettuce starter, adding options
+    print "\nPLZ MAKE SURE YOUR LETTUCE VERSION is 0.2.17\n"
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
