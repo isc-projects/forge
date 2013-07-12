@@ -1,3 +1,6 @@
+8. [func] wlodek
+		- first version of UserHelp in using Forge (set of all available test sets, features, test names) and building new tests
+		
 7. [func] wlodek
 		- new functions in run_test.py:
 			-l for listing all features (for specific IP version)
