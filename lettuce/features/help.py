@@ -27,26 +27,26 @@ class UserHelp ():
         """
         Add only unique tags to list
         """
-        global tags
-        global all_tags
         tag_list = line.strip() 
         tag_list = tag_list.split('@')
         tag_list = [x.strip(' ') for x in tag_list]
         for tag in tag_list:
             if tag is not None:
-                if tag in tags:
+                if tag in self.tags:
                     pass
                 else:
-                    tags += tag + ', '
+                    self.tags += tag + ', '
         
     def test(self, number, more):
-        global tags
+        """
+        Generate list of test sets, features, test names and all available tags
+        """
         #make for each in number because it starts in two points: in run_test.py by using -l option, then it create list only for one IP version, 
         #and in help.py generating whole test list.
         print "Test tree schema:\nroot directory\n\ttest set (available by option -s in run_test.py)\n\t\ttest feature"
         if more: print "\t\t\ttest name (available by option -n in run_test.py)"
         for each_number in number: 
-            tags = ''
+            self.tags = ''
             print "\nIPv" + each_number + " Tests:"
             print "features/tests_v" + each_number + "/"
             for path, dirs, files in os.walk("features/tests_v" + each_number + "/"):
@@ -60,8 +60,7 @@ class UserHelp ():
                         elif "Scenario:" in line:
                             if more: print "\t\t\t" + line.strip()[10:]
                     names.close()
-                    
-            print "\nTest tags you can use: \n", tags[:-2], "\n"
+            print "\nTest tags you can use: \n", self.tags[:-2], "\n"
         
 if __name__ == '__main__':
     #orginal_stdout = sys.stdout
