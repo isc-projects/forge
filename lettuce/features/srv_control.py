@@ -3,6 +3,7 @@ from init_all import SERVER_TYPE
 import importlib
 dhcpfun = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
 
+##server configurations
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(step, subnet, pool):
     """
@@ -29,6 +30,7 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
 
     dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value)
 
+##subnet options
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
 def config_srv(step, option_name, subnet, option_value):
     """
@@ -38,6 +40,7 @@ def config_srv(step, option_name, subnet, option_value):
     """
     dhcpfun.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
 
+##server management
 @step('Server is started.')
 def start_srv(step):
     dhcpfun.start_srv()

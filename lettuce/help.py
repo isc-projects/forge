@@ -61,14 +61,35 @@ class UserHelp ():
                             if more: print "\t\t\t" + line.strip()[10:]
                     names.close()
             print "\nTest tags you can use: \n", self.tags[:-2], "\n"
+            
+    def steps(self):
+        """
+        Generate list of available steps in tests.
+        """
+        files = ['msg', 'srv_control']
+        message = ['All steps available in building tests procedure:', 'All steps available in preparing DHCP server configuration:']
         
+        for each, text in zip(files, message):
+            steps = open ('features/'+each+'.py', 'r')
+            print '\n',text,
+            for line in steps:
+                if line[0] == '#' and line[1] == '#':
+                    print '\n\t',line[2:],
+                elif line[0] == '@':
+                    print "\t\t    ",line[7:-3]
+            steps.close()
+        print "\nFor definitions of (\d+) (\w+) plz check python regular expressions at http://docs.python.org/2/library/re.html"
+    
 if __name__ == '__main__':
     #orginal_stdout = sys.stdout
     help_file = file('UserHelp.txt', 'w')
     sys.stdout = help_file
     generate_help = UserHelp()
+    print "AVAILABLE TESTS:"
     generate_help.test(["4","6"], 1)
     help_file.flush()
-    
+    print "AVAILABLE STEPS:"
+    generate_help.steps()
+    help_file.flush()
     help_file.close()
     #sys.stdout = orginal_stdout

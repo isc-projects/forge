@@ -10,8 +10,7 @@ from logging_facility import *
 
 dhcpmsg = importlib.import_module("protosupport.%s.msg"  % (PROTO))
 
-
-#building messages 
+##building messages 
 @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
     dhcpmsg.client_requests_option(step, opt_type)
@@ -36,7 +35,7 @@ def new_client_id(step):
 def create_relay_forward(step, level, s ):
     dhcpmsg.create_relay_forward(step, level)
 
-#checking respond
+##checking respond
 @step('Server MUST (NOT )?respond with (\w+) message')
 def send_wait_for_message(step, yes_or_no, message):
     get_common_logger().debug("client_send_msg:{message}.\n".format(**locals()))
@@ -55,7 +54,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     else:
         dhcpmsg.response_check_option_content(step, opt_code, expect, data_type, expected)
 
-#save option from received message
+##save option from received message
 @step('Client copies (\S+) option from received message.')
 def client_copy_option(step, option_name):
     assert len(world.srvmsg), "No messages received, nothing to copy."
