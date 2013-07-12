@@ -80,17 +80,12 @@ def option_parser():
     
     #Generate list of set tests.
     if opts.list:
-        print "\n IPv" + number + " Tests:\n"
-        print "features/tests_v" + number + "/"
-        for path, dirs, files in os.walk("features/tests_v"+number+"/"):
-            if len(path[18:]) > 1: print "\t" + path[18:] 
-            for each_file in files:
-                print "\t\t", each_file[:-8]
-        print "Root tree is main directory, names of first parents you can use first as test sets, child names as test features (single feature not yet operational"
+        from features.help import UserHelp
+        hlp = UserHelp()
+        hlp.test(number, 0)
         sys.exit()
         
     tag = None
-
     #adding tags for lettuce
     if opts.tag is not None:
         tag = opts.tag[0].split(',')
