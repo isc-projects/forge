@@ -338,7 +338,7 @@ def response_check_include_message(step, opt_code, expect, data_type, expected):
     #UNDER CONSTRUCTION :)
 #    assert len(world.srvmsg) != 0, "No response received."
     x = world.srvmsg[0].getlayer(2)
-    print "cala wiadomosc:"
+    print "msg:"
     x.show()
     
     msg_types = { "ADVERTISE": DHCP6_Advertise,

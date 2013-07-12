@@ -2,7 +2,7 @@
 Feature: DHCPv6 Relay Agent 
     This is a simple DHCPv6 message exchange between server and relay-agent.  
 
-@v6 @relay @teraz 
+@v6 @relay 
     Scenario: v6.relay.message.solicit-advertise
 
 	Test Setup:
@@ -18,6 +18,7 @@ Feature: DHCPv6 Relay Agent
 	Server MUST respond with RELAYREPLY message.
 	Response MUST include option 9.
 	Response option 9 MUST contain message 2.
+	#message 2 - Advertise
 	
 	References: RFC3315 section 18.2.8
 	
