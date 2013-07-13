@@ -1,7 +1,6 @@
 from lettuce import world, step
 from init_all import PROTO
 import importlib
-from logging_facility import *
 
 # Tomek: For some reason importing terrain does not help, as the
 # @before.each_scenario is not called, so the world do not have proto set up.

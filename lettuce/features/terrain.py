@@ -1,14 +1,16 @@
 from Crypto.Random.random import randint
-from init_all import *
 from lettuce import world, before, after
+from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, \
+    SERVER_INSTALL_DIR, CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, \
+    removelist
 from logging_facility import *
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from serversupport.bind10 import *
 import os
 import shutil
+import sys
 import time
-
 
 # @todo: There were RunningProcess and RunningProcesses classes here, but they
 # were removed. They were used to start and stop processes on a local machine.

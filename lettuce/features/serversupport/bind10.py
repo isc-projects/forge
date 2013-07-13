@@ -20,6 +20,8 @@
 
 from fabric.context_managers import settings, hide
 from fabric.operations import sudo
+from features.init_all import MGMT_USERNAME, MGMT_PASSWORD
+from features.logging_facility import get_common_logger
 
 
 def bind10 (host, cmd): 

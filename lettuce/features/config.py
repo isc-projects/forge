@@ -18,7 +18,10 @@
 # By a lot of feature files.
 #
 
-from lettuce import *
+
+from lettuce.decorators import step
+from lettuce.registry import world
+import new
 import os
 
 @step('stop process (\w+)')

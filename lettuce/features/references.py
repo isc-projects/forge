@@ -12,13 +12,14 @@
 # FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+from lettuce.decorators import step
 
 #
 # This file contains a number of common steps that are general and may be used
 # By a lot of feature files.
 #
 
-from lettuce import *
+
 
 
 @step('References: (\S+).')

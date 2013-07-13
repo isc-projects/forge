@@ -1,5 +1,4 @@
 import logging
-import sys
 
 def logger_initialize(loglevel):
     """
