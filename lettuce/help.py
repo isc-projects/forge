@@ -128,7 +128,42 @@ if __name__ == '__main__':
     As you can see there are test steps marked with '@step' and steps family marked with '##' (don't remove #, it's need to be double).
     When designing new step please put them in correct family. 
     
+    Test example:
+    
+feature name >>                Feature: Standard DHCPv6 address validation
+feature description >>         This feature is for checking respond on messages send on UNICAST address. Solicit, Confirm, Rebind, Info-Request should be discarded. Request should be answered with Reply message containing option StatusCode with code 5. 
+        
+tags >>                             @basic @v6 @unicast  
+test name >>                        Scenario: v6.basic.message.unicast.solicit
+    
+configure server >>                 Test Setup:
+                                    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+                                    Server is started.
+    
+Test steps >>                       Test Procedure:
+           >>                       Client requests option 7.
+           >>                       Client chooses UNICAST address.
+           >>                       Client sends SOLICIT message.
+                    
+                                    Pass Criteria:
+send/receive msg >>                 Server MUST NOT respond with ADVERTISE message.
+                                
+                                    Test Procedure:
+                                    Client requests option 7.
+                                    Client sends SOLICIT message.
+                                
+                                    Pass Criteria:
+                                    Server MUST respond with ADVERTISE message.
+    
+Information about references >>     References: RFC3315 section 15
+
     Do NOT use 'Scenario' in tests in other places then test name, right below tags (e.g. @my_tag)
+    For tags always use '@' before without white spaces:
+        good tag: @basic 
+        bad tag: @ basic
+    
+    You can use multiple parts like Test Procedure/ Pass Criteria but using Test Setup please be advised that remote server will be restarted,
+    configuration removed, generated new configuration and start server with it.
     
     That's all what you should keep while designing new tests ;)
     
