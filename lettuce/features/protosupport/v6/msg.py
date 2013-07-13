@@ -19,16 +19,29 @@
 #
 
 from cookielib import debug
-from features.serversupport.kea6.functions import kea_options6
 from features.logging_facility import get_common_logger
+from features.serversupport.kea6.functions import kea_options6
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 from scapy.layers.inet import UDP
 from scapy.layers.inet6 import IPv6
 from scapy.sendrecv import sr
 
-
-
+def test_pause(step):
+    """
+    Pause the test for any reason. 
+    """
+    def getch():
+        import tty, termios
+        fd = sys.stdin.fileno()
+        old = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            return sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old)
+    getch()
+    
 def client_requests_option(step, opt_type):
     """
     Add RequestOption to message.

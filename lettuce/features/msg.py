@@ -59,3 +59,8 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
 def client_copy_option(step, option_name):
     assert len(world.srvmsg), "No messages received, nothing to copy."
     dhcpmsg.client_copy_option(step, option_name)
+
+##modification of the test run
+@step('Pause the Test, press any key to continue.')
+def test_pause(step):
+    dhcpmsg.test_pause(step)

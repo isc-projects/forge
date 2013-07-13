@@ -106,7 +106,7 @@ def option_parser():
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
-                    scenarios = opts.name,
+                    #scenarios = opts.name,
                     failfast = False,
                     tags = tag,
                     enable_xunit = opts.enable_xunit)\
