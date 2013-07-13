@@ -29,7 +29,7 @@ from scapy.sendrecv import sr
 
 def test_pause(step):
     """
-    Pause the test for any reason. 
+    Pause the test for any reason. Press any key to continue. 
     """
     def getch():
         import tty, termios

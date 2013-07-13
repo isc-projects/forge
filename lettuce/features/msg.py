@@ -61,6 +61,9 @@ def client_copy_option(step, option_name):
     dhcpmsg.client_copy_option(step, option_name)
 
 ##modification of the test run
-@step('Pause the Test, press any key to continue.')
+@step('Pause the Test.')
 def test_pause(step):
+    """
+    Pause the test for any reason. Press any key to continue.
+    """
     dhcpmsg.test_pause(step)

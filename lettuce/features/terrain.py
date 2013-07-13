@@ -1,14 +1,12 @@
 from Crypto.Random.random import randint
-from fabric.context_managers import settings, hide
-from fabric.operations import sudo
 from init_all import *
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
+from serversupport.bind10 import *
 import os
 import shutil
-import sys
 import time
 
 
@@ -16,25 +14,6 @@ import time
 # were removed. They were used to start and stop processes on a local machine.
 # We should either use fabric directly or copy those classes over and modify
 # their methods to use fabric for remote process management.
-
-# @todo: This must be moved to serversupport/ dir.
-def bind10 (host, cmd): 
-    """
-    Start/kill bind10
-    """
-    with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-        with hide('running', 'stdout', 'stderr'):
-            sudo(cmd, pty = True)
-
-def kill_bind10(host):
-    """
-    Kill any running bind10 instance
-    """
-    get_common_logger().debug("--- Killing all running Bind instances")
-    cmd = 'pkill b10-*; sleep 2'
-    with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-        with settings(warn_only = True):
-            sudo(cmd, pty = True)
 
 def client_id (mac):
     world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac )
@@ -139,7 +118,7 @@ initialize(None)
 @after.each_scenario
 def cleanup(scenario):
     """
-    Global cleanup for each scenario.
+    Global cleanup for each scenario. Implemented within tests by "Server is started."
     """
     
 @after.all
