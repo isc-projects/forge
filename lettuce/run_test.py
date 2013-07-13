@@ -55,6 +55,10 @@ def option_parser():
                       action="store",
                       default=None,
                       help="Specific tests sets")
+#     parser.add_option("-n", "--name",
+#                       dest="name",
+#                       default=None,
+#                       help='Comma separated list of scenarios/test names to run')
     parser.add_option("-t", "--tags",
                       dest="tag",
                       action="append",
@@ -99,10 +103,10 @@ def option_parser():
         base_path = os.getcwd() + "/features/tests_v" + number + "/"
     
     #lettuce starter, adding options
-    print "\nPLZ MAKE SURE YOUR LETTUCE VERSION is at least 0.2.17\n"
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
+                    scenarios = opts.name,
                     failfast = False,
                     tags = tag,
                     enable_xunit = opts.enable_xunit)\
@@ -120,7 +124,6 @@ def main():
         print "Please make sure your configuration is valid\nProject Forge shutting down."
         sys.exit()       
     option_parser()
-
 
 if __name__ == '__main__':
     main()
