@@ -1,3 +1,5 @@
 *.pyc
 output/*
 /UserHelp.txt
+/history.html
+/lettucetests.xml

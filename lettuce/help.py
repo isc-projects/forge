@@ -15,9 +15,62 @@
 #
 # author: Wlodzimierz Wencel
 
+import datetime
 import os
 import sys
 
+class TestHistory ():
+    def __init__(self):
+        self.date = self.present_time() 
+        self.start_time = None
+        self.stop_time = None
+        self.time_elapsed = None
+        self.passed = 0
+        self.ran = 0
+        self.failed = 0
+        self.percent = 0.0
+        self.tags = None
+        self.path = None
+        
+        from features.init_all import SERVER_TYPE
+        self.server_type = SERVER_TYPE
+        
+        #TODO: implement this
+        self.bind10_version = "N/A"
+        self.dibbler_version = "N/A"
+        self.isc_dhcp_version = "N/A"
+        #self.scenarios = {}
+
+        self.check_file()
+
+    def present_time(self):
+        return datetime.datetime.now()
+
+    def start(self):
+        self.start_time = self.present_time() 
+
+    def information(self, passed, ran, tags, path):
+        self.stop_time = self.present_time()
+        self.passed = passed
+        self.ran = ran
+        self.failed = ran - passed
+        self.percent = (1.0 * passed/ran) * 100
+        self.tags = tags
+        self.path = path
+        
+    def check_file(self):
+        if not os.path.exists('history.html'):
+            new_file = open('history.html','w')
+            new_file.close()
+    
+    def build_report(self):
+        #it could be nice to add new line to first not to last line, but for now we keep it that way
+        #also report should be extended, names of tests scenarios with results.
+        report = open('history.html','a')
+        self.time_elapsed = self.stop_time - self.start_time
+        report.write('<table border = \'1\'><tr><td> DATE: </td><td>'+str(self.date.day)+'.'+str(self.date.month)+'.'+str(self.date.year)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> %: </td><td>'+str(self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr></table><br/>\n')
+        report.close()
+        
 class UserHelp ():
     def __init__(self):
         self.tags = ''
@@ -27,9 +80,8 @@ class UserHelp ():
         """
         Add only unique tags to list
         """
-        tag_list = line.strip() 
-        tag_list = tag_list.split('@')
-        tag_list = [x.strip(' ') for x in tag_list]
+        tag_list = line.split('@')
+        tag_list = [x.strip() for x in tag_list]
         for tag in tag_list:
             if tag is not None:
                 if tag in self.tags or tag == 'v4' or tag == 'v6':
@@ -47,22 +99,29 @@ class UserHelp ():
         if more: print "\t\t\ttest name (available by option -n in run_test.py)"
         for each_number in ip_version: 
             self.tags = ''
+            sets_number = 0
+            features_number = 0
+            tests_number = 0
             print "\nIPv" + each_number + " Tests:"
             print "features/tests_v" + each_number + "/"
             for path, dirs, files in os.walk("features/tests_v" + each_number + "/"):
-                if len(path[18:]) > 1: print "\t" + path[18:] 
+                if len(path[18:]) > 1: 
+                    print "\t" + path[18:]
+                    sets_number += 1 
                 for each_file in files:
                     print "\t\t", each_file[:-8]
+                    features_number += 1
                     names = open(path +'/'+ each_file, 'r')
                     for line in names:
                         line = line.strip()
                         if len(line) > 0:
                             if line[0] == '@':
                                 self.check_tags(line)
-                            elif "Scenario" in line:
-                                if more: print "\t\t\t" + line.strip()[10:]
+                            elif "Scenario" in line and more:
+                                print "\t\t\t" + line[10:]
+                                tests_number += 1
                     names.close()
-            print "\nTest tags you can use: \n", self.tags[:-2], "\n"
+            print "Totally: \n\t",tests_number,"tests in",features_number,"features, grouped in ",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
             
     def steps(self):
         """

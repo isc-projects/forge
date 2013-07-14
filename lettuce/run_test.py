@@ -17,11 +17,11 @@
 
 
 from lettuce import Runner
-
 import importlib
 import optparse
 import os
 import sys
+
 
 
 def option_parser():
@@ -50,6 +50,7 @@ def option_parser():
                       action="store_true",
                       default=False,
                       help='List all features (test sets) please choose also IP version')
+
     parser.add_option("-s", "--test_set",
                       dest="test_set",
                       action="store",
@@ -81,15 +82,18 @@ def option_parser():
         parser.error("options -4 and -6 are exclusive.\n")
         
     number = '6' if opts.version6 else '4'
-    
-    #Generate list of set tests.
+    from features.init_all import HISTORY
+    #Generate list of set tests and exit
     if opts.list:
-        from features.help import UserHelp
+        from help import UserHelp
         hlp = UserHelp()
         hlp.test(number, 0)
         sys.exit()
+    
+    if HISTORY:
+        from help import TestHistory
+        history = TestHistory()
         
-    tag = None
     #adding tags for lettuce
     if opts.tag is not None:
         tag = opts.tag[0].split(',')
@@ -98,11 +102,14 @@ def option_parser():
     
     #path for tests, all for specified IP version or only one set
     if opts.test_set is not None:
-        base_path = os.getcwd() + "/features/tests_v" + number + "/" + opts.test_set + "/"
+        path = "/features/tests_v" + number + "/" + opts.test_set + "/"
+        base_path = os.getcwd() + path
     else:
-        base_path = os.getcwd() + "/features/tests_v" + number + "/"
+        path = "/features/tests_v" + number + "/"
+        base_path = os.getcwd() + path
     
     #lettuce starter, adding options
+    if HISTORY: history.start()
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
@@ -111,14 +118,17 @@ def option_parser():
                     tags = tag,
                     enable_xunit = opts.enable_xunit)\
                      
-    runner.run() #start lettuce
-    print "used tags:", tag, "\npath:", base_path
+    result = runner.run() #start lettuce
+    
+    if HISTORY: 
+        history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
+        history.build_report()
     
 def main():
     try :
         config = importlib.import_module("features.init_all")
     except ImportError:
-        print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_default)"
+        print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)"
         sys.exit()
     if config.SERVER_TYPE == "":
         print "Please make sure your configuration is valid\nProject Forge shutting down."

@@ -52,7 +52,7 @@ OUTPUT_WAIT_MAX_INTERVALS = 5
 
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required!
-#ip address and port. ssh port default 22
+# ip address and port. ssh port default 22
 MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
@@ -66,3 +66,6 @@ SERVER_INSTALL_DIR = ""
 # scope link server address for testing unicast messages  
 SRV_IPV6_ADDR = ""
 
+# If you wont to build tests history in history.html set HISTORY on True if not, on False
+# but for more detailed information about tests, use --with_xunit option when starting run_test.py
+HISTORY = False  
