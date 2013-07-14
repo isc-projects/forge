@@ -39,7 +39,6 @@ class TestHistory ():
         self.bind10_version = "N/A"
         self.dibbler_version = "N/A"
         self.isc_dhcp_version = "N/A"
-        #self.scenarios = {}
 
         self.check_file()
 
@@ -66,10 +65,37 @@ class TestHistory ():
     def build_report(self):
         #it could be nice to add new line to first not to last line, but for now we keep it that way
         #also report should be extended, names of tests scenarios with results.
+        scenarios = self.read_result() 
+        scenarios.reverse()
+        scenarios_html = '<tr><th colspan="2" align = left>TESTS:</th></tr><tr><td>NAME:</td><td>RESULT:</td></tr>'
+        
+        for i in range(len(scenarios)/2):
+            name = str(scenarios.pop())
+            result = str(scenarios.pop())
+            if 'True' in result:
+                result = 'FAILED'
+                color = 'red'
+            else:
+                result = 'PASSED'
+                color = 'green'                
+            scenarios_html += '<tr><td>'+name+'</td><td bgcolor = \''+color+'\'>'+result+'</td></tr>'
+            
         report = open('history.html','a')
         self.time_elapsed = self.stop_time - self.start_time
-        report.write('<table border = \'1\'><tr><td> DATE: </td><td>'+str(self.date.day)+'.'+str(self.date.month)+'.'+str(self.date.year)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> %: </td><td>'+str(self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr></table><br/>\n')
+        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.day)+'.'+str(self.date.month)+'.'+str(self.date.year)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> %: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
         report.close()
+        
+    def read_result(self):
+        res = []
+        result = open ('result','r')
+        for line in result:
+            res.append(line)
+        result.close()
+        try:
+            os.remove('result')
+        except OSError:
+            pass
+        return res
         
 class UserHelp ():
     def __init__(self):
@@ -121,7 +147,7 @@ class UserHelp ():
                                 print "\t\t\t" + line[10:]
                                 tests_number += 1
                     names.close()
-            print "Totally: \n\t",tests_number,"tests in",features_number,"features, grouped in ",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
+            print "Totally: \n\t",tests_number,"tests in",features_number,"features, grouped in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
             
     def steps(self):
         """

@@ -123,7 +123,7 @@ def option_parser():
     if HISTORY: 
         history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
         history.build_report()
-    
+        
 def main():
     try :
         config = importlib.import_module("features.init_all")

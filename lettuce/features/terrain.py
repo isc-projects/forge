@@ -2,7 +2,7 @@ from Crypto.Random.random import randint
 from lettuce import world, before, after
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, \
     SERVER_INSTALL_DIR, CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, \
-    removelist
+    removelist, HISTORY
 from logging_facility import *
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
@@ -11,6 +11,7 @@ import os
 import shutil
 import sys
 import time
+
 
 # @todo: There were RunningProcess and RunningProcesses classes here, but they
 # were removed. They were used to start and stop processes on a local machine.
@@ -28,6 +29,8 @@ def server_start():
     """
     Server starting before testing
     """
+    world.result = []
+    
     # Initialize the common logger. The instance of this logger can
     # be instantiated by get_common_logger()
     logger_initialize(LOGLEVEL)
@@ -90,6 +93,7 @@ def initialize(scenario):
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.cfg["time"] = False
+    
     # Setup scapy for v4
     conf.iface = IFACE
     conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
@@ -122,17 +126,27 @@ def cleanup(scenario):
     """
     Global cleanup for each scenario. Implemented within tests by "Server is started."
     """
+    info = str(scenario.name) +'\n'+ str(scenario.failed)
+    world.result.append(info)
+#     import inspect
+#     print inspect.getmembers(scenario)
     
 @after.all
 def say_goodbye(total):
     """
     Server stopping after whole work
     """
+    
     get_common_logger().info("%d of %d scenarios passed." % (
         total.scenarios_passed,
         total.scenarios_ran
     ))
-
+    if HISTORY:
+        result = open ('result','w')
+        for item in world.result:
+            result.write(str(item)+'\n')
+        result.close()
+        
     kill_bind10(MGMT_ADDRESS)
 
     try:
