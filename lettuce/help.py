@@ -63,8 +63,6 @@ class TestHistory ():
             new_file.close()
     
     def build_report(self):
-        #it could be nice to add new line to first not to last line, but for now we keep it that way
-        #also report should be extended, names of tests scenarios with results.
         scenarios = self.read_result() 
         scenarios.reverse()
         scenarios_html = '<tr><th colspan="2" align = left>TESTS:</th></tr><tr><td>NAME:</td><td>RESULT:</td></tr>'
@@ -82,7 +80,7 @@ class TestHistory ():
             
         report = open('history.html','a')
         self.time_elapsed = self.stop_time - self.start_time
-        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.day)+'.'+str(self.date.month)+'.'+str(self.date.year)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> %: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
+        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.year)+'.'+str(self.date.month)+'.'+str(self.date.day)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> PASS-RATE: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
         report.close()
         
     def read_result(self):
@@ -198,7 +196,7 @@ if __name__ == '__main__':
     
     AVAILABLE TESTS:  
     """
-    generate_help.test(["4","6"], 1)
+    generate_help.test(["4", "6"], 1)
     help_file.flush()
     print "\tAVAILABLE STEPS:"
     generate_help.steps()
@@ -254,5 +252,7 @@ Information about references >>     References: RFC3315 section 15
     
     If someone would redesign directory tree for test or files listed above, plz make sure that automatically generated help still working properly.
     """
+    
     help_file.close()
+    
     #sys.stdout = orginal_stdout

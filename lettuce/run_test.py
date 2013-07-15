@@ -15,61 +15,58 @@
 #
 # author: Wlodzimierz Wencel
 
-
 from lettuce import Runner
 import importlib
 import optparse
 import os
 import sys
 
-
-
 def option_parser():
     desc='''
     Forge version .... ? :)
     '''
     parser = optparse.OptionParser(description=desc, usage="%prog or type %prog -h (--help) for help")
-    parser.add_option("-4","--version4",
-                      dest="version4",
-                      action="store_true",
-                      default=False,
-                      help='Declare IP version 4 tests')
+    parser.add_option("-4", "--version4",
+                      dest = "version4",
+                      action = "store_true",
+                      default = False,
+                      help = 'Declare IP version 4 tests')
     parser.add_option("-6", "--version6",
-                      dest="version6",
-                      action="store_true",
-                      default=False,
-                      help="Declare IP version 6 tests")
+                      dest = "version6",
+                      action = "store_true",
+                      default = False,
+                      help = "Declare IP version 6 tests")
     parser.add_option("-v", "--verbosity",
-                      dest="verbosity",
-                      type="int",
-                      action="store",
-                      default=4,
-                      help="Level of the lettuce verbosity")
-    parser.add_option("-l","--list",
-                      dest="list",
-                      action="store_true",
-                      default=False,
-                      help='List all features (test sets) please choose also IP version')
+                      dest = "verbosity",
+                      type = "int",
+                      action = "store",
+                      default = 4,
+                      help = "Level of the lettuce verbosity")
+    parser.add_option("-l", "--list",
+                      dest = "list",
+                      action = "store_true",
+                      default = False,
+                      help = 'List all features (test sets) please choose also IP version')
 
     parser.add_option("-s", "--test_set",
-                      dest="test_set",
-                      action="store",
-                      default=None,
-                      help="Specific tests sets")
+                      dest = "test_set",
+                      action = "store",
+                      default = None,
+                      help = "Specific tests sets")
 #     parser.add_option("-n", "--name",
 #                       dest="name",
 #                       default=None,
 #                       help='Comma separated list of scenarios/test names to run')
     parser.add_option("-t", "--tags",
-                      dest="tag",
-                      action="append",
-                      default=None,
-                      help="Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.")
+                      dest = "tag",
+                      action = "append",
+                      default = None,
+                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.")
     parser.add_option("-x", "--with-xunit",
-                      dest="enable_xunit",
-                      action="store_true",
-                      default=False,
-                      help="Generate results file in xUnit format")
+                      dest = "enable_xunit",
+                      action = "store_true",
+                      default = False,
+                      help = "Generate results file in xUnit format")
 
     (opts, args) = parser.parse_args()
     
@@ -82,14 +79,14 @@ def option_parser():
         parser.error("options -4 and -6 are exclusive.\n")
         
     number = '6' if opts.version6 else '4'
-    from features.init_all import HISTORY
     #Generate list of set tests and exit
     if opts.list:
         from help import UserHelp
         hlp = UserHelp()
         hlp.test(number, 0)
         sys.exit()
-    
+        
+    from features.init_all import HISTORY
     if HISTORY:
         from help import TestHistory
         history = TestHistory()
@@ -108,8 +105,8 @@ def option_parser():
         path = "/features/tests_v" + number + "/"
         base_path = os.getcwd() + path
     
-    #lettuce starter, adding options
     if HISTORY: history.start()
+    #lettuce starter, adding options
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
@@ -120,9 +117,13 @@ def option_parser():
                      
     result = runner.run() #start lettuce
     
+    #build report if requested
     if HISTORY: 
-        history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
-        history.build_report()
+        try:
+            history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
+            history.build_report()
+        except:
+            pass
         
 def main():
     try :

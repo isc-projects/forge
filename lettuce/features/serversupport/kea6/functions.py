@@ -179,11 +179,11 @@ def pepere_config_file(cfg):
     # Copy input line by line, but skip empty and comment lines
     for line in conf:
         line = line.strip()
-        if len(line)<2:
+        if len(line) < 2:
             continue
         if (line[0] == "#"):
             continue
-        process.write(line+"\n")
+        process.write(line + "\n")
     conf.close()
     process.close()
     try:
@@ -197,9 +197,9 @@ def fabric_send_file (file_local):
     Send file to remote virtual machine
     """
     file_remote = file_local
-    with settings(host_string=world.cfg["mgmt_addr"],
-                  user=world.cfg["mgmt_user"],
-                  password=world.cfg["mgmt_pass"]):
+    with settings(host_string = world.cfg["mgmt_addr"],
+                  user = world.cfg["mgmt_user"],
+                  password = world.cfg["mgmt_pass"]):
         with hide('running', 'stdout'):
             put(file_local, file_remote)
     try:
@@ -216,25 +216,25 @@ def fabric_run_bindctl (opt):
         prepare_cfg_kea6_for_kea6_stop()
         cfg_file = 'kea6-stop.cfg'
         pepere_config_file(cfg_file)
-        fabric_send_file (cfg_file+"_processed")
+        fabric_send_file (cfg_file + "_processed")
     if opt == "start":
         get_common_logger().debug('------------ starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
         cfg_file = 'kea6-start.cfg'
         pepere_config_file(cfg_file)
-        fabric_send_file (cfg_file+"_processed")
+        fabric_send_file (cfg_file + "_processed")
     if opt == "conf":
         get_common_logger().debug('------------ kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
-        fabric_send_file (cfg_file+"_processed")
+        fabric_send_file (cfg_file + "_processed")
     if opt == "restart":
-        #implement this
+        #there is no need for restarting server in testing conformance with RFC
         pass
-    cmd='(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
-    with settings(host_string=world.cfg["mgmt_addr"],
-                  user=world.cfg["mgmt_user"],
-                  password=world.cfg["mgmt_pass"]):
+    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
+    with settings(host_string = world.cfg["mgmt_addr"],
+                  user = world.cfg["mgmt_user"],
+                  password = world.cfg["mgmt_pass"]):
         run(cmd)
 
 def start_srv():
