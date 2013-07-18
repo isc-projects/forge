@@ -141,11 +141,12 @@ class UserHelp ():
                         if len(line) > 0:
                             if line[0] == '@':
                                 self.check_tags(line)
-                            elif "Scenario" in line and more:
-                                print "\t\t\t" + line[10:]
+                            elif "Scenario" in line:
+                                if more: print "\t\t\t" + line[10:]
                                 tests_number += 1
                     names.close()
             print "Totally: \n\t",tests_number,"tests in",features_number,"features, grouped in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
+            if not more: print 'For more information, use help.py to generate UserHelp document.\n'
             
     def steps(self):
         """
@@ -166,6 +167,22 @@ class UserHelp ():
                         print "\t\t    ",line[7:-3]
             steps.close()
         print "\nFor definitions of (\d+) (\w+) (\S+) check Python regular expressions at http://docs.python.org/2/library/re.html"
+
+def find_scenario(name, IPversion):
+    scenario = -1
+    for path, dirs, files in os.walk("features/tests_v" + IPversion + "/"):
+        for each_file in files:
+            file_name = open (path +'/'+ each_file, 'r')
+            for each_line in file_name:
+                if 'Scenario' in each_line:
+                    scenario += 1
+                    if name in each_line:
+                        file_name.close()
+                        return (path+'/'+each_file, str(scenario))
+            else:
+                scenario = -1
+                file_name.close()
+    return (None,0)
     
 if __name__ == '__main__':
     #orginal_stdout = sys.stdout
@@ -188,8 +205,15 @@ if __name__ == '__main__':
             run_test.py -6 -t basic
         - or multiple tags (then you start tests with both of tags):
             run_test.py -6 -t basic, relay
-        - you can start test with specific name:
-            run_test.py -6 -n v6.basic.message.unicast.solicit (don't use it yet :D)
+        - you can start test with specific name, only one name at the time:
+            run_test.py -6 -n v6.basic.message.unicast.solicit
+    
+    Lettuce verbosity (-v option):
+        1 - dots for each feature
+        2 - scenario names
+        3 - full feature print, but colorless
+        4 - full feature print, but colorful, DEFAULT level
+
     
     Below there is automatically generated list of all tests. If you design new keeping the build procedure, 
     just start help.py again and you will see updated list (build procedure is described at the end of that document).

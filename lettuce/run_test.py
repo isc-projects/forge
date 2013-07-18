@@ -25,23 +25,26 @@ def option_parser():
     desc='''
     Forge version .... ? :)
     '''
-    parser = optparse.OptionParser(description=desc, usage="%prog or type %prog -h (--help) for help")
+    parser = optparse.OptionParser(description = desc, usage = "%prog or type %prog -h (--help) for help")
     parser.add_option("-4", "--version4",
                       dest = "version4",
                       action = "store_true",
                       default = False,
                       help = 'Declare IP version 4 tests')
+    
     parser.add_option("-6", "--version6",
                       dest = "version6",
                       action = "store_true",
                       default = False,
                       help = "Declare IP version 6 tests")
+    
     parser.add_option("-v", "--verbosity",
                       dest = "verbosity",
                       type = "int",
                       action = "store",
                       default = 4,
                       help = "Level of the lettuce verbosity")
+    
     parser.add_option("-l", "--list",
                       dest = "list",
                       action = "store_true",
@@ -53,15 +56,18 @@ def option_parser():
                       action = "store",
                       default = None,
                       help = "Specific tests sets")
-#     parser.add_option("-n", "--name",
-#                       dest="name",
-#                       default=None,
-#                       help='Comma separated list of scenarios/test names to run')
+    
+    parser.add_option("-n", "--name",
+                      dest = "name",
+                      default = None,
+                      help = "Single scenario name, don't use that option with -s or -t")
+    
     parser.add_option("-t", "--tags",
                       dest = "tag",
                       action = "append",
                       default = None,
                       help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.")
+    
     parser.add_option("-x", "--with-xunit",
                       dest = "enable_xunit",
                       action = "store_true",
@@ -91,6 +97,15 @@ def option_parser():
         from help import TestHistory
         history = TestHistory()
         
+    if opts.name is not None:
+        from help import find_scenario
+        base_path, scenario = find_scenario(opts.name, number)
+        if base_path is None:
+            print "Scenario named %s has been not found" %opts.name
+            sys.exit()
+    else:
+        scenario = None
+        
     #adding tags for lettuce
     if opts.tag is not None:
         tag = opts.tag[0].split(',')
@@ -101,16 +116,19 @@ def option_parser():
     if opts.test_set is not None:
         path = "/features/tests_v" + number + "/" + opts.test_set + "/"
         base_path = os.getcwd() + path
+    elif opts.name is not None:
+        pass
     else:
         path = "/features/tests_v" + number + "/"
         base_path = os.getcwd() + path
-    
+        
+    print base_path,scenario
     if HISTORY: history.start()
     #lettuce starter, adding options
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
-                    #scenarios = opts.name,
+                    scenarios = scenario,
                     failfast = False,
                     tags = tag,
                     enable_xunit = opts.enable_xunit)\

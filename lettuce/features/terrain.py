@@ -55,7 +55,7 @@ def server_start():
     try:
         if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
             with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-                sudo("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
+                run("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
     except:
         pass # most likely REL4_ADDR caused this exception -> we do not use relay
        
@@ -152,7 +152,7 @@ def say_goodbye(total):
     try:
         if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
             with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-                sudo("route del -host %s" % (GIADDR4))
+                run("route del -host %s" % (GIADDR4))
     except NameError:
         pass # most likely REL4_ADDR caused this exception -> we do not use relay
 
