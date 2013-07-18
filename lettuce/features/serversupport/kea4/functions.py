@@ -1,4 +1,4 @@
-from fabric.api import sudo, run, settings, put, hide
+from fabric.api import run, run, settings, put, hide
 from lettuce import world
 from textwrap import dedent
 import serversupport.kea6.functions

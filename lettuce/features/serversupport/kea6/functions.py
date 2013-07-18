@@ -14,7 +14,7 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-from fabric.api import sudo, run, settings, put, hide
+from fabric.api import run, run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR
