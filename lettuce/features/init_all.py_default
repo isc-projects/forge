@@ -46,12 +46,13 @@ removelist = [ ]
 # When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
 # as the interval in which to check again if it has not been found yet.
 # If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an
-# error (so as not to hang indefinitely)
+# error (so as not to hang indefinitely). Values are counted in seconds.
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
 # This are required management information about device under test (the one that
-# tested server will be running on) root privileges are required!
+# tested server will be running on) root privileges are required! So edit sudoers
+# file, or use root account.
 # ip address and port. ssh port default 22
 MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
