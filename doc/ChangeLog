@@ -1,3 +1,7 @@
+9. [func] wlodek
+		- new type of tests, Scenario Outline
+		- reports for Scenario Outline
+
 8. [func] wlodek
 		- first version of UserHelp in using Forge (set of all available test sets, features, test names) and building new tests
 		
