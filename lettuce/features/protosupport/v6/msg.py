@@ -21,6 +21,7 @@
 from cookielib import debug
 from features.logging_facility import get_common_logger
 from features.serversupport.kea6.functions import kea_options6
+from features.terrain import set_options
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 from scapy.layers.inet import UDP
@@ -488,20 +489,32 @@ def client_does_include(step, opt_type):
     """
     #If you want to use parts of received message to include it, please use 'Client copies (\S+) option from received message.' step.
     if opt_type == "client-id":
-        world.cfg["client_id"] = False
+        world.cfg["add_option"]["client_id"] = False
     elif opt_type == "wrong-client-id":
-        world.cfg["wrong_client_id"] = True
+        world.cfg["add_option"]["wrong_client_id"] = True
     elif opt_type == "wrong-server-id":
-        world.cfg["wrong_server_id"] = True
+        world.cfg["add_option"]["wrong_server_id"] = True
     elif opt_type == "preference":
-        world.cfg["preference"] = True
+        world.cfg["add_option"]["preference"] = True
     elif opt_type == "rapid-commit":
-        world.cfg["rapid_commit"] = True
+        world.cfg["add_option"]["rapid_commit"] = True
     elif opt_type == "time":
-        world.cfg["time"] = True
+        world.cfg["add_option"]["time"] = True
+    elif opt_type == "relay-msg":
+        world.cfg["add_option"]["relay_msg"] = True
+    elif opt_type == "server-unicast":
+        world.cfg["add_option"]["server_uni"] = True
+    elif opt_type == "status-code":
+        world.cfg["add_option"]["status_code"] = True
+    elif opt_type == "interface-id":
+        world.cfg["add_option"]["interface_id"] = True
+    elif opt_type == "reconfigure":
+        world.cfg["add_option"]["reconfig"] = True
+    elif opt_type == "reconfigure-accept":
+        world.cfg["add_option"]["reconfig_accept"] = True
     else:
         assert "unsupported option: " + opt_type
-        
+
 def new_client_id (step):
     """
     Generate new client id with random MAC address.
@@ -509,43 +522,57 @@ def new_client_id (step):
     from features.terrain import client_id, ia_id
     client_id(RandMAC())
     ia_id()
-
+    
 def client_option (msg):
     """
     Add options (like server-id, rapid commit) to message. This function refers to building message
     """
-    #server id with mistake
-    if world.cfg["wrong_server_id"] == True:
+    #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
+
+    if world.cfg["add_option"]["wrong_server_id"] == True:
         msg /= DHCP6OptServerId()
-        world.cfg["wrong_server_id"] = False
         
     #client id
-    if world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == False:
+    if world.cfg["add_option"]["client_id"] == True and world.cfg["add_option"]["wrong_client_id"] == False:
         if world.cfg["relay"] == False:
             msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    elif world.cfg["client_id"] == True and world.cfg["wrong_client_id"] == True:
+    elif world.cfg["add_option"]["client_id"] == True and world.cfg["add_option"]["wrong_client_id"] == True:
         msg /= DHCP6OptClientId()
-        world.cfg["wrong_client_id"] = False
-    elif world.cfg["client_id"] == False:
-        world.cfg["client_id"] = True
         
-    #preference option
-    if world.cfg["preference"] == True:
+    elif world.cfg["add_option"]["client_id"] == False:
+        #world.cfg["add_option"]["client_id"] = True
+        pass
+        
+    if world.cfg["add_option"]["preference"] == True:
         msg /= DHCP6OptPref()
-        world.cfg["preference"] = False
         
-    #rapid commit
-    if world.cfg["rapid_commit"] == True:
+    if world.cfg["add_option"]["rapid_commit"] == True:
         msg /= DHCP6OptRapidCommit()
-        world.cfg["rapid_commit"] = False
     
-    if world.cfg["time"] == True:
+    if world.cfg["add_option"]["time"] == True:
         msg /= DHCP6OptElapsedTime()
-        world.cfg["time"] = False
+
+    if world.cfg["add_option"]["server_uni"] == True:
+        msg /= DHCP6OptServerUnicast()
+
+    if world.cfg["add_option"]["status_code"] == True:
+        msg /= DHCP6OptStatusCode()
+
+    if world.cfg["add_option"]["interface_id"] == True:
+        msg /= DHCP6OptIfaceId()
+
+    if world.cfg["add_option"]["reconfig"] == True:
+        msg /= DHCP6OptReconfMsg()
+
+    if world.cfg["add_option"]["reconfig_accept"] == True:
+        msg /= DHCP6OptReconfAccept()
+
+    if world.cfg["add_option"]["relay_msg"] == True:
+        msg /= DHCP6OptRelayMsg()
     
+    set_options()
     return msg
-
-
+ 
 def msg_add_defaults(msg):
     
     if world.cfg["unicast"] == False:
