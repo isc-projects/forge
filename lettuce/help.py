@@ -73,9 +73,12 @@ class TestHistory ():
             if 'True' in result:
                 result = 'FAILED'
                 color = 'red'
-            else:
+            elif 'False':
                 result = 'PASSED'
-                color = 'green'                
+                color = 'green'
+            else:
+                result = 'N/A'
+                color = 'black'                
             scenarios_html += '<tr><td>'+name+'</td><td bgcolor = \''+color+'\'>'+result+'</td></tr>'
             
         report = open('history.html','a')
@@ -126,6 +129,7 @@ class UserHelp ():
             sets_number = 0
             features_number = 0
             tests_number = 0
+            outline_tests_number = 0
             print "\nIPv" + each_number + " Tests:"
             print "features/tests_v" + each_number + "/"
             for path, dirs, files in os.walk("features/tests_v" + each_number + "/"):
@@ -142,10 +146,14 @@ class UserHelp ():
                             if line[0] == '@':
                                 self.check_tags(line)
                             elif "Scenario" in line:
-                                if more: print "\t\t\t" + line[10:]
-                                tests_number += 1
+                                if "Outline" in line:
+                                    outline_tests_number += 1
+                                    if more: print "\t\t\t" + line[18:]
+                                else:
+                                    tests_number += 1
+                                    if more: print "\t\t\t" + line[10:]
                     names.close()
-            print "Totally: \n\t",tests_number,"tests in",features_number,"features, grouped in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
+            print "Totally: \n\t",tests_number,"tests and",outline_tests_number,"multi-tests in",features_number,"features, grouped in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
             if not more: print 'For more information, use help.py to generate UserHelp document.\n'
             
     def steps(self):
@@ -169,7 +177,7 @@ class UserHelp ():
         print "\nFor definitions of (\d+) (\w+) (\S+) check Python regular expressions at http://docs.python.org/2/library/re.html"
 
 def find_scenario(name, IPversion):
-    scenario = -1
+    scenario = 0
     for path, dirs, files in os.walk("features/tests_v" + IPversion + "/"):
         for each_file in files:
             file_name = open (path +'/'+ each_file, 'r')
@@ -180,7 +188,7 @@ def find_scenario(name, IPversion):
                         file_name.close()
                         return (path+'/'+each_file, str(scenario))
             else:
-                scenario = -1
+                scenario = 0
                 file_name.close()
     return (None,0)
     
@@ -222,7 +230,9 @@ if __name__ == '__main__':
     """
     generate_help.test(["4", "6"], 1)
     help_file.flush()
-    print "\tAVAILABLE STEPS:"
+    print """Tests are simple Scenarios, multi-test are Scenarios Outline.
+
+    AVAILABLE STEPS:"""
     generate_help.steps()
     help_file.flush()
     print """
@@ -241,7 +251,7 @@ feature name >>                Feature: Standard DHCPv6 address validation
 feature description >>         This feature is for checking respond on messages send on UNICAST address. Solicit, Confirm, Rebind, Info-Request should be discarded. Request should be answered with Reply message containing option StatusCode with code 5. 
         
 tags >>                             @basic @v6 @unicast  
-test name >>                        Scenario: v6.basic.message.unicast.solicit
+test name (simple scenario)>>       Scenario: v6.basic.message.unicast.solicit
     
 configure server >>                 Test Setup:
                                     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -263,6 +273,45 @@ send/receive msg >>                 Server MUST NOT respond with ADVERTISE messa
                                     Server MUST respond with ADVERTISE message.
     
 Information about references >>     References: RFC3315 section 15
+
+That was example of a simple test scenario, there is another type of tests: Scenario Outline
+
+tags >>                                    @v6 @solicit_invalid @invalid_option @outline
+test name (multi scenario)>>                    Scenario Outline: v6.solicit.invalid.options.outline
+     
+configure server >>                             Test Setup:
+                                                Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+                                                Server is started.
+
+Test steps >>                                   Test Procedure:
+                   >>                           Client requests option 7.
+<opt_name> will be replaced by text in example>>Client does include <opt_name>.
+Test steps >>                                   Client sends SOLICIT message.
+
+                                                Pass Criteria:
+send/receive msg >>                             Server MUST NOT respond with ADVERTISE message.
+    
+                                                Test Procedure:
+                                                Client requests option 7.
+                                                Client sends SOLICIT message.
+
+                                                Pass Criteria:
+                                                Server MUST respond with ADVERTISE message.
+    
+                                                References: RFC3315 section 15.2, 17.2.1
+
+list of test cases >>                           Examples:
+field name >>                                   | opt_name       |
+test case, every line after 'opt_name'          | relay-msg      |
+will create separate scenario.                  | preference     |
+                                                | server-unicast |
+                                                | status-code    |
+                                                | interface-id   |
+                                                | reconfigure    |
+
+    More info about Scenario Outlines: http://pythonhosted.org/lettuce/intro/wtf.html#outlined
+    Unfortunately Lettuce is little messy with Scenario Outline. Scenario Outline is not Scenario so parts like @after.each_scenario are not considered when Lettuce execute
+    Scenario Outline, you need to use @before.outline and @after.outline which are not mentioned in Lettuce documentation.
 
     Do NOT use 'Scenario' in tests in other places then test name, right below tags (e.g. @my_tag)
     For tags always use '@' before without white spaces:

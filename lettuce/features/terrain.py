@@ -18,6 +18,30 @@ import time
 # We should either use fabric directly or copy those classes over and modify
 # their methods to use fabric for remote process management.
 
+add_option = {'client_id' : True,
+              'preference' : False,
+              'time' : False,
+              'relay_msg' : False,
+              'server_uni' : False,
+              'status_code' : False,
+              'rapid_commit' : False,
+              'interface_id' : False,
+              'reconfig' : False,
+              'reconfig_accept' : False,
+              'server_id' : False,
+              'wrong_client_id' : False,
+              'wrong_server_id' : False,
+              'IA_NA': True,
+              'IA_TA': True
+              }
+    
+def set_options():
+    world.cfg["add_option"] = add_option.copy()
+    #world.cfg["add_option"] = add_option
+    
+def add_result_to_raport(info):
+    world.result.append(info)
+
 def client_id (mac):
     world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac )
 
@@ -84,15 +108,9 @@ def initialize(scenario):
 
     world.proto = PROTO
 
-    # messages validation for v6 DO NOT CHANGE THIS!
-    world.cfg["client_id"] = True
-    world.cfg["wrong_server_id"] = False
-    world.cfg["wrong_client_id"] = False
-    world.cfg["preference"] = False
-    world.cfg["rapid_commit"] = False
+    set_options()
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
-    world.cfg["time"] = False
     
     # Setup scapy for v4
     conf.iface = IFACE
@@ -121,13 +139,49 @@ def initialize(scenario):
 
 initialize(None)
 
+@before.outline
+def outline_before(scenario, number, step, failed):
+    """
+    For Outline Scenarios, 
+        scenario - name
+        number - number of scenario
+        step - which 'example' from test
+        failed - reason of failure
+    For more info please read UserHelp - Outline Scenarios
+    """
+    #set_options()
+
+@after.outline
+def outline_result(scenario, number, step, failed):
+    """
+    For Outline Scenarios, 
+        scenario - name
+        number - number of scenario
+        step - which 'example' from test
+        failed - reason of failure
+    For more info please read UserHelp - Outline Scenarios
+    """
+    if len(failed) == 0:
+        result = 'False'
+    else:
+        result = 'True'
+    info = str(scenario.name)+str(step)+'\n'+ result
+    add_result_to_raport(info)
+
+
+@after.each_step
+def cleanup_option(step):
+    #set_options ()
+    pass
+    
 @after.each_scenario
 def cleanup(scenario):
     """
     Global cleanup for each scenario. Implemented within tests by "Server is started."
     """
     info = str(scenario.name) +'\n'+ str(scenario.failed)
-    world.result.append(info)
+    if 'outline' not in info:
+        add_result_to_raport(info)
 #     import inspect
 #     print inspect.getmembers(scenario)
     

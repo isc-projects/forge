@@ -122,7 +122,6 @@ def option_parser():
         path = "/features/tests_v" + number + "/"
         base_path = os.getcwd() + path
         
-    print base_path,scenario
     if HISTORY: history.start()
     #lettuce starter, adding options
     runner = Runner(
