@@ -142,8 +142,8 @@ Feature: Standard DHCPv6 release message
 	References: RFC3315 section 15.9
 	
 	
-@v6 @release_invalid @wrong_option
-    Scenario: v6.release.invalid.wrong_option
+@v6 @release_invalid @invalid_option @outline
+    Scenario Outline: v6.release.invalid.options.outline
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -158,7 +158,7 @@ Feature: Standard DHCPv6 release message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client does include preference.
+	Client does include <opt_name>.
 	Client sends RELEASE message.
 
 	Pass Criteria:
@@ -179,3 +179,14 @@ Feature: Standard DHCPv6 release message
 	Server MUST respond with REPLY message.
 
 	References: RFC3315 section 15.9
+	
+	Examples:
+	| opt_name           |
+	| relay-msg          |
+	| preference         |
+	| server-unicast     |
+	| status-code        |
+	| rapid-commit       |
+	| interface-id       |
+	| reconfigure        |
+	| reconfigure-accept |

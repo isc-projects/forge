@@ -4,7 +4,7 @@ Feature: DHCPv6 Relay Agent
 
 @v6 @relay 
     Scenario: v6.relay.message.solicit-advertise
-
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -12,7 +12,7 @@ Feature: DHCPv6 Relay Agent
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
-	...using relay-agent encapsulated in 3 level.
+	...using relay-agent encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
@@ -41,7 +41,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @relay
-    Scenario: v6.basic.message.request-reply
+    Scenario: v6.relay.message.request-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -68,7 +68,7 @@ Feature: DHCPv6 Relay Agent
 	
 	
 @v6 @relay 
-    Scenario: v6.basic.message.confirm-reply
+    Scenario: v6.relay.message.confirm-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -85,7 +85,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @relay
-    Scenario: v6.basic.message.renew-reply
+    Scenario: v6.relay.message.renew-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -118,7 +118,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8 
 	
 @v6 @relay
-    Scenario: v6.basic.message.rebind-reply
+    Scenario: v6.relay.message.rebind-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -150,7 +150,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	 
 @v6 @relay 
-    Scenario: v6.basic.message.release-reply
+    Scenario: v6.relay.message.release-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -183,7 +183,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8 
 	
 @v6 @relay 
-    Scenario: v6.basic.message.decline-reply
+    Scenario: v6.relay.message.decline-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -208,7 +208,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @relay  
-    Scenario: v6.basic.message.information_request-reply
+    Scenario: v6.relay.message.information_request-reply
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.

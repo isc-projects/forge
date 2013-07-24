@@ -81,16 +81,17 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2, 17.2.1
 	
-@v6 @solicit_invalid @wrong_option
-    Scenario: v6.solicit.invalid.with_wrong_option
-
+@v6 @solicit_invalid @invalid_option @outline
+    Scenario Outline: v6.solicit.invalid.options.outline
+	#This is outline scenario, Examples will be filled in <...>, each example makes new test scenario.
+	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
 	Test Procedure:
 	Client requests option 7.
-	Client does include preference.
+	Client does include <opt_name>.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
@@ -102,5 +103,14 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-
+	
 	References: RFC3315 section 15.2, 17.2.1
+
+	Examples:
+	| opt_name       |
+	| relay-msg      |
+	| preference     |
+	| server-unicast |
+	| status-code    |
+	| interface-id   |
+	| reconfigure    |

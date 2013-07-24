@@ -50,54 +50,6 @@ Feature: Standard DHCPv6 rebind message
 	
 	References: RFC3315 section 15.7
 	
-@v6 @rebind_invalid 
-    Scenario: v6.rebind.invalid.wrong_server_id
-
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client does include wrong-server-id.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
-	
-	Test Procedure:
-	Client requests option 7.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15.7
-
-@v6 @rebind_invalid @wrong_option
-    Scenario: v6.rebind.invalid.wrong_option
-
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client does include preference.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
-	
-	Test Procedure:
-	Client requests option 7.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15, 15.7
-
 @v6 @rebind_invalid
     Scenario: v6.rebind.invalid.with_server_id
 
@@ -129,3 +81,37 @@ Feature: Standard DHCPv6 rebind message
 	
 	References: RFC3315 section 15.7
 	
+	
+@v6 @rebind_invalid @invalid_option @outline
+    Scenario Outline: v6.rebind.invalid.options.outline
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does include <opt_name>.
+	Client sends REBIND message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends REBIND message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	
+	References: RFC3315 section 15, 15.7
+	
+	Examples:
+	| opt_name       |
+	| relay-msg      |
+	| preference     |
+	| server-unicast |
+	| status-code    |
+	| rapid-commit   |
+	| interface-id   |
+	| reconfigure    |

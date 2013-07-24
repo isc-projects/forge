@@ -50,30 +50,6 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5 
 	
-@v6 @confirm_invalid 
-    Scenario: v6.confirm.invalid.wrong_server_id
-
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client does include wrong-server-id.
-	Client sends CONFIRM message.
-
-	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
-	
-	Test Procedure:
-	Client requests option 7.
-	Client sends CONFIRM message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15.5 
-	
 @v6 @confirm_invalid
     Scenario: v6.confirm.invalid.with_server_id
 
@@ -105,15 +81,16 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5 
 	
-@v6 @confirm_invalid @wrong_option 
-    Scenario: v6.confirm.invalid.wrong_option
+@v6 @confirm_invalid @invalid_option @outline
+    Scenario Outline: v6.confirm.invalid.options.outline
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
 	Test Procedure:
-	Client does include preference.
+	Client requests option 7.
+	Client does include <opt_name>.
 	Client sends CONFIRM message.
 
 	Pass Criteria:
@@ -127,3 +104,15 @@ Feature: Standard DHCPv6 confirm message
 	Server MUST respond with REPLY message.
 	
 	References: RFC3315 section 15.5. 22.8.
+	
+	Examples:
+	| opt_name          |
+	| relay-msg         |
+	| preference        |
+	| rapid-commit      |
+	| server-unicast    |
+	| status-code       |
+	| interface-id      |
+	| reconfigure       |
+	| reconfigure-accept|
+	

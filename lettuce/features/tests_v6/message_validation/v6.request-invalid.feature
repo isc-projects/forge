@@ -145,8 +145,8 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4 
 	
-@v6 @request_invalid 
-    Scenario: v6.request.invalid.wrong_option
+@v6 @request_invalid @invalid_option @outline
+    Scenario Outline: v6.request.invalid.options.outline
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -162,7 +162,7 @@ Feature: Standard DHCPv6 request message
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client does include preference.
+	Client does include <opt_name>.
 	Client sends REQUEST message.
 
 	Pass Criteria:
@@ -184,3 +184,13 @@ Feature: Standard DHCPv6 request message
 	Server MUST respond with REPLY message.
 
 	References: RFC3315 section 15.4 
+	
+	Examples:
+	| opt_name       |
+	| relay-msg      |
+	| preference     |
+	| server-unicast |
+	| status-code    |
+	| rapid-commit   |
+	| interface-id   |
+	| reconfigure    |

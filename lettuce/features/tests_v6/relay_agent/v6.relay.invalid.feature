@@ -3,47 +3,7 @@ Feature: DHCPv6 Relay Agent
     This is test for DHCPv6 message exchange between server and relay-agent with not permitted options in Relay-Forward message.  
 
 @v6 @relay @relay_invalid
-    Scenario: v6.relay.wrongoption.preference
-	
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
-	#add options to relay message
-	Client does include preference.
-	...using relay-agent encapsulated in 1 level.
-	
-	Pass Criteria:
-	Server MUST NOT respond with RELAYREPLY message.
-
-	References: RFC3315 section 18.2.8
-
-@v6 @relay @relay_invalid
-    Scenario: v6.relay.wrongoption.rapidcommit
-
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
-	#add options to relay message
-	Client does include rapid-commit.
-	...using relay-agent encapsulated in 1 level.
-	
-	Pass Criteria:
-	Server MUST NOT respond with RELAYREPLY message.
-
-	References: RFC3315 section 18.2.8
-
-@v6 @relay @relay_invalid
-    Scenario: v6.relay.wrongoption.clientid
+    Scenario: v6.relay.invalid.with_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -63,8 +23,9 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8	
 	
 @v6 @relay @relay_invalid
-    Scenario: v6.relay.wrongoption.serverid
-
+    Scenario: v6.relay.invalid.wrong_server_id
+	#add just serverid
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -81,10 +42,10 @@ Feature: DHCPv6 Relay Agent
 	Server MUST NOT respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
-	
-@v6 @relay @relay_invalid
-    Scenario: v6.relay.wrongoption.time
 
+@v6 @relay @relay_invalid
+    Scenario: v6.relay.invalid.opt_req
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -94,10 +55,42 @@ Feature: DHCPv6 Relay Agent
 	Client sends SOLICIT message.
 	
 	#add options to relay message
-	Client does include time.
+	Client requests option 7.
 	...using relay-agent encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
+
+@v6 @relay @relay_invalid @invalid_option @outline
+    Scenario Outline: v6.relay.invalid.options.outline
+	
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+	
+	#add options to relay message
+	Client does include <opt_name>.
+	...using relay-agent encapsulated in 1 level.
+	
+	Pass Criteria:
+	Server MUST NOT respond with RELAYREPLY message.
+
+	References: RFC3315 section 18.2.8
+	
+	Examples:
+	| opt_name           |
+	| preference         |
+	| time               |
+	| server-unicast     |
+	| status-code        |
+	| rapid-commit       |
+	| reconfigure        |
+	| reconfigure-accept |
+	#|IA_NA|
+	#|IA_TA|
