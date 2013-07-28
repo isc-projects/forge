@@ -14,7 +14,7 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-from fabric.api import run, run, settings, put, hide
+from fabric.api import run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
@@ -66,28 +66,8 @@ def prepare_cfg_subnet(step, subnet, pool):
         
     
 #still not implemented
-isc_dhcp_options6 = { "client-id": 1,
-                      "server-id" : 2,
-                      "IA_NA" : 3,
-                      "IN_TA": 4,
-                      "IA_address" : 5,
-                      "preference": 7,
-                      "relay-msg": 9,
-                      "status-code": 13,
-                      "rapid_commit": 14,
-                      "interface-id": 18,
-                      "sip-server-dns": 21,
-                      "sip-server-addr": 22,
-                      "dns-servers": 23,
-                      "domain-search": 24,
-                      "IA_PD": 25,
-                      "IA-Prefix": 26,
-                      "nis-servers": 27,
-                      "nisp-servers": 28,
-                      "nis-domain-name": 29,
-                      "nisp-domain-name": 30,
-                      "sntp-servers": 31,
-                      "information-refresh-time": 32 }
+isc_dhcp_options6 = { 
+                     }
 
 def prepare_cfg_add_option(step, option_name, option_value):
     if (not "conf" in world.cfg):
@@ -160,10 +140,19 @@ def send_file (file_local):
                   password = world.cfg["mgmt_pass"]):
         with hide('running', 'stdout'):
             put(file_local, file_remote)
-#     try:
-#         os.remove(file_local)
-#     except OSError:
-#         get_common_logger().error('File %s cannot be removed' % file_local)
+    try:
+        os.remove(file_local)
+    except OSError:
+        get_common_logger().error('File %s cannot be removed' % file_local)
+
+
+def fabric_cmd (cmd, hide_opt):
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
+        if hide_opt:
+            with hide('running', 'stdout', 'stderr', 'output','warnings'):
+                run(cmd)
+        else:
+            run(cmd)
 
 def set_ethernet_interface():
     """
@@ -180,19 +169,7 @@ def set_ethernet_interface():
     
     get_common_logger().debug("Set up ethernet interface for ISC-DHCP server:")
     
-    with settings(host_string = world.cfg["mgmt_addr"],
-                  user = world.cfg["mgmt_user"],
-                  password = world.cfg["mgmt_pass"]):
-        with hide('running', 'stdout'):
-            run(cmd)    
-
-def fabric_cmd (cmd, hide_opt):
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        if hide_opt:
-            with hide('running', 'stdout', 'stderr', 'output','warnings'):
-                run(cmd)
-        else:
-            run(cmd)
+    fabric_cmd(cmd,1)
 
 def start_srv():
     """
