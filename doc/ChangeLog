@@ -1,3 +1,6 @@
+12.[func] wlodek
+		- config generation for Dibbler (v6)
+		- automatic start/stop Dibbler (v6)
 11. [bug] wlodek
 		- removed - character from directory names.
 		 
