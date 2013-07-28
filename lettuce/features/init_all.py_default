@@ -1,13 +1,21 @@
 #Configuration file, please copy this to the init_all.py and fill it with your
 #variables. init_all.py is added to gitignore.
 
+# All configurations are separated to different sections: 
+# general - for general Forge configuration ;)
+# ssh - for ssh connection between virtual machines
+# kea - for kea configuration
+# ISC-DHCP - for ISC-DHCP configurations
+
+ 
+# =============== GENERAL ===============
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
 # case insensitive.
 LOGLEVEL = "info"
 
 # This defines server type. Allowed values are:
-# kea4, kea6, isc-dhcp4, isc-dhcp6, dibbler
+# kea4, kea6, isc_dhcp4, isc_dhcp6, dibbler
 # Not all of those are functional yet. This is essentailly
 # name of the subdirectory in lettuce/features/serversupport
 SERVER_TYPE = ""
@@ -15,9 +23,6 @@ SERVER_TYPE = ""
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
 PROTO = ""
-
-# Defines name of the DUT-facing network interface
-IFACE = ""
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ""
@@ -50,6 +55,18 @@ removelist = [ ]
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
+# scope link server address for testing unicast messages  
+SRV_IPV6_ADDR = ""
+
+# Defines name of the DUT-facing network interface
+IFACE = ""
+
+# If you wont to build tests history in history.html set HISTORY on True if not, on False
+# but for more detailed information about tests, use --with_xunit option when starting run_test.py
+HISTORY = False
+
+# =============== SSH ===============
+
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required! So edit sudoers
 # file, or use root account.
@@ -58,15 +75,15 @@ MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
 
+
+# =============== Kea ===============
 # Specifies path to the server installation directory on DUT. This must
 # point to root directory of server installation and must end with /.
 # The framework appends subdirectories to this path to run applications.
 # For example, it appends "bin/" to obtain path to the bindctl.
 SERVER_INSTALL_DIR = ""
 
-# scope link server address for testing unicast messages  
-SRV_IPV6_ADDR = ""
 
-# If you wont to build tests history in history.html set HISTORY on True if not, on False
-# but for more detailed information about tests, use --with_xunit option when starting run_test.py
-HISTORY = False  
+# =============== ISC-DHCP ===============
+#For servers: ISC-DHCP and ISC-DHCPv6 choose ethernet interface to bind server.
+SERVER_IFACE = ""
