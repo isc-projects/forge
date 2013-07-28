@@ -70,11 +70,14 @@ def server_start():
             get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
             sys.exit()
     elif SERVER_TYPE == "isc-dhcp6":
-        from serversupport.isc_dhcpv6.functions import stop_srv
+        from serversupport.isc_dhcp6.functions import stop_srv
         stop_srv()
         get_common_logger().debug("Starting ISC-DHCPv6:")
+    elif SERVER_TYPE == "dibbler":
+        from serversupport.dibbler.functions import stop_srv
+        stop_srv()
     else:
-        get_common_logger().error("Server"+SERVER_TYPE+"not implemented yet")
+        get_common_logger().error("Server "+SERVER_TYPE+" not implemented yet")
         
     #If relay is used routing needs to be reconfigured on DUT
     try:
@@ -211,4 +214,10 @@ def say_goodbye(total):
                     run("route del -host %s" % (GIADDR4))
         except NameError:
             pass # most likely REL4_ADDR caused this exception -> we do not use relay
+    elif (SERVER_TYPE in ['isc_dhcp4', 'isc_dhcp6']):
+        from serversupport.isc_dhcp6.functions import stop_srv
+        stop_srv()
+    elif SERVER_TYPE is 'dibbler':
+        from serversupport.dibbler.functions import stop_srv
+        stop_srv()
     get_common_logger().info("Goodbye.")
