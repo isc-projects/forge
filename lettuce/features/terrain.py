@@ -1,16 +1,15 @@
 from Crypto.Random.random import randint
+from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, SERVER_INSTALL_DIR, \
+    CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, MGMT_PASSWORD
 from lettuce import world, before, after
-from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, \
-    SERVER_INSTALL_DIR, CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, \
-    removelist, HISTORY
 from logging_facility import *
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
-from serversupport.bind10 import *
 import os
 import shutil
 import sys
 import time
+from serversupport.bind10 import *
 
 
 # @todo: There were RunningProcess and RunningProcesses classes here, but they
@@ -37,7 +36,6 @@ add_option = {'client_id' : True,
     
 def set_options():
     world.cfg["add_option"] = add_option.copy()
-    #world.cfg["add_option"] = add_option
     
 def add_result_to_raport(info):
     world.result.append(info)
@@ -59,21 +57,24 @@ def server_start():
     # be instantiated by get_common_logger()
     logger_initialize(LOGLEVEL)
 
-    # Make sure there is noo garbage instance of bind10 running.
-    kill_bind10(MGMT_ADDRESS)
-
     if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
-        get_common_logger().debug("--- Starting Bind:")
+        get_common_logger().debug("Starting Bind:")
+        
         try:
+            # Make sure there is noo garbage instance of bind10 running.
+            kill_bind10(MGMT_ADDRESS)
             #comment line below to turn off starting bind
-            bind10(MGMT_ADDRESS, cmd = '(rm nohup.out; nohup ' + SERVER_INSTALL_DIR
-                   + 'sbin/bind10 &); sleep 2' )
+            bind10(MGMT_ADDRESS, cmd = '(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/bind10 &); sleep 2' )
             get_common_logger().debug("Bind10 successfully started")
         except :
             get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
             sys.exit()
+    elif SERVER_TYPE == "isc-dhcp6":
+        from serversupport.isc_dhcpv6.functions import stop_srv
+        stop_srv()
+        get_common_logger().debug("Starting ISC-DHCPv6:")
     else:
-        get_common_logger().error("Server other than kea not implemented yet")
+        get_common_logger().error("Server"+SERVER_TYPE+"not implemented yet")
         
     #If relay is used routing needs to be reconfigured on DUT
     try:
@@ -105,9 +106,10 @@ def initialize(scenario):
     world.cfg["mgmt_user"] = MGMT_USERNAME
     world.cfg["mgmt_pass"] = MGMT_PASSWORD
     world.cfg["conf"] = "" # Just empty config for now
-
+    
     world.proto = PROTO
-
+    world.cfg["subnet"] = ""
+    
     set_options()
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
@@ -201,14 +203,12 @@ def say_goodbye(total):
             result.write(str(item)+'\n')
         result.close()
         
-    kill_bind10(MGMT_ADDRESS)
-
-    try:
-        if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
-            with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-                run("route del -host %s" % (GIADDR4))
-    except NameError:
-        pass # most likely REL4_ADDR caused this exception -> we do not use relay
-
-    
+    if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):    
+        kill_bind10(MGMT_ADDRESS)
+        try:
+            if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+                with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
+                    run("route del -host %s" % (GIADDR4))
+        except NameError:
+            pass # most likely REL4_ADDR caused this exception -> we do not use relay
     get_common_logger().info("Goodbye.")

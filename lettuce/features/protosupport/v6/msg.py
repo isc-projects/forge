@@ -55,7 +55,6 @@ def client_requests_option(step, opt_type):
 
     world.oro.reqopts.append(int(opt_type))
 
-# @step('Client sends (\w+) message( with (\w+) option)?')
 def client_send_msg(step, msgname, opt_type, unknown):
     """
     Sends specified message with defined options.
@@ -218,7 +217,7 @@ def create_relay_forward(step, level):
 
     #all three values: linkaddr, peeraddr and hopcount must be filled
     
-    tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
+    tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
     #tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)
     
     #add options (used only when checking "wrong option" test for relay-forward message. to add some options to relay-forward 
@@ -231,7 +230,7 @@ def create_relay_forward(step, level):
     while True:
         level -= 1
         if not level: break;
-        tmp /= DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+        tmp /= DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
 
     #build full message
     relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/tmp/msg
@@ -343,70 +342,83 @@ def response_check_include_option(step, must_include, opt_code):
     else:
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
 
-def response_check_include_message(step, opt_code, expect, data_type, expected):
-    """
-    Checking included messages in relay-reply message.  
-    still not operational :/
-    """
-    #UNDER CONSTRUCTION :)
-    #UNDER CONSTRUCTION :)
-#    assert len(world.srvmsg) != 0, "No response received."
-    x = world.srvmsg[0].getlayer(2)
-    print "msg:"
-    x.show()
+#===============================================================================
+# #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# 
+# def many_byte_xor(buf, key):
+#     buf = bytearray(buf)
+#     key = bytearray(key)
+#     key_len = len(key)
+#     for i, bufbyte in enumerate(buf):
+#         buf[i] = bufbyte ^ key[i % key_len]
+#     return str(buf)
+# 
+# def process_packets(infile):
+#     pkts = rdpcap(infile)
+#     cooked=[]
+#     for p in pkts:
+#         # You may have to adjust the payload depth here:
+#         # i.e. p.payload.payload.payload
+#         pkt_payload = str(p.payload.payload)
+#         pkt_offset = str(p.payload.payload)[:3]
+#         if pkt_payload and pkt_offset:
+#             pmod=p
+#             # You may have to adjust the payload depth here:
+#             p.payload.payload=many_byte_xor(pkt_payload, pkt_offset)
+#             cooked.append(pmod)
+# 
+#     
+#     pkt = cooked[0]
+#     print pkt.payload.payload
+#     strpayload = str(pkt.payload.payload)
+#     fd=open('/tmp/file', 'w')
+#     fd.write(strpayload)
+#     fd.close()
+#     print os.system('file /tmp/file')
+#     print "WYNIK: ", cooked
+#     wrpcap("p.pcap", cooked)
+# 
+# 
+# def response_check_include_message(step, opt_code, expect, data_type, expected):
+#     """
+#     Checking included messages in relay-reply message.  
+#     still not operational :/
+#     """
+#     #UNDER CONSTRUCTION :)
+#     #UNDER CONSTRUCTION :)
+# #    assert len(world.srvmsg) != 0, "No response received."
+#     x = world.srvmsg[0].getlayer(2)
+#     print "msg:"
+#     x.show()
+#    
+# #     while x:
+# #         print "!"
+# #         if x.optcode == 9:
+# #             #if type(x.payload) == msg_types[msg_type]:
+# #             
+# #             z2 = hexdump(x.payload.data)
+# #             wrpcap("p.pcap", x)
+# #             process_packets("p.pcap")
+# #         x = x.payload
+#     
+# #      0th is IPv6, 1st is UDP, 2nd should be DHCP6
+#   
+# #     while x:
+# #         for msg_name in msg_types.keys():
+# #             if type(x) == msg_types[msg_name]:
+# #                 assert "Expected message " + msg_type + " present in the message."
+# #         x = x.payload
+# #          
+# #         x.show()
+# 
+# #     assert "Expected message " + msg_type + " not present in the message."
+# #     if must_include:
+# #         assert opt, "Expected message " + msg_type + " not present in the message."
+# #     else:
+# #         assert opt == None, "Unexpected message" + msg_type + " found in the message."    
+#===============================================================================
     
-    msg_types = { "ADVERTISE": DHCP6_Advertise,
-                  "REPLY": DHCP6_Reply,
-    }
     
-    
-    while x:
-        print "!"
-        if x.optcode == 9:
-            #if type(x.payload) == msg_types[msg_type]:
-            x.show()
-            print "\npayload type: ",type(x.payload)
-            #z = DHCP6(x.payload.data)
-            #z.show()
-            print "hex payload: "
-            z1 = hexdump(x.payload)
-            print "str payload: \n", str(x.payload)
-            print "payload:\n", x.payload
-            print "hex payload.data: "
-            z2 = hexdump(x.payload.data)
-            print "str payload.data: \n", str(x.payload.data)
-            print "payload.data:\n", x.payload.data
-            
-            
-            print "\n\n", str(x.payload.data).decode("hex")
-            y1 = str(z1)
-            z1 = DHCP6(y1)
-            z1.show()
-
-            y2 = str(z2)
-            z2 = DHCP6(y2)
-            z2.show()
-            
-            #a.show()
-            #print "\n\n", type(x.payload.data), "\n\n"
-            #pay = x.payload
-        x = x.payload
-    
-#      0th is IPv6, 1st is UDP, 2nd should be DHCP6
-  
-#     while x:
-#         for msg_name in msg_types.keys():
-#             if type(x) == msg_types[msg_name]:
-#                 assert "Expected message " + msg_type + " present in the message."
-#         x = x.payload
-#          
-#         x.show()
-
-#     assert "Expected message " + msg_type + " not present in the message."
-#     if must_include:
-#         assert opt, "Expected message " + msg_type + " not present in the message."
-#     else:
-#         assert opt == None, "Unexpected message" + msg_type + " found in the message."    
     
 # Returns text representation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
@@ -430,12 +442,13 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     x = get_option(world.srvmsg[0], opt_code)
 
     assert x, "Expected option " + str(opt_code) + " not present in the message."
-
+    
     received = ""
     if opt_code == 3:
         #needs more work
         x.show()
-        #received = str(x.ianaopts[0].optcode)
+        received = x.ianaopts
+        print received
         #test_option_code(x.ianaopts[0])
     elif opt_code == 7:
         received = str(x.prefval)
