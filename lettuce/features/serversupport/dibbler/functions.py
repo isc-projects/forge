@@ -171,8 +171,7 @@ def start_srv():
     """
     cfg_write() 
     stop_srv()
-    #set_ethernet_interface()
     get_common_logger().debug("Starting Dibbler with generated config:")
     send_file (world.cfg["cfg_file"])
-    fabric_cmd ('(rm nohup.out; nohup dibbler-server run & ); sleep 2;', 0)
+    fabric_cmd ('(rm nohup.out; nohup dibbler-server start & ); sleep 2;', 0)
 

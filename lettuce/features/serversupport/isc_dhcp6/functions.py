@@ -180,4 +180,4 @@ def start_srv():
     send_file (world.cfg["cfg_file"])
     set_ethernet_interface()
     stop_srv()
-    fabric_cmd ('(dhcpd -6 -cf server.cfg); sleep 1;', 1)
+    fabric_cmd ('(dhcpd -6 -cf server.cfg); sleep 3;', 1)
