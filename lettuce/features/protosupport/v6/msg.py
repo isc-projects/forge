@@ -587,7 +587,18 @@ def client_option (msg):
     elif world.cfg["add_option"]["client_id"] == False:
         #world.cfg["add_option"]["client_id"] = True
         pass
-        
+    
+    if world.cfg["add_option"]["IA_NA"] == True:
+        if world.oro is not None and len(world.cliopts):
+            for opt in world.cliopts:
+                print opt
+                if opt.optcode == 3:
+                    break #if there is no IA_NA/TA in world.cliopts, break.. 
+            else:
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
+        else:
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA   
+                 
     if world.cfg["add_option"]["preference"] == True:
         msg /= DHCP6OptPref()
         
@@ -611,17 +622,6 @@ def client_option (msg):
 
     if world.cfg["add_option"]["reconfig_accept"] == True:
         msg /= DHCP6OptReconfAccept()
-    
-    if world.cfg["add_option"]["IA_NA"] == True:
-        if world.oro is not None and len(world.cliopts):
-            for opt in world.cliopts:
-                print opt
-                if opt.optcode == 3:
-                    break #if there is no IA_NA/TA in world.cliopts, break.. 
-            else:
-                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
-        else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
 
     if world.cfg["add_option"]["relay_msg"] == True:
         msg /= DHCP6OptRelayMsg()

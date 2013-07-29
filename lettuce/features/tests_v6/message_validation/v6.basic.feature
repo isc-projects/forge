@@ -17,7 +17,7 @@ Feature: Standard DHCPv6 message types
 
 	References: RFC3315 section 5.3
 
-@basic @v6
+@basic @v6 @rapid
     Scenario: v6.basic.message.solicit-reply
     #solicit with rapid commit option
 

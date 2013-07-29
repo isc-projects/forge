@@ -9,6 +9,7 @@ import os
 import shutil
 import sys
 import time
+import importlib
 from serversupport.bind10 import *
 
 add_option = {'client_id' : True,
@@ -109,6 +110,7 @@ def initialize(scenario):
     set_options()
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
+    world.oro = None
     
     # Setup scapy for v4
     conf.iface = IFACE
@@ -207,10 +209,8 @@ def say_goodbye(total):
                     run("route del -host %s" % (GIADDR4))
         except NameError:
             pass # most likely REL4_ADDR caused this exception -> we do not use relay
-    elif (SERVER_TYPE in ['isc_dhcp4', 'isc_dhcp6']):
-        from serversupport.isc_dhcp6.functions import stop_srv
-        stop_srv()
-    elif SERVER_TYPE in ['dibbler']:
-        from serversupport.dibbler.functions import stop_srv
-        stop_srv()
+    elif (SERVER_TYPE in ['isc_dhcp6','dibbler']):
+        stop = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
+        stop.stop_srv()
+
     get_common_logger().info("Goodbye.")
