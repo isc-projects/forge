@@ -1,5 +1,5 @@
 Feature: Standard DHCPv6 message types
-    This is a simple DHCPv6 message exchange validation. Its purpose is to check if presence of message types from RFC 3315 section 5.3
+    This is a simple DHCPv6 message exchange validation. Its purpose is to verify that server responds with messages of expected types, specified in RFC 3315, section 5.3.
     
 @basic @v6
     Scenario: v6.basic.message.solicit-advertise
@@ -196,13 +196,6 @@ Feature: Standard DHCPv6 message types
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
