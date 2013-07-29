@@ -1,9 +1,11 @@
 13. [bug] wlodek
-		- adding IA_NA repaired  
-
+		- IA_NA option fixed  
+		- double option bug fixed
+		
 12.[func] wlodek
 		- config generation for Dibbler (v6)
 		- automatic start/stop Dibbler (v6)
+		
 11. [bug] wlodek
 		- removed - character from directory names.
 		 
