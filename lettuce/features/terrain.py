@@ -1,6 +1,6 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, SERVER_INSTALL_DIR, \
-    CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, MGMT_PASSWORD
+    CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, MGMT_PASSWORD, GIADDR4
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.config import conf
@@ -10,12 +10,6 @@ import shutil
 import sys
 import time
 from serversupport.bind10 import *
-
-
-# @todo: There were RunningProcess and RunningProcesses classes here, but they
-# were removed. They were used to start and stop processes on a local machine.
-# We should either use fabric directly or copy those classes over and modify
-# their methods to use fabric for remote process management.
 
 add_option = {'client_id' : True,
               'preference' : False,
@@ -31,7 +25,7 @@ add_option = {'client_id' : True,
               'wrong_client_id' : False,
               'wrong_server_id' : False,
               'IA_NA': True,
-              'IA_TA': True
+              'IA_TA': False
               }
     
 def set_options():
@@ -69,7 +63,7 @@ def server_start():
         except :
             get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
             sys.exit()
-    elif SERVER_TYPE == "isc-dhcp6":
+    elif SERVER_TYPE == "isc_dhcp6":
         from serversupport.isc_dhcp6.functions import stop_srv
         stop_srv()
         get_common_logger().debug("Starting ISC-DHCPv6:")
@@ -86,7 +80,6 @@ def server_start():
                 run("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
     except:
         pass # most likely REL4_ADDR caused this exception -> we do not use relay
-       
 
 @before.each_scenario
 def initialize(scenario):    
@@ -154,7 +147,7 @@ def outline_before(scenario, number, step, failed):
         failed - reason of failure
     For more info please read UserHelp - Outline Scenarios
     """
-    #set_options()
+    initialize(None)#we need to initialize all
 
 @after.outline
 def outline_result(scenario, number, step, failed):
@@ -217,7 +210,7 @@ def say_goodbye(total):
     elif (SERVER_TYPE in ['isc_dhcp4', 'isc_dhcp6']):
         from serversupport.isc_dhcp6.functions import stop_srv
         stop_srv()
-    elif SERVER_TYPE is 'dibbler':
+    elif SERVER_TYPE in ['dibbler']:
         from serversupport.dibbler.functions import stop_srv
         stop_srv()
     get_common_logger().info("Goodbye.")

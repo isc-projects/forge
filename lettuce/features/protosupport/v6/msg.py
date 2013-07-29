@@ -20,13 +20,36 @@
 
 from cookielib import debug
 from features.logging_facility import get_common_logger
-from features.serversupport.kea6.functions import kea_options6
+
 from features.terrain import set_options
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 from scapy.layers.inet import UDP
 from scapy.layers.inet6 import IPv6
 from scapy.sendrecv import sr
+
+options6 = {     "client-id": 1,
+                 "server-id" : 2,
+                 "IA_NA" : 3,
+                 "IN_TA": 4,
+                 "IA_address" : 5,
+                 "preference": 7,
+                 "relay-msg": 9,
+                 "status-code": 13,
+                 "rapid_commit": 14,
+                 "interface-id": 18,
+                 "sip-server-dns": 21,
+                 "sip-server-addr": 22,
+                 "dns-servers": 23,
+                 "domain-search": 24,
+                 "IA_PD": 25,
+                 "IA-Prefix": 26,
+                 "nis-servers": 27,
+                 "nisp-servers": 28,
+                 "nis-domain-name": 29,
+                 "nisp-domain-name": 30,
+                 "sntp-servers": 31,
+                 "information-refresh-time": 32 }
 
 def test_pause(step):
     """
@@ -78,8 +101,9 @@ def client_send_msg(step, msgname, opt_type, unknown):
         Also we can include IA options, Option Request, Rapid Commit and Reconfigure Accept.
         """
         msg = msg_add_defaults(DHCP6_Solicit())
+        #make function from that: Solicit, request,renew,rebind,confirm,infor-req
         try:
-            if (world.oro is not None):
+            if (len(world.oro.reqopts) > 0):
                     msg = add_option_to_msg(msg, world.oro)
         except:
             pass
@@ -96,7 +120,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         """
         msg = msg_add_defaults(DHCP6_Request())
         try:
-            if (world.oro is not None):
+            if (len(world.oro.reqopts) > 0):
                     msg = add_option_to_msg(msg, world.oro)
         except:
             pass
@@ -110,7 +134,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         """
         msg = msg_add_defaults(DHCP6_Confirm())
         try:
-            if (world.oro is not None):
+            if (len(world.oro.reqopts) > 0):
                     msg = add_option_to_msg(msg, world.oro)
         except:
             pass
@@ -169,7 +193,15 @@ def client_send_msg(step, msgname, opt_type, unknown):
               the option does not match the server's DUID.
            -  The message includes an IA option.
         """
+        world.cfg["add_option"]["IA_NA"] = False #by default, IA restricted
+        world.cfg["add_option"]["IA_TA"] = False
+        #world.cfg["add_option"]["server_id"] = False
         msg = msg_add_defaults(DHCP6_InfoRequest())
+        try:
+            if (len(world.oro.reqopts) > 0):
+                    msg = add_option_to_msg(msg, world.oro)
+        except:
+            pass
         
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -194,7 +226,7 @@ def unicast_addres(step):
     """
     world.cfg["unicast"] = True
 
-def add_option_to_msg(msg, option):
+def add_option_to_msg(msg, option):#this is request_option option
     msg /= option
     return msg
 
@@ -217,7 +249,7 @@ def create_relay_forward(step, level):
 
     #all three values: linkaddr, peeraddr and hopcount must be filled
     
-    tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
+    tmp = DHCP6_RelayForward(linkaddr = "3000::ffff", peeraddr = "2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
     #tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)
     
     #add options (used only when checking "wrong option" test for relay-forward message. to add some options to relay-forward 
@@ -230,10 +262,10 @@ def create_relay_forward(step, level):
     while True:
         level -= 1
         if not level: break;
-        tmp /= DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+        tmp /= DHCP6_RelayForward(linkaddr = "3000::ffff", peeraddr = "2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
 
     #build full message
-    relay_msg = IPv6(dst = address)/UDP(sport=546, dport=547)/tmp/msg
+    relay_msg = IPv6(dst = address)/UDP(sport = 546, dport = 547)/tmp/msg
     
     world.climsg.append(relay_msg)
     
@@ -254,7 +286,7 @@ def send_wait_for_message(step, presence, exp_message):
 
     #Uncomment this to get debug.recv filled with all received messages
     #conf.debug_match = True
-    ans,unans = sr(world.climsg, iface = world.cfg["iface"], timeout=1, nofilter=1, verbose=99)
+    ans,unans = sr(world.climsg, iface = world.cfg["iface"], timeout = 1, nofilter = 1, verbose = 99)
     
     expected_type_found = False
     received_names = ""
@@ -285,7 +317,7 @@ def get_last_response():
     return world.srvmsg[len(world.srvmsg) - 1]
 
 def get_msg_type(msg):
-    msg_types = { "SOLICIT": DHCP6_Solicit,
+    msg_types = { 
                   "ADVERTISE": DHCP6_Advertise,
                   "REQUEST": DHCP6_Request,
                   "REPLY": DHCP6_Reply,
@@ -319,14 +351,13 @@ def client_copy_option(step, option_name):
     """
     assert world.srvmsg
 
-    assert option_name in kea_options6, "Unsupported option name " + option_name
-    opt_code = kea_options6.get(option_name)
+    assert option_name in options6, "Unsupported option name " + option_name
+    opt_code = options6.get(option_name)
     opt = get_option(get_last_response(), opt_code)
     
     assert opt, "Received message does not contain option " + option_name
-
-    #opt.payload = None
-
+    opt.payload = None
+    #opt.show()
     add_client_option(opt)
 
 def response_check_include_option(step, must_include, opt_code):
@@ -490,17 +521,17 @@ def receive_dhcp6_tcpdump(count = 1, timeout = 1):
     time.sleep(timeout)
     tcpdump.terminate()
 
-    ans = sniff(count=5, filter="ip6", offline="test.pcap", promisc=True, timeout=3)
+    ans = sniff(count = 5, filter = "ip6", offline = "test.pcap", promisc = True, timeout = 3)
     get_common_logger().debug("Received traffic: %d packet(s)." % len(ans))
     assert len(ans) != 0, "No response received."
-    for x in ans:
-        x.show()
+#     for x in ans:
+#         x.show()
 
 def client_does_include(step, opt_type):
     """
     Include options to message. This function refers to @step in lettuce
     """
-    #If you want to use parts of received message to include it, please use 'Client copies (\S+) option from received message.' step.
+    #If you want to use options of received message to include it, please use 'Client copies (\S+) option from received message.' step.
     if opt_type == "client-id":
         world.cfg["add_option"]["client_id"] = False
     elif opt_type == "wrong-client-id":
@@ -536,12 +567,13 @@ def new_client_id (step):
     client_id(RandMAC())
     ia_id()
     
+    
 def client_option (msg):
     """
     Add options (like server-id, rapid commit) to message. This function refers to building message
     """
-    #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
 
+    #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
     if world.cfg["add_option"]["wrong_server_id"] == True:
         msg /= DHCP6OptServerId()
         
@@ -579,6 +611,17 @@ def client_option (msg):
 
     if world.cfg["add_option"]["reconfig_accept"] == True:
         msg /= DHCP6OptReconfAccept()
+    
+    if world.cfg["add_option"]["IA_NA"] == True:
+        if world.oro is not None and len(world.cliopts):
+            for opt in world.cliopts:
+                print opt
+                if opt.optcode == 3:
+                    break #if there is no IA_NA/TA in world.cliopts, break.. 
+            else:
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
+        else:
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
 
     if world.cfg["add_option"]["relay_msg"] == True:
         msg /= DHCP6OptRelayMsg()
@@ -595,21 +638,13 @@ def msg_add_defaults(msg):
         address = SRV_IPV6_ADDR
         world.cfg["unicast"] = False
     
-    x = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
+    msg = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
     #transaction id
-    x.trid = random.randint(0, 256*256*256)
-    world.cfg["tr_id"] = x.trid
-    #add all options to message. 
-    x = client_option (x)
+    msg.trid = random.randint(0, 256*256*256)
+    world.cfg["tr_id"] = msg.trid
     
-    if len(world.cliopts) > 0:
-        if world.cliopts[0].optcode == 3:
-            x /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], ianaopts = world.cliopts[0].ianaopts)
-            world.cliopts = []
-        else:
-            x /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])
-            return x
-    else:
-        x /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])
-    return x
+    #add all options to message. 
+    msg = client_option (msg)
+
+    return msg
 
