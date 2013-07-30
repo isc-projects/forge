@@ -23,7 +23,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8	
 	
 @v6 @relay @relay_invalid
-    Scenario: v6.relay.invalid.wrong_server_id
+    Scenario: v6.relay.invalid.with_server_id
 	#add just serverid
 	
 	Test Setup:
@@ -92,5 +92,3 @@ Feature: DHCPv6 Relay Agent
 	| rapid-commit       |
 	| reconfigure        |
 	| reconfigure-accept |
-	#|IA_NA|
-	#|IA_TA|
