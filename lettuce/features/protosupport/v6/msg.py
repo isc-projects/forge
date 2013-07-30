@@ -102,11 +102,11 @@ def client_send_msg(step, msgname, opt_type, unknown):
         """
         msg = msg_add_defaults(DHCP6_Solicit())
         #make function from that: Solicit, request,renew,rebind,confirm,infor-req
-        try:
-            if (len(world.oro.reqopts) > 0):
-                    msg = add_option_to_msg(msg, world.oro)
-        except:
-            pass
+#         try:
+#             if (len(world.oro.reqopts) > 0):
+#                     msg = add_option_to_msg(msg, world.oro)
+#         except:
+#             pass
         
     elif (msgname == "REQUEST"):
         """
@@ -119,11 +119,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
            -  the message does not include a Client Identifier option.
         """
         msg = msg_add_defaults(DHCP6_Request())
-        try:
-            if (len(world.oro.reqopts) > 0):
-                    msg = add_option_to_msg(msg, world.oro)
-        except:
-            pass
+
         
     elif (msgname == "CONFIRM"):
         """
@@ -133,11 +129,11 @@ def client_send_msg(step, msgname, opt_type, unknown):
         Identifier option.
         """
         msg = msg_add_defaults(DHCP6_Confirm())
-        try:
-            if (len(world.oro.reqopts) > 0):
-                    msg = add_option_to_msg(msg, world.oro)
-        except:
-            pass
+#         try:
+#             if (len(world.oro.reqopts) > 0):
+#                     msg = add_option_to_msg(msg, world.oro)
+#         except:
+#             pass
         
     elif (msgname == "RENEW"):
         """
@@ -150,6 +146,11 @@ def client_send_msg(step, msgname, opt_type, unknown):
            -  the message does not include a Client Identifier option.
         """
         msg = msg_add_defaults(DHCP6_Renew())
+#         try:
+#             if (len(world.oro.reqopts) > 0):
+#                     msg = add_option_to_msg(msg, world.oro)
+#         except:
+#             pass
         
     elif (msgname == "REBIND"):
         """
@@ -197,24 +198,18 @@ def client_send_msg(step, msgname, opt_type, unknown):
         world.cfg["add_option"]["IA_TA"] = False
         #world.cfg["add_option"]["server_id"] = False
         msg = msg_add_defaults(DHCP6_InfoRequest())
-        try:
-            if (len(world.oro.reqopts) > 0):
-                    msg = add_option_to_msg(msg, world.oro)
-        except:
-            pass
+#         try:
+#             if (len(world.oro.reqopts) > 0):
+#                     msg = add_option_to_msg(msg, world.oro)
+#         except:
+#             pass
         
     else:
         assert False, "Invalid message type: %s" % msgname
     
     assert msg, "Message preparation failed"
 
-    try:
-        if world.oro is not None and len(world.cliopts):
-            for opt in world.cliopts:
-                msg = add_option_to_msg(msg, opt)
-    except:
-        pass
-    
+   
     if msg:
         world.climsg.append(msg)
 
@@ -573,6 +568,8 @@ def client_does_include(step, opt_type):
         world.cfg["add_option"]["reconfig"] = True
     elif opt_type == "reconfigure-accept":
         world.cfg["add_option"]["reconfig_accept"] = True
+    elif opt_type == "option-request":
+        world.cfg["add_option"]["option_request"] = True
     else:
         assert "unsupported option: " + opt_type
 
@@ -599,7 +596,7 @@ def client_option (msg):
         if world.cfg["relay"] == False:
             msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
     elif world.cfg["add_option"]["client_id"] == True and world.cfg["add_option"]["wrong_client_id"] == True:
-        msg /= DHCP6OptClientId()
+        msg /= DHCP6OptClientId()#it needs to stay blank!
         
     elif world.cfg["add_option"]["client_id"] == False:
         #world.cfg["add_option"]["client_id"] = True
@@ -631,7 +628,7 @@ def client_option (msg):
         msg /= DHCP6OptStatusCode()
 
     if world.cfg["add_option"]["interface_id"] == True:
-        msg /= DHCP6OptIfaceId()
+        msg /= DHCP6OptIfaceId(ifaceid = "15")
 
     if world.cfg["add_option"]["reconfig"] == True:
         msg /= DHCP6OptReconfMsg()
@@ -639,8 +636,11 @@ def client_option (msg):
     if world.cfg["add_option"]["reconfig_accept"] == True:
         msg /= DHCP6OptReconfAccept()
 
+    if world.cfg["add_option"]["option_request"] == True:
+        msg /= DHCP6OptOptReq() #this adds 23 and 24 opt by default, we can leave it that way in this point.
+        
     if world.cfg["add_option"]["relay_msg"] == True:
-        msg /= DHCP6OptRelayMsg()
+        msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
     
     set_options()
     return msg
@@ -659,6 +659,18 @@ def msg_add_defaults(msg):
     msg.trid = random.randint(0, 256*256*256)
     world.cfg["tr_id"] = msg.trid
     
+    try:
+        if (len(world.oro.reqopts) > 0):
+                msg = add_option_to_msg(msg, world.oro)
+    except:
+        pass
+    
+    try:
+        if world.oro is not None and len(world.cliopts):
+            for opt in world.cliopts:
+                msg = add_option_to_msg(msg, opt)
+    except:
+        pass
     #add all options to message. 
     msg = client_option (msg)
 

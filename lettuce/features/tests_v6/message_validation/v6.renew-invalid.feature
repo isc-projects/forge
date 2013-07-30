@@ -157,8 +157,8 @@ Feature: Standard DHCPv6 renew message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client does include <opt_name>.
 	Client requests option 7.
+	Client does include <opt_name>.
 	Client sends RENEW message.
 
 	Pass Criteria:
@@ -183,8 +183,8 @@ Feature: Standard DHCPv6 renew message
 	Examples:
 	| opt_name       |
 	| relay-msg      |
-	| preference     |
 	| server-unicast |
+	| preference     |
 	| status-code    |
 	| rapid-commit   |
 	| interface-id   |
