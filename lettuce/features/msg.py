@@ -56,9 +56,25 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
 ##save option from received message
 @step('Client copies (\S+) option from received message.')
 def client_copy_option(step, option_name):
+    """
+    Copied option is automatically added to next generated message, and erased.
+    """
     assert len(world.srvmsg), "No messages received, nothing to copy."
     dhcpmsg.client_copy_option(step, option_name)
 
+@step('Client save (\S+) option from received message.')
+def client_save_option(step, option_name):
+    """
+    Saved option is kept in memory till end of the test, or step 'Client adds saved option'
+    """
+    assert len(world.srvmsg), "No messages received, nothing to copy."
+    dhcpmsg.client_save_option(step, option_name)
+
+@step('Client adds saved options.')
+def client_add_saved_option(step):
+    assert len(world.srvmsg), "No messages received, nothing to copy."
+    dhcpmsg.client_add_saved_option(step)
+    
 ##modification of the test run
 @step('Pause the Test.')
 def test_pause(step):

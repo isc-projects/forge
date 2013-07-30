@@ -230,8 +230,26 @@ def add_option_to_msg(msg, option):#this is request_option option
     msg /= option
     return msg
 
+def client_add_saved_option(step):
+    """
+    Add saved option to message, and erase.
+    """
+    if len(world.savedmsg) < 1: assert "No saved option!"
+    for each in world.savedmsg:
+        world.cliopts.append(each)
+    world.savedmsg = []
+
 def add_client_option(option):
     world.cliopts.append(option)
+
+def client_save_option(step, option_name):
+    assert option_name in options6, "Unsupported option name " + option_name
+    opt_code = options6.get(option_name)
+    opt = get_option(get_last_response(), opt_code)
+    
+    assert opt, "Received message does not contain option " + option_name
+    opt.payload = None
+    world.savedmsg.append(opt)
 
 def create_relay_forward(step, level):
     """
@@ -241,7 +259,6 @@ def create_relay_forward(step, level):
     world.cfg["relay"] = True
     
     address = All_DHCP_Relay_Agents_and_Servers
-    
     #get only DHCPv6 part of the message
     msg = world.climsg.pop().getlayer(2)
     from features.init_all import SRV_IPV6_ADDR
@@ -575,7 +592,7 @@ def client_option (msg):
 
     #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
     if world.cfg["add_option"]["wrong_server_id"] == True:
-        msg /= DHCP6OptServerId()
+        msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC() ))
         
     #client id
     if world.cfg["add_option"]["client_id"] == True and world.cfg["add_option"]["wrong_client_id"] == False:
@@ -588,10 +605,9 @@ def client_option (msg):
         #world.cfg["add_option"]["client_id"] = True
         pass
     
-    if world.cfg["add_option"]["IA_NA"] == True:
+    if world.cfg["add_option"]["IA_NA"] == True and world.cfg["relay"] == False:
         if world.oro is not None and len(world.cliopts):
             for opt in world.cliopts:
-                print opt
                 if opt.optcode == 3:
                     break #if there is no IA_NA/TA in world.cliopts, break.. 
             else:

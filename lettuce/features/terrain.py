@@ -88,7 +88,8 @@ def initialize(scenario):
     world.climsg = []  # Message(s) to be sent
     world.cliopts = [] # Option(s) to be included in the next message sent
     world.srvmsg = []  # Server's response(s)
-
+    world.savedmsg = [] # Saved option(s)
+    
     world.cfg = {}
     world.cfg["iface"] = IFACE
     world.cfg["server_type"] = SERVER_TYPE
