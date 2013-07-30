@@ -24,6 +24,7 @@
 		- new functions in run_test.py:
 			-l for listing all features (for specific IP version)
 			-s for choosing test set based on directory name
+			
 6. [bug] wlodek
 		- options -v4 and -v6 in run_test.py are operational  
 
