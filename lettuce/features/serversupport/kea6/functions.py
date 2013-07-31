@@ -17,9 +17,30 @@
 from fabric.api import run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR
+from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS
 import os
 
+def parsing_bind_stdout(stdout, opt):
+    """
+    Modify this function if you wont react to some bind stdout
+    """
+    #search = []
+    search = ['Broken pipe']
+    for each in search: 
+        if each in stdout:
+            print "RESTART BIND10, found ", each 
+            from serversupport.bind10 import kill_bind10, start_bind10 #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
+            kill_bind10(MGMT_ADDRESS)
+            start_bind10(MGMT_ADDRESS)
+#             from Crypto.Random.random import randint
+#             i = randint (0,10000)
+#             nazwa = 'nazwa' + str(i)
+#             a = open (nazwa,'w')
+#             for item in world.result:
+#                 a.write(str(item)+'\n')
+#             world.result = []
+#             a.close()
+            fabric_run_bindctl (opt)
 
 def restart_srv():
     fabric_run_bindctl ('restart')
@@ -211,20 +232,21 @@ def fabric_run_bindctl (opt):
     """
     Run bindctl with prepered config file
     """    
+    
     if opt == "clean":
-        get_common_logger().debug('------------ cleaning kea configuration')
+        get_common_logger().debug('cleaning kea configuration')
         prepare_cfg_kea6_for_kea6_stop()
         cfg_file = 'kea6-stop.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
     if opt == "start":
-        get_common_logger().debug('------------ starting fresh kea')
+        get_common_logger().debug('starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
         cfg_file = 'kea6-start.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
     if opt == "conf":
-        get_common_logger().debug('------------ kea configuration')
+        get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
@@ -235,14 +257,16 @@ def fabric_run_bindctl (opt):
     with settings(host_string = world.cfg["mgmt_addr"],
                   user = world.cfg["mgmt_user"],
                   password = world.cfg["mgmt_pass"]):
-        run(cmd)
+        result = run(cmd)
+        
+        parsing_bind_stdout(result.stdout, opt) #react on some output, default restarts BIND10 after Error 32: Broken pipe
 
 def start_srv():
     """
     Start kea with generated config
     """
     cfg_write() 
-    get_common_logger().debug("------ Bind10, dhcp6 configuration procedure:")
+    get_common_logger().debug("Bind10, dhcp6 configuration procedure:")
     fabric_run_bindctl ('clean')#clean and stop
     fabric_run_bindctl ('start')#start
     fabric_run_bindctl ('conf')#conf
