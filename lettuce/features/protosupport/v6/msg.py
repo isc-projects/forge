@@ -100,13 +100,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         
         Also we can include IA options, Option Request, Rapid Commit and Reconfigure Accept.
         """
-        msg = msg_add_defaults(DHCP6_Solicit())
-        #make function from that: Solicit, request,renew,rebind,confirm,infor-req
-#         try:
-#             if (len(world.oro.reqopts) > 0):
-#                     msg = add_option_to_msg(msg, world.oro)
-#         except:
-#             pass
+        msg = build_msg(DHCP6_Solicit())
         
     elif (msgname == "REQUEST"):
         """
@@ -118,7 +112,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
               server's DUID.
            -  the message does not include a Client Identifier option.
         """
-        msg = msg_add_defaults(DHCP6_Request())
+        msg = build_msg(DHCP6_Request())
 
         
     elif (msgname == "CONFIRM"):
@@ -128,12 +122,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         include a Client Identifier option or that do include a Server
         Identifier option.
         """
-        msg = msg_add_defaults(DHCP6_Confirm())
-#         try:
-#             if (len(world.oro.reqopts) > 0):
-#                     msg = add_option_to_msg(msg, world.oro)
-#         except:
-#             pass
+        msg = build_msg(DHCP6_Confirm())
         
     elif (msgname == "RENEW"):
         """
@@ -145,12 +134,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
               server's identifier.
            -  the message does not include a Client Identifier option.
         """
-        msg = msg_add_defaults(DHCP6_Renew())
-#         try:
-#             if (len(world.oro.reqopts) > 0):
-#                     msg = add_option_to_msg(msg, world.oro)
-#         except:
-#             pass
+        msg = build_msg(DHCP6_Renew())
         
     elif (msgname == "REBIND"):
         """
@@ -159,7 +143,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         a Client Identifier option or that do include a Server Identifier
         option.
         """
-        msg = msg_add_defaults(DHCP6_Rebind())
+        msg = build_msg(DHCP6_Rebind())
 
     elif (msgname == "DECLINE"):
         """
@@ -171,7 +155,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
               server's identifier.
            -  the message does not include a Client Identifier option.
         """
-        msg = msg_add_defaults(DHCP6_Decline())
+        msg = build_msg(DHCP6_Decline())
                 
     elif (msgname == "RELEASE"):
         """
@@ -183,7 +167,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
               server's identifier.
            -  the message does not include a Client Identifier option.
         """
-        msg = msg_add_defaults(DHCP6_Release())
+        msg = build_msg(DHCP6_Release())
         
     elif (msgname == "INFOREQUEST"):
         """
@@ -196,13 +180,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
         """
         world.cfg["add_option"]["IA_NA"] = False #by default, IA restricted
         world.cfg["add_option"]["IA_TA"] = False
-        #world.cfg["add_option"]["server_id"] = False
-        msg = msg_add_defaults(DHCP6_InfoRequest())
-#         try:
-#             if (len(world.oro.reqopts) > 0):
-#                     msg = add_option_to_msg(msg, world.oro)
-#         except:
-#             pass
+        msg = build_msg(DHCP6_InfoRequest())
         
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -645,7 +623,7 @@ def client_option (msg):
     set_options()
     return msg
  
-def msg_add_defaults(msg):
+def build_msg(msg):
     
     if world.cfg["unicast"] == False:
         address = All_DHCP_Relay_Agents_and_Servers
@@ -659,19 +637,22 @@ def msg_add_defaults(msg):
     msg.trid = random.randint(0, 256*256*256)
     world.cfg["tr_id"] = msg.trid
     
+    #add option request if any
     try:
         if (len(world.oro.reqopts) > 0):
                 msg = add_option_to_msg(msg, world.oro)
     except:
         pass
     
+    #add other options if any
     try:
         if world.oro is not None and len(world.cliopts):
             for opt in world.cliopts:
                 msg = add_option_to_msg(msg, opt)
     except:
         pass
-    #add all options to message. 
+    
+    #add all rest options to message. 
     msg = client_option (msg)
 
     return msg
