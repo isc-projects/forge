@@ -99,7 +99,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15
 	
-@basic @v6  
+@basic @v6 @unicast
     Scenario: v6.basic.message.unicast.request	
 	
 	Test Setup:
@@ -125,3 +125,46 @@ Feature: Standard DHCPv6 address validation
 	Response option 13 MUST contain statuscode 5.
 	
 	References: RFC3315 section 18.2.1
+	
+@basic @v6 @unicast
+    Scenario: v6.basic.message.unicast.renew	
+	
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client chooses UNICAST address.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 13.
+	Response option 13 MUST contain statuscode 5.
+	
+	References: RFC3315 section 18.2.3
