@@ -20,24 +20,26 @@
 
 from fabric.context_managers import settings, hide
 from fabric.operations import run
-from features.init_all import MGMT_USERNAME, MGMT_PASSWORD
+from features.init_all import MGMT_USERNAME, MGMT_PASSWORD, SERVER_INSTALL_DIR
 from features.logging_facility import get_common_logger
 
-
-def bind10 (host, cmd): 
-    """
-    Start/kill bind10
-    """
-    with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-        with hide('running', 'stdout', 'stderr'):
-            run(cmd, pty = True)
 
 def kill_bind10(host):
     """
     Kill any running bind10 instance
     """
-    get_common_logger().debug("--- Killing all running Bind instances")
+    get_common_logger().debug("Killing all running Bind instances")
     cmd = 'pkill b10-*; sleep 2'
+    with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
+        with settings(warn_only = True):
+            run(cmd, pty = True)
+            
+def start_bind10(host):
+    """
+    Start Bind10 instance
+    """
+    get_common_logger().debug("Starting Bind instances")
+    cmd = '(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/bind10 &); sleep 2'
     with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with settings(warn_only = True):
             run(cmd, pty = True)
