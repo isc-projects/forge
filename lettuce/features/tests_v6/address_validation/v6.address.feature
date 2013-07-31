@@ -84,13 +84,6 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
 	Client chooses UNICAST address.
 	Client sends INFOREQUEST message.
 
@@ -99,13 +92,6 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
@@ -113,8 +99,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15
 	
-	
-@basic @v6 @unicast 
+@basic @v6  
     Scenario: v6.basic.message.unicast.request	
 	
 	Test Setup:

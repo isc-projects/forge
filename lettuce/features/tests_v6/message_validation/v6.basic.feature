@@ -113,20 +113,6 @@ Feature: Standard DHCPv6 message types
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
-	Client requests option 7.
-	Client sends REQUEST message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-
-	Test Procedure:
 	Client sends REBIND message.
 
 	Pass Criteria:
