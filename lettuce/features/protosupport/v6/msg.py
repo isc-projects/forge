@@ -203,14 +203,15 @@ def add_option_to_msg(msg, option):#this is request_option option
     msg /= option
     return msg
 
-def client_add_saved_option(step):
+def client_add_saved_option(step, erase):
     """
     Add saved option to message, and erase.
     """
     if len(world.savedmsg) < 1: assert "No saved option!"
     for each in world.savedmsg:
         world.cliopts.append(each)
-    world.savedmsg = []
+    if erase:
+        world.savedmsg = []
 
 def add_client_option(option):
     world.cliopts.append(option)
@@ -466,16 +467,19 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     
     received = ""
     if opt_code == 3:
-        #needs more work
-        x.show()
-        received = x.ianaopts
-        print received
+        #needs more work, IA_NA needs also StatusCode option in it!.
+#         x.show()
+#         received = x.ianaopts
+#         print received
         #test_option_code(x.ianaopts[0])
+        received = x.ianaopts[0].addr
     elif opt_code == 7:
         received = str(x.prefval)
     elif opt_code == 9:
         pass
         #received = str(x.optcode)
+    elif opt_code == 13:
+        received = str(x.statuscode)
     elif opt_code == 21:
         received = ",".join(x.sipdomains)
     elif opt_code == 22:
@@ -548,18 +552,26 @@ def client_does_include(step, opt_type):
         world.cfg["add_option"]["reconfig_accept"] = True
     elif opt_type == "option-request":
         world.cfg["add_option"]["option_request"] = True
+    elif opt_type == "IA-NA":
+        world.cfg["add_option"]["IA_NA"] = False
+
     else:
         assert "unsupported option: " + opt_type
 
-def new_client_id (step):
+def generate_new (step, opt):
     """
     Generate new client id with random MAC address.
     """
-    from features.terrain import client_id, ia_id
-    client_id(RandMAC())
-    ia_id()
-    
-    
+    if opt == 'client-id':
+        from features.terrain import client_id, ia_id
+        client_id(RandMAC())
+        ia_id()
+    elif opt == 'IA':
+        from features.terrain import ia_id
+        ia_id()    
+    else:
+        assert  opt + " generation unsupported" 
+
 def client_option (msg):
     """
     Add options (like server-id, rapid commit) to message. This function refers to building message
@@ -586,10 +598,10 @@ def client_option (msg):
                 if opt.optcode == 3:
                     break #if there is no IA_NA/TA in world.cliopts, break.. 
             else:
-                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, ianaopts = DHCP6OptIAAddress(addr = "2001:db8:1::1")) # if not, add IA_NA
         else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA   
-                 
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, ianaopts = DHCP6OptIAAddress(addr = "2001:db8:1::1", validlft = 30,preflft = 30 )) # if not, add IA_NA   
+
     if world.cfg["add_option"]["preference"] == True:
         msg /= DHCP6OptPref()
         
