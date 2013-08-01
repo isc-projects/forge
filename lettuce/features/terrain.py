@@ -1,5 +1,5 @@
 from Crypto.Random.random import randint
-from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, SERVER_INSTALL_DIR, \
+from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, \
     CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, MGMT_PASSWORD, GIADDR4
 from lettuce import world, before, after
 from logging_facility import *

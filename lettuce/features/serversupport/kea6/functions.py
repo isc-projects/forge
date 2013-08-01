@@ -43,7 +43,9 @@ def parsing_bind_stdout(stdout, opt):
             fabric_run_bindctl (opt)
 
 def restart_srv():
-    fabric_run_bindctl ('restart')
+    #cfg_write()
+    #fabric_run_bindctl ('restart')
+    pass
 
 def stop_srv():
     # @todo: implement this
@@ -185,6 +187,20 @@ def prepare_cfg_kea6_for_kea6_stop():
     cfg_file.write(config)
     cfg_file.close()
 
+def prepare_cfg_kea6_for_kea6_restart():
+    """
+    config file for kea6 clear configuration and stopping
+    """
+    config = '''
+        Dhcp6 shutdown
+        config add Init/components b10-dhcp6
+        config set Init/components/b10-dhcp6/kind dispensable
+        config commit
+        '''
+    cfg_file = open("kea6-restart.cfg", "w")
+    cfg_file.write(config)
+    cfg_file.close()
+
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf"])
@@ -239,24 +255,24 @@ def fabric_run_bindctl (opt):
         cfg_file = 'kea6-stop.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
-    if opt == "start":
+    elif opt == "start":
         get_common_logger().debug('starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
         cfg_file = 'kea6-start.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
-    if opt == "conf":
+    elif opt == "conf":
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
-    if opt == "restart":
-        #there is no need for restarting server in testing conformance with RFC
-        pass
+    elif opt == "restart":
+        cfg_file = world.cfg["cfg_file"]
+        pepere_config_file(cfg_file)
+        fabric_send_file (cfg_file + "_processed")
+        
     cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
-    with settings(host_string = world.cfg["mgmt_addr"],
-                  user = world.cfg["mgmt_user"],
-                  password = world.cfg["mgmt_pass"]):
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
         result = run(cmd)
         
         parsing_bind_stdout(result.stdout, opt) #react on some output, default restarts BIND10 after Error 32: Broken pipe
