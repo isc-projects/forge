@@ -83,7 +83,7 @@ class TestHistory ():
             
         report = open('history.html','a')
         self.time_elapsed = self.stop_time - self.start_time
-        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.year)+'.'+str(self.date.month)+'.'+str(self.date.day)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> PASS-RATE: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
+        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.year)+'.'+str(self.date.month)+'.'+str(self.date.day)+'; '+str(self.date.hour)+':'+str(self.date.minute)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> PASS-RATE: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
         report.close()
         
     def read_result(self):
@@ -130,6 +130,8 @@ class UserHelp ():
             features_number = 0
             tests_number = 0
             outline_tests_number = 0
+            outline_generate_test = 0
+            outline_tag = False
             print "\nIPv" + each_number + " Tests:"
             print "features/tests_v" + each_number + "/"
             for path, dirs, files in os.walk("features/tests_v" + each_number + "/"):
@@ -147,13 +149,19 @@ class UserHelp ():
                                 self.check_tags(line)
                             elif "Scenario" in line:
                                 if "Outline" in line:
+                                    outline_tag = True
                                     outline_tests_number += 1
                                     if more: print "\t\t\t" + line[18:]
                                 else:
+                                    outline_tag = False
                                     tests_number += 1
                                     if more: print "\t\t\t" + line[10:]
+                            elif "|" in line and outline_tag:
+                                outline_generate_test += 1
+                                
+                                
                     names.close()
-            print "Totally: \n\t",tests_number,"tests and",outline_tests_number,"multi-tests in",features_number,"features, grouped in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
+            print "Totally: \n\t",outline_generate_test + tests_number - outline_tests_number,"tests in",tests_number,"simple tests and",outline_tests_number,"multi-tests. Grouped in",features_number,"features, and in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
             if not more: print 'For more information, use help.py to generate UserHelp document.\n'
             
     def steps(self):
