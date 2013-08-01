@@ -32,7 +32,8 @@ def kill_bind10(host):
     cmd = 'pkill b10-*; sleep 2'
     with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with settings(warn_only = True):
-            run(cmd, pty = True)
+            with hide ('running', 'stdout'):
+                run(cmd, pty = True)
             
 def start_bind10(host):
     """
@@ -42,4 +43,5 @@ def start_bind10(host):
     cmd = '(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/bind10 &); sleep 2'
     with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with settings(warn_only = True):
-            run(cmd, pty = True)
+            with hide ('running', 'stdout'):
+                run(cmd, pty = True)

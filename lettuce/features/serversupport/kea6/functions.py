@@ -20,6 +20,11 @@ from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS
 import os
 
+def fabric(cmd):
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
+        with hide ('stdout','stderr'):
+            result = run(cmd)
+    return result
 def parsing_bind_stdout(stdout, opt):
     """
     Modify this function if you wont react to some bind stdout
@@ -32,25 +37,15 @@ def parsing_bind_stdout(stdout, opt):
             from serversupport.bind10 import kill_bind10, start_bind10 #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
             kill_bind10(MGMT_ADDRESS)
             start_bind10(MGMT_ADDRESS)
-#             from Crypto.Random.random import randint
-#             i = randint (0,10000)
-#             nazwa = 'nazwa' + str(i)
-#             a = open (nazwa,'w')
-#             for item in world.result:
-#                 a.write(str(item)+'\n')
-#             world.result = []
-#             a.close()
-            fabric_run_bindctl (opt)
+            run_bindctl (opt)
 
 def restart_srv():
-    #cfg_write()
-    #fabric_run_bindctl ('restart')
-    pass
+    cmd = '(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 7' # can't be less then 7, server needs time to restart.
+    fabric(cmd)
 
 def stop_srv():
-    # @todo: implement this
-    pass
-
+    run_bindctl ('clean')
+    
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# Default server config for Kea6 is just empty string\n"
     
@@ -187,19 +182,6 @@ def prepare_cfg_kea6_for_kea6_stop():
     cfg_file.write(config)
     cfg_file.close()
 
-def prepare_cfg_kea6_for_kea6_restart():
-    """
-    config file for kea6 clear configuration and stopping
-    """
-    config = '''
-        Dhcp6 shutdown
-        config add Init/components b10-dhcp6
-        config set Init/components/b10-dhcp6/kind dispensable
-        config commit
-        '''
-    cfg_file = open("kea6-restart.cfg", "w")
-    cfg_file.write(config)
-    cfg_file.close()
 
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
@@ -244,7 +226,7 @@ def fabric_send_file (file_local):
     except OSError:
         get_common_logger().error('File %s cannot be removed' % file_local)
         
-def fabric_run_bindctl (opt):
+def run_bindctl (opt):
     """
     Run bindctl with prepered config file
     """    
@@ -267,15 +249,11 @@ def fabric_run_bindctl (opt):
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
     elif opt == "restart":
-        cfg_file = world.cfg["cfg_file"]
-        pepere_config_file(cfg_file)
-        fabric_send_file (cfg_file + "_processed")
+        restart_srv()
         
     cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        result = run(cmd)
-        
-        parsing_bind_stdout(result.stdout, opt) #react on some output, default restarts BIND10 after Error 32: Broken pipe
+    result = fabric(cmd)
+    parsing_bind_stdout(result.stdout, opt) #react on some output, default restarts BIND10 after Error 32: Broken pipe
 
 def start_srv():
     """
@@ -283,7 +261,7 @@ def start_srv():
     """
     cfg_write() 
     get_common_logger().debug("Bind10, dhcp6 configuration procedure:")
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start
-    fabric_run_bindctl ('conf')#conf
+    run_bindctl ('clean')#clean and stop
+    run_bindctl ('start')#start
+    run_bindctl ('conf')#conf
 #     
