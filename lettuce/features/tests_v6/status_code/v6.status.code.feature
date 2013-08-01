@@ -172,9 +172,9 @@ Feature: DHCPv6 Status Codes
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	
-	#MAKE HERE RESTART DHCP 
-	
+
+	Test Procedure:	
+	Restart server.
 	Client requests option 7.
 	Client sends RELEASE message.
 	

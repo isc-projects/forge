@@ -45,7 +45,7 @@ def config_srv(step, option_name, subnet, option_value):
 def start_srv(step):
     dhcpfun.start_srv()
 
-@step('Server is restarted.')
+@step('Restart server.')
 def restart_srv(step):
     """
     Restart DHCPv6 without changing server configuration

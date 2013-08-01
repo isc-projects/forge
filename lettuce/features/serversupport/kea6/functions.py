@@ -22,9 +22,10 @@ import os
 
 def fabric(cmd):
     with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        with hide ('stdout','stderr'):
+        with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
             result = run(cmd)
     return result
+
 def parsing_bind_stdout(stdout, opt):
     """
     Modify this function if you wont react to some bind stdout
