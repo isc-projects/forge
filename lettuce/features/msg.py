@@ -1,5 +1,5 @@
-from lettuce import world, step
 from init_all import PROTO
+from lettuce import world, step
 import importlib
 
 # Tomek: For some reason importing terrain does not help, as the
@@ -26,9 +26,9 @@ def client_does_include(step, yes_or_not, opt_type):
 def unicast_addres(step):
     dhcpmsg.unicast_addres(step)
 
-@step('Generate new client-id.')
-def new_client_id(step):
-    dhcpmsg.new_client_id(step)
+@step('Generate new (\S+).')
+def generate_new(step, opt):
+    dhcpmsg.generate_new(step,opt)
 
 @step('...using relay-agent encapsulated in (\d+) level(s)?.')
 def create_relay_forward(step, level, s ):
@@ -62,18 +62,19 @@ def client_copy_option(step, option_name):
     assert len(world.srvmsg), "No messages received, nothing to copy."
     dhcpmsg.client_copy_option(step, option_name)
 
-@step('Client save (\S+) option from received message.')
+@step('Client saves (\S+) option from received message.')
 def client_save_option(step, option_name):
     """
     Saved option is kept in memory till end of the test, or step 'Client adds saved option'
     """
-    assert len(world.srvmsg), "No messages received, nothing to copy."
+    assert len(world.srvmsg), "No messages received, nothing to save."
     dhcpmsg.client_save_option(step, option_name)
 
-@step('Client adds saved options.')
-def client_add_saved_option(step):
-    assert len(world.srvmsg), "No messages received, nothing to copy."
-    dhcpmsg.client_add_saved_option(step)
+@step('Client adds saved options. And (DONT )?Erase.')
+def client_add_saved_option(step, yes_or_no):
+    assert len(world.savedmsg), "No options to add."
+    erase = True if yes_or_no == None else False
+    dhcpmsg.client_add_saved_option(step, erase)
     
 ##modification of the test run
 @step('Pause the Test.')
