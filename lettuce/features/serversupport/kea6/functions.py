@@ -57,7 +57,7 @@ def prepare_cfg_subnet(step, subnet, pool):
     if (subnet == "default"):
         subnet = "2001:db8:1::/64"
     if (pool == "default"):
-        pool = "2001:db8:1::0 - 2001:db8:1::ffff"
+        pool = "2001:db8:1::1 - 2001:db8:1::ffff"
     world.cfg["conf"] = '''\
         # subnet defintion Kea 6
         config add Dhcp6/subnet6
@@ -65,9 +65,7 @@ def prepare_cfg_subnet(step, subnet, pool):
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
         config commit
         '''.format(**locals())
-        
-    
-  
+
 kea_options6 = { "client-id": 1,
                  "server-id" : 2,
                  "IA_NA" : 3,
@@ -254,6 +252,7 @@ def run_bindctl (opt):
         
     cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
     result = fabric(cmd)
+    
     parsing_bind_stdout(result.stdout, opt) #react on some output, default restarts BIND10 after Error 32: Broken pipe
 
 def start_srv():

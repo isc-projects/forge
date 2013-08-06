@@ -135,9 +135,7 @@ def send_file (file_local):
     Send file to remote virtual machine
     """
     file_remote = file_local
-    with settings(host_string = world.cfg["mgmt_addr"],
-                  user = world.cfg["mgmt_user"],
-                  password = world.cfg["mgmt_pass"]):
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
         with hide('running', 'stdout'):
             put(file_local, file_remote)
     try:
