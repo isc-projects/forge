@@ -203,6 +203,13 @@ def add_option_to_msg(msg, option):#this is request_option option
     msg /= option
     return msg
 
+def test_content(value_name):
+    #this is only beta version of value testing
+    if value_name in "address":
+        opt = get_option(world.srvmsg[0], 3)
+        if str(opt.ianaopts[0].addr[-1]) in [":","0"]:
+            assert False, "Invalid assigned address: %s" % opt.ianaopts[0].addr
+
 def client_add_saved_option(step, erase):
     """
     Add saved option to message, and erase.
@@ -262,7 +269,7 @@ def create_relay_forward(step, level):
     
     world.cfg["relay"] = False
 
-def send_wait_for_message(step, presence, exp_message):
+def send_wait_for_message(step, type, presence, exp_message):
     """
     Block until the given message is (not) received.
     Parameter:
@@ -272,9 +279,15 @@ def send_wait_for_message(step, presence, exp_message):
     message ('message <message>'): Output (part) to wait for.
     """
     world.cliopts = [] #clear options, always build new message, also possible make it in client_send_msg
+    may_flag = False
     #debug.recv = []
     conf.use_pcap = True
-
+    if str(type) in "MUST":
+        pass
+    elif str(type) in "MAY":
+        may_flag = True
+    else:
+        assert False, "Invalid expected behavior: %s." %str(type)
     #Uncomment this to get debug.recv filled with all received messages
     #conf.debug_match = True
     ans,unans = sr(world.climsg, iface = world.cfg["iface"], timeout = 1, nofilter = 1, verbose = 99)
@@ -295,11 +308,15 @@ def send_wait_for_message(step, presence, exp_message):
 
     get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)." 
                               % (len(ans), len(unans)))
-    
-    if presence:
+    if may_flag:
+        if len(world.srvmsg) != 0:
+            assert True, "Response received."
+        if len(world.srvmsg) == 0:
+            assert True, "Response not received." #stop the test... ??
+    elif presence:
         assert len(world.srvmsg) != 0, "No response received."
         assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
-    if not presence:
+    elif not presence:
         assert len(world.srvmsg) == 0, "Response received, not expected"
 
 def get_last_response():

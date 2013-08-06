@@ -35,11 +35,11 @@ def create_relay_forward(step, level, s ):
     dhcpmsg.create_relay_forward(step, level)
 
 ##checking respond
-@step('Server MUST (NOT )?respond with (\w+) message')
-def send_wait_for_message(step, yes_or_no, message):
+@step('Server (\S+) (NOT )?respond with (\w+) message')
+def send_wait_for_message(step, type, yes_or_no, message):
     get_common_logger().debug("client_send_msg:{message}.\n".format(**locals()))
     presence = True if yes_or_no == None else False 
-    dhcpmsg.send_wait_for_message(step, presence ,message)
+    dhcpmsg.send_wait_for_message(step, type, presence ,message)
 
 @step('Response MUST (NOT )?include option (\d+).')
 def response_check_include_option(step, yes_or_no, opt_code):
@@ -52,6 +52,10 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
         dhcpmsg.response_check_include_message(step, opt_code, expect, data_type, expected)
     else:
         dhcpmsg.response_check_option_content(step, opt_code, expect, data_type, expected)
+        
+@step('Test (\S+) content.')
+def test_content(step, test_value):
+    dhcpmsg.test_content(test_value)
 
 ##save option from received message
 @step('Client copies (\S+) option from received message.')
