@@ -108,11 +108,7 @@ Feature: Standard DHCPv6 confirm message
 	Examples:
 	| opt_name          |
 	| relay-msg         |
-	| preference        |
 	| rapid-commit      |
-	| server-unicast    |
-	| status-code       |
 	| interface-id      |
-	| reconfigure       |
 	| reconfigure-accept|
 	

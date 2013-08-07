@@ -188,9 +188,5 @@ Feature: Standard DHCPv6 request message
 	Examples:
 	| opt_name       |
 	| relay-msg      |
-	| preference     |
-	| server-unicast |
-	| status-code    |
 	| rapid-commit   |
 	| interface-id   |
-	| reconfigure    |

@@ -109,8 +109,4 @@ Feature: Standard DHCPv6 solicit message
 	Examples:
 	| opt_name       |
 	| relay-msg      |
-	| preference     |
-	| server-unicast |
-	| status-code    |
 	| interface-id   |
-	| reconfigure    |

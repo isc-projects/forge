@@ -196,10 +196,6 @@ Feature: Standard DHCPv6 decline message
 	Examples:
 	| opt_name           |
 	| relay-msg          |
-	| preference         |
-	| server-unicast     |
-	| status-code        |
 	| rapid-commit       |
 	| interface-id       |
-	| reconfigure        |
 	| reconfigure-accept |

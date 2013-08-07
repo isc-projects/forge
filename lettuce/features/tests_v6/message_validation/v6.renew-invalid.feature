@@ -183,9 +183,5 @@ Feature: Standard DHCPv6 renew message
 	Examples:
 	| opt_name       |
 	| relay-msg      |
-	| server-unicast |
-	| preference     |
-	| status-code    |
 	| rapid-commit   |
 	| interface-id   |
-	| reconfigure    |

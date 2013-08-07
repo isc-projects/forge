@@ -109,9 +109,5 @@ Feature: Standard DHCPv6 rebind message
 	Examples:
 	| opt_name       |
 	| relay-msg      |
-	| preference     |
-	| server-unicast |
-	| status-code    |
 	| rapid-commit   |
 	| interface-id   |
-	| reconfigure    |
