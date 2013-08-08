@@ -188,3 +188,19 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with REPLY message.
 	
 	References: RFC3315 section 5.3 
+
+@basic @v6
+    Scenario: v6.basic.message.information_request-reply_without_client_id
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does NOT include client-id.
+	Client sends INFOREQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	
+	References: RFC3315 section 5.3 
