@@ -63,7 +63,6 @@ def prepare_cfg_subnet(step, subnet, pool):
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[0]/subnet "{subnet}"
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
-        config commit
         '''.format(**locals())
 
 kea_options6 = { "client-id": 1,
@@ -103,7 +102,6 @@ def prepare_cfg_add_option(step, option_name, option_value):
         config set Dhcp6/option-data[{number}]/space "dhcp6"
         config set Dhcp6/option-data[{number}]/csv-format true
         config set Dhcp6/option-data[{number}]/data "{option_value}"
-        config commit
         '''.format(**locals())
 
     world.kea["option_cnt"] = world.kea["option_cnt"] + 1
@@ -125,7 +123,6 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value)
         config set Dhcp6/option-data[0]/space "dhcp6"
         config set Dhcp6/option-data[0]/csv-format true
         config set Dhcp6/option-data[0]/data "{opt_value}"
-        config commit
         '''.format(**locals())
 
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
@@ -142,7 +139,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/space "dhcp6"
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/csv-format true
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/data "{option_value}"
-        config commit
+
         '''.format(**locals())
 
 def prepare_cfg_kea6_for_kea6_start():
@@ -245,6 +242,9 @@ def run_bindctl (opt):
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
+        add_last = open (cfg_file + "_processed", 'a')
+        add_last.write("config commit")
+        add_last.close()
         fabric_send_file (cfg_file + "_processed")
     elif opt == "restart":
         restart_srv()
