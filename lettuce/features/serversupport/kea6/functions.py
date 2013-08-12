@@ -22,8 +22,8 @@ import os
 
 def fabric(cmd):
     with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
-            result = run(cmd)
+        #with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
+        result = run(cmd)
     return result
 
 def parsing_bind_stdout(stdout, opt):
@@ -90,18 +90,19 @@ kea_options6 = { "client-id": 1,
                  "information-refresh-time": 32 }
 
 def prepare_cfg_add_option(step, option_name, option_value):
-    if (not "conf" in world.cfg):
-        world.cfg["conf"] = ""
+#     if (not "conf" in world.cfg):
+#         world.cfg["conf"] = ""
 
     assert option_name in kea_options6, "Unsupported option name " + option_name
     option_code = kea_options6.get(option_name)
-
+    number = world.kea["option_cnt"]
+    
     world.cfg["conf"] += '''config add Dhcp6/option-data
-        config set Dhcp6/option-data[0]/name "{option_name}"
-        config set Dhcp6/option-data[0]/code {option_code}
-        config set Dhcp6/option-data[0]/space "dhcp6"
-        config set Dhcp6/option-data[0]/csv-format true
-        config set Dhcp6/option-data[0]/data "{option_value}"
+        config set Dhcp6/option-data[{number}]/name "{option_name}"
+        config set Dhcp6/option-data[{number}]/code {option_code}
+        config set Dhcp6/option-data[{number}]/space "dhcp6"
+        config set Dhcp6/option-data[{number}]/csv-format true
+        config set Dhcp6/option-data[{number}]/data "{option_value}"
         config commit
         '''.format(**locals())
 
@@ -154,7 +155,7 @@ def prepare_cfg_kea6_for_kea6_start():
         config set Init/components/b10-dhcp6/kind dispensable
         config commit
         '''
-    cfg_file = open("kea6-start.cfg", "w")
+    cfg_file = open("kea6start.cfg", "w")
     cfg_file.write(config)
     cfg_file.close()
 
@@ -177,7 +178,7 @@ def prepare_cfg_kea6_for_kea6_stop():
         # And stop it
         Dhcp6 shutdown
         '''
-    cfg_file = open("kea6-stop.cfg", "w")
+    cfg_file = open("kea6stop.cfg", "w")
     cfg_file.write(config)
     cfg_file.close()
 
@@ -215,9 +216,7 @@ def fabric_send_file (file_local):
     Send file to remote virtual machine
     """
     file_remote = file_local
-    with settings(host_string = world.cfg["mgmt_addr"],
-                  user = world.cfg["mgmt_user"],
-                  password = world.cfg["mgmt_pass"]):
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
         with hide('running', 'stdout'):
             put(file_local, file_remote)
     try:
@@ -233,13 +232,13 @@ def run_bindctl (opt):
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
         prepare_cfg_kea6_for_kea6_stop()
-        cfg_file = 'kea6-stop.cfg'
+        cfg_file = 'kea6stop.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
     elif opt == "start":
         get_common_logger().debug('starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
-        cfg_file = 'kea6-start.cfg'
+        cfg_file = 'kea6start.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
     elif opt == "conf":
