@@ -58,7 +58,6 @@ Feature: DHCPv6 values
 
 	References: RFC3315 section 11	
 	
-	
 @v6 @values
     Scenario: v6.values.address4
 
