@@ -64,7 +64,7 @@ Feature: Standard DHCPv6 options
 
 	References: v6.options RFC3319
 
-@v6 @options @sip
+@v6 @options @sip @rfc3319
     Scenario: v6.options.sip-servers
 	# Checks that server is able to serve SIP servers option to clients.
 
@@ -157,7 +157,7 @@ Feature: Standard DHCPv6 options
 
 	References: v6.options, v6.oro, RFC3646 
 
-@v6 @options @nis
+@v6 @options @nis @rfc3898
     Scenario: v6.options.nis-servers
 	# Checks that server is able to serve NIS server option to clients.
 
@@ -187,7 +187,7 @@ Feature: Standard DHCPv6 options
 
 	References: v6.options, v6.oro, RFC3898
 
-@v6 @options @nis @nisp
+@v6 @options @nis @nisp @rfc3898
     Scenario: v6.options.nisp-servers
 	# Checks that server is able to serve NIS+ servers option to clients.
 
@@ -208,7 +208,7 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3898
 
 	
-@v6 @options @nis
+@v6 @options @nis @rfc3898
     Scenario: v6.options.nisdomain
 	# Checks that server is able to serve NIS domain option to clients.
 
@@ -239,7 +239,7 @@ Feature: Standard DHCPv6 options
 	References: v6.options, v6.oro, RFC3898
 
 
-@v6 @options
+@v6 @options @rfc3898
     Scenario: v6.options.nispdomain
 	# Checks that server is able to serve NIS+ domain option to clients.
 
@@ -270,7 +270,7 @@ Feature: Standard DHCPv6 options
 
 	Tags: v6 options nisplus nis+ nisp-domain nis automated
 
-@v6 @options @sntp
+@v6 @options @sntp @rfc4075
     Scenario: v6.options.sntp-servers
 	# Checks that server is able to serve sntp-servers option to clients.
 
@@ -303,7 +303,7 @@ Feature: Standard DHCPv6 options
 
 	References: v6.options, v6.oro, RFC4075
 	
-@v6 @options
+@v6 @options @rfc4242
     Scenario: v6.options.info-refresh
 	# Checks that server is able to serve sntp-servers option to clients.
 
@@ -378,7 +378,7 @@ Feature: Standard DHCPv6 options
 
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
-@v6 @options @dns
+@v6 @options @dns @rfc3646
     Scenario: v6.options.negative
 	# Checks that server does not return option that it was not configured
 	# to return.

@@ -21,6 +21,4 @@ Feature: DHCPv6 custom options
 	Response MUST include option 100.
 	Response option 100 MUST contain uint8 123.
 
-	References: v6.user-options, v6.oro, RFC3315 section 22.8
-
-	Tags: v6 options preference automated
+	References: RFC3315 section 22.8

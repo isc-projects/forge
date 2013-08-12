@@ -1,4 +1,3 @@
-
 Feature: DHCPv6 options defined in subnet
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly.
@@ -23,9 +22,7 @@ Feature: DHCPv6 options defined in subnet
 
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
-	Tags: v6 options preference automated
-
-@v6 @options @subnet
+@v6 @options @subnet @rfc3646
     Scenario: v6.options.subnet.dns-servers
 	# Checks that server is able to serve dns-servers option to clients.
 
@@ -45,9 +42,7 @@ Feature: DHCPv6 options defined in subnet
 
 	References: v6.options, v6.oro, RFC3646
 
-	Tags: v6 options dns-servers automated
-
-@v6 @options @subnet
+@v6 @options @subnet @rfc3646
     Scenario: v6.options.subnet.domains
 	# Checks that server is able to serve domains option to clients.
 
@@ -67,9 +62,7 @@ Feature: DHCPv6 options defined in subnet
 
 	References: v6.options, v6.oro, RFC3646 
 
-	Tags: v6 options domain automated
-
-@v6 @options @subnet
+@v6 @options @subnet @rfc3646
     Scenario: v6.options.subnet.override
 	# Checks that server uses the option defined in subnet, if both subnet and global
 	# options are defined.
@@ -90,5 +83,3 @@ Feature: DHCPv6 options defined in subnet
 	Response option 24 MUST contain domains subnet.example.com.
 
 	References: v6.options, v6.oro, RFC3646 
-
-	Tags: v6 options domain automated
