@@ -1,0 +1,43 @@
+--- backup4	2013-08-08 01:02:01.749570872 +0200
++++ dhcp6_srv.cc	2013-08-08 01:15:27.059646290 +0200
+@@ -563,6 +563,16 @@
+     option_status->writeString(text, 1);
+     return (option_status);
+ }
++void
++Dhcpv6Srv::testServerid(const Pkt6Ptr& pkt){
++
++	OptionPtr serverid = pkt->getOption(D6O_SERVERID);
++	//if there is one serverid, test it:
++	if (duidToString(serverid) != duidToString(getServerID())){ 
++		//if received serverid isn't same with our, drop message
++		isc_throw(RFCViolation, "Receievd serverid isn't ours");
++	}
++}
+ 
+ void
+ Dhcpv6Srv::sanityCheck(const Pkt6Ptr& pkt, RequirementLevel clientid,
+@@ -612,7 +622,10 @@
+                       << server_ids.size() << "), exactly 1 expected in message "
+                       << pkt->getName());
+         }
+-
++        if (server_ids.size() == 1) {
++        	//let's test that received server id it's ours 
++        	testServerid(pkt);
++        } 
+         break;
+ 
+     case OPTIONAL:
+@@ -620,7 +633,10 @@
+             isc_throw(RFCViolation, "Too many (" << server_ids.size()
+                       << ") server-id options received in " << pkt->getName());
+         }
+-
++        if (server_ids.size() == 1) {
++        	//let's test that received server id it's ours 
++        	testServerid(pkt);
++        }
+     }
+     
+ 	Option::OptionCollection Relay_msgs = pkt->getOptions(D6O_RELAY_MSG);
