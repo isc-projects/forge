@@ -1,4 +1,4 @@
-Feature: Standard DHCPv6 message types
+Feature: DHCPv6 Rebind
     Those are tests for rebind - reply exchange.
     
 @v6 @rebind
