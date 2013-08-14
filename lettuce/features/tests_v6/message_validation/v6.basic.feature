@@ -106,7 +106,6 @@ Feature: Standard DHCPv6 message types
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client requests option 7.
 	Client sends REQUEST message.
 
 	Pass Criteria:
@@ -127,15 +126,31 @@ Feature: Standard DHCPv6 message types
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	
+	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 
+	References: RFC3315 sections 5.3, 18.1.4 
 	
 @basic @v6
     Scenario: v6.basic.message.release-reply
