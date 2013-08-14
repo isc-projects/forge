@@ -38,7 +38,7 @@ Feature: DHCPv6 Status Codes
 	
 	References: RFC3315 section 17.2.2.
 	
-@v6 @status_code
+@v6 @status_code @request
     Scenario: v6.statuscode.noaddravail.request
 
 	Test Setup:
@@ -78,7 +78,7 @@ Feature: DHCPv6 Status Codes
 	References: RFC3315 section 18.2.1.
 	
 	
-@v6 @status_code
+@v6 @status_code @renew
     Scenario: v6.statuscode.nobinding.renew
 	#when client id not known
 	Test Setup:
@@ -106,7 +106,7 @@ Feature: DHCPv6 Status Codes
 	
 	References: RFC3315 section 18.2.3
 
-@v6 @status_code
+@v6 @status_code @release
     Scenario: v6.statuscode.nobinding.release
 	#no address included to release
 	Test Setup:
@@ -145,7 +145,7 @@ Feature: DHCPv6 Status Codes
 	
 	References: RFC3315 section 18.2.6.
 	
-@v6 @status_code
+@v6 @status_code @release
     Scenario: v6.statuscode.nobinding.release.restart
 	#no address to release
 	#also can be design with decline
@@ -187,7 +187,7 @@ Feature: DHCPv6 Status Codes
 	
 	References: RFC3315 section 18.2.6.
 	
-@v6 @status_code
+@v6 @status_code @release
     Scenario: v6.statuscode.success.release
 	
 	Test Setup:
