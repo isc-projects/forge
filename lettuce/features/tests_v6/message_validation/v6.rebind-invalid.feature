@@ -27,7 +27,7 @@ Feature: Standard DHCPv6 rebind message
 	References: RFC3315 section 15.7
 	
 @v6 @rebind_invalid 
-    Scenario: v6.rebind.invalid.wrong_client_id
+    Scenario: v6.rebind.invalid.blank_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

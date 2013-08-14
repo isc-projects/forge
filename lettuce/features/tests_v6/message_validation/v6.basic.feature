@@ -66,13 +66,30 @@ Feature: Standard DHCPv6 message types
 	Server is started.
 
 	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	
-	References: RFC3315 section 5.3 
-	
+	References: RFC3315 sections 5.3, 18.2.2 
+
 @basic @v6
     Scenario: v6.basic.message.renew-reply
 

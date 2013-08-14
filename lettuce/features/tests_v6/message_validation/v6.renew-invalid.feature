@@ -103,7 +103,7 @@ Feature: Standard DHCPv6 renew message
 	References: RFC3315 section 15.6
 
 @v6 @renew_invalid
-    Scenario: v6.renew.invalid.wrong_client_id
+    Scenario: v6.renew.invalid.blank_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

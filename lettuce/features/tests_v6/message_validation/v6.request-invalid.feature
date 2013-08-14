@@ -106,7 +106,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid
-    Scenario: v6.request.invalid.wrong_client_id
+    Scenario: v6.request.invalid.blank_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

@@ -103,7 +103,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8
 
 @v6 @decline_invalid
-    Scenario: v6.decline.invalid.wrong_client_id
+    Scenario: v6.decline.invalid.blank_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

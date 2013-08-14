@@ -103,7 +103,7 @@ Feature: Standard DHCPv6 release message
 	References: RFC3315 section 15.9
 
 @v6 @release_invalid
-    Scenario: v6.release.invalid.wrong_client_id
+    Scenario: v6.release.invalid.blank_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

@@ -27,7 +27,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5 
 	
 @v6 @confirm_invalid 
-    Scenario: v6.confirm.invalid.wrong_client_id
+    Scenario: v6.confirm.invalid.blank_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -80,7 +80,22 @@ Feature: Standard DHCPv6 confirm message
 	Server MUST respond with REPLY message.
 	
 	References: RFC3315 section 15.5 
+
+@v6 @confirm_invalid
+    Scenario: v6.confirm.invalid.without_IA_NA_address
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client sends CONFIRM message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
 	
+	References: RFC3315 18.2.2
+
 @v6 @confirm_invalid @invalid_option @outline
     Scenario Outline: v6.confirm.invalid.options.outline
 
