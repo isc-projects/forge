@@ -126,4 +126,7 @@ Feature: Standard DHCPv6 confirm message
 	| rapid-commit      |
 	| interface-id      |
 	| reconfigure-accept|
-	
+	| preference        | 
+	| server-unicast    | 
+	| status-code       |
+	| reconfigure       | 

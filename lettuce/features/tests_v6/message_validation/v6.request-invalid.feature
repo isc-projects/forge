@@ -190,3 +190,7 @@ Feature: Standard DHCPv6 request message
 	| relay-msg      |
 	| rapid-commit   |
 	| interface-id   |
+	| preference     |
+	| server-unicast |
+	| status-code    |
+	| reconfigure    |

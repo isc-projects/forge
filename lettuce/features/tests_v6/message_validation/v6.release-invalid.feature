@@ -186,3 +186,7 @@ Feature: Standard DHCPv6 release message
 	| rapid-commit       |
 	| interface-id       |
 	| reconfigure-accept |
+	| preference         |
+	| server-unicast     |
+	| status-code        | 
+	| reconfigure        | 

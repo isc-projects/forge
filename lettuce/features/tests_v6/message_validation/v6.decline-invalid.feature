@@ -199,3 +199,7 @@ Feature: Standard DHCPv6 decline message
 	| rapid-commit       |
 	| interface-id       |
 	| reconfigure-accept |
+	| preference         |
+	| server-unicast     |
+	| status-code        | 
+	| reconfigure        | 

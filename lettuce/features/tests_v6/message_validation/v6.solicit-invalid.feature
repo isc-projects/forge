@@ -110,3 +110,8 @@ Feature: Standard DHCPv6 solicit message
 	| opt_name       |
 	| relay-msg      |
 	| interface-id   |
+	| preference     |
+	| server-unicast |
+	| status-code    |
+	| interface-id   |
+	| reconfigure    |
