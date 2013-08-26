@@ -148,7 +148,7 @@ class UserHelp ():
                             if line[0] == '@':
                                 self.check_tags(line)
                             elif "Scenario" in line:
-                                if "Outline" in line:
+                                if "Outline" in line and not outline_tag:
                                     outline_tag = True
                                     outline_tests_number += 1
                                     if more: print "\t\t\t" + line[18:]
@@ -158,7 +158,8 @@ class UserHelp ():
                                     if more: print "\t\t\t" + line[10:]
                             elif "|" in line and outline_tag:
                                 outline_generate_test += 1
-                                
+                            else:
+                                pass    
                                 
                     names.close()
             print "Totally: \n\t",outline_generate_test + tests_number - outline_tests_number,"tests in",tests_number,"simple tests and",outline_tests_number,"multi-tests. Grouped in",features_number,"features, and in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
@@ -325,6 +326,8 @@ will create separate scenario.                  | preference     |
     For tags always use '@' before without white spaces:
         good tag: @basic 
         bad tag: @ basic
+    For efficient work of Forge project DO NOT put lots of different tags in one feature. It takes a lot of time for lettuce to parsing tags. It's better to make two separate 
+    features (as it is with options.feature in options_validation set).
     
     You can use multiple parts like Test Procedure/ Pass Criteria but using Test Setup please be advised that remote server will be restarted,
     configuration removed, generated new configuration and start server with it.
