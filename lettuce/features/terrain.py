@@ -109,6 +109,7 @@ def initialize(scenario):
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.oro = None
+    world.opts = []
     
     # Setup scapy for v4
     conf.iface = IFACE
