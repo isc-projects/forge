@@ -26,7 +26,7 @@ Feature: DHCPv6 Status Codes
 
 	Test Procedure:
 	Client requests option 7.
-	Generate new client-id.
+	Generate new client.
 	Client sends SOLICIT message.
 	
 	Pass Criteria:
