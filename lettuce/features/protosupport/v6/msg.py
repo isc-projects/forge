@@ -209,6 +209,8 @@ def test_content(value_name):
         opt = get_option(world.srvmsg[0], 3)
         if str(opt.ianaopts[0].addr[-1]) in [":","0"]:
             assert False, "Invalid assigned address: %s" % opt.ianaopts[0].addr
+    else:
+        assert False, "testing %s not implemented" % value_name
 
 def client_add_saved_option(step, erase):
     """
@@ -345,13 +347,29 @@ def get_msg_type(msg):
 def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
-
+#     option_list = []
+#     x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+#     while x:
+#         if x.optcode == int(opt_code):
+#             option_list.append(x)
+#         x = x.payload
+#     
+#     if len(option_list) > 0:
+#         for each in option_list:
+#             each.show()
+#         return option_list
+#     else:
+#         return None
+    world.opts = []
+    tmp = None
     x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
     while x:
         if x.optcode == int(opt_code):
-            return x
+            tmp = x
+            world.opts.append(x)
         x = x.payload
-    return None
+        
+    return tmp
 
 def client_copy_option(step, option_name):
     """
@@ -483,44 +501,45 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     assert x, "Expected option " + str(opt_code) + " not present in the message."
     
     received = ""
-    if opt_code == 3:
-        #needs more work, IA_NA needs also StatusCode option in it!.
-#         x.show()
-#         received = x.ianaopts
-#         print received
-        #test_option_code(x.ianaopts[0])
-        received = x.ianaopts[0].addr
-    elif opt_code == 7:
-        received = str(x.prefval)
-    elif opt_code == 9:
-        pass
-        #received = str(x.optcode)
-    elif opt_code == 13:
-        received = str(x.statuscode)
-    elif opt_code == 21:
-        received = ",".join(x.sipdomains)
-    elif opt_code == 22:
-        received = ",".join(x.sipservers)
-    elif opt_code == 23:
-        received = ",".join(x.dnsservers)
-    elif opt_code == 24:
-        received = ",".join(x.dnsdomains)
-    elif opt_code == 27:
-        received = ",".join(x.nisservers)
-    elif opt_code == 28:
-        received = ",".join(x.nispservers)
-    elif opt_code == 29:
-        received = x.nisdomain
-    elif opt_code == 30:
-        received = x.nispdomain
-    elif opt_code == 31:
-        received = ",".join(x.sntpservers)
-    elif opt_code == 32:
-        received = str(x.reftime)
-    else:
-        received = unknown_option_to_str(data_type, x)
+    for each in world.opts:
+        if opt_code == 3:
+            #needs more work, IA_NA needs also StatusCode option in it!.
+    #         x.show()
+    #         received = x.ianaopts
+    #         print received
+            #test_option_code(x.ianaopts[0])
+            received += each.ianaopts[0].addr + ' '
+        elif opt_code == 7:
+            received = str(each.prefval)
+        elif opt_code == 9:
+            pass
+            #received = str(x.optcode)
+        elif opt_code == 13:
+            received = str(each.statuscode)
+        elif opt_code == 21:
+            received = ",".join(each.sipdomains)
+        elif opt_code == 22:
+            received = ",".join(each.sipservers)
+        elif opt_code == 23:
+            received = ",".join(each.dnsservers)
+        elif opt_code == 24:
+            received = ",".join(each.dnsdomains)
+        elif opt_code == 27:
+            received = ",".join(each.nisservers)
+        elif opt_code == 28:
+            received = ",".join(each.nispservers)
+        elif opt_code == 29:
+            received = each.nisdomain
+        elif opt_code == 30:
+            received = each.nispdomain
+        elif opt_code == 31:
+            received = ",".join(each.sntpservers)
+        elif opt_code == 32:
+            received = str(each.reftime)
+        else:
+            received = unknown_option_to_str(data_type, each)
 
-    assert expected == received, "Invalid " + str(opt_code) + " option received:" + received + \
+    assert expected in received, "Invalid " + str(opt_code) + " option received: " + received + \
                                  ", but expected " + str(expected)
 
 def receive_dhcp6_tcpdump(count = 1, timeout = 1):
@@ -579,7 +598,7 @@ def generate_new (step, opt):
     """
     Generate new client id with random MAC address.
     """
-    if opt == 'client-id':
+    if opt == 'client':
         from features.terrain import client_id, ia_id
         client_id(RandMAC())
         ia_id()
@@ -615,9 +634,9 @@ def client_option (msg):
                 if opt.optcode == 3:
                     break #if there is no IA_NA/TA in world.cliopts, break.. 
             else:
-                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, ianaopts = DHCP6OptIAAddress(addr = "2001:db8:1::1")) # if not, add IA_NA
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
         else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, ianaopts = DHCP6OptIAAddress(addr = "2001:db8:1::1", validlft = 30,preflft = 30 )) # if not, add IA_NA   
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA   
 
     if world.cfg["add_option"]["preference"] == True:
         msg /= DHCP6OptPref()
