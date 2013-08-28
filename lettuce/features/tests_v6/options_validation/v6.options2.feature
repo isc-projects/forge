@@ -3,6 +3,44 @@ Feature: Standard DHCPv6 options part 2
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly. Also testing information-request message.
 
+@v6 @options @preference
+    Scenario: v6.options.preference.inforequest
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with preference option with value 123.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends INFOREQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 7.
+	Response option 7 MUST contain value 123.
+
+	References: RFC3315 section 22.8
+
+@v6 @options @sip
+    Scenario: v6.options.sip-domains.inforequest
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 21.
+	Client sends INFOREQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 21.
+	Response option 21 MUST contain domains srv1.example.com,srv2.isc.org.
+
+	References: RFC3319
+
 @v6 @options @sip @rfc3319
     Scenario: v6.options.sip-servers.inforequest
 

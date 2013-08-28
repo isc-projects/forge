@@ -30,10 +30,9 @@ Feature: DHCPv6 Confirm
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 3.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 0.
-	#Scapy bug, uncomment this after bug fixing, kea6 fails 
+	Response MUST include option 3.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 0.
 	
 	References: RFC3315 sections 18.1.2, 18.2.2
 	
@@ -91,9 +90,8 @@ Feature: DHCPv6 Confirm
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 4.
-	#Scapy bug, uncomment this after bug fixing, kea6 fails 
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 4.
 	
 	References: RFC3315 sections 18.1.2, 18.2.2
 	

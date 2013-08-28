@@ -99,10 +99,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 3.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 0.
-	#Scapy bug, uncomment this after bug fixing, kea6 passes 
+	Response MUST include option 3.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 0.
 	
 @v6 @multipleIA
     Scenario: v6.multipleIA.addresses.release.partial.success
@@ -156,10 +155,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 3.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 0.
-	#Scapy bug, uncomment this after bug fixing, kea6 passes 
+	Response MUST include option 3.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 0.
 	
 	Test Procedure:
 	Client copies server-id option from received message.
@@ -168,8 +166,10 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#status codes test after scapy fixes
-	
+	Response MUST include option 3.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 0.
+	Response option 13 MUST contain statuscode 3.	
 	
 @v6 @multipleIA
     Scenario: v6.multipleIA.addresses.rebind.partial.success
@@ -223,20 +223,20 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 3.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 0.
-	#Scapy bug, uncomment this after bug fixing, kea6 passes 
+	Response MUST include option 3.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 0.
 	
 	Test Procedure:
-	Client copies server-id option from received message.
 	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#status codes test after scapy fixes
-	
+	Response MUST include option 3.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 0.
+	Response option 13 MUST contain statuscode 3.	
 	
 @v6 @multipleIA
     Scenario: v6.multipleIA.addresses.noaddravail
@@ -280,5 +280,5 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response MUST include option 3.
 	Response option 3 MUST contain address 3000::1.
 	Response option 3 MUST contain address 3000::2.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 2.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 2.

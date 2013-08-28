@@ -16,8 +16,8 @@ Feature: DHCPv6 values
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 2.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 2.
 
 	References: RFC3315 section 11
 
@@ -34,8 +34,8 @@ Feature: DHCPv6 values
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 2.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 2.
 
 	References: RFC3315 section 11	
 	
@@ -53,8 +53,8 @@ Feature: DHCPv6 values
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 2.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 2.
 
 	References: RFC3315 section 11	
 	
@@ -71,7 +71,7 @@ Feature: DHCPv6 values
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	#Response option 3 MUST contain option 13. 
-	#Response option 13 MUST contain statuscode 2.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 2.
 
 	References: RFC3315 section 11	

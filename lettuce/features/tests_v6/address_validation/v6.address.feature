@@ -121,8 +121,8 @@ Feature: Standard DHCPv6 address validation
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 13.
-	#Response option 13 MUST contain statuscode 5.
+	Response MUST include option 13.
+	Response option 13 MUST contain statuscode 5.
 	
 	References: RFC3315 section 18.2.1
 	
@@ -164,8 +164,8 @@ Feature: Standard DHCPv6 address validation
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 13.
-	#Response option 13 MUST contain statuscode 5.
+	Response MUST include option 13.
+	Response option 13 MUST contain statuscode 5.
 	
 	References: RFC3315 section 18.2.3
 	
@@ -200,10 +200,9 @@ Feature: Standard DHCPv6 address validation
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 3.
-	#Response option 3 MUST contain option 13. 
-	Response option 13 MUST contain statuscode 0.
-	#Scapy bug, uncomment this after bug fixing, kea6 failing this test! 
+	Response MUST include option 3.
+	Response option 3 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 5.
 	
 	References: RFC3315 section 18.2.6.
 	
