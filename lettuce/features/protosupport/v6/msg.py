@@ -367,7 +367,7 @@ def client_copy_option(step, option_name):
 
     assert option_name in options6, "Unsupported option name " + option_name
     opt_code = options6.get(option_name)
-    opt = get_option(get_last_response(), opt_code)
+    opt = get_option(world.srvmsg[0], opt_code)
     
     assert opt, "Received message does not contain option " + option_name
     opt.payload = None
@@ -474,36 +474,41 @@ def unknown_option_to_str(data_type, opt):
     else:
         assert False, "Parsing of option format " + data_type + " not implemented."
 
-def test_option_code(msg):
-    print msg.statuscode
-
-        
 def response_check_option_content(step, opt_code, expect, data_type, expected):
-
+    flag = False
     opt_code = int(opt_code)
 
     assert len(world.srvmsg) != 0, "No response received."
-
+    if opt_code == 13: # that's little messy but option 13 is unique, Forge checks it only inside option 3.
+        opt_code = 3
+        flag = True 
     x = get_option(world.srvmsg[0], opt_code)
-
-    assert x, "Expected option " + str(opt_code) + " not present in the message."
     
+    if flag:
+        opt_code = 13
+        
+    assert x, "Expected option " + str(opt_code) + " not present in the message."
+  
     received = ""
     for each in world.opts:
         if opt_code == 3:
-            #needs more work, IA_NA needs also StatusCode option in it!.
-    #         x.show()
-    #         received = x.ianaopts
-    #         print received
-            #test_option_code(x.ianaopts[0])
-            received += each.ianaopts[0].addr + ' '
+            try:
+                if each.ianaopts[0].optcode == 13:
+                    received += str(each.ianaopts[0].optcode)
+                elif each.ianaopts[0].optcode == 5:
+                    received += each.ianaopts[0].addr + ' '
+            except:
+                pass
         elif opt_code == 7:
             received = str(each.prefval)
         elif opt_code == 9:
             pass
             #received = str(x.optcode)
         elif opt_code == 13:
-            received = str(each.statuscode)
+            try:
+                received += str(each.ianaopts[0].statuscode) + ' '
+            except:
+                pass
         elif opt_code == 21:
             received = ",".join(each.sipdomains)
         elif opt_code == 22:
