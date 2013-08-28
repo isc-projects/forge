@@ -80,7 +80,30 @@ Feature: Standard DHCPv6 solicit message
 	Server MUST respond with ADVERTISE message.
 
 	References: RFC3315 section 15.2, 17.2.1
-	
+
+@v6 @solicit_invalid 
+    Scenario: v6.solicit.invalid.with_multiple_client_id
+
+ 	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies client-id option from received message.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST NOT respond with ADVERTISE message.
+
+	References: RFC3315 section 15.2
+
 @v6 @solicit_invalid @invalid_option @outline
     Scenario Outline: v6.solicit.invalid.options.outline
 	#This is outline scenario, Examples will be filled in <...>, each example makes new test scenario.

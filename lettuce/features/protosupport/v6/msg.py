@@ -347,19 +347,7 @@ def get_msg_type(msg):
 def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
-#     option_list = []
-#     x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
-#     while x:
-#         if x.optcode == int(opt_code):
-#             option_list.append(x)
-#         x = x.payload
-#     
-#     if len(option_list) > 0:
-#         for each in option_list:
-#             each.show()
-#         return option_list
-#     else:
-#         return None
+
     world.opts = []
     tmp = None
     x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
