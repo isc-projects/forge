@@ -1,3 +1,9 @@
+15. [func] wlodek
+		- multiple IA options in msg
+		
+14. [bug] wlodek
+		- Scapy statuscode fixed, all tests now operational
+
 13. [bug] wlodek
 		- IA_NA option fixed  
 		- double option bug fixed
