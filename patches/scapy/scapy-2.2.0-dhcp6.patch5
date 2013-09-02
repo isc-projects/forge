@@ -1,0 +1,11 @@
+--- /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-09-02 10:54:04.252221302 +0200
++++ /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-09-02 10:55:52.432211633 +0200
+@@ -727,7 +727,7 @@
+                     IntField("iaid", 0),
+                     IntField("T1", 0),
+                     IntField("T2", 0),
+-                    PacketListField("iapdopt", [], DHCP6OptIAPrefix,
++                    PacketListField("iapdopt", [],_DHCP6OptGuessPayload,
+                                     length_from = lambda pkt: pkt.optlen-12) ]
+ 
+ class DHCP6OptNISServers(_DHCP6OptGuessPayload):                 #RFC3898
