@@ -176,7 +176,7 @@ iface "eth0" {
  valid-lifetime 7200
  
  class {
-   pool 2001:db8:1::/64
+   pool 3000::/64
  }
 
  # the following lines instruct server to grant each client
@@ -185,7 +185,7 @@ iface "eth0" {
  # 2001:db8:2:6485:0/64 and
  # 2001:db8:3:6485:0/112
  pd-class {
-        pd-pool 2001:db8:2::/48
+        pd-pool 3000:1::/48
 
         # uncomment following line to assign 2 prefixes for 2 different pools
 # Note: each client will receive 1 prefix from each pool.

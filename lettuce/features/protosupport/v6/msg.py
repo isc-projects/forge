@@ -517,6 +517,14 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
             received = ",".join(each.dnsservers)
         elif opt_code == 24:
             received = ",".join(each.dnsdomains)
+        elif opt_code == 25:
+            try:
+                if each.iapdopt[0].optcode == 13:
+                    received += str(each.iapdopt[0].optcode)
+                elif each.iapdopt[0].optcode == 26:
+                    received += each.iapdopt[0].prefix + ' '
+            except:
+                pass
         elif opt_code == 27:
             received = ",".join(each.nisservers)
         elif opt_code == 28:
@@ -581,9 +589,11 @@ def client_does_include(step, opt_type):
         world.cfg["add_option"]["reconfig_accept"] = True
     elif opt_type == "option-request":
         world.cfg["add_option"]["option_request"] = True
+    elif opt_type == "IA-PD":
+        world.cfg["add_option"]["IA_PD"] = True
     elif opt_type == "IA-NA":
         world.cfg["add_option"]["IA_NA"] = False
-
+        
     else:
         assert "unsupported option: " + opt_type
 
@@ -605,7 +615,6 @@ def client_option (msg):
     """
     Add options (like server-id, rapid commit) to message. This function refers to building message
     """
-
     #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
     if world.cfg["add_option"]["wrong_server_id"] == True:
         msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC() ))
@@ -655,6 +664,9 @@ def client_option (msg):
     if world.cfg["add_option"]["reconfig_accept"] == True:
         msg /= DHCP6OptReconfAccept()
 
+    if world.cfg["add_option"]["IA_PD"] == True:
+        msg /= DHCP6OptIA_PD()
+
     if world.cfg["add_option"]["option_request"] == True:
         msg /= DHCP6OptOptReq() #this adds 23 and 24 opt by default, we can leave it that way in this point.
         
@@ -695,6 +707,6 @@ def build_msg(msg):
     
     #add all rest options to message. 
     msg = client_option (msg)
-
+    
     return msg
 

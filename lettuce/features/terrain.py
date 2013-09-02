@@ -27,7 +27,8 @@ add_option = {'client_id' : True,
               'wrong_client_id' : False,
               'wrong_server_id' : False,
               'IA_NA': True,
-              'IA_TA': False
+              'IA_TA': False,
+              'IA_PD': False
               }
     
 def set_options():
