@@ -17,19 +17,26 @@
 from fabric.api import run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
+from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, DIBBLER_INSTALL_DIR
 import os
 
+def fabric_cmd (cmd, hide_opt):
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
+        if hide_opt:
+            with hide('running', 'stdout', 'stderr', 'output','warnings'):
+                run(cmd, pty = True)
+        else:
+            run(cmd, pty = True)
 
 def restart_srv():
     try:
-        fabric_cmd ("(dibbler-server restart); sleep 1;", 1)
+        fabric_cmd ("("+DIBBLER_INSTALL_DIR+"dibbler-server restart); sleep 1;", 0)
     except:
         pass
 
 def stop_srv():
     try:
-        fabric_cmd ("(dibbler-server stop); sleep 1;", 1)
+        fabric_cmd ("("+DIBBLER_INSTALL_DIR+"dibbler-server stop); sleep 1;", 0)
     except:
         pass
 
@@ -63,16 +70,24 @@ def prepare_cfg_subnet(step, subnet, pool):
        
     if (pool == "default"):
         pool = "2001:db8:1::0-2001:db8:1::ffff"
-        
+
+    eth = SERVER_IFACE
     world.cfg["subnet"] = subnet
     add_defaults() #add in future configuration of those functions
     pointer_open = '{'
     pointer_close = '}'
     world.cfg["conf"] += '''\
+    log-level 8
+    log-mode short
 # subnet defintion
   class {pointer_open}
+   T1 1800
+   T2 2700
+   prefered-lifetime 3600
+   valid-lifetime 7200
    pool {pool}
-  {pointer_close}
+
+    {pointer_close}
         '''.format(**locals())
         
     
@@ -137,8 +152,58 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
 
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
-    cfg_file.write(world.cfg["conf"])
-    cfg_file.write('}')#add last } for closing file
+    #cfg_file.write(world.cfg["conf"])
+    #cfg_file.write('}')#add last } for closing file
+    
+    conf = """
+#log-level 1
+
+# Don't log full date
+log-mode short
+
+iface "eth0" {
+
+# clients should renew every half an hour
+ T1 1800
+
+# In case of troubles, after 45 minutes, ask any server
+ T2 2700
+
+# Addresses should be prefered for an hour
+ prefered-lifetime 3600
+
+# and should be valid for 2 hours
+ valid-lifetime 7200
+ 
+ class {
+   pool 2001:db8:1::/64
+ }
+
+ # the following lines instruct server to grant each client
+ # 1 or 2 prefixes (if you have uncommented second line with pd-pool or not).
+ # For example, client might get
+ # 2001:db8:2:6485:0/64 and
+ # 2001:db8:3:6485:0/112
+ pd-class {
+        pd-pool 2001:db8:2::/48
+
+        # uncomment following line to assign 2 prefixes for 2 different pools
+# Note: each client will receive 1 prefix from each pool.
+# pd-pool 2001:db8:3::/48
+
+# length of assigned prefixes
+        pd-length 64
+
+# you can also specify t1,t2, prefered and valid lifetimes on a per pool basis
+        T1 11111
+        T2 22222
+    }
+ 
+}
+
+
+    """
+    cfg_file.write(conf)
     cfg_file.close()
 
 def send_file (file_local):
@@ -156,15 +221,6 @@ def send_file (file_local):
     except OSError:
         get_common_logger().error('File %s cannot be removed' % file_local)
 
-
-def fabric_cmd (cmd, hide_opt):
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        if hide_opt:
-            with hide('running', 'stdout', 'stderr', 'output','warnings'):
-                run(cmd, pty = True)
-        else:
-            run(cmd, pty = True)
-
 def start_srv():
     """
     Start ISC-DHCPv6 with generated config.
@@ -173,5 +229,6 @@ def start_srv():
     stop_srv()
     get_common_logger().debug("Starting Dibbler with generated config:")
     send_file (world.cfg["cfg_file"])
-    fabric_cmd ('(rm nohup.out; nohup dibbler-server start & ); sleep 2;', 0)
-
+    fabric_cmd ('(rm nohup.out; nohup '+DIBBLER_INSTALL_DIR+'dibbler-server start & ); sleep 2;', 0)
+    #fabric_cmd ("("+DIBBLER_INSTALL_DIR+"dibbler-server start); sleep 10;", 0)
+    #fabric_cmd ('('+DIBBLER_INSTALL_DIR+'dibbler-server start & ); sleep 10;', 0)
