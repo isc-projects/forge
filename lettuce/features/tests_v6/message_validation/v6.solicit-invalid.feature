@@ -136,5 +136,4 @@ Feature: Standard DHCPv6 solicit message
 	| preference     |
 	| server-unicast |
 	| status-code    |
-	| interface-id   |
 	| reconfigure    |

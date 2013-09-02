@@ -1,7 +1,6 @@
  TODO:
- - new tests ;)
- - rewrite run_test.py
- - repair InfoRequest
-
+ - vendor option
+ - reconfigure message
+ 
  - Write more reasonable documentation (tomek)
  - Verify documentation and amend as necessary (jeff)

@@ -148,7 +148,7 @@ class UserHelp ():
                             if line[0] == '@':
                                 self.check_tags(line)
                             elif "Scenario" in line:
-                                if "Outline" in line and not outline_tag:
+                                if "Outline" in line:
                                     outline_tag = True
                                     outline_tests_number += 1
                                     if more: print "\t\t\t" + line[18:]
@@ -162,7 +162,7 @@ class UserHelp ():
                                 pass    
                                 
                     names.close()
-            print "Totally: \n\t",outline_generate_test + tests_number - outline_tests_number,"tests in",tests_number,"simple tests and",outline_tests_number,"multi-tests. Grouped in",features_number,"features, and in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
+            print "Totally: \n\t",outline_generate_test + tests_number - outline_tests_number,"tests. ",tests_number,"simple tests and",outline_tests_number,"multi-tests. Grouped in",features_number,"features, and in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
             if not more: print 'For more information, use help.py to generate UserHelp document.\n'
             
     def steps(self):
