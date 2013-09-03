@@ -528,7 +528,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
                 #every.show()
                 try:
                     if every.optcode == 13:
-                        received += str(every.optcode)
+                        received += ' ' + str(every.statuscode)
                     elif every.optcode == 26:
                         received += every.prefix + ' '
                 except:
@@ -615,7 +615,11 @@ def generate_new (step, opt):
         ia_id()
     elif opt == 'IA':
         from features.terrain import ia_id
-        ia_id()    
+        ia_id()
+    elif opt == 'IA_PD':
+        from features.terrain import ia_pd
+        ia_pd()
+
     else:
         assert  opt + " generation unsupported" 
 
@@ -673,7 +677,7 @@ def client_option (msg):
         msg /= DHCP6OptReconfAccept()
 
     if world.cfg["add_option"]["IA_PD"] == True:
-        msg /= DHCP6OptIA_PD()
+        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"])
 
     if world.cfg["add_option"]["option_request"] == True:
         msg /= DHCP6OptOptReq() #this adds 23 and 24 opt by default, we can leave it that way in this point.

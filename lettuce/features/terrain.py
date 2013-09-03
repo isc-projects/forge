@@ -43,6 +43,9 @@ def client_id (mac):
 def ia_id ():
     world.cfg["ia_id"] = randint(1,99999)
 
+def ia_pd ():
+    world.cfg["ia_pd"] = randint(1,99999)
+
 @before.all
 def server_start():
     """
@@ -126,6 +129,9 @@ def initialize(scenario):
         
     if (not hasattr(world.cfg, "ia_id")):
         ia_id ()
+        
+    if (not hasattr(world.cfg, "ia_pd")):
+        ia_pd ()
     # Some tests can modify the settings. If the tests fail half-way, or
     # don't clean up, this can leave configurations or data in a bad state,
     # so we copy them from originals before each scenario
