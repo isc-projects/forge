@@ -1,3 +1,9 @@
+17.[func] wlodek
+		- support for Prefix Delegation (RFC 3633) 
+
+16. [bug] wlodek
+		- multiple copy-from-received message procedure now fully functional 
+
 15. [func] wlodek
 		- multiple IA options in msg
 		
