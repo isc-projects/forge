@@ -323,8 +323,8 @@ def send_wait_for_message(step, type, presence, exp_message):
 
 def get_last_response():
     assert len(world.srvmsg), "No response received."
-
-    return world.srvmsg[len(world.srvmsg) - 1]
+    msg = world.srvmsg[len(world.srvmsg) - 1].copy()
+    return msg 
 
 def get_msg_type(msg):
     msg_types = { 
@@ -347,10 +347,13 @@ def get_msg_type(msg):
 def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
-
+    
+    # message needs to be copied, otherwise we changing original message what makes sometimes multiple copy impossible. 
+    tmp_msg = msg.copy()
+    
     world.opts = []
     tmp = None
-    x = msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+    x = tmp_msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
     while x:
         if x.optcode == int(opt_code):
             tmp = x
@@ -475,18 +478,15 @@ def unknown_option_to_str(data_type, opt):
         assert False, "Parsing of option format " + data_type + " not implemented."
 
 def response_check_option_content(step, opt_code, expect, data_type, expected):
-    flag = False
     opt_code = int(opt_code)
-
+    x = None
     assert len(world.srvmsg) != 0, "No response received."
-    if opt_code == 13: # that's little messy but option 13 is unique, Forge checks it only inside option 3.
-        opt_code = 3
-        flag = True 
-    x = get_option(world.srvmsg[0], opt_code)
     
-    if flag:
-        opt_code = 13
-        
+    if opt_code == 13: # that's little messy but option 13 is unique, Forge checks it inside option 3 and 25.
+        x = get_option(world.srvmsg[0], 3) #updates for 25 option ?!
+    else:
+        x = get_option(world.srvmsg[0], opt_code)
+    
     assert x, "Expected option " + str(opt_code) + " not present in the message."
   
     received = ""
@@ -505,8 +505,14 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
             pass
             #received = str(x.optcode)
         elif opt_code == 13:
+            
             try:
                 received += str(each.ianaopts[0].statuscode) + ' '
+            except:
+                pass
+            try:
+                each.iapdopt[0].show()
+                received += str(each.iapdopt[0].statuscode) + ' '
             except:
                 pass
         elif opt_code == 21:
@@ -518,13 +524,15 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
         elif opt_code == 24:
             received = ",".join(each.dnsdomains)
         elif opt_code == 25:
-            try:
-                if each.iapdopt[0].optcode == 13:
-                    received += str(each.iapdopt[0].optcode)
-                elif each.iapdopt[0].optcode == 26:
-                    received += each.iapdopt[0].prefix + ' '
-            except:
-                pass
+            for every in each.iapdopt:
+                #every.show()
+                try:
+                    if every.optcode == 13:
+                        received += str(every.optcode)
+                    elif every.optcode == 26:
+                        received += every.prefix + ' '
+                except:
+                    pass
         elif opt_code == 27:
             received = ",".join(each.nisservers)
         elif opt_code == 28:
