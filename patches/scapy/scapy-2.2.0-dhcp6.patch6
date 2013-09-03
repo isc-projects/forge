@@ -1,0 +1,40 @@
+--- /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-09-03 09:52:07.625901176 +0200
++++ /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-09-03 10:16:45.321922425 +0200
+@@ -711,23 +711,28 @@
+     name = "DHCP6 Option - IA_PD Prefix option"
+     fields_desc = [ ShortEnumField("optcode", 26, dhcp6opts),
+                     FieldLenField("optlen", None, length_of="iaprefopts",
+-                                  adjust = lambda pkt,x: x+26),
++                                  adjust = lambda pkt,x: x+25),
+                     IntField("preflft", 0),
+                     IntField("validlft", 0),
+-                    ByteField("plen", 48),  # TODO: Challenge that default value
+-                    IP6Field("prefix", "2001:db8::"), # At least, global and won't hurt
++                    ByteField("plen", 0),  # TODO: Challenge that default value
++                    IP6Field("prefix", "::"), # At least, global and won't hurt
+                     StrLenField("iaprefopts", "",
+-                                length_from = lambda pkt: pkt.optlen-26) ]
++                                length_from = lambda pkt: pkt.optlen-25) ]
++    def guess_payload_class(self, payload):
++        return Padding
++
++class _IAPDOptField(_IANAOptField):	
++	pass
+ 
+ class DHCP6OptIA_PD(_DHCP6OptGuessPayload):                       #RFC3633
+     name = "DHCP6 Option - Identity Association for Prefix Delegation"
+     fields_desc = [ ShortEnumField("optcode", 25, dhcp6opts),
+                     FieldLenField("optlen", None, length_of="iapdopt",
+-                                  adjust = lambda pkt,x: x+12),
+-                    IntField("iaid", 0),
+-                    IntField("T1", 0),
+-                    IntField("T2", 0),
+-                    PacketListField("iapdopt", [],_DHCP6OptGuessPayload,
++                                  fmt="!H", adjust = lambda pkt,x: x+12),
++                    IntField("iaid", None),
++                    IntField("T1", None),
++                    IntField("T2", None),
++                    _IAPDOptField("iapdopt", [],_DHCP6OptGuessPayload,
+                                     length_from = lambda pkt: pkt.optlen-12) ]
+ 
+ class DHCP6OptNISServers(_DHCP6OptGuessPayload):                 #RFC3898
