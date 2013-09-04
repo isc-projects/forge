@@ -352,14 +352,21 @@ def get_option(msg, opt_code):
     tmp_msg = msg.copy()
     
     world.opts = []
+    world.subopts = []
     tmp = None
     x = tmp_msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
     while x:
         if x.optcode == int(opt_code):
             tmp = x
             world.opts.append(x)
+
+        if x.optcode == 3: # add IA Address and Status Code as separate option
+            for each in x.ianaopts:
+                world.subopts.append(each)
+        if x.optcode == 25: # add IA PrefixDelegation and Status Code as separate option
+            for each in x.iapdopt:
+                world.subopts.append(each)
         x = x.payload
-        
     return tmp
 
 def client_copy_option(step, option_name):
@@ -483,12 +490,14 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     assert len(world.srvmsg) != 0, "No response received."
     
     if opt_code == 13: # that's little messy but option 13 is unique, Forge checks it inside option 3 and 25.
-        x = get_option(world.srvmsg[0], 3) #updates for 25 option ?!
+        x = get_option(world.srvmsg[0], 3) 
+        if x == None:
+            x = get_option(world.srvmsg[0], 25)
     else:
         x = get_option(world.srvmsg[0], opt_code)
     
     assert x, "Expected option " + str(opt_code) + " not present in the message."
-  
+
     received = ""
     for each in world.opts:
         if opt_code == 3:
@@ -533,6 +542,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
                         received += every.prefix + ' '
                 except:
                     pass
+
         elif opt_code == 27:
             received = ",".join(each.nisservers)
         elif opt_code == 28:
@@ -547,6 +557,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
             received = str(each.reftime)
         else:
             received = unknown_option_to_str(data_type, each)
+    
 
     assert expected in received, "Invalid " + str(opt_code) + " option received: " + received + \
                                  ", but expected " + str(expected)
@@ -621,7 +632,7 @@ def generate_new (step, opt):
         ia_pd()
 
     else:
-        assert  opt + " generation unsupported" 
+        assert False,  opt + " generation unsupported" 
 
 def client_option (msg):
     """
