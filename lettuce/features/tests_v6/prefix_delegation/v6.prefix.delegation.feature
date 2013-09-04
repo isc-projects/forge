@@ -62,7 +62,194 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain prefix 3000:1:.
 	Response MUST include option 3.
 	Response option 3 MUST contain address 3000::.
-	
+
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.multiplePD.request
+	Scenario: prefix.delegation.request.release
+	
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	#Server is configured with prefix-delegation option with value 3000:1::.
+	#pool of two prefixes
+	Server is started.
+	
+	Test Procedure:
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 26.
+	
+	Test Procedure:
+	Client copies IA_PD option from received message.
+	Client copies server-id option from received message.
+	Client does NOT include IA-NA.
+	Client sends RELEASE message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 13. 
+	Response option 13 MUST contain statuscode 0.
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.noprefixavail.relesa
+  	#assign 2 prefixes, try third, fail, release one, assign one more time with success.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	#Server is configured with prefix-delegation option with value 3000:1::.
+	#pool of two prefixes
+	Server is started.
+	
+	Test Procedure:
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 26.
+	
+	Test Procedure:
+	Generate new IA_PD.
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 26.
+	#both prefixes assigned.
+	
+	Test Procedure:
+	Client saves IA_PD option from received message.
+	Generate new IA_PD.
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 13. 
+	#Response option 13 MUST contain statuscode 6.
+	
+	Test Procedure:
+	Client adds saved options. And DONT Erase.
+	Client copies server-id option from received message.
+	Client does NOT include IA-NA.
+	Client sends RELEASE message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	#Response MUST include option 25.
+	#Response option 25 MUST contain option 13. 
+	#Response option 13 MUST contain statuscode 0.
+
+	Test Procedure:
+	Generate new IA_PD.
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 13. 
+	#Response option 13 MUST contain statuscode 6.
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.noprefixavail
   
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	#Server is configured with prefix-delegation option with value 3000:1::.
+	#pool of two prefixes
+	Server is started.
+	
+	Test Procedure:
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 26.
+	
+	Test Procedure:
+	Generate new IA_PD.
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 26.
+	#both prefixes assigned.
+	
+	Test Procedure:
+	Generate new IA_PD.
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	#Response option 25 MUST contain option 13. 
+	#Response option 13 MUST contain statuscode 6.
+	
+	
