@@ -199,11 +199,13 @@ def unicast_addres(step):
     """
     world.cfg["unicast"] = True
 
-def add_option_to_msg(msg, option):#this is request_option option
+def add_option_to_msg(msg, option):
+    # this is request_option option
     msg /= option
     return msg
 
 def test_content(value_name):
+    # !! probably REMOVE!!
     #this is only beta version of value testing
     if value_name in "address":
         opt = get_option(world.srvmsg[0], 3)
@@ -351,21 +353,28 @@ def get_option(msg, opt_code):
     # message needs to be copied, otherwise we changing original message what makes sometimes multiple copy impossible. 
     tmp_msg = msg.copy()
     
+    # clear all opts/subopts
     world.opts = []
     world.subopts = []
     tmp = None
     x = tmp_msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+    
+    # check all message, for expected option and all suboptions in IA_NA/IA_PD
     while x:
         if x.optcode == int(opt_code):
             tmp = x
             world.opts.append(x)
 
-        if x.optcode == 3: # add IA Address and Status Code as separate option
+        # add IA Address and Status Code as separate option
+        if x.optcode == 3: 
             for each in x.ianaopts:
                 world.subopts.append(each)
-        if x.optcode == 25: # add IA PrefixDelegation and Status Code as separate option
+                
+        # add IA PrefixDelegation and Status Code as separate option
+        if x.optcode == 25: 
             for each in x.iapdopt:
                 world.subopts.append(each)
+                
         x = x.payload
     return tmp
 
@@ -377,11 +386,15 @@ def client_copy_option(step, option_name):
 
     assert option_name in options6, "Unsupported option name " + option_name
     opt_code = options6.get(option_name)
+    
+    # find and copy option
     opt = get_option(world.srvmsg[0], opt_code)
     
     assert opt, "Received message does not contain option " + option_name
+    
+    # payload need to be 'None'otherwise we copy all options from one we are
+    # looking for till the end of the message
     opt.payload = None
-    #opt.show()
     add_client_option(opt)
 
 def response_check_include_option(step, must_include, opt_code):
@@ -396,84 +409,6 @@ def response_check_include_option(step, must_include, opt_code):
         assert opt, "Expected option " + opt_code + " not present in the message."
     else:
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
-
-#===============================================================================
-# #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# 
-# def many_byte_xor(buf, key):
-#     buf = bytearray(buf)
-#     key = bytearray(key)
-#     key_len = len(key)
-#     for i, bufbyte in enumerate(buf):
-#         buf[i] = bufbyte ^ key[i % key_len]
-#     return str(buf)
-# 
-# def process_packets(infile):
-#     pkts = rdpcap(infile)
-#     cooked=[]
-#     for p in pkts:
-#         # You may have to adjust the payload depth here:
-#         # i.e. p.payload.payload.payload
-#         pkt_payload = str(p.payload.payload)
-#         pkt_offset = str(p.payload.payload)[:3]
-#         if pkt_payload and pkt_offset:
-#             pmod=p
-#             # You may have to adjust the payload depth here:
-#             p.payload.payload=many_byte_xor(pkt_payload, pkt_offset)
-#             cooked.append(pmod)
-# 
-#     
-#     pkt = cooked[0]
-#     print pkt.payload.payload
-#     strpayload = str(pkt.payload.payload)
-#     fd=open('/tmp/file', 'w')
-#     fd.write(strpayload)
-#     fd.close()
-#     print os.system('file /tmp/file')
-#     print "WYNIK: ", cooked
-#     wrpcap("p.pcap", cooked)
-# 
-# 
-# def response_check_include_message(step, opt_code, expect, data_type, expected):
-#     """
-#     Checking included messages in relay-reply message.  
-#     still not operational :/
-#     """
-#     #UNDER CONSTRUCTION :)
-#     #UNDER CONSTRUCTION :)
-# #    assert len(world.srvmsg) != 0, "No response received."
-#     x = world.srvmsg[0].getlayer(2)
-#     print "msg:"
-#     x.show()
-#    
-# #     while x:
-# #         print "!"
-# #         if x.optcode == 9:
-# #             #if type(x.payload) == msg_types[msg_type]:
-# #             
-# #             z2 = hexdump(x.payload.data)
-# #             wrpcap("p.pcap", x)
-# #             process_packets("p.pcap")
-# #         x = x.payload
-#     
-# #      0th is IPv6, 1st is UDP, 2nd should be DHCP6
-#   
-# #     while x:
-# #         for msg_name in msg_types.keys():
-# #             if type(x) == msg_types[msg_name]:
-# #                 assert "Expected message " + msg_type + " present in the message."
-# #         x = x.payload
-# #          
-# #         x.show()
-# 
-# #     assert "Expected message " + msg_type + " not present in the message."
-# #     if must_include:
-# #         assert opt, "Expected message " + msg_type + " not present in the message."
-# #     else:
-# #         assert opt == None, "Unexpected message" + msg_type + " found in the message."    
-#===============================================================================
-    
-    
     
 # Returns text representation of the option, interpreted as specified by data_type
 def unknown_option_to_str(data_type, opt):
@@ -485,21 +420,33 @@ def unknown_option_to_str(data_type, opt):
         assert False, "Parsing of option format " + data_type + " not implemented."
 
 def response_check_option_content(step, opt_code, expect, data_type, expected):
+    
     opt_code = int(opt_code)
-    x = None
-    assert len(world.srvmsg) != 0, "No response received."
-    
-    if opt_code == 13: # that's little messy but option 13 is unique, Forge checks it inside option 3 and 25.
-        x = get_option(world.srvmsg[0], 3) 
-        if x == None:
-            x = get_option(world.srvmsg[0], 25)
-    else:
-        x = get_option(world.srvmsg[0], opt_code)
-    
-    assert x, "Expected option " + str(opt_code) + " not present in the message."
+    # without any msg received, fail test
+    assert len(world.srvmsg) != 0, "No response received."  
+
+    # get that one option, also fill world.opts (for multiple options same type, e.g. IA_NA)
+    # and world.subopts for suboptions for e.g. IA Address or StatusCodes
+    x = get_option(world.srvmsg[0], opt_code) 
 
     received = ""
+
+    # if we are looking for sub option test them:
+    # for now we take first sub option 
+    if data_type in "sub-option":
+        for each in world.subopts:
+            if each.optcode == int(expected):
+                x = each
+                x.show()
+                received += str(each.optcode)
+                break
+                
+    # in case we didn't find any opt (in options or sub options), fail test:        
+    assert x, "Expected option " + str(opt_code) + " not present in the message."
+
+    # test all collected options:
     for each in world.opts:
+        # TEST IT! I think there is no more need for this, also with 25!
         if opt_code == 3:
             try:
                 if each.ianaopts[0].optcode == 13:
@@ -508,22 +455,24 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
                     received += each.ianaopts[0].addr + ' '
             except:
                 pass
+            
         elif opt_code == 7:
             received = str(each.prefval)
         elif opt_code == 9:
             pass
             #received = str(x.optcode)
         elif opt_code == 13:
-            
+            # here we need to test first options, then sub options!
             try:
-                received += str(each.ianaopts[0].statuscode) + ' '
+                received += 'optcode: ' + str(each.optcode)
+                received += 'status code:' + str(each.statuscode)
             except:
-                pass
-            try:
-                each.iapdopt[0].show()
-                received += str(each.iapdopt[0].statuscode) + ' '
-            except:
-                pass
+                for each in world.subopts:
+                    try:
+                        received += 'status code:' + str(each.ianaopts[0].statuscode)
+                    except:
+                        pass
+                    
         elif opt_code == 21:
             received = ",".join(each.sipdomains)
         elif opt_code == 22:
@@ -534,7 +483,6 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
             received = ",".join(each.dnsdomains)
         elif opt_code == 25:
             for every in each.iapdopt:
-                #every.show()
                 try:
                     if every.optcode == 13:
                         received += ' ' + str(every.statuscode)
@@ -556,9 +504,10 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
         elif opt_code == 32:
             received = str(each.reftime)
         else:
+            # if you came to this place, need to do some implementation with new options 
             received = unknown_option_to_str(data_type, each)
     
-
+    # test if expected option/suboption/value is in all collected options/suboptions/values 
     assert expected in received, "Invalid " + str(opt_code) + " option received: " + received + \
                                  ", but expected " + str(expected)
 
@@ -696,6 +645,7 @@ def client_option (msg):
     if world.cfg["add_option"]["relay_msg"] == True:
         msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
     
+    # set all "add_option" True/False values to default.
     set_options()
     return msg
  
