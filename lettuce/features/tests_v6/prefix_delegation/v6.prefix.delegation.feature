@@ -99,7 +99,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 25.
+	#Response MUST include option 25.
 	#Response option 25 MUST contain option 13. 
 	Response option 13 MUST contain statuscode 0.
 
