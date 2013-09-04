@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Copyright (C) 2013 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
