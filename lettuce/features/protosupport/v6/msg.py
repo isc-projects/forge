@@ -373,9 +373,10 @@ def get_option(msg, opt_code):
         if x.optcode == 25: 
             for each in x.iapdopt:
                 world.subopts.append([25,each])
-        # add Status Code to suboptions even if it is option in main message
-        if x.optcode == 13:
-                world.subopts.append([0,x])
+                
+#         # add Status Code to suboptions even if it is option in main message
+#         if x.optcode == 13:
+#                 world.subopts.append([0,x])
         x = x.payload
     return tmp
 
@@ -421,23 +422,24 @@ def unknown_option_to_str(data_type, opt):
         assert False, "Parsing of option format " + data_type + " not implemented."
 
 def sub_option_help(expected, opt_code):
-    x = None
+    x = []
     received = ''
     for each in world.subopts:
         # we need to be sure that option 13 is in 25 or 3
         # otherwise sub-option 13 from option 3 could be taken
-        # as sub-option from option 25. 
+        # as sub-option from option 25. And that's important!
         if each[0] == opt_code:
             if each[1].optcode == expected:
-                x = each[1]
-                received = str(each[1].optcode)
-                return x, received
+                x.append(each[1])
+                received += str(each[1].optcode)
     else:
-        if opt_code: assert x, "Expected sub-option " + str(expected) + " not present in the option " + str(opt_code)
-        
-def response_check_option_content(step, opt_code, expect, data_type, expected):
+        assert len(x)>0, "Expected sub-option " + str(expected) + " not present in the option " + str(opt_code)
+        return x, received
+    
+def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
     
     opt_code = int(opt_code)
+    subopt_code = int(subopt_code)
     # without any msg received, fail test
     assert len(world.srvmsg) != 0, "No response received."  
 
@@ -447,46 +449,72 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
 
     received = ""
     
+    # check sub-options if we are looking for some
     if data_type in "sub-option":
         x, receive_tmp = sub_option_help(int(expected),opt_code)
         received += receive_tmp
-        
+    
+    # no option received? Fail test (there is one think to do: optional statuscode(13) in main
+    # message, not as a sub-option! 
     assert x, "Expected option " + str(opt_code) + " not present in the message."
 
     # test all collected options:
-    for each in world.opts:
-        if opt_code == 3:
-            pass
-        elif opt_code == 7:
-            received = str(each.prefval)
-        elif opt_code == 13:
-            pass
-        elif opt_code == 21:
-            received = ",".join(each.sipdomains)
-        elif opt_code == 22:
-            received = ",".join(each.sipservers)
-        elif opt_code == 23:
-            received = ",".join(each.dnsservers)
-        elif opt_code == 24:
-            received = ",".join(each.dnsdomains)
-        elif opt_code == 25:
-            pass
-        elif opt_code == 27:
-            received = ",".join(each.nisservers)
-        elif opt_code == 28:
-            received = ",".join(each.nispservers)
-        elif opt_code == 29:
-            received = each.nisdomain
-        elif opt_code == 30:
-            received = each.nispdomain
-        elif opt_code == 31:
-            received = ",".join(each.sntpservers)
-        elif opt_code == 32:
-            received = str(each.reftime)
-        else:
-            # if you came to this place, need to do some implementation with new options 
-            received = unknown_option_to_str(data_type, each)
-    
+    if subopt_code is 0:
+        for each in world.opts:
+            if opt_code == 3:
+                pass
+            elif opt_code == 7:
+                received = str(each.prefval)
+            elif opt_code == 21:
+                received = ",".join(each.sipdomains)
+            elif opt_code == 22:
+                received = ",".join(each.sipservers)
+            elif opt_code == 23:
+                received = ",".join(each.dnsservers)
+            elif opt_code == 24:
+                received = ",".join(each.dnsdomains)
+            elif opt_code == 25:
+                pass
+            elif opt_code == 27:
+                received = ",".join(each.nisservers)
+            elif opt_code == 28:
+                received = ",".join(each.nispservers)
+            elif opt_code == 29:
+                received = each.nisdomain
+            elif opt_code == 30:
+                received = each.nispdomain
+            elif opt_code == 31:
+                received = ",".join(each.sntpservers)
+            elif opt_code == 32:
+                received = str(each.reftime)
+            else:
+                # if you came to this place, need to do some implementation with new options 
+                received = unknown_option_to_str(data_type, each)
+    else:
+        # test all suboptions which we extracted from received message, 
+        # and also test primary option for that sub-option.We don't want to have 
+        # situation when 13 suboption from option 3 was taken as a subotion of option 25.
+        # yest that's freaky...
+        for each in world.subopts:
+            if each[0] == opt_code:
+                if subopt_code == 5:
+                    try:
+                        received += each[1].addr + ' '
+                    except:
+                        pass
+                elif subopt_code == 13:
+                    try:
+                        received += str(each[1].statuscode) + ' ' 
+                    except:
+                        pass
+                elif subopt_code == 26:
+                    try:
+                        received += each[1].prefval + ' '
+                    except:
+                        pass
+                else:
+                    received = unknown_option_to_str(data_type, each)
+
     # test if expected option/suboption/value is in all collected options/suboptions/values 
     assert expected in received, "Invalid " + str(opt_code) + " option received: " + received + \
                                  ", but expected " + str(expected)
