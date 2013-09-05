@@ -24,9 +24,7 @@ from features.logging_facility import get_common_logger
 from features.terrain import set_options
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
-from scapy.layers.inet import UDP
-from scapy.layers.inet6 import IPv6
-from scapy.sendrecv import sr
+
 
 options6 = {     "client-id": 1,
                  "server-id" : 2,
@@ -350,7 +348,8 @@ def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
     
-    # message needs to be copied, otherwise we changing original message what makes sometimes multiple copy impossible. 
+    # message needs to be copied, otherwise we changing original message 
+    # what makes sometimes multiple copy impossible. 
     tmp_msg = msg.copy()
     
     # clear all opts/subopts
@@ -368,13 +367,15 @@ def get_option(msg, opt_code):
         # add IA Address and Status Code as separate option
         if x.optcode == 3: 
             for each in x.ianaopts:
-                world.subopts.append(each)
+                world.subopts.append([3,each])
                 
         # add IA PrefixDelegation and Status Code as separate option
         if x.optcode == 25: 
             for each in x.iapdopt:
-                world.subopts.append(each)
-                
+                world.subopts.append([25,each])
+        # add Status Code to suboptions even if it is option in main message
+        if x.optcode == 13:
+                world.subopts.append([0,x])
         x = x.payload
     return tmp
 
@@ -419,6 +420,21 @@ def unknown_option_to_str(data_type, opt):
     else:
         assert False, "Parsing of option format " + data_type + " not implemented."
 
+def sub_option_help(expected, opt_code):
+    x = None
+    received = ''
+    for each in world.subopts:
+        # we need to be sure that option 13 is in 25 or 3
+        # otherwise sub-option 13 from option 3 could be taken
+        # as sub-option from option 25. 
+        if each[0] == opt_code:
+            if each[1].optcode == expected:
+                x = each[1]
+                received = str(each[1].optcode)
+                return x, received
+    else:
+        if opt_code: assert x, "Expected sub-option " + str(expected) + " not present in the option " + str(opt_code)
+        
 def response_check_option_content(step, opt_code, expect, data_type, expected):
     
     opt_code = int(opt_code)
@@ -430,49 +446,21 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     x = get_option(world.srvmsg[0], opt_code) 
 
     received = ""
-
-    # if we are looking for sub option test them:
-    # for now we take first sub option 
+    
     if data_type in "sub-option":
-        for each in world.subopts:
-            if each.optcode == int(expected):
-                x = each
-                x.show()
-                received += str(each.optcode)
-                break
-                
-    # in case we didn't find any opt (in options or sub options), fail test:        
+        x, receive_tmp = sub_option_help(int(expected),opt_code)
+        received += receive_tmp
+        
     assert x, "Expected option " + str(opt_code) + " not present in the message."
 
     # test all collected options:
     for each in world.opts:
-        # TEST IT! I think there is no more need for this, also with 25!
         if opt_code == 3:
-            try:
-                if each.ianaopts[0].optcode == 13:
-                    received += str(each.ianaopts[0].optcode)
-                elif each.ianaopts[0].optcode == 5:
-                    received += each.ianaopts[0].addr + ' '
-            except:
-                pass
-            
+            pass
         elif opt_code == 7:
             received = str(each.prefval)
-        elif opt_code == 9:
-            pass
-            #received = str(x.optcode)
         elif opt_code == 13:
-            # here we need to test first options, then sub options!
-            try:
-                received += 'optcode: ' + str(each.optcode)
-                received += 'status code:' + str(each.statuscode)
-            except:
-                for each in world.subopts:
-                    try:
-                        received += 'status code:' + str(each.ianaopts[0].statuscode)
-                    except:
-                        pass
-                    
+            pass
         elif opt_code == 21:
             received = ",".join(each.sipdomains)
         elif opt_code == 22:
@@ -482,15 +470,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
         elif opt_code == 24:
             received = ",".join(each.dnsdomains)
         elif opt_code == 25:
-            for every in each.iapdopt:
-                try:
-                    if every.optcode == 13:
-                        received += ' ' + str(every.statuscode)
-                    elif every.optcode == 26:
-                        received += every.prefix + ' '
-                except:
-                    pass
-
+            pass
         elif opt_code == 27:
             received = ",".join(each.nisservers)
         elif opt_code == 28:
