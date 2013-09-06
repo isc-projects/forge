@@ -261,3 +261,25 @@ Feature: DHCPv6 Prefix Delegation
 	#Response option 13 MUST contain statuscode 6.
 		
 	References: RFC 3633, Section:
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.onlyPD.relay
+  
+ 	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	#Server is configured with prefix-delegation option with value 3000:1::.
+	Server is started.
+	
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client does include IA-PD.
+	Client sends SOLICIT message.
+
+	...using relay-agent encapsulated in 1 level.
+	
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	Response MUST include option 9. 
+	#add test after Scapy fix
+	
+	References: RFC 3633, Section: 14
