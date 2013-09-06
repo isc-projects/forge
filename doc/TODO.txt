@@ -3,8 +3,7 @@
  - reconfigure message
  - optional 13 option as a main option,not suboption
  - collecting received information,more accurate.
- - why relay msg from dibbler are not acceptable by scapy?
- -  
+ - fix tests for testing received values!
  
  
  
