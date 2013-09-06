@@ -1,7 +1,12 @@
  TODO:
  - vendor option
  - reconfigure message
- - optional 13 option as a main option
+ - optional 13 option as a main option,not suboption
+ - collecting received information,more accurate.
+ - why relay msg from dibbler are not acceptable by scapy?
+ -  
+ 
+ 
  
  - Write more reasonable documentation (tomek)
  - Verify documentation and amend as necessary (jeff)
