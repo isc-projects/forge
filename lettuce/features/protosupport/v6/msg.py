@@ -241,6 +241,9 @@ def create_relay_forward(step, level):
     #set flag for adding client option client-id which is added by default
     world.cfg["relay"] = True
     
+    # we pretend to be relay-server so we need to listen on 547 port
+    world.reciveport = 547 
+    
     address = All_DHCP_Relay_Agents_and_Servers
     #get only DHCPv6 part of the message
     msg = world.climsg.pop().getlayer(2)
@@ -265,7 +268,7 @@ def create_relay_forward(step, level):
         tmp /= DHCP6_RelayForward(linkaddr = "3000::ffff", peeraddr = "2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
 
     #build full message
-    relay_msg = IPv6(dst = address)/UDP(sport = 546, dport = 547)/tmp/msg
+    relay_msg = IPv6(dst = address)/UDP(sport = 547, dport = 547)/tmp/msg
     
     world.climsg.append(relay_msg)
     
@@ -293,7 +296,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     #Uncomment this to get debug.recv filled with all received messages
     #conf.debug_match = True
     ans,unans = sr(world.climsg, iface = world.cfg["iface"], timeout = 1, nofilter = 1, verbose = 99)
-    
+
     expected_type_found = False
     received_names = ""
     world.srvmsg = []
@@ -465,6 +468,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 pass
             elif opt_code == 7:
                 received = str(each.prefval)
+            elif opt_code == 9:
+                received = str(each.optcode)
             elif opt_code == 21:
                 received = ",".join(each.sipdomains)
             elif opt_code == 22:
@@ -474,7 +479,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
             elif opt_code == 24:
                 received = ",".join(each.dnsdomains)
             elif opt_code == 25:
-                pass
+                received += str(each.T1) + ' '
+                received += str(each.T2) + ' ' 
             elif opt_code == 27:
                 received = ",".join(each.nisservers)
             elif opt_code == 28:
@@ -496,6 +502,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
         # situation when 13 suboption from option 3 was taken as a subotion of option 25.
         # yest that's freaky...
         for each in world.subopts:
+            print each[0]
+            each[1].show()
+        for each in world.subopts:
             if each[0] == opt_code:
                 if subopt_code == 5:
                     try:
@@ -509,7 +518,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                         pass
                 elif subopt_code == 26:
                     try:
-                        received += each[1].prefval + ' '
+                        received += each[1].prefix + ' '
+                        
                     except:
                         pass
                 else:
