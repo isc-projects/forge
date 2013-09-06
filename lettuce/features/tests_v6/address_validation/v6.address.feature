@@ -201,7 +201,7 @@ Feature: Standard DHCPv6 address validation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 5.
 	
 	References: RFC3315 section 18.2.6.

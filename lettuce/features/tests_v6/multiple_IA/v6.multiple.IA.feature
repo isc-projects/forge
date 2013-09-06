@@ -100,7 +100,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 0.
 	
 @v6 @multipleIA
@@ -156,7 +156,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 0.
 	
 	Test Procedure:
@@ -167,7 +167,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 0.
 	Response option 13 MUST contain statuscode 3.	
 	
@@ -224,7 +224,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 0.
 	
 	Test Procedure:
@@ -234,7 +234,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 0.
 	Response option 13 MUST contain statuscode 3.	
 	
@@ -280,5 +280,5 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response MUST include option 3.
 	Response option 3 MUST contain address 3000::1.
 	Response option 3 MUST contain address 3000::2.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 2.

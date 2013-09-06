@@ -34,7 +34,7 @@ Feature: DHCPv6 Release
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 3.
 	
 	References: RFC3315 section 18.2.6.
@@ -75,7 +75,7 @@ Feature: DHCPv6 Release
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 3.
 	
 	References: RFC3315 section 18.2.6.
@@ -112,7 +112,7 @@ Feature: DHCPv6 Release
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain option 13. 
+	Response option 3 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 0.
 	
 	References: RFC3315 section 18.2.6.
