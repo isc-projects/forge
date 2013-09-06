@@ -374,9 +374,9 @@ def get_option(msg, opt_code):
             for each in x.iapdopt:
                 world.subopts.append([25,each])
                 
-#         # add Status Code to suboptions even if it is option in main message
-#         if x.optcode == 13:
-#                 world.subopts.append([0,x])
+        # add Status Code to suboptions even if it is option in main message
+        if x.optcode == 13:
+                world.subopts.append([0,x])
         x = x.payload
     return tmp
 

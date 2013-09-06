@@ -30,6 +30,8 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
 	Response option 25 MUST contain prefix 3000:1:.
+	
+	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.IA.and.PD.request
@@ -62,6 +64,8 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain prefix 3000:1:.
 	Response MUST include option 3.
 	Response option 3 MUST contain address 3000::.
+	
+	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
 	Scenario: prefix.delegation.request.release
@@ -100,11 +104,13 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	#Response MUST include option 25.
-	#Response option 25 MUST contain option 13. 
+	#Response option 25 MUST contain sub-option 13. 
 	Response option 13 MUST contain statuscode 0.
+	
+	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.noprefixavail.relesa
+    Scenario: prefix.delegation.noprefixavail.release
   	#assign 2 prefixes, try third, fail, release one, assign one more time with success.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	#Server is configured with prefix-delegation option with value 3000:1::.
@@ -163,7 +169,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 13. 
+	#Response option 25 MUST contain sub-option 13. 
 	#Response option 13 MUST contain statuscode 6.
 	
 	Test Procedure:
@@ -175,7 +181,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	#Response MUST include option 25.
-	#Response option 25 MUST contain option 13. 
+	#Response option 25 MUST contain sub-option 13. 
 	#Response option 13 MUST contain statuscode 0.
 
 	Test Procedure:
@@ -187,8 +193,10 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 13. 
+	#Response option 25 MUST contain sub-option 13. 
 	#Response option 13 MUST contain statuscode 6.
+	
+	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail
@@ -249,7 +257,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 13. 
+	#Response option 25 MUST contain sub-option 13. 
 	#Response option 13 MUST contain statuscode 6.
-	
-	
+		
+	References: RFC 3633, Section:

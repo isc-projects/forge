@@ -18,6 +18,8 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
 	Response option 25 MUST contain prefix 3000:1:.
+	
+	References: RFC 3633, Section: 9
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.IA.and.PD
@@ -37,6 +39,8 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain prefix 3000:1:.
 	Response MUST include option 3.
 	Response option 3 MUST contain address 3000::.
+
+	References: RFC 3633, Section: 9
 	
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.without.server.configuration
@@ -52,3 +56,5 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST NOT include option 25.
+	
+	References: RFC 3633, Section:
