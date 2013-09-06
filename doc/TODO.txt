@@ -1,11 +1,9 @@
  TODO:
  - vendor option
- - reconfigure message
+ - reconfigure message support
  - optional 13 option as a main option,not suboption
  - collecting received information,more accurate.
  - fix tests for testing received values!
- 
- 
  
  - Write more reasonable documentation (tomek)
  - Verify documentation and amend as necessary (jeff)
