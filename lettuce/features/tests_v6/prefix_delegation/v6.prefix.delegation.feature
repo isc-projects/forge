@@ -17,7 +17,8 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	Response option 25 MUST contain prefix 3000:1:.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -29,7 +30,8 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	Response option 25 MUST contain prefix 3000:1:.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	
 	References: RFC 3633, Section:
 
@@ -48,10 +50,12 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	Response option 25 MUST contain prefix 3000:1:.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	Response MUST include option 3.
-	Response option 3 MUST contain address 3000::.
-	
+	Response option 3 MUST contain sub-option 5.
+	Response sub-option 5 from option 3 MUST contain address 3000::.
+		
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
@@ -61,9 +65,11 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	Response option 25 MUST contain prefix 3000:1:.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	Response MUST include option 3.
-	Response option 3 MUST contain address 3000::.
+	Response option 3 MUST contain sub-option 5.
+	Response sub-option 5 from option 3 MUST contain address 3000::.
 	
 	References: RFC 3633, Section:
 
@@ -93,7 +99,8 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 26.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	
 	Test Procedure:
 	Client copies IA_PD option from received message.
@@ -103,9 +110,9 @@ Feature: DHCPv6 Prefix Delegation
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 25.
-	#Response option 25 MUST contain sub-option 13. 
-	Response option 13 MUST contain statuscode 0.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 13. 
+	Response sub-option 13 from option 25 MUST contain statuscode 0.
 	
 	References: RFC 3633, Section:
 
@@ -135,7 +142,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 26.
+	Response option 25 MUST contain sub-option 26.
 	
 	Test Procedure:
 	Generate new IA_PD.
@@ -156,7 +163,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 26.
+	Response option 25 MUST contain sub-option 26.
 	#both prefixes assigned.
 	
 	Test Procedure:
@@ -169,8 +176,8 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain sub-option 13. 
-	#Response option 13 MUST contain statuscode 6.
+	Response option 25 MUST contain sub-option 13.	
+	Response sub-option 13 from option 25 MUST contain statuscode 6. 
 	
 	Test Procedure:
 	Client adds saved options. And DONT Erase.
@@ -180,9 +187,9 @@ Feature: DHCPv6 Prefix Delegation
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	#Response MUST include option 25.
-	#Response option 25 MUST contain sub-option 13. 
-	#Response option 13 MUST contain statuscode 0.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 13. 
+	Response sub-option 13 from option 25 MUST contain statuscode 0. 
 
 	Test Procedure:
 	Generate new IA_PD.
@@ -193,8 +200,8 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain sub-option 13. 
-	#Response option 13 MUST contain statuscode 6.
+	Response option 25 MUST contain sub-option 13.	
+	Response sub-option 13 from option 25 MUST contain statuscode 6. 
 	
 	References: RFC 3633, Section:
 
@@ -224,7 +231,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 26.
+	Response option 25 MUST contain sub-option 26.
 	
 	Test Procedure:
 	Generate new IA_PD.
@@ -245,7 +252,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain option 26.
+	Response option 25 MUST contain sub-option 26.
 	#both prefixes assigned.
 	
 	Test Procedure:
@@ -257,8 +264,8 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	#Response option 25 MUST contain sub-option 13. 
-	#Response option 13 MUST contain statuscode 6.
+	Response option 25 MUST contain sub-option 13.	
+	Response sub-option 13 from option 25 MUST contain statuscode 6. 
 		
 	References: RFC 3633, Section:
 

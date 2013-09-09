@@ -56,9 +56,8 @@ Feature: DHCPv6 Prefix Delegation
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.  
-	Response MUST include option 25.
-	Response option 25 MUST contain prefix 3000:1::3. #depends on configuration!
-	#and other...
+	Response option 25 MUST contain sub-option 26. 
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 
 @v6 @PD @rfc3633 @multiplePD
     Scenario: prefix.delegation.multiplePD.and.IA.request
@@ -119,8 +118,8 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with REPLY message.  
 	Response MUST include option 25.
 	Response MUST include option 3.
-	Response option 25 MUST contain prefix 3000:1::3. #depends on configuration!
-	#and other...
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	#4x IA address and 4x prefix
 	
 	
@@ -183,8 +182,9 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with REPLY message.  
 	Response MUST include option 25.
 	Response MUST include option 3.
-	Response option 25 MUST contain prefix 3000:1::3. #depends on configuration!
-	#and other...
+	Response option 25 MUST contain sub-option 26. 
+	Response option 25 MUST contain sub-option 13. 
+	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	#4x IA address and 4x prefix, both 2 success and 2 fails
 	
 	
@@ -226,7 +226,6 @@ Feature: DHCPv6 Prefix Delegation
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 13.
 	Response sub-option 13 from option 3 MUST contain statuscode 0.
