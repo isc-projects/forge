@@ -33,7 +33,7 @@ Feature: DHCPv6 Status Codes
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 13. 
-	Response option 13 MUST contain statuscode 2.
+	Response sub-option 13 from option 3 MUST contain statuscode 2.
 	
 	References: RFC3315 section 17.2.2.
 	
@@ -71,7 +71,7 @@ Feature: DHCPv6 Status Codes
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 13. 
-	Response option 13 MUST contain statuscode 2.
+	Response sub-option 13 from option 3 MUST contain statuscode 2.
 	
 	References: RFC3315 section 18.2.1.
 	
@@ -99,7 +99,7 @@ Feature: DHCPv6 Status Codes
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 13. 
-	Response option 13 MUST contain statuscode 3.
+	Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
 	References: RFC3315 section 18.2.3
 	
