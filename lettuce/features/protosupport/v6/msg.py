@@ -470,6 +470,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 received = str(each.prefval)
             elif opt_code == 9:
                 received = str(each.optcode)
+            elif opt_code == 13:
+                received = str(each.statuscode)
             elif opt_code == 21:
                 received = ",".join(each.sipdomains)
             elif opt_code == 22:

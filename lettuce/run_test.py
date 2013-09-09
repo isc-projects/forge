@@ -74,9 +74,6 @@ def option_parser():
                       default = False,
                       help = "Generate results file in xUnit format")
 
-    from help import alert
-    alert()
-    
     (opts, args) = parser.parse_args()
     
     if not opts.version6 and not opts.version4:

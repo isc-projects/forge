@@ -20,32 +20,6 @@ import datetime
 import os
 import sys
 
-
-def getch():
-    import tty, termios
-    fd = sys.stdin.fileno()
-    old = termios.tcgetattr(fd)
-    try:
-        tty.setraw(fd)
-        return sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old)
-def alert():
-    news = '''
-    
-    ATTENTION!
-    Program you are running are in the middle of major rebuild, 
-    most of included tests will fail without any cause!
-    
-    Rest of the update will be published 9 September 2013
-    About 4 PM UTC +2
-    
-    Press Enter to continue.....
-    '''
-    print news
-    getch()
-
-
 class TestHistory ():
     def __init__(self):
         self.date = self.present_time() 
