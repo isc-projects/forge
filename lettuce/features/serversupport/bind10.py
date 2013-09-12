@@ -19,7 +19,7 @@
 #
 
 from fabric.context_managers import settings, hide
-from fabric.operations import run
+from fabric.operations import run, sudo
 from features.init_all import MGMT_USERNAME, MGMT_PASSWORD, SERVER_INSTALL_DIR
 from features.logging_facility import get_common_logger
 
@@ -33,7 +33,7 @@ def kill_bind10(host):
     with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with settings(warn_only = True):
             with hide ('running', 'stdout'):
-                run(cmd, pty = True)
+                sudo(cmd, pty = True)
             
 def start_bind10(host):
     """
@@ -44,4 +44,4 @@ def start_bind10(host):
     with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with settings(warn_only = True):
             with hide ('running', 'stdout'):
-                run(cmd, pty = True)
+                sudo(cmd, pty = True)
