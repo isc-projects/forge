@@ -503,9 +503,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
         # and also test primary option for that sub-option.We don't want to have 
         # situation when 13 suboption from option 3 was taken as a subotion of option 25.
         # yest that's freaky...
-        for each in world.subopts:
-            print each[0]
-            each[1].show()
+#         for each in world.subopts:
+#             print each[0]
+#             each[1].show()
         for each in world.subopts:
             if each[0] == opt_code:
                 if subopt_code == 5:
