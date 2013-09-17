@@ -250,8 +250,10 @@ def run_bindctl (opt):
         
     cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
     result = fabric(cmd)
-    if result.stderr is not None:
-        assert False, 'Server operation: ' + opt + ' failed! with error: ' + result.stderr
+    # now let's test output, looking for errors, 
+    # some times clean can fail, so we wanna test only start and conf
+    if result.stderr is not None and opt is not "clean":  
+        assert False, 'Server operation: ' + opt + ' failed! '
          
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe']) #react on some output, default restarts BIND10 after Error 32: Broken pipe
 
