@@ -32,8 +32,8 @@ def kill_bind10(host):
     cmd = 'pkill b10-*; sleep 2'
     with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with settings(warn_only = True):
-            with hide ('running', 'stdout'):
-                sudo(cmd, pty = True)
+            #with hide ('running', 'stdout'):
+            sudo(cmd, pty = True)
             
 def start_bind10(host):
     """
