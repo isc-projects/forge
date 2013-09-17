@@ -26,12 +26,11 @@ def fabric(cmd):
         result = run(cmd)
     return result
 
-def parsing_bind_stdout(stdout, opt):
+def parsing_bind_stdout(stdout, opt, search = []):
     """
     Modify this function if you wont react to some bind stdout
     """
     #search = []
-    search = ['Broken pipe']
     for each in search: 
         if each in stdout:
             print "RESTART BIND10, found ", each 
@@ -251,8 +250,8 @@ def run_bindctl (opt):
         
     cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
     result = fabric(cmd)
-    
-    parsing_bind_stdout(result.stdout, opt) #react on some output, default restarts BIND10 after Error 32: Broken pipe
+    print result
+    parsing_bind_stdout(result.stdout, opt, ['Broken pipe']) #react on some output, default restarts BIND10 after Error 32: Broken pipe
 
 def start_srv():
     """

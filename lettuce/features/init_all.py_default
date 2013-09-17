@@ -27,7 +27,7 @@ PROTO = ""
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ""
 REL4_ADDR = ""
-GIADDR = ""
+GIADDR4 = ""
 
 # defines client MAC (used for DUID generation)
 CLI_MAC = ""
@@ -87,3 +87,6 @@ SERVER_INSTALL_DIR = ""
 # =============== ISC-DHCP ===============
 #For servers: ISC-DHCP and ISC-DHCPv6 choose ethernet interface to bind server.
 SERVER_IFACE = ""
+
+# =============== DIBBLER ================
+DIBBLER_INSTALL_DIR = ""
