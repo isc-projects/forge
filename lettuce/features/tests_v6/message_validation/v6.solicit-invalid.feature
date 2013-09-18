@@ -104,9 +104,8 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2
 
-@v6 @solicit_invalid @invalid_option @outline
-    Scenario Outline: v6.solicit.invalid.options.outline
-	#This is outline scenario, Examples will be filled in <...>, each example makes new test scenario.
+@v6 @solicit_invalid @invalid_option 
+    Scenario: v6.solicit.invalid.options.relaymsg
 	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -114,7 +113,7 @@ Feature: Standard DHCPv6 solicit message
 
 	Test Procedure:
 	Client requests option 7.
-	Client does include <opt_name>.
+	Client does include relay-msg.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
@@ -129,11 +128,122 @@ Feature: Standard DHCPv6 solicit message
 	
 	References: RFC3315 section 15.2, 17.2.1
 
-	Examples:
-	| opt_name       |
-	| relay-msg      |
-	| interface-id   |
-	| preference     |
-	| server-unicast |
-	| status-code    |
-	| reconfigure    |
+@v6 @solicit_invalid @invalid_option 
+    Scenario: v6.solicit.invalid.options.interfaceid
+	 
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does include interface-id.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST NOT respond with ADVERTISE message.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	
+	References: RFC3315 section 15.2, 17.2.1
+
+@v6 @solicit_invalid @invalid_option 
+    Scenario: v6.solicit.invalid.options.preference
+	 
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does include preference.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST NOT respond with ADVERTISE message.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	
+	References: RFC3315 section 15.2, 17.2.1
+
+@v6 @solicit_invalid @invalid_option 
+    Scenario: v6.solicit.invalid.options.serverunicast
+	 
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does include server-unicast.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST NOT respond with ADVERTISE message.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	
+	References: RFC3315 section 15.2, 17.2.1
+
+@v6 @solicit_invalid @invalid_option 
+    Scenario: v6.solicit.invalid.options.statuscode
+	 
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does include status-code.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST NOT respond with ADVERTISE message.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	
+	References: RFC3315 section 15.2, 17.2.1
+
+@v6 @solicit_invalid @invalid_option 
+    Scenario: v6.solicit.invalid.options.reconfigure
+	 
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client does include reconfigure.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST NOT respond with ADVERTISE message.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	
+	References: RFC3315 section 15.2, 17.2.1

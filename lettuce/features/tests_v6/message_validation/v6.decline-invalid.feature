@@ -142,7 +142,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8
 	
 @v6 @decline_invalid @invalid_option @outline
-    Scenario Outline: v6.decline.invalid.options.outline
+    Scenario: v6.decline.invalid.options.relay-msg
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -171,7 +171,7 @@ Feature: Standard DHCPv6 decline message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client does include <opt_name>.
+	Client does include relay-msg.
 	Client sends DECLINE message.
 
 	Pass Criteria:
@@ -193,13 +193,366 @@ Feature: Standard DHCPv6 decline message
 
 	References: RFC3315 section 15.8 22.8.
 
-	Examples:
-	| opt_name           |
-	| relay-msg          |
-	| rapid-commit       |
-	| interface-id       |
-	| reconfigure-accept |
-	| preference         |
-	| server-unicast     |
-	| status-code        | 
-	| reconfigure        | 
+@v6 @decline_invalid @invalid_option @outline
+    Scenario: v6.decline.invalid.options.rapid-commit
+	#valid messages exchange performed twice, before and after invalid message
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include rapid-commit.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.8 22.8.
+
+@v6 @decline_invalid @invalid_option @outline
+    Scenario: v6.decline.invalid.options.interface-id
+	#valid messages exchange performed twice, before and after invalid message
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include interface-id.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.8 22.8.
+
+@v6 @decline_invalid @invalid_option @outline
+    Scenario: v6.decline.invalid.options.reconfigure-accept
+	#valid messages exchange performed twice, before and after invalid message
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include reconfigure-accept.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.8 22.8.
+
+@v6 @decline_invalid @invalid_option @outline
+    Scenario: v6.decline.invalid.options.preference
+	#valid messages exchange performed twice, before and after invalid message
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include preference.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.8 22.8.
+
+@v6 @decline_invalid @invalid_option @outline
+    Scenario: v6.decline.invalid.options.server-unicast
+	#valid messages exchange performed twice, before and after invalid message
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include server-unicast.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.8 22.8.
+
+@v6 @decline_invalid @invalid_option @outline
+    Scenario: v6.decline.invalid.options.status-code
+	#valid messages exchange performed twice, before and after invalid message
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include status-code.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.8 22.8.
+
+@v6 @decline_invalid @invalid_option @outline
+    Scenario: v6.decline.invalid.options.reconfigure
+	#valid messages exchange performed twice, before and after invalid message
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include reconfigure.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends DECLINE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.8 22.8.

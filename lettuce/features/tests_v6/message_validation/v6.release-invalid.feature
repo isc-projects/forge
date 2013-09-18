@@ -143,7 +143,7 @@ Feature: Standard DHCPv6 release message
 	
 	
 @v6 @release_invalid @invalid_option @outline
-    Scenario Outline: v6.release.invalid.options.outline
+    Scenario: v6.release.invalid.options.relay-msg
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -158,7 +158,83 @@ Feature: Standard DHCPv6 release message
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client does include <opt_name>.
+	Client does include relay-msg.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.9
+
+@v6 @release_invalid @invalid_option @outline
+    Scenario: v6.release.invalid.options.rapid-commit
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include rapid-commit.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.9
+
+@v6 @release_invalid @invalid_option @outline
+    Scenario: v6.release.invalid.options.interface-id
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include interface-id.
 	Client sends RELEASE message.
 
 	Pass Criteria:
@@ -180,13 +256,193 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9
 	
-	Examples:
-	| opt_name           |
-	| relay-msg          |
-	| rapid-commit       |
-	| interface-id       |
-	| reconfigure-accept |
-	| preference         |
-	| server-unicast     |
-	| status-code        | 
-	| reconfigure        | 
+@v6 @release_invalid @invalid_option @outline
+    Scenario: v6.release.invalid.options.reconfigure-accept
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include reconfigure-accept.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.9
+	
+@v6 @release_invalid @invalid_option @outline
+    Scenario: v6.release.invalid.options.preference
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include preference.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.9
+	
+@v6 @release_invalid @invalid_option @outline
+    Scenario: v6.release.invalid.options.server-unicast
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include server-unicast.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.9
+	
+@v6 @release_invalid @invalid_option @outline
+    Scenario: v6.release.invalid.options.status-code
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include status-code.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.9
+	
+@v6 @release_invalid @invalid_option @outline
+    Scenario: v6.release.invalid.options.reconfigure
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client does include reconfigure.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.9
+	

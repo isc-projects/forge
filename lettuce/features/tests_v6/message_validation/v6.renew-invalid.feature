@@ -142,7 +142,7 @@ Feature: Standard DHCPv6 renew message
 	References: RFC3315 section 15.6
 	
 @v6 @renew_invalid @invalid_option @outline
-    Scenario Outline: v6.renew.invalid.options.outline
+    Scenario: v6.renew.invalid.options.relay-msg
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -158,7 +158,7 @@ Feature: Standard DHCPv6 renew message
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client does include <opt_name>.
+	Client does include relay-msg.
 	Client sends RENEW message.
 
 	Pass Criteria:
@@ -180,12 +180,236 @@ Feature: Standard DHCPv6 renew message
 
 	References: RFC3315 section 15.6
 	
-	Examples:
-	| opt_name       |
-	| relay-msg      |
-	| rapid-commit   |
-	| interface-id   |
-	| preference     | 
-	| server-unicast |
-	| status-code    |
-	| reconfigure    |
+@v6 @renew_invalid @invalid_option @outline
+    Scenario: v6.renew.invalid.options.rapid-commit
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client does include rapid-commit.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.6
+	
+@v6 @renew_invalid @invalid_option @outline
+    Scenario: v6.renew.invalid.options.interface-id
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client does include interface-id.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.6
+	
+@v6 @renew_invalid @invalid_option @outline
+    Scenario: v6.renew.invalid.options.preference
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client does include preference.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.6
+	
+@v6 @renew_invalid @invalid_option @outline
+    Scenario: v6.renew.invalid.options.server-unicast
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client does include server-unicast.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.6
+	
+@v6 @renew_invalid @invalid_option @outline
+    Scenario: v6.renew.invalid.options.status-code
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client does include status-code.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.6
+
+@v6 @renew_invalid @invalid_option @outline
+    Scenario: v6.renew.invalid.options.reconfigure
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client does include reconfigure.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client sends RENEW message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	References: RFC3315 section 15.6
