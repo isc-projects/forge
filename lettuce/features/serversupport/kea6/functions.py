@@ -255,8 +255,9 @@ def run_bindctl (opt):
     # some times clean can fail, so we wanna test only start and conf
     # for now we fail test on any presence of stderr, probably this will
     # need some more specific search.
-    if result.stderr is not None and opt is not "clean":  
-        assert False, 'Server operation: ' + opt + ' failed! '
+    if opt is not "clean":
+        if "ImportError:" in result.stderr:  
+            assert False, 'Server operation: ' + opt + ' failed! '
 
     # react on some output, default restarts BIND10 after Error 32: Broken pipe
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
