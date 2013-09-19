@@ -55,7 +55,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12, table A: Appearance of Options in Message Types
 
 @v6 @inforequest_invalid @invalid_option @outline
-    Scenario: v6.inforequest.invalid.options.relay-msg 
+    Scenario: v6.inforequest.invalid.options-relay-msg 
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -78,7 +78,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
 @v6 @inforequest_invalid @invalid_option @outline
-    Scenario: v6.inforequest.invalid.options.rapid-commit 
+    Scenario: v6.inforequest.invalid.options-rapid-commit 
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -101,7 +101,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
 @v6 @inforequest_invalid @invalid_option @outline
-    Scenario: v6.inforequest.invalid.options.interface-id 
+    Scenario: v6.inforequest.invalid.options-interface-id 
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -124,7 +124,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
 @v6 @inforequest_invalid @invalid_option @outline
-    Scenario: v6.inforequest.invalid.options.preference 
+    Scenario: v6.inforequest.invalid.options-preference 
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -147,7 +147,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
 @v6 @inforequest_invalid @invalid_option @outline
-    Scenario: v6.inforequest.invalid.options.server-unicast 
+    Scenario: v6.inforequest.invalid.options-server-unicast 
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -170,7 +170,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
 @v6 @inforequest_invalid @invalid_option @outline
-    Scenario: v6.inforequest.invalid.options.status-code
+    Scenario: v6.inforequest.invalid.options-status-code
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -193,7 +193,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
 @v6 @inforequest_invalid @invalid_option @outline
-    Scenario: v6.inforequest.invalid.options.reconfigure
+    Scenario: v6.inforequest.invalid.options-reconfigure
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

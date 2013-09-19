@@ -83,7 +83,7 @@ Feature: Standard DHCPv6 rebind message
 	
 	
 @v6 @rebind_invalid @invalid_option @outline
-    Scenario: v6.rebind.invalid.options.relay-msg
+    Scenario: v6.rebind.invalid.options-relay-msg
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -107,7 +107,7 @@ Feature: Standard DHCPv6 rebind message
 	References: RFC3315 section 15, 15.7
 	
 @v6 @rebind_invalid @invalid_option @outline
-    Scenario: v6.rebind.invalid.options.rapid-commit
+    Scenario: v6.rebind.invalid.options-rapid-commit
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -131,7 +131,7 @@ Feature: Standard DHCPv6 rebind message
 	References: RFC3315 section 15, 15.7
 	
 @v6 @rebind_invalid @invalid_option @outline
-    Scenario: v6.rebind.invalid.options.interface-id
+    Scenario: v6.rebind.invalid.options-interface-id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -155,7 +155,7 @@ Feature: Standard DHCPv6 rebind message
 	References: RFC3315 section 15, 15.7
 	
 @v6 @rebind_invalid @invalid_option @outline
-    Scenario: v6.rebind.invalid.options.preference
+    Scenario: v6.rebind.invalid.options-preference
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -179,7 +179,7 @@ Feature: Standard DHCPv6 rebind message
 	References: RFC3315 section 15, 15.7
 	
 @v6 @rebind_invalid @invalid_option @outline
-    Scenario: v6.rebind.invalid.options.server-unicast
+    Scenario: v6.rebind.invalid.options-server-unicast
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -203,7 +203,7 @@ Feature: Standard DHCPv6 rebind message
 	References: RFC3315 section 15, 15.7
 	
 @v6 @rebind_invalid @invalid_option @outline
-    Scenario: v6.rebind.invalid.options.status-code 
+    Scenario: v6.rebind.invalid.options-status-code 
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -227,7 +227,7 @@ Feature: Standard DHCPv6 rebind message
 	References: RFC3315 section 15, 15.7
 
 @v6 @rebind_invalid @invalid_option @outline
-    Scenario: v6.rebind.invalid.options.reconfigure 
+    Scenario: v6.rebind.invalid.options-reconfigure 
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

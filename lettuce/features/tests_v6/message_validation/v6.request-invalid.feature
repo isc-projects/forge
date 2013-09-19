@@ -146,7 +146,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid @invalid_option @outline
-    Scenario: v6.request.invalid.options.relay-msg
+    Scenario: v6.request.invalid.options-relay-msg
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -186,7 +186,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid @invalid_option @outline
-    Scenario: v6.request.invalid.options.rapid-commit
+    Scenario: v6.request.invalid.options-rapid-commit
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -226,7 +226,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid @invalid_option @outline
-    Scenario: v6.request.invalid.options.interface-id
+    Scenario: v6.request.invalid.options-interface-id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -266,7 +266,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid @invalid_option @outline
-    Scenario: v6.request.invalid.options.preference
+    Scenario: v6.request.invalid.options-preference
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -306,7 +306,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid @invalid_option @outline
-    Scenario: v6.request.invalid.options.server-unicast
+    Scenario: v6.request.invalid.options-server-unicast
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -346,7 +346,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid @invalid_option @outline
-    Scenario: v6.request.invalid.options.status-code
+    Scenario: v6.request.invalid.options-status-code
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -386,7 +386,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @request_invalid @invalid_option @outline
-    Scenario: v6.request.invalid.options.reconfigure
+    Scenario: v6.request.invalid.options-reconfigure
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

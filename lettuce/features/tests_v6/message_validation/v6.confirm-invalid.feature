@@ -89,15 +89,23 @@ Feature: Standard DHCPv6 confirm message
 	Server is started.
 
 	Test Procedure:
+	#default IA is blank
 	Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
 	References: RFC3315 18.2.2
 
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.relay-msg
+    Scenario: v6.confirm.invalid.options-relay-msg
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -121,7 +129,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5. 22.8.
 	
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.rapid-commit
+    Scenario: v6.confirm.invalid.options-rapid-commit
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -145,7 +153,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5. 22.8.
 
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.interface-id
+    Scenario: v6.confirm.invalid.options-interface-id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -169,7 +177,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5. 22.8.
 
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.reconfigure-accept
+    Scenario: v6.confirm.invalid.options-reconfigure-accept
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -193,7 +201,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5. 22.8.
 
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.preference
+    Scenario: v6.confirm.invalid.options-preference
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -217,7 +225,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5. 22.8.
 
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.server-unicast
+    Scenario: v6.confirm.invalid.options-server-unicast
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -241,7 +249,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5. 22.8.
 
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.status-code
+    Scenario: v6.confirm.invalid.options-status-code
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -265,7 +273,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5. 22.8.
 
 @v6 @confirm_invalid @invalid_option @outline
-    Scenario: v6.confirm.invalid.options.reconfigure
+    Scenario: v6.confirm.invalid.options-reconfigure
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

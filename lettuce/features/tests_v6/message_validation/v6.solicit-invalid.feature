@@ -105,7 +105,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2
 
 @v6 @solicit_invalid @invalid_option 
-    Scenario: v6.solicit.invalid.options.relaymsg
+    Scenario: v6.solicit.invalid.options-relaymsg
 	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -129,7 +129,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @solicit_invalid @invalid_option 
-    Scenario: v6.solicit.invalid.options.interfaceid
+    Scenario: v6.solicit.invalid.options-interfaceid
 	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -153,7 +153,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @solicit_invalid @invalid_option 
-    Scenario: v6.solicit.invalid.options.preference
+    Scenario: v6.solicit.invalid.options-preference
 	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -177,7 +177,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @solicit_invalid @invalid_option 
-    Scenario: v6.solicit.invalid.options.serverunicast
+    Scenario: v6.solicit.invalid.options-serverunicast
 	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -201,7 +201,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @solicit_invalid @invalid_option 
-    Scenario: v6.solicit.invalid.options.statuscode
+    Scenario: v6.solicit.invalid.options-statuscode
 	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -225,7 +225,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @solicit_invalid @invalid_option 
-    Scenario: v6.solicit.invalid.options.reconfigure
+    Scenario: v6.solicit.invalid.options-reconfigure
 	 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

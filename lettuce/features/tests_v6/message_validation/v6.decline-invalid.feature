@@ -142,7 +142,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8
 	
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.relay-msg
+    Scenario: v6.decline.invalid.options-relay-msg
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -194,7 +194,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.rapid-commit
+    Scenario: v6.decline.invalid.options-rapid-commit
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -246,7 +246,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.interface-id
+    Scenario: v6.decline.invalid.options-interface-id
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -298,7 +298,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.reconfigure-accept
+    Scenario: v6.decline.invalid.options-reconfigure-accept
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -350,7 +350,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.preference
+    Scenario: v6.decline.invalid.options-preference
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -402,7 +402,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.server-unicast
+    Scenario: v6.decline.invalid.options-server-unicast
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -454,7 +454,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.status-code
+    Scenario: v6.decline.invalid.options-status-code
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -506,7 +506,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
-    Scenario: v6.decline.invalid.options.reconfigure
+    Scenario: v6.decline.invalid.options-reconfigure
 	#valid messages exchange performed twice, before and after invalid message
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
