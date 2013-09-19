@@ -2,7 +2,7 @@ Feature: DHCPv6 Release
     Those are tests for DHCPv6 release process.
 
 @v6 @status_code @release
-    Scenario: v6.statuscode.nobinding.release
+    Scenario: v6.statuscode.nobinding-release
 	#no address included to release
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -40,7 +40,7 @@ Feature: DHCPv6 Release
 	References: RFC3315 section 18.2.6.
 	
 @v6 @status_code @release
-    Scenario: v6.statuscode.nobinding.release.restart
+    Scenario: v6.statuscode.nobinding-release-restart
 	#no address to release
 	#also can be design with decline
 	Test Setup:
@@ -81,7 +81,7 @@ Feature: DHCPv6 Release
 	References: RFC3315 section 18.2.6.
 	
 @v6 @status_code @release
-    Scenario: v6.statuscode.success.release
+    Scenario: v6.statuscode.success-release
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

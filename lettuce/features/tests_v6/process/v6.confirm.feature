@@ -2,7 +2,7 @@ Feature: DHCPv6 Confirm
     Those are tests for confirm - reply exchange.
 	
 @v6 @status_code @confirm
-    Scenario: v6.statuscode.success.confirm
+    Scenario: v6.statuscode.success-confirm
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -37,7 +37,7 @@ Feature: DHCPv6 Confirm
 	References: RFC3315 sections 18.1.2, 18.2.2
 	
 @v6 @status_code @confirm
-    Scenario: v6.statuscode.notonlink.confirm
+    Scenario: v6.statuscode.notonlink-confirm
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

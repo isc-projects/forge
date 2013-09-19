@@ -2,7 +2,7 @@ Feature: DHCPv6 Rebind
     Those are tests for rebind - reply exchange.
     
 @v6 @rebind
-    Scenario: v6.message.rebind-reply.zerotime
+    Scenario: v6.message.rebind-reply-zerotime
 	#life time of address in IA returned with value 0
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -39,7 +39,7 @@ Feature: DHCPv6 Rebind
 	References: RFC3315 sections 5.3, 18.2.4 
 	
 @v6 @rebind
-    Scenario: v6.message.rebind-reply.newtime
+    Scenario: v6.message.rebind-reply-newtime
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
