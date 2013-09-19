@@ -5,7 +5,7 @@ Feature: Standard DHCPv6 options part 1
 
 
 @v6 @options @preference
-    Scenario: v6.options-preference
+    Scenario: v6.options.preference
 	# Checks that server is able to serve preference option to clients.
 
 	Test Setup:
@@ -36,7 +36,7 @@ Feature: Standard DHCPv6 options part 1
 
 
 @v6 @options @sip
-    Scenario: v6.options-sip-domains
+    Scenario: v6.options.sip-domains
 	# Checks that server is able to serve SIP domains option to clients.
 
 	Test Setup:
@@ -66,7 +66,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options RFC3319
 
 @v6 @options @sip @rfc3319
-    Scenario: v6.options-sip-servers
+    Scenario: v6.options.sip-servers
 	# Checks that server is able to serve SIP servers option to clients.
 
 	Test Setup:
@@ -97,7 +97,7 @@ Feature: Standard DHCPv6 options part 1
 
 
 @v6 @options @dns @rfc3646
-    Scenario: v6.options-dns-servers
+    Scenario: v6.options.dns-servers
 	# Checks that server is able to serve dns-servers option to clients.
 
 	Test Setup:
@@ -129,7 +129,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3646
 
 @v6 @options @rfc3646
-    Scenario: v6.options-domains
+    Scenario: v6.options.domains
 	# Checks that server is able to serve domains option to clients.
 
 	Test Setup:
@@ -159,7 +159,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3646 
 
 @v6 @options @nis @rfc3898
-    Scenario: v6.options-nis-servers
+    Scenario: v6.options.nis-servers
 	# Checks that server is able to serve NIS server option to clients.
 
 	Test Setup:
@@ -189,7 +189,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3898
 
 @v6 @options @nis @nisp @rfc3898
-    Scenario: v6.options-nisp-servers
+    Scenario: v6.options.nisp-servers
 	# Checks that server is able to serve NIS+ servers option to clients.
 
 	Test Setup:
@@ -210,7 +210,7 @@ Feature: Standard DHCPv6 options part 1
 
 	
 @v6 @options @nis @rfc3898
-    Scenario: v6.options-nisdomain
+    Scenario: v6.options.nisdomain
 	# Checks that server is able to serve NIS domain option to clients.
 
 	Test Setup:
@@ -241,7 +241,7 @@ Feature: Standard DHCPv6 options part 1
 
 
 @v6 @options @rfc3898
-    Scenario: v6.options-nispdomain
+    Scenario: v6.options.nispdomain
 	# Checks that server is able to serve NIS+ domain option to clients.
 
 	Test Setup:
@@ -270,7 +270,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3898 
 
 @v6 @options @sntp @rfc4075
-    Scenario: v6.options-sntp-servers
+    Scenario: v6.options.sntp-servers
 	# Checks that server is able to serve sntp-servers option to clients.
 
 	Test Setup:
@@ -300,7 +300,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC4075
 	
 @v6 @options @rfc4242
-    Scenario: v6.options-info-refresh
+    Scenario: v6.options.info-refresh
 	# Checks that server is able to serve sntp-servers option to clients.
 
 	Test Setup:
@@ -330,7 +330,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC4242
 
 @v6 @options
-    Scenario: v6.options-multiple
+    Scenario: v6.options.multiple
 	# Checks that server is able to serve many options to clients.
 
 	Test Setup:
@@ -375,7 +375,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
 @v6 @options @dns @rfc3646
-    Scenario: v6.options-negative
+    Scenario: v6.options.negative
 	# Checks that server does not return option that it was not configured
 	# to return.
 

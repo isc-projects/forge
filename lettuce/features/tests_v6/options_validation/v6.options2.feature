@@ -4,7 +4,7 @@ Feature: Standard DHCPv6 options part 2
     requested options are assigned properly. Also testing information-request message.
 
 @v6 @options @preference
-    Scenario: v6.options.inforequest-preference-
+    Scenario: v6.options.inforequest.preference
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -23,7 +23,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3315 section 22.8
 
 @v6 @options @sip
-    Scenario: v6.options.inforequest-sip-domains
+    Scenario: v6.options.inforequest.sip-domains
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -42,7 +42,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3319
 
 @v6 @options @sip @rfc3319
-    Scenario: v6.options.inforequest-sip-servers
+    Scenario: v6.options.inforequest.sip-servers
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -62,7 +62,7 @@ Feature: Standard DHCPv6 options part 2
 
 
 @v6 @options @dns @rfc3646
-    Scenario: v6.options.inforequest-dns-servers
+    Scenario: v6.options.inforequest.dns-servers
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -83,7 +83,7 @@ Feature: Standard DHCPv6 options part 2
 	References: v6.options, v6.oro, RFC3646
 
 @v6 @options @rfc3646
-    Scenario: v6.options.inforequest-domains
+    Scenario: v6.options.inforequest.domains
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -102,7 +102,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3646 
 
 @v6 @options @nis @rfc3898
-    Scenario: v6.options.inforequest-nis-servers
+    Scenario: v6.options.inforequest.nis-servers
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -121,7 +121,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3898
 
 @v6 @options @nis @nisp @rfc3898
-    Scenario: v6.options.inforequest-nisp-servers
+    Scenario: v6.options.inforequest.nisp-servers
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -141,7 +141,7 @@ Feature: Standard DHCPv6 options part 2
 
 	
 @v6 @options @nis @rfc3898
-    Scenario: v6.options.inforequest-nisdomain
+    Scenario: v6.options.inforequest.nisdomain
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -161,7 +161,7 @@ Feature: Standard DHCPv6 options part 2
 
 
 @v6 @options @rfc3898
-    Scenario: v6.options.inforequest-nispdomain
+    Scenario: v6.options.inforequest.nispdomain
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -180,7 +180,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3898 
 
 @v6 @options @sntp @rfc4075
-    Scenario: v6.options.sntp-servers.inforequest
+    Scenario: v6.options.inforequest.sntp-servers
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -199,7 +199,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC4075
 	
 @v6 @options @rfc4242
-    Scenario: v6.options.inforequest-info-refresh
+    Scenario: v6.options.inforequest.info-refresh
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -218,7 +218,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC4242
 
 @v6 @options
-    Scenario: v6.options.inforequest-multiple
+    Scenario: v6.options.inforequest.multiple
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -246,7 +246,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3315 section 22.8
 
 @v6 @options @dns @rfc3646
-    Scenario: v6.options.inforequest-negative
+    Scenario: v6.options.inforequest.negative
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
