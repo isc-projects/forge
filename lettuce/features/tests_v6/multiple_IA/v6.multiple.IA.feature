@@ -48,7 +48,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response sub-option 5 from option 3 MUST contain address 3000::3.
 	
 @v6 @multipleIA
-    Scenario: v6.multipleIA.addresses.release.success
+    Scenario: v6.multipleIA.addresses-release-success
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -105,7 +105,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response sub-option 13 from option 3 MUST contain statuscode 0.
 	
 @v6 @multipleIA
-    Scenario: v6.multipleIA.addresses.release.partial.success
+    Scenario: v6.multipleIA.addresses-release-partial-success
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -173,7 +173,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
 @v6 @multipleIA
-    Scenario: v6.multipleIA.addresses.rebind.partial.success
+    Scenario: v6.multipleIA.addresses-rebind-partial-success
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -241,7 +241,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
 @v6 @multipleIA
-    Scenario: v6.multipleIA.addresses.noaddravail
+    Scenario: v6.multipleIA.addresses-noaddravail
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
 	Server is started.
