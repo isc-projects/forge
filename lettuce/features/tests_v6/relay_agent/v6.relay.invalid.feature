@@ -58,7 +58,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 
 @v6 @relay @relay_invalid @invalid_option @outline
-    Scenario: v6.relay.invalid.options.preference
+    Scenario: v6.relay.invalid.options-preference
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
