@@ -2,7 +2,7 @@ Feature: DHCPv6 Prefix Delegation
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.onlyPD.renew
+    Scenario: prefix.delegation-onlyPD-renew
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -50,7 +50,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section: 12.2
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.IA.and.PD.renew
+    Scenario: prefix.delegation-IA-and-PD-renew
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -101,7 +101,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section: 12.2
 
 @v6 @PD @rfc3633
-	Scenario: prefix.delegation.IA.and.PD.renew.nobindig
+	Scenario: prefix.delegation-IA-and-PD-renew-nobindig
 	
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
