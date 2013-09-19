@@ -2,7 +2,7 @@ Feature: DHCPv6 Prefix Delegation
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation-onlyPD-request
+    Scenario: prefix.delegation.onlyPD-request
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -36,7 +36,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation-IA-and-PD-request
+    Scenario: prefix.delegation.IA-and-PD-request
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -74,7 +74,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
-	Scenario: prefix.delegation-request-release
+	Scenario: prefix.delegation.request-release
 	
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	#Server is configured with prefix-delegation option with value 3000:1::.
@@ -117,7 +117,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation-noprefixavail-release
+    Scenario: prefix.delegation.noprefixavail-release
   	#assign 2 prefixes, try third, fail, release one, assign one more time with success.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	#Server is configured with prefix-delegation option with value 3000:1::.
@@ -206,7 +206,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation-noprefixavail
+    Scenario: prefix.delegation.noprefixavail
   
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	#Server is configured with prefix-delegation option with value 3000:1::.
@@ -270,7 +270,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section:
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation-onlyPD-relay
+    Scenario: prefix.delegation.onlyPD-relay
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
