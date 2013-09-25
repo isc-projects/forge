@@ -198,6 +198,7 @@ Feature: Standard DHCPv6 message types
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sends DECLINE message.
 
