@@ -74,4 +74,39 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain T1 0.
 
-	References: RFC 3633, Section: 12.2    
+	References: RFC 3633, Section: 12.2   
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.rebind-fail-dropped
+
+ 	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	#Server is configured with prefix-delegation option with value 3000:1::.
+	Server is started.
+	
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client does include IA-PD.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+ 	
+ 	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	#Server is configured with prefix-delegation option with value 3000:1::. different settings then before!
+	Server is started.
+
+	Test Procedure:
+	Client sends REBIND message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	References: RFC 3633, Section: 12.2   
