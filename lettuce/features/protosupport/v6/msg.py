@@ -469,11 +469,14 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
             # uncomment to print all pocket fields 
             #assert False, each.fields.keys()
             if opt_code == 3:
-                pass
+                # looking for all kinds of variables, specified in test step (e.g. T1 )  
+                received += str(each.fields.get(data_type))
+            elif opt_code == 4:
+                received += str(each.fields.get(data_type))
             elif opt_code == 7:
                 received = str(each.prefval)
             elif opt_code == 9:
-                received = str(each.optcode)
+                received += str(each.fields.get(data_type))
             elif opt_code == 13:
                 received = str(each.statuscode)
             elif opt_code == 21:
@@ -485,6 +488,7 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
             elif opt_code == 24:
                 received = ",".join(each.dnsdomains)
             elif opt_code == 25:
+                # looking for all kinds of variables, specified in test step (e.g. T1 )
                 received += str(each.fields.get(data_type))
             elif opt_code == 27:
                 received = ",".join(each.nisservers)
@@ -505,29 +509,17 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
         # test all suboptions which we extracted from received message, 
         # and also test primary option for that sub-option.We don't want to have 
         # situation when 13 suboption from option 3 was taken as a subotion of option 25.
-        # yest that's freaky...
+        # yes that's freaky...
+        # each[0] - it's parent optcode (for 26 it will be 25, for 13 it will be 3,
+        # some times statuscode option included not as sub-option will be marked as 0. 
 
         for each in world.subopts:
             if each[0] == opt_code:
-                if subopt_code == 5:
-                    try:
-                        received += each[1].addr + ' '
-                    except:
-                        pass
-                elif subopt_code == 13:
-                    try:
-                        received += str(each[1].statuscode) + ' ' 
-                    except:
-                        pass
-                elif subopt_code == 26:
-                    try:
-                        received += each[1].prefix + ' '
-                        
-                    except:
-                        pass
-                else:
-                    received = unknown_option_to_str(data_type, each)
-    
+                try:
+                    received += str(each[1].payload.fields.get(data_type)) + ' '
+                except:
+                    pass
+
     # test if expected option/suboption/value is in all collected options/suboptions/values 
     assert expected in received, "Invalid " + str(opt_code) + " option, received "+data_type+": " + received + \
                                   ", but expected " + str(expected)
