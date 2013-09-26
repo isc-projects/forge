@@ -23,8 +23,7 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client does NOT include IA-NA.
 	Client copies server-id option from received message.
-	Client saves IA_PD option from received message.
-	Client adds saved options. And Erase.
+	Client copies IA_PD option from received message.
 	Client sends REQUEST message.
 
 	Pass Criteria:
