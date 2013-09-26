@@ -443,6 +443,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     
     opt_code = int(opt_code)
     subopt_code = int(subopt_code)
+    data_type = str(data_type)
+    expected = str(expected)
     # without any msg received, fail test
     assert len(world.srvmsg) != 0, "No response received."  
 
@@ -464,6 +466,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     # test all collected options:
     if subopt_code is 0:
         for each in world.opts:
+            # uncomment to print all pocket fields 
+            #assert False, each.fields.keys()
             if opt_code == 3:
                 pass
             elif opt_code == 7:
@@ -481,8 +485,7 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
             elif opt_code == 24:
                 received = ",".join(each.dnsdomains)
             elif opt_code == 25:
-                received += str(each.T1) + ' '
-                received += str(each.T2) + ' ' 
+                received += str(each.fields.get(data_type))
             elif opt_code == 27:
                 received = ",".join(each.nisservers)
             elif opt_code == 28:
@@ -503,9 +506,7 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
         # and also test primary option for that sub-option.We don't want to have 
         # situation when 13 suboption from option 3 was taken as a subotion of option 25.
         # yest that's freaky...
-#         for each in world.subopts:
-#             print each[0]
-#             each[1].show()
+
         for each in world.subopts:
             if each[0] == opt_code:
                 if subopt_code == 5:
@@ -526,10 +527,12 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                         pass
                 else:
                     received = unknown_option_to_str(data_type, each)
-
+    
     # test if expected option/suboption/value is in all collected options/suboptions/values 
-    assert expected in received, "Invalid " + str(opt_code) + " option received: " + received + \
-                                 ", but expected " + str(expected)
+    assert expected in received, "Invalid " + str(opt_code) + " option, received "+data_type+": " + received + \
+                                  ", but expected " + str(expected)
+
+
 
 def receive_dhcp6_tcpdump(count = 1, timeout = 1):
 
