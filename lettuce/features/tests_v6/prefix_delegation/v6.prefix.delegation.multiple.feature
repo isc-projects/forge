@@ -6,8 +6,7 @@ Feature: DHCPv6 Prefix Delegation
     
    	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	#
-	
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
 	Server is started.
 	
 	Test Procedure:
@@ -57,12 +56,13 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.  
 	Response option 25 MUST contain sub-option 26. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 
 @v6 @PD @rfc3633 @multiplePD
     Scenario: prefix.delegation.multiple.PD-and-IA-request
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::4 pool.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	#pool for 4 addresses and 4 prefix, all 8 with success
 	
 	Server is started.
@@ -119,7 +119,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response MUST include option 3.
 	Response option 25 MUST contain sub-option 26.
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	#4x IA address and 4x prefix
 	
 	
@@ -127,6 +127,7 @@ Feature: DHCPv6 Prefix Delegation
     Scenario: prefix.delegation.multiple.PD-and-IA-request-partial-success
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool for 2 addresses and 2 prefix, half success
 	
 	Server is started.
@@ -184,7 +185,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 3.
 	Response option 25 MUST contain sub-option 26. 
 	Response option 25 MUST contain sub-option 13. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	#4x IA address and 4x prefix, both 2 success and 2 fails
 	
 	
@@ -192,6 +193,7 @@ Feature: DHCPv6 Prefix Delegation
     Scenario: prefix.delegation.multiple.PD-and-IA-request-partial-fail
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Server is started.
 
 	Test Procedure:

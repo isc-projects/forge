@@ -6,10 +6,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-  
-	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	#Server is configured with prefix-delegation option with value 3000:1::.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
 	Server is started.
 	
 	Test Procedure:
@@ -21,10 +18,10 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	Response sub-option 5 from option 3 MUST contain address 3000::.
+	Response sub-option 5 from option 3 MUST contain address 3000:1::.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
@@ -51,10 +48,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-  
-	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	#Server is configured with prefix-delegation option with value 3000:1::.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
 	Server is started.
 	
 	Test Procedure:
@@ -66,7 +60,7 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
 	Response sub-option 5 from option 3 MUST contain address 3000::.

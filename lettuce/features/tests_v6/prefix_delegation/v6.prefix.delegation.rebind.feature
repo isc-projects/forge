@@ -6,7 +6,7 @@ Feature: DHCPv6 Prefix Delegation
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	#Server is configured with prefix-delegation option with value 3000:1::.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Server is started.
 	
 	Test Procedure:
@@ -19,7 +19,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
 	Response option 25 MUST contain sub-option 13. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -33,7 +33,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
 	Response option 25 MUST contain sub-option 13. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -53,7 +53,7 @@ Feature: DHCPv6 Prefix Delegation
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	#Server is configured with prefix-delegation option with value 3000:1::.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Server is started.
 	
 	Test Procedure:
@@ -81,7 +81,7 @@ Feature: DHCPv6 Prefix Delegation
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	#Server is configured with prefix-delegation option with value 3000:1::.
+	Server is configured with 3000:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Server is started.
 	
 	Test Procedure:
@@ -99,8 +99,8 @@ Feature: DHCPv6 Prefix Delegation
 	Client copies IA_PD option from received message.
  	
  	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	#Server is configured with prefix-delegation option with value 3000:1::. different settings then before!
+	Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
+	Server is configured with 2001:db8:1:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Server is started.
 
 	Test Procedure:
