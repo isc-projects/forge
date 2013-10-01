@@ -14,8 +14,8 @@ def config_srv_subnet(step, subnet, pool):
 
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
-@step('Server is configured with (\S+) prefix with (\d+) prefix-length and (\d+) delegated prefix length in subnet (\+d).')
-def config_srv_prefix(step, prefix, length, delegated_length, subnet):
+@step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')#  
+def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
     """
     Adds server configuration with specified prefix.
     """

@@ -104,6 +104,15 @@ def prepare_cfg_add_option(step, option_name, option_value):
         '''.format(**locals())
 
     world.kea["option_cnt"] = world.kea["option_cnt"] + 1
+
+def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+
+    world.cfg["conf"] += '''
+        config add Dhcp6/subnet6[{subnet}]/pd-pools
+        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix "{prefix}"
+        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix-len {length}
+        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/delegated-len {delegated_length}
+        '''.format(**locals())
     
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value):
     if (not "conf" in world.cfg):

@@ -399,6 +399,8 @@ def client_copy_option(step, option_name):
     
     # payload need to be 'None'otherwise we copy all options from one we are
     # looking for till the end of the message
+    # it would be nice to remove 'status code' sub-option
+    # before sending it back to server 
     opt.payload = None
     add_client_option(opt)
 
