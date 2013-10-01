@@ -77,6 +77,24 @@ you make to this file will be ignored by git.
 
 Also make sure that your ssh server is configured.
 
+Environment example:
+To use Forge you will need two PC's. In this configuration author used two virtual
+machines using VM VirtualBox. Those machines needs to be connected with internal network 
+(without any other access to interfaces) in VirtualBox this is called Host-Only network.
+You can establish internet connection on other interface if you want. Two different networks 
+should be used for: 
+	vboxnet0 - configuration server via ssh
+	vboxnet1 - testing.
+
+Author used this configuration:
+ ______											   ______
+|	   | <----vboxnet0: configuration via ssh---> |      | 
+| VM 1 |										  | VM 2 |
+|______| <----vboxnet1: testing DHCP        ----> |______|
+
+That's only example, other architectures not tested. If you set up other configuration please
+report it on https://github.com/isc-projects/forge to update documentation.
+
  Usage
 -------
 You can dynamically generate user help by running forge/lettuce/help.py. UserHelp.txt 
