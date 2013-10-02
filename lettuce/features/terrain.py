@@ -66,7 +66,7 @@ def server_start():
             start_bind10(MGMT_ADDRESS)
             get_common_logger().debug("Bind10 successfully started")
         except :
-            get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP address: %s\nMac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
+            get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP destination address: %s\nLocal Mac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
             sys.exit()
     elif SERVER_TYPE in ["isc_dhcp6", "dibbler"]:
         stop = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))

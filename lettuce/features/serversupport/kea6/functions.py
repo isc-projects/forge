@@ -40,7 +40,7 @@ def parsing_bind_stdout(stdout, opt, search = []):
             run_bindctl (opt)
 
 def restart_srv():
-    cmd = '(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 7' # can't be less then 7, server needs time to restart.
+    cmd = '(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10' # can't be less then 7, server needs time to restart.
     fabric(cmd)
 
 def stop_srv():

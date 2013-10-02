@@ -43,5 +43,5 @@ def start_bind10(host):
     cmd = '(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/bind10 &); sleep 2'
     with settings(host_string = host, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         with settings(warn_only = True):
-            with hide ('running', 'stdout'):
-                sudo(cmd, pty = True)
+            #with hide ('running', 'stdout'):
+            sudo(cmd, pty = True)
