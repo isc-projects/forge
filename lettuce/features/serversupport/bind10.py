@@ -45,3 +45,4 @@ def start_bind10(host):
         with settings(warn_only = True):
             #with hide ('running', 'stdout'):
             sudo(cmd, pty = True)
+            
