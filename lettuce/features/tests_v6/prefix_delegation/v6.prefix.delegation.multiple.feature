@@ -58,6 +58,8 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 26. 
 	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 
+	References: RFC 3633, Section: 12.2
+
 @v6 @PD @rfc3633 @multiplePD
     Scenario: prefix.delegation.multiple.PD-and-IA-request
 	Test Setup:
@@ -122,6 +124,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	#4x IA address and 4x prefix
 	
+	References: RFC 3633, Section: 12.2
 	
 @v6 @PD @rfc3633 @multiplePD
     Scenario: prefix.delegation.multiple.PD-and-IA-request-partial-success
@@ -188,6 +191,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	#4x IA address and 4x prefix, both 2 success and 2 fails
 	
+	References: RFC 3633, Section: 12.2
 	
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.multiple.PD-and-IA-request-partial-fail
@@ -234,4 +238,6 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 13 from option 3 MUST contain statuscode 2.	
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 13.
-	Response sub-option 13 from option 25 MUST contain statuscode 0.	
+	Response sub-option 13 from option 25 MUST contain statuscode 0.
+
+	References: RFC 3633, Section: 12.2

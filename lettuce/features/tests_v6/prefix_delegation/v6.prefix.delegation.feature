@@ -32,7 +32,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 26.
 	Response sub-option 26 from option 25 MUST contain prefix 3000:1::.
 	
-	References: RFC 3633, Section:
+	References: RFC 3633, Section: 12.2
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.IA-and-PD-request
@@ -113,7 +113,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 13. 
 	Response sub-option 13 from option 25 MUST contain statuscode 0.
 	
-	References: RFC 3633, Section:
+	References: RFC 3633, Section: 12.2
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail-release
@@ -202,7 +202,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 13.	
 	Response sub-option 13 from option 25 MUST contain statuscode 6. 
 	
-	References: RFC 3633, Section:
+	References: RFC 3633, Section: 11.2 12.2
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail
@@ -266,7 +266,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 13.	
 	Response sub-option 13 from option 25 MUST contain statuscode 6. 
 		
-	References: RFC 3633, Section:
+	References: RFC 3633, Section: 11.2
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD-relay
