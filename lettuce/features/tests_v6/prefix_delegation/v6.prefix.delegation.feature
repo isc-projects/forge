@@ -19,6 +19,8 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response option 25 MUST contain sub-option 13.
+	Response sub-option 13 from option 25 MUST contain statuscode 0.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -38,7 +40,7 @@ Feature: DHCPv6 Prefix Delegation
     Scenario: prefix.delegation.IA-and-PD-request
   
  	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Server is started.
 	
@@ -53,7 +55,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	Response sub-option 5 from option 3 MUST contain address 3000::.
+	Response sub-option 5 from option 3 MUST contain address 3000::1.
 		
 	Test Procedure:
 	Client copies IA_NA option from received message.
@@ -68,7 +70,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	Response sub-option 5 from option 3 MUST contain address 3000::.
+	Response sub-option 5 from option 3 MUST contain address 3000::1.
 	
 	References: RFC 3633, Section:
 
