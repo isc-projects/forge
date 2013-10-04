@@ -246,7 +246,7 @@ def run_bindctl (opt):
         cfg_file = 'kea6start.cfg'
         pepere_config_file(cfg_file)
         fabric_send_file (cfg_file + "_processed")
-    elif opt == "conf":
+    elif opt == "configuration":
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
@@ -264,11 +264,16 @@ def run_bindctl (opt):
     # some times clean can fail, so we wanna test only start and conf
     # for now we fail test on any presence of stderr, probably this will
     # need some more specific search.
+    search = ["ImportError:",'"config revert".',"Error"]
     if opt is not "clean":
-        if "ImportError:" in result.stderr:  
-            assert False, 'Server operation: ' + opt + ' failed! '
+        for each in search: 
+            if each in result.stdout:
+                assert False, 'Server operation: ' + opt + ' failed! '
+            if each in result.stderr:
+                assert False, 'Server operation: ' + opt + ' failed! '
 
-    # react on some output, default restarts BIND10 after Error 32: Broken pipe
+    # Error 32: Broken pipe
+    # this error needs different aproach then others. Bind10 needs to be restarted.
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
 def start_srv():
@@ -279,5 +284,5 @@ def start_srv():
     get_common_logger().debug("Bind10, dhcp6 configuration procedure:")
     run_bindctl ('clean')#clean and stop
     run_bindctl ('start')#start
-    run_bindctl ('conf')#conf
+    run_bindctl ('configuration')#conf
 #     

@@ -32,6 +32,9 @@ GIADDR4 = ""
 # defines client MAC (used for DUID generation)
 CLI_MAC = ""
 
+# For servers: ISC-DHCP, ISC-DHCPv6 and Dibbler choose ethernet interface to bind server.
+SERVER_IFACE = ""
+
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
 # files, and removing generated data files.
@@ -82,11 +85,6 @@ MGMT_PASSWORD = ""
 # The framework appends subdirectories to this path to run applications.
 # For example, it appends "bin/" to obtain path to the bindctl.
 SERVER_INSTALL_DIR = ""
-
-
-# =============== ISC-DHCP ===============
-#For servers: ISC-DHCP and ISC-DHCPv6 choose ethernet interface to bind server.
-SERVER_IFACE = ""
 
 # =============== DIBBLER ================
 DIBBLER_INSTALL_DIR = ""
