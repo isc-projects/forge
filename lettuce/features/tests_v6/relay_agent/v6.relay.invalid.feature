@@ -24,8 +24,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8	
 	
@@ -52,8 +54,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 
@@ -79,8 +83,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 	
@@ -106,8 +112,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 	
@@ -132,9 +140,10 @@ Feature: DHCPv6 Relay Agent
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
-
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 	
@@ -160,8 +169,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 	
@@ -187,8 +198,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 	
@@ -214,8 +227,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 	
@@ -241,8 +256,10 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
 	
@@ -268,7 +285,9 @@ Feature: DHCPv6 Relay Agent
 	Client requests option 7.
 	Client sends SOLICIT message.
 
+	...using relay-agent encapsulated in 1 level.
+	
 	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
+	Server MUST respond with RELAYREPLY message.
 
 	References: RFC3315 section 18.2.8
