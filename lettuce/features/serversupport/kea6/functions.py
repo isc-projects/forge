@@ -257,7 +257,7 @@ def run_bindctl (opt):
     elif opt == "restart":
         restart_srv()
         
-    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
+    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 2'
     result = fabric(cmd)
     
     # now let's test output, looking for errors, 
