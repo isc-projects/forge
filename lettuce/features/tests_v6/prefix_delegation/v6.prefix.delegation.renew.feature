@@ -2,7 +2,7 @@ Feature: DHCPv6 Prefix Delegation
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.onlyPD-renew
+    Scenario: prefix.delegation.onlyPD_renew
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -18,8 +18,6 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
-	Response option 25 MUST contain sub-option 13. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -31,8 +29,6 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
-	Response option 25 MUST contain sub-option 13. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -43,14 +39,12 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	Response option 25 MUST contain sub-option 26. 
-	Response option 25 MUST contain sub-option 13.
-	Response sub-option 13 from option 25 MUST contain statuscode 0.
+	Response option 25 MUST contain sub-option 26.
 	
 	References: RFC 3633, Section: 12.2
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.IA-and-PD-renew
+    Scenario: prefix.delegation.IA_and_PD_renew
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -66,7 +60,6 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
-	Response option 25 MUST contain sub-option 13. 
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	
 	Test Procedure:
@@ -80,7 +73,6 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
-	Response option 25 MUST contain sub-option 13. 
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 
 	Test Procedure:
@@ -92,8 +84,6 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
-	Response option 25 MUST contain sub-option 13.
-	Response sub-option 13 from option 25 MUST contain statuscode 0.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 13.
 	Response sub-option 13 from option 3 MUST contain statuscode 3.
@@ -101,7 +91,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section: 12.2
 
 @v6 @PD @rfc3633
-	Scenario: prefix.delegation.IA-and-PD-renew-nobindig
+	Scenario: prefix.delegation.IA_and_PD_renew_nobindig
 	
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.

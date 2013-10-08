@@ -2,7 +2,7 @@ Feature: DHCPv6 Prefix Delegation
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.onlyPD-request
+    Scenario: prefix.delegation.onlyPD_request
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
@@ -19,9 +19,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
-	Response option 25 MUST contain sub-option 13.
-	Response sub-option 13 from option 25 MUST contain statuscode 0.
-	
+
 	Test Procedure:
 	Client does NOT include IA-NA.
 	Client copies server-id option from received message.
@@ -33,7 +31,9 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
-	
+	Response option 25 MUST contain sub-option 13.
+	Response sub-option 13 from option 25 MUST contain statuscode 0.
+		
 	References: RFC 3633, Section: 12.2
 
 @v6 @PD @rfc3633
