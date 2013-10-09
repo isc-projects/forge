@@ -25,29 +25,50 @@ from features.terrain import set_options
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 
+# option codes for options and sub-options for dhcp v6
+options6 = {"client-id": 1,
+            "server-id" : 2,
+            "IA_NA" : 3,
+            "IN_TA": 4,
+            "IA_address" : 5,
+            "preference": 7,
+            "relay-msg": 9,
+            "status-code": 13,
+            "rapid_commit": 14,
+            "interface-id": 18,
+            "sip-server-dns": 21,
+            "sip-server-addr": 22,
+            "dns-servers": 23,
+            "domain-search": 24,
+            "IA_PD": 25,
+            "IA-Prefix": 26,
+            "nis-servers": 27,
+            "nisp-servers": 28,
+            "nis-domain-name": 29,
+            "nisp-domain-name": 30,
+            "sntp-servers": 31,
+            "information-refresh-time": 32 }
 
-options6 = {     "client-id": 1,
-                 "server-id" : 2,
-                 "IA_NA" : 3,
-                 "IN_TA": 4,
-                 "IA_address" : 5,
-                 "preference": 7,
-                 "relay-msg": 9,
-                 "status-code": 13,
-                 "rapid_commit": 14,
-                 "interface-id": 18,
-                 "sip-server-dns": 21,
-                 "sip-server-addr": 22,
-                 "dns-servers": 23,
-                 "domain-search": 24,
-                 "IA_PD": 25,
-                 "IA-Prefix": 26,
-                 "nis-servers": 27,
-                 "nisp-servers": 28,
-                 "nis-domain-name": 29,
-                 "nisp-domain-name": 30,
-                 "sntp-servers": 31,
-                 "information-refresh-time": 32 }
+# default values send to the server, 
+# before each scenario copy this, to some world.cfg["values"] to make sure 
+# always use default values at the begging of the test!
+# same thing we do with "add_option" in function "set_options()" in file: terrain.py 
+# should be editable by test step: <not created yet>  e.g. Client set <value_name> value to <value>.
+
+values = {"T1": 0,
+          "T2": 0,
+          "address": "::",
+          "prefix": "::",
+          "plen": 0 #plz remember, to add prefix and prefix length!
+          #add much more
+          }
+# after that just look into function " client_option " and add values to 
+# their options.
+
+# to change values of the suboptions (now I'm thinking only about IA_Address and IA_Prefix, some more?),
+# we should provide adding IA_Addres and IA_Prefix in test step  @step('Client does (NOT )?include (\S+).').
+# that involves changing couple places, like mentioned before "add_option" in terrain.py and functions:
+# client_does_include and client_option in this file.
 
 def test_pause(step):
     """
@@ -293,8 +314,10 @@ def send_wait_for_message(step, type, presence, exp_message):
         may_flag = True
     else:
         assert False, "Invalid expected behavior: %s." %str(type)
-    #Uncomment this to get debug.recv filled with all received messages
-    #conf.debug_match = True
+        
+    # Uncomment this to get debug.recv filled with all received messages
+    # conf.debug_match = True
+    #world.climsg[0].show()
     ans,unans = sr(world.climsg, iface = world.cfg["iface"], timeout = 1, nofilter = 1, verbose = 99)
 
     expected_type_found = False
@@ -478,6 +501,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
             elif opt_code == 7:
                 received = str(each.prefval)
             elif opt_code == 9:
+                # receive relay messages bug in scapy must be fixed!
+                #each.show() 
                 received += str(each.fields.get(data_type))
             elif opt_code == 13:
                 received = str(each.statuscode)
