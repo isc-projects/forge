@@ -17,7 +17,7 @@ Feature: DHCPv6 Relay Agent
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
 	Response MUST include option 9.
-	Response option 9 MUST contain message 2.
+	#Response option 9 MUST contain message 2.
 	#message 2 - Advertise
 	
 	References: RFC3315 section 18.2.8
