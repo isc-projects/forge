@@ -37,7 +37,7 @@ def parsing_bind_stdout(stdout, opt, search = []):
             from serversupport.bind10 import kill_bind10, start_bind10 #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
             kill_bind10(MGMT_ADDRESS)
             start_bind10(MGMT_ADDRESS)
-            run_bindctl (opt)
+            run_bindctl (True, opt)
 
 def restart_srv():
     cmd = '(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10' # can't be less then 7, server needs time to restart.

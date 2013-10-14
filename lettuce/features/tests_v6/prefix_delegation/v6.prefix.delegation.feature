@@ -357,6 +357,121 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section: 11.2
 
 @v6 @PD @rfc3633
+    Scenario: prefix.delegation.release_nobinding
+
+ 	Test Setup:
+	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
+	Server is started.
+	
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client does include IA-PD.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 13.
+	Response sub-option 13 from option 25 MUST contain statuscode 3.
+
+	References: RFC 3633, Section: ?
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.release_dual_nobinding
+ 	Test Setup:
+	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
+	Server is started.
+	
+	Test Procedure:
+	Client does include IA-PD.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client copies IA_NA option from received message.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 13.
+	Response sub-option 13 from option 25 MUST contain statuscode 3.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 13.
+	Response sub-option 13 from option 3 MUST contain statuscode 3.
+	
+	References: RFC 3633, Section: ?
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.release_nobinding
+
+ 	Test Setup:
+	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
+	Server is started.
+	
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client does include IA-PD.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client saves IA_PD option from received message.
+	Client adds saved options. And DONT Erase.
+	Client does NOT include IA-NA.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client does NOT include IA-NA.
+	Client sends RELEASE message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 13.
+	Response sub-option 13 from option 25 MUST contain statuscode 3.
+
+	References: RFC 3633, Section: ?
+
+@v6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD-relay
   
  	Test Setup:
