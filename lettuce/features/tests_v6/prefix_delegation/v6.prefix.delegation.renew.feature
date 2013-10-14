@@ -59,8 +59,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 25.
-	Response option 25 MUST contain sub-option 26. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response option 25 MUST contain sub-option 26.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -72,8 +71,7 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	Response option 25 MUST contain sub-option 26. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response option 25 MUST contain sub-option 26.
 
 	Test Procedure:
 	Client copies server-id option from received message.
