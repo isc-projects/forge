@@ -420,7 +420,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633/3315
 
 @v6 @PD @rfc3633
-    Scenario: prefix.delegation.release_nobinding
+    Scenario: prefix.delegation.release_nobinding2
 
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
