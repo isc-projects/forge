@@ -229,7 +229,7 @@ def fabric_send_file (file_local):
     except OSError:
         get_common_logger().error('File %s cannot be removed' % file_local)
         
-def run_bindctl (opt):
+def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
     """    
@@ -264,6 +264,8 @@ def run_bindctl (opt):
     # some times clean can fail, so we wanna test only start and conf
     # for now we fail test on any presence of stderr, probably this will
     # need some more specific search.
+    
+    # TODO: change it to respond for 'succeed' variable!
     search = ["ImportError:",'"config revert".',"Error"]
     if opt is not "clean":
         for each in search: 
@@ -276,13 +278,31 @@ def run_bindctl (opt):
     # this error needs different aproach then others. Bind10 needs to be restarted.
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
-def start_srv():
+def start_srv(start, process):
     """
     Start kea with generated config
     """
+
+    # All 3 available processess set to 'True' it means that they should to succeed
+    configuration = True
+    start = True
+    clean = True
+
+    # Switch one of three processess to false, which? That is decided in 
+    # Server failed to start. During (\S+) process.) step.    
+    if process == None and start:
+        pass
+    elif process == 'configuration':
+        configuration = False
+    elif process == 'start':
+        start = False
+    elif process == 'clean':
+        clean = False
+    else:
+        assert False, "Process: '"+process+"' not supported."
+
     cfg_write() 
     get_common_logger().debug("Bind10, dhcp6 configuration procedure:")
-    run_bindctl ('clean')#clean and stop
-    run_bindctl ('start')#start
-    run_bindctl ('configuration')#conf
-#     
+    run_bindctl (clean, 'clean')#clean and stop
+    run_bindctl (start, 'start')#start
+    run_bindctl (configuration,'configuration')#conf

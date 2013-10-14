@@ -11,7 +11,6 @@ def config_srv_subnet(step, subnet, pool):
     subnet may define specific subnet or use the word "default"
     pool may define specific pool range or use the word "default"
     """
-
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
 @step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')#  
@@ -34,7 +33,6 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
     opt_type type of the option, e.g. uint8 (see bind10 guide for complete list)
     opt_value value of the option, e.g. 1
     """
-
     dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value)
 
 ##subnet options
@@ -48,9 +46,15 @@ def config_srv(step, option_name, subnet, option_value):
     dhcpfun.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
 
 ##server management
-@step('Server is started.')
-def start_srv(step):
-    dhcpfun.start_srv()
+@step('(Server is started.)|(Server failed to start. During (\S+) process.)')
+def start_srv(step, started , failed, process):
+    """
+    Decide which you want, start server of failed start (testing incorrect configuration)
+    Also decide in which part should it failed.
+    """
+    # pass True for 'Server is started' and False for 'Server failed to start.'
+    start = True if started is not None else False
+    dhcpfun.start_srv(start, process)
 
 @step('Restart server.')
 def restart_srv(step):
@@ -58,7 +62,6 @@ def restart_srv(step):
     Restart DHCPv6 without changing server configuration
     """
     dhcpfun.restart_srv()
-
 
 @step('Server is stopped.')
 def stop_srv(step):
