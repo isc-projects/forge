@@ -385,7 +385,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 13.
 	Response sub-option 13 from option 25 MUST contain statuscode 3.
 
-	References: RFC 3633, Section: ?
+	References: RFC 3633/3315
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.release_dual_nobinding
@@ -417,7 +417,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 3 MUST contain sub-option 13.
 	Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
-	References: RFC 3633, Section: ?
+	References: RFC 3633/3315
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.release_nobinding
@@ -469,7 +469,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 13.
 	Response sub-option 13 from option 25 MUST contain statuscode 3.
 
-	References: RFC 3633, Section: ?
+	References: RFC 3633/3315
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD-relay
