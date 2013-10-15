@@ -68,6 +68,10 @@ IFACE = ""
 # but for more detailed information about tests, use --with_xunit option when starting run_test.py
 HISTORY = False
 
+# Also you can choose to save .pcap file from every test in different file by turning 
+# TCPDUMP to True.
+TCPDUMP = False
+
 # =============== SSH ===============
 
 # This are required management information about device under test (the one that
@@ -85,6 +89,9 @@ MGMT_PASSWORD = ""
 # The framework appends subdirectories to this path to run applications.
 # For example, it appends "bin/" to obtain path to the bindctl.
 SERVER_INSTALL_DIR = ""
+
+# Also you can decide to save Kea logs to further testing:
+KEA_LOGS = False
 
 # =============== DIBBLER ================
 DIBBLER_INSTALL_DIR = ""
