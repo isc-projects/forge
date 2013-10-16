@@ -643,9 +643,9 @@ def client_option (msg):
                 if opt.optcode == 3:
                     break #if there is no IA_NA/TA in world.cliopts, break.. 
             else:
-                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
         else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA   
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA   
 
     if world.cfg["add_option"]["preference"] == True:
         msg /= DHCP6OptPref()
@@ -685,6 +685,10 @@ def client_option (msg):
             preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"], plen = world.cfg["values"]["plen"],
             prefix = world.cfg["values"]["prefix"]
         )
+    if world.cfg["add_option"]["IA_Address"]:
+        world.cfg["add_option"]["IA_NA"] = False
+        msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAAddress(
+                    address = world.cfg["values"]["address"], preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"])
     # set all "add_option" True/False values to default.
     set_options()
     set_values()
