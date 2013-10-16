@@ -58,8 +58,9 @@ removelist = [ ]
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
-# scope link server address for testing unicast messages  
-SRV_IPV6_ADDR = ""
+# server address for testing unicast messages, both link-local and global.  
+SRV_IPV6_ADDR_LOCAL = ""
+SRV_IPV6_ADDR_GLOBAL = ""
 
 # Defines name of the DUT-facing network interface
 # Also that interface is used by tcpdump when TCPDUMP = True
