@@ -215,6 +215,7 @@ def outline_result(scenario, number, step, failed):
 def cleanup_option(step):
     #set_options ()
     pass
+
     
 @after.each_scenario
 def cleanup(scenario):
