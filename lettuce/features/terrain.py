@@ -30,9 +30,24 @@ add_option = {'client_id' : True,
               'wrong_server_id' : False,
               'IA_NA': True,
               'IA_TA': False,
-              'IA_PD': False
+              'IA_PD': False,
+              'IA_Prefix': False,
+              'IA_Address': False 
               }
-    
+values = {"T1": 0,
+          "T2": 0,
+          "address": "::",
+          "prefix": "::",
+          "plen": 0,  # plz remember, to add prefix and prefix length!
+          "preflft" : 0,
+          "validlft" : 0
+          #TODO: relay msg values!
+          }
+# we should consider transfer most of funtions to separate v4 and v6 files
+# there is no v4 functions yet.
+def set_values():
+    world.cfg["values"] = values.copy()
+ 
 def set_options():
     world.cfg["add_option"] = add_option.copy()
     
@@ -111,6 +126,7 @@ def initialize(scenario):
     world.proto = PROTO
     world.cfg["subnet"] = ""
     
+    set_values() 
     set_options()
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
