@@ -3,3 +3,4 @@ output/*
 /UserHelp.txt
 /history.html
 /lettucetests.xml
+tests_results/*.pcap
