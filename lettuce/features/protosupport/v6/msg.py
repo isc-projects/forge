@@ -20,8 +20,8 @@
 
 from cookielib import debug
 from features.logging_facility import get_common_logger
-
 from features.terrain import set_options
+from features.terrain import set_values
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 
@@ -49,27 +49,6 @@ options6 = {"client-id": 1,
             "sntp-servers": 31,
             "information-refresh-time": 32 }
 
-# default values send to the server, 
-# before each scenario copy this, to some world.cfg["values"] to make sure 
-# always use default values at the begging of the test!
-# same thing we do with "add_option" in function "set_options()" in file: terrain.py 
-# should be editable by test step: <not created yet>  e.g. Client set <value_name> value to <value>.
-
-values = {"T1": 0,
-          "T2": 0,
-          "address": "::",
-          "prefix": "::",
-          "plen": 0 #plz remember, to add prefix and prefix length!
-          #add much more
-          }
-# after that just look into function " client_option " and add values to 
-# their options.
-
-# to change values of the suboptions (now I'm thinking only about IA_Address and IA_Prefix, some more?),
-# we should provide adding IA_Addres and IA_Prefix in test step  @step('Client does (NOT )?include (\S+).').
-# that involves changing couple places, like mentioned before "add_option" in terrain.py and functions:
-# client_does_include and client_option in this file.
-
 def test_pause(step):
     """
     Pause the test for any reason. Press any key to continue. 
@@ -96,6 +75,17 @@ def client_requests_option(step, opt_type):
         world.oro.reqopts = [] # don't request anything by default
 
     world.oro.reqopts.append(int(opt_type))
+
+
+def client_sets_value(step, value_name, new_value):
+    if value_name in world.cfg["values"]:
+        if isinstance(world.cfg["values"][value_name], str):
+            world.cfg["values"][value_name] = new_value
+        elif isinstance(world.cfg["values"][value_name], int):
+            world.cfg["values"][value_name] = int(new_value)
+    else:
+        assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
+
 
 def client_send_msg(step, msgname, opt_type, unknown):
     """
@@ -603,7 +593,10 @@ def client_does_include(step, opt_type):
         world.cfg["add_option"]["IA_PD"] = True
     elif opt_type == "IA-NA":
         world.cfg["add_option"]["IA_NA"] = False
-        
+    elif opt_type == "IA_Prefix":
+        world.cfg["add_option"]["IA_Prefix"] = True
+    elif opt_type == "IA_Address":
+        world.cfg["add_option"]["IA_Address"] = True
     else:
         assert "unsupported option: " + opt_type
 
@@ -650,9 +643,9 @@ def client_option (msg):
                 if opt.optcode == 3:
                     break #if there is no IA_NA/TA in world.cliopts, break.. 
             else:
-                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
         else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"]) # if not, add IA_NA   
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"])#, T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA   
 
     if world.cfg["add_option"]["preference"] == True:
         msg /= DHCP6OptPref()
@@ -679,16 +672,22 @@ def client_option (msg):
         msg /= DHCP6OptReconfAccept()
 
     if world.cfg["add_option"]["IA_PD"] == True:
-        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"])
+        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])
 
     if world.cfg["add_option"]["option_request"] == True:
         msg /= DHCP6OptOptReq() #this adds 23 and 24 opt by default, we can leave it that way in this point.
         
     if world.cfg["add_option"]["relay_msg"] == True:
         msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
-    
+
+    if world.cfg["add_option"]["IA_Prefix"]:
+        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAPrefix(
+            preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"], plen = world.cfg["values"]["plen"],
+            prefix = world.cfg["values"]["prefix"]
+        )
     # set all "add_option" True/False values to default.
     set_options()
+    set_values()
     return msg
  
 def build_msg(msg):
@@ -707,7 +706,7 @@ def build_msg(msg):
     
     #add option request if any
     try:
-        if (len(world.oro.reqopts) > 0):
+        if len(world.oro.reqopts) > 0:
                 msg = add_option_to_msg(msg, world.oro)
     except:
         pass
@@ -721,7 +720,7 @@ def build_msg(msg):
         pass
     
     #add all rest options to message. 
-    msg = client_option (msg)
+    msg = client_option(msg)
     
     return msg
 

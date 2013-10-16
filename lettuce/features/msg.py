@@ -14,6 +14,10 @@ dhcpmsg = importlib.import_module("protosupport.%s.msg"  % (PROTO))
 def client_requests_option(step, opt_type):
     dhcpmsg.client_requests_option(step, opt_type)
 
+@step('Client sets (\w+) value to (\w+).')
+def client_sets_value(step, value_name, new_value):
+    dhcpmsg.client_sets_value(step, value_name, new_value)
+
 @step('Client sends (\w+) message( with (\w+) option)?')
 def client_send_msg(step, msgname, opt_type, unknown):
     dhcpmsg.client_send_msg(step, msgname, opt_type, unknown)
