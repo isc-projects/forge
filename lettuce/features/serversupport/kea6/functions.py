@@ -266,11 +266,17 @@ def run_bindctl (succeed, opt):
     # need some more specific search.
     search = ["ImportError:",'"config revert".',"Error"]
     if opt is not "clean":
-        for each in search: 
-            if each in result.stdout and succeed or each in result.stderr and succeed:
-                assert False, 'Server operation: ' + opt + ' failed! '
-            elif each in result.stdout and not succeed or each in result.stderr and not succeed:
-                assert True, 'Server operation: ' + opt + ' failed! That we excepted!'
+        if succeed:
+            for each in search: 
+                if each in result.stdout or each in result.stderr:
+                    assert False, 'Server operation: ' + opt + ' failed! '
+        if not succeed:
+            for each in search: 
+                if each in result.stdout or each in result.stderr:
+                    break
+            else:
+                assert False, 'Server operation: ' + opt + ' not failed!'
+
     # Error 32: Broken pipe
     # this error needs different aproach then others. Bind10 needs to be restarted.
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
