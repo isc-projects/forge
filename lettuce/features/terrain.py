@@ -1,15 +1,17 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, \
-    CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, MGMT_PASSWORD, GIADDR4
+    CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, MGMT_PASSWORD, GIADDR4, TCPDUMP
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
+from scapy.all import sniff
 import os
 import shutil
 import sys
 import time
 import importlib
+import subprocess
 from serversupport.bind10 import kill_bind10, start_bind10
 
 add_option = {'client_id' : True,
@@ -116,7 +118,8 @@ def initialize(scenario):
     
     world.opts = []
     world.subopts = []
-        
+    
+    world.name = scenario.name    
     # Setup scapy for v4
     conf.iface = IFACE
     conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
@@ -145,7 +148,22 @@ def initialize(scenario):
         if os.path.exists(item):
             os.remove(item)
 
-initialize(None)
+    if TCPDUMP:
+        # to create separate files for each test we need, test name:
+        file_name = str(scenario.name)
+        file_name = file_name.replace(".","_")
+        # also IP version for tcpdump
+        type = 'ip'
+        
+        if PROTO == "v6":
+            type = type +'6'
+
+        args = ["tcpdump", type, "-i", world.cfg["iface"], "-w", "tests_results/"+file_name+".pcap", "-s", str(65535)]
+        get_common_logger().debug("Running tcpdump: ")
+        get_common_logger().debug(args)
+        # TODO: hide stdout, log it in debug mode
+        subprocess.Popen(args)
+#initialize()
 
 @before.outline
 def outline_before(scenario, number, step, failed):
@@ -190,9 +208,12 @@ def cleanup(scenario):
     info = str(scenario.name) +'\n'+ str(scenario.failed)
     if 'outline' not in info:
         add_result_to_raport(info)
-#     import inspect
-#     print inspect.getmembers(scenario)
-    
+
+    if TCPDUMP:
+        args = ["killall tcpdump"]
+        subprocess.call(args, shell = True)
+        # TODO: log output in debug mode
+        
 @after.all
 def say_goodbye(total):
     """

@@ -551,23 +551,6 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     assert expected in received, "Invalid " + str(opt_code) + " option, received "+data_type+": " + received + \
                                   ", but expected " + str(expected)
 
-
-
-def receive_dhcp6_tcpdump(count = 1, timeout = 1):
-
-    args = ["tcpdump", "-i", world.cfg["iface"], "-c", str(count), "-w", "test.pcap", "ip6"]
-    get_common_logger().debug("Running tcpdump for %d seconds:" % timeout)
-    get_common_logger().debug(args)
-    tcpdump = subprocess.Popen(args)
-    time.sleep(timeout)
-    tcpdump.terminate()
-
-    ans = sniff(count = 5, filter = "ip6", offline = "test.pcap", promisc = True, timeout = 3)
-    get_common_logger().debug("Received traffic: %d packet(s)." % len(ans))
-    assert len(ans) != 0, "No response received."
-#     for x in ans:
-#         x.show()
-
 def client_does_include(step, opt_type):
     """
     Include options to message. This function refers to @step in lettuce

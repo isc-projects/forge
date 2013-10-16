@@ -71,7 +71,8 @@ IFACE = ""
 HISTORY = False
 
 # Also you can choose to save .pcap file from every test in different file by turning 
-# TCPDUMP to True.
+# TCPDUMP to True. If you recieve error tcpdump: <file name>: Permission denied
+# please use command as a root: aa-complain /usr/sbin/tcpdump
 TCPDUMP = False
 
 # =============== SSH ===============
