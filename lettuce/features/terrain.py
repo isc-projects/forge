@@ -32,15 +32,19 @@ add_option = {'client_id' : True,
               'IA_TA': False,
               'IA_PD': False,
               'IA_Prefix': False,
-              'IA_Address': False 
+              'IA_Address': False,
+              'vendor_class': False,
+              'vendor_specific_info': False
               }
-values = {"T1": 0,
+# TODO: add detailed description to every value:
+values = {"T1": 0, 
           "T2": 0,
           "address": "::",
           "prefix": "::",
           "plen": 0,  # plz remember, to add prefix and prefix length!
           "preflft" : 0,
-          "validlft" : 0
+          "validlft" : 0,
+          "enterprisenum": 0 # vendor 
           #TODO: relay msg values!
           }
 # we should consider transfer most of funtions to separate v4 and v6 files
@@ -215,7 +219,6 @@ def outline_result(scenario, number, step, failed):
 def cleanup_option(step):
     #set_options ()
     pass
-
     
 @after.each_scenario
 def cleanup(scenario):

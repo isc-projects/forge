@@ -34,6 +34,8 @@ options6 = {"client-id": 1,
             "relay-msg": 9,
             "status-code": 13,
             "rapid_commit": 14,
+            "vendor-class": 16,
+            "vendor-specific-info":17,
             "interface-id": 18,
             "sip-server-dns": 21,
             "sip-server-addr": 22,
@@ -596,6 +598,10 @@ def client_does_include(step, opt_type):
         world.cfg["add_option"]["IA_Prefix"] = True
     elif opt_type == "IA_Address":
         world.cfg["add_option"]["IA_Address"] = True
+    elif opt_type == "vendor-class":
+        world.cfg["add_option"]["vendor_class"] = True
+    elif opt_type == "vendor-specific-info":
+        world.cfg["add_option"]["vendor_specific_info"] = True        
     else:
         assert "unsupported option: " + opt_type
 
@@ -688,6 +694,13 @@ def client_option (msg):
         world.cfg["add_option"]["IA_NA"] = False
         msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAAddress(
                     address = world.cfg["values"]["address"], preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"])
+        
+    if world.cfg["add_option"]["vendor_class"]:
+        msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
+
+    if world.cfg["add_option"]["vendor_specific_info"]:     
+        msg /= DHCP6OptVendorSpecificInfo(enterprisenum = world.cfg["values"]["enterprisenum"])
+    
     # set all "add_option" True/False values to default.
     set_options()
     set_values()
