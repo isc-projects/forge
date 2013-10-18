@@ -138,7 +138,7 @@ def initialize(scenario):
     world.vendor = []
     world.opts = []
     world.subopts = []
-    
+   
     world.name = scenario.name    
     # Setup scapy for v4
     conf.iface = IFACE

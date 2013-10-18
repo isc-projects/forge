@@ -85,20 +85,33 @@ kea_options6 = { "client-id": 1,
                  "nis-domain-name": 29,
                  "nisp-domain-name": 30,
                  "sntp-servers": 31,
-                 "information-refresh-time": 32 }
+                 "information-refresh-time": 32,
+                  }
+# kea_otheoptions was originally designed for vendor options
+# because codes sometime overlap with basic options
+kea_otheroptions = {"tftp-servers": 32,
+                    "config-file": 33,
+                    "syslog-servers": 34,
+                    "time-servers": 37,
+                    "time-offset": 38
+                    }
 
-def prepare_cfg_add_option(step, option_name, option_value):
+def prepare_cfg_add_option(step, option_name, option_value, space):
 #     if (not "conf" in world.cfg):
 #         world.cfg["conf"] = ""
-
-    assert option_name in kea_options6, "Unsupported option name " + option_name
-    option_code = kea_options6.get(option_name)
+    
+    if space == 'dhcp6':
+        option_code = kea_options6.get(option_name)
+        assert option_name in kea_options6, "Unsupported option name for basic Kea6 options: " + option_name
+    else:
+        option_code = kea_otheroptions.get(option_name)
+        assert option_name in kea_otheroptions, "Unsupported option name for other Kea6 options: " + option_name
     number = world.kea["option_cnt"]
     
     world.cfg["conf"] += '''config add Dhcp6/option-data
         config set Dhcp6/option-data[{number}]/name "{option_name}"
         config set Dhcp6/option-data[{number}]/code {option_code}
-        config set Dhcp6/option-data[{number}]/space "dhcp6"
+        config set Dhcp6/option-data[{number}]/space "{space}"
         config set Dhcp6/option-data[{number}]/csv-format true
         config set Dhcp6/option-data[{number}]/data "{option_value}"
         '''.format(**locals())
@@ -257,7 +270,7 @@ def run_bindctl (succeed, opt):
     elif opt == "restart":
         restart_srv()
         
-    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 2'
+    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
     result = fabric(cmd)
     
     # now let's test output, looking for errors, 

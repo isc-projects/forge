@@ -47,3 +47,15 @@ def test_procedure(step):
             world.oro = DHCP6OptOptReq()
             # Scapy creates ORO with 23, 24 options request. Let's get rid of them
             world.oro.reqopts = [] # don't request anything by default
+
+    # some tests skip "test setup" procedure and goes to "test procedure"
+    # e.g. tests for server configuration. Then we need to setup 
+    # world.kea["option_cnt"] here.
+    try:
+        tmp = world.kea["option_cnt"]
+    except:
+        if not hasattr(world, 'kea'):
+            world.kea = {}
+        else:
+            world.kea.clear()
+        world.kea["option_cnt"] = 0
