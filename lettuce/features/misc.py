@@ -20,6 +20,13 @@
 from lettuce import step, world
 from scapy.layers.dhcp6 import DHCP6OptOptReq
 
+def set_world_kea():
+    if not hasattr(world, 'kea'):
+        world.kea = {}
+    else:
+        world.kea.clear()
+    world.kea["option_cnt"] = 0
+    
 @step('Pass Criteria:')
 def pass_criteria(step):
     # Do nothing, "Pass criteria:" appears in the text as beautification only
@@ -28,11 +35,7 @@ def pass_criteria(step):
 @step('Test Setup:')
 def test_setup(step):
     # Do nothing, "Test Setup:" line is there as text bautification only
-    if not hasattr(world, 'kea'):
-        world.kea = {}
-    else:
-        world.kea.clear()
-    world.kea["option_cnt"] = 0
+    set_world_kea()
 
 @step('Test Procedure:')
 def test_procedure(step):
@@ -51,11 +54,4 @@ def test_procedure(step):
     # some tests skip "test setup" procedure and goes to "test procedure"
     # e.g. tests for server configuration. Then we need to setup 
     # world.kea["option_cnt"] here.
-    try:
-        tmp = world.kea["option_cnt"]
-    except:
-        if not hasattr(world, 'kea'):
-            world.kea = {}
-        else:
-            world.kea.clear()
-        world.kea["option_cnt"] = 0
+    set_world_kea()
