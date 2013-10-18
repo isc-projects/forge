@@ -22,7 +22,12 @@ def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
     
 @step('Server is configured with (\S+) option with value (\S+).')
 def config_srv_opt(step, option_name, option_value):
-    dhcpfun.prepare_cfg_add_option(step, option_name, option_value)
+    dhcpfun.prepare_cfg_add_option(step, option_name, option_value, 'dhcp6')
+
+@step('On space (\S+) server is configured with (\S+) option with value (\S+).')
+def config_srv_opt_space(step, space, option_name, option_value):
+    dhcpfun.prepare_cfg_add_option(step, option_name, option_value, space)
+
 
 @step('Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
