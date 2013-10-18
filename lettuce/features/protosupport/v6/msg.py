@@ -81,7 +81,7 @@ def client_requests_option(step, opt_type):
 def client_sets_value(step, value_name, new_value):
     if value_name in world.cfg["values"]:
         if isinstance(world.cfg["values"][value_name], str):
-            world.cfg["values"][value_name] = new_value
+            world.cfg["values"][value_name] = str(new_value)
         elif isinstance(world.cfg["values"][value_name], int):
             world.cfg["values"][value_name] = int(new_value)
     else:
@@ -543,22 +543,6 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                                   ", but expected " + str(expected)
 
 
-
-def receive_dhcp6_tcpdump(count = 1, timeout = 1):
-
-    args = ["tcpdump", "-i", world.cfg["iface"], "-c", str(count), "-w", "test.pcap", "ip6"]
-    get_common_logger().debug("Running tcpdump for %d seconds:" % timeout)
-    get_common_logger().debug(args)
-    tcpdump = subprocess.Popen(args)
-    time.sleep(timeout)
-    tcpdump.terminate()
-
-    ans = sniff(count = 5, filter = "ip6", offline = "test.pcap", promisc = True, timeout = 3)
-    get_common_logger().debug("Received traffic: %d packet(s)." % len(ans))
-    assert len(ans) != 0, "No response received."
-#     for x in ans:
-#         x.show()
-
 def client_does_include(step, opt_type):
     """
     Include options to message. This function refers to @step in lettuce
@@ -622,7 +606,32 @@ def generate_new (step, opt):
 
     else:
         assert False,  opt + " generation unsupported" 
+        
+def add_vendor_suboption(step, code, data):
+    # if code == 1 we need check if we added code = 1 before
+    # if we do, we need append only data not whole suboption 
+    if code == 1 and len(world.vendor) > 0:
+        for each in world.vendor:
+            if each[0] == 1:
+                each[1].append(int(data))
 
+    # if world.vendor is empty and code == 1 add
+    # code =1 and data as int (required to further conversion)
+    elif code == 1:
+        world.vendor.append([code,[int(data)]])
+        
+    # every other option just add
+    else:
+        world.vendor.append([code,str(data)])
+        
+def vendor_option_request_convert():
+    data_tmp = ''
+    for each in world.vendor:
+        if each[0] == 1:
+            for number in each[1]:
+                data_tmp +='\00' + str(chr(number))
+            each[1] = data_tmp
+                
 def client_option (msg):
     """
     Add options (like server-id, rapid commit) to message. This function refers to building message
@@ -698,9 +707,16 @@ def client_option (msg):
     if world.cfg["add_option"]["vendor_class"]:
         msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
 
-    if world.cfg["add_option"]["vendor_specific_info"]:     
-        msg /= DHCP6OptVendorSpecificInfo(enterprisenum = world.cfg["values"]["enterprisenum"])
-    
+    if world.cfg["add_option"]["vendor_specific_info"]:
+        # convert data for world.vendor with code == 1 (option request)
+        # that is the only one option that needs converting.
+        vendor_option_request_convert()
+
+        # build VENDOR_CPECIDIC_OPTIONs depending on world.vendor:
+        vso_tmp= []
+        for each in world.vendor: vso_tmp.append(VENDOR_SPECIFIC_OPTION(optcode = each[0], optdata = each[1]))
+        msg /= DHCP6OptVendorSpecificInfo(enterprisenum = world.cfg["values"]["enterprisenum"], vso = vso_tmp)
+    #
     # set all "add_option" True/False values to default.
     set_options()
     set_values()

@@ -37,6 +37,10 @@ def generate_new(step, opt):
 @step('...using relay-agent encapsulated in (\d+) level(s)?.')
 def create_relay_forward(step, level, s ):
     dhcpmsg.create_relay_forward(step, level)
+    
+@step('Client adds suboption for vendor specific information with code: (\d+) and data: (\w+).')
+def add_vendor_suboption(step, code, data):
+    dhcpmsg.add_vendor_suboption(step, int(code), data)
 
 ##checking respond
 @step('Server (\S+) (NOT )?respond with (\w+) message')

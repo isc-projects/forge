@@ -135,7 +135,7 @@ def initialize(scenario):
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.oro = None
-    
+    world.vendor = []
     world.opts = []
     world.subopts = []
     
