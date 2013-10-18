@@ -376,27 +376,40 @@ def get_option(msg, opt_code):
     x = tmp_msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
     
     # check all message, for expected option and all suboptions in IA_NA/IA_PD
+    check_suboptions = {3:'ianaopts',
+                        25:'iapdopt',
+                        17:'vso'
+                        }
     while x:
         if x.optcode == int(opt_code):
             tmp = x
             world.opts.append(x)
 
         # add IA Address and Status Code as separate option
+        
+#        MAKE IT WORK :)
+#         for combination in check_suboptions:
+#             if x.optcode == combination[0]: 
+#                 for each in x.fields.get(data_type(combination[1])):
+#                     world.subopts.append([number,each])
         if x.optcode == 3: 
             for each in x.ianaopts:
                 world.subopts.append([3,each])
-                
+                  
         # add IA PrefixDelegation and Status Code as separate option
         if x.optcode == 25: 
             for each in x.iapdopt:
                 world.subopts.append([25,each])
-                
+        # add suboptions for vendor specific information
+        if x.optcode == 17:
+            for each in x.vso:
+                world.subopts.append([17,each])
         # add Status Code to suboptions even if it is option in main message
         if x.optcode == 13:
                 world.subopts.append([0,x])
         x = x.payload
     return tmp
-
+#ord()
 def client_copy_option(step, option_name):
     """
     Copy option from received message 
@@ -469,17 +482,17 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     x = get_option(world.srvmsg[0], opt_code) 
 
     received = ""
-    
+
     # check sub-options if we are looking for some
     if data_type in "sub-option":
         x, receive_tmp = sub_option_help(int(expected),opt_code)
         received += receive_tmp
-    
+
     # no option received? Fail test (there is one think to do: optional statuscode(13) in main
     # message, not as a sub-option! 
     assert x, "Expected option " + str(opt_code) + " not present in the message."
-
-    # test all collected options:
+    
+    # test all collected options,:
     if subopt_code is 0:
         for each in world.opts:
             # uncomment to print all pocket fields 
@@ -497,6 +510,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 received += str(each.fields.get(data_type))
             elif opt_code == 13:
                 received = str(each.statuscode)
+            elif opt_code == 17:
+                received += str(each.fields.get(data_type))
+                #received = str(each.enterprisenum)
             elif opt_code == 21:
                 received = ",".join(each.sipdomains)
             elif opt_code == 22:
@@ -538,10 +554,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 except:
                     pass
 
-    # test if expected option/suboption/value is in all collected options/suboptions/values 
+    # test if expected option/suboption/value is in all collected options/suboptions/values
     assert expected in received, "Invalid " + str(opt_code) + " option, received "+data_type+": " + received + \
                                   ", but expected " + str(expected)
-
 
 def client_does_include(step, opt_type):
     """

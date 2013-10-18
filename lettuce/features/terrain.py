@@ -106,7 +106,7 @@ def server_start():
 
 @before.each_scenario
 def initialize(scenario):    
-
+    
     world.climsg = []  # Message(s) to be sent
     world.cliopts = [] # Option(s) to be included in the next message sent
     world.srvmsg = []  # Server's response(s)
