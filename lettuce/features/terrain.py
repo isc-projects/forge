@@ -1,7 +1,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, \
-    MGMT_PASSWORD, GIADDR4, TCPDUMP
+    MGMT_PASSWORD, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -182,8 +182,8 @@ def initialize(scenario):
         
         if PROTO == "v6":
             type = type +'6'
-
-        args = ["tcpdump", type, "-i", world.cfg["iface"], "-w", "tests_results/"+file_name+".pcap", "-s", str(65535)]
+        cmd = TCPDUMP_INSTALL_DIR+'tcpdump'
+        args = [cmd, type, "-i", world.cfg["iface"], "-w", "tests_results/"+file_name+".pcap", "-s", str(65535)]
         get_common_logger().debug("Running tcpdump: ")
         get_common_logger().debug(args)
         # TODO: hide stdout, log it in debug mode

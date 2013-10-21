@@ -69,6 +69,14 @@ IFACE = ""
 # but for more detailed information about tests, use --with_xunit option when starting run_test.py
 HISTORY = False
 
+# Also you can save separate .pcap file of every test. In default it's disabled 
+# If you recieve error tcpdump: <file name>: Permission denied
+# please use command as a root: aa-complain /usr/sbin/tcpdump 
+TCPDUMP = False 
+# If your tcpdump is installed in different location place that in TCPDUMP_INSTALL_DIR
+# otherwise leave it blank
+TCPDUMP_INSTALL_DIR = ""
+
 # =============== SSH ===============
 
 # This are required management information about device under test (the one that
