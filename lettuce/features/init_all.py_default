@@ -59,7 +59,8 @@ OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
 # scope link server address for testing unicast messages  
-SRV_IPV6_ADDR = ""
+SRV_IPV6_ADDR_GLOBAL = ""
+SRV_IPV6_ADDR_LINK_LOCAL = ""
 
 # Defines name of the DUT-facing network interface
 IFACE = ""

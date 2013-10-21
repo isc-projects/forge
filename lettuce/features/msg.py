@@ -26,9 +26,10 @@ def client_send_msg(step, msgname, opt_type, unknown):
 def client_does_include(step, yes_or_not, opt_type):
     dhcpmsg.client_does_include(step, opt_type)
 
-@step('Client chooses UNICAST address.')
-def unicast_addres(step):
-    dhcpmsg.unicast_addres(step)
+@step('Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
+def unicast_addres(step, addr_type, addr_type2):
+    # send true when GLOBAL and False when LINK_LOCAL
+    dhcpmsg.unicast_addres(step, True if addr_type else False)
 
 @step('Generate new (\S+).')
 def generate_new(step, opt):
@@ -47,7 +48,7 @@ def add_vendor_suboption(step, code, data):
 def send_wait_for_message(step, type, yes_or_no, message):
     get_common_logger().debug("client_send_msg:{message}.\n".format(**locals()))
     presence = True if yes_or_no == None else False 
-    dhcpmsg.send_wait_for_message(step, type, presence ,message)
+    dhcpmsg.send_wait_for_message(step, type, presence, message)
 
 @step('Response MUST (NOT )?include option (\d+).')
 def response_check_include_option(step, yes_or_no, opt_code):

@@ -203,12 +203,16 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
     get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
-def unicast_addres(step):
+def unicast_addres(step,addr_type):
     """
     Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address. 
     """
-    world.cfg["unicast"] = True
-
+    if addr_type:
+        from features.init_all import SRV_IPV6_ADDR_GLOBAL
+        world.cfg["address_v6"] = SRV_IPV6_ADDR_GLOBAL 
+    else: 
+        from features.init_all import SRV_IPV6_ADDR_LINK_LOCAL
+        world.cfg["address_v6"] = SRV_IPV6_ADDR_LINK_LOCAL
 def add_option_to_msg(msg, option):
     # this is request_option option
     msg /= option
@@ -256,10 +260,9 @@ def create_relay_forward(step, level):
     # we pretend to be relay-server so we need to listen on 547 port
     world.reciveport = 547 
     
-    address = All_DHCP_Relay_Agents_and_Servers
     #get only DHCPv6 part of the message
     msg = world.climsg.pop().getlayer(2)
-    from features.init_all import SRV_IPV6_ADDR
+    #from features.init_all import SRV_IPV6_ADDR
     level = int(level)
 
     #all three values: linkaddr, peeraddr and hopcount must be filled
@@ -280,7 +283,10 @@ def create_relay_forward(step, level):
         tmp /= DHCP6_RelayForward(linkaddr = "3000::ffff", peeraddr = "2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
 
     #build full message
-    relay_msg = IPv6(dst = address)/UDP(sport = 547, dport = 547)/tmp/msg
+    relay_msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport = 547, dport = 547)/tmp/msg
+    
+    # in case if unicast used, get back to multicast address.
+    world.cfg["address_v6"] = "ff02::1:2"
     
     world.climsg.append(relay_msg)
     
@@ -738,15 +744,12 @@ def client_option (msg):
     return msg
  
 def build_msg(msg):
+   
+    msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport=546, dport=547)/msg
     
-    if world.cfg["unicast"] == False:
-        address = All_DHCP_Relay_Agents_and_Servers
-    elif world.cfg["unicast"] == True:
-        from features.init_all import SRV_IPV6_ADDR
-        address = SRV_IPV6_ADDR
-        world.cfg["unicast"] = False
-    
-    msg = IPv6(dst = address)/UDP(sport=546, dport=547)/msg
+    # get back to multicast address.
+    world.cfg["address_v6"] = "ff02::1:2"
+
     #transaction id
     msg.trid = random.randint(0, 256*256*256)
     world.cfg["tr_id"] = msg.trid

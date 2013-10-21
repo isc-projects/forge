@@ -21,6 +21,53 @@ Feature: DHCPv6 Relay Agent
 	#message 2 - Advertise
 	
 	References: RFC3315 section 18.2.8
+
+@v6 @relay @unicast 
+    Scenario: v6.relay.message.unicast.global
+	
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+	Client chooses GLOBAL UNICAST address.
+	...using relay-agent encapsulated in 1 level.
+	
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	Response MUST include option 9.
+
+	References: RFC3315 section 18.2.8
+
+@v6 @relay @unicast 
+    Scenario: v6.relay.message.unicast.local
+	
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+	Client chooses LINK_LOCAL UNICAST address.
+	...using relay-agent encapsulated in 1 level.
+	
+	Pass Criteria:
+	Server MUST NOT respond with RELAYREPLY message.
+	Response MUST include option 9.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+	...using relay-agent encapsulated in 1 level.
+	
+	Pass Criteria:
+	Server MUST respond with RELAYREPLY message.
+	Response MUST include option 9.
+	
+	References: RFC3315 section 18.2.8
 	
 @v6 @relay 
     Scenario: v6.relay.message.solicit-reply

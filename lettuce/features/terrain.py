@@ -1,18 +1,19 @@
 from Crypto.Random.random import randint
-from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, \
-    CLI_MAC, IFACE, REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, MGMT_PASSWORD, GIADDR4, TCPDUMP
+from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
+    REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, \
+    MGMT_PASSWORD, GIADDR4, TCPDUMP
 from lettuce import world, before, after
 from logging_facility import *
+from scapy.all import sniff
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
-from scapy.all import sniff
+from serversupport.bind10 import kill_bind10, start_bind10
+import importlib
 import os
 import shutil
+import subprocess
 import sys
 import time
-import importlib
-import subprocess
-from serversupport.bind10 import kill_bind10, start_bind10
 
 add_option = {'client_id' : True,
               'preference' : False,
@@ -127,6 +128,10 @@ def initialize(scenario):
     world.cfg["mgmt_pass"] = MGMT_PASSWORD
     world.cfg["conf"] = "" # Just empty config for now
     
+    # RFC 3315 define two addresess:
+    # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
+    # All DHCP_Servers ff05::1:3 that is deprecated. 
+    world.cfg["address_v6"] = "ff02::1:2"
     world.proto = PROTO
     world.cfg["subnet"] = ""
     
