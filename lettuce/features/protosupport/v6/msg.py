@@ -267,7 +267,7 @@ def create_relay_forward(step, level):
 
     #all three values: linkaddr, peeraddr and hopcount must be filled
     
-    tmp = DHCP6_RelayForward(linkaddr = "3000::ffff", peeraddr = "2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")
+    tmp = DHCP6_RelayForward(linkaddr = world.cfg["values"]["linkaddr"], peeraddr = world.cfg["values"]["peeraddr"], hopcount = level)/DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
     #tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)
     
     #add options (used only when checking "wrong option" test for relay-forward message. to add some options to relay-forward 
@@ -280,7 +280,7 @@ def create_relay_forward(step, level):
     while True:
         level -= 1
         if not level: break;
-        tmp /= DHCP6_RelayForward(linkaddr = "3000::ffff", peeraddr = "2000::1", hopcount = level)/DHCP6OptIfaceId(ifaceid = "15")/DHCP6OptRelayMsg()
+        tmp /= DHCP6_RelayForward(hopcount = level, linkaddr =  world.cfg["values"]["linkaddr"], peeraddr = world.cfg["values"]["peeraddr"])/DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])/DHCP6OptRelayMsg()
 
     #build full message
     relay_msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport = 547, dport = 547)/tmp/msg
@@ -323,6 +323,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
+        #b.show() #uncomment this to see message
         get_common_logger().info("Received packet type = %s" % get_msg_type(b))
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
@@ -512,7 +513,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 received = str(each.prefval)
             elif opt_code == 9:
                 # receive relay messages bug in scapy must be fixed!
-                #each.show() 
+                #each.payload.show()
+                #hexdump(each.payload)
+                #assert False, 'break'
                 received += str(each.fields.get(data_type))
             elif opt_code == 13:
                 received = str(each.statuscode)
@@ -658,21 +661,21 @@ def client_option (msg):
     Add options (like server-id, rapid commit) to message. This function refers to building message
     """
     #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
-    if world.cfg["add_option"]["wrong_server_id"] == True:
+    if world.cfg["add_option"]["wrong_server_id"]:
         msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC() ))
         
     #client id
-    if world.cfg["add_option"]["client_id"] == True and world.cfg["add_option"]["wrong_client_id"] == False:
+    if world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"] == False:
         if world.cfg["relay"] == False:
             msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    elif world.cfg["add_option"]["client_id"] == True and world.cfg["add_option"]["wrong_client_id"] == True:
+    elif world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"]:
         msg /= DHCP6OptClientId()#it needs to stay blank!
         
     elif world.cfg["add_option"]["client_id"] == False:
         #world.cfg["add_option"]["client_id"] = True
         pass
     
-    if world.cfg["add_option"]["IA_NA"] == True and world.cfg["relay"] == False:
+    if world.cfg["add_option"]["IA_NA"] and world.cfg["relay"] == False:
         if world.oro is not None and len(world.cliopts):
             for opt in world.cliopts:
                 if opt.optcode == 3:
@@ -682,37 +685,37 @@ def client_option (msg):
         else:
             msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA   
 
-    if world.cfg["add_option"]["preference"] == True:
+    if world.cfg["add_option"]["preference"]:
         msg /= DHCP6OptPref()
         
-    if world.cfg["add_option"]["rapid_commit"] == True:
+    if world.cfg["add_option"]["rapid_commit"]:
         msg /= DHCP6OptRapidCommit()
     
-    if world.cfg["add_option"]["time"] == True:
+    if world.cfg["add_option"]["time"]:
         msg /= DHCP6OptElapsedTime()
 
-    if world.cfg["add_option"]["server_uni"] == True:
+    if world.cfg["add_option"]["server_uni"]:
         msg /= DHCP6OptServerUnicast()
 
-    if world.cfg["add_option"]["status_code"] == True:
+    if world.cfg["add_option"]["status_code"]:
         msg /= DHCP6OptStatusCode()
 
-    if world.cfg["add_option"]["interface_id"] == True:
-        msg /= DHCP6OptIfaceId(ifaceid = "15")
+    if world.cfg["add_option"]["interface_id"]:
+        msg /= DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
 
-    if world.cfg["add_option"]["reconfig"] == True:
+    if world.cfg["add_option"]["reconfig"]:
         msg /= DHCP6OptReconfMsg()
 
-    if world.cfg["add_option"]["reconfig_accept"] == True:
+    if world.cfg["add_option"]["reconfig_accept"]:
         msg /= DHCP6OptReconfAccept()
 
-    if world.cfg["add_option"]["IA_PD"] == True:
+    if world.cfg["add_option"]["IA_PD"]:
         msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])
 
-    if world.cfg["add_option"]["option_request"] == True:
+    if world.cfg["add_option"]["option_request"]:
         msg /= DHCP6OptOptReq() #this adds 23 and 24 opt by default, we can leave it that way in this point.
         
-    if world.cfg["add_option"]["relay_msg"] == True:
+    if world.cfg["add_option"]["relay_msg"]:
         msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
 
     if world.cfg["add_option"]["IA_Prefix"]:

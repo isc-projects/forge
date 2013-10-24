@@ -37,19 +37,21 @@ add_option = {'client_id' : True,
               'vendor_class': False,
               'vendor_specific_info': False
               }
-# TODO: add detailed description to every value:
-values = {"T1": 0, 
-          "T2": 0,
+
+values = {"T1": 0, # IA_NA IA_PD
+          "T2": 0, # IA_NA IA_PD
           "address": "::",
           "prefix": "::",
-          "plen": 0,  # plz remember, to add prefix and prefix length!
-          "preflft" : 0,
-          "validlft" : 0,
-          "enterprisenum": 0 # vendor 
-          #TODO: relay msg values!
+          "plen": 0,  # prefix; plz remember, to add prefix and prefix length!
+          "preflft" : 0, # IA_Address IA_Prefix
+          "validlft" : 0, # IA_Address IA_Prefix
+          "enterprisenum": 0, # vendor 
+          "linkaddr": "3000::ffff", # relay
+          "peeraddr": "2000::1", # relay
+          "ifaceid": "15" # relay
           }
-# we should consider transfer most of funtions to separate v4 and v6 files
-# there is no v4 functions yet.
+# we should consider transfer most of functions to separate v4 and v6 files
+# there is no v4 functions yet ;)
 def set_values():
     world.cfg["values"] = values.copy()
  
