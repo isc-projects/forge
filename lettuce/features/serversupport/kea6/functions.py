@@ -20,6 +20,44 @@ from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS
 import os
 
+kea_options6 = { "client-id": 1,
+                 "server-id" : 2,
+                 "IA_NA" : 3,
+                 "IN_TA": 4,
+                 "IA_address" : 5,
+                 "preference": 7,
+                 "relay-msg": 9,
+                 "status-code": 13,
+                 "rapid_commit": 14,
+                 "interface-id": 18,
+                 "sip-server-dns": 21,
+                 "sip-server-addr": 22,
+                 "dns-servers": 23,
+                 "domain-search": 24,
+                 "IA_PD": 25,
+                 "IA-Prefix": 26,
+                 "nis-servers": 27,
+                 "nisp-servers": 28,
+                 "nis-domain-name": 29,
+                 "nisp-domain-name": 30,
+                 "sntp-servers": 31,
+                 "information-refresh-time": 32,
+                  }
+# kea_otheoptions was originally designed for vendor options
+# because codes sometime overlap with basic options
+kea_otheroptions = {"tftp-servers": 32,
+                    "config-file": 33,
+                    "syslog-servers": 34,
+                    "time-servers": 37,
+                    "time-offset": 38
+                    }
+
+def set_time(step, which_time, value):
+    if which_time in world.cfg["server_times"]:
+            world.cfg["server_times"][which_time] = value
+    else:
+        assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+
 def fabric(cmd):
     with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
     #    with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
@@ -57,44 +95,21 @@ def prepare_cfg_subnet(step, subnet, pool):
         subnet = "2001:db8:1::/64"
     if (pool == "default"):
         pool = "2001:db8:1::1 - 2001:db8:1::ffff"
+    t1 = world.cfg["server_times"]["renew-timer"]
+    t2 = world.cfg["server_times"]["rebind-timer"]
+    t3 = world.cfg["server_times"]["preferred-lifetime"]
+    t4 = world.cfg["server_times"]["valid-lifetime"]
+    
     world.cfg["conf"] = '''\
         # subnet defintion Kea 6
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[0]/subnet "{subnet}"
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
+        config set Dhcp6/renew-timer {t1} 
+        config set Dhcp6/rebind-timer {t2}
+        config set Dhcp6/preferred-lifetime {t3} 
+        config set Dhcp6/valid-lifetime {t4}
         '''.format(**locals())
-
-kea_options6 = { "client-id": 1,
-                 "server-id" : 2,
-                 "IA_NA" : 3,
-                 "IN_TA": 4,
-                 "IA_address" : 5,
-                 "preference": 7,
-                 "relay-msg": 9,
-                 "status-code": 13,
-                 "rapid_commit": 14,
-                 "interface-id": 18,
-                 "sip-server-dns": 21,
-                 "sip-server-addr": 22,
-                 "dns-servers": 23,
-                 "domain-search": 24,
-                 "IA_PD": 25,
-                 "IA-Prefix": 26,
-                 "nis-servers": 27,
-                 "nisp-servers": 28,
-                 "nis-domain-name": 29,
-                 "nisp-domain-name": 30,
-                 "sntp-servers": 31,
-                 "information-refresh-time": 32,
-                  }
-# kea_otheoptions was originally designed for vendor options
-# because codes sometime overlap with basic options
-kea_otheroptions = {"tftp-servers": 32,
-                    "config-file": 33,
-                    "syslog-servers": 34,
-                    "time-servers": 37,
-                    "time-offset": 38
-                    }
 
 def prepare_cfg_add_option(step, option_name, option_value, space):
 #     if (not "conf" in world.cfg):

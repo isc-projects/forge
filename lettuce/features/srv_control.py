@@ -40,6 +40,10 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
     """
     dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value)
 
+@step('Time (\S+) is configured with value (\d+).')
+def set_time(step, which_time, value):
+    dhcpfun.set_time(step, which_time, value)
+    
 ##subnet options
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
 def config_srv(step, option_name, subnet, option_value):

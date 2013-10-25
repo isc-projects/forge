@@ -1,3 +1,12 @@
+21. [func] wlodek
+		- configuration server timers (e.g. renew-timer) 
+
+20. [func] wlodek
+		- support for vendor option tests
+		
+19. [func] maciek
+		- support for changing multiple values
+		 
 18. [bug] wlodek
 		- parsing received message more accurate
 		- added new patch for Scapy!
