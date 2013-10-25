@@ -64,7 +64,10 @@ def test_pause(step):
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old)
     getch()
-    
+
+## ======================================================================
+## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
+
 def client_requests_option(step, opt_type):
     """
     Add RequestOption to message.
@@ -76,17 +79,6 @@ def client_requests_option(step, opt_type):
         world.oro.reqopts = [] # don't request anything by default
 
     world.oro.reqopts.append(int(opt_type))
-
-
-def client_sets_value(step, value_name, new_value):
-    if value_name in world.cfg["values"]:
-        if isinstance(world.cfg["values"][value_name], str):
-            world.cfg["values"][value_name] = str(new_value)
-        elif isinstance(world.cfg["values"][value_name], int):
-            world.cfg["values"][value_name] = int(new_value)
-    else:
-        assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
-
 
 def client_send_msg(step, msgname, opt_type, unknown):
     """
@@ -203,6 +195,15 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
     get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
+def client_sets_value(step, value_name, new_value):
+    if value_name in world.cfg["values"]:
+        if isinstance(world.cfg["values"][value_name], str):
+            world.cfg["values"][value_name] = str(new_value)
+        elif isinstance(world.cfg["values"][value_name], int):
+            world.cfg["values"][value_name] = int(new_value)
+    else:
+        assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
+
 def unicast_addres(step,addr_type):
     """
     Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address. 
@@ -213,20 +214,100 @@ def unicast_addres(step,addr_type):
     else: 
         from features.init_all import SRV_IPV6_ADDR_LINK_LOCAL
         world.cfg["address_v6"] = SRV_IPV6_ADDR_LINK_LOCAL
+
+def client_does_include(step, opt_type):
+    """
+    Include options to message. This function refers to @step in lettuce
+    """
+    #If you want to use options of received message to include it, please use 'Client copies (\S+) option from received message.' step.
+    if opt_type == "client-id":
+        world.cfg["add_option"]["client_id"] = False
+    elif opt_type == "wrong-client-id":
+        world.cfg["add_option"]["wrong_client_id"] = True
+    elif opt_type == "wrong-server-id":
+        world.cfg["add_option"]["wrong_server_id"] = True
+    elif opt_type == "preference":
+        world.cfg["add_option"]["preference"] = True
+    elif opt_type == "rapid-commit":
+        world.cfg["add_option"]["rapid_commit"] = True
+    elif opt_type == "time":
+        world.cfg["add_option"]["time"] = True
+    elif opt_type == "relay-msg":
+        world.cfg["add_option"]["relay_msg"] = True
+    elif opt_type == "server-unicast":
+        world.cfg["add_option"]["server_uni"] = True
+    elif opt_type == "status-code":
+        world.cfg["add_option"]["status_code"] = True
+    elif opt_type == "interface-id":
+        world.cfg["add_option"]["interface_id"] = True
+    elif opt_type == "reconfigure":
+        world.cfg["add_option"]["reconfig"] = True
+    elif opt_type == "reconfigure-accept":
+        world.cfg["add_option"]["reconfig_accept"] = True
+    elif opt_type == "option-request":
+        world.cfg["add_option"]["option_request"] = True
+    elif opt_type == "IA-PD":
+        world.cfg["add_option"]["IA_PD"] = True
+    elif opt_type == "IA-NA":
+        world.cfg["add_option"]["IA_NA"] = False
+    elif opt_type == "IA_Prefix":
+        world.cfg["add_option"]["IA_Prefix"] = True
+    elif opt_type == "IA_Address":
+        world.cfg["add_option"]["IA_Address"] = True
+    elif opt_type == "vendor-class":
+        world.cfg["add_option"]["vendor_class"] = True
+    elif opt_type == "vendor-specific-info":
+        world.cfg["add_option"]["vendor_specific_info"] = True        
+    else:
+        assert "unsupported option: " + opt_type
+
+def add_vendor_suboption(step, code, data):
+    # if code == 1 we need check if we added code = 1 before
+    # if we do, we need append only data not whole suboption 
+    if code == 1 and len(world.vendor) > 0:
+        for each in world.vendor:
+            if each[0] == 1:
+                each[1].append(int(data))
+
+    # if world.vendor is empty and code == 1 add
+    # code =1 and data as int (required to further conversion)
+    elif code == 1:
+        world.vendor.append([code,[int(data)]])
+        
+    # every other option just add
+    else:
+        world.vendor.append([code,str(data)])
+
+def generate_new (step, opt):
+    """
+    Generate new client id with random MAC address.
+    """
+    if opt == 'client':
+        from features.terrain import client_id, ia_id
+        client_id(RandMAC())
+        ia_id()
+    elif opt == 'IA':
+        from features.terrain import ia_id
+        ia_id()
+    elif opt == 'IA_PD':
+        from features.terrain import ia_pd
+        ia_pd()
+
+    else:
+        assert False,  opt + " generation unsupported" 
+
+## ================ PREPARE MESSAGE OPTIONS BLOCK END ===================
+
+## ============================================================
+## ================ BUILD MESSAGE BLOCK START =================
+
+def add_client_option(option):
+    world.cliopts.append(option)
+
 def add_option_to_msg(msg, option):
     # this is request_option option
     msg /= option
     return msg
-
-def test_content(value_name):
-    # !! probably REMOVE!!
-    #this is only beta version of value testing
-    if value_name in "address":
-        opt = get_option(world.srvmsg[0], 3)
-        if str(opt.ianaopts[0].addr[-1]) in [":","0"]:
-            assert False, "Invalid assigned address: %s" % opt.ianaopts[0].addr
-    else:
-        assert False, "testing %s not implemented" % value_name
 
 def client_add_saved_option(step, erase):
     """
@@ -238,17 +319,134 @@ def client_add_saved_option(step, erase):
     if erase:
         world.savedmsg = []
 
-def add_client_option(option):
-    world.cliopts.append(option)
+def vendor_option_request_convert():
+    data_tmp = ''
+    for each in world.vendor:
+        if each[0] == 1:
+            for number in each[1]:
+                data_tmp +='\00' + str(chr(number))
+            each[1] = data_tmp
 
-def client_save_option(step, option_name):
-    assert option_name in options6, "Unsupported option name " + option_name
-    opt_code = options6.get(option_name)
-    opt = get_option(get_last_response(), opt_code)
+def client_option (msg):
+    """
+    Add options (like server-id, rapid commit) to message. This function refers to building message
+    """
+    #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
+    if world.cfg["add_option"]["wrong_server_id"]:
+        msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC() ))
+        
+    #client id
+    if world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"] == False:
+        if world.cfg["relay"] == False:
+            msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
+    elif world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"]:
+        msg /= DHCP6OptClientId()#it needs to stay blank!
+        
+    elif world.cfg["add_option"]["client_id"] == False:
+        #world.cfg["add_option"]["client_id"] = True
+        pass
     
-    assert opt, "Received message does not contain option " + option_name
-    opt.payload = None
-    world.savedmsg.append(opt)
+    if world.cfg["add_option"]["IA_NA"] and world.cfg["relay"] == False:
+        if world.oro is not None and len(world.cliopts):
+            for opt in world.cliopts:
+                if opt.optcode == 3:
+                    break #if there is no IA_NA/TA in world.cliopts, break.. 
+            else:
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
+        else:
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA   
+
+    if world.cfg["add_option"]["preference"]:
+        msg /= DHCP6OptPref()
+        
+    if world.cfg["add_option"]["rapid_commit"]:
+        msg /= DHCP6OptRapidCommit()
+    
+    if world.cfg["add_option"]["time"]:
+        msg /= DHCP6OptElapsedTime()
+
+    if world.cfg["add_option"]["server_uni"]:
+        msg /= DHCP6OptServerUnicast()
+
+    if world.cfg["add_option"]["status_code"]:
+        msg /= DHCP6OptStatusCode()
+
+    if world.cfg["add_option"]["interface_id"]:
+        msg /= DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
+
+    if world.cfg["add_option"]["reconfig"]:
+        msg /= DHCP6OptReconfMsg()
+
+    if world.cfg["add_option"]["reconfig_accept"]:
+        msg /= DHCP6OptReconfAccept()
+
+    if world.cfg["add_option"]["IA_PD"]:
+        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])
+
+    if world.cfg["add_option"]["option_request"]:
+        msg /= DHCP6OptOptReq() #this adds 23 and 24 opt by default, we can leave it that way in this point.
+        
+    if world.cfg["add_option"]["relay_msg"]:
+        msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
+
+    if world.cfg["add_option"]["IA_Prefix"]:
+        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAPrefix(
+            preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"], plen = world.cfg["values"]["plen"],
+            prefix = world.cfg["values"]["prefix"]
+        )
+    if world.cfg["add_option"]["IA_Address"]:
+        world.cfg["add_option"]["IA_NA"] = False
+        msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAAddress(
+                    address = world.cfg["values"]["address"], preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"])
+        
+    if world.cfg["add_option"]["vendor_class"]:
+        msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
+
+    if world.cfg["add_option"]["vendor_specific_info"]:
+        # convert data for world.vendor with code == 1 (option request)
+        # that is the only one option that needs converting.
+        vendor_option_request_convert()
+
+        # build VENDOR_CPECIDIC_OPTIONs depending on world.vendor:
+        vso_tmp= []
+        for each in world.vendor: vso_tmp.append(VENDOR_SPECIFIC_OPTION(optcode = each[0], optdata = each[1]))
+        msg /= DHCP6OptVendorSpecificInfo(enterprisenum = world.cfg["values"]["enterprisenum"], vso = vso_tmp)
+    #
+    # set all "add_option" True/False values to default.
+    set_options()
+    set_values()
+    return msg
+
+def build_msg(msg):
+   
+    msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport=546, dport=547)/msg
+    
+    # get back to multicast address.
+    world.cfg["address_v6"] = "ff02::1:2"
+
+    #transaction id
+    msg.trid = random.randint(0, 256*256*256)
+    world.cfg["tr_id"] = msg.trid
+    
+    #add option request if any
+    try:
+        if len(world.oro.reqopts) > 0:
+                msg = add_option_to_msg(msg, world.oro)
+    except:
+        pass
+    
+    #add other options if any
+    try:
+        if world.oro is not None and len(world.cliopts):
+            for opt in world.cliopts:
+                msg = add_option_to_msg(msg, opt)
+    except:
+        pass
+    
+    #add all rest options to message. 
+    msg = client_option(msg)
+    
+    return msg
 
 def create_relay_forward(step, level):
     """
@@ -291,6 +489,12 @@ def create_relay_forward(step, level):
     world.climsg.append(relay_msg)
     
     world.cfg["relay"] = False
+
+## ================ BUILD MESSAGE BLOCK END ===================
+
+
+## ===================================================================
+## ================ SEND/RECEIVE MESSAGE BLOCK START =================
 
 def send_wait_for_message(step, type, presence, exp_message):
     """
@@ -350,6 +554,22 @@ def get_last_response():
     msg = world.srvmsg[len(world.srvmsg) - 1].copy()
     return msg 
 
+## ================ SEND/RECEIVE MESSAGE BLOCK END ===================
+
+
+## =======================================================================
+## ================ PARSING RECEIVED MESSAGE BLOCK START =================
+
+def test_content(value_name):
+    # !! probably REMOVE!!
+    #this is only beta version of value testing
+    if value_name in "address":
+        opt = get_option(world.srvmsg[0], 3)
+        if str(opt.ianaopts[0].addr[-1]) in [":","0"]:
+            assert False, "Invalid assigned address: %s" % opt.ianaopts[0].addr
+    else:
+        assert False, "testing %s not implemented" % value_name
+
 def get_msg_type(msg):
     msg_types = { 
                   "ADVERTISE": DHCP6_Advertise,
@@ -368,6 +588,37 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 # Returns option of specified type
+
+def client_save_option(step, option_name):
+    assert option_name in options6, "Unsupported option name " + option_name
+    opt_code = options6.get(option_name)
+    opt = get_option(get_last_response(), opt_code)
+    
+    assert opt, "Received message does not contain option " + option_name
+    opt.payload = None
+    world.savedmsg.append(opt)
+
+def client_copy_option(step, option_name):
+    """
+    Copy option from received message 
+    """
+    assert world.srvmsg
+
+    assert option_name in options6, "Unsupported option name " + option_name
+    opt_code = options6.get(option_name)
+    
+    # find and copy option
+    opt = get_option(world.srvmsg[0], opt_code)
+    
+    assert opt, "Received message does not contain option " + option_name
+    
+    # payload need to be 'None'otherwise we copy all options from one we are
+    # looking for till the end of the message
+    # it would be nice to remove 'status code' sub-option
+    # before sending it back to server 
+    opt.payload = None
+    add_client_option(opt)
+
 def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
@@ -417,26 +668,14 @@ def get_option(msg, opt_code):
         x = x.payload
     return tmp
 #ord()
-def client_copy_option(step, option_name):
-    """
-    Copy option from received message 
-    """
-    assert world.srvmsg
 
-    assert option_name in options6, "Unsupported option name " + option_name
-    opt_code = options6.get(option_name)
-    
-    # find and copy option
-    opt = get_option(world.srvmsg[0], opt_code)
-    
-    assert opt, "Received message does not contain option " + option_name
-    
-    # payload need to be 'None'otherwise we copy all options from one we are
-    # looking for till the end of the message
-    # it would be nice to remove 'status code' sub-option
-    # before sending it back to server 
-    opt.payload = None
-    add_client_option(opt)
+def unknown_option_to_str(data_type, opt):
+    if data_type == "uint8":
+        assert len(opt.data) == 1, "Received option " + opt.optcode + " contains " + len(opt.data) + \
+                                   " bytes, but expected exactly 1"
+        return str(ord(opt.data[0:1]))
+    else:
+        assert False, "Parsing of option format " + data_type + " not implemented."
 
 def response_check_include_option(step, must_include, opt_code):
     """
@@ -452,13 +691,6 @@ def response_check_include_option(step, must_include, opt_code):
         assert opt == None, "Unexpected option " + opt_code + " found in the message."
     
 # Returns text representation of the option, interpreted as specified by data_type
-def unknown_option_to_str(data_type, opt):
-    if data_type == "uint8":
-        assert len(opt.data) == 1, "Received option " + opt.optcode + " contains " + len(opt.data) + \
-                                   " bytes, but expected exactly 1"
-        return str(ord(opt.data[0:1]))
-    else:
-        assert False, "Parsing of option format " + data_type + " not implemented."
 
 def sub_option_help(expected, opt_code):
     x = []
@@ -567,213 +799,4 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     assert expected in received, "Invalid " + str(opt_code) + " option, received "+data_type+": " + received + \
                                   ", but expected " + str(expected)
 
-def client_does_include(step, opt_type):
-    """
-    Include options to message. This function refers to @step in lettuce
-    """
-    #If you want to use options of received message to include it, please use 'Client copies (\S+) option from received message.' step.
-    if opt_type == "client-id":
-        world.cfg["add_option"]["client_id"] = False
-    elif opt_type == "wrong-client-id":
-        world.cfg["add_option"]["wrong_client_id"] = True
-    elif opt_type == "wrong-server-id":
-        world.cfg["add_option"]["wrong_server_id"] = True
-    elif opt_type == "preference":
-        world.cfg["add_option"]["preference"] = True
-    elif opt_type == "rapid-commit":
-        world.cfg["add_option"]["rapid_commit"] = True
-    elif opt_type == "time":
-        world.cfg["add_option"]["time"] = True
-    elif opt_type == "relay-msg":
-        world.cfg["add_option"]["relay_msg"] = True
-    elif opt_type == "server-unicast":
-        world.cfg["add_option"]["server_uni"] = True
-    elif opt_type == "status-code":
-        world.cfg["add_option"]["status_code"] = True
-    elif opt_type == "interface-id":
-        world.cfg["add_option"]["interface_id"] = True
-    elif opt_type == "reconfigure":
-        world.cfg["add_option"]["reconfig"] = True
-    elif opt_type == "reconfigure-accept":
-        world.cfg["add_option"]["reconfig_accept"] = True
-    elif opt_type == "option-request":
-        world.cfg["add_option"]["option_request"] = True
-    elif opt_type == "IA-PD":
-        world.cfg["add_option"]["IA_PD"] = True
-    elif opt_type == "IA-NA":
-        world.cfg["add_option"]["IA_NA"] = False
-    elif opt_type == "IA_Prefix":
-        world.cfg["add_option"]["IA_Prefix"] = True
-    elif opt_type == "IA_Address":
-        world.cfg["add_option"]["IA_Address"] = True
-    elif opt_type == "vendor-class":
-        world.cfg["add_option"]["vendor_class"] = True
-    elif opt_type == "vendor-specific-info":
-        world.cfg["add_option"]["vendor_specific_info"] = True        
-    else:
-        assert "unsupported option: " + opt_type
-
-def generate_new (step, opt):
-    """
-    Generate new client id with random MAC address.
-    """
-    if opt == 'client':
-        from features.terrain import client_id, ia_id
-        client_id(RandMAC())
-        ia_id()
-    elif opt == 'IA':
-        from features.terrain import ia_id
-        ia_id()
-    elif opt == 'IA_PD':
-        from features.terrain import ia_pd
-        ia_pd()
-
-    else:
-        assert False,  opt + " generation unsupported" 
-        
-def add_vendor_suboption(step, code, data):
-    # if code == 1 we need check if we added code = 1 before
-    # if we do, we need append only data not whole suboption 
-    if code == 1 and len(world.vendor) > 0:
-        for each in world.vendor:
-            if each[0] == 1:
-                each[1].append(int(data))
-
-    # if world.vendor is empty and code == 1 add
-    # code =1 and data as int (required to further conversion)
-    elif code == 1:
-        world.vendor.append([code,[int(data)]])
-        
-    # every other option just add
-    else:
-        world.vendor.append([code,str(data)])
-        
-def vendor_option_request_convert():
-    data_tmp = ''
-    for each in world.vendor:
-        if each[0] == 1:
-            for number in each[1]:
-                data_tmp +='\00' + str(chr(number))
-            each[1] = data_tmp
-                
-def client_option (msg):
-    """
-    Add options (like server-id, rapid commit) to message. This function refers to building message
-    """
-    #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
-    if world.cfg["add_option"]["wrong_server_id"]:
-        msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC() ))
-        
-    #client id
-    if world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"] == False:
-        if world.cfg["relay"] == False:
-            msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
-    elif world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"]:
-        msg /= DHCP6OptClientId()#it needs to stay blank!
-        
-    elif world.cfg["add_option"]["client_id"] == False:
-        #world.cfg["add_option"]["client_id"] = True
-        pass
-    
-    if world.cfg["add_option"]["IA_NA"] and world.cfg["relay"] == False:
-        if world.oro is not None and len(world.cliopts):
-            for opt in world.cliopts:
-                if opt.optcode == 3:
-                    break #if there is no IA_NA/TA in world.cliopts, break.. 
-            else:
-                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
-        else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA   
-
-    if world.cfg["add_option"]["preference"]:
-        msg /= DHCP6OptPref()
-        
-    if world.cfg["add_option"]["rapid_commit"]:
-        msg /= DHCP6OptRapidCommit()
-    
-    if world.cfg["add_option"]["time"]:
-        msg /= DHCP6OptElapsedTime()
-
-    if world.cfg["add_option"]["server_uni"]:
-        msg /= DHCP6OptServerUnicast()
-
-    if world.cfg["add_option"]["status_code"]:
-        msg /= DHCP6OptStatusCode()
-
-    if world.cfg["add_option"]["interface_id"]:
-        msg /= DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
-
-    if world.cfg["add_option"]["reconfig"]:
-        msg /= DHCP6OptReconfMsg()
-
-    if world.cfg["add_option"]["reconfig_accept"]:
-        msg /= DHCP6OptReconfAccept()
-
-    if world.cfg["add_option"]["IA_PD"]:
-        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])
-
-    if world.cfg["add_option"]["option_request"]:
-        msg /= DHCP6OptOptReq() #this adds 23 and 24 opt by default, we can leave it that way in this point.
-        
-    if world.cfg["add_option"]["relay_msg"]:
-        msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
-
-    if world.cfg["add_option"]["IA_Prefix"]:
-        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAPrefix(
-            preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"], plen = world.cfg["values"]["plen"],
-            prefix = world.cfg["values"]["prefix"]
-        )
-    if world.cfg["add_option"]["IA_Address"]:
-        world.cfg["add_option"]["IA_NA"] = False
-        msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAAddress(
-                    address = world.cfg["values"]["address"], preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"])
-        
-    if world.cfg["add_option"]["vendor_class"]:
-        msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
-
-    if world.cfg["add_option"]["vendor_specific_info"]:
-        # convert data for world.vendor with code == 1 (option request)
-        # that is the only one option that needs converting.
-        vendor_option_request_convert()
-
-        # build VENDOR_CPECIDIC_OPTIONs depending on world.vendor:
-        vso_tmp= []
-        for each in world.vendor: vso_tmp.append(VENDOR_SPECIFIC_OPTION(optcode = each[0], optdata = each[1]))
-        msg /= DHCP6OptVendorSpecificInfo(enterprisenum = world.cfg["values"]["enterprisenum"], vso = vso_tmp)
-    #
-    # set all "add_option" True/False values to default.
-    set_options()
-    set_values()
-    return msg
- 
-def build_msg(msg):
-   
-    msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport=546, dport=547)/msg
-    
-    # get back to multicast address.
-    world.cfg["address_v6"] = "ff02::1:2"
-
-    #transaction id
-    msg.trid = random.randint(0, 256*256*256)
-    world.cfg["tr_id"] = msg.trid
-    
-    #add option request if any
-    try:
-        if len(world.oro.reqopts) > 0:
-                msg = add_option_to_msg(msg, world.oro)
-    except:
-        pass
-    
-    #add other options if any
-    try:
-        if world.oro is not None and len(world.cliopts):
-            for opt in world.cliopts:
-                msg = add_option_to_msg(msg, opt)
-    except:
-        pass
-    
-    #add all rest options to message. 
-    msg = client_option(msg)
-    
-    return msg
-
+## ================ PARSING RECEIVED MESSAGE BLOCK END ===================
