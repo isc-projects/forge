@@ -56,7 +56,7 @@ def set_time(step, which_time, value):
     if which_time in world.cfg["server_times"]:
             world.cfg["server_times"][which_time] = value
     else:
-        assert which_time in world.cfg["server_times"], "Unknown time name : %s" % which_time
+        assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
 def fabric(cmd):
     with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
