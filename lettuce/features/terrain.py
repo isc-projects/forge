@@ -50,11 +50,20 @@ values = {"T1": 0, # IA_NA IA_PD
           "peeraddr": "2000::1", # relay
           "ifaceid": "15" # relay
           }
+
+# times values, plz do not change this.
+# there is a test step to do this
+server_times = {"renew-timer": 1000,
+                "rebind-timer": 2000,
+                "preferred-lifetime": 3000,
+                "valid-lifetime": 4000
+                }
 # we should consider transfer most of functions to separate v4 and v6 files
 # there is no v4 functions yet ;)
 def set_values():
     world.cfg["values"] = values.copy()
- 
+    world.cfg["server_times"] = server_times.copy()
+    
 def set_options():
     world.cfg["add_option"] = add_option.copy()
     

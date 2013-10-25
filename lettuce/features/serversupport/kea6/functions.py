@@ -52,16 +52,11 @@ kea_otheroptions = {"tftp-servers": 32,
                     "time-offset": 38
                     }
 
-# Dhcp6/renew-timer    1000    integer    (default)
-# Dhcp6/rebind-timer    2000    integer    (default)
-# Dhcp6/preferred-lifetime    3000    integer    (default)
-# Dhcp6/valid-lifetime    4000    integer    (default)
-kea_times = {"renew-timer": 1000,
-             "rebind-timer": 2000,
-             "preferred-lifetime": 3000,
-             "valid-lifetime": 4000
-             }
-
+def set_time(step, which_time, value):
+    if which_time in world.cfg["server_times"]:
+            world.cfg["server_times"][which_time] = value
+    else:
+        assert which_time in world.cfg["server_times"], "Unknown time name : %s" % which_time
 
 def fabric(cmd):
     with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
@@ -100,15 +95,20 @@ def prepare_cfg_subnet(step, subnet, pool):
         subnet = "2001:db8:1::/64"
     if (pool == "default"):
         pool = "2001:db8:1::1 - 2001:db8:1::ffff"
+    t1 = world.cfg["server_times"]["renew-timer"]
+    t2 = world.cfg["server_times"]["rebind-timer"]
+    t3 = world.cfg["server_times"]["preferred-lifetime"]
+    t4 = world.cfg["server_times"]["valid-lifetime"]
+    
     world.cfg["conf"] = '''\
         # subnet defintion Kea 6
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[0]/subnet "{subnet}"
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
-        config set Dhcp6/renew-timer 1000
-        config set Dhcp6/rebind-timer 2000
-        config set Dhcp6/preferred-lifetime 3000
-        config set Dhcp6/valid-lifetime 4000
+        config set Dhcp6/renew-timer {t1} 
+        config set Dhcp6/rebind-timer {t2}
+        config set Dhcp6/preferred-lifetime {t3} 
+        config set Dhcp6/valid-lifetime {t4}
         '''.format(**locals())
 
 def prepare_cfg_add_option(step, option_name, option_value, space):
