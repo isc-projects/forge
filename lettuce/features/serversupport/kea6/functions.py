@@ -96,6 +96,16 @@ kea_otheroptions = {"tftp-servers": 32,
                     "time-offset": 38
                     }
 
+# Dhcp6/renew-timer    1000    integer    (default)
+# Dhcp6/rebind-timer    2000    integer    (default)
+# Dhcp6/preferred-lifetime    3000    integer    (default)
+# Dhcp6/valid-lifetime    4000    integer    (default)
+kea_ times = {"renew-timer": 1000,
+              "rebind-timer": 2000,
+              "preferred-lifetime": 3000,
+              "valid-lifetime": 4000
+              }
+
 def prepare_cfg_add_option(step, option_name, option_value, space):
 #     if (not "conf" in world.cfg):
 #         world.cfg["conf"] = ""
