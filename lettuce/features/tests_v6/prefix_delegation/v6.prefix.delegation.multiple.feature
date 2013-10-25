@@ -50,6 +50,7 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client saves IA_PD option from received message.
+	Client does NOT include IA-NA.
 	Client adds saved options. And Erase.
 	Client sends REQUEST message.
 	
