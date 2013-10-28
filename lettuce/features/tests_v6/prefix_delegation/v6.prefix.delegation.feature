@@ -555,6 +555,7 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
+	#success
 	
 	Test Procedure:
 	Generate new IA_PD.
@@ -600,7 +601,8 @@ Feature: DHCPv6 Prefix Delegation
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
-	Response option 25 MUST contain sub-option 26.	
+	Response option 25 MUST contain sub-option 13.	
+	Response sub-option 13 from option 25 MUST contain statuscode 0.
 	
 	Test Procedure:
 	Generate new IA_PD.
