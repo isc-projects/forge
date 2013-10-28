@@ -64,6 +64,9 @@ def fabric(cmd):
         result = run(cmd)
     return result
 
+def run_command(step, command):
+    world.cfg["conf"] += command.replace("_"," ") 
+
 def parsing_bind_stdout(stdout, opt, search = []):
     """
     Modify this function if you wont react to some bind stdout

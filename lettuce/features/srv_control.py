@@ -43,6 +43,14 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
 @step('Time (\S+) is configured with value (\d+).')
 def set_time(step, which_time, value):
     dhcpfun.set_time(step, which_time, value)
+
+@step('Run configuration command: (\S+).')
+def run_command(step, command):
+    # this is only KEA step!
+    if SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+        dhcpfun.set_time(step, command)
+    else:
+        assert False, "Test available only for Kea servers."
     
 ##subnet options
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
