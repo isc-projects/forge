@@ -65,7 +65,7 @@ def fabric(cmd):
     return result
 
 def run_command(step, command):
-    world.cfg["conf"] += command.replace("_"," ") 
+    world.cfg["conf"] += ('\n'+command+'\n') 
 
 def parsing_bind_stdout(stdout, opt, search = []):
     """
