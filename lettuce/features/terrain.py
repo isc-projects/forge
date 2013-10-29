@@ -86,8 +86,8 @@ def server_start():
     Server starting before testing
     """
     # make sure we have place to store logs and pcap files
-    if not os.path.exists('test_results'):
-        os.makedirs('test_results')
+    if not os.path.exists('tests_results'):
+        os.makedirs('tests_results')
         
     world.result = []
     
@@ -193,12 +193,12 @@ def initialize(scenario):
         # to create separate files for each test we need:
         # create new directory for that test:
         dir_name = str(scenario.name).replace(".","_")
-        world.cfg["dir_name"] = 'test_results/'+dir_name 
-        if not os.path.exists('test_results/'+dir_name):
-            os.makedirs('test_results/'+dir_name)
+        world.cfg["dir_name"] = 'tests_results/'+dir_name 
+        if not os.path.exists('tests_results/'+dir_name):
+            os.makedirs('tests_results/'+dir_name)
         # create new file for capture
-        if not os.path.exists('test_results/'+dir_name+'/capture.pcap'):
-            tmp = open('test_results/'+dir_name+'/capture.pcap', 'w+')
+        if not os.path.exists('tests_results/'+dir_name+'/capture.pcap'):
+            tmp = open('tests_results/'+dir_name+'/capture.pcap', 'w+')
             tmp.close()
         file_name = "a"
         # also IP version for tcpdump

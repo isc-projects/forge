@@ -9,7 +9,7 @@ early stages of development (think "pre-prototype").
  Dependencies Installation
 ---------------------------
 
-Forge requires python 2.x, Scapy and lettuce. The following steps are
+Forge requires python 2.7.x, Scapy and lettuce. The following steps are
 necessary on Debian 6.0. If you use different operating system, your
 steps may be slightly different:
 
