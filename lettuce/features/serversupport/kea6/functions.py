@@ -17,7 +17,7 @@
 from fabric.api import run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS
+from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS, LOGFILE
 import os
 
 kea_options6 = { "client-id": 1,
@@ -304,7 +304,8 @@ def run_bindctl (succeed, opt):
         
     elif opt == "start":
         # start logging on different file:
-        set_logger()
+        if LOGFILE:
+            set_logger()
         # build configuration file with for:  
         #  - clean start Kea
         get_common_logger().debug('starting fresh kea')

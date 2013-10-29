@@ -1,3 +1,6 @@
+22. [func] wlodek
+		- copy log files for Kea servers
+		
 21. [func] wlodek
 		- configuration server timers (e.g. renew-timer) 
 

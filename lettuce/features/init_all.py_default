@@ -95,5 +95,9 @@ MGMT_PASSWORD = ""
 # For example, it appends "bin/" to obtain path to the bindctl.
 SERVER_INSTALL_DIR = ""
 
+# Copy logs file, different file for each test.
+# WARRNING: this produce really big amount of data!
+# Default - False
+LOGFILE = False
 # =============== DIBBLER ================
 DIBBLER_INSTALL_DIR = ""
