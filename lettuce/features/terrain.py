@@ -1,7 +1,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, \
-    MGMT_PASSWORD, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR
+    MGMT_PASSWORD, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, LOGFILE
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import sys
 import time
+from fabric.api import get,settings
 
 add_option = {'client_id' : True,
               'preference' : False,
@@ -84,6 +85,10 @@ def server_start():
     """
     Server starting before testing
     """
+    # make sure we have place to store logs and pcap files
+    if not os.path.exists('test_results'):
+        os.makedirs('test_results')
+        
     world.result = []
     
     # Initialize the common logger. The instance of this logger can
@@ -155,7 +160,7 @@ def initialize(scenario):
     world.opts = []
     world.subopts = []
    
-    world.name = scenario.name    
+    world.name = scenario.name
     # Setup scapy for v4
     conf.iface = IFACE
     conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
@@ -185,20 +190,29 @@ def initialize(scenario):
             os.remove(item)
 
     if TCPDUMP:
-        # to create separate files for each test we need, test name:
-        file_name = str(scenario.name)
-        file_name = file_name.replace(".","_")
+        # to create separate files for each test we need:
+        # create new directory for that test:
+        dir_name = str(scenario.name).replace(".","_")
+        world.cfg["dir_name"] = 'test_results/'+dir_name 
+        if not os.path.exists('test_results/'+dir_name):
+            os.makedirs('test_results/'+dir_name)
+        # create new file for capture
+        if not os.path.exists('test_results/'+dir_name+'/capture.pcap'):
+            tmp = open('test_results/'+dir_name+'/capture.pcap', 'w+')
+            tmp.close()
+        file_name = "a"
         # also IP version for tcpdump
         type = 'ip'
         
         if PROTO == "v6":
             type = type +'6'
         cmd = TCPDUMP_INSTALL_DIR+'tcpdump'
-        args = [cmd, type, "-i", world.cfg["iface"], "-w", "tests_results/"+file_name+".pcap", "-s", str(65535)]
+        args = [cmd, type, "-i", world.cfg["iface"], "-w", "test_results/"+dir_name+"/capture.pcap", "-s", str(65535)]
         get_common_logger().debug("Running tcpdump: ")
         get_common_logger().debug(args)
         # TODO: hide stdout, log it in debug mode
         subprocess.Popen(args)
+
 #initialize()
 
 @before.outline
@@ -249,7 +263,11 @@ def cleanup(scenario):
         args = ["killall tcpdump"]
         subprocess.call(args, shell = True)
         # TODO: log output in debug mode
-        
+
+    # copy log file from remote server:
+    if LOGFILE:
+        with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
+            get('log_file',world.cfg["dir_name"]+'/log_file')        
 @after.all
 def say_goodbye(total):
     """

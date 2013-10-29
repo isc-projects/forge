@@ -208,6 +208,8 @@ def prepare_cfg_kea6_for_kea6_stop():
         config set Dhcp6/option-def []
         # Get rid of any option values
         config set Dhcp6/option-data []
+        # clear loggers
+        config set Logging/loggers []
         # Stop b10-dhcp6 server from starting again
         config remove Init/components b10-dhcp6
         config commit
@@ -259,7 +261,30 @@ def fabric_send_file (file_local):
         os.remove(file_local)
     except OSError:
         get_common_logger().error('File %s cannot be removed' % file_local)
-        
+
+def set_logger():
+    file_name = world.name.replace(".","_")
+    logger_str ='''
+    config add Logging/loggers
+    config set Logging/loggers[0]/name *
+    config set Logging/loggers[0]/severity DEBUG
+    config set Logging/loggers[0]/debuglevel 99
+    config add Logging/loggers[0]/output_options
+    config set Logging/loggers[0]/output_options[0]/destination file
+    config set Logging/loggers[0]/output_options[0]/output log_file
+    config commit
+    '''.format(**locals())
+
+    cfg_file = open("logger.cfg", "w")
+    cfg_file.write(logger_str)
+    cfg_file.close()
+
+    cfg_file = 'logger.cfg'
+    fabric_send_file (cfg_file)
+    cmd = '(echo "execute file ' + cfg_file + '" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
+    
+    fabric(cmd)
+    
 def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
@@ -267,25 +292,42 @@ def run_bindctl (succeed, opt):
     
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
+        # build configuration file with for:  
+        #  - stopping Kea
+        #  - cleaning configuration
+        #  - default logging
         prepare_cfg_kea6_for_kea6_stop()
         cfg_file = 'kea6stop.cfg'
         pepere_config_file(cfg_file)
+        # send file
         fabric_send_file (cfg_file + "_processed")
+        
     elif opt == "start":
+        # start logging on different file:
+        set_logger()
+        # build configuration file with for:  
+        #  - clean start Kea
         get_common_logger().debug('starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
         cfg_file = 'kea6start.cfg'
         pepere_config_file(cfg_file)
+        # send file
         fabric_send_file (cfg_file + "_processed")
     elif opt == "configuration":
+        # build configuration file with for:  
+        #  - configure all needed to test features
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
         pepere_config_file(cfg_file)
         add_last = open (cfg_file + "_processed", 'a')
+
+        # add 'config commit' we don't put it before
         add_last.write("config commit")
         add_last.close()
+        # send file
         fabric_send_file (cfg_file + "_processed")
     elif opt == "restart":
+        # restart server without changing it's configuration
         restart_srv()
         
     cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
