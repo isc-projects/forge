@@ -268,7 +268,7 @@ def set_logger():
     config add Logging/loggers
     config set Logging/loggers[0]/name *
     config set Logging/loggers[0]/severity DEBUG
-    config set Logging/loggers[0]/debuglevel 99
+    config set Logging/loggers[0]/debuglevel 0
     config add Logging/loggers[0]/output_options
     config set Logging/loggers[0]/output_options[0]/destination file
     config set Logging/loggers[0]/output_options[0]/output log_file
