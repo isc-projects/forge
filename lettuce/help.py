@@ -182,7 +182,7 @@ class UserHelp ():
                     if line[0] == '#' and line[1] == '#':
                         print '\n\t',line[2:]
                     elif line[0] == '@':
-                        print "\t\t    ",line[7:-3]
+                        print "\t\t    ",line[7:-2]
             steps.close()
         print "\nFor definitions of (\d+) (\w+) (\S+) check Python regular expressions at http://docs.python.org/2/library/re.html"
 
@@ -247,6 +247,12 @@ if __name__ == '__main__':
     generate_help.steps()
     help_file.flush()
     print """
+    Step "Run configuration command: (.+)" is unique, it's for Kea servers only. All test with that step will automatically fail 
+    when variable SERVER_TYPE in init_all.py will be different then: kea, kea4 or kea6.
+    This step is designed to put one line commands to configuration file (e.g. config set Dhcp6/renew-timer 999)
+    but it can be used to more complicated things if you put command in right order.
+    Be aware of fact that command passed to config file it's all after "Run configuration command:" to the end of the line!
+    
     HOW TO DESIGN NEW SETPS?
     
     All the informations automatically generated and included in this file are result of parsing two files:
