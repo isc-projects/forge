@@ -1,31 +1,39 @@
 #Configuration file, please copy this to the init_all.py and fill it with your
 #variables. init_all.py is added to gitignore.
 
+# All configurations are separated to different sections: 
+# general - for general Forge configuration ;)
+# ssh - for ssh connection between virtual machines
+# kea - for kea configuration
+# ISC-DHCP - for ISC-DHCP configurations
+
+ 
+# =============== GENERAL ===============
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
 # case insensitive.
 LOGLEVEL = "info"
 
 # This defines server type. Allowed values are:
-# kea4, kea6, isc-dhcp4, isc-dhcp6, dibbler
+# kea4, kea6, isc_dhcp4, isc_dhcp6, dibbler
 # Not all of those are functional yet. This is essentailly
 # name of the subdirectory in lettuce/features/serversupport
-SERVER_TYPE = "kea4"
+SERVER_TYPE = "kea6"
 
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
-PROTO = "v4"
-
-# Defines name of the DUT-facing network interface
-IFACE = "eth1"
+PROTO = "v6"
 
 # Parameters specific to DHCPv4 tests
-SRV4_ADDR = "192.168.1.1"
-REL4_ADDR = "192.168.1.2"
-GIADDR4 = "192.0.2.1"
+SRV4_ADDR = "192.168.56.2"
+REL4_ADDR = "192.168.56.3"
+GIADDR4 = ""
 
 # defines client MAC (used for DUID generation)
-CLI_MAC = ""
+CLI_MAC = "08:00:27:58:f1:e8"
+
+# For servers: ISC-DHCP, ISC-DHCPv6 and Dibbler choose ethernet interface to bind server.
+SERVER_IFACE = "eth2"
 
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
@@ -46,24 +54,55 @@ removelist = [ ]
 # When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
 # as the interval in which to check again if it has not been found yet.
 # If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an
-# error (so as not to hang indefinitely)
+# error (so as not to hang indefinitely). Values are counted in seconds.
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
-# This are required management information about device under test (the one that
-# tested server will be running on) root privileges are required!
-#ip address and port. ssh port default 22
-#MGMT_ADDRESS could be either IPv4, IPv6 or any resolvable server address
-MGMT_ADDRESS = "192.168.56.3"
-MGMT_USERNAME = "root"
-MGMT_PASSWORD = "termops"
+# scope link server address for testing unicast messages  
+SRV_IPV6_ADDR_GLOBAL = "3000::55"
+SRV_IPV6_ADDR_LINK_LOCAL = "fe80::a00:27ff:fe11:c767"
 
+# Defines name of the DUT-facing network interface
+IFACE = "eth4"
+
+# If you wont to build tests history in history.html set HISTORY on True if not, on False
+# but for more detailed information about tests, use --with_xunit option when starting run_test.py
+HISTORY = False
+
+# Also you can save separate .pcap file of every test. In default it's disabled 
+# If you recieve error tcpdump: <file name>: Permission denied
+# please use command as a root: aa-complain /usr/sbin/tcpdump 
+TCPDUMP = False 
+# If your tcpdump is installed in different location place that in TCPDUMP_INSTALL_DIR
+# otherwise leave it blank
+TCPDUMP_INSTALL_DIR = "/usr/local/"
+
+# =============== SSH ===============
+
+# This are required management information about device under test (the one that
+# tested server will be running on) root privileges are required! So edit sudoers
+# file, or use root account.
+# ip address and port. ssh port default 22
+MGMT_ADDRESS='192.168.50.50'
+MGMT_USERNAME='test'
+MGMT_PASSWORD='m'
+
+
+
+# =============== Kea ===============
 # Specifies path to the server installation directory on DUT. This must
 # point to root directory of server installation and must end with /.
 # The framework appends subdirectories to this path to run applications.
 # For example, it appends "bin/" to obtain path to the bindctl.
 SERVER_INSTALL_DIR = "/home/rafal/local/bind10/"
 
-# scope link server address for testing unicast messages  
-SRV_IPV6_ADDR = ""
+# Copy logs file, different file for each test.
+# WARRNING: this produce really big amount of data!
+# Default - False
+LOGFILE = False
+
+# =============== DIBBLER ================
+DIBBLER_INSTALL_DIR = ""
+
+
 
