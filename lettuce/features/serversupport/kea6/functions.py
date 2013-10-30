@@ -58,38 +58,37 @@ def set_time(step, which_time, value):
     else:
         assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
+## =============================================================
+## ================ FABRIC BLOCK START =========================
+
 def fabric(cmd):
     with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
     #    with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
         result = run(cmd)
     return result
 
-def run_command(step, command):
-    world.cfg["conf"] += ('\n'+command+'\n') 
-
-def parsing_bind_stdout(stdout, opt, search = []):
+def fabric_send_file (file_local):
     """
-    Modify this function if you wont react to some bind stdout
+    Send file to remote virtual machine
     """
-    #search = []
-    for each in search: 
-        if each in stdout:
-            print "RESTART BIND10, found ", each 
-            from serversupport.bind10 import kill_bind10, start_bind10 #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
-            kill_bind10(MGMT_ADDRESS)
-            start_bind10(MGMT_ADDRESS)
-            run_bindctl (True, opt)
+    file_remote = file_local
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
+        with hide('running', 'stdout'):
+            put(file_local, file_remote)
+    try:
+        os.remove(file_local)
+    except OSError:
+        get_common_logger().error('File %s cannot be removed' % file_local)
+        
+## =============================================================
+## ================ FABRIC BLOCK END ===========================
 
-def restart_srv():
-    cmd = '(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10' # can't be less then 7, server needs time to restart.
-    fabric(cmd)
+## =============================================================
+## ================ PREPARE CONFIG BLOCK START =================
 
-def stop_srv():
-    run_bindctl ('clean')
-    
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# Default server config for Kea6 is just empty string\n"
-    
+
 def prepare_cfg_subnet(step, subnet, pool):
     get_common_logger().debug("Configure subnet...")
     if (not "conf" in world.cfg):
@@ -114,6 +113,15 @@ def prepare_cfg_subnet(step, subnet, pool):
         config set Dhcp6/valid-lifetime {t4}
         '''.format(**locals())
 
+def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+
+    world.cfg["conf"] += '''
+        config add Dhcp6/subnet6[{subnet}]/pd-pools
+        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix "{prefix}"
+        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix-len {length}
+        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/delegated-len {delegated_length}
+        '''.format(**locals())
+
 def prepare_cfg_add_option(step, option_name, option_value, space):
 #     if (not "conf" in world.cfg):
 #         world.cfg["conf"] = ""
@@ -136,15 +144,6 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
 
     world.kea["option_cnt"] = world.kea["option_cnt"] + 1
 
-def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
-
-    world.cfg["conf"] += '''
-        config add Dhcp6/subnet6[{subnet}]/pd-pools
-        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix "{prefix}"
-        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix-len {length}
-        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/delegated-len {delegated_length}
-        '''.format(**locals())
-    
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value):
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
@@ -195,7 +194,6 @@ def prepare_cfg_kea6_for_kea6_start():
     cfg_file.write(config)
     cfg_file.close()
 
-
 def prepare_cfg_kea6_for_kea6_stop():
     """
     config file for kea6 clear configuration and stopping
@@ -220,47 +218,8 @@ def prepare_cfg_kea6_for_kea6_stop():
     cfg_file.write(config)
     cfg_file.close()
 
-
-def cfg_write():
-    cfg_file = open(world.cfg["cfg_file"], 'w')
-    cfg_file.write(world.cfg["conf"])
-    cfg_file.close()
- 
-def pepere_config_file(cfg):
-    """
-    Prepare config file from generated world.cfg["cfg_file"] or START/STOP
-    """
-    tmpfile = cfg + "_processed"
-    conf = open(cfg, "rt")
-    process = open(tmpfile, "w")
-    # Copy input line by line, but skip empty and comment lines
-    for line in conf:
-        line = line.strip()
-        if len(line) < 2:
-            continue
-        if (line[0] == "#"):
-            continue
-        process.write(line + "\n")
-    conf.close()
-    process.close()
-    try:
-        os.remove(cfg)
-    except OSError:
-        get_common_logger().error('File %s cannot be removed' % cfg)
-        
-
-def fabric_send_file (file_local):
-    """
-    Send file to remote virtual machine
-    """
-    file_remote = file_local
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        with hide('running', 'stdout'):
-            put(file_local, file_remote)
-    try:
-        os.remove(file_local)
-    except OSError:
-        get_common_logger().error('File %s cannot be removed' % file_local)
+def run_command(step, command):
+    world.cfg["conf"] += ('\n'+command+'\n') 
 
 def set_logger():
     file_name = world.name.replace(".","_")
@@ -283,12 +242,94 @@ def set_logger():
     cfg_file.close()
 
     cfg_file = 'logger.cfg'
-    pepere_config_file(cfg_file)
+    prepare_config_file(cfg_file)
     fabric_send_file (cfg_file + '_processed')
     cmd = '(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
     
     fabric(cmd)
-    
+
+def prepare_config_file(cfg):
+    """
+    Prepare config file from generated world.cfg["cfg_file"] or START/STOP
+    """
+    tmpfile = cfg + "_processed"
+    conf = open(cfg, "rt")
+    process = open(tmpfile, "w")
+    # Copy input line by line, but skip empty and comment lines
+    for line in conf:
+        line = line.strip()
+        if len(line) < 2:
+            continue
+        if (line[0] == "#"):
+            continue
+        process.write(line + "\n")
+    conf.close()
+    process.close()
+    try:
+        os.remove(cfg)
+    except OSError:
+        get_common_logger().error('File %s cannot be removed' % cfg)
+
+def cfg_write():
+    cfg_file = open(world.cfg["cfg_file"], 'w')
+    cfg_file.write(world.cfg["conf"])
+    cfg_file.close()
+
+## =============================================================
+## ================ PREPARE CONFIG BLOCK END  ==================
+
+## =============================================================
+## ================ REMOTE SERVER BLOCK START ==================
+
+def start_srv(start, process):
+    """
+    Start kea with generated config
+    """
+
+    # All 3 available processess set to 'True' it means that they should to succeed
+    configuration = True
+    start = True
+    clean = True
+
+    # Switch one of three processess to false, which? That is decided in 
+    # Server failed to start. During (\S+) process.) step.    
+    if process == None and start:
+        pass
+    elif process == 'configuration':
+        configuration = False
+    elif process == 'start':
+        start = False
+    elif process == 'clean':
+        clean = False
+    else:
+        assert False, "Process: '"+process+"' not supported."
+
+    cfg_write() 
+    get_common_logger().debug("Bind10, dhcp6 configuration procedure:")
+    run_bindctl (clean, 'clean')#clean and stop
+    run_bindctl (start, 'start')#start
+    run_bindctl (configuration,'configuration')#conf
+
+def stop_srv():
+    run_bindctl ('clean')
+
+def restart_srv():
+    cmd = '(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10' # can't be less then 7, server needs time to restart.
+    fabric(cmd)
+
+def parsing_bind_stdout(stdout, opt, search = []):
+    """
+    Modify this function if you wont react to some bind stdout
+    """
+    #search = []
+    for each in search: 
+        if each in stdout:
+            print "RESTART BIND10, found ", each 
+            from serversupport.bind10 import kill_bind10, start_bind10 #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
+            kill_bind10(MGMT_ADDRESS)
+            start_bind10(MGMT_ADDRESS)
+            run_bindctl (True, opt)
+
 def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
@@ -302,7 +343,7 @@ def run_bindctl (succeed, opt):
         #  - default logging
         prepare_cfg_kea6_for_kea6_stop()
         cfg_file = 'kea6stop.cfg'
-        pepere_config_file(cfg_file)
+        prepare_config_file(cfg_file)
         # send file
         fabric_send_file (cfg_file + "_processed")
         
@@ -312,7 +353,7 @@ def run_bindctl (succeed, opt):
         get_common_logger().debug('starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
         cfg_file = 'kea6start.cfg'
-        pepere_config_file(cfg_file)
+        prepare_config_file(cfg_file)
         # send file
         fabric_send_file (cfg_file + "_processed")
     elif opt == "configuration":
@@ -323,7 +364,7 @@ def run_bindctl (succeed, opt):
         #  - configure all needed to test features
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
-        pepere_config_file(cfg_file)
+        prepare_config_file(cfg_file)
         add_last = open (cfg_file + "_processed", 'a')
 
         # add 'config commit' we don't put it before
@@ -359,31 +400,5 @@ def run_bindctl (succeed, opt):
     # this error needs different aproach then others. Bind10 needs to be restarted.
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
-def start_srv(start, process):
-    """
-    Start kea with generated config
-    """
-
-    # All 3 available processess set to 'True' it means that they should to succeed
-    configuration = True
-    start = True
-    clean = True
-
-    # Switch one of three processess to false, which? That is decided in 
-    # Server failed to start. During (\S+) process.) step.    
-    if process == None and start:
-        pass
-    elif process == 'configuration':
-        configuration = False
-    elif process == 'start':
-        start = False
-    elif process == 'clean':
-        clean = False
-    else:
-        assert False, "Process: '"+process+"' not supported."
-
-    cfg_write() 
-    get_common_logger().debug("Bind10, dhcp6 configuration procedure:")
-    run_bindctl (clean, 'clean')#clean and stop
-    run_bindctl (start, 'start')#start
-    run_bindctl (configuration,'configuration')#conf
+## =============================================================
+## ================ REMOTE SERVER BLOCK END ====================
