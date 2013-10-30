@@ -285,7 +285,7 @@ def set_logger():
     cfg_file = 'logger.cfg'
     pepere_config_file(cfg_file)
     fabric_send_file (cfg_file + '_processed')
-    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
+    cmd = '(rm log_file | echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
     
     fabric(cmd)
     
