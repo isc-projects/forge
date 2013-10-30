@@ -98,6 +98,14 @@ SERVER_INSTALL_DIR = ""
 # Copy logs file, different file for each test.
 # WARRNING: this produce really big amount of data!
 # Default - False
-LOGFILE = False
+SAVE_BIND_LOGS = False
+
+# Also we can decide which logging type choose, logging lvl,
+# and BIND10 module type 
+# for more accurate information plz read BIND10 documentation: Chapter 21. Logging
+BIND_LOG_TYPE = ""
+BIND_LOG_LVL = 
+BIND_MODULE = ""
+
 # =============== DIBBLER ================
 DIBBLER_INSTALL_DIR = ""

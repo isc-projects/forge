@@ -1,7 +1,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, \
-    MGMT_PASSWORD, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, LOGFILE
+    MGMT_PASSWORD, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, SAVE_BIND_LOGS
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -200,7 +200,6 @@ def initialize(scenario):
         if not os.path.exists('tests_results/'+dir_name+'/capture.pcap'):
             tmp = open('tests_results/'+dir_name+'/capture.pcap', 'w+')
             tmp.close()
-        file_name = "a"
         # also IP version for tcpdump
         type = 'ip'
         
@@ -265,7 +264,7 @@ def cleanup(scenario):
         # TODO: log output in debug mode
 
     # copy log file from remote server:
-    if LOGFILE:
+    if SAVE_BIND_LOGS:
         with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
             get('log_file',world.cfg["dir_name"]+'/log_file')        
 @after.all

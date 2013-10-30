@@ -17,7 +17,7 @@
 from fabric.api import run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS, LOGFILE
+from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE
 import os
 
 kea_options6 = { "client-id": 1,
@@ -264,11 +264,14 @@ def fabric_send_file (file_local):
 
 def set_logger():
     file_name = world.name.replace(".","_")
+    type = BIND_LOG_TYPE 
+    lvl = BIND_LOG_LVL
+    module = BIND_MODULE 
     logger_str ='''
     config add Logging/loggers
-    config set Logging/loggers[0]/name *
-    config set Logging/loggers[0]/severity DEBUG
-    config set Logging/loggers[0]/debuglevel 0
+    config set Logging/loggers[0]/name "{module}"
+    config set Logging/loggers[0]/severity "{type}"
+    config set Logging/loggers[0]/debuglevel {lvl}
     config add Logging/loggers[0]/output_options
     config set Logging/loggers[0]/output_options[0]/destination file
     config set Logging/loggers[0]/output_options[0]/output log_file
@@ -280,8 +283,9 @@ def set_logger():
     cfg_file.close()
 
     cfg_file = 'logger.cfg'
-    fabric_send_file (cfg_file)
-    cmd = '(echo "execute file ' + cfg_file + '" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
+    pepere_config_file(cfg_file)
+    fabric_send_file (cfg_file + '_processed')
+    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
     
     fabric(cmd)
     
@@ -303,9 +307,6 @@ def run_bindctl (succeed, opt):
         fabric_send_file (cfg_file + "_processed")
         
     elif opt == "start":
-        # start logging on different file:
-        if LOGFILE:
-            set_logger()
         # build configuration file with for:  
         #  - clean start Kea
         get_common_logger().debug('starting fresh kea')
@@ -315,6 +316,9 @@ def run_bindctl (succeed, opt):
         # send file
         fabric_send_file (cfg_file + "_processed")
     elif opt == "configuration":
+        # start logging on different file:
+        if SAVE_BIND_LOGS:
+            set_logger()
         # build configuration file with for:  
         #  - configure all needed to test features
         get_common_logger().debug('kea configuration')
