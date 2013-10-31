@@ -49,8 +49,7 @@ values = {"T1": 0, # IA_NA IA_PD
           "enterprisenum": 0, # vendor 
           "linkaddr": "3000::ffff", # relay
           "peeraddr": "2000::1", # relay
-          "ifaceid": "15", # relay
-          "DIUD": "" # for some specific usage
+          "ifaceid": "15" # relay
           }
 
 # times values, plz do not change this.
