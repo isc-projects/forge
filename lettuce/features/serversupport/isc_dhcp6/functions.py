@@ -58,12 +58,19 @@ needs_chenging = {
                   "nisp-domain-name": True
                   }
 
-isc_dhcp_otheroptions = {"tftp-servers": [32,""],
-                         "config-file": [33,""],
-                         "syslog-servers": [34,""],
-                         "time-servers": [37,""],
-                         "time-offset": [38,""]
+isc_dhcp_otheroptions = {"tftp-servers": 32,
+                         "config-file": 33,
+                         "syslog-servers": 34,
+                         "time-servers": 37,
+                         "time-offset": 38
                          }
+isc_dhcp_otheroptions_value_type = {"tftp-servers": "array of ip6-address",
+                         "config-file": "text",
+                         "syslog-servers": "array of ip6-address",
+                         "time-servers": "array of ip6-address",
+                         "time-offset": "integer 16"
+                         }
+
 def restart_srv():
     pass
 
@@ -152,12 +159,13 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
     else:
         if not "conf_vendor" in world.cfg:
             world.cfg["conf_vendor"] = '''
-                option space {space};
+                option space {space} code width 2 length width 2;
                 '''.format(**locals())
                 #code width 2 length width 2 hash size 3
-                
+        type = isc_dhcp_otheroptions_value_type.get(option_name)
         world.cfg["conf_vendor"] += '''
-            option {space}.{option_name} code {option_proper_name} = {option_value[0]};
+            option {space}.{option_name} code {option_proper_name} = {type};
+            option {space}.{option_name} {option_value};
             '''.format(**locals())
 
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
