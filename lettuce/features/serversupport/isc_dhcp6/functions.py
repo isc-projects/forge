@@ -13,16 +13,13 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+# Author: Wlodzimierz Wencel
 
 from fabric.api import run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
-import time
 import os
-#import serversupport.kea6.functions.set_time
-# ctrl+c ctrl+v from kea6
-# temporary! 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
 isc_dhcp_options6 = {
@@ -55,7 +52,8 @@ needs_chenging = {
                   "domain-name-servers": True,
                   "domain-search": True,
                   "nis-domain-name": True,
-                  "nisp-domain-name": True
+                  "nisp-domain-name": True,
+                  33: True #for 'config file', that will need more work:)
                   }
 
 isc_dhcp_otheroptions = {"tftp-servers": 32,
@@ -71,6 +69,74 @@ isc_dhcp_otheroptions_value_type = {"tftp-servers": "array of ip6-address",
                          "time-offset": "integer 16"
                          }
 
+def switch_prefix6_lengths_to_pool(ip6_addr ,length, delegated_length):
+    
+    ip6_addr_splited = ip6_addr.split(":")
+    
+    if len(ip6_addr_splited) < 3 or len(ip6_addr_splited) > 9:
+        raise "Error! Please enter correct IPv6 address!"
+    error_flag = False
+    for i in range(1, len(ip6_addr_splited) - 1):
+        if not ip6_addr_splited[i]:
+            if error_flag:
+                raise "Error! Please enter correct IPv6 address!"
+            error_flag = True
+    
+    for i in range (0, 6):
+        if ip6_addr_splited[i]:
+            continue
+        else:
+            ip6_addr_splited.append("")
+    
+    bin_addr = []
+    for each in ip6_addr_splited:
+        if not each:
+            bin_addr.append('')
+            continue
+        bin_addr.append(bin(int(each,16)))
+    
+    str = ""
+    for each in bin_addr:
+        each = each.zfill(18)
+        if "0b" in each:
+            each = each.replace("0b","")
+        else:
+            each = each[2:]
+        str += each
+    lowest_prefix = str
+    highest_prefix = lowest_prefix[0:length] + '1'*(delegated_length - length) + lowest_prefix[delegated_length:]
+    
+    ip6_addr_new = []
+    for i in range (0,8):
+        ip6_addr_new.append(highest_prefix[:16])
+        highest_prefix = highest_prefix[16:]
+    
+    tmp = []
+    for each in ip6_addr_new:
+        b = hex(int(each,2))
+        tmp.append(b[2:])
+    
+    prefix = []
+    flag1 = False
+    flag2 = False
+    for i in range(0,8):
+        if tmp[i] == "0" and not flag1 and not flag2:
+            prefix.append("")
+            flag1 = True
+            continue
+        elif tmp[i] == "0" and flag1 and not flag2:
+            continue
+        elif tmp[i] != "0" and flag1 and not flag2:
+            prefix.append(tmp[i])
+            flag2 = True
+        else:
+            prefix.append(tmp[i])
+    
+    final = ":".join(prefix)
+    if final[-1]==":":
+        final+=":"
+
+    return final
 def restart_srv():
     pass
 
@@ -188,11 +254,11 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
          '''.format(**locals())
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
-    pass
-#implement this!!
-#     world.cfg["conf_subnet"] += '''
-#         prefix6 {prefix} /{delegated_length}
-#         '''.format(**locals())
+    
+    highest = switch_prefix6_lengths_to_pool(str(prefix),int(length),int(delegated_length))
+    
+    world.cfg["conf_subnet"] += '''prefix6 {prefix} {highest} /{delegated_length};
+         '''.format(**locals())
 
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')

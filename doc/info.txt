@@ -97,8 +97,10 @@ report it on https://github.com/isc-projects/forge to update documentation.
 
  Usage
 -------
-You can dynamically generate user help by running forge/lettuce/help.py. UserHelp.txt 
-will contain all informations about using and further developing Forge project. 
+
+IMPORTANT:
+	You can dynamically generate user help by running forge/lettuce/help.py. UserHelp.txt 
+	will contain all informations about using and further developing Forge project. 
 
 cd forge/lettuce
 
