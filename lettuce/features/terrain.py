@@ -188,6 +188,7 @@ def initialize(scenario):
     for item in removelist:
         if os.path.exists(item):
             os.remove(item)
+            
     dir_name = str(scenario.name).replace(".","_")
     world.cfg["dir_name"] = 'tests_results/'+dir_name 
     

@@ -50,21 +50,6 @@ options6 = {"client-id": 1,
             "sntp-servers": 31,
             "information-refresh-time": 32 }
 
-def test_pause(step):
-    """
-    Pause the test for any reason. Press any key to continue. 
-    """
-    def getch():
-        import tty, termios
-        fd = sys.stdin.fileno()
-        old = termios.tcgetattr(fd)
-        try:
-            tty.setraw(fd)
-            return sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old)
-    getch()
-
 ## ======================================================================
 ## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
 

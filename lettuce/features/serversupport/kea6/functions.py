@@ -41,7 +41,7 @@ kea_options6 = { "client-id": 1,
                  "nis-domain-name": 29,
                  "nisp-domain-name": 30,
                  "sntp-servers": 31,
-                 "information-refresh-time": 32,
+                 "information-refresh-time": 32
                   }
 # kea_otheoptions was originally designed for vendor options
 # because codes sometime overlap with basic options

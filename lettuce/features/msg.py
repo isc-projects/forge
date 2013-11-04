@@ -8,6 +8,7 @@ import importlib
 # works. If you know how to fix is properly, plese do so.
 
 dhcpmsg = importlib.import_module("protosupport.%s.msg"  % (PROTO))
+other = importlib.import_module("protosupport.multi_protocol_functions")
 
 ##building messages 
 @step('Client requests option (\d+).')
@@ -90,10 +91,25 @@ def client_add_saved_option(step, yes_or_no):
     erase = True if yes_or_no == None else False
     dhcpmsg.client_add_saved_option(step, erase)
     
-##modification of the test run
+##other
 @step('Pause the Test.')
 def test_pause(step):
     """
     Pause the test for any reason. Press any key to continue.
     """
-    dhcpmsg.test_pause(step)
+    other.test_pause(step)
+
+@step('Client download file from server stored in: (.+)')
+def copy_remote(step, remote_path):
+    """
+    Download file to automatic compare
+    """
+    other.copy_file_from_server(step, remote_path)
+
+@step('Client compares downloaded file from server with local file stored in: (.+)')
+def compare_file(step, remote_path):
+    """
+    Compare file 
+    """
+    other.compare_file(step, remote_path)
+        
