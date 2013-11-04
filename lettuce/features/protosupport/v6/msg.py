@@ -186,9 +186,12 @@ def client_sets_value(step, value_name, new_value):
             world.cfg["values"][value_name] = str(new_value)
         elif isinstance(world.cfg["values"][value_name], int):
             world.cfg["values"][value_name] = int(new_value)
+        else:
+            world.cfg["values"][value_name] = new_value
     else:
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
 
+   
 def unicast_addres(step,addr_type):
     """
     Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address. 
@@ -316,6 +319,10 @@ def client_option (msg):
     """
     Add options (like server-id, rapid commit) to message. This function refers to building message
     """
+    
+    if world.cfg["values"]["DUID"] is not None:
+        world.cfg["cli_duid"] = DUID_LL( lladdr = world.cfg["values"]["DUID"][12:]) 
+        
     #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
     if world.cfg["add_option"]["wrong_server_id"]:
         msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC() ))

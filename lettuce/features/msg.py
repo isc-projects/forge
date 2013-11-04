@@ -15,7 +15,7 @@ other = importlib.import_module("protosupport.multi_protocol_functions")
 def client_requests_option(step, opt_type):
     dhcpmsg.client_requests_option(step, opt_type)
 
-@step('Client sets (\w+) value to (\w+).')
+@step('Client sets (\w+) value to (\S+).')
 def client_sets_value(step, value_name, new_value):
     dhcpmsg.client_sets_value(step, value_name, new_value)
 
