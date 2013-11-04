@@ -13,6 +13,8 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+# Author: Wlodzimierz Wencel
+
 from _pyio import open
 from fabric.context_managers import settings
 from fabric.operations import get
@@ -20,8 +22,6 @@ from lettuce.registry import world
 from locale import str
 import os
 import sys
-
-# Author: Wlodzimierz Wencel
 
 def test_pause(step):
     """
@@ -53,13 +53,33 @@ def compare_file(step, local_path):
         assert False, 'No local file %s' %local_path
         
     downloaded = open(world.cfg["dir_name"]+'/downloaded_file', 'r')
+    
     outcome = open (world.cfg["dir_name"]+'/file_compare', 'w')
     
-    downloaded_list = downloaded.readlines()
-    local_list = local.readlines()
+    # first remove all commented and blank lines of both files
+    downloaded_striped = []
+    local_striped = []
+    for line in local:
+        line = line.strip()
+        if len(line) < 1:
+            continue
+        elif line[0] == '#':
+            continue
+        else:
+            local_striped.append(line.strip())
+
+    for line in downloaded:
+        line = line.strip()
+        if len(line) < 1:
+            continue
+        elif line[0] == '#':
+            continue
+        else:
+            downloaded_striped.append(line.strip())
+    
     line_number = 1
     error_flag = True
-    for i, j in zip (downloaded_list, local_list):
+    for i, j in zip (downloaded_striped, local_striped):
         if i != j:
             outcome.write('Line number: '+str(line_number)+' \n\tDownloaded file line: "'+i.rstrip('\n')+ '" and local file line: "'+j.rstrip('\n')+'"\n')
             error_flag = False
