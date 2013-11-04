@@ -119,3 +119,11 @@ def file_includes_line(step, condition, line):
     Check if downloaded file includes line
     """
     other.file_includes_line(step, condition, line)
+
+@step('Client sends local file stored in: (\S+) to server, to location: (.+)')
+def send_file_to_server(step, local_path, remote_path):
+    other.send_file_to_server(step, local_path, remote_path)
+
+@step('Client removes file from server located in: (.+)')
+def remove_file_from_server(step, remote_path):
+    other.remove_file_from_server(step, remote_path)

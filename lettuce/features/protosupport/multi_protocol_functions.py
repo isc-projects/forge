@@ -17,7 +17,7 @@
 
 from _pyio import open
 from fabric.context_managers import settings
-from fabric.operations import get
+from fabric.operations import get, put, run
 from lettuce.registry import world
 from locale import str
 import os
@@ -45,6 +45,16 @@ def copy_file_from_server(step, remote_path):
             get(remote_path, world.cfg["dir_name"]+'/downloaded_file')
     except:
         assert False, 'No remote file %s' %remote_path 
+
+def send_file_to_server(step, local_path, remote_path):
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
+        put(local_path, remote_path)
+
+def remove_file_from_server(step, remote_path):
+    cmd = "rm -f "+remote_path
+    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
+    #    with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
+        run(cmd)
 
 def strip_file(file_path):
     tmp_list = []
@@ -79,7 +89,7 @@ def compare_file(step, local_path):
         line_number += 1
     if error_flag:
         os.remove(world.cfg["dir_name"]+'/file_compare')
-    assert error_flag, 'Downloaded file is NOT the same as local. ' 
+    assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details' %world.cfg["dir_name"] 
     
 def file_includes_line(step, condition, line):
     downloaded_stripped = strip_file(world.cfg["dir_name"]+'/downloaded_file')
@@ -89,4 +99,3 @@ def file_includes_line(step, condition, line):
     else:
         if line not in downloaded_stripped:
             assert False, 'Downloaded file does NOT contain line: "%s"' %line
-    #if line in downloaded_striped:
