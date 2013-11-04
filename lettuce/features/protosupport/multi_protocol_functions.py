@@ -46,40 +46,33 @@ def copy_file_from_server(step, remote_path):
     except:
         assert False, 'No remote file %s' %remote_path 
 
+def strip_file(file_path):
+    tmp_list = []
+    tmp = open(file_path, 'r')
+    for line in tmp:
+        line = line.strip()
+        if len(line) < 1:
+            continue
+        elif line[0] == '#':
+            continue
+        else:
+            tmp_list.append(line.strip())
+    tmp.close()
+    return tmp_list
+
 def compare_file(step, local_path):
-    try:
-        local = open (local_path, 'r')
-    except:
+    if not os.path.exists(local_path):
         assert False, 'No local file %s' %local_path
-        
-    downloaded = open(world.cfg["dir_name"]+'/downloaded_file', 'r')
     
     outcome = open (world.cfg["dir_name"]+'/file_compare', 'w')
     
     # first remove all commented and blank lines of both files
-    downloaded_striped = []
-    local_striped = []
-    for line in local:
-        line = line.strip()
-        if len(line) < 1:
-            continue
-        elif line[0] == '#':
-            continue
-        else:
-            local_striped.append(line.strip())
+    downloaded_stripped = strip_file(world.cfg["dir_name"]+'/downloaded_file')
+    local_stripped = strip_file(local_path)
 
-    for line in downloaded:
-        line = line.strip()
-        if len(line) < 1:
-            continue
-        elif line[0] == '#':
-            continue
-        else:
-            downloaded_striped.append(line.strip())
-    
     line_number = 1
     error_flag = True
-    for i, j in zip (downloaded_striped, local_striped):
+    for i, j in zip (downloaded_stripped, local_stripped):
         if i != j:
             outcome.write('Line number: '+str(line_number)+' \n\tDownloaded file line: "'+i.rstrip('\n')+ '" and local file line: "'+j.rstrip('\n')+'"\n')
             error_flag = False
@@ -87,3 +80,13 @@ def compare_file(step, local_path):
     if error_flag:
         os.remove(world.cfg["dir_name"]+'/file_compare')
     assert error_flag, 'Downloaded file is NOT the same as local. ' 
+    
+def file_includes_line(step, condition, line):
+    downloaded_stripped = strip_file(world.cfg["dir_name"]+'/downloaded_file')
+    if condition is not None:
+        if line in downloaded_stripped:
+            assert False, 'Downloaded file does contain line: "%s" But it should NOT.' %line
+    else:
+        if line not in downloaded_stripped:
+            assert False, 'Downloaded file does NOT contain line: "%s"' %line
+    #if line in downloaded_striped:

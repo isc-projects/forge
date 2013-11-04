@@ -109,7 +109,13 @@ def copy_remote(step, remote_path):
 @step('Client compares downloaded file from server with local file stored in: (.+)')
 def compare_file(step, remote_path):
     """
-    Compare file 
+    Compare files
     """
     other.compare_file(step, remote_path)
-        
+
+@step('Downloaded file MUST (NOT )?contain line: (.+)')
+def file_includes_line(step, condition, line):
+    """
+    Check if downloaded file includes line
+    """
+    other.file_includes_line(step, condition, line)
