@@ -208,6 +208,8 @@ def prepare_cfg_kea6_for_kea6_stop():
         config set Dhcp6/option-data []
         # clear loggers
         config set Logging/loggers []
+        # Clear all library hooks
+        config set Dhcp6/hooks-libraries []
         # Stop b10-dhcp6 server from starting again
         config remove Init/components b10-dhcp6
         config commit
