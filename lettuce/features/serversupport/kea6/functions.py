@@ -114,6 +114,20 @@ def prepare_cfg_subnet(step, subnet, pool):
         config set Dhcp6/valid-lifetime {t4}
         '''.format(**locals())
 
+    world.kea["subnet_cnt"] = world.kea["subnet_cnt"] + 1
+
+def config_srv_another_subnet(step, subnet, pool, interface):
+    count = world.kea["subnet_cnt"]
+    world.cfg["conf"] += '''\
+        # subnet defintion Kea 6
+        config add Dhcp6/subnet6
+        config set Dhcp6/subnet6[{count}]/subnet "{subnet}"
+        config set Dhcp6/subnet6[{count}]/pool [ "{pool}" ]
+        config set Dhcp6/subnet6[{count}]/interface "{interface}"
+        '''.format(**locals())
+
+    world.kea["subnet_cnt"] = world.kea["subnet_cnt"] + 1
+    
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
 
     world.cfg["conf"] += '''
