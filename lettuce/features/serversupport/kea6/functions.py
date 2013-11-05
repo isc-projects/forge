@@ -17,7 +17,7 @@
 from fabric.api import run, settings, put, hide
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE
+from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SERVER_IFACE
 import os
 
 kea_options6 = { "client-id": 1,
@@ -101,12 +101,13 @@ def prepare_cfg_subnet(step, subnet, pool):
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["preferred-lifetime"]
     t4 = world.cfg["server_times"]["valid-lifetime"]
-    
+    eth = SERVER_IFACE
     world.cfg["conf"] = '''\
         # subnet defintion Kea 6
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[0]/subnet "{subnet}"
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
+        #config set Dhcp6/subnet6[0]/interface "{eth}"
         config set Dhcp6/renew-timer {t1} 
         config set Dhcp6/rebind-timer {t2}
         config set Dhcp6/preferred-lifetime {t3} 
