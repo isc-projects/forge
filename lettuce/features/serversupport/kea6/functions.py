@@ -107,7 +107,7 @@ def prepare_cfg_subnet(step, subnet, pool):
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[0]/subnet "{subnet}"
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
-        #config set Dhcp6/subnet6[0]/interface "{eth}"
+        config set Dhcp6/subnet6[0]/interface "{eth}"
         config set Dhcp6/renew-timer {t1} 
         config set Dhcp6/rebind-timer {t2}
         config set Dhcp6/preferred-lifetime {t3} 
