@@ -19,6 +19,12 @@ def config_srv_another_subnet(step, subnet, pool, interface):
         assert False, "Test temporary available only for Kea servers."
     dhcpfun.config_srv_another_subnet(step, subnet, pool, interface)
 
+@step('Server is configured with another subnet: (\S+) with (\S+) pool.')
+def config_srv_another_subnet_no_interface(step, subnet, pool):
+    if SERVER_TYPE in ['dibbler', 'isc_dhcp4', 'isc_dhcp6']:
+        assert False, "Test temporary available only for Kea servers."
+    dhcpfun.config_srv_another_subnet(step, subnet, pool, None)
+
 @step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')#  
 def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
     """

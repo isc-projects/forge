@@ -107,12 +107,15 @@ def prepare_cfg_subnet(step, subnet, pool):
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[0]/subnet "{subnet}"
         config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
-        config set Dhcp6/subnet6[0]/interface "{eth}"
         config set Dhcp6/renew-timer {t1} 
         config set Dhcp6/rebind-timer {t2}
         config set Dhcp6/preferred-lifetime {t3} 
         config set Dhcp6/valid-lifetime {t4}
         '''.format(**locals())
+    if eth is not None:
+        world.cfg["conf"] += '''\
+            config set Dhcp6/subnet6[0]/interface "{eth}"
+            '''.format(**locals())
 
     world.kea["subnet_cnt"] = world.kea["subnet_cnt"] + 1
 
@@ -123,8 +126,11 @@ def config_srv_another_subnet(step, subnet, pool, interface):
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[{count}]/subnet "{subnet}"
         config set Dhcp6/subnet6[{count}]/pool [ "{pool}" ]
-        config set Dhcp6/subnet6[{count}]/interface "{interface}"
         '''.format(**locals())
+    if interface is not None:
+        world.cfg["conf"] += '''\
+                config set Dhcp6/subnet6[{count}]/interface "{interface}"
+                '''.format(**locals())
 
     world.kea["subnet_cnt"] = world.kea["subnet_cnt"] + 1
     
