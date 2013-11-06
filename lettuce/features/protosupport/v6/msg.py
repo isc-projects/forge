@@ -782,6 +782,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
 
         for each in world.subopts:
             if each[0] == opt_code:
+                if opt_code == 17:
+                    received += str(each[1].optdata) + ' '
+                    continue
                 try:
                     received += str(each[1].payload.fields.get(data_type)) + ' '
                 except:
