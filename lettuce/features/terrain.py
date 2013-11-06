@@ -8,13 +8,17 @@ from scapy.all import sniff
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from serversupport.bind10 import kill_bind10, start_bind10
+
+from serversupport.multi_server_functions import fabric_download_file 
+
 import importlib
 import os
 import shutil
 import subprocess
 import sys
 import time
-from fabric.api import get,settings
+
+
 
 add_option = {'client_id' : True,
               'preference' : False,
@@ -101,8 +105,8 @@ def server_start():
         
         try:
             # Make sure there is noo garbage instance of bind10 running.
-            kill_bind10(MGMT_ADDRESS)
-            start_bind10(MGMT_ADDRESS)
+            kill_bind10()
+            start_bind10()
             get_common_logger().debug("Bind10 successfully started")
         except :
             get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\nPlease make sure it's configured properly\nIP destination address: %s\nLocal Mac address: %s\nNetwork interface: %s" %(MGMT_ADDRESS, CLI_MAC, IFACE))
@@ -117,8 +121,9 @@ def server_start():
     #If relay is used routing needs to be reconfigured on DUT
     try:
         if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
-            with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-                run("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
+            assert False, "we don't support ip v4 yet"
+#             with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
+#                 run("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
     except:
         pass # most likely REL4_ADDR caused this exception -> we do not use relay
 
@@ -268,8 +273,7 @@ def cleanup(scenario):
 
     # copy log file from remote server:
     if SAVE_BIND_LOGS:
-        with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-            get('log_file',world.cfg["dir_name"]+'/log_file')        
+        fabric_download_file('log_file',world.cfg["dir_name"]+'/log_file')        
 @after.all
 def say_goodbye(total):
     """
@@ -287,13 +291,13 @@ def say_goodbye(total):
         result.close()
         
     if SERVER_TYPE in ['kea', 'kea4', 'kea6']:    
-        kill_bind10(MGMT_ADDRESS)
-        try:
-            if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
-                with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-                    run("route del -host %s" % (GIADDR4))
-        except NameError:
-            pass # most likely REL4_ADDR caused this exception -> we do not use relay
+        kill_bind10()
+#         try:
+#             if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+#                 with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
+#                     run("route del -host %s" % (GIADDR4))
+#         except NameError:
+#             pass # most likely REL4_ADDR caused this exception -> we do not use relay
     elif SERVER_TYPE in ['isc_dhcp6','dibbler']:
         stop = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
         stop.stop_srv()

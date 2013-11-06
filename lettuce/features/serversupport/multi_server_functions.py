@@ -15,5 +15,45 @@
 
 # Author: Wlodzimierz Wencel
 
+from fabric.api import get, settings, put, sudo, run, hide
+from features.init_all import MGMT_ADDRESS, MGMT_USERNAME, MGMT_PASSWORD
+from features.logging_facility import get_common_logger
+import os
 
-#transfer here all fabric functions
+#from features.serversupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
+# fabric_send_file,fabric_download_file,fabric_remove_file_command,remove_local_file
+
+def fabric_run_command(cmd):
+    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+        result = run(cmd, pty = True)
+    return result
+
+def fabric_sudo_command(cmd):
+    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+        result = sudo(cmd, pty = True)
+    return result
+        
+def fabric_send_file(file_local, file_remote):
+    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+        with hide('running', 'stdout'):
+            result = put(file_local, file_remote)
+    return result
+
+def fabric_download_file(remote_path, local_path):
+    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+        try:
+            result = get(remote_path, local_path)
+        except:
+            assert False, 'No remote file %s' %remote_path
+    return result
+
+def fabric_remove_file_command(remote_path):
+    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+        result = run("rm -f "+remote_path)
+    return result
+
+def remove_local_file(file_local):
+    try:
+        os.remove(file_local)
+    except OSError:
+        get_common_logger().error('File %s cannot be removed' % file_local)

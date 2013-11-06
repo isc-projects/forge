@@ -15,11 +15,14 @@
 
 # Author: Wlodzimierz Wencel
 
-from fabric.api import run, settings, put, hide
+
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
-import os
+
+from serversupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
+    fabric_send_file, fabric_download_file, fabric_remove_file_command, remove_local_file 
+
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
 isc_dhcp_options6 = {
@@ -142,7 +145,7 @@ def restart_srv():
 
 def stop_srv():
     try:
-        fabric_cmd ("killall dhcpd &>/dev/null", 1)
+        fabric_run_command("killall dhcpd &>/dev/null")
     except:
         pass
     
@@ -295,31 +298,8 @@ def convert_cfg_file(cfg):
 
     conf.close()
     process.close
-    try:
-        os.remove(cfg)
-    except OSError:
-        pass
 
-def send_file (file_local):
-    """
-    Send file to remote virtual machine
-    """
-    file_remote = file_local
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        with hide('running', 'stdout'):
-            put(file_local, file_remote)
-    try:
-        os.remove(file_local)
-    except OSError:
-        get_common_logger().error('File %s cannot be removed' % file_local)
-
-def fabric_cmd (cmd, hide_opt):
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        if hide_opt:
-            with hide('running', 'stdout', 'stderr', 'output','warnings'):
-                run(cmd)
-        else:
-            run(cmd)
+    remove_local_file(cfg)
 
 def set_ethernet_interface():
     """
@@ -347,7 +327,11 @@ def start_srv(start, process):
     cfg_write() 
     get_common_logger().debug("Start ISC-DHCPv6 with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
-    send_file (world.cfg["cfg_file"] + "_processed")
+    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
+    remove_local_file(world.cfg["cfg_file"])
     set_ethernet_interface()
     stop_srv()
-    fabric_cmd ('(dhcpd -6 -cf server.cfg_processed); sleep 3;', 0)
+
+    fabric_run_command('(dhcpd -6 -cf server.cfg_processed); sleep 3;')
+    #uncomment this for less output, do this after full support for isc-dhcp
+    #fabric_run_command('(rm nohup.out; nohup dhcpd -6 -cf server.cfg_processed); sleep 3;') 

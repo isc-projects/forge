@@ -14,11 +14,12 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-from fabric.api import run, settings, put, hide
+from serversupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
+    fabric_send_file, fabric_download_file, fabric_remove_file_command, remove_local_file 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, MGMT_ADDRESS, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SERVER_IFACE
-import os
+from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SERVER_IFACE
+
 
 kea_options6 = { "client-id": 1,
                  "server-id" : 2,
@@ -57,31 +58,6 @@ def set_time(step, which_time, value):
             world.cfg["server_times"][which_time] = value
     else:
         assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
-
-## =============================================================
-## ================ FABRIC BLOCK START =========================
-
-def fabric(cmd):
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-    #    with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
-        result = run(cmd)
-    return result
-
-def fabric_send_file (file_local):
-    """
-    Send file to remote virtual machine
-    """
-    file_remote = file_local
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        with hide('running', 'stdout'):
-            put(file_local, file_remote)
-    try:
-        os.remove(file_local)
-    except OSError:
-        get_common_logger().error('File %s cannot be removed' % file_local)
-        
-## =============================================================
-## ================ FABRIC BLOCK END ===========================
 
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK START =================
@@ -204,7 +180,6 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/space "dhcp6"
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/csv-format true
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/data "{option_value}"
-
         '''.format(**locals())
 
 def prepare_cfg_kea6_for_kea6_start():
@@ -255,6 +230,7 @@ def set_logger():
     type = BIND_LOG_TYPE 
     lvl = BIND_LOG_LVL
     module = BIND_MODULE 
+    
     logger_str ='''
     config add Logging/loggers
     config set Logging/loggers[0]/name "{module}"
@@ -272,10 +248,10 @@ def set_logger():
 
     cfg_file = 'logger.cfg'
     prepare_config_file(cfg_file)
-    fabric_send_file (cfg_file + '_processed')
-    cmd = '(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
+
+    fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
     
-    fabric(cmd)
+    fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
 
 def prepare_config_file(cfg):
     """
@@ -294,10 +270,8 @@ def prepare_config_file(cfg):
         process.write(line + "\n")
     conf.close()
     process.close()
-    try:
-        os.remove(cfg)
-    except OSError:
-        get_common_logger().error('File %s cannot be removed' % cfg)
+
+    remove_local_file(cfg)
 
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
@@ -343,8 +317,8 @@ def stop_srv():
     run_bindctl ('clean')
 
 def restart_srv():
-    cmd = '(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10' # can't be less then 7, server needs time to restart.
-    fabric(cmd)
+    fabric_run_command('(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') # can't be less then 7, server needs time to restart.
+
 
 def parsing_bind_stdout(stdout, opt, search = []):
     """
@@ -355,8 +329,8 @@ def parsing_bind_stdout(stdout, opt, search = []):
         if each in stdout:
             print "RESTART BIND10, found ", each 
             from serversupport.bind10 import kill_bind10, start_bind10 #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
-            kill_bind10(MGMT_ADDRESS)
-            start_bind10(MGMT_ADDRESS)
+            kill_bind10()
+            start_bind10()
             run_bindctl (True, opt)
 
 def run_bindctl (succeed, opt):
@@ -374,7 +348,7 @@ def run_bindctl (succeed, opt):
         cfg_file = 'kea6stop.cfg'
         prepare_config_file(cfg_file)
         # send file
-        fabric_send_file (cfg_file + "_processed")
+        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         
     elif opt == "start":
         # build configuration file with for:  
@@ -384,7 +358,8 @@ def run_bindctl (succeed, opt):
         cfg_file = 'kea6start.cfg'
         prepare_config_file(cfg_file)
         # send file
-        fabric_send_file (cfg_file + "_processed")
+        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        
     elif opt == "configuration":
         # start logging on different file:
         if SAVE_BIND_LOGS:
@@ -400,13 +375,13 @@ def run_bindctl (succeed, opt):
         add_last.write("config commit")
         add_last.close()
         # send file
-        fabric_send_file (cfg_file + "_processed")
+        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        
     elif opt == "restart":
         # restart server without changing it's configuration
         restart_srv()
         
-    cmd = '(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
-    result = fabric(cmd)
+    result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
     
     # now let's test output, looking for errors, 
     # some times clean can fail, so we wanna test only start and conf
