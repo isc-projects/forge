@@ -40,7 +40,6 @@ def config_srv_opt(step, option_name, option_value):
 def config_srv_opt_space(step, space, option_name, option_value):
     dhcpfun.prepare_cfg_add_option(step, option_name, option_value, space)
 
-
 @step('Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
     """
@@ -50,7 +49,13 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
     opt_type type of the option, e.g. uint8 (see bind10 guide for complete list)
     opt_value value of the option, e.g. 1
     """
-    dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value)
+    dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, 'dhcp6')
+
+@step('On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
+def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_value):
+    """
+    """
+    dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space)
 
 @step('Time (\S+) is configured with value (\d+).')
 def set_time(step, which_time, value):

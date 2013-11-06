@@ -27,6 +27,7 @@ def set_world_kea():
         world.kea.clear()
     world.kea["option_cnt"] = 0
     world.kea["subnet_cnt"] = 0
+    world.kea["option_usr_cnt"] = 0
     
 @step('Pass Criteria:')
 def pass_criteria(step):

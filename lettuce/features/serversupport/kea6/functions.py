@@ -147,12 +147,12 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
 #     if (not "conf" in world.cfg):
 #         world.cfg["conf"] = ""
     
-    if space == 'dhcp6':
-        option_code = kea_options6.get(option_name)
-        assert option_name in kea_options6, "Unsupported option name for basic Kea6 options: " + option_name
-    else:
+    option_code = kea_options6.get(option_name)
+    
+    if option_code == None:
         option_code = kea_otheroptions.get(option_name)
-        assert option_name in kea_otheroptions, "Unsupported option name for other Kea6 options: " + option_name
+    
+    assert option_code != None, "Unsupported option name for other Kea6 options: " + option_name
     number = world.kea["option_cnt"]
     
     world.cfg["conf"] += '''config add Dhcp6/option-data
@@ -165,25 +165,31 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
 
     world.kea["option_cnt"] = world.kea["option_cnt"] + 1
 
-def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value):
+def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
+        
+    number = world.kea["option_cnt"]
+    number_def = world.kea["option_usr_cnt"]
     world.cfg["conf"] += '''config add Dhcp6/option-def
-        config set Dhcp6/option-def[0]/name "{opt_name}"
-        config set Dhcp6/option-def[0]/code {opt_code}
-        config set Dhcp6/option-def[0]/type "{opt_type}"
-        config set Dhcp6/option-def[0]/array false
-        config set Dhcp6/option-def[0]/record-types ""
-        config set Dhcp6/option-def[0]/space "dhcp6"
-        config set Dhcp6/option-def[0]/encapsulate ""
+        config set Dhcp6/option-def[{number_def}]/name "{opt_name}"
+        config set Dhcp6/option-def[{number_def}]/code {opt_code}
+        config set Dhcp6/option-def[{number_def}]/type "{opt_type}"
+        config set Dhcp6/option-def[{number_def}]/array false
+        config set Dhcp6/option-def[{number_def}]/record-types ""
+        config set Dhcp6/option-def[{number_def}]/space "{space}"
+        config set Dhcp6/option-def[{number_def}]/encapsulate ""
         config add Dhcp6/option-data
-        config set Dhcp6/option-data[0]/name "{opt_name}"
-        config set Dhcp6/option-data[0]/code {opt_code}
-        config set Dhcp6/option-data[0]/space "dhcp6"
-        config set Dhcp6/option-data[0]/csv-format true
-        config set Dhcp6/option-data[0]/data "{opt_value}"
+        config set Dhcp6/option-data[{number}]/name "{opt_name}"
+        config set Dhcp6/option-data[{number}]/code {opt_code}
+        config set Dhcp6/option-data[{number}]/space "{space}"
+        config set Dhcp6/option-data[{number}]/csv-format true
+        config set Dhcp6/option-data[{number}]/data "{opt_value}"
         '''.format(**locals())
-
+        
+    world.kea["option_usr_cnt"] = world.kea["option_usr_cnt"] + 1
+    world.kea["option_cnt"] = world.kea["option_cnt"] + 1
+    
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
