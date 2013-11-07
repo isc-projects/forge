@@ -202,11 +202,11 @@ def initialize(scenario):
         # to create separate files for each test we need:
         # create new directory for that test:
         
-        if not os.path.exists('tests_results/'+dir_name):
-            os.makedirs('tests_results/'+dir_name)
+        if not os.path.exists(world.cfg["dir_name"]):
+            os.makedirs(world.cfg["dir_name"])
         # create new file for capture
-        if not os.path.exists('tests_results/'+dir_name+'/capture.pcap'):
-            tmp = open('tests_results/'+dir_name+'/capture.pcap', 'w+')
+        if not os.path.exists(world.cfg["dir_name"]+'/capture.pcap'):
+            tmp = open(world.cfg["dir_name"]+'/capture.pcap', 'w+')
             tmp.close()
         # also IP version for tcpdump
         type = 'ip'
@@ -214,7 +214,7 @@ def initialize(scenario):
         if PROTO == "v6":
             type = type +'6'
         cmd = TCPDUMP_INSTALL_DIR+'tcpdump'
-        args = [cmd, type, "-i", world.cfg["iface"], "-w", "tests_results/"+dir_name+"/capture.pcap", "-s", str(65535)]
+        args = [cmd, type, "-i", world.cfg["iface"], "-w", world.cfg["dir_name"]+"/capture.pcap", "-s", str(65535)]
         get_common_logger().debug("Running tcpdump: ")
         get_common_logger().debug(args)
         # TODO: hide stdout, log it in debug mode
