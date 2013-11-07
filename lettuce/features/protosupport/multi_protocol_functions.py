@@ -16,12 +16,12 @@
 # Author: Wlodzimierz Wencel
 
 from _pyio import open
-from fabric.context_managers import settings
-from fabric.operations import get, put, run
 from lettuce.registry import world
 from locale import str
-import os
 import sys
+import os
+from features.serversupport.multi_server_functions import fabric_send_file,fabric_download_file,\
+        fabric_remove_file_command,remove_local_file
 
 def test_pause(step):
     """
@@ -40,21 +40,13 @@ def test_pause(step):
 
 
 def copy_file_from_server(step, remote_path):
-    try:
-        with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-            get(remote_path, world.cfg["dir_name"]+'/downloaded_file')
-    except:
-        assert False, 'No remote file %s' %remote_path 
+    fabric_download_file(remote_path, world.cfg["dir_name"]+'/downloaded_file')
 
 def send_file_to_server(step, local_path, remote_path):
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        put(local_path, remote_path)
+    fabric_send_file(local_path, remote_path)
 
 def remove_file_from_server(step, remote_path):
-    cmd = "rm -f "+remote_path
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-    #    with hide ('stdout','stderr'): #remove stdout if you want to see command stdout. good move to debug.
-        run(cmd)
+    fabric_remove_file_command(remote_path)
 
 def strip_file(file_path):
     tmp_list = []
@@ -88,7 +80,7 @@ def compare_file(step, local_path):
             error_flag = False
         line_number += 1
     if error_flag:
-        os.remove(world.cfg["dir_name"]+'/file_compare')
+        remove_local_file(world.cfg["dir_name"]+'/file_compare')
     assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details' %world.cfg["dir_name"] 
     
 def file_includes_line(step, condition, line):
@@ -102,4 +94,6 @@ def file_includes_line(step, condition, line):
 
 def beer(step):
     from shutil import copy
+    if not os.path.exists(world.cfg["dir_name"]):
+        os.makedirs(world.cfg["dir_name"])
     copy('../doc/.beer.jpg',world.cfg["dir_name"]+'/beer_for_you.jpg')
