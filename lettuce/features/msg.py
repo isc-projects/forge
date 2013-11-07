@@ -99,14 +99,14 @@ def test_pause(step):
     """
     other.test_pause(step)
 
-@step('Client download file from server stored in: (\S+)')
+@step('Client download file from server stored in: (\S+).')
 def copy_remote(step, remote_path):
     """
     Download file to automatic compare
     """
     other.copy_file_from_server(step, remote_path)
 
-@step('Client compares downloaded file from server with local file stored in: (\S+)')
+@step('Client compares downloaded file from server with local file stored in: (\S+).')
 def compare_file(step, remote_path):
     """
     Compare files
@@ -120,10 +120,10 @@ def file_includes_line(step, condition, line):
     """
     other.file_includes_line(step, condition, line)
 
-@step('Client sends local file stored in: (\S+) to server, to location: (\S+)')
+@step('Client sends local file stored in: (\S+) to server, to location: (\S+).')
 def send_file_to_server(step, local_path, remote_path):
     other.send_file_to_server(step, local_path, remote_path)
 
-@step('Client removes file from server located in: (\S+)')
+@step('Client removes file from server located in: (\S+).')
 def remove_file_from_server(step, remote_path):
     other.remove_file_from_server(step, remote_path)
