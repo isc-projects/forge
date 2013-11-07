@@ -3,6 +3,21 @@ from init_all import SERVER_TYPE
 import importlib
 dhcpfun = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
 
+def test_define_value(*args):
+    tested_args = []
+    for i in range(len(args)):
+        tmp = str(args[i])
+        if tmp[0] == "$":
+            try:
+                imported = getattr(__import__('init_all', fromlist=[tmp[1:]]), tmp[1:])
+            except:
+                assert False, "No variable in init_all.py named: " + tmp
+            print imported
+            tested_args.append(imported)
+        else:
+            tested_args.append(args[i]) 
+    return tested_args
+        
 ##server configurations
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(step, subnet, pool):
@@ -11,6 +26,7 @@ def config_srv_subnet(step, subnet, pool):
     subnet may define specific subnet or use the word "default"
     pool may define specific pool range or use the word "default"
     """
+    #subnet, pool = test_define_value( subnet, pool)
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool on interface (\S+).')
