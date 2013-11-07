@@ -99,3 +99,7 @@ def file_includes_line(step, condition, line):
     else:
         if line not in downloaded_stripped:
             assert False, 'Downloaded file does NOT contain line: "%s"' %line
+
+def beer(step):
+    from shutil import copy
+    copy('../doc/.beer.jpg',world.cfg["dir_name"]+'/beer_for_you.jpg')

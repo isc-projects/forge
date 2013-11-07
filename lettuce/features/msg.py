@@ -127,3 +127,7 @@ def send_file_to_server(step, local_path, remote_path):
 @step('Client removes file from server located in: (\S+).')
 def remove_file_from_server(step, remote_path):
     other.remove_file_from_server(step, remote_path)
+    
+@step('Bring user a beer.')
+def beer(step):
+    other.beer(step)
