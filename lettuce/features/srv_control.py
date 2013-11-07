@@ -7,13 +7,24 @@ def test_define_value(*args):
     tested_args = []
     for i in range(len(args)):
         tmp = str(args[i])
-        if tmp[0] == "$":
+        if tmp[0] == "$":#r'[\W_]+'
+            counter = 1
+            variable = ""
+            flag = True
+            for i in range(len(tmp)):
+                if tmp[i] == "$":
+                    continue
+                if tmp[i].isupper() or tmp[i] == "_" or tmp[i].isdigit() and flag:
+                    variable += tmp[i]
+                    counter += 1
+                else:
+                    flag = False
             try:
-                imported = getattr(__import__('init_all', fromlist=[tmp[1:]]), tmp[1:])
+                imported = getattr(__import__('init_all', fromlist = [variable]), variable)
             except:
-                assert False, "No variable in init_all.py named: " + tmp
-            print imported
-            tested_args.append(imported)
+                assert False, "No variable in init_all.py named: " + variable
+            print imported+tmp[counter:]
+            tested_args.append(imported+tmp[counter:])
         else:
             tested_args.append(args[i]) 
     return tested_args

@@ -41,10 +41,10 @@ def fabric_send_file(file_local, file_remote):
 
 def fabric_download_file(remote_path, local_path):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
-        try:
-            result = get(remote_path, local_path)
-        except:
-            assert False, 'No remote file %s' %remote_path
+#         try:
+        result = get(remote_path, local_path)
+#         except:
+#             assert False, 'No remote file %s' %remote_path
     return result
 
 def fabric_remove_file_command(remote_path):
