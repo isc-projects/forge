@@ -104,7 +104,7 @@ def copy_remote(step, remote_path):
     """
     Download file to automatic compare
     """
-    remote_path = test_define_value(remote_path)
+    #remote_path = test_define_value(remote_path)
     other.copy_file_from_server(step, remote_path)
 
 @step('Client compares downloaded file from server with local file stored in: (\S+).')
@@ -112,7 +112,7 @@ def compare_file(step, remote_path):
     """
     Compare files
     """
-    remote_path = test_define_value(remote_path)
+    #remote_path = test_define_value(remote_path)
     other.compare_file(step, remote_path)
 
 @step('Downloaded file MUST (NOT )?contain line: (.+)')
@@ -120,17 +120,17 @@ def file_includes_line(step, condition, line):
     """
     Check if downloaded file includes line
     """
-    line = test_define_value(line)
+    #line = test_define_value(line)
     other.file_includes_line(step, condition, line)
 
 @step('Client sends local file stored in: (\S+) to server, to location: (\S+).')
 def send_file_to_server(step, local_path, remote_path):
-    local_path, remote_path = test_define_value(local_path, remote_path)
+    #local_path, remote_path = test_define_value(local_path, remote_path)
     other.send_file_to_server(step, local_path, remote_path)
 
 @step('Client removes file from server located in: (\S+).')
 def remove_file_from_server(step, remote_path):
-    remote_path = test_define_value()
+    #remote_path = test_define_value(remote_path)
     other.remove_file_from_server(step, remote_path)
     
 @step('Bring user a beer.')
