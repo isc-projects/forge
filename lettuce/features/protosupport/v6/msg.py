@@ -314,6 +314,62 @@ def vendor_option_request_convert():
             for number in each[1]:
                 data_tmp +='\00' + str(chr(number))
             each[1] = data_tmp
+            
+def convert_DUID_hwaddr(value):
+    counter = 0
+    addr = ""
+    for each in world.cfg["values"]["DUID"][value:]:
+        addr += each
+        counter += 1
+        if counter % 2 == 0 and counter < 12:
+            addr += ":"
+    return addr
+
+def convert_DUID():
+    """
+    We can use two types of DUID:
+        DUID_LLT link layer address + time (e.g. 00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8 )
+        DUID_LL link layer address (e.g. 00:03:00:01:ff:ff:ff:ff:ff:01 )
+        
+        third DUID based on vendor is not supported (also not planned to be ever supported)
+        
+        In case of using DUID_LLT:
+            00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8
+            00:01 - duid type, it need to be 0001 for DUID_LLT
+                  00:01 - hardware type, make it always 0001 
+                        52:7b:a8:f0 - converted time value
+                                    08:00:27:58:f1:e8 - link layer address
+
+        In case of using DUID_LL:
+            00:03:00:01:ff:ff:ff:ff:ff:01
+            00:01 - duid type, it need to be 0003 for DUID_LL
+                  00:01 - hardware type, make it always 0001 
+                        ff:ff:ff:ff:ff:01 - link layer address
+
+        Other configurations will cause to fail test.
+    """
+    
+    if world.cfg["values"]["DUID"][2] == ":":
+        if world.cfg["values"]["DUID"][:11] == "00:03:00:01":
+            return DUID_LL( lladdr = world.cfg["values"]["DUID"][12:])
+        elif world.cfg["values"]["DUID"][:11] == "00:01:00:01":
+            time_tmp = world.cfg["values"]["DUID"][12:23]
+            time_tmp = int(time_tmp.replace(":",""),16)
+            return DUID_LLT(timeval = time_tmp, lladdr = world.cfg["values"]["DUID"][24:])
+        else:
+            assert False, "DUID value is not valid! DUID: " +world.cfg["values"]["DUID"]
+    else:
+        #00020001527ba8f008002758f1e8
+        if world.cfg["values"]["DUID"][:8] == "00030001":
+            addr = convert_DUID_hwaddr(8)
+            return DUID_LL(lladdr = addr)
+        elif world.cfg["values"]["DUID"][:8] == "00010001":
+            addr = convert_DUID_hwaddr(16)
+            time_tmp = world.cfg["values"]["DUID"][8:16]
+            time_tmp = int(time_tmp,16)
+            return DUID_LLT(timeval = time_tmp, lladdr = addr)
+        else:
+            assert False, "DUID value is not valid! DUID: " +world.cfg["values"]["DUID"]
 
 def client_option (msg):
     """
@@ -321,7 +377,7 @@ def client_option (msg):
     """
     
     if world.cfg["values"]["DUID"] is not None:
-        world.cfg["cli_duid"] = DUID_LL( lladdr = world.cfg["values"]["DUID"][12:]) 
+        world.cfg["cli_duid"] = convert_DUID() 
         
     #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
     if world.cfg["add_option"]["wrong_server_id"]:
