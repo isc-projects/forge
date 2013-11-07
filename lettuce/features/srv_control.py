@@ -126,7 +126,6 @@ def start_srv(step, started , failed, process):
     """
     # pass True for 'Server is started' and False for 'Server failed to start.'
     start = True if started is not None else False
-    process = test_define_value( process)
     dhcpfun.start_srv(start, process)
 
 @step('Restart server.')
