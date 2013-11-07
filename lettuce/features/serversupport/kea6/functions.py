@@ -348,6 +348,7 @@ def run_bindctl (succeed, opt):
         prepare_config_file(cfg_file)
         # send file
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        remove_local_file(cfg_file + '_processed')
         
     elif opt == "start":
         # build configuration file with for:  
@@ -358,6 +359,7 @@ def run_bindctl (succeed, opt):
         prepare_config_file(cfg_file)
         # send file
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        remove_local_file(cfg_file + '_processed')
         
     elif opt == "configuration":
         # start logging on different file:
@@ -375,6 +377,7 @@ def run_bindctl (succeed, opt):
         add_last.close()
         # send file
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        remove_local_file(cfg_file + '_processed')
         
     elif opt == "restart":
         # restart server without changing it's configuration
