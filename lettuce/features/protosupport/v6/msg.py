@@ -403,6 +403,8 @@ def client_option (msg):
         vso_tmp= []
         for each in world.vendor: vso_tmp.append(VENDOR_SPECIFIC_OPTION(optcode = each[0], optdata = each[1]))
         msg /= DHCP6OptVendorSpecificInfo(enterprisenum = world.cfg["values"]["enterprisenum"], vso = vso_tmp)
+        # clear vendor list
+        world.vendor = []
     #
     # set all "add_option" True/False values to default.
     set_options()
