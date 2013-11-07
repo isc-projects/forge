@@ -346,6 +346,16 @@ def convert_DUID():
                   00:01 - hardware type, make it always 0001 
                         ff:ff:ff:ff:ff:01 - link layer address
 
+        You can use two forms for each DUID type, with ":" and without.
+        For example
+                00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8
+            it's same as: 
+                00010001527ba8f008002758f1e8 
+            and
+                00:03:00:01:ff:ff:ff:ff:ff:01
+            it's same as:
+                00030001ffffffffff01
+        
         Other configurations will cause to fail test.
     """
     
@@ -359,7 +369,6 @@ def convert_DUID():
         else:
             assert False, "DUID value is not valid! DUID: " +world.cfg["values"]["DUID"]
     else:
-        #00020001527ba8f008002758f1e8
         if world.cfg["values"]["DUID"][:8] == "00030001":
             addr = convert_DUID_hwaddr(8)
             return DUID_LL(lladdr = addr)
