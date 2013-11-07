@@ -63,11 +63,13 @@ def set_time(step, which_time, value):
 
 @step('Run configuration command: (.+)')
 def run_command(step, command):
-    # this is only KEA step!
-    if SERVER_TYPE in ['kea', 'kea4', 'kea6']:
-        dhcpfun.run_command(step, command)
-    else:
-        assert False, "Test available only for Kea servers."
+    """
+    Add single line to configuration, there is no validation within this step.
+    Be aware what you are putting this and in what moment.
+    
+    Includes everything after "command: " to the end of the line.
+    """
+    dhcpfun.run_command(step, command)
     
 ##subnet options
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
