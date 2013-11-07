@@ -20,8 +20,7 @@ from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
 
-from serversupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
-    fabric_send_file, fabric_download_file, fabric_remove_file_command, remove_local_file 
+from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file 
 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
