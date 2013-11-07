@@ -112,6 +112,7 @@ def option_parser():
     else:
         tag = 'v6' if opts.version6 else 'v4'
     
+    path = ""
     #path for tests, all for specified IP version or only one set
     if opts.test_set is not None:
         path = "/features/tests_v" + number + "/" + opts.test_set + "/"
@@ -135,12 +136,9 @@ def option_parser():
     result = runner.run() #start lettuce
     
     #build report if requested
-    if HISTORY: 
-        try:
-            history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
-            history.build_report()
-        except:
-            pass
+    if HISTORY:
+        history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
+        history.build_report() 
         
 def main():
     try :

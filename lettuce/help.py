@@ -93,10 +93,8 @@ class TestHistory ():
         for line in result:
             res.append(line)
         result.close()
-        try:
-            os.remove('result')
-        except OSError:
-            pass
+        
+        os.remove('result')
         return res
         
 class UserHelp ():
