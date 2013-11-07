@@ -14,31 +14,16 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-from fabric.api import run, settings, put, hide
+from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file 
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, DIBBLER_INSTALL_DIR
-import os
-
-def fabric_cmd (cmd, hide_opt):
-    with settings(host_string = world.cfg["mgmt_addr"], user = world.cfg["mgmt_user"], password = world.cfg["mgmt_pass"]):
-        if hide_opt:
-            with hide('running', 'stdout', 'stderr', 'output','warnings'):
-                run(cmd, pty = True)
-        else:
-            run(cmd, pty = True)
 
 def restart_srv():
-    try:
-        fabric_cmd ("("+DIBBLER_INSTALL_DIR+"dibbler-server restart); sleep 1;", 0)
-    except:
-        pass
+    fabric_run_command ("("+DIBBLER_INSTALL_DIR+"dibbler-server restart); sleep 1;")
 
 def stop_srv():
-    try:
-        fabric_cmd ("("+DIBBLER_INSTALL_DIR+"dibbler-server stop); sleep 1;", 0)
-    except:
-        pass
+    fabric_run_command ("("+DIBBLER_INSTALL_DIR+"dibbler-server stop); sleep 1;")
 
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# This is Forge generated config file.\n"
@@ -206,21 +191,6 @@ iface "eth0" {
     cfg_file.write(conf)
     cfg_file.close()
 
-def send_file (file_local):
-    """
-    Send file to remote virtual machine
-    """
-    file_remote = '/etc/dibbler/server.conf'
-    with settings(host_string = world.cfg["mgmt_addr"],
-                  user = world.cfg["mgmt_user"],
-                  password = world.cfg["mgmt_pass"]):
-        with hide('running', 'stdout'):
-            put(file_local, file_remote)
-    try:
-        os.remove(file_local)
-    except OSError:
-        get_common_logger().error('File %s cannot be removed' % file_local)
-
 def start_srv():
     """
     Start ISC-DHCPv6 with generated config.
@@ -228,7 +198,8 @@ def start_srv():
     cfg_write() 
     stop_srv()
     get_common_logger().debug("Starting Dibbler with generated config:")
-    send_file (world.cfg["cfg_file"])
-    fabric_cmd ('(rm nohup.out; nohup '+DIBBLER_INSTALL_DIR+'dibbler-server start & ); sleep 2;', 0)
+    fabric_send_file (world.cfg["cfg_file"], '/etc/dibbler/server.conf')
+    remove_local_file (world.cfg["cfg_file"])
+    fabric_run_command ('(rm nohup.out; nohup '+DIBBLER_INSTALL_DIR+'dibbler-server start & ); sleep 2;')
     #fabric_cmd ("("+DIBBLER_INSTALL_DIR+"dibbler-server start); sleep 10;", 0)
     #fabric_cmd ('('+DIBBLER_INSTALL_DIR+'dibbler-server start & ); sleep 10;', 0)
