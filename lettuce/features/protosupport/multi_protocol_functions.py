@@ -40,12 +40,25 @@ def test_pause(step):
 
 
 def copy_file_from_server(step, remote_path):
+    """
+    Copy file from remote server via ssh. Address/login/password from init_all.py
+    Path required.
+    """
     fabric_download_file(remote_path, world.cfg["dir_name"]+'/downloaded_file')
 
 def send_file_to_server(step, local_path, remote_path):
+    """
+    Send file to remote server via ssh. Address/login/password from init_all
+    Two paths required. 
+    Local - relative to lettuce directory
+    Remote - absolute 
+    """
     fabric_send_file(local_path, remote_path)
 
 def remove_file_from_server(step, remote_path):
+    """
+    Remove file from remote server.
+    """
     fabric_remove_file_command(remote_path)
 
 def strip_file(file_path):
@@ -63,6 +76,8 @@ def strip_file(file_path):
     return tmp_list
 
 def compare_file(step, local_path):
+    """
+    """
     if not os.path.exists(local_path):
         assert False, 'No local file %s' %local_path
     
@@ -84,6 +99,8 @@ def compare_file(step, local_path):
     assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details' %world.cfg["dir_name"] 
     
 def file_includes_line(step, condition, line):
+    """
+    """
     downloaded_stripped = strip_file(world.cfg["dir_name"]+'/downloaded_file')
     if condition is not None:
         if line in downloaded_stripped:

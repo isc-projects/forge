@@ -572,6 +572,8 @@ def send_wait_for_message(step, type, presence, exp_message):
         pass
     elif str(type) in "MAY":
         may_flag = True
+	# we needs to get it operational
+	# problem: break test with success. (for nor we can break test only with fail)
     else:
         assert False, "Invalid expected behavior: %s." %str(type)
         

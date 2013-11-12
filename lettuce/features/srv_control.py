@@ -4,6 +4,22 @@ import importlib
 dhcpfun = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
 
 def test_define_value(*args):
+    """
+    Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
+    You can use steps like:
+		Client download file from server stored in: $SERVER_SETUP_DIRother_dir/my_file
+	or 
+		Client removes file from server located in: $SERVER_INSTALL_DIRmy_file
+
+    $ sign is very important without it Forge wont find variable in init_all.
+
+    There is no slash ("/") between $SERVER_INSTALL_DIR and my_file because variable $SERVER_INSTALL_DIR
+    should end with slash.
+
+    You can use any variable form init_all in that way. Also you can add them using step:
+	"Client defines new variable: (\S+) with value (\S+)."
+
+    """
     tested_args = []
     for i in range(len(args)):
         tmp = str(args[i])
@@ -36,12 +52,19 @@ def config_srv_subnet(step, subnet, pool):
     Adds server configuration with specified subnet and pool.
     subnet may define specific subnet or use the word "default"
     pool may define specific pool range or use the word "default"
+
+    Setting subnet in that way, will cause to set in on interface you set in 
+    init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set 
+    interface.
     """
     #subnet, pool = test_define_value( subnet, pool)
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool on interface (\S+).')
 def config_srv_another_subnet(step, subnet, pool, interface):
+    """
+    Add another subnet with specified subnet/pool/interface.
+    """
     if SERVER_TYPE in ['dibbler', 'isc_dhcp4', 'isc_dhcp6']:
         assert False, "Test temporary available only for Kea servers."
     #subnet, pool, interface = test_define_value( subnet, pool, interface)
@@ -49,6 +72,9 @@ def config_srv_another_subnet(step, subnet, pool, interface):
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool.')
 def config_srv_another_subnet_no_interface(step, subnet, pool):
+    """
+    Add another subnet to config file without interface specified.
+    """
     if SERVER_TYPE in ['dibbler', 'isc_dhcp4', 'isc_dhcp6']:
         assert False, "Test temporary available only for Kea servers."
     #subnet, pool = test_define_value( subnet, pool)
@@ -64,11 +90,19 @@ def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
     
 @step('Server is configured with (\S+) option with value (\S+).')
 def config_srv_opt(step, option_name, option_value):
+    """
+    Add to configuration options like: preference, dns servers..
+    This step causes to set in to main space!
+    """
     #option_name, option_value = test_define_value( option_name, option_value)
     dhcpfun.prepare_cfg_add_option(step, option_name, option_value, 'dhcp6')
 
 @step('On space (\S+) server is configured with (\S+) option with value (\S+).')
 def config_srv_opt_space(step, space, option_name, option_value):
+    """
+    Add to configuration options like: preference, dns servers.. but you can specify
+    to which space should that be included. 
+    """
     #option_name, option_value, space = test_define_value(option_name, option_value, space)
     dhcpfun.prepare_cfg_add_option(step, option_name, option_value, space)
 
@@ -87,12 +121,16 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
 @step('On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_value):
     """
+    Same step like ............. but specify that option on different space then main.
     """
     #opt_name, opt_code, opt_type, opt_value, space = test_define_value(opt_name, opt_code, opt_type, opt_value, space)
     dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space)
 
 @step('Time (\S+) is configured with value (\d+).')
 def set_time(step, which_time, value):
+    """
+    Change values of T1, T2, preffered lifetime and valid lifetime.
+    """
     #which_time, value = test_define_value(which_time, value)
     dhcpfun.set_time(step, which_time, value)
 
@@ -100,7 +138,8 @@ def set_time(step, which_time, value):
 def run_command(step, command):
     """
     Add single line to configuration, there is no validation within this step.
-    Be aware what you are putting this and in what moment.
+    Be aware what you are putting this and in what moment. If you use that
+    I recommend set variable "SAVE_CONFIG_FILES" to True.
     
     Includes everything after "command: " to the end of the line.
     """

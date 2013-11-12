@@ -13,6 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+# Author: Wlodzimierz Wencel
 
 from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file 
 from logging_facility import *

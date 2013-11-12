@@ -21,6 +21,9 @@ from lettuce import step, world
 from scapy.layers.dhcp6 import DHCP6OptOptReq
 
 def set_world_kea():
+    """
+    Set counters which are being used to server configuration in Kea
+    """
     if not hasattr(world, 'kea'):
         world.kea = {}
     else:
@@ -36,7 +39,6 @@ def pass_criteria(step):
 
 @step('Test Setup:')
 def test_setup(step):
-    # Do nothing, "Test Setup:" line is there as text bautification only
     set_world_kea()
 
 @step('Test Procedure:')
