@@ -157,7 +157,7 @@ def run_command(step, command):
     
     Includes everything after "command: " to the end of the line.
     """
-    #command = test_define_value(command)[0]
+    command = test_define_value(command)[0]
     dhcpfun.run_command(step, command)
     
 ##subnet options
