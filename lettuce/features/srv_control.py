@@ -39,9 +39,16 @@ def test_define_value(*args):
 
     """
     imported = None
+    front = None
     tested_args = []
     for i in range(len(args)):
         tmp = str(args[i])
+        if "$" in args[i]:
+            index = tmp.find('$')
+            front = tmp[:index]
+            
+            tmp = tmp[index:]
+            
         if tmp[:2] == "$(":
             index = tmp.find(')')
             assert index > 2, "Defined variable not complete. Missing ')'. "
@@ -53,9 +60,13 @@ def test_define_value(*args):
                     imported = getattr(__import__('init_all', fromlist = [tmp[2:index]]), tmp[2:index])
                 except:
                     assert False, "No variable in init_all.py or in world.define named: " + tmp[2:index]
-            tested_args.append(imported+tmp[index+1:])
+            if front == None:
+                tested_args.append(imported+tmp[index+1:])
+            else:
+                tested_args.append(front + imported+tmp[index+1:])
         else:
             tested_args.append(args[i])
+            
     return tested_args
 
 ##server configurations
