@@ -71,7 +71,6 @@ def config_srv_subnet(step, subnet, pool):
     interface.
     """
     subnet, pool = test_define_value( subnet, pool)
-    assert False, subnet
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool on interface (\S+).')
