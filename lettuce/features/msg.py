@@ -193,7 +193,7 @@ def copy_remote(step, remote_path):
     Download file from remote server. It is stored in test directory.
     And named "downloaded_file"
     """
-    #remote_path = test_define_value(remote_path)
+    remote_path = test_define_value(remote_path)[0]
     other.copy_file_from_server(step, remote_path)
 
 @step('Client compares downloaded file from server with local file stored in: (\S+).')
@@ -201,7 +201,7 @@ def compare_file(step, remote_path):
     """
     Compare two files, our local and "downloaded_file".
     """
-    #remote_path = test_define_value(remote_path)
+    remote_path = test_define_value(remote_path)[0]
     other.compare_file(step, remote_path)
 
 @step('Downloaded file MUST (NOT )?contain line: (.+)')
@@ -210,7 +210,7 @@ def file_includes_line(step, condition, line):
     Check if downloaded file includes line.
     Be aware that tested line is every thing after "line: " until end of the line.
     """
-    #line = test_define_value(line)
+    line = test_define_value(line)[0]
     other.file_includes_line(step, condition, line)
 
 @step('Client sends local file stored in: (\S+) to server, to location: (\S+).')
@@ -218,7 +218,7 @@ def send_file_to_server(step, local_path, remote_path):
     """
     If you need send some file to server, use that step.
     """
-    #local_path, remote_path = test_define_value(local_path, remote_path)
+    local_path, remote_path = test_define_value(local_path, remote_path)
     other.send_file_to_server(step, local_path, remote_path)
 
 @step('Client removes file from server located in: (\S+).')
@@ -226,8 +226,29 @@ def remove_file_from_server(step, remote_path):
     """
     If you need to remove file from a server, please do so.
     """
-    #remote_path = test_define_value(remote_path)
+    remote_path = test_define_value(remote_path)[0]
     other.remove_file_from_server(step, remote_path)
+
+@step('User define temporary variable: (\S+) with value (\S+).')
+def add_variable_temporary(step, variable_name, variable_val):
+    """
+    User can define his own variable, that can be called from any place in test scenario,
+    by $(variable_name). Allowed signs in variable name are: capitalized letters and '_'.
+    
+    Temporary variable will be stored in world.define and cleared at the end of scenario.
+    """
+    other.add_variable(step, variable_name, variable_val, 0)
+
+@step('User define permanent variable: (\S+) with value (\S+).')
+def add_variable_permanent(step, variable_name, variable_val):
+    """
+    User can define his own variable, that can be called from any place in test scenario,
+    by $(variable_name). Allowed signs in variable name are: capitalized letters and '_'.
+    
+    Permanent variable will be placed at the end of the init_all.py file. It won't be removed.
+    User can do so by removing it from file.
+    """
+    other.add_variable(step, variable_name, variable_val, 1)
     
 @step('Bring user a beer.')
 def beer(step):

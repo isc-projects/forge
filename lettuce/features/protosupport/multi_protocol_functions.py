@@ -109,6 +109,32 @@ def file_includes_line(step, condition, line):
         if line not in downloaded_stripped:
             assert False, 'Downloaded file does NOT contain line: "%s"' %line
 
+def add_variable(step, variable_name, variable_val, type):
+# TODO: make names validation 
+#     import re
+#     a = re.compile("^[a-z]+")
+#     a.match(variable_name)
+#     assert False, a.match(variable_name)
+#     assert False, "Variable name contain invalid characters (only capital letters, numbers and sign '_'."
+    if type:
+        #permanent
+        # TO: for same name change value
+        imported = None
+        try:
+            imported = getattr(__import__('init_all', fromlist = [variable_name]), variable_name)
+        except:
+            init_all = open("features/init_all.py","a")
+            #tmp_name =
+            init_all.write("\n# USER VARIABLE:\n"+variable_name +" = "+  (variable_val if variable_val.isdigit() else '\"'+variable_val+'\"'))
+            init_all.close()
+    if not type:
+        pass
+        #temporary
+        
+#         if variable_name not in world.define:
+#             tmp = variable_val if variable_val.isdigit() else str(variable_val)  
+#             world.define.append([variable_name,tmp])
+
 def beer(step):
     from shutil import copy
     if not os.path.exists(world.cfg["dir_name"]):

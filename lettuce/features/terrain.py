@@ -151,6 +151,7 @@ def initialize(scenario):
     world.cliopts = [] # Option(s) to be included in the next message sent
     world.srvmsg = []  # Server's response(s)
     world.savedmsg = [] # Saved option(s)
+    world.define = [] # temporary define variables
     
     world.cfg = {}
     world.cfg["iface"] = IFACE
