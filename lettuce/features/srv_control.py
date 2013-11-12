@@ -38,16 +38,21 @@ def test_define_value(*args):
 	"Client defines new variable: (\S+) with value (\S+)."
 
     """
+    imported = None
     tested_args = []
     for i in range(len(args)):
         tmp = str(args[i])
         if tmp[:2] == "$(":
             index = tmp.find(')')
             assert index > 2, "Defined variable not complete. Missing ')'. "
-            try:
-                imported = getattr(__import__('init_all', fromlist = [tmp[2:index]]), tmp[2:index])
-            except:
-                assert False, "No variable in init_all.py named: " + tmp[2:index]
+            for each in world.define:
+                if str(each[0]) == tmp[2:index]:
+                    imported = int(each[1]) if each[1].isdigit() else str(each[1])
+            if imported == None:
+                try:
+                    imported = getattr(__import__('init_all', fromlist = [tmp[2:index]]), tmp[2:index])
+                except:
+                    assert False, "No variable in init_all.py or in world.define named: " + tmp[2:index]
             tested_args.append(imported+tmp[index+1:])
         else:
             tested_args.append(args[i])
@@ -66,6 +71,7 @@ def config_srv_subnet(step, subnet, pool):
     interface.
     """
     subnet, pool = test_define_value( subnet, pool)
+    assert False, subnet
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool on interface (\S+).')

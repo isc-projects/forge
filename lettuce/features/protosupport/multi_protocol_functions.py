@@ -116,7 +116,13 @@ def add_variable(step, variable_name, variable_val, type):
 #     a.match(variable_name)
 #     assert False, a.match(variable_name)
 #     assert False, "Variable name contain invalid characters (only capital letters, numbers and sign '_'."
-    if type:
+    #assert False, variable_name
+    if not type:
+        #temporary
+        if variable_name not in world.define:
+            tmp = variable_val if variable_val.isdigit() else variable_val  
+            world.define.append([variable_name,tmp])
+    elif type:
         #permanent
         # TO: for same name change value
         imported = None
@@ -124,17 +130,9 @@ def add_variable(step, variable_name, variable_val, type):
             imported = getattr(__import__('init_all', fromlist = [variable_name]), variable_name)
         except:
             init_all = open("features/init_all.py","a")
-            #tmp_name =
             init_all.write("\n# USER VARIABLE:\n"+variable_name +" = "+  (variable_val if variable_val.isdigit() else '\"'+variable_val+'\"'))
             init_all.close()
-    if not type:
-        pass
-        #temporary
         
-#         if variable_name not in world.define:
-#             tmp = variable_val if variable_val.isdigit() else str(variable_val)  
-#             world.define.append([variable_name,tmp])
-
 def beer(step):
     from shutil import copy
     if not os.path.exists(world.cfg["dir_name"]):
