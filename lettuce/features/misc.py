@@ -13,7 +13,8 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-#
+# Author: Wlodzimierz Wencel
+
 # This file contains a number of common steps that are general and may be used
 # By a lot of feature files.
 #

@@ -102,18 +102,18 @@ def fabric_run_bindctl (opt):
         get_common_logger().debug('------------ cleaning kea configuration')
         cfg_file = 'kea4-stop.cfg'
         prepare_cfg_kea4_for_kea4_stop(cfg_file)
-        serversupport.kea6.functions.pepere_config_file(cfg_file)
+        serversupport.kea6.functions.prepare_config_file(cfg_file)
         serversupport.kea6.functions.fabric_send_file (cfg_file + "_processed")
     if opt == "start":
         get_common_logger().debug('------------ starting fresh kea')
         cfg_file = 'kea4-start.cfg'
         prepare_cfg_kea4_for_kea4_start(cfg_file)
-        serversupport.kea6.functions.pepere_config_file(cfg_file)
+        serversupport.kea6.functions.prepare_config_file(cfg_file)
         serversupport.kea6.functions.fabric_send_file(cfg_file + "_processed")
     if opt == "conf":
         get_common_logger().debug('------------ kea configuration')
         cfg_file = world.cfg["cfg_file"]
-        serversupport.kea6.functions.pepere_config_file(cfg_file)
+        serversupport.kea6.functions.prepare_config_file(cfg_file)
         serversupport.kea6.functions.fabric_send_file (cfg_file+"_processed")
     if opt == "restart":
         #implement this

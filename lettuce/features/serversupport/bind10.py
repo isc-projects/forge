@@ -13,6 +13,8 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+# Author: Wlodzimierz Wencel
+
 #
 # This file contain management functions for BIND 10 
 # 
