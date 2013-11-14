@@ -110,13 +110,10 @@ def file_includes_line(step, condition, line):
             assert False, 'Downloaded file does NOT contain line: "%s"' %line
 
 def add_variable(step, variable_name, variable_val, type):
-# TODO: make names validation 
-#     import re
-#     a = re.compile("^[a-z]+")
-#     a.match(variable_name)
-#     assert False, a.match(variable_name)
-#     assert False, "Variable name contain invalid characters (only capital letters, numbers and sign '_'."
-    #assert False, variable_name
+ 
+    import re
+    assert not bool(re.compile('[^A-Z^0-9^_]+').search(variable_name)), "Variable name contain invalid characters (only capital letters, numbers and sign '_'."
+    
     if not type:
         #temporary
         if variable_name not in world.define:
