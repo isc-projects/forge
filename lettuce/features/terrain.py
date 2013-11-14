@@ -17,8 +17,8 @@
 
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
-    REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY, MGMT_USERNAME, \
-    MGMT_PASSWORD, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, SAVE_BIND_LOGS
+    REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY,  \
+    GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, SAVE_BIND_LOGS
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -102,6 +102,32 @@ def ia_id ():
 def ia_pd ():
     world.cfg["ia_pd"] = randint(1,99999)
 
+def multiprotocol_initialize():
+    pass
+
+def v4_initialize():
+        # Setup scapy for v4
+    #conf.iface = IFACE
+    #conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
+    world.cfg["srv4_addr"] = SRV4_ADDR
+    world.cfg["rel4_addr"] = REL4_ADDR
+    world.cfg["giaddr4"] = GIADDR4
+
+def v6_initialize():
+    # RFC 3315 define two addresess:
+    # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
+    # All DHCP_Servers ff05::1:3 that is deprecated. 
+    world.cfg["address_v6"] = "ff02::1:2"
+    world.cfg["unicast"] = False
+    world.cfg["relay"] = False
+
+    set_values() 
+    set_options()
+
+    # Setup scapy for v6
+    conf.iface6 = IFACE
+    conf.use_pcap = True
+    
 @before.all
 def server_start():
     """
@@ -136,13 +162,13 @@ def server_start():
         get_common_logger().error("Server "+SERVER_TYPE+" not implemented yet")
         
     #If relay is used routing needs to be reconfigured on DUT
-    try:
-        if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
-            assert False, "we don't support ip v4 yet"
-#             with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-#                 run("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
-    except:
-        pass # most likely REL4_ADDR caused this exception -> we do not use relay
+#     try:
+#         if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+#             assert False, "we don't support ip v4 yet"
+# #             with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
+# #                 run("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
+#     except:
+#         pass # most likely REL4_ADDR caused this exception -> we do not use relay
 
 @before.each_scenario
 def initialize(scenario):    
@@ -153,45 +179,25 @@ def initialize(scenario):
     world.savedmsg = [] # Saved option(s)
     world.define = [] # temporary define variables
     
-    world.cfg = {}
-    world.cfg["iface"] = IFACE
-    world.cfg["server_type"] = SERVER_TYPE
-    try:    
-        world.cfg["srv4_addr"] = SRV4_ADDR
-        world.cfg["rel4_addr"] = REL4_ADDR
-        world.cfg["giaddr4"] = GIADDR4
-    except:
-        pass
-    world.cfg["cfg_file"] = "server.cfg"
-    world.cfg["mgmt_addr"] = MGMT_ADDRESS
-    world.cfg["mgmt_user"] = MGMT_USERNAME
-    world.cfg["mgmt_pass"] = MGMT_PASSWORD
-    world.cfg["conf"] = "" # Just empty config for now
-    
-    # RFC 3315 define two addresess:
-    # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
-    # All DHCP_Servers ff05::1:3 that is deprecated. 
-    world.cfg["address_v6"] = "ff02::1:2"
     world.proto = PROTO
-    world.cfg["subnet"] = ""
-    
-    set_values() 
-    set_options()
-    world.cfg["unicast"] = False
-    world.cfg["relay"] = False
     world.oro = None
     world.vendor = []
     world.opts = []
     world.subopts = []
+
+    world.cfg = {}
+    world.cfg["iface"] = IFACE
+    world.cfg["server_type"] = SERVER_TYPE
+
+    world.cfg["cfg_file"] = "server.cfg"
+    world.cfg["conf"] = "" # Just empty config for now
+    
+    dir_name = str(scenario.name).replace(".","_")
+    world.cfg["dir_name"] = 'tests_results/'+dir_name 
+    
+    world.cfg["subnet"] = ""
    
     world.name = scenario.name
-    # Setup scapy for v4
-    conf.iface = IFACE
-    conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
-
-    # Setup scapy for v6
-    conf.iface6 = IFACE
-    conf.use_pcap = True
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if (not hasattr(world.cfg, "cli_duid")):
@@ -202,20 +208,15 @@ def initialize(scenario):
         
     if (not hasattr(world.cfg, "ia_pd")):
         ia_pd ()
-    # Some tests can modify the settings. If the tests fail half-way, or
-    # don't clean up, this can leave configurations or data in a bad state,
-    # so we copy them from originals before each scenario
-    # @todo: This should be done remotely, using fabric or something similar
-    for item in copylist:
-        shutil.copy(item[0], item[1])
 
-    for item in removelist:
-        if os.path.exists(item):
-            os.remove(item)
-            
-    dir_name = str(scenario.name).replace(".","_")
-    world.cfg["dir_name"] = 'tests_results/'+dir_name 
-    
+    # set couple things depending on used IP version:
+    # IPv6:
+    if PROTO == "v6":
+        v6_initialize()
+    # IPv4:
+    if PROTO == "v4":
+        v4_initialize()
+        
     if TCPDUMP:
         # to create separate files for each test we need:
         # create new directory for that test:
