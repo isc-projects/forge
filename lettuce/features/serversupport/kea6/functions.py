@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
-from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file 
+from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file 
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SERVER_IFACE
@@ -80,13 +80,13 @@ def prepare_cfg_subnet(step, subnet, pool):
     eth = SERVER_IFACE
     world.cfg["conf"] = '''\
         # subnet defintion Kea 6
-        config add Dhcp6/subnet6
-        config set Dhcp6/subnet6[0]/subnet "{subnet}"
-        config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
         config set Dhcp6/renew-timer {t1} 
         config set Dhcp6/rebind-timer {t2}
         config set Dhcp6/preferred-lifetime {t3} 
         config set Dhcp6/valid-lifetime {t4}
+        config add Dhcp6/subnet6
+        config set Dhcp6/subnet6[0]/subnet "{subnet}"
+        config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
         '''.format(**locals())
     if eth is not None:
         world.cfg["conf"] += '''\
@@ -378,6 +378,7 @@ def run_bindctl (succeed, opt):
         add_last.close()
         # send file
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        cpoy_configuration_file(cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
         
     elif opt == "restart":

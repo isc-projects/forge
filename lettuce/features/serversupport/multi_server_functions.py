@@ -16,8 +16,9 @@
 # Author: Wlodzimierz Wencel
 
 from fabric.api import get, settings, put, sudo, run, hide
-from features.init_all import MGMT_ADDRESS, MGMT_USERNAME, MGMT_PASSWORD
+from features.init_all import MGMT_ADDRESS, MGMT_USERNAME, MGMT_PASSWORD, SAVE_CONFIG_FILE
 from features.logging_facility import get_common_logger
+from lettuce.registry import world
 import os
 
 #from features.serversupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
@@ -57,3 +58,11 @@ def remove_local_file(file_local):
         os.remove(file_local)
     except OSError:
         get_common_logger().error('File %s cannot be removed' % file_local)
+
+def cpoy_configuration_file(local_file, file_name = 'configuration_file'):
+    if SAVE_CONFIG_FILE:
+        from shutil import copy
+        if not os.path.exists(world.cfg["dir_name"]):
+            os.makedirs(world.cfg["dir_name"])
+        copy(local_file, world.cfg["dir_name"]+'/'+file_name)
+    
