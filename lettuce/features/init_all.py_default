@@ -32,7 +32,7 @@ GIADDR4 = ""
 # defines client MAC (used for DUID generation)
 CLI_MAC = ""
 
-# For servers: ISC-DHCP, ISC-DHCPv6 and Dibbler choose ethernet interface to bind server.
+# For all servers, choose ethernet interface on which server will be configured
 SERVER_IFACE = ""
 
 # In order to make sure we start all tests with a 'clean' environment,
@@ -73,10 +73,14 @@ HISTORY = False
 # If you recieve error tcpdump: <file name>: Permission denied
 # please use command as a root: aa-complain /usr/sbin/tcpdump 
 TCPDUMP = False 
+
 # If your tcpdump is installed in different location place that in TCPDUMP_INSTALL_DIR
 # otherwise leave it blank
 TCPDUMP_INSTALL_DIR = ""
 
+# Also we can decide to keep main configuration file in tests_results.
+SAVE_CONFIG_FILE = False
+ 
 # =============== SSH ===============
 
 # This are required management information about device under test (the one that
