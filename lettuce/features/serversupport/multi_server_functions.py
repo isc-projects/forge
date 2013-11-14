@@ -59,8 +59,19 @@ def remove_local_file(file_local):
     except OSError:
         get_common_logger().error('File %s cannot be removed' % file_local)
 
+def configuration_file_name(counter, file_name):
+    if os.path.isfile(world.cfg["dir_name"] +'/'+ file_name):
+        if counter == 1:
+            file_name += str(counter)
+        else:
+            file_name = file_name[:18] + str(counter)
+        file_name = configuration_file_name(counter + 1, file_name)
+
+    return file_name
+
 def cpoy_configuration_file(local_file, file_name = 'configuration_file'):
     if SAVE_CONFIG_FILE:
+        file_name = configuration_file_name(1, file_name)
         from shutil import copy
         if not os.path.exists(world.cfg["dir_name"]):
             os.makedirs(world.cfg["dir_name"])
