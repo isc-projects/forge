@@ -46,9 +46,7 @@ def test_define_value(*args):
         if "$" in args[i]:
             index = tmp.find('$')
             front = tmp[:index]
-            
             tmp = tmp[index:]
-            
         if tmp[:2] == "$(":
             index = tmp.find(')')
             assert index > 2, "Defined variable not complete. Missing ')'. "
