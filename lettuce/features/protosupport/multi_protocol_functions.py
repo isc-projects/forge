@@ -77,6 +77,7 @@ def strip_file(file_path):
 
 def compare_file(step, local_path):
     """
+    Compare two files, downloaded and local
     """
     if not os.path.exists(local_path):
         assert False, 'No local file %s' %local_path
@@ -100,6 +101,7 @@ def compare_file(step, local_path):
     
 def file_includes_line(step, condition, line):
     """
+    Check if downloaded file contain line.
     """
     downloaded_stripped = strip_file(world.cfg["dir_name"]+'/downloaded_file')
     if condition is not None:
@@ -110,9 +112,11 @@ def file_includes_line(step, condition, line):
             assert False, 'Downloaded file does NOT contain line: "%s"' %line
 
 def add_variable(step, variable_name, variable_val, type):
- 
+    """
+    Define variable and add it to temporary list or to init_all.py file. 
+    """
     import re
-    assert not bool(re.compile('[^A-Z^0-9^_]+').search(variable_name)), "Variable name contain invalid characters (only capital letters, numbers and sign '_'."
+    assert not bool(re.compile('[^A-Z^0-9^_]+').search(variable_name)), "Variable name contain invalid characters (Allowed are only capital letters, numbers and sign '_')."
     
     if not type:
         #temporary

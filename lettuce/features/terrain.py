@@ -17,8 +17,8 @@
 
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
-    REL4_ADDR, SRV4_ADDR, PROTO, copylist, removelist, HISTORY,  \
-    GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, SAVE_BIND_LOGS
+    REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
+    SAVE_BIND_LOGS
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -30,12 +30,9 @@ from serversupport.multi_server_functions import fabric_download_file
 
 import importlib
 import os
-import shutil
 import subprocess
 import sys
 import time
-
-
 
 add_option = {'client_id' : True,
               'preference' : False,
@@ -269,7 +266,6 @@ def outline_result(scenario, number, step, failed):
         result = 'True'
     info = str(scenario.name)+str(step)+'\n'+ result
     add_result_to_raport(info)
-
 
 @after.each_step
 def cleanup_option(step):
