@@ -989,5 +989,61 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain sub-option 26.
 	Response sub-option 26 from option 25 MUST contain prefix 3000::20:0:0.
 
-
     References: RFC 3633, Section: 11.2
+
+
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.compare_prefixes_after_client_reboot
+
+    Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::300 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
+	Server is started.
+
+	Test Procedure:
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	# save prefix value
+	Save prefix value from 26 option.
+
+	Test Procedure:
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	# client reboot
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	# compare assigned prefix with the saved one
+	Received prefix value in option 26 is the same as saved value.
+
+    References: RFC 3633
