@@ -132,12 +132,14 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     dhcpmsg.response_check_option_content(step, 0, opt_code, expect, data_type, expected)
         
 @step('Response sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_suboption_content(step, subopt_code, opt_code, expect, data_type, expected):
+def response_check_suboption_content(step, subopt_code, opt_code, yes_or_no, data_type, expected):
     """
     Some options can include suboptions, we can test them too.
     For more details please read manual section "Parsing respond"
     """
+    expect = not (yes_or_no == "NOT ")
     dhcpmsg.response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected)
+
 
 @step('Test (\S+) content.')
 def test_content(step, test_value):

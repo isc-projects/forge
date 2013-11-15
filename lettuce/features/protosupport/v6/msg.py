@@ -860,7 +860,11 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                     pass
 
     # test if expected option/suboption/value is in all collected options/suboptions/values
-    assert expected in received, "Invalid " + str(opt_code) + " option, received "+data_type+": " + received + \
-                                  ", but expected " + str(expected)
+    if expect is None or expect is True:
+        assert expected in received, "Invalid " + str(opt_code) + " option, received "\
+                                     + data_type + ": " + received + ", but expected " + str(expected)
+    elif expect is False:
+        assert expected not in received, "Received value of " + data_type + ": " + received + \
+                                         " should not be equal to value from client - " + str(expected)
 
 ## ================ PARSING RECEIVED MESSAGE BLOCK END ===================
