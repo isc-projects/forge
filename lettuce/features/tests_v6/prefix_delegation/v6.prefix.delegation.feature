@@ -907,3 +907,87 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain T1 2500.
 
 	References: RFC 3633, Section: 10
+
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.assign_saved_iapd
+
+    Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	#two prefixes - 3000::/91; 3000::20:0:0/91;
+	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
+	Server is started.
+
+	Test Procedure:
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	#1st prefix
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+
+	Test Procedure:
+	Generate new IA_PD.
+	Client does include IA-PD.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client saves IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client adds saved options. And DONT Erase.
+	#2nd prefix
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	#both prefixes assigned.
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 95 delegated prefix length.
+	Server is started.
+
+    Test Procedure:
+	Client adds saved options. And Erase.
+	Client does NOT include IA-NA.
+	Client sends SOLICIT message.
+
+    Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+
+    Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_PD option from received message.
+	Client does NOT include IA-NA.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain prefix 3000::20:0:0.
+
+
+    References: RFC 3633, Section: 11.2
