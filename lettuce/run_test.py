@@ -23,7 +23,7 @@ import sys
 
 def option_parser():
     desc='''
-    Forge version .... ? :)
+    Forge - Testing environment. For more information please run help.py to generate UserHelp.txt
     '''
     parser = optparse.OptionParser(description = desc, usage = "%prog or type %prog -h (--help) for help")
     parser.add_option("-4", "--version4",
@@ -66,7 +66,8 @@ def option_parser():
                       dest = "tag",
                       action = "append",
                       default = None,
-                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.")
+                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.\
+                      also if you want to skip some tests use minus sing before that test tag (e.g. -kea).")
     
     parser.add_option("-x", "--with-xunit",
                       dest = "enable_xunit",
@@ -146,7 +147,7 @@ def main():
     except ImportError:
         print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)"
         sys.exit()
-    if config.SERVER_TYPE == "":
+    if config.SERVER_TYPE == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
         print "Please make sure your configuration is valid\nProject Forge shutting down."
         sys.exit()       
     option_parser()

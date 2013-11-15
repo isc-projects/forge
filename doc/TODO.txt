@@ -1,7 +1,4 @@
  TODO:
- - vendor option
  - reconfigure message support
- - optional 13 option as a main option,not suboption
  
  - Write more reasonable documentation (tomek)
- - Verify documentation and amend as necessary (jeff)
