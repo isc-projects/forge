@@ -867,4 +867,36 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
         assert expected not in received, "Received value of " + data_type + ": " + received + \
                                          " should not be equal to value from client - " + str(expected)
 
+
+def save_value_from_option(step, value_name, option_name):
+
+    assert world.srvmsg
+    get_option(world.srvmsg[0], option_name)
+    if len(world.opts) == 0:
+        temp = world.subopts[0][1].payload
+        world.savedvalue = getattr(temp, value_name)
+        world.subopts = []
+    else:
+        world.savedvalue = getattr(world.opts[0], value_name)
+        world.opts = []
+        world.subopts = []
+
+
+def compare_values(step, value_name, option_name):
+
+    assert world.srvmsg
+    get_option(world.srvmsg[0], option_name)
+    if len(world.opts) == 0:
+        subopt = world.subopts[0][1].payload
+        to_cmp = getattr(subopt, value_name)
+        assert world.savedvalue == to_cmp, \
+        "Compared values %s and %s do not match" % (world.savedvalue, to_cmp)
+        world.subopts = []
+    else:
+        to_cmp = getattr(world.opts[0], value_name)
+        assert world.savedvalue == to_cmp, \
+        "Compared values %s and %s do not match" % (world.savedvalue, to_cmp)
+        world.opts = []
+        world.subopts = []
+
 ## ================ PARSING RECEIVED MESSAGE BLOCK END ===================

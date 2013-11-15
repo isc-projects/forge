@@ -258,3 +258,11 @@ def beer(step):
     Use your imagination.
     """
     other.beer(step)
+
+@step('Save (\S+) value from (\d+) option.')
+def save_value_from_option(step, value_name, option_name):
+    dhcpmsg.save_value_from_option(step, value_name, option_name)
+
+@step('Received (\S+) value in option (\d+) is the same as saved value.')
+def compare_values(step, value_name, option_name):
+    dhcpmsg.compare_values(step, value_name, option_name)
