@@ -819,3 +819,91 @@ Feature: DHCPv6 Prefix Delegation
 	#add test after Scapy fix
 	
 	References: RFC 3633, Section: 14
+
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.ignore_lifetimes
+
+    Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::200 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
+	Server is started.
+
+	Test Procedure:
+	# Client sets preflft value bigger than validlft. Server MUST ignore those values.
+	Client sets preflft value to 4444.
+    Client sets validlft value to 2345.
+    Client does NOT include IA-NA.
+    Client does include IA_Prefix.
+
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST NOT contain preflft 4444.
+	Response sub-option 26 from option 25 MUST NOT contain validlft 2345.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	# Now, preflft > validlft. Server should take those values.
+	Client sets preflft value to 3500.
+	Client sets validlft value to 5000.
+	Client does NOT include IA-NA.
+	Client does include IA_Prefix.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	Response sub-option 26 from option 25 MUST contain preflft 3500.
+	Response sub-option 26 from option 25 MUST contain validlft 5000.
+
+	References: RFC 3633, Section: 10
+
+
+@v6 @PD @rfc3633
+    Scenario: prefix.delegation.ignore_timers
+
+    Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::200 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
+	Server is started.
+
+	Test Procedure:
+	# Client sets T1, T2 values bigger than preflft. Server MUST ignore those values.
+	Client sets T1 value to 2500.
+	Client sets T2 value to 3500.
+	Client sets preflft value to 2000.
+    Client does NOT include IA-NA.
+    Client does include IA_Prefix.
+
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	Response option 25 MUST NOT contain T1 2500.
+	Response option 25 MUST NOT contain T2 3500.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	# Now, T1, T2 < preflft. Server should take those values.
+	Client sets T1 value to 1500.
+	Client sets T2 value to 2500.
+	Client sets preflft value to 3500.
+	Client does NOT include IA-NA.
+	Client does include IA_Prefix.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
+	Response option 25 MUST contain T1 1500.
+	Response option 25 MUST contain T1 2500.
+
+	References: RFC 3633, Section: 10
