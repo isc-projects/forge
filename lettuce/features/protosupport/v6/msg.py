@@ -890,12 +890,12 @@ def compare_values(step, value_name, option_name):
         subopt = world.subopts[0][1].payload
         to_cmp = getattr(subopt, value_name)
         assert world.savedvalue == to_cmp, \
-        "Compared values %s and %s do not match" % (world.savedvalue, to_cmp)
+            "Compared values %s and %s do not match" % (world.savedvalue, to_cmp)
         world.subopts = []
     else:
         to_cmp = getattr(world.opts[0], value_name)
         assert world.savedvalue == to_cmp, \
-        "Compared values %s and %s do not match" % (world.savedvalue, to_cmp)
+            "Compared values %s and %s do not match" % (world.savedvalue, to_cmp)
         world.opts = []
         world.subopts = []
 
