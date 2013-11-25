@@ -178,6 +178,25 @@ def client_add_saved_option(step, yes_or_no):
     assert len(world.savedmsg), "No options to add."
     erase = True if yes_or_no == None else False
     dhcpmsg.client_add_saved_option(step, erase)
+
+@step('Save (\S+) value from (\d+) option.')
+def save_value_from_option(step, value_name, option_name):
+    """
+    This step can be used to save value of some option field for
+    further usage. It's like client_save_option step, but only for
+    one specific field of given option.
+    """
+    dhcpmsg.save_value_from_option(step, value_name, option_name)
+
+@step('Received (\S+) value in option (\d+) is the same as saved value.')
+def compare_values(step, value_name, option_name):
+    """
+    If you have used step save_value_from_option, then this step will
+    compare the earlier saved value with the recent received value.
+    Note that names of fields that values are being compared should
+    be the same.
+    """
+    dhcpmsg.compare_values(step, value_name, option_name)
     
 ##other
 @step('Pause the Test.')
@@ -258,22 +277,3 @@ def beer(step):
     Use your imagination.
     """
     other.beer(step)
-
-@step('Save (\S+) value from (\d+) option.')
-def save_value_from_option(step, value_name, option_name):
-    """
-    This step can be used to save value of some option field for
-    further usage. It's like client_save_option step, but only for
-    one specific field of given option.
-    """
-    dhcpmsg.save_value_from_option(step, value_name, option_name)
-
-@step('Received (\S+) value in option (\d+) is the same as saved value.')
-def compare_values(step, value_name, option_name):
-    """
-    If you have used step save_value_from_option, then this step will
-    compare the earlier saved value with the recent received value.
-    Note that names of fields that values are being compared should
-    be the same.
-    """
-    dhcpmsg.compare_values(step, value_name, option_name)

@@ -342,7 +342,7 @@ def convert_DUID():
 
         In case of using DUID_LL:
             00:03:00:01:ff:ff:ff:ff:ff:01
-            00:01 - duid type, it need to be 0003 for DUID_LL
+            00:03 - duid type, it need to be 0003 for DUID_LL
                   00:01 - hardware type, make it always 0001 
                         ff:ff:ff:ff:ff:01 - link layer address
 
