@@ -97,7 +97,12 @@ def compare_file(step, local_path):
         line_number += 1
     if error_flag:
         remove_local_file(world.cfg["dir_name"]+'/file_compare')
-    assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details' %world.cfg["dir_name"] 
+        
+    assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details' %world.cfg["dir_name"]
+    
+    if len(downloaded_stripped) != len(local_stripped):
+        assert len(downloaded_stripped) > len(local_stripped), 'Downloaded file is part of a local file.'
+        assert len(downloaded_stripped) < len(local_stripped), 'Local file is a part of a downlaoded life.'
     
 def file_includes_line(step, condition, line):
     """
