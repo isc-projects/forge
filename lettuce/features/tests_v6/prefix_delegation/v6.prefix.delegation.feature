@@ -820,7 +820,6 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 14
 
-
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.ignore_lifetimes
 
@@ -862,7 +861,6 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 26 from option 25 MUST contain validlft 5000.
 
 	References: RFC 3633, Section: 10
-
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.ignore_timers
@@ -907,7 +905,6 @@ Feature: DHCPv6 Prefix Delegation
 	Response option 25 MUST contain T1 2500.
 
 	References: RFC 3633, Section: 10
-
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.assign_saved_iapd
@@ -990,8 +987,6 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 26 from option 25 MUST contain prefix 3000::20:0:0.
 
     References: RFC 3633, Section: 11.2
-
-
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.compare_prefixes_after_client_reboot
