@@ -18,7 +18,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS
+    SAVE_BIND_LOGS, AUTO_ARCHIVE
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -26,7 +26,7 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from serversupport.bind10 import kill_bind10, start_bind10
 from time import sleep
-from serversupport.multi_server_functions import fabric_download_file 
+from serversupport.multi_server_functions import fabric_download_file, make_tarfile
 
 import importlib
 import os
@@ -317,4 +317,11 @@ def say_goodbye(total):
         stop = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
         stop.stop_srv()
 
+    if AUTO_ARCHIVE:
+        from shutil import rmtree
+        # build archive
+        make_tarfile('archive.tar.gz', 'tests_results')
+        # clear tests results that should be at the beginning!
+        #rmtree('tests_results')
     get_common_logger().info("Goodbye.")
+    

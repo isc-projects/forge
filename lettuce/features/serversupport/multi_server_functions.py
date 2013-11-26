@@ -48,6 +48,11 @@ def fabric_download_file(remote_path, local_path):
 #             assert False, 'No remote file %s' %remote_path
     return result
 
+def make_tarfile(output_filename, source_dir):
+    import tarfile
+    with tarfile.open(output_filename, "w:gz") as tar:
+        tar.add(source_dir)
+
 def fabric_remove_file_command(remote_path):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
         result = run("rm -f "+remote_path)

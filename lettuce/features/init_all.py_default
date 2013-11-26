@@ -65,8 +65,9 @@ SRV_IPV6_ADDR_LINK_LOCAL = ""
 # Defines name of the DUT-facing network interface
 IFACE = ""
 
-# If you wont to build tests history in history.html set HISTORY on True if not, on False
-# but for more detailed information about tests, use --with_xunit option when starting run_test.py
+# If you wont to build tests history in history.html set HISTORY on True if not, 
+# on False but for more detailed information about tests, use --with_xunit option
+# when starting run_test.py
 HISTORY = False
 
 # Also you can save separate .pcap file of every test. In default it's disabled 
@@ -81,6 +82,10 @@ TCPDUMP_INSTALL_DIR = ""
 # Also we can decide to keep main configuration file in tests_results.
 SAVE_CONFIG_FILE = False
  
+# Auto archive it's feature that automatically create tar archive containing 
+# folder 'tests_results' and history.html (if created). Default disabled.
+AUTO_ARCHIVE = False
+  
 # =============== SSH ===============
 
 # This are required management information about device under test (the one that
