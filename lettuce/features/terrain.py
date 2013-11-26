@@ -25,7 +25,7 @@ from scapy.all import sniff
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from serversupport.bind10 import kill_bind10, start_bind10
-
+from time import sleep
 from serversupport.multi_server_functions import fabric_download_file 
 
 import importlib
@@ -168,8 +168,8 @@ def server_start():
 #         pass # most likely REL4_ADDR caused this exception -> we do not use relay
 
 @before.each_scenario
-def initialize(scenario):    
-    
+def initialize(scenario):
+
     world.climsg = []  # Message(s) to be sent
     world.cliopts = [] # Option(s) to be included in the next message sent
     world.srvmsg = []  # Server's response(s)
@@ -213,7 +213,7 @@ def initialize(scenario):
     # IPv4:
     if PROTO == "v4":
         v4_initialize()
-        
+
     if TCPDUMP:
         # to create separate files for each test we need:
         # create new directory for that test:
@@ -230,7 +230,7 @@ def initialize(scenario):
         if PROTO == "v6":
             type = type +'6'
         cmd = TCPDUMP_INSTALL_DIR+'tcpdump'
-        args = [cmd, type, "-i", world.cfg["iface"], "-w", world.cfg["dir_name"]+"/capture.pcap", "-s", str(65535)]
+        args = [cmd, type, "-i", world.cfg["iface"], "-U", "-w", world.cfg["dir_name"]+"/capture.pcap"]
         get_common_logger().debug("Running tcpdump: ")
         get_common_logger().debug(args)
         # TODO: hide stdout, log it in debug mode
