@@ -20,7 +20,7 @@ from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
 
-from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file 
+from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file 
 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
@@ -327,6 +327,7 @@ def start_srv(start, process):
     get_common_logger().debug("Start ISC-DHCPv6 with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
     fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
+    cpoy_configuration_file(world.cfg["cfg_file"] + '_processed')
     remove_local_file(world.cfg["cfg_file"])
     set_ethernet_interface()
     stop_srv()
