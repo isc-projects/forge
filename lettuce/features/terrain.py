@@ -26,7 +26,7 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from serversupport.bind10 import kill_bind10, start_bind10
 from time import sleep
-from serversupport.multi_server_functions import fabric_download_file, make_tarfile
+from serversupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name
 
 import importlib
 import os
@@ -130,9 +130,13 @@ def server_start():
     """
     Server starting before testing
     """
-    # make sure we have place to store logs and pcap files
-    if not os.path.exists('tests_results'):
-        os.makedirs('tests_results')
+    # clear tests results
+    from shutil import rmtree
+    if os.path.exists('tests_results'):
+        rmtree('tests_results')
+    os.makedirs('tests_results')
+    if not os.path.exists('tests_results_archive') and AUTO_ARCHIVE:
+        os.makedirs('tests_results_archive')
         
     world.result = []
     
@@ -318,10 +322,10 @@ def say_goodbye(total):
         stop.stop_srv()
 
     if AUTO_ARCHIVE:
-        from shutil import rmtree
         # build archive
-        make_tarfile('archive.tar.gz', 'tests_results')
-        # clear tests results that should be at the beginning!
-        #rmtree('tests_results')
+         
+        archive_name = PROTO + '_' + SERVER_TYPE + '_' + time.strftime("%Y-%m-%d-%H:%M")
+        archive_name = archive_file_name (1, 'tests_results_archive/' + archive_name)
+        make_tarfile(archive_name + '.tar.gz', 'tests_results')
     get_common_logger().info("Goodbye.")
     

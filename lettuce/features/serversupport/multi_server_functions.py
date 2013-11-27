@@ -71,7 +71,16 @@ def configuration_file_name(counter, file_name):
         else:
             file_name = file_name[:18] + str(counter)
         file_name = configuration_file_name(counter + 1, file_name)
+    return file_name
 
+def archive_file_name(counter, file_name):
+    if os.path.isfile(file_name + '.tar.gz'):
+        if counter == 1:
+            file_name += '_'+str(counter)
+        else:
+            file_name = file_name[0:-2] +'_'+ str(counter)
+            
+        file_name = archive_file_name(counter + 1, file_name)
     return file_name
 
 def cpoy_configuration_file(local_file, file_name = 'configuration_file'):
