@@ -54,7 +54,10 @@ class TestHistory ():
         self.passed = passed
         self.ran = ran
         self.failed = ran - passed
-        self.percent = (1.0 * passed/ran) * 100
+        if ran > 0:
+            self.percent = (1.0 * passed/ran) * 100
+        else:
+            self.percent = 0
         self.tags = tags
         self.path = path
         
