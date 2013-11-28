@@ -3,7 +3,12 @@ Feature: Standard DHCPv6 message types
     
 @basic @v6
     Scenario: v6.basic.message.solicit-advertise
-
+	## Basic message test, testing only server ability to respond with 'ADVERTISE' to received 'SOLICIT'
+	## Client		Server
+	## SOLICIT -->
+	## 		   <--	ADVERTISE
+	## Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -19,7 +24,9 @@ Feature: Standard DHCPv6 message types
 
 @basic @v6 @rapid
     Scenario: v6.basic.message.solicit-reply
-    #solicit with rapid commit option
+    ## Basic message test, testing only server ability to respond with 'REPLY' 
+    ## to received 'SOLICIT' with RAPID COMMIT option. Without testing content
+    ## of a message.
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -36,6 +43,14 @@ Feature: Standard DHCPv6 message types
 	
 @basic @v6
     Scenario: v6.basic.message.request-reply
+	## Basic message test, testing only server ability message exchange 
+	## between him and client.
+	## Client		Server
+	## SOLICIT -->
+	## 		   <--	ADVERTISE
+	## REQUEST -->
+	## 		   <--	REPLY
+	## Without testing content of a message.
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -60,7 +75,17 @@ Feature: Standard DHCPv6 message types
 	
 @basic @v6 
     Scenario: v6.basic.message.confirm-reply
-
+	## Basic message test, testing only server ability message exchange 
+	## between him and client.
+	## Client		Server
+	## SOLICIT -->
+	## 		   <--	ADVERTISE
+	## REQUEST -->
+	## 		   <--	REPLY
+	## CONFIRM -->
+	## 		   <--	REPLY
+	## Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -92,7 +117,17 @@ Feature: Standard DHCPv6 message types
 
 @basic @v6
     Scenario: v6.basic.message.renew-reply
-
+	## Basic message test, testing only server ability message exchange 
+	## between him and client.
+	## Client		Server
+	## SOLICIT -->
+	## 		   <--	ADVERTISE
+	## REQUEST -->
+	## 		   <--	REPLY
+	## RENEW   -->
+	## 		   <--	REPLY
+	## Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -122,7 +157,17 @@ Feature: Standard DHCPv6 message types
 	
 @basic @v6
     Scenario: v6.basic.message.rebind-reply
-
+	## Basic message test, testing only server ability message exchange 
+	## between him and client.
+	## Client		Server
+	## SOLICIT -->
+	## 		   <--	ADVERTISE
+	## REQUEST -->
+	## 		   <--	REPLY
+	## REBIND  -->
+	## 		   <--	REPLY
+	## Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -154,7 +199,17 @@ Feature: Standard DHCPv6 message types
 	
 @basic @v6
     Scenario: v6.basic.message.release-reply
-
+	## Basic message test, testing only server ability message exchange 
+	## between him and client.
+	## Client		Server
+	## SOLICIT -->
+	## 		   <--	ADVERTISE
+	## REQUEST -->
+	## 		   <--	REPLY
+	## RELEASE   -->
+	## 		   <--	REPLY
+	## Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -185,7 +240,17 @@ Feature: Standard DHCPv6 message types
 	
 @basic @v6
     Scenario: v6.basic.message.decline-reply
-
+	## Basic message test, testing only server ability message exchange 
+	## between him and client.
+	## Client		Server
+	## SOLICIT -->
+	## 		   <--	ADVERTISE
+	## REQUEST -->
+	## 		   <--	REPLY
+	## DECLINE -->
+	## 		   <--	REPLY
+	## Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -209,6 +274,9 @@ Feature: Standard DHCPv6 message types
 	
 @basic @v6
     Scenario: v6.basic.message.information_request-reply
+	## Basic message test, testing only server ability to respond with 'REPLY' 
+	## to received 'INFOREQUEST'. Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -224,6 +292,10 @@ Feature: Standard DHCPv6 message types
 
 @basic @v6
     Scenario: v6.basic.message.information_request-reply_without_client_id
+	## Basic message test, testing only server ability to respond with 'REPLY' 
+	## to received 'INFOREQUEST' message that not include CLIENT-ID option.
+	## Without testing content of a message.
+	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
