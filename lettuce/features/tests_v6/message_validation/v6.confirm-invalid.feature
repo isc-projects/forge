@@ -232,8 +232,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
@@ -287,8 +287,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
@@ -342,8 +342,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
@@ -397,8 +397,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
@@ -452,8 +452,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
@@ -507,8 +507,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
@@ -562,8 +562,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
@@ -617,8 +617,8 @@ Feature: Standard DHCPv6 confirm message
 	## 		   						<--	ADVERTISE
 	## 						REQUEST -->
 	## 		   						<--	REPLY
-	## with IA option but
-	## without IA_Address 	CONFIRM -->
+	## with restricted 
+	## option				CONFIRM -->
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
