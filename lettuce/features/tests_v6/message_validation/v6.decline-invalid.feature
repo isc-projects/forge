@@ -4,13 +4,42 @@ Feature: Standard DHCPv6 decline message
     
 @v6 @decline_invalid
     Scenario: v6.decline.invalid.without_server_id
-
-	Test Setup:
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: DECLINE without SERVER_ID
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## without SERVER_ID	DECLINE -->
+	##					  		     X	REPLY
+	## 						SOLICIT -->
+	## (copy server_id)				<--	ADVERTISE
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
@@ -25,23 +54,55 @@ Feature: Standard DHCPv6 decline message
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8
 	
 @v6 @decline_invalid
     Scenario: v6.decline.invalid.wrong_server_id
-
-	Test Setup:
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: DECLINE with incorrect SERVER_ID
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## incorrect SERVER_ID	DECLINE -->
+	##					  		     X	REPLY
+	## 						SOLICIT -->
+	## (copy server_id)				<--	ADVERTISE
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client does include wrong-server-id.
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
 	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
+	Client does include wrong-server-id.
 	Client sends DECLINE message.
 
 	Pass Criteria:
@@ -56,17 +117,30 @@ Feature: Standard DHCPv6 decline message
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
-	References: RFC3315 section 15.8 
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
+	References: RFC3315 section 15.8
 	
 @v6 @decline_invalid 
     Scenario: v6.decline.invalid.without_client_id
-
-	Test Setup:
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: DECLINE without CLIENT_ID
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## without CLIENT_ID	DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 
@@ -78,37 +152,52 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client does NOT include client-id.
 	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client does NOT include client-id.
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8
 
 @v6 @decline_invalid
     Scenario: v6.decline.invalid.blank_client_id
-
-	Test Setup:
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: DECLINE with blank CLIENT_ID
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## incorrect CLIENT_ID	DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -117,37 +206,52 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include wrong-client-id.
-	Client requests option 7.
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
-	References: RFC3315 section 15.8
+	Response MUST include option 2.
+	Response MUST include option 13.
 	
+	References: RFC3315 section 15.8
+		
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-relay-msg
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -156,21 +260,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include relay-msg.
 	Client sends DECLINE message.
 
@@ -178,28 +277,35 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-rapid-commit
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
+
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -208,21 +314,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include rapid-commit.
 	Client sends DECLINE message.
 
@@ -230,28 +331,35 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-interface-id
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
+
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -260,21 +368,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include interface-id.
 	Client sends DECLINE message.
 
@@ -282,28 +385,35 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-reconfigure-accept
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
+
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -312,21 +422,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include reconfigure-accept.
 	Client sends DECLINE message.
 
@@ -334,28 +439,35 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-preference
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
+
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -364,21 +476,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include preference.
 	Client sends DECLINE message.
 
@@ -386,28 +493,35 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
-
+	
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-server-unicast
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
+
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -416,21 +530,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include server-unicast.
 	Client sends DECLINE message.
 
@@ -438,28 +547,35 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
-
+	
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-status-code
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
+
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -468,21 +584,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include status-code.
 	Client sends DECLINE message.
 
@@ -490,28 +601,35 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
-
+	
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-reconfigure
-	#valid messages exchange performed twice, before and after invalid message
-	Test Setup:
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option				DECLINE -->
+	##					  		     X	REPLY
+	## correct message 		DECLINE -->
+	##					  		    <--	REPLY
+
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -520,21 +638,16 @@ Feature: Standard DHCPv6 decline message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
-	Client sends DECLINE message.
-
+	Client saves IA_NA option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And DONT Erase.
 	Client does include reconfigure.
 	Client sends DECLINE message.
 
@@ -542,17 +655,12 @@ Feature: Standard DHCPv6 decline message
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-
-	Test Procedure:
-	Client copies server-id option from received message.
+	Client adds saved options. And Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 2.
+	Response MUST include option 13.
+	
 	References: RFC3315 section 15.8 22.8.
