@@ -251,10 +251,6 @@ Feature: Standard DHCPv6 message types
 	## 		   <--	REPLY
 	## Without testing content of a message.
 	
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -264,7 +260,17 @@ Feature: Standard DHCPv6 message types
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
-	Client copies server-id option from received message.
+	Client saves server-id option from received message.
+	Client adds saved options. And DONT Erase.
+	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends DECLINE message.
 
 	Pass Criteria:

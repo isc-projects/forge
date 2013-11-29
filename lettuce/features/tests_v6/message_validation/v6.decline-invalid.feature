@@ -285,7 +285,7 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-rapid-commit
@@ -339,7 +339,7 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-interface-id
@@ -393,7 +393,7 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-reconfigure-accept
@@ -447,7 +447,7 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-preference
@@ -501,7 +501,7 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-server-unicast
@@ -555,7 +555,7 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-status-code
@@ -609,7 +609,7 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
 @v6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-reconfigure
@@ -663,4 +663,4 @@ Feature: Standard DHCPv6 decline message
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
-	References: RFC3315 section 15.8 22.8.
+	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
