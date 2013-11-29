@@ -4,59 +4,21 @@ Feature: Standard DHCPv6 rebind message
     
 @v6 @rebind_invalid
     Scenario: v6.rebind.invalid.without_client_id
-
-	Test Setup:
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: REBIND without CLIENT_ID option.
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## without CLIENT_ID	REBIND -->
+	##					  		     X	REPLY
+	## correct message 		REBIND -->
+	##					  		    <--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client does NOT include client-id.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
 	
-	Test Procedure:
-	Client requests option 7.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15.7
-	
-@v6 @rebind_invalid 
-    Scenario: v6.rebind.invalid.blank_client_id
-
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
-	Test Procedure:
-	Client requests option 7.
-	Client does include wrong-client-id.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
-	
-	Test Procedure:
-	Client requests option 7.
-	Client sends REBIND message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15.7
-	
-@v6 @rebind_invalid
-    Scenario: v6.rebind.invalid.with_server_id
-
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
-
 	Test Procedure:
 	Client requests option 7.
 	Client sends SOLICIT message.
@@ -65,187 +27,514 @@ Feature: Standard DHCPv6 rebind message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client does NOT include client-id.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+
+	References: RFC3315 section 15.7
+	
+@v6 @rebind_invalid 
+    Scenario: v6.rebind.invalid.blank_client_id
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: REBIND with invalid CLIENT_ID option.
+	## Message details 			Client		Server
+	## 							SOLICIT -->
+	## 		   							<--	ADVERTISE
+	## 							REQUEST -->
+	## 		   							<--	REPLY
+	## with incorrect CLIENT_ID	 REBIND -->
+	##					  		     	X	REPLY
+	## correct message 			 REBIND -->
+	##					  		    	<--	REPLY
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client does include wrong-client-id.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REBIND message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client adds saved options. And Erase.
+	Client sends REBIND message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
 	
 	References: RFC3315 section 15.7
 	
+@v6 @rebind_invalid
+    Scenario: v6.rebind.invalid.with_server_id
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: REBIND with SERVER_ID option.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with SERVER_ID	     REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is started.
+	
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REBIND message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client adds saved options. And Erase.
+	Client sends REBIND message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+	
+	References: RFC3315 section 15.7
 	
 @v6 @rebind_invalid @invalid_option @outline
     Scenario: v6.rebind.invalid.options-relay-msg
-
-	Test Setup:
+    ## Temporary test replacing disabled outline scenario
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option	     		 REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include relay-msg.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
 	
-	References: RFC3315 section 15, 15.7
+	References: RFC3315 section 15, 15.7, table A: Appearance of Options in Message Types
 	
 @v6 @rebind_invalid @invalid_option @outline
     Scenario: v6.rebind.invalid.options-rapid-commit
-
-	Test Setup:
+    ## Temporary test replacing disabled outline scenario
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option	     		 REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include rapid-commit.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15, 15.7
-	
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+
+	References: RFC3315 section 15, 15.7, table A: Appearance of Options in Message Types
+		
 @v6 @rebind_invalid @invalid_option @outline
     Scenario: v6.rebind.invalid.options-interface-id
-
-	Test Setup:
+    ## Temporary test replacing disabled outline scenario
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option	     		 REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include interface-id.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15, 15.7
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+
+	References: RFC3315 section 15, 15.7, table A: Appearance of Options in Message Types
 	
 @v6 @rebind_invalid @invalid_option @outline
     Scenario: v6.rebind.invalid.options-preference
-
-	Test Setup:
+    ## Temporary test replacing disabled outline scenario
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option	     		 REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include preference.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15, 15.7
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+
+	References: RFC3315 section 15, 15.7, table A: Appearance of Options in Message Types
 	
 @v6 @rebind_invalid @invalid_option @outline
     Scenario: v6.rebind.invalid.options-server-unicast
-
-	Test Setup:
+    ## Temporary test replacing disabled outline scenario
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option	     		 REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include server-unicast.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15, 15.7
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+
+	References: RFC3315 section 15, 15.7, table A: Appearance of Options in Message Types
 	
 @v6 @rebind_invalid @invalid_option @outline
     Scenario: v6.rebind.invalid.options-status-code 
-
-	Test Setup:
+    ## Temporary test replacing disabled outline scenario
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option	     		 REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include status-code.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15, 15.7
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+
+	References: RFC3315 section 15, 15.7, table A: Appearance of Options in Message Types
 
 @v6 @rebind_invalid @invalid_option @outline
     Scenario: v6.rebind.invalid.options-reconfigure 
-
-	Test Setup:
+    ## Temporary test replacing disabled outline scenario
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+	## Message details		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## 						REQUEST -->
+	## 		   						<--	REPLY
+	## with restricted 
+	## option	     		 REBIND -->
+	##					  	     	 X	REPLY
+	## correct message 		 REBIND -->
+	##					  	    	<--	REPLY
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
-
+	
 	Test Procedure:
 	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
 	Client does include reconfigure.
+	Client saves IA_NA option from received message.
+	Client adds saved options. And DONT Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
-	
+
 	Test Procedure:
-	Client requests option 7.
+	Client adds saved options. And Erase.
 	Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	
-	References: RFC3315 section 15, 15.7
+	Response MUST include option 2.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+
+	References: RFC3315 section 15, 15.7, table A: Appearance of Options in Message Types
