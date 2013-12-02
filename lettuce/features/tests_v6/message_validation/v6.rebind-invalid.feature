@@ -16,6 +16,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  		     X	REPLY
 	## correct message 		REBIND -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -49,6 +55,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -69,6 +76,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  		     	X	REPLY
 	## correct message 			 REBIND -->
 	##					  		    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -102,6 +115,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -122,6 +136,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -155,6 +175,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -176,6 +197,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -209,6 +236,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -230,6 +258,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -263,6 +297,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -284,6 +319,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -317,6 +358,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -338,6 +380,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -371,6 +419,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -392,6 +441,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -425,6 +480,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -446,6 +502,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -479,6 +541,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
@@ -500,6 +563,12 @@ Feature: Standard DHCPv6 rebind message
 	##					  	     	 X	REPLY
 	## correct message 		 REBIND -->
 	##					  	    	<--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+	##					IA-Address
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -533,6 +602,7 @@ Feature: Standard DHCPv6 rebind message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
