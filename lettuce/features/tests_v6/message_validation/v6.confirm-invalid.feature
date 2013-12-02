@@ -15,6 +15,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -52,7 +57,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 2.
+	Response MUST include option 1.
 	Response MUST include option 13.
 	
 	References: RFC3315 section 15.5 
@@ -70,6 +75,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -107,6 +117,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 		
@@ -125,6 +136,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -162,6 +178,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 		
@@ -181,6 +198,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -217,6 +239,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 
@@ -237,6 +260,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -272,6 +300,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
@@ -292,6 +321,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -327,6 +361,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
@@ -347,6 +382,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -382,6 +422,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
@@ -402,6 +443,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -437,6 +483,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
@@ -457,6 +504,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -492,6 +544,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
@@ -512,6 +565,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -547,6 +605,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
@@ -567,6 +626,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -602,6 +666,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	
@@ -622,6 +687,11 @@ Feature: Standard DHCPv6 confirm message
 	##					  		     X	REPLY
 	## correct message 		CONFIRM -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+	##					status-code
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -657,6 +727,7 @@ Feature: Standard DHCPv6 confirm message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
 	

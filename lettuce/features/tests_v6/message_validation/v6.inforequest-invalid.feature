@@ -13,6 +13,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -37,6 +41,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12, 
 
@@ -51,6 +57,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -69,6 +79,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12
 	
@@ -84,6 +96,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -110,6 +126,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12, 
 
@@ -126,6 +144,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -145,6 +167,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
@@ -161,6 +185,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -179,6 +207,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
@@ -195,6 +225,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -213,6 +247,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
@@ -229,6 +265,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -247,6 +287,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
@@ -263,6 +305,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -281,6 +327,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
@@ -297,6 +345,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -315,6 +367,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
@@ -331,6 +385,10 @@ Feature: Standard DHCPv6 information request message
 	##					  		     X	REPLY
 	## correct message 	INFOREQUEST -->
 	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -349,6 +407,8 @@ Feature: Standard DHCPv6 information request message
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 	
