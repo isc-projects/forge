@@ -4,6 +4,19 @@ Feature: Standard DHCPv6 solicit message
     
 @v6 @solicit_invalid
     Scenario: v6.solicit.invalid.without_client_id
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: SOLICIT without CLIENT_ID option.
+	## Message details 		Client		Server
+	## without CLIENT_ID	SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -23,11 +36,29 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+	
 	References: RFC3315 section 15.2, 17.2.1
 	
 @v6 @solicit_invalid
     Scenario: v6.solicit.invalid.with_server_id
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: SOLICIT with SERVER_ID option.
+	## Message details 		Client		Server
+	## 				 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## with SERVER_ID		SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -54,11 +85,27 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
 
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @solicit_invalid 
     Scenario: v6.solicit.invalid.with_blank_client_id
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: SOLICIT with incorrect CLIENT_ID option.
+	## Message details 		Client		Server
+	## incorrect CLIENT_ID	SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -78,11 +125,29 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
 
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @solicit_invalid 
     Scenario: v6.solicit.invalid.with_multiple_client_id
+    ## Testing server ability to discard message that not meets 
+    ## content requirements.
+    ## In this case: SOLICIT with multiple CLIENT_ID option.
+	## Message details 		Client		Server
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## multiple CLIENT_ID	SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
@@ -102,11 +167,35 @@ Feature: Standard DHCPv6 solicit message
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+
 	References: RFC3315 section 15.2
 
 @v6 @solicit_invalid @invalid_option 
     Scenario: v6.solicit.invalid.options-relaymsg
-	 
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## with restricted 
+	## option				SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
+		 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -125,12 +214,28 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	
-	References: RFC3315 section 15.2, 17.2.1
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+		
+	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
 @v6 @solicit_invalid @invalid_option 
     Scenario: v6.solicit.invalid.options-interfaceid
-	 
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## with restricted 
+	## option				SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE 
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -149,12 +254,28 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	
-	References: RFC3315 section 15.2, 17.2.1
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+		
+	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
 @v6 @solicit_invalid @invalid_option 
     Scenario: v6.solicit.invalid.options-preference
-	 
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## with restricted 
+	## option				SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE 
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -173,12 +294,28 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	
-	References: RFC3315 section 15.2, 17.2.1
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+		
+	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
 @v6 @solicit_invalid @invalid_option 
     Scenario: v6.solicit.invalid.options-serverunicast
-	 
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## with restricted 
+	## option				SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE 
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -197,12 +334,28 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	
-	References: RFC3315 section 15.2, 17.2.1
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+		
+	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
 @v6 @solicit_invalid @invalid_option 
     Scenario: v6.solicit.invalid.options-statuscode
-	 
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## with restricted 
+	## option				SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE 
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -221,12 +374,28 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	
-	References: RFC3315 section 15.2, 17.2.1
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+
+	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
 @v6 @solicit_invalid @invalid_option 
     Scenario: v6.solicit.invalid.options-reconfigure
-	 
+	## Temporary test replacing disabled outline scenario 
+	## Testing server ability to discard message that not meets 
+	## content requirements.
+	## Message details 		Client		Server
+	## with restricted 
+	## option				SOLICIT -->
+	## 		   						 X	ADVERTISE
+	## correct message 		SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## Pass Criteria:
+	## 				Advertise MUST include option:
+	##					client-id
+	##					server-id
+	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
@@ -245,5 +414,8 @@ Feature: Standard DHCPv6 solicit message
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	
-	References: RFC3315 section 15.2, 17.2.1
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+		
+	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
