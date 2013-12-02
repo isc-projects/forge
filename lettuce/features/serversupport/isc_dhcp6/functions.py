@@ -74,7 +74,6 @@ isc_dhcp_otheroptions_value_type = {"tftp-servers": "array of ip6-address",
 def switch_prefix6_lengths_to_pool(ip6_addr ,length, delegated_length):
     
     ip6_addr_splited = ip6_addr.split(":")
-    
     if len(ip6_addr_splited) < 3 or len(ip6_addr_splited) > 9:
         raise "Error! Please enter correct IPv6 address!"
     error_flag = False
@@ -165,7 +164,7 @@ def add_defaults():
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["preferred-lifetime"]
     t4 = world.cfg["server_times"]["valid-lifetime"]
-    world.cfg["conf_time"] += '''
+    world.cfg["conf_time"] = '''
     option dhcp-rebinding-time {t2};
     option dhcp-renewal-time {t1};
     preferred-lifetime {t3};
@@ -179,7 +178,6 @@ def prepare_cfg_subnet(step, subnet, pool):
 
     world.cfg["subnet"] = subnet
     pointer = '{'
-
     
     if subnet == "default":
         subnet = "2001:db8:1::/64"
@@ -331,7 +329,8 @@ def start_srv(start, process):
     remove_local_file(world.cfg["cfg_file"])
     set_ethernet_interface()
     stop_srv()
-
-    fabric_run_command('(dhcpd -6 -cf server.cfg_processed); sleep 3;')
+    fabric_run_command('rm /var/db/dhcpd6.leases')
+    fabric_run_command('touch /var/db/dhcpd6.leases')
+    fabric_run_command('( dhcpd -6 -cf server.cfg_processed); sleep 3;')
     #uncomment this for less output, do this after full support for isc-dhcp
     #fabric_run_command('(rm nohup.out; nohup dhcpd -6 -cf server.cfg_processed); sleep 3;') 
