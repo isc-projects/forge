@@ -299,7 +299,7 @@ Feature: Standard DHCPv6 options part 1
 	## domain-search			<--	REPLY
 	## Pass Criteria:
 	## 				REPLY/ADVERTISE MUST include option:
-	##					domain-search option with addresse ntp.example.com
+	##					domain-search option with address ntp.example.com
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -340,7 +340,7 @@ Feature: Standard DHCPv6 options part 1
 	## nisp-domain-name			<--	REPLY
 	## Pass Criteria:
 	## 				ADVERTISE MUST include option:
-	##					nisp-domain-name option with addresse ntp.example.com
+	##					nisp-domain-name option with address ntp.example.com
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -421,8 +421,8 @@ Feature: Standard DHCPv6 options part 1
 	## information-refresh-time <--	REPLY
 	## Pass Criteria:
 	## 				REPLY/ADVERTISE MUST include option:
-	##					sntp-servers option with addresses
-	##					2001:db8::abc, 3000::1 and 2000::1234.
+	##					information-refresh-time option with value 12345678
+
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with information-refresh-time option with value 12345678.
@@ -526,7 +526,12 @@ Feature: Standard DHCPv6 options part 1
 	## Pass Criteria:
 	## 				REPLY/ADVERTISE MUST include not option:
 	##					domain and dns-servers
-
+	##
+	## request option 23 REQUEST -->
+	## does include code 23		<--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					dns-servers	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
@@ -552,4 +557,14 @@ Feature: Standard DHCPv6 options part 1
 	Response MUST NOT include option 23.
 	Response MUST NOT include option 24.
 
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client requests option 23.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 23.
+	Response option 23 MUST contain addresses 2001:db8::1,2001:db8::2.
+	Response MUST NOT include option 24.
 	References: v6.options, v6.oro, RFC3646
