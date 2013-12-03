@@ -169,8 +169,6 @@ Feature: Standard DHCPv6 options part 1
 	Response MUST include option 23.
 	Response option 23 MUST contain addresses 2001:db8::1,2001:db8::2.
 
-	Test Procedure:
-
 	References: v6.options, v6.oro, RFC3646
 
 @v6 @options @rfc3646
