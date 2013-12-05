@@ -17,19 +17,18 @@ steps may be slightly different:
    deb http://mirror.cse.iitk.ac.in/debian/ testing main contrib
 ...then run "sudo apt-get update")
 
-# This will install pip (python package installer)
+ This will install pip (python package installer)
 sudo apt-get install python-pip
+ It's strongly recommended to install lettuce manually after downloading newest version 
+ from https://pypi.python.org/pypi/lettuce.
+ If you're using any other source, make sure that installed lettuce version is
+ at least 0.2.17.
 
-# It's strongly recommended to install lettuce manually after downloading newest version 
-# from https://pypi.python.org/pypi/lettuce.
-# If you're using any other source, make sure that installed lettuce version is
-# at least 0.2.17.
-
-# This will install scapy
+ This will install scapy
 wget http://www.secdev.org/projects/scapy/files/scapy-latest.zip
 unzip scapy-latest.zip
 
-# Apply patches, see below
+ Apply patches, see below
 cd scapy-2.2.0
 sudo python setup.py install
 
@@ -46,6 +45,15 @@ DeprecationWarning: The popen2 module is deprecated.  Use the subprocess module.
 
 Our understanding is that those can be safely ignored for now.
 
+  Also you need to install:
+
+  tcpdump for saving caputers of every test.
+ sudo apt-get install tcpdump
+  or manually using latest version
+
+ Fabric module for python using latest version available https://pypi.python.org/pypi/Fabric
+ 
+ 
  Scapy patches
 ---------------
 Currently the latest Scapy release seems to be 2.2.0. Its main
