@@ -58,7 +58,10 @@ removelist = [ ]
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
-# scope link server address for testing unicast messages  
+# scope link server address for testing unicast messages 
+# Address 3000:: is strongly recommended for global address. Most tests are using pool
+# 3000::1-3000::ffff in this case recommended address will not cover any address form
+# server pool (what could cause some tests to fail)
 SRV_IPV6_ADDR_GLOBAL = ""
 SRV_IPV6_ADDR_LINK_LOCAL = ""
 
