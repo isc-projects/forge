@@ -20,10 +20,10 @@ steps may be slightly different:
 # This will install pip (python package installer)
 sudo apt-get install python-pip
 
-# This will install lettuce, make sure your lettuce version is at least 0.2.17
-sudo pip install lettuce
-
-# or do it manually, downloading newest version from https://pypi.python.org/pypi/lettuce 
+# It's strongly recommended to install lettuce manually after downloading newest version 
+# from https://pypi.python.org/pypi/lettuce.
+# If you're using any other source, make sure that installed lettuce version is
+# at least 0.2.17.
 
 # This will install scapy
 wget http://www.secdev.org/projects/scapy/files/scapy-latest.zip
