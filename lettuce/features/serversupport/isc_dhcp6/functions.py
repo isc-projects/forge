@@ -329,6 +329,7 @@ def start_srv(start, process):
     remove_local_file(world.cfg["cfg_file"])
     set_ethernet_interface()
     stop_srv()
+    world.cfg["conf_subnet"] = ""
     fabric_run_command('rm /var/db/dhcpd6.leases')
     fabric_run_command('touch /var/db/dhcpd6.leases')
     fabric_run_command('( dhcpd -6 -cf server.cfg_processed); sleep 3;')
