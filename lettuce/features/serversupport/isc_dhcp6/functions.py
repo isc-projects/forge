@@ -332,6 +332,6 @@ def start_srv(start, process):
     world.cfg["conf_subnet"] = ""
     fabric_run_command('rm /var/db/dhcpd6.leases')
     fabric_run_command('touch /var/db/dhcpd6.leases')
-    fabric_run_command('( dhcpd -6 -cf server.cfg_processed); sleep 3;')
+    fabric_run_command('('+SERVER_INSTALL_DIR+' dhcpd -6 -cf server.cfg_processed); sleep 3;')
     #uncomment this for less output, do this after full support for isc-dhcp
     #fabric_run_command('(rm nohup.out; nohup dhcpd -6 -cf server.cfg_processed); sleep 3;') 
