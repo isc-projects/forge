@@ -143,7 +143,7 @@ def restart_srv():
 
 def stop_srv():
     try:
-        fabric_run_command("killall dhcpd &>/dev/null")
+        fabric_run_command("sudo killall dhcpd &>/dev/null")
     except:
         pass
     
@@ -330,7 +330,7 @@ def start_srv(start, process):
     set_ethernet_interface()
     stop_srv()
     world.cfg["conf_subnet"] = ""
-    fabric_run_command('rm /var/db/dhcpd6.leases')
+    fabric_run_command('echo y |rm /var/db/dhcpd6.leases')
     fabric_run_command('touch /var/db/dhcpd6.leases')
     fabric_run_command('( sudo '+SERVER_INSTALL_DIR+'sbin/dhcpd -6 -cf server.cfg_processed); sleep 3;')
     #uncomment this for less output, do this after full support for isc-dhcp
