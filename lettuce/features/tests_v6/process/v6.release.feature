@@ -155,7 +155,10 @@ Feature: DHCPv6 Release
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-
+	Response MUST include option 1.
+	Response MUST include option 2.
+	Response MUST include option 3.
+	
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
@@ -163,7 +166,8 @@ Feature: DHCPv6 Release
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 3.
+	Response MUST include option 1.
+	Response MUST include option 2.
 	Response MUST include option 13. 
 	Response option 13 MUST contain statuscode 0.
 		

@@ -122,6 +122,23 @@ Feature: DHCPv6 Relay Agent
 	Server is started.
 
 	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
+	Client copies server-id option from received message.
+	Client requests option 7.
+	Client sends REQUEST message.
+	
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client sends CONFIRM message.
 	...using relay-agent encapsulated in 1 level.
 

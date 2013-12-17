@@ -37,7 +37,7 @@ isc_dhcp_options6 = {
 #                  "interface-id": 18,
                  "sip-server-dns": "sip-servers-names",
                  "sip-server-addr": "sip-servers-addresses",
-                 "dns-servers": "domain-name-servers",
+                 "dns-servers": "name-servers",
                  "domain-search": "domain-search",
 #                  "IA_PD": 25,
 #                  "IA-Prefix": 26,
@@ -330,8 +330,13 @@ def start_srv(start, process):
     set_ethernet_interface()
     stop_srv()
     world.cfg["conf_subnet"] = ""
-    fabric_run_command('echo y |rm /var/db/dhcpd6.leases')
-    fabric_run_command('touch /var/db/dhcpd6.leases')
+    leases_file = ''
+    if len(SERVER_INSTALL_DIR) > 0:
+        leases_file = SERVER_INSTALL_DIR + 'dhcpd6.leases'
+    else:
+        leases_file = '/var/db/dhcpd6.leases'
+    fabric_run_command('echo y |rm '+leases_file)
+    fabric_run_command('touch '+leases_file)
     fabric_run_command('( sudo '+SERVER_INSTALL_DIR+'sbin/dhcpd -6 -cf server.cfg_processed); sleep 3;')
     #uncomment this for less output, do this after full support for isc-dhcp
     #fabric_run_command('(rm nohup.out; nohup dhcpd -6 -cf server.cfg_processed); sleep 3;') 

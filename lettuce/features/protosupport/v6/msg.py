@@ -453,9 +453,10 @@ def client_option (msg):
         )
     if world.cfg["add_option"]["IA_Address"]:
         world.cfg["add_option"]["IA_NA"] = False
-        msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"])/DHCP6OptIAAddress(
-                    address = world.cfg["values"]["address"], preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"])
-        
+        # IT'S MESSED UP!!
+#         msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"], ianaopt = DHCP6OptIAAddress(
+#                     address = world.cfg["values"]["address"], preflft = world.cfg["values"]["preflft"], validlft = world.cfg["values"]["validlft"])
+
     if world.cfg["add_option"]["vendor_class"]:
         msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
 
@@ -573,7 +574,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     elif str(type) in "MAY":
         may_flag = True
 	# we needs to get it operational
-	# problem: break test with success. (for nor we can break test only with fail)
+	# problem: break test with success. (for now we can break test only with fail)
     else:
         assert False, "Invalid expected behavior: %s." %str(type)
         
