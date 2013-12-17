@@ -97,7 +97,6 @@ Feature: DHCPv6 Prefix Delegation
 	Server is started.
 	
 	Test Procedure:
-	Client does NOT include IA-NA.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
