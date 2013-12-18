@@ -5,7 +5,7 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
     Scenario: v6.relay.message.interfaceid
 
 	Test Setup:
-	Server is configured with 2000::/64 subnet with 2000::1-2000::ff pool.
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with interface-id option in subnet 0 with value 15.
 	Server is started.
 

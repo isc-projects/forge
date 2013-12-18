@@ -68,7 +68,7 @@ values = {"T1": 0, # IA_NA IA_PD
           "linkaddr": "3000::ffff", # relay
           "peeraddr": "2000::1", # relay
           "ifaceid": "15", # relay
-          "DUID": None
+          "DUID": None          
           }
 
 # times values, plz do not change this.
@@ -76,7 +76,8 @@ values = {"T1": 0, # IA_NA IA_PD
 server_times = {"renew-timer": 1000,
                 "rebind-timer": 2000,
                 "preferred-lifetime": 3000,
-                "valid-lifetime": 4000
+                "valid-lifetime": 4000,
+                "rapid-commit": False 
                 }
 # we should consider transfer most of functions to separate v4 and v6 files
 # there is no v4 functions yet ;)

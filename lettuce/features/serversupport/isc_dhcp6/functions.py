@@ -33,8 +33,8 @@ isc_dhcp_options6 = {
                  "preference": "preference",
 #                  "relay-msg": 9,
 #                  "status-code": 13,
-#                  "rapid_commit": 14,
-#                  "interface-id": 18,
+                 "rapid_commit": "rapid-commit",
+                 "interface-id": "interface-id",
                  "sip-server-dns": "sip-servers-names",
                  "sip-server-addr": "sip-servers-addresses",
                  "dns-servers": "name-servers",
@@ -170,7 +170,10 @@ def add_defaults():
     preferred-lifetime {t3};
     default-lease-time {t4};
     '''.format(**locals())
-    
+    if world.cfg["server_times"]["rapid-commit"]:
+        world.cfg["conf_time"] += '''
+            option dhcp6.rapid-commit;
+            '''    
 def prepare_cfg_subnet(step, subnet, pool):
     get_common_logger().debug("Configure subnet...")
     if not "conf_subnet" in world.cfg:
