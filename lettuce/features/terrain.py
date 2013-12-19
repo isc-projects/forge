@@ -18,7 +18,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS, AUTO_ARCHIVE
+    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -293,7 +293,9 @@ def cleanup(scenario):
 
     # copy log file from remote server:
     if SAVE_BIND_LOGS:
-        fabric_download_file('log_file',world.cfg["dir_name"]+'/log_file')        
+        fabric_download_file('log_file',world.cfg["dir_name"]+'/log_file')
+    if SAVE_LEASES:        
+        fabric_download_file(world.cfg['leases'], world.cfg["dir_name"]+'/dhcpd6.leases')
 @after.all
 def say_goodbye(total):
     """

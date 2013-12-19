@@ -333,13 +333,14 @@ def start_srv(start, process):
     set_ethernet_interface()
     stop_srv()
     world.cfg["conf_subnet"] = ""
-    leases_file = ''
     if len(SERVER_INSTALL_DIR) > 0:
         leases_file = SERVER_INSTALL_DIR + 'dhcpd6.leases'
     else:
         leases_file = '/var/db/dhcpd6.leases'
+        
+    world.cfg['leases'] = leases_file
+    
     fabric_run_command('echo y |rm '+leases_file)
     fabric_run_command('touch '+leases_file)
-    fabric_run_command('( sudo '+SERVER_INSTALL_DIR+'sbin/dhcpd -6 -cf server.cfg_processed); sleep 3;')
-    #uncomment this for less output, do this after full support for isc-dhcp
-    #fabric_run_command('(rm nohup.out; nohup dhcpd -6 -cf server.cfg_processed); sleep 3;') 
+
+    fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 3;')
