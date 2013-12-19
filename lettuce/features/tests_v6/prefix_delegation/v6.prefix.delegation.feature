@@ -70,7 +70,8 @@ Feature: DHCPv6 Prefix Delegation
 
 @v6 @PD @rfc3633
 	Scenario: prefix.delegation.onlyPD_request_release
-	
+
+ 	Test Setup:	
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
@@ -113,7 +114,8 @@ Feature: DHCPv6 Prefix Delegation
 
 @v6 @PD @rfc3633
 	Scenario: prefix.delegation.onlyPD_multiple_request_release
-
+ 	
+ 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
@@ -188,7 +190,8 @@ Feature: DHCPv6 Prefix Delegation
 	
 @v6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_request_release
-	
+ 	
+ 	Test Setup:	
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
@@ -231,7 +234,8 @@ Feature: DHCPv6 Prefix Delegation
 	
 @v6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_multiple_request_release
-
+ 	
+ 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
@@ -266,8 +270,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 25.
-	Response MUST include option 3.
+	Response MUST include option 13.
 	# tests MUST NOT include 'NoBinding'...	
 
 	Test Procedure:
@@ -531,6 +534,7 @@ Feature: DHCPv6 Prefix Delegation
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail_release
   	#assign 2 prefixes, try third, fail, release one, assign one more time with success.
+ 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
@@ -619,7 +623,8 @@ Feature: DHCPv6 Prefix Delegation
 
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail
-  
+   	
+   	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes

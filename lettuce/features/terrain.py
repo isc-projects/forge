@@ -294,7 +294,7 @@ def cleanup(scenario):
     # copy log file from remote server:
     if SAVE_BIND_LOGS:
         fabric_download_file('log_file',world.cfg["dir_name"]+'/log_file')
-    if SAVE_LEASES:        
+    if SAVE_LEASES and SERVER_TYPE not in ['kea', 'kea4', 'kea6']:        
         fabric_download_file(world.cfg['leases'], world.cfg["dir_name"]+'/dhcpd6.leases')
 @after.all
 def say_goodbye(total):

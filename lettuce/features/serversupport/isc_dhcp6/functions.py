@@ -338,9 +338,11 @@ def start_srv(start, process):
     else:
         leases_file = '/var/db/dhcpd6.leases'
         
-    world.cfg['leases'] = leases_file
+    world.cfg['leases'] ='/var/db/dhcpd6.leases'# leases_file
     
-    fabric_run_command('echo y |rm '+leases_file)
-    fabric_run_command('touch '+leases_file)
+#     fabric_run_command('echo y |rm '+leases_file)
+#     fabric_run_command('touch '+leases_file)
+    fabric_run_command('echo y |rm /var/db/dhcpd6.leases')
+    fabric_run_command('touch /var/db/dhcpd6.leases')
 
     fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 3;')
