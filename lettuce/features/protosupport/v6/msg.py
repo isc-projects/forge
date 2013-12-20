@@ -274,6 +274,9 @@ def generate_new (step, opt):
         from features.terrain import client_id, ia_id
         client_id(RandMAC())
         ia_id()
+    elif opt == 'Client_ID':
+        from features.terrain import client_id
+        client_id(RandMAC())
     elif opt == 'IA':
         from features.terrain import ia_id
         ia_id()

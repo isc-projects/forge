@@ -80,7 +80,8 @@ def generate_new(step, opt):
     """
     For some test scenarios there is a need for multiple different users, in this step you can 
     choose which value needs to be changed:
-	for client id and IA: client
+	for client_id and IA: client
+	for client_id only: Client_ID
 	for IA: IA
 	for IA_PD: IA_PD
     """
