@@ -61,7 +61,7 @@ Feature: DHCPv6 Release
 	References: RFC3315 section 18.2.6.
 	
 @v6 @status_code @release
-    Scenario: v6.statuscode.nobinding-release-new_client_id
+    Scenario: v6.statuscode.nobinding-release-new-client-id
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Try to release existing leases but using different client ID.
 	## Message details 		Client		Server
@@ -138,7 +138,6 @@ Feature: DHCPv6 Release
 	## 				REPLY MUST include option:
 	##					client-id
 	##					server-id
-	##					IA_NA with suboption status-code with code NoBinding
 	## 						SOLICIT -->
 	## 		   						<--	ADVERTISE	
 	## Pass Criteria:
@@ -184,9 +183,18 @@ Feature: DHCPv6 Release
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
 	Response MUST include option 2.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 1.
+	Response MUST include option 2.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 13. 
-	Response sub-option 13 from option 3 MUST contain statuscode 3.
+	Response sub-option 13 from option 3 MUST contain statuscode 2.
 	
 	References: RFC3315 section 18.2.6.
 		
