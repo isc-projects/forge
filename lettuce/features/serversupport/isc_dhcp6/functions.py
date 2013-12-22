@@ -345,4 +345,4 @@ def start_srv(start, process):
     fabric_run_command('echo y |rm /var/db/dhcpd6.leases')
     fabric_run_command('touch /var/db/dhcpd6.leases')
 
-    fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 3;')
+    fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 5;')
