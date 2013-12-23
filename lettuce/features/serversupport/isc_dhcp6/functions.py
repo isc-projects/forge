@@ -139,8 +139,11 @@ def switch_prefix6_lengths_to_pool(ip6_addr ,length, delegated_length):
 
     return final
 def restart_srv():
-    pass
-
+    stop_srv()
+    fabric_run_command('echo y |rm ' + world.cfg['leases'])
+    fabric_run_command('touch ' + world.cfg['leases'])
+    fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 5;')
+    
 def stop_srv():
     try:
         fabric_run_command("sudo killall dhcpd &>/dev/null")
@@ -316,6 +319,11 @@ def set_ethernet_interface():
 #     fabric_cmd(cmd,0)
 #     time.sleep(3)
 #     fabric_cmd(cmd1,0)
+def build_leases_path():
+    leases_file = '/var/db/dhcpd6.leases'
+    if SERVER_INSTALL_DIR is not "/usr/local/":
+        leases_file = SERVER_INSTALL_DIR + 'dhcpd6.leases'
+    return leases_file
 
 def start_srv(start, process):
     """
@@ -330,19 +338,12 @@ def start_srv(start, process):
     fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
     cpoy_configuration_file(world.cfg["cfg_file"] + '_processed')
     remove_local_file(world.cfg["cfg_file"])
-    set_ethernet_interface()
+    #set_ethernet_interface()
     stop_srv()
-    world.cfg["conf_subnet"] = ""
-    if len(SERVER_INSTALL_DIR) > 0:
-        leases_file = SERVER_INSTALL_DIR + 'dhcpd6.leases'
-    else:
-        leases_file = '/var/db/dhcpd6.leases'
         
-    world.cfg['leases'] ='/var/db/dhcpd6.leases'# leases_file
-    
-#     fabric_run_command('echo y |rm '+leases_file)
-#     fabric_run_command('touch '+leases_file)
-    fabric_run_command('echo y |rm /var/db/dhcpd6.leases')
-    fabric_run_command('touch /var/db/dhcpd6.leases')
+    world.cfg['leases'] = build_leases_path()
+
+    fabric_run_command('echo y |rm ' + world.cfg['leases'])
+    fabric_run_command('touch ' + world.cfg['leases'])
 
     fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 5;')
