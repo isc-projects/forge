@@ -121,3 +121,7 @@ BIND_MODULE = ""
 
 # =============== DIBBLER ================
 DIBBLER_INSTALL_DIR = ""
+
+# =============== ISC-DHCP ================
+# Save leases file in tests result folder
+SAVE_LEASES = False
