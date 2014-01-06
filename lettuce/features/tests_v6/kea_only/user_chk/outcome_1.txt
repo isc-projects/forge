@@ -1,0 +1,5 @@
+id_type=DUID
+client=00:03:00:01:ff:ff:ff:ff:ff:01
+addr=1000::5
+registered=no
+

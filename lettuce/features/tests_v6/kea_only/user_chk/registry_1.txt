@@ -1,0 +1,5 @@
+{ "type" : "DUID", "id" : "00:03:00:01:11:02:03:04:05:06" }
+{ "type" : "DUID", "id" : "00:03:00:01:22:02:03:04:05:06", "bootfile" : "bootfile.from.user" }
+{ "type" : "DUID", "id" : "00:03:00:01:33:02:03:04:05:06", "tftp_server" : "8000::1" }
+{ "type" : "DUID", "id" : "00:03:00:01:44:02:03:04:05:06", "bootfile" : "bootfile.from.user-2" , "tftp_server" : "8002::1" }
+{ "type" : "DUID", "id" : "00:00:00:00", "bootfile" : "bootfile.from.default" , "tftp_server" : "9000::1" }
