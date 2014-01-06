@@ -42,10 +42,7 @@ def fabric_send_file(file_local, file_remote):
 
 def fabric_download_file(remote_path, local_path):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
-        try:
-            result = get(remote_path, local_path)
-        except:
-            pass
+        result = get(remote_path, local_path)
     return result
 
 def make_tarfile(output_filename, source_dir):
