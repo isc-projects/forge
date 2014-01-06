@@ -139,8 +139,8 @@ def add_variable(step, variable_name, variable_val, type):
             init_all.write("\n# USER VARIABLE:\n"+variable_name +" = "+  (variable_val if variable_val.isdigit() else '\"'+variable_val+'\"'))
             init_all.close()
         
-def beer(step):
+def user_victory(step):
     from shutil import copy
     if not os.path.exists(world.cfg["dir_name"]):
         os.makedirs(world.cfg["dir_name"])
-    copy('../doc/.beer.jpg',world.cfg["dir_name"]+'/beer_for_you.jpg')
+    copy('../doc/.victory.jpg',world.cfg["dir_name"]+'/celebrate_success.jpg')

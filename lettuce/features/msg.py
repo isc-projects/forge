@@ -272,9 +272,9 @@ def add_variable_permanent(step, variable_name, variable_val):
     """
     other.add_variable(step, variable_name, variable_val, 1)
     
-@step('Bring user a beer.')
-def beer(step):
+@step('Let us celebrate this SUCCESS!')
+def test_victory(step):
     """
     Use your imagination.
     """
-    other.beer(step)
+    other.user_victory(step)
