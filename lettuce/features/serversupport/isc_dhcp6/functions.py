@@ -242,7 +242,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
 
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
     #implement this
-    pass
+    pass #http://linux.die.net/man/5/dhcp-options
 
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     if (not "conf_subnet" in world.cfg):
@@ -321,7 +321,7 @@ def set_ethernet_interface():
 #     fabric_cmd(cmd1,0)
 def build_leases_path():
     leases_file = '/var/db/dhcpd6.leases'
-    if SERVER_INSTALL_DIR is not "/usr/local/":
+    if SERVER_INSTALL_DIR != "/usr/local/":
         leases_file = SERVER_INSTALL_DIR + 'dhcpd6.leases'
     return leases_file
 
