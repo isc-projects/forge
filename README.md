@@ -27,7 +27,7 @@ Former participants
 
 Project homepage
 ================
-http://bind10.isc.org/wiki/DhcpTesting
+http://bind10.isc.org/wiki/IscForge
 
 Project source code
 ===================
