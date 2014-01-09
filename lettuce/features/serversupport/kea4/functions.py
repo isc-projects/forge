@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-from fabric.api import run, run, settings, put, hide
+from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file
 from lettuce import world
 from textwrap import dedent
 import serversupport.kea6.functions
@@ -59,7 +59,7 @@ def config_srv_another_subnet(step, subnet, pool, interface):
     #implement this
     pass
    
-def prepare_cfg_add_option(step, option_name, option_value):
+def prepare_cfg_add_option(step, option_name, option_value, space): # TODO: enable space configuration
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
 
@@ -131,30 +131,26 @@ def fabric_run_bindctl (opt):
         cfg_file = 'kea4-stop.cfg'
         prepare_cfg_kea4_for_kea4_stop(cfg_file)
         serversupport.kea6.functions.prepare_config_file(cfg_file)
-        serversupport.kea6.functions.fabric_send_file (cfg_file + "_processed")
+        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
     if opt == "start":
         get_common_logger().debug('------------ starting fresh kea')
         cfg_file = 'kea4-start.cfg'
         prepare_cfg_kea4_for_kea4_start(cfg_file)
         serversupport.kea6.functions.prepare_config_file(cfg_file)
-        serversupport.kea6.functions.fabric_send_file(cfg_file + "_processed")
+        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
     if opt == "conf":
         get_common_logger().debug('------------ kea configuration')
         cfg_file = world.cfg["cfg_file"]
         serversupport.kea6.functions.prepare_config_file(cfg_file)
-        serversupport.kea6.functions.fabric_send_file (cfg_file+"_processed")
+        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        cpoy_configuration_file(cfg_file + '_processed')
     if opt == "restart":
         #implement this
         pass
-    cmd='(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1'
-    with settings(host_string=world.cfg["mgmt_addr"],
-                  user=world.cfg["mgmt_user"],
-                  password=world.cfg["mgmt_pass"]):
-        run(cmd)
+    
+    result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
 
-
-
-def start_srv():
+def start_srv(start, process):
     serversupport.kea6.functions.cfg_write()
     get_common_logger().debug("------ Bind10, dhcp4 configuration procedure:")
     fabric_run_bindctl ('clean')#clean and stop
