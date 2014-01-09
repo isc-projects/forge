@@ -1,9 +1,28 @@
+# Copyright (C) 2013 Internet Systems Consortium.
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SYSTEMS CONSORTIUM
+# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+# INTERNET SYSTEMS CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
+# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
 from fabric.api import run, run, settings, put, hide
 from lettuce import world
 from textwrap import dedent
 import serversupport.kea6.functions
 from logging_facility import get_common_logger
 from init_all import SERVER_INSTALL_DIR
+
+## functions to import:
+## run_command, set_logger, prepare_config_file,cfg_write, parsing_bind_stdout
+## set_time ?
 
 def prepare_cfg_subnet(step, subnet, pool):
 
@@ -29,6 +48,17 @@ kea_options4= { "subnet-mask": 1,
                  "ntp-servers": 42 # ipv4-address (array)
                  }
 
+def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
+    #implement this
+    pass
+
+def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
+    #implement this
+    pass
+def config_srv_another_subnet(step, subnet, pool, interface):
+    #implement this
+    pass
+   
 def prepare_cfg_add_option(step, option_name, option_value):
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
@@ -92,8 +122,6 @@ def prepare_cfg_kea4_for_kea4_stop(filename):
     cfg_file.write(config)
     cfg_file.close()
 
-
-
 def fabric_run_bindctl (opt):
     """
     Run bindctl with prepered config file
@@ -137,3 +165,7 @@ def start_srv():
 def restart_srv():
     pass
     # @todo: Implement this
+
+
+def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+    assert False, "This function can be used only with DHCPv6"
