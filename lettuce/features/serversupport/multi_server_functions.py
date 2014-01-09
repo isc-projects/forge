@@ -52,10 +52,8 @@ def make_tarfile(output_filename, source_dir):
 
 def fabric_remove_file_command(remote_path):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
-        try:
-            result = run("rm -f "+remote_path)
-        except:
-            result = run("sudo rm -f "+remote_path)
+        result = run("rm -f "+remote_path)
+        result = run("sudo rm -f "+remote_path) #that is really temporary
     return result
 
 def remove_local_file(file_local):
