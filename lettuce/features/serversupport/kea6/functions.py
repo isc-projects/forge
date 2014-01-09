@@ -323,6 +323,8 @@ def restart_srv():
 def parsing_bind_stdout(stdout, opt, search = []):
     """
     Modify this function if you wont react to some bind stdout
+    This function is particulary of one type of error that causes BIND to stop responding. 
+    BIND restart is necessary.
     """
     #search = []
     for each in search: 
@@ -333,6 +335,22 @@ def parsing_bind_stdout(stdout, opt, search = []):
             start_bind10()
             run_bindctl (True, opt)
 
+def search_for_errors(succeed, opt, result, search = []):
+    """
+    This function is for seeking and reporting errors in BIND configuration process.
+    """
+    if opt is not "clean":
+        if succeed:
+            for each in search: 
+                if each in result.stdout or each in result.stderr:
+                    assert False, 'Server operation: ' + opt + ' failed! '
+        if not succeed:
+            for each in search: 
+                if each in result.stdout or each in result.stderr:
+                    break
+            else:
+                assert False, 'Server operation: ' + opt + ' not failed!'
+                
 def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
@@ -391,18 +409,7 @@ def run_bindctl (succeed, opt):
     # some times clean can fail, so we wanna test only start and conf
     # for now we fail test on any presence of stderr, probably this will
     # need some more specific search.
-    search = ["ImportError:",'"config revert".',"Error"]
-    if opt is not "clean":
-        if succeed:
-            for each in search: 
-                if each in result.stdout or each in result.stderr:
-                    assert False, 'Server operation: ' + opt + ' failed! '
-        if not succeed:
-            for each in search: 
-                if each in result.stdout or each in result.stderr:
-                    break
-            else:
-                assert False, 'Server operation: ' + opt + ' not failed!'
+    search_for_errors (succeed, opt, result, ["ImportError:",'"config revert".',"Error"])
 
     # Error 32: Broken pipe
     # this error needs different aproach then others. Bind10 needs to be restarted.
