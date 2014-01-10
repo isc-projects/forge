@@ -173,6 +173,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     assert option_name in kea_options6, "Unsupported option name " + option_name
     option_code = kea_options6.get(option_name)
     
+    # need to have numbers for multiple options for each subnet! 
     world.cfg["conf"] += '''
         config add Dhcp6/subnet6[{subnet}]/option-data
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/name "{option_name}"
@@ -317,8 +318,8 @@ def stop_srv():
     run_bindctl ('clean')
 
 def restart_srv():
-    fabric_run_command('(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') # can't be less then 7, server needs time to restart.
-
+    # can't be less then 7, server needs time to restart.
+    fabric_run_command('(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') 
 
 def parsing_bind_stdout(stdout, opt, search = []):
     """
@@ -330,7 +331,9 @@ def parsing_bind_stdout(stdout, opt, search = []):
     for each in search: 
         if each in stdout:
             print "RESTART BIND10, found ", each 
-            from serversupport.bind10 import kill_bind10, start_bind10 #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
+            #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
+            #error fixed, but I decided to keep it anyway.
+            from serversupport.bind10 import kill_bind10, start_bind10 
             kill_bind10()
             start_bind10()
             run_bindctl (True, opt)
