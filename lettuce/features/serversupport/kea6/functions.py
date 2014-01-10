@@ -93,7 +93,7 @@ def prepare_cfg_subnet(step, subnet, pool):
             config set Dhcp6/subnet6[0]/interface "{eth}"
             '''.format(**locals())
 
-    world.kea["subnet_cnt"] = world.kea["subnet_cnt"] + 1
+    world.kea["subnet_cnt"] += 1
 
 def config_srv_another_subnet(step, subnet, pool, interface):
     count = world.kea["subnet_cnt"]
@@ -108,7 +108,7 @@ def config_srv_another_subnet(step, subnet, pool, interface):
                 config set Dhcp6/subnet6[{count}]/interface "{interface}"
                 '''.format(**locals())
 
-    world.kea["subnet_cnt"] = world.kea["subnet_cnt"] + 1
+    world.kea["subnet_cnt"] += 1
     
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
 
