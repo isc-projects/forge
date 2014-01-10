@@ -41,11 +41,11 @@ def prepare_cfg_subnet(step, subnet, pool):
     # subnet defintion Kea4
     t1 = world.cfg["server_times"]["renew-timer"]
     subnetcfg ='''\
-    config set Dhcp4/renew-timer {t1}
-    config add Dhcp4/subnet4
-    config set Dhcp4/subnet4[0]/subnet "{subnet}"
-    config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
-    '''.format(**locals())
+        config set Dhcp4/renew-timer {t1}
+        config add Dhcp4/subnet4
+        config set Dhcp4/subnet4[0]/subnet "{subnet}"
+        config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
+        '''.format(**locals())
      
     if eth is not None:
         world.cfg["conf"] += '''\
@@ -82,7 +82,7 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
         config set Dhcp4/option-data[{number}]/csv-format true
         config set Dhcp4/option-data[{number}]/data "{opt_value}"
         '''.format(**locals())
-        
+
     #world.kea["option_usr_cnt"] += 1
     world.kea["option_cnt"] += 1
 
@@ -115,6 +115,8 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
         '''.format(**locals())
 
 def disanable_client_echo(step):
+    # after using it, we should revert that at the end!
+    # keep that in mind when first time using it.
     world.cfg["conf"] += '''
         config add Dhcp4/echo-client-id
         config set Dhcp4/echo-client-id False
@@ -187,6 +189,9 @@ def prepare_cfg_kea4_for_kea4_stop(filename):
         config set Dhcp4/option-data []
         # clear loggers
         config set Logging/loggers []
+        #config set Dhcp4/echo-client-id True
+        config set Dhcp4/next-server ""
+        config set Dhcp4/interfaces []
         # Stop b10-dhcp4 server from starting again
         config remove Init/components b10-dhcp4
         config commit
@@ -236,8 +241,8 @@ def fabric_run_bindctl (opt):
     
     result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
     
-    serversupport.kea6.functionssearch_for_errors (True, opt, result, ["ImportError:",'"config revert".',"Error"])
-    serversupport.kea6.functionsparsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
+    serversupport.kea6.functions.search_for_errors (True, opt, result, ["ImportError:",'"config revert".',"Error"])
+    serversupport.kea6.functions.parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
 def start_srv(start, process):
     serversupport.kea6.functions.cfg_write()
@@ -246,12 +251,12 @@ def start_srv(start, process):
     fabric_run_bindctl ('start')#start
     fabric_run_bindctl ('conf')#conf
 
-
 def stop_srv():
     fabric_run_bindctl ('clean')
 
 def restart_srv():
-    fabric_run_command('(echo "Dhcp4 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') # can't be less then 7, server needs time to restart.
+    # can't be less then 7, server needs time to restart.
+    fabric_run_command('(echo "Dhcp4 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"
