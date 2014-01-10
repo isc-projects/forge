@@ -34,7 +34,7 @@ import subprocess
 import sys
 import time
 
-add_option = {'client_id' : True,
+add_option_v6 = {'client_id' : True,
               'preference' : False,
               'time' : False,
               'relay_msg' : False,
@@ -57,7 +57,7 @@ add_option = {'client_id' : True,
               'vendor_specific_info': False
               }
 
-values = {"T1": 0, # IA_NA IA_PD
+values_v6 = {"T1": 0, # IA_NA IA_PD
           "T2": 0, # IA_NA IA_PD
           "address": "::",
           "prefix": "::",
@@ -73,20 +73,38 @@ values = {"T1": 0, # IA_NA IA_PD
 
 # times values, plz do not change this.
 # there is a test step to do this
-server_times = {"renew-timer": 1000,
+server_times_v6 = {"renew-timer": 1000,
                 "rebind-timer": 2000,
                 "preferred-lifetime": 3000,
                 "valid-lifetime": 4000,
-                "rapid-commit": False 
+                "rapid-commit": False # yes that little odd, but let us keep it that way, 
+                                      # rapid-commit it's only option that is used 
+                                      # only in server configuration
                 }
+
+server_times_v4 = {"renew-timer": 1000
+                   } 
+
+values_v4 = {}
+
+add_option_v4 = {}
+
 # we should consider transfer most of functions to separate v4 and v6 files
-# there is no v4 functions yet ;)
+# TODO: make separate files after branch merge
+
 def set_values():
-    world.cfg["values"] = values.copy()
-    world.cfg["server_times"] = server_times.copy()
-    
+    if PROTO == "v6":
+        world.cfg["values"] = values_v6.copy()
+        world.cfg["server_times"] = server_times_v6.copy()
+    else:
+        world.cfg["values"] = values_v4.copy()
+        world.cfg["server_times"] = server_times_v4.copy()
+        
 def set_options():
-    world.cfg["add_option"] = add_option.copy()
+    if PROTO == "v6":
+        world.cfg["add_option"] = add_option_v6.copy()
+    else:
+        world.cfg["add_option"] = add_option_v4.copy()
     
 def add_result_to_raport(info):
     world.result.append(info)
@@ -104,9 +122,9 @@ def multiprotocol_initialize():
     pass
 
 def v4_initialize():
-        # Setup scapy for v4
+    # Setup scapy for v4
     #conf.iface = IFACE
-    #conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
+    conf.checkIPaddr = False # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
     world.cfg["srv4_addr"] = SRV4_ADDR
     world.cfg["rel4_addr"] = REL4_ADDR
     world.cfg["giaddr4"] = GIADDR4
@@ -120,9 +138,6 @@ def v6_initialize():
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.cfg["space"] = "dhcp6"
-
-    set_values() 
-    set_options()
 
     # Setup scapy for v6
     conf.iface6 = IFACE
@@ -218,11 +233,14 @@ def initialize(scenario):
 
     # set couple things depending on used IP version:
     # IPv6:
-    if PROTO == "v6":
+    if world.proto == "v6":
         v6_initialize()
     # IPv4:
-    if PROTO == "v4":
+    if world.proto == "v4":
         v4_initialize()
+
+    set_values() 
+    set_options()
 
     if TCPDUMP:
         # to create separate files for each test we need:
@@ -306,7 +324,6 @@ def say_goodbye(total):
     """
     Server stopping after whole work
     """
-    
     get_common_logger().info("%d of %d scenarios passed." % (
         total.scenarios_passed,
         total.scenarios_ran
