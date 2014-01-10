@@ -15,27 +15,15 @@
 
 from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file
 from lettuce import world
+from logging_facility import *
 from textwrap import dedent
 import serversupport.kea6.functions
 from logging_facility import get_common_logger
-from init_all import SERVER_INSTALL_DIR
+from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
 
 ## functions to import:
 ## run_command, set_logger, prepare_config_file,cfg_write, parsing_bind_stdout
 ## set_time ?
-
-def prepare_cfg_subnet(step, subnet, pool):
-
-    # subnet defintion Kea4
-    subnetcfg ='''\
-    config add Dhcp4/subnet4
-    config set Dhcp4/subnet4[0]/subnet "{subnet}"
-    config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
-    config commit\n
-    '''.format(**locals())
-    
-    world.cfg["conf"] += dedent(subnetcfg) 
-
 
 kea_options4= { "subnet-mask": 1,
                  "routers": 3,
@@ -48,16 +36,72 @@ kea_options4= { "subnet-mask": 1,
                  "ntp-servers": 42 # ipv4-address (array)
                  }
 
+def prepare_cfg_subnet(step, subnet, pool):
+    eth = SERVER_IFACE
+    # subnet defintion Kea4
+    subnetcfg ='''\
+    config add Dhcp4/subnet4
+    config set Dhcp4/subnet4[0]/subnet "{subnet}"
+    config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
+    '''.format(**locals())
+     
+    if eth is not None:
+        world.cfg["conf"] += '''\
+            config add Dhcp4/interfaces "{eth}"
+            '''.format(**locals())
+                
+    world.cfg["conf"] += dedent(subnetcfg)
+    world.kea["subnet_cnt"] += 1
+
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
-    #implement this
-    pass
+    if (not "conf" in world.cfg):
+        world.cfg["conf"] = ""
+
+    number = world.kea["option_cnt"]
+
+    ## there is some problem with world.kea["option_usr_cnt"], no idea what.. 
+    ## error msg: KeyError: 'option_usr_cnt'
+    ## for now we keep option that user can add only one user option on test!
+    #number_def = world.kea["option_usr_cnt"]
+    number_def = 0
+    
+    world.cfg["conf"] += '''config add Dhcp4/option-def
+        config set Dhcp4/option-def[{number_def}]/name "{opt_name}"
+        config set Dhcp4/option-def[{number_def}]/code {opt_code}
+        config set Dhcp4/option-def[{number_def}]/type "{opt_type}"
+        config set Dhcp4/option-def[{number_def}]/array false
+        config set Dhcp4/option-def[{number_def}]/record-types ""
+        config set Dhcp4/option-def[{number_def}]/space "{space}"
+        config set Dhcp4/option-def[{number_def}]/encapsulate ""
+        config add Dhcp4/option-data
+        config set Dhcp4/option-data[{number}]/name "{opt_name}"
+        config set Dhcp4/option-data[{number}]/code {opt_code}
+        config set Dhcp4/option-data[{number}]/space "{space}"
+        config set Dhcp4/option-data[{number}]/csv-format true
+        config set Dhcp4/option-data[{number}]/data "{opt_value}"
+        '''.format(**locals())
+        
+    #world.kea["option_usr_cnt"] += 1
+    world.kea["option_cnt"] += 1
 
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     #implement this
     pass
-def config_srv_another_subnet(step, subnet, pool, interface):
+
+def add_interface():
     #implement this
     pass
+
+def config_srv_another_subnet(step, subnet, pool, interface):
+    number = world.kea["subnet_cnt"]
+    subnetcfg ='''\
+    config add Dhcp4/subnet4
+    config set Dhcp4/subnet4[{number}]/subnet "{subnet}"
+    config set Dhcp4/subnet4[{number}]/pool [ "{pool}" ]
+    '''.format(**locals())
+               
+    world.cfg["conf"] += dedent(subnetcfg)
+    world.kea["subnet_cnt"] += 1
    
 def prepare_cfg_add_option(step, option_name, option_value, space): # TODO: enable space configuration
     if (not "conf" in world.cfg):
@@ -66,21 +110,15 @@ def prepare_cfg_add_option(step, option_name, option_value, space): # TODO: enab
     assert option_name in kea_options4, "Unsupported option name " + option_name
     option_code = kea_options4.get(option_name)
 
-    if not hasattr(world, 'kea'):
-        world.kea = {}
-    else:
-        world.kea.clear()
-    world.kea["option_cnt"] = 0
-    
-    option_cnt=world.kea["option_cnt"]
+    option_cnt = world.kea["option_cnt"]
+
     options = '''\
     config add Dhcp4/option-data
     config set Dhcp4/option-data[{option_cnt}]/name "{option_name}"
     config set Dhcp4/option-data[{option_cnt}]/code {option_code}
-    config set Dhcp4/option-data[{option_cnt}]/space "dhcp4"
+    config set Dhcp4/option-data[{option_cnt}]/space "{space}"
     config set Dhcp4/option-data[{option_cnt}]/csv-format true
     config set Dhcp4/option-data[{option_cnt}]/data "{option_value}"
-    config commit
     '''.format(**locals())
     world.cfg["conf"] +=  dedent(options)
     world.kea["option_cnt"] += 1
@@ -112,6 +150,8 @@ def prepare_cfg_kea4_for_kea4_stop(filename):
         config set Dhcp4/option-def []
         # Get rid of any option values
         config set Dhcp4/option-data []
+        # clear loggers
+        config set Logging/loggers []
         # Stop b10-dhcp4 server from starting again
         config remove Init/components b10-dhcp4
         config commit
@@ -132,21 +172,34 @@ def fabric_run_bindctl (opt):
         prepare_cfg_kea4_for_kea4_stop(cfg_file)
         serversupport.kea6.functions.prepare_config_file(cfg_file)
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        remove_local_file(cfg_file + '_processed')
+        
     if opt == "start":
         get_common_logger().debug('------------ starting fresh kea')
         cfg_file = 'kea4-start.cfg'
         prepare_cfg_kea4_for_kea4_start(cfg_file)
         serversupport.kea6.functions.prepare_config_file(cfg_file)
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
+        remove_local_file(cfg_file + '_processed')
+        
     if opt == "conf":
         get_common_logger().debug('------------ kea configuration')
         cfg_file = world.cfg["cfg_file"]
+
         serversupport.kea6.functions.prepare_config_file(cfg_file)
+
+        add_last = open (cfg_file + "_processed", 'a')
+
+        # add 'config commit' we don't put it before
+        add_last.write("config commit")
+        add_last.close()
+
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         cpoy_configuration_file(cfg_file + '_processed')
+        remove_local_file(cfg_file + '_processed')
+        
     if opt == "restart":
-        #implement this
-        pass
+        restart_srv()
     
     result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
 
