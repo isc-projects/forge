@@ -103,7 +103,7 @@ def config_srv_another_subnet(step, subnet, pool, interface):
     world.cfg["conf"] += dedent(subnetcfg)
     world.kea["subnet_cnt"] += 1
    
-def prepare_cfg_add_option(step, option_name, option_value, space): # TODO: enable space configuration
+def prepare_cfg_add_option(step, option_name, option_value, space):
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
 
@@ -167,7 +167,7 @@ def fabric_run_bindctl (opt):
     Run bindctl with prepered config file
     """    
     if opt == "clean":
-        get_common_logger().debug('------------ cleaning kea configuration')
+        get_common_logger().debug('cleaning kea configuration')
         cfg_file = 'kea4-stop.cfg'
         prepare_cfg_kea4_for_kea4_stop(cfg_file)
         serversupport.kea6.functions.prepare_config_file(cfg_file)
@@ -175,7 +175,7 @@ def fabric_run_bindctl (opt):
         remove_local_file(cfg_file + '_processed')
         
     if opt == "start":
-        get_common_logger().debug('------------ starting fresh kea')
+        get_common_logger().debug('starting fresh kea')
         cfg_file = 'kea4-start.cfg'
         prepare_cfg_kea4_for_kea4_start(cfg_file)
         serversupport.kea6.functions.prepare_config_file(cfg_file)
@@ -183,11 +183,9 @@ def fabric_run_bindctl (opt):
         remove_local_file(cfg_file + '_processed')
         
     if opt == "conf":
-        get_common_logger().debug('------------ kea configuration')
+        get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
-
         serversupport.kea6.functions.prepare_config_file(cfg_file)
-
         add_last = open (cfg_file + "_processed", 'a')
 
         # add 'config commit' we don't put it before
@@ -203,18 +201,21 @@ def fabric_run_bindctl (opt):
     
     result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
 
+    # TODO: parsing result for errors!
+
 def start_srv(start, process):
     serversupport.kea6.functions.cfg_write()
-    get_common_logger().debug("------ Bind10, dhcp4 configuration procedure:")
+    get_common_logger().debug("Bind10, dhcp4 configuration procedure:")
     fabric_run_bindctl ('clean')#clean and stop
     fabric_run_bindctl ('start')#start
     fabric_run_bindctl ('conf')#conf
 
 
-def restart_srv():
-    pass
-    # @todo: Implement this
+def stop_srv():
+    fabric_run_bindctl ('clean')
 
+def restart_srv():
+    fabric_run_command('(echo "Dhcp4 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') # can't be less then 7, server needs time to restart.
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"
