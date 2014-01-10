@@ -110,6 +110,7 @@ def v4_initialize():
     world.cfg["srv4_addr"] = SRV4_ADDR
     world.cfg["rel4_addr"] = REL4_ADDR
     world.cfg["giaddr4"] = GIADDR4
+    world.cfg["space"] = "dhcp4"
 
 def v6_initialize():
     # RFC 3315 define two addresess:
@@ -118,6 +119,7 @@ def v6_initialize():
     world.cfg["address_v6"] = "ff02::1:2"
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
+    world.cfg["space"] = "dhcp6"
 
     set_values() 
     set_options()

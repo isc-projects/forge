@@ -117,7 +117,7 @@ def config_srv_opt(step, option_name, option_value):
     This step causes to set in to main space!
     """
     option_name, option_value = test_define_value( option_name, option_value)
-    dhcpfun.prepare_cfg_add_option(step, option_name, option_value, 'dhcp6')
+    dhcpfun.prepare_cfg_add_option(step, option_name, option_value, world.cfg["space"])
 
 @step('On space (\S+) server is configured with (\S+) option with value (\S+).')
 def config_srv_opt_space(step, space, option_name, option_value):
@@ -138,7 +138,7 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
     opt_value value of the option, e.g. 1
     """
     opt_name, opt_code, opt_type, opt_value = test_define_value(opt_name, opt_code, opt_type, opt_value)
-    dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, 'dhcp6')
+    dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, world.cfg["space"])
 
 @step('On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_value):
