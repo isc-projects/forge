@@ -39,7 +39,9 @@ kea_options4= { "subnet-mask": 1,
 def prepare_cfg_subnet(step, subnet, pool):
     eth = SERVER_IFACE
     # subnet defintion Kea4
+    t1 = world.cfg["server_times"]["renew-timer"]
     subnetcfg ='''\
+    config set Dhcp4/renew-timer {t1}
     config add Dhcp4/subnet4
     config set Dhcp4/subnet4[0]/subnet "{subnet}"
     config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
@@ -84,13 +86,46 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
     #world.kea["option_usr_cnt"] += 1
     world.kea["option_cnt"] += 1
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
-    #implement this
-    pass
+def add_siaddr(step, addr, subnet_number):
+    # not tested
+    if subnet_number == None:
+        world.cfg["conf"] += '''
+            config add Dhcp4/next-server
+            config set Dhcp4/next-server "{addr}"
+            '''.format(**locals())
+    else:
+        world.cfg["conf"] += '''
+            config add Dhcp4/subnet[{subnet_number}]/next-server
+            config set Dhcp4/subnet[{subnet_number}]/next-server "{addr}"
+            '''.format(**locals())
 
-def add_interface():
-    #implement this
-    pass
+def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
+    
+    assert option_name in kea_options4, "Unsupported option name " + option_name
+    option_code = kea_options4.get(option_name)
+    
+    # need to have numbers for multiple options for each subnet! 
+    world.cfg["conf"] += '''
+        config add Dhcp4/subnet4[{subnet}]/option-data
+        config set Dhcp4/subnet4[{subnet}]/option-data[0]/name "{option_name}"
+        config set Dhcp4/subnet4[{subnet}]/option-data[0]/code {option_code}
+        config set Dhcp4/subnet4[{subnet}]/option-data[0]/space "dhcp4"
+        config set Dhcp4/subnet4[{subnet}]/option-data[0]/csv-format true
+        config set Dhcp4/subnet4[{subnet}]/option-data[0]/data "{option_value}"
+        '''.format(**locals())
+
+def disanable_client_echo(step):
+    world.cfg["conf"] += '''
+        config add Dhcp4/echo-client-id
+        config set Dhcp4/echo-client-id False
+        config commit
+        '''.format(**locals())
+
+def add_interface(step, interface):
+    # not jet tested!
+    world.cfg["conf"] += '''
+        config add Dhcp4/interfaces {interface}
+        '''.format(**locals())
 
 def config_srv_another_subnet(step, subnet, pool, interface):
     number = world.kea["subnet_cnt"]
@@ -200,8 +235,9 @@ def fabric_run_bindctl (opt):
         restart_srv()
     
     result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
-
-    # TODO: parsing result for errors!
+    
+    serversupport.kea6.functionssearch_for_errors (True, opt, result, ["ImportError:",'"config revert".',"Error"])
+    serversupport.kea6.functionsparsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
 def start_srv(start, process):
     serversupport.kea6.functions.cfg_write()
