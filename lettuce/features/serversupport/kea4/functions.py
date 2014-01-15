@@ -19,7 +19,7 @@ from logging_facility import *
 from textwrap import dedent
 import serversupport.kea6.functions
 from logging_facility import get_common_logger
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
+from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS
 
 ## functions to import:
 ## run_command, set_logger, prepare_config_file,cfg_write, parsing_bind_stdout
@@ -189,6 +189,8 @@ def prepare_cfg_kea4_for_kea4_stop(filename):
         config set Dhcp4/option-data []
         # clear loggers
         config set Logging/loggers []
+        # clear loggers
+        config set Logging/loggers []
         #config set Dhcp4/echo-client-id True
         config set Dhcp4/next-server ""
         config set Dhcp4/interfaces []
@@ -215,6 +217,9 @@ def fabric_run_bindctl (opt):
         remove_local_file(cfg_file + '_processed')
         
     if opt == "start":
+        if SAVE_BIND_LOGS:
+            serversupport.kea6.functions.set_logger()
+        
         get_common_logger().debug('starting fresh kea')
         cfg_file = 'kea4-start.cfg'
         prepare_cfg_kea4_for_kea4_start(cfg_file)
