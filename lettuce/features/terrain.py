@@ -82,7 +82,9 @@ server_times_v6 = {"renew-timer": 1000,
                                       # only in server configuration
                 }
 
-server_times_v4 = {"renew-timer": 1000
+server_times_v4 = {"renew-timer": 1000,
+                   "rebind-timer": 2000,
+                   "valid-lifetime": 4000,
                    } 
 
 values_v4 = {}
