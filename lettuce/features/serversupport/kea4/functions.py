@@ -40,8 +40,13 @@ def prepare_cfg_subnet(step, subnet, pool):
     eth = SERVER_IFACE
     # subnet defintion Kea4
     t1 = world.cfg["server_times"]["renew-timer"]
+    t2 = world.cfg["server_times"]["rebind-timer"]
+    t3 = world.cfg["server_times"]["valid-lifetime"]
+
     subnetcfg ='''\
         config set Dhcp4/renew-timer {t1}
+        config set Dhcp4/rebind-timer {t2}
+        config set Dhcp4/valid-lifetime {t3}
         config add Dhcp4/subnet4
         config set Dhcp4/subnet4[0]/subnet "{subnet}"
         config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
