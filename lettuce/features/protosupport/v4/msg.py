@@ -6,6 +6,7 @@ from scapy.fields import Field
 from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sendp, sniff
+from random import randint
 import protosupport.v6.msg
 
 
@@ -14,7 +15,7 @@ def client_requests_option(step, opt_type):
         world.prl = "" # don't request anything by default
     world.prl += chr(int(opt_type)) # put a single byte there
 
-def client_send_msg(step, msgname, opt_type, unknown):
+def client_send_msg(step, msgname):
     """
     Sends specified message with defined options.
     Parameters:
@@ -22,7 +23,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
     num_opts: number of options to send.
     opt_type: option type
     """
-    
+    world.climsg = []
     options = []
 
     if hasattr(world, 'prl'):
@@ -32,20 +33,30 @@ def client_send_msg(step, msgname, opt_type, unknown):
 
     options += ["end"] # end option
 
+    # What about messages: "force_renew","lease_query",
+    # "lease_unassigned","lease_unknown","lease_active",
+    # messages from server: offer, ack, nak
+
     if (msgname == "DISCOVER"):
-        msg = create_discover(options)
-#    elif (msgname == "OFFER"):
-#        msg = create_offer()
-#    elif (msgname == "REQUEST"):
-#        msg = create_request()
-#    elif (msgname == "ACK"):
-#        msg = create_ack()
-#    elif (msgname == "NAK"):
-#        msg = create_nak()
-#    elif (msgname == "DHCPINFORM"):
-#        msg = create_inform()
-#    elif (msgname == "DHCPRELEASE"):
-#        msg = create_release()
+        # msg code: 1
+        msg = build_msg([("message-type","discover")]+options)
+        
+    elif (msgname == "REQUEST"):
+        # msg code: 3
+        msg = build_msg([("message-type","request")]+options)
+        
+    elif (msgname == "DECLINE"):
+        # msg code: 4
+        msg = build_msg([("message-type","decline")]+options)
+        
+    elif (msgname == "RELEASE"):
+        # msg code: 7
+        msg = build_msg([("message-type","release")]+options)
+        
+    elif (msgname == "INFORM"):
+        # msg code: 8
+        msg = build_msg([("message-type","inform")]+options)
+
     else:
         assert False, "Invalid message type: %s" % msgname
 
@@ -57,32 +68,27 @@ def client_send_msg(step, msgname, opt_type, unknown):
     get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
     
 
-def create_discover(options):
-
-    opts = [("message-type","discover")]
-    if options:
-        opts += options
-    else:
-        assert False
+def build_msg(opts):
 
     conf.checkIPaddr = False
     fam,hw = get_if_raw_hwaddr(conf.iface)
 
 
-    discover = Ether(dst="ff:ff:ff:ff:ff:ff")/IP(src=world.cfg["rel4_addr"],dst=world.cfg["srv4_addr"])
-    discover /= UDP(sport=68,dport=67)/BOOTP(chaddr=hw, giaddr=world.cfg["giaddr4"])
-    dhcp = DHCP(options=opts)
-    discover /= dhcp
-    return discover
+    msg = Ether(dst = "ff:ff:ff:ff:ff:ff")/IP(dst = world.cfg["srv4_addr"])
+    msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = hw, giaddr = world.cfg["giaddr4"])
+    msg /= DHCP(options = opts)
+    msg.xid = randint(0, 256*256*256)
+    
+    return msg
 
-def send_wait_for_message(step, presence, message):
+def send_wait_for_message(step, type, presence, exp_message):
     """
     Block until the given message is (not) received.
     """
 
     # We need to use srp() here (send and receive on layer 2)
 
-    ans,unans = srp(world.climsg, iface=world.cfg["iface"], timeout=2, multi=True, verbose=1)
+    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 2, multi = True, verbose = 1)
 
     world.srvmsg = []
     for x in ans:
