@@ -22,15 +22,48 @@ from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS
 
 from serversupport.kea6.functions import search_for_errors, parsing_bind_stdout, prepare_config_file, set_logger, cfg_write, set_time
 
-kea_options4= { "subnet-mask": 1,
-                 "routers": 3,
-                 "name-servers": 5, # ipv4-address (array)
-                 "domain-name-servers": 6, # ipv4-address (array)
-                 "domain-name": 15, # fqdn (single)
-                 "broadcast-address": 28, # ipv4-address (single)
-                 "nis-domain": 40, # string (single)
-                 "nis-servers": 41, # ipv4-address (array)
-                 "ntp-servers": 42 # ipv4-address (array)
+kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
+                "time-offset": 2, 
+                "routers": 3, # ipv4-address (single)
+                "time-servers": 4, # ipv4-address (single)
+                "name-servers": 5, # ipv4-address (array)
+                "domain-name-servers": 6, # ipv4-address (array)
+                "log-servers": 7, # ipv4-address (single)
+                "cookie-servers": 8,  # ipv4-address (single)
+                "lpr-servers": 9, # ipv4-address (single)
+                "impress-servers": 10, # ipv4-address (single)
+                "resource-location-servers": 11, # ipv4-address (single)
+                "host-name": 12, # string 
+                "boot-size": 13,
+                "merit-dump": 14, # string 
+                "domain-name": 15, # fqdn (single)
+                "swap-server": 16, # ipv4-address (single)
+                "root-path": 17, # string 
+                "extensions-path": 18, # string 
+                "ip-forwarding": 19, # boolean
+                "non-local-source-routing": 20, # boolean
+                "policy-filter": 21, # ipv4-address (single)
+                "max-dgram-reassembly": 22,
+                "default-ip-ttl": 23,
+                "path-mtu-aging-timeout": 24,
+                "path-mtu-plateau-table": 25,
+                "interface-mtu": 26,
+                "all-subnets-local": 27, # boolean
+                "broadcast-address": 28, # ipv4-address (single)
+                "perform-mask-discovery": 29, # boolean
+                "mask-supplier": 30, # boolean
+                "router-discovery": 31, # boolean
+                "router-solicitation-address": 32, # ipv4-address (single)
+                "static-routes": 33, # ipv4-address (array)
+                "trailer-encapsulation": 34, # boolean
+                "arp-cache-timeout": 35,
+                "ieee802-3-encapsulation": 36,
+                "default-tcp-ttl": 37,
+                "tcp-keepalive-internal": 38,
+                "tcp-keepalive-garbage": 39, # boolean
+                "nis-domain": 40, # string (single)
+                "nis-servers": 41, # ipv4-address (array)
+                "ntp-servers": 42 # ipv4-address (array)
                  }
 
 def prepare_cfg_subnet(step, subnet, pool):
