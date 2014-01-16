@@ -17,13 +17,10 @@ from serversupport.multi_server_functions import fabric_run_command, fabric_send
 from lettuce import world
 from logging_facility import *
 from textwrap import dedent
-import serversupport.kea6.functions
 from logging_facility import get_common_logger
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS
 
-## functions to import:
-## run_command, set_logger, prepare_config_file,cfg_write, parsing_bind_stdout
-## set_time ?
+from serversupport.kea6.functions import search_for_errors, parsing_bind_stdout, prepare_config_file, set_logger, cfg_write, set_time
 
 kea_options4= { "subnet-mask": 1,
                  "routers": 3,
@@ -65,12 +62,7 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
         world.cfg["conf"] = ""
 
     number = world.kea["option_cnt"]
-
-    ## there is some problem with world.kea["option_usr_cnt"], no idea what.. 
-    ## error msg: KeyError: 'option_usr_cnt'
-    ## for now we keep option that user can add only one user option on test!
-    #number_def = world.kea["option_usr_cnt"]
-    number_def = 0
+    number_def = world.kea["option_usr_cnt"]
     
     world.cfg["conf"] += '''config add Dhcp4/option-def
         config set Dhcp4/option-def[{number_def}]/name "{opt_name}"
@@ -88,7 +80,7 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
         config set Dhcp4/option-data[{number}]/data "{opt_value}"
         '''.format(**locals())
 
-    #world.kea["option_usr_cnt"] += 1
+    world.kea["option_usr_cnt"] += 1
     world.kea["option_cnt"] += 1
 
 def add_siaddr(step, addr, subnet_number):
@@ -217,25 +209,25 @@ def fabric_run_bindctl (opt):
         get_common_logger().debug('cleaning kea configuration')
         cfg_file = 'kea4-stop.cfg'
         prepare_cfg_kea4_for_kea4_stop(cfg_file)
-        serversupport.kea6.functions.prepare_config_file(cfg_file)
+        prepare_config_file(cfg_file)
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
         
     if opt == "start":
         if SAVE_BIND_LOGS:
-            serversupport.kea6.functions.set_logger()
+            set_logger()
         
         get_common_logger().debug('starting fresh kea')
         cfg_file = 'kea4-start.cfg'
         prepare_cfg_kea4_for_kea4_start(cfg_file)
-        serversupport.kea6.functions.prepare_config_file(cfg_file)
+        prepare_config_file(cfg_file)
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
         
     if opt == "conf":
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
-        serversupport.kea6.functions.prepare_config_file(cfg_file)
+        prepare_config_file(cfg_file)
         add_last = open (cfg_file + "_processed", 'a')
 
         # add 'config commit' we don't put it before
@@ -251,11 +243,11 @@ def fabric_run_bindctl (opt):
     
     result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
     
-    serversupport.kea6.functions.search_for_errors (True, opt, result, ["ImportError:",'"config revert".',"Error"])
-    serversupport.kea6.functions.parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
+    search_for_errors (True, opt, result, ["ImportError:",'"config revert".',"Error"])
+    parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
 def start_srv(start, process):
-    serversupport.kea6.functions.cfg_write()
+    cfg_write()
     get_common_logger().debug("Bind10, dhcp4 configuration procedure:")
     fabric_run_bindctl ('clean')#clean and stop
     fabric_run_bindctl ('start')#start
