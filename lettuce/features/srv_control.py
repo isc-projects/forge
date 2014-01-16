@@ -143,7 +143,7 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
 @step('On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_value):
     """
-    Same step like ............. but specify that option on different space then main.
+    Same step like "Server is configured with custom option.." but specify that option on different space then main.
     """
     opt_name, opt_code, opt_type, opt_value, space = test_define_value(opt_name, opt_code, opt_type, opt_value, space)
     dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space)
