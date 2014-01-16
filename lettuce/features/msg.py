@@ -43,8 +43,8 @@ def client_sets_value(step, value_name, new_value):
     """
     dhcpmsg.client_sets_value(step, value_name, new_value)
 
-@step('Client sends (\w+) message( with (\w+) option)?')
-def client_send_msg(step, msgname, opt_type, unknown):
+@step('Client sends (\w+) message.')
+def client_send_msg(step, msgname):
     """
     This step actually build message (e.g. SOLICIT) with all details
     specified in steps like:
@@ -53,7 +53,7 @@ def client_send_msg(step, msgname, opt_type, unknown):
 	and others..
     Message builded here will be send in step: Server must response with...
     """
-    dhcpmsg.client_send_msg(step, msgname, opt_type, unknown)
+    dhcpmsg.client_send_msg(step, msgname)
 
 @step('Client does (NOT )?include (\S+).')
 def client_does_include(step, yes_or_not, opt_type):

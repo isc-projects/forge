@@ -65,13 +65,11 @@ def client_requests_option(step, opt_type):
 
     world.oro.reqopts.append(int(opt_type))
 
-def client_send_msg(step, msgname, opt_type, unknown):
+def client_send_msg(step, msgname):
     """
     Sends specified message with defined options.
     Parameters:
     msg ('<msg> message'): name of the message.
-    num_opts: number of options to send.
-    opt_type: option type
     """
     # Remove previous message waiting to be sent, just in case this is a
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
