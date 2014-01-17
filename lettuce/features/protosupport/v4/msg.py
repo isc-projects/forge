@@ -88,7 +88,7 @@ def send_wait_for_message(step, type, presence, exp_message):
 
     # We need to use srp() here (send and receive on layer 2)
 
-    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 2, multi = True, verbose = 1)
+    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 1)
 
     world.srvmsg = []
     for x in ans:
@@ -119,17 +119,23 @@ def get_option(msg, opt_code):
             return opt
     return None
 
-def response_check_include_option(step, yes_or_no, opt_code):
+def response_check_include_option(step, expected, opt_code):
     assert len(world.srvmsg) != 0, "No response received."
     opt = get_option(world.srvmsg[0], opt_code)
-    assert opt, "Expected option " + opt_code + " not present in the message."
-    
-    
-def response_check_option_content(step, opt_code, expect, data_type, expected):
+    if expected:
+        assert opt, "Expected option " + opt_code + " not present in the message."
+    else:
+        assert opt == None, "Expected option " + opt_code + " present in the message. But not expected!"
+
+def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
+    # expect == None when we want that content and NOT when we dont want! that's messy correct that!
     opt_code = int(opt_code)
     assert len(world.srvmsg) != 0, "No response received."
     opt_name, received = get_option(world.srvmsg[0], opt_code)
-    assert opt_name, "Expected option {opt_code} not present in the message.".format(**locals())
-    assert expected == received, "Invalid {opt_code} option received: {received}"\
-                                 " but expected {expected}".format(**locals())
+    if expect == None:
+        assert expected == received, "Invalid {opt_code} option received: {received}"\
+                                    " but expected {expected}".format(**locals())
+    else:
+        assert expected != received, "Invalid {opt_code} option received: {received}"\
+                                 " that value has been excluded from correct values".format(**locals())
 
