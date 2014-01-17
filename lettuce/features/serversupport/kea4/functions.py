@@ -63,7 +63,31 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "tcp-keepalive-garbage": 39, # boolean
                 "nis-domain": 40, # string (single)
                 "nis-servers": 41, # ipv4-address (array)
-                "ntp-servers": 42 # ipv4-address (array)
+                "ntp-servers": 42, # ipv4-address (array)
+                "vendor-encapsulated-options": 43, # empty
+                "netbios-name-servers": 44, # ipv4-address
+                "netbios-dd-server": 45, # ipv4-address
+                "netbios-node-type": 46, # uint8
+                "netbios-scope": 47, # string
+                "font-servers": 48, # ipv4-address
+                "x-display-manager": 49, # ipv4-address
+                "dhcp-requested-address": 50, # ipv4-address
+                "dhcp-option-overload": 52, # uint8
+                "dhcp-message": 56, # string
+                "dhcp-max-message-size": 57, # uint16
+                "vendor-class-identifier": 60, # binary
+                "nwip-domain-name": 62, # string
+                "nwip-suboptions": 63, # binary
+                "user-class": 77, # binary
+                "fqdn": 81, # record
+                "dhcp-agent-options": 82, # empty
+                "authenticate": 90, # binary
+                "client-last-transaction-time": 91, # uint32
+                "associated-ip": 92, # ipv4-address
+                "subnet-selection": 118, # ipv4-address
+                "domain-search": 119, # binary
+                "vivco-suboptions": 124, # binary
+                "vivso-suboptions": 125 # binary
                  }
 
 def prepare_cfg_subnet(step, subnet, pool):
