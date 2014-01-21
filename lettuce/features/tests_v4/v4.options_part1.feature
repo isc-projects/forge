@@ -247,23 +247,6 @@ Feature: DHCPv4 options part1
     Response option 14 MUST contain value some-string.
     
 @v4 @options @subnet
-    Scenario: v4.options.domain-name
-
-    Test Setup:
-    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    #Server is configured with domain-name option with value True.
-    Server is started. 
-
-    Test Procedure:
-    #Client requests option .
-    Client sends DISCOVER message and expect OFFER response.
-
-    Pass Criteria:
-    Server MUST respond with OFFER message.
-    #Response MUST include option .
-    #Response option  MUST contain value .
-    
-@v4 @options @subnet
     Scenario: v4.options.swap-server
 
     Test Setup:
