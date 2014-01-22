@@ -182,13 +182,13 @@ Feature: DHCPv4 options part2
     Server is started. 
 
     Test Procedure:
-    Client requests option 41.
+    Client requests option 42.
     Client sends DISCOVER message and expect OFFER response.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST include option 41.
-    Response option 41 MUST contain value 199.199.199.1.
+    Response MUST include option 42.
+    Response option 42 MUST contain value 199.199.199.1.
     
 @v4 @options @subnet
     Scenario: v4.options.netbios-name-servers
@@ -426,4 +426,4 @@ Feature: DHCPv4 options part2
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 118.
-    Response option 118 MUST contain value 188.188.188.2.
+    Response option 118 MUST contain value 188.188.188.2.    

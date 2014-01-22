@@ -319,7 +319,7 @@ Feature: DHCPv4 options part1
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with max-dgram-reassembly option with value 48.
+    Server is configured with max-dgram-reassembly option with value 600.
     Server is started. 
 
     Test Procedure:
@@ -329,7 +329,7 @@ Feature: DHCPv4 options part1
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 22.
-    Response option 22 MUST contain value 48.
+    Response option 22 MUST contain value 600.
     
 @v4 @options @subnet
     Scenario: v4.options.default-ip-ttl
