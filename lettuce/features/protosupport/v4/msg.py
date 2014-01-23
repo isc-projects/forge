@@ -85,16 +85,14 @@ def send_wait_for_message(step, type, presence, exp_message):
     """
     Block until the given message is (not) received.
     """
-
     # We need to use srp() here (send and receive on layer 2)
-
     ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 1)
 
     world.srvmsg = []
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-
+        #b.show()
     get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
                               % (len(ans), len(unans)))
 
@@ -104,9 +102,9 @@ def send_wait_for_message(step, type, presence, exp_message):
 def get_option(msg, opt_code):
     # We need to iterate over all options and see
     # if there's one we're looking for
-    
+    world.opts = []
     opt_name = DHCPOptions[int(opt_code)]
-
+    
     # dhcpv4 implementation in Scapy is a mess. The options array contains mix of 
     # strings, IPField, ByteEnumField and who knows what else. In each case the
     # values are accessed differenty
@@ -116,8 +114,17 @@ def get_option(msg, opt_code):
     x = msg.getlayer(4) # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
     for opt in x.options:
         if opt[0] == opt_name:
+            world.opts.append(opt)
             return opt
     return None
+
+def test_option(received, expected):
+    tmp = ""
+    for each in received:
+        tmp += str(each) + ' '
+        if str(each) == expected:
+            return True, each
+    return False, tmp
 
 def response_check_include_option(step, expected, opt_code):
     assert len(world.srvmsg) != 0, "No response received."
@@ -129,13 +136,15 @@ def response_check_include_option(step, expected, opt_code):
 
 def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
     # expect == None when we want that content and NOT when we dont want! that's messy correct that!
-    opt_code = int(opt_code)
     assert len(world.srvmsg) != 0, "No response received."
-    opt_name, received = get_option(world.srvmsg[0], opt_code)
+    
+    opt_code = int(opt_code)
+    received = get_option(world.srvmsg[0], opt_code)
+    outcome, received = test_option(received ,expected)
+
     if expect == None:
-        assert expected == received, "Invalid {opt_code} option received: {received}"\
+        assert outcome, "Invalid {opt_code} option received: {received}"\
                                     " but expected {expected}".format(**locals())
     else:
-        assert expected != received, "Invalid {opt_code} option received: {received}"\
+        assert not outcome, "Invalid {opt_code} option received: {received}"\
                                  " that value has been excluded from correct values".format(**locals())
-
