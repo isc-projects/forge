@@ -3,12 +3,13 @@
 Feature: DHCPv4 options part2
     This is a simple DHCPv4 options validation. Its purpose is to check
     if requested option are assigned properly.
+    
 @v4 @options @subnet
     Scenario: v4.options.path-mtu-plateau-table
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with path-mtu-plateau-table option with value 48.
+    Server is configured with path-mtu-plateau-table option with value 100,300,500.
     Server is started. 
 
     Test Procedure:
@@ -18,8 +19,10 @@ Feature: DHCPv4 options part2
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 25.
-    Response option 25 MUST contain value 48.
-    
+    Response option 25 MUST contain value 100.
+    Response option 25 MUST contain value 300.
+	Response option 25 MUST contain value 500.
+
 @v4 @options @subnet
     Scenario: v4.options.interface-mtu
 
@@ -36,7 +39,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 26.
     Response option 26 MUST contain value 321.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.broadcast-address
 
@@ -53,7 +56,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 28.
     Response option 28 MUST contain value 255.255.255.0.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.router-solicitation-address
 
@@ -70,13 +73,13 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 32.
     Response option 32 MUST contain value 199.199.199.1.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.static-routes
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with static-routes option with value 199.199.199.1.
+    Server is configured with static-routes option with value 199.199.199.1,70.70.70.1.
     Server is started. 
 
     Test Procedure:
@@ -87,7 +90,8 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 33.
     Response option 33 MUST contain value 199.199.199.1.
-    
+    Response option 33 MUST contain value 70.70.70.1.
+
 @v4 @options @subnet
     Scenario: v4.options.arp-cache-timeout
 
@@ -104,7 +108,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 35.
     Response option 35 MUST contain value 48.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.default-tcp-ttl
 
@@ -121,7 +125,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 37.
     Response option 37 MUST contain value 44.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.tcp-keepalive-internal
 
@@ -138,7 +142,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 38.
     Response option 38 MUST contain value 4896.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.nis-domain
 
@@ -155,13 +159,13 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 40.
     Response option 40 MUST contain value some.domain.com.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.nis-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with nis-servers option with value 199.199.199.1.
+    Server is configured with nis-servers option with value 199.199.199.1,100.100.100.15.
     Server is started. 
 
     Test Procedure:
@@ -172,13 +176,14 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 41.
     Response option 41 MUST contain value 199.199.199.1.
-    
+    Response option 41 MUST contain value 100.100.100.15.
+
 @v4 @options @subnet
     Scenario: v4.options.ntp-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with ntp-servers option with value 199.199.199.1.
+    Server is configured with ntp-servers option with value 199.199.199.1,100.100.100.15.
     Server is started. 
 
     Test Procedure:
@@ -189,13 +194,14 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 42.
     Response option 42 MUST contain value 199.199.199.1.
-    
+    Response option 42 MUST contain value 100.100.100.15.
+
 @v4 @options @subnet
     Scenario: v4.options.netbios-name-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with netbios-name-servers option with value 188.188.188.2.
+    Server is configured with netbios-name-servers option with value 188.188.188.2,100.100.100.15.
     Server is started. 
 
     Test Procedure:
@@ -206,13 +212,14 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 44.
     Response option 44 MUST contain value 188.188.188.2.
-    
+    Response option 44 MUST contain value 100.100.100.15.
+
 @v4 @options @subnet
     Scenario: v4.options.netbios-dd-server
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with netbios-dd-server option with value 188.188.188.2.
+    Server is configured with netbios-dd-server option with value 188.188.188.2,70.70.70.1.
     Server is started. 
 
     Test Procedure:
@@ -223,7 +230,8 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 45.
     Response option 45 MUST contain value 188.188.188.2.
-    
+    Response option 45 MUST contain value 70.70.70.1.
+
 @v4 @options @subnet
     Scenario: v4.options.netbios-node-type
 
@@ -263,7 +271,7 @@ Feature: DHCPv4 options part2
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with font-servers option with value 188.188.188.2.
+    Server is configured with font-servers option with value 188.188.188.2,100.100.100.1.
     Server is started. 
 
     Test Procedure:
@@ -274,13 +282,14 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 48.
     Response option 48 MUST contain value 188.188.188.2.
-    
+    Response option 48 MUST contain value 100.100.100.1.
+
 @v4 @options @subnet
     Scenario: v4.options.x-display-manager
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with x-display-manager option with value 188.188.188.2.
+    Server is configured with x-display-manager option with value 188.188.188.2,150.150.150.10.
     Server is started. 
 
     Test Procedure:
@@ -291,7 +300,8 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 49.
     Response option 49 MUST contain value 188.188.188.2.
-    
+    Response option 49 MUST contain value 150.150.150.10.
+
 @v4 @options @subnet
     Scenario: v4.options.dhcp-requested-address
 
@@ -308,7 +318,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 50.
     Response option 50 MUST contain value 188.188.188.2.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.dhcp-option-overload
 
@@ -325,7 +335,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 52.
     Response option 52 MUST contain value 88.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.dhcp-message
 
@@ -342,7 +352,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 56.
     Response option 56 MUST contain value some-message.
-    
+
 @v4 @options @subnet
     Scenario: v4.options.dhcp-max-message-size
 
@@ -399,7 +409,7 @@ Feature: DHCPv4 options part2
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with associated-ip option with value 188.188.188.2.
+    Server is configured with associated-ip option with value 188.188.188.2,199.188.188.12.
     Server is started. 
 
     Test Procedure:
@@ -410,6 +420,7 @@ Feature: DHCPv4 options part2
     Server MUST respond with OFFER message.
     Response MUST include option 92.
     Response option 92 MUST contain value 188.188.188.2.
+	Response option 92 MUST contain value 199.188.188.12.
 
 @v4 @options @subnet
     Scenario: v4.options.subnet-selection

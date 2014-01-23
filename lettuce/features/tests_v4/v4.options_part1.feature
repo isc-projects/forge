@@ -46,7 +46,7 @@ Feature: DHCPv4 options part1
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with routers option with value 100.100.100.0.
+    Server is configured with routers option with value 100.100.100.10,50.50.50.5.
     Server is started. 
 
     Test Procedure:
@@ -56,7 +56,8 @@ Feature: DHCPv4 options part1
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 3.
-    Response option 3 MUST contain value 100.100.100.0.
+    Response option 3 MUST contain value 100.100.100.10.
+    Response option 3 MUST contain value 50.50.50.5.
     
 @v4 @options @subnet
     Scenario: v4.options.time-servers
@@ -73,15 +74,15 @@ Feature: DHCPv4 options part1
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 4.
-    #multiple options not available right now
-    #Response option 4 MUST contain value 199.199.199.1,199.199.199.2.
+    Response option 4 MUST contain value 199.199.199.1.
+    Response option 4 MUST contain value 199.199.199.2.
     
 @v4 @options @subnet
     Scenario: v4.options.name-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with name-servers option with value 199.199.199.1.
+    Server is configured with name-servers option with value 199.199.199.1,100.100.100.1.
     Server is started. 
 
     Test Procedure:
@@ -92,13 +93,14 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 5.
     Response option 5 MUST contain value 199.199.199.1.
+    Response option 5 MUST contain value 100.100.100.1.
 
 @v4 @options @subnet
     Scenario: v4.options.domain-name-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with domain-name-servers option with value 199.199.199.1.
+    Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
     Server is started. 
 
     Test Procedure:
@@ -109,13 +111,14 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 6.
     Response option 6 MUST contain value 199.199.199.1.
+    Response option 6 MUST contain value 100.100.100.1.
     
 @v4 @options @subnet
     Scenario: v4.options.log-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with log-servers option with value 199.199.199.1.
+    Server is configured with log-servers option with value 199.199.199.1,100.100.100.1.
     Server is started. 
 
     Test Procedure:
@@ -126,13 +129,14 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 7.
     Response option 7 MUST contain value 199.199.199.1.
+    Response option 7 MUST contain value 100.100.100.1.
     
 @v4 @options @subnet
     Scenario: v4.options.cookie-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with cookie-servers option with value 199.199.199.1.
+    Server is configured with cookie-servers option with value 199.199.199.1,100.100.100.1.
     Server is started. 
 
     Test Procedure:
@@ -143,13 +147,14 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 8.
     Response option 8 MUST contain value 199.199.199.1.
+    Response option 8 MUST contain value 100.100.100.1.
     
 @v4 @options @subnet
     Scenario: v4.options.lpr-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with lpr-servers option with value 199.199.199.1.
+    Server is configured with lpr-servers option with value 199.199.199.1,150.150.150.1.
     Server is started. 
 
     Test Procedure:
@@ -160,13 +165,14 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 9.
     Response option 9 MUST contain value 199.199.199.1.
+    Response option 9 MUST contain value 150.150.150.1.
     
 @v4 @options @subnet
     Scenario: v4.options.impress-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with impress-servers option with value 199.199.199.1.
+    Server is configured with impress-servers option with value 199.199.199.1,150.150.150.1.
     Server is started. 
 
     Test Procedure:
@@ -177,13 +183,14 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 10.
     Response option 10 MUST contain value 199.199.199.1.
+    Response option 10 MUST contain value 150.150.150.1.
     
 @v4 @options @subnet
     Scenario: v4.options.resource-location-servers
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with resource-location-servers option with value 199.199.199.1.
+    Server is configured with resource-location-servers option with value 199.199.199.1,150.150.150.1.
     Server is started. 
 
     Test Procedure:
@@ -194,6 +201,7 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 11.
     Response option 11 MUST contain value 199.199.199.1.
+    Response option 11 MUST contain value 150.150.150.1.
     
 @v4 @options @subnet
     Scenario: v4.options.host-name
@@ -302,7 +310,7 @@ Feature: DHCPv4 options part1
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with policy-filter option with value 199.199.199.1.
+    Server is configured with policy-filter option with value 199.199.199.1,50.50.50.1.
     Server is started. 
 
     Test Procedure:
@@ -313,6 +321,7 @@ Feature: DHCPv4 options part1
     Server MUST respond with OFFER message.
     Response MUST include option 21.
     Response option 21 MUST contain value 199.199.199.1.
+    Response option 21 MUST contain value 50.50.50.1.
     
 @v4 @options @subnet
     Scenario: v4.options.max-dgram-reassembly
