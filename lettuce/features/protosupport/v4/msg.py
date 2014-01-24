@@ -81,21 +81,56 @@ def build_msg(opts):
     
     return msg
 
+def get_msg_type(msg):
+    
+    msg_types = {1:"DISCOVER",
+                 2:"OFFER",
+                 3:"REQUEST",
+                 4:"DECLINE",
+                 5:"ACK",
+                 6:"NAK",
+                 7:"RELEASE",
+                 8:"INFORM"
+                 }
+    # option 53 it's message type
+    opt = get_option(msg, 53)
+    
+    # opt[1] it's value of message-type option
+    for msg_code in msg_types.keys():
+        if opt[1] == msg_code:
+            return msg_types[msg_code]
+        
+    return "UNKNOWN-TYPE"
 def send_wait_for_message(step, type, presence, exp_message):
     """
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
-    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 1)
+    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 99)
+
+    expected_type_found = False
+    received_names = ""
 
     world.srvmsg = []
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
         #b.show()
+        received_names = get_msg_type(b) + " " + received_names
+        if (get_msg_type(b) == exp_message):
+            expected_type_found = True
+            
     get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
                               % (len(ans), len(unans)))
 
+    for x in unans:
+        get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
+        
+    if presence:
+        assert len(world.srvmsg) != 0, "No response received."
+        assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
+    elif not presence:
+        assert len(world.srvmsg) == 0, "Response received, not expected"
     assert presence == bool(world.srvmsg), "No response received."
 
 # Returns option of specified type
