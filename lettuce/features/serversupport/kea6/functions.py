@@ -352,7 +352,7 @@ def search_for_errors(succeed, opt, result, search = []):
                 if each in result.stdout or each in result.stderr:
                     break
             else:
-                assert False, 'Server operation: ' + opt + ' not failed!'
+                assert False, 'Server operation: ' + opt + ' NOT failed!'
                 
 def run_bindctl (succeed, opt):
     """
