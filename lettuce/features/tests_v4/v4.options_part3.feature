@@ -10,11 +10,11 @@ Feature: DHCPv4 options part3
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with ip-forwarding option with value True.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 19.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -28,11 +28,11 @@ Feature: DHCPv4 options part3
  	Test Setup:   
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with non-local-source-routing option with value True.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 20.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -46,11 +46,11 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with perform-mask-discovery option with value False.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 29.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -64,11 +64,11 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with mask-supplier option with value True.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 30.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -82,11 +82,11 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with router-discovery option with value True.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 31.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -100,11 +100,11 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with trailer-encapsulation option with value True.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 34.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -118,11 +118,11 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with ieee802-3-encapsulation option with value True.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 36.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -136,11 +136,11 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with tcp-keepalive-garbage option with value True.
-    Server is started. 
+    Server is started.
 
     Test Procedure:
     Client requests option 39.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.

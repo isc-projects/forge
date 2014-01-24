@@ -15,7 +15,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 1.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -34,7 +34,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 2.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -51,7 +51,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 3.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -69,7 +69,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 4.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -87,7 +87,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 5.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -105,7 +105,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 6.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -123,7 +123,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 7.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -141,7 +141,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 8.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -159,7 +159,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 9.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -177,7 +177,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 10.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -195,7 +195,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 11.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -213,7 +213,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 12.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -230,7 +230,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 13.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -247,7 +247,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 14.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -264,7 +264,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 16.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -281,7 +281,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 17.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -298,7 +298,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 18.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -315,7 +315,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 21.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -333,7 +333,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 22.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -350,7 +350,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 23.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
@@ -367,7 +367,7 @@ Feature: DHCPv4 options part1
 
     Test Procedure:
     Client requests option 24.
-    Client sends DISCOVER message and expect OFFER response.
+    Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
