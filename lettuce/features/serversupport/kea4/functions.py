@@ -87,10 +87,13 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "subnet-selection": 118, # ipv4-address
                 "domain-search": 119, # binary
                 "vivco-suboptions": 124, # binary
-                "vivso-suboptions": 125 # binary
+                "vivso-suboptions": 125, # binary
+                "end": 255
                  }
 
 def prepare_cfg_subnet(step, subnet, pool):
+    if (not "conf" in world.cfg):
+        world.cfg["conf"] = ""
     eth = SERVER_IFACE
     # subnet defintion Kea4
     t1 = world.cfg["server_times"]["renew-timer"]
@@ -258,7 +261,7 @@ def prepare_cfg_kea4_for_kea4_stop(filename):
     cfg_file.write(config)
     cfg_file.close()
 
-def fabric_run_bindctl (opt):
+def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
     """    
@@ -281,7 +284,7 @@ def fabric_run_bindctl (opt):
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
         
-    if opt == "conf":
+    if opt == "configuration":
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
         prepare_config_file(cfg_file)
@@ -294,24 +297,42 @@ def fabric_run_bindctl (opt):
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         cpoy_configuration_file(cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
+        world.cfg["conf"] = ""
         
     if opt == "restart":
         restart_srv()
     
     result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
     
-    search_for_errors (True, opt, result, ["ImportError:",'"config revert".',"Error"])
+    search_for_errors (succeed, opt, result, ["ImportError:",'"config revert".',"Error"])
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
 def start_srv(start, process):
+    configuration = True
+    start = True
+    clean = True
+
+    # Switch one of three processess to false, which? That is decided in 
+    # Server failed to start. During (\S+) process.) step.    
+    if process == None and start:
+        pass
+    elif process == 'configuration':
+        configuration = False
+    elif process == 'start':
+        start = False
+    elif process == 'clean':
+        clean = False
+    else:
+        assert False, "Process: '"+process+"' not supported."
+        
     cfg_write()
     get_common_logger().debug("Bind10, dhcp4 configuration procedure:")
-    fabric_run_bindctl ('clean')#clean and stop
-    fabric_run_bindctl ('start')#start
-    fabric_run_bindctl ('conf')#conf
+    run_bindctl (clean, 'clean')#clean and stop
+    run_bindctl (start, 'start')#start
+    run_bindctl (configuration,'configuration')#conf
 
 def stop_srv():
-    fabric_run_bindctl ('clean')
+    run_bindctl ('clean')
 
 def restart_srv():
     # can't be less then 7, server needs time to restart.
