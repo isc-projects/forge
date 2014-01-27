@@ -224,3 +224,105 @@ Feature: DHCPv4 options part4
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
     Server is configured with static-routes option with value 199.199.199.1,70.70.70.5,80.80.80.80,10.10.10.5.
     Server is started.
+
+@v4 @options @subnet
+    Scenario: v4.options.malformed.values.arp-cache-timeout
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with arp-cache-timeout option with value -1.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with arp-cache-timeout option with value 4294967296.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with arp-cache-timeout option with value 0.
+	Server is started.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with arp-cache-timeout option with value 4294967295.
+    Server is started.
+
+@v4 @options @subnet
+    Scenario: v4.options.malformed.values.default-tcp-ttl
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with default-tcp-ttl option with value 0.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with default-tcp-ttl option with value 256.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with default-tcp-ttl option with value 255.
+    Server is started.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with default-tcp-ttl option with value 1.
+    Server is started.
+    
+@v4 @options @subnet
+    Scenario: v4.options.malformed.values.dhcp-option-overload
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-option-overload option with value 0.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-option-overload option with value 4.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-option-overload option with value 1.
+    Server is started.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-option-overload option with value 2.
+    Server is started.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-option-overload option with value 3.
+    Server is started.
+
+@v4 @options @subnet
+    Scenario: v4.options.malformed.values.dhcp-max-message-size
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-max-message-size option with value 0.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-max-message-size option with value 575.
+	Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-max-message-size option with value 576.
+	Server is started.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-max-message-size option with value 65536.
+    Server failed to start. During configuration process.
+
+    Test Setup:
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is configured with dhcp-max-message-size option with value 65535.
+    Server is started.

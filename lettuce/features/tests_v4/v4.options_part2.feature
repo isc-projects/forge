@@ -237,7 +237,7 @@ Feature: DHCPv4 options part2
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with netbios-node-type option with value 55.
+    Server is configured with netbios-node-type option with value 8.
     Server is started. 
 
     Test Procedure:
@@ -247,7 +247,7 @@ Feature: DHCPv4 options part2
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 46.
-    Response option 46 MUST contain value 55.
+    Response option 46 MUST contain value 8.
     
 @v4 @options @subnet
     Scenario: v4.options.netbios-scope
@@ -324,7 +324,7 @@ Feature: DHCPv4 options part2
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
-    Server is configured with dhcp-option-overload option with value 88.
+    Server is configured with dhcp-option-overload option with value 1.
     Server is started. 
 
     Test Procedure:
@@ -334,7 +334,7 @@ Feature: DHCPv4 options part2
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 52.
-    Response option 52 MUST contain value 88.
+    Response option 52 MUST contain value 1.
 
 @v4 @options @subnet
     Scenario: v4.options.dhcp-message
