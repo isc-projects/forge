@@ -251,9 +251,9 @@ def set_logger():
     prepare_config_file(cfg_file)
 
     fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
-    
     fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
-
+    remove_local_file(cfg_file + '_processed')
+    
 def prepare_config_file(cfg):
     """
     Prepare config file from generated world.cfg["cfg_file"] or START/STOP
