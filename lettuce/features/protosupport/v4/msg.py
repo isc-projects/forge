@@ -9,7 +9,6 @@ from scapy.sendrecv import send, sendp, sniff
 from random import randint
 import protosupport.v6.msg
 
-
 def client_requests_option(step, opt_type):
     if not hasattr(world, 'prl'):
         world.prl = "" # don't request anything by default
@@ -24,7 +23,7 @@ def client_send_msg(step, msgname):
     opt_type: option type
     """
     world.climsg = []
-    options = []
+    options = world.cliopts
 
     if hasattr(world, 'prl'):
         options += [("param_req_list", str(world.prl))]
@@ -67,7 +66,8 @@ def client_send_msg(step, msgname):
 
     get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
     
-
+def client_does_include(step, opt_type, value):
+    world.cliopts += [(opt_type, value)]
 def build_msg(opts):
 
     conf.checkIPaddr = False
@@ -110,7 +110,7 @@ def send_wait_for_message(step, type, presence, exp_message):
 
     expected_type_found = False
     received_names = ""
-
+    world.cliopts = []
     world.srvmsg = []
     for x in ans:
         a,b = x

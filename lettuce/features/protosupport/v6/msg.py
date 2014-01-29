@@ -17,7 +17,6 @@
 # This file contains a number of common steps that are general and may be used
 # By a lot of feature files.
 #
-
 from cookielib import debug
 from features.logging_facility import get_common_logger
 from features.terrain import set_options, set_values
@@ -201,10 +200,11 @@ def unicast_addres(step,addr_type):
         from features.init_all import SRV_IPV6_ADDR_LINK_LOCAL
         world.cfg["address_v6"] = SRV_IPV6_ADDR_LINK_LOCAL
 
-def client_does_include(step, opt_type):
+def client_does_include(step, opt_type, value):
     """
     Include options to message. This function refers to @step in lettuce
     """
+    # value variable not used in v6
     #If you want to use options of received message to include it, please use 'Client copies (\S+) option from received message.' step.
     if opt_type == "client-id":
         world.cfg["add_option"]["client_id"] = False
