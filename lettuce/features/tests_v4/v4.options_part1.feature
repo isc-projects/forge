@@ -4,6 +4,8 @@ Feature: DHCPv4 options part1
     This is a simple DHCPv4 options validation. Its purpose is to check
     if requested option are assigned properly.
 
+	# References in all tests are temporary empty, that's intentional.
+
 @v4 @options @subnet
     Scenario: v4.options.subnet-mask
     # Checks that server is able to serve subnet-mask option to clients.

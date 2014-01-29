@@ -4,6 +4,8 @@ Feature: DHCPv4 options part4
     This is a simple DHCPv4 options validation. Its purpose is to check
     how server is configuring corner values. 
 
+	# References in all tests are temporary empty, that's intentional.
+
 @v4 @options @subnet
     Scenario: v4.options.malformed.values.pool
 
