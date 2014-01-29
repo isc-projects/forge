@@ -61,7 +61,16 @@ def client_does_include(step, yes_or_not, opt_type):
     You can choose to include options to message (support for every option listed
     in RFC 3315 and more) or to not include options like IA_NA or client_id.
     """
-    dhcpmsg.client_does_include(step, opt_type)
+    dhcpmsg.client_does_include(step, opt_type, None)
+
+@step('Client does (NOT )?include (\S+) with value (\S+).')
+def client_does_include_with_value(step, yes_or_not, opt_type, value):
+    """
+    You can choose to include options to message (support for every option listed
+    in RFC 3315 and more) or to not include options like IA_NA or client_id.
+    """
+    dhcpmsg.client_does_include(step, opt_type, value)
+
 
 @step('Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
 def unicast_addres(step, addr_type, addr_type2):
