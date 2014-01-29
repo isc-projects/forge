@@ -90,6 +90,8 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "vivso-suboptions": 125, # binary
                 "end": 255
                  }
+def check_empty_value(val):
+    return ("false","") if val == "<empty>" else ("true",val)
 
 def prepare_cfg_subnet(step, subnet, pool):
     if (not "conf" in world.cfg):
@@ -123,7 +125,7 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
 
     number = world.kea["option_cnt"]
     number_def = world.kea["option_usr_cnt"]
-    
+    csv_format, opt_value = check_empty_value(opt_value)
     world.cfg["conf"] += '''config add Dhcp4/option-def
         config set Dhcp4/option-def[{number_def}]/name "{opt_name}"
         config set Dhcp4/option-def[{number_def}]/code {opt_code}
@@ -136,7 +138,7 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
         config set Dhcp4/option-data[{number}]/name "{opt_name}"
         config set Dhcp4/option-data[{number}]/code {opt_code}
         config set Dhcp4/option-data[{number}]/space "{space}"
-        config set Dhcp4/option-data[{number}]/csv-format true
+        config set Dhcp4/option-data[{number}]/csv-format {csv_format}
         config set Dhcp4/option-data[{number}]/data "{opt_value}"
         '''.format(**locals())
 
@@ -160,6 +162,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     
     assert option_name in kea_options4, "Unsupported option name " + option_name
     option_code = kea_options4.get(option_name)
+    csv_format, option_value = check_empty_value(option_value)
     
     # need to have numbers for multiple options for each subnet! 
     world.cfg["conf"] += '''
@@ -167,7 +170,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
         config set Dhcp4/subnet4[{subnet}]/option-data[0]/name "{option_name}"
         config set Dhcp4/subnet4[{subnet}]/option-data[0]/code {option_code}
         config set Dhcp4/subnet4[{subnet}]/option-data[0]/space "dhcp4"
-        config set Dhcp4/subnet4[{subnet}]/option-data[0]/csv-format true
+        config set Dhcp4/subnet4[{subnet}]/option-data[0]/csv-format {csv_format}
         config set Dhcp4/subnet4[{subnet}]/option-data[0]/data "{option_value}"
         '''.format(**locals())
 
@@ -203,7 +206,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
 
     assert option_name in kea_options4, "Unsupported option name " + option_name
     option_code = kea_options4.get(option_name)
-
+    csv_format, option_value = check_empty_value(option_value)
     option_cnt = world.kea["option_cnt"]
 
     options = '''\
@@ -211,7 +214,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
     config set Dhcp4/option-data[{option_cnt}]/name "{option_name}"
     config set Dhcp4/option-data[{option_cnt}]/code {option_code}
     config set Dhcp4/option-data[{option_cnt}]/space "{space}"
-    config set Dhcp4/option-data[{option_cnt}]/csv-format true
+    config set Dhcp4/option-data[{option_cnt}]/csv-format {csv_format}
     config set Dhcp4/option-data[{option_cnt}]/data "{option_value}"
     '''.format(**locals())
     world.cfg["conf"] +=  dedent(options)
