@@ -52,8 +52,21 @@ def client_send_msg(step, msgname):
 	Client does include (\S+).
 	and others..
     Message builded here will be send in step: Server must response with...
+    Message will be send via interface set in init_all.py marked as IFACE.
     """
-    dhcpmsg.client_send_msg(step, msgname)
+    dhcpmsg.client_send_msg(step, msgname, None)
+
+@step('Client sends (\w+) message through (\S+) interface.')
+def client_send_msg_via_interface(step, msgname, iface):
+    """
+    This step actually build message (e.g. SOLICIT) with all details
+    specified in steps like:
+    Client sets (\w+) value to (\S+).
+    Client does include (\S+).
+    and others..
+    Message builded here will be send in step: Server must response with...
+    """
+    dhcpmsg.client_send_msg(step, msgname, iface)
 
 @step('Client does (NOT )?include (\S+).')
 def client_does_include(step, yes_or_not, opt_type):
