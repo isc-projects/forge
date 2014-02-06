@@ -27,6 +27,8 @@ from srv_control import test_define_value
 dhcpmsg = importlib.import_module("protosupport.%s.msg"  % (PROTO))
 other = importlib.import_module("protosupport.multi_protocol_functions")
 
+from srv_control import test_define_value 
+
 ##building messages 
 @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
@@ -43,6 +45,19 @@ def client_sets_value(step, value_name, new_value):
     """
     dhcpmsg.client_sets_value(step, value_name, new_value)
 
+@step('Through (\S+) interface to address (\S+) client sends (\w+) message.')
+def client_send_msg_via_interface(step, iface, addr, msgname):
+    """
+    This step actually build message (e.g. SOLICIT) with all details
+    specified in steps like:
+    Client sets (\w+) value to (\S+).
+    Client does include (\S+).
+    and others..
+    Message builded here will be send in step: Server must response with...
+    """
+    msgname, iface, addr = test_define_value(msgname, iface, addr)
+    dhcpmsg.client_send_msg(step, msgname, iface, addr)
+
 @step('Client sends (\w+) message.')
 def client_send_msg(step, msgname):
     """
@@ -54,19 +69,7 @@ def client_send_msg(step, msgname):
     Message builded here will be send in step: Server must response with...
     Message will be send via interface set in init_all.py marked as IFACE.
     """
-    dhcpmsg.client_send_msg(step, msgname, None)
-
-@step('Client sends (\w+) message through (\S+) interface.')
-def client_send_msg_via_interface(step, msgname, iface):
-    """
-    This step actually build message (e.g. SOLICIT) with all details
-    specified in steps like:
-    Client sets (\w+) value to (\S+).
-    Client does include (\S+).
-    and others..
-    Message builded here will be send in step: Server must response with...
-    """
-    dhcpmsg.client_send_msg(step, msgname, iface)
+    dhcpmsg.client_send_msg(step, msgname, None, None)
 
 @step('Client does (NOT )?include (\S+).')
 def client_does_include(step, yes_or_not, opt_type):
