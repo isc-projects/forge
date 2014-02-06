@@ -64,12 +64,14 @@ def client_requests_option(step, opt_type):
 
     world.oro.reqopts.append(int(opt_type))
 
-def client_send_msg(step, msgname):
+def client_send_msg(step, msgname, iface, addr):
     """
     Sends specified message with defined options.
     Parameters:
     msg ('<msg> message'): name of the message.
     """
+    # iface and addr not used for v6 for now.
+    
     # Remove previous message waiting to be sent, just in case this is a
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
     # the second time.

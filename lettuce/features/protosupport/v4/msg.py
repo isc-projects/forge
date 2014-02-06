@@ -14,7 +14,7 @@ def client_requests_option(step, opt_type):
         world.prl = "" # don't request anything by default
     world.prl += chr(int(opt_type)) # put a single byte there
 
-def client_send_msg(step, msgname):
+def client_send_msg(step, msgname, iface, addr):
     """
     Sends specified message with defined options.
     Parameters:
@@ -22,6 +22,11 @@ def client_send_msg(step, msgname):
     num_opts: number of options to send.
     opt_type: option type
     """
+    # set different ethernet interface then default one.
+    if iface != None:
+        world.cfg["iface"] = iface
+        world.cfg["srv4_addr"] = addr
+        
     world.climsg = []
     options = world.cliopts
 
@@ -38,23 +43,23 @@ def client_send_msg(step, msgname):
 
     if (msgname == "DISCOVER"):
         # msg code: 1
-        msg = build_msg([("message-type","discover")]+options)
+        msg = build_msg([("message-type","discover")] + options)
         
     elif (msgname == "REQUEST"):
         # msg code: 3
-        msg = build_msg([("message-type","request")]+options)
+        msg = build_msg([("message-type","request")] + options)
         
     elif (msgname == "DECLINE"):
         # msg code: 4
-        msg = build_msg([("message-type","decline")]+options)
+        msg = build_msg([("message-type","decline")] + options)
         
     elif (msgname == "RELEASE"):
         # msg code: 7
-        msg = build_msg([("message-type","release")]+options)
+        msg = build_msg([("message-type","release")] + options)
         
     elif (msgname == "INFORM"):
         # msg code: 8
-        msg = build_msg([("message-type","inform")]+options)
+        msg = build_msg([("message-type","inform")] + options)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -68,13 +73,23 @@ def client_send_msg(step, msgname):
     
 def client_does_include(step, opt_type, value):
     world.cliopts += [(opt_type, value)]
+    
+def client_copy_option(step, opt_name):
+    from serversupport.kea4.functions import kea_options4
+    opt_code = kea_options4.get(opt_name)
+    
+    assert opt_name in kea_options4, "Unsupported option name " + opt_name
+    
+    received = get_option(world.srvmsg[0], opt_code)
+    world.cliopts.append(received)
+    
 def build_msg(opts):
 
     conf.checkIPaddr = False
-    fam,hw = get_if_raw_hwaddr(conf.iface)
-
-
-    msg = Ether(dst = "ff:ff:ff:ff:ff:ff")/IP(dst = world.cfg["srv4_addr"])
+    fam,hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    
+    # addresses needs changing when we are able to send request msg 
+    msg = Ether(dst = "ff:ff:ff:ff:ff:ff", src = hw)/IP(src ='0.0.0.0', dst = '255.255.255.255')
     msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = hw, giaddr = world.cfg["giaddr4"])
     msg /= DHCP(options = opts)
     msg.xid = randint(0, 256*256*256)
@@ -107,15 +122,16 @@ def send_wait_for_message(step, type, presence, exp_message):
     """
     # We need to use srp() here (send and receive on layer 2)
     ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 99)
-
+    world.climsg[0].show()
     expected_type_found = False
+    
     received_names = ""
     world.cliopts = []
     world.srvmsg = []
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        #b.show()
+        b.show()
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
