@@ -82,8 +82,8 @@ def config_srv_subnet(step, subnet, pool):
     subnet, pool = test_define_value( subnet, pool)
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
-@step('Server is configured with another subnet: (\S+) with (\S+) pool on interface (\S+).')
-def config_srv_another_subnet(step, subnet, pool, interface):
+@step('On interface (\S+) server is configured with another subnet: (\S+) with (\S+) pool.')
+def config_srv_another_subnet(step, interface, subnet, pool):
     """
     Add another subnet with specified subnet/pool/interface.
     """
