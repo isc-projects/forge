@@ -73,6 +73,7 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "x-display-manager": 49, # ipv4-address
                 "dhcp-requested-address": 50, # ipv4-address
                 "dhcp-option-overload": 52, # uint8
+                "server-id": 54,
                 "dhcp-message": 56, # string
                 "dhcp-max-message-size": 57, # uint16
                 "vendor-class-identifier": 60, # binary
@@ -111,11 +112,28 @@ def prepare_cfg_subnet(step, subnet, pool):
         config set Dhcp4/subnet4[0]/pool [ "{pool}" ]
         '''.format(**locals())
      
-    if eth is not None:
+    if eth != "":
         world.cfg["conf"] += '''\
             config add Dhcp4/interfaces "{eth}"
             '''.format(**locals())
                 
+    world.cfg["conf"] += dedent(subnetcfg)
+    world.kea["subnet_cnt"] += 1
+
+def config_srv_another_subnet(step, subnet, pool, interface):
+    count = world.kea["subnet_cnt"]
+    
+    subnetcfg = '''\
+        config add Dhcp4/subnet4
+        config set Dhcp4/subnet4[{count}]/subnet "{subnet}"
+        config set Dhcp4/subnet4[{count}]/pool [ "{pool}" ]
+        '''.format(**locals())
+        
+    if interface != None:
+        world.cfg["conf"] += '''\
+                config add Dhcp4/interfaces "{interface}"
+                '''.format(**locals())
+
     world.cfg["conf"] += dedent(subnetcfg)
     world.kea["subnet_cnt"] += 1
 
@@ -189,17 +207,6 @@ def add_interface(step, interface):
         config add Dhcp4/interfaces {interface}
         '''.format(**locals())
 
-def config_srv_another_subnet(step, subnet, pool, interface):
-    number = world.kea["subnet_cnt"]
-    subnetcfg ='''\
-    config add Dhcp4/subnet4
-    config set Dhcp4/subnet4[{number}]/subnet "{subnet}"
-    config set Dhcp4/subnet4[{number}]/pool [ "{pool}" ]
-    '''.format(**locals())
-               
-    world.cfg["conf"] += dedent(subnetcfg)
-    world.kea["subnet_cnt"] += 1
-   
 def prepare_cfg_add_option(step, option_name, option_value, space):
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
@@ -249,11 +256,10 @@ def prepare_cfg_kea4_for_kea4_stop(filename):
         config set Dhcp4/option-data []
         # clear loggers
         config set Logging/loggers []
-        # clear loggers
-        config set Logging/loggers []
         #config set Dhcp4/echo-client-id True
         config set Dhcp4/next-server ""
         config set Dhcp4/interfaces []
+        config commit
         # Stop b10-dhcp4 server from starting again
         config remove Init/components b10-dhcp4
         config commit
