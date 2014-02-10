@@ -8,7 +8,6 @@ Feature: DHCPv4 options part1
 
     Test Setup:
     Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.1 pool.
-    Server is configured with client-classification option in subnet 0 with name my-own-class.
     Server is started.
 
     Test Procedure:
