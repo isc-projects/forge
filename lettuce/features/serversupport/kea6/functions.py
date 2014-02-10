@@ -109,6 +109,10 @@ def config_srv_another_subnet(step, subnet, pool, interface):
                 '''.format(**locals())
 
     world.kea["subnet_cnt"] += 1
+
+def config_client_classification(step, subnet, option_value):
+    # TODO: implement this!
+    pass
     
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
 
