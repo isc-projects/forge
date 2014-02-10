@@ -87,9 +87,17 @@ server_times_v4 = {"renew-timer": 1000,
                    "valid-lifetime": 4000,
                    } 
 
-values_v4 = {}
+values_v4 = {"source_IP": "0.0.0.0",
+             "dstination_IP": "255.255.255.255",
+             "ciaddr": "0.0.0.0",
+             "yiaddr": "0.0.0.0",
+             "siaddr": "0.0.0.0",
+             "giaddr": GIADDR4
+             }
 
-add_option_v4 = {}
+add_option_v4 = {
+                 "vendor_class_id": ""
+                 }
 
 # we should consider transfer most of functions to separate v4 and v6 files
 # TODO: make separate files after branch merge
@@ -179,6 +187,7 @@ def server_start():
                                          %(MGMT_ADDRESS, CLI_MAC, IFACE))
             sys.exit()
     elif SERVER_TYPE in ["isc_dhcp6", "dibbler"]:
+        # TODO: import only one function
         stop = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
         stop.stop_srv()
 
@@ -349,10 +358,9 @@ def say_goodbye(total):
         stop.stop_srv()
 
     if AUTO_ARCHIVE:
-        # build archive
-         
         archive_name = PROTO + '_' + SERVER_TYPE + '_' + time.strftime("%Y-%m-%d-%H:%M")
         archive_name = archive_file_name (1, 'tests_results_archive/' + archive_name)
         make_tarfile(archive_name + '.tar.gz', 'tests_results')
+
     get_common_logger().info("Goodbye.")
     
