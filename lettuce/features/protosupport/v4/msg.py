@@ -84,7 +84,39 @@ def client_sets_value(step, value_name, new_value):
 
 def client_does_include(step, opt_type, value):
     world.cliopts += [(opt_type, value)]
-    a
+
+def response_check_content(step, expect, data_type, expected):
+    
+    if data_type == 'yiaddr':
+        received = world.srvmsg[0].yiaddr
+    elif data_type == 'ciaddr':
+        received = world.srvmsg[0].ciaddr
+    elif data_type == 'siaddr':
+        received = world.srvmsg[0].siaddr
+    elif data_type == 'giaddr':
+        received = world.srvmsg[0].giaddr
+    elif data_type == 'src_address':
+        received = world.srvmsg[0].src
+#     elif data_type == 'chaddr':
+#         received += world.srvmsg[0].chaddr
+#     elif data_type == 'sname':
+#         received += world.srvmsg[0].sname
+#     elif data_type == 'file':
+#         received += world.srvmsg[0].file
+    else:
+        assert False, "Value %s is not supported" % data_type
+    
+    # because we are using function to parse full option not just value
+    # I did little hack, added 'value:' as option code, and changed assertion message
+    outcome, received = test_option(['value:', received], expected)
+    
+    if expect == None:
+        assert outcome, "Invalid received {received}"\
+                                    " but expected {expected}".format(**locals())
+    else:
+        assert not outcome, "Invalid received {received}"\
+                                 " that value has been excluded from correct values".format(**locals())
+                                 
 def client_copy_option(step, opt_name):
     from serversupport.kea4.functions import kea_options4
     opt_code = kea_options4.get(opt_name)
@@ -144,7 +176,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        #b.show()
+        b.show()
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
