@@ -186,6 +186,12 @@ def config_srv(step, option_name, subnet, option_value):
     """
     dhcpfun.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
 
+@step('Server is configured with client-classification option in subnet (\d+) with name (\S+).')
+def config_client_classification(step, subnet, option_value):
+    """
+    """
+    dhcpfun.config_client_classification(step, subnet, option_value)
+
 ##server management
 @step('(Server is started.)|(Server failed to start. During (\S+) process.)')
 def start_srv(step, started , failed, process):
