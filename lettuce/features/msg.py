@@ -150,6 +150,12 @@ def response_check_include_option(step, yes_or_no, opt_code):
     include = not (yes_or_no == "NOT ")
     dhcpmsg.response_check_include_option(step, include, opt_code)
 
+@step('Response MUST (NOT )?contain (\S+) (\S+).')
+def response_check_content(step, expect, data_type, expected):
+    """
+    """
+    dhcpmsg.response_check_content(step, expect, data_type, expected)
+
 @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(step, opt_code, expect, data_type, expected):
     """
