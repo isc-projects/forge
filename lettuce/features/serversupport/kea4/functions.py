@@ -73,7 +73,7 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "x-display-manager": 49, # ipv4-address
                 "dhcp-requested-address": 50, # ipv4-address
                 "dhcp-option-overload": 52, # uint8
-                "server-id": 54,
+                "server_id": 54,
                 "dhcp-message": 56, # string
                 "dhcp-max-message-size": 57, # uint16
                 "vendor-class-identifier": 60, # binary
