@@ -137,6 +137,11 @@ def config_srv_another_subnet(step, subnet, pool, interface):
     world.cfg["conf"] += dedent(subnetcfg)
     world.kea["subnet_cnt"] += 1
 
+def config_client_classification(step, subnet, option_value):
+    world.cfg["conf"] += '''
+        config set Dhcp4/subnet4[{subnet}]/client-class "{option_value}"
+        '''.format(**locals())
+
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
     if (not "conf" in world.cfg):
         world.cfg["conf"] = ""
