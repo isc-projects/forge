@@ -70,10 +70,21 @@ def client_send_msg(step, msgname, iface, addr):
         world.climsg.append(msg)
 
     get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
-    
+
+def client_sets_value(step, value_name, new_value):
+    if value_name in world.cfg["values"]:
+        if isinstance(world.cfg["values"][value_name], str):
+            world.cfg["values"][value_name] = str(new_value)
+        elif isinstance(world.cfg["values"][value_name], int):
+            world.cfg["values"][value_name] = int(new_value)
+        else:
+            world.cfg["values"][value_name] = new_value
+    else:
+        assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
+
 def client_does_include(step, opt_type, value):
     world.cliopts += [(opt_type, value)]
-    
+    a
 def client_copy_option(step, opt_name):
     from serversupport.kea4.functions import kea_options4
     opt_code = kea_options4.get(opt_name)
@@ -89,11 +100,13 @@ def build_msg(opts):
     fam,hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
     
     # addresses needs changing when we are able to send request msg 
-    msg = Ether(dst = "ff:ff:ff:ff:ff:ff", src = hw)/IP(src ='0.0.0.0', dst = '255.255.255.255')
-    msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = hw, giaddr = world.cfg["giaddr4"])
+    msg = Ether(dst = "ff:ff:ff:ff:ff:ff", src = hw)/IP(src = world.cfg["values"]["source_IP"], dst = world.cfg["values"]["dstination_IP"])
+    msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = hw, giaddr = world.cfg["values"]["giaddr"])
     msg /= DHCP(options = opts)
     msg.xid = randint(0, 256*256*256)
-    
+    msg.siaddr = world.cfg["values"]["siaddr"]
+    msg.ciaddr = world.cfg["values"]["ciaddr"]
+    msg.yiaddr = world.cfg["values"]["yiaddr"]
     return msg
 
 def get_msg_type(msg):
@@ -122,7 +135,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     """
     # We need to use srp() here (send and receive on layer 2)
     ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 99)
-    world.climsg[0].show()
+    #world.climsg[0].show()
     expected_type_found = False
     
     received_names = ""
@@ -131,7 +144,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        b.show()
+        #b.show()
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
