@@ -77,6 +77,7 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "dhcp-message": 56, # string
                 "dhcp-max-message-size": 57, # uint16
                 "vendor-class-identifier": 60, # binary
+                "client_id": 61,
                 "nwip-domain-name": 62, # string
                 "nwip-suboptions": 63, # binary
                 "user-class": 77, # binary
