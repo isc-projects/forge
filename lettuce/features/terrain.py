@@ -92,11 +92,13 @@ values_v4 = {"source_IP": "0.0.0.0",
              "ciaddr": "0.0.0.0",
              "yiaddr": "0.0.0.0",
              "siaddr": "0.0.0.0",
-             "giaddr": GIADDR4
+             "giaddr": GIADDR4,
+             "chaddr": None
              }
 
 add_option_v4 = {
-                 "vendor_class_id": ""
+                 "vendor_class_id": False,
+                 "client_id": True
                  }
 
 # we should consider transfer most of functions to separate v4 and v6 files
