@@ -30,7 +30,7 @@ def client_send_msg(step, msgname, iface, addr):
     world.climsg = []
     options = world.cliopts
 
-    if hasattr(world, 'prl'):
+    if hasattr(world, 'prl') and len(world.prl) > 0:
         options += [("param_req_list", str(world.prl))]
     else:
         assert False, "No PRL defined"
@@ -116,7 +116,8 @@ def response_check_content(step, expect, data_type, expected):
     else:
         assert not outcome, "Invalid received {received}"\
                                  " that value has been excluded from correct values".format(**locals())
-                                 
+    return received
+                             
 def client_copy_option(step, opt_name):
     from serversupport.kea4.functions import kea_options4
     opt_code = kea_options4.get(opt_name)
@@ -125,20 +126,28 @@ def client_copy_option(step, opt_name):
     
     received = get_option(world.srvmsg[0], opt_code)
     world.cliopts.append(received)
-    
+
 def build_msg(opts):
 
     conf.checkIPaddr = False
     fam,hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
-    
+    tmp_hw = None
+    # we need to choose if we want to use chaddr, or client id. 
+    # also we can include both: client_id and chaddr 
+    if world.cfg["values"]["chaddr"] == None:
+        tmp_hw = hw
+    else:
+        tmp_hw = str(world.cfg["values"]["chaddr"])
+        
     # addresses needs changing when we are able to send request msg 
     msg = Ether(dst = "ff:ff:ff:ff:ff:ff", src = hw)/IP(src = world.cfg["values"]["source_IP"], dst = world.cfg["values"]["dstination_IP"])
-    msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = hw, giaddr = world.cfg["values"]["giaddr"])
+    msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = tmp_hw, giaddr = world.cfg["values"]["giaddr"])
     msg /= DHCP(options = opts)
     msg.xid = randint(0, 256*256*256)
     msg.siaddr = world.cfg["values"]["siaddr"]
     msg.ciaddr = world.cfg["values"]["ciaddr"]
     msg.yiaddr = world.cfg["values"]["yiaddr"]
+
     return msg
 
 def get_msg_type(msg):
@@ -167,7 +176,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     """
     # We need to use srp() here (send and receive on layer 2)
     ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 99)
-    #world.climsg[0].show()
+    world.climsg[0].show()
     expected_type_found = False
     
     received_names = ""
