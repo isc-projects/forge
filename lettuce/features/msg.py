@@ -18,7 +18,7 @@
 from init_all import PROTO
 from lettuce import world, step
 import importlib
-from srv_control import test_define_value
+
 # Tomek: For some reason importing terrain does not help, as the
 # @before.each_scenario is not called, so the world do not have proto set up.
 # Therefore I imported PROTO constant and use it directly. It's a hack, but it
