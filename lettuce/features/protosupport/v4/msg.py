@@ -1,6 +1,6 @@
 from lettuce import world
 from logging_facility import *
-from scapy.all import get_if_raw_hwaddr, Ether, srp
+from scapy.all import get_if_raw_hwaddr, Ether, srp 
 from scapy.config import conf
 from scapy.fields import Field
 from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
@@ -97,8 +97,8 @@ def response_check_content(step, expect, data_type, expected):
         received = world.srvmsg[0].giaddr
     elif data_type == 'src_address':
         received = world.srvmsg[0].src
-#     elif data_type == 'chaddr':
-#         received += world.srvmsg[0].chaddr
+    elif data_type == 'chaddr':
+        received += world.srvmsg[0].chaddr #decode!!
 #     elif data_type == 'sname':
 #         received += world.srvmsg[0].sname
 #     elif data_type == 'file':
@@ -132,14 +132,16 @@ def build_msg(opts):
     conf.checkIPaddr = False
     fam,hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
     tmp_hw = None
+
     # we need to choose if we want to use chaddr, or client id. 
-    # also we can include both: client_id and chaddr 
+    # also we can include both: client_id and chaddr
     if world.cfg["values"]["chaddr"] == None:
         tmp_hw = hw
+    elif world.cfg["values"]["chaddr"] == "empty":
+        tmp_hw = "00:00:00:00:00:00".replace(':', '').decode('hex')
     else:
-        tmp_hw = str(world.cfg["values"]["chaddr"])
-        
-    # addresses needs changing when we are able to send request msg 
+        tmp_hw = world.cfg["values"]["chaddr"].replace(':', '').decode('hex')
+    
     msg = Ether(dst = "ff:ff:ff:ff:ff:ff", src = hw)/IP(src = world.cfg["values"]["source_IP"], dst = world.cfg["values"]["dstination_IP"])
     msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = tmp_hw, giaddr = world.cfg["values"]["giaddr"])
     msg /= DHCP(options = opts)
