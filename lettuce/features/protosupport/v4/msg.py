@@ -83,7 +83,10 @@ def client_sets_value(step, value_name, new_value):
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
 
 def client_does_include(step, opt_type, value):
-    world.cliopts += [(opt_type, value)]
+    if opt_type == 'client_id':
+        world.cliopts += [(opt_type, convert_MAC(value))]
+    else:
+        world.cliopts += [(opt_type, value)]
 
 def response_check_content(step, expect, data_type, expected):
     
@@ -108,8 +111,8 @@ def response_check_content(step, expect, data_type, expected):
     
     # because we are using function to parse full option not just value
     # I did little hack, added 'value:' as option code, and changed assertion message
-    outcome, received = test_option(['value:', received], expected)
-    
+    outcome, received = test_option(0, ['value:', received], expected)
+
     if expect == None:
         assert outcome, "Invalid received {received}"\
                                     " but expected {expected}".format(**locals())
@@ -126,6 +129,10 @@ def client_copy_option(step, opt_name):
     
     received = get_option(world.srvmsg[0], opt_code)
     world.cliopts.append(received)
+    
+def convert_MAC(mac):
+    # convert MAC address to hex representation
+    return mac.replace(':', '').decode('hex')
 
 def build_msg(opts):
 
@@ -138,9 +145,9 @@ def build_msg(opts):
     if world.cfg["values"]["chaddr"] == None:
         tmp_hw = hw
     elif world.cfg["values"]["chaddr"] == "empty":
-        tmp_hw = "00:00:00:00:00:00".replace(':', '').decode('hex')
+        tmp_hw = convert_MAC("00:00:00:00:00:00")
     else:
-        tmp_hw = world.cfg["values"]["chaddr"].replace(':', '').decode('hex')
+        tmp_hw = convert_MAC(world.cfg["values"]["chaddr"])
     
     msg = Ether(dst = "ff:ff:ff:ff:ff:ff", src = hw)/IP(src = world.cfg["values"]["source_IP"], dst = world.cfg["values"]["dstination_IP"])
     msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = tmp_hw, giaddr = world.cfg["values"]["giaddr"])
@@ -225,8 +232,16 @@ def get_option(msg, opt_code):
             return opt
     return None
 
-def test_option(received, expected):
+def ByteToHex (byteStr):
+    return ''.join( [ "%02X " % ord( x ) for x in byteStr ] ).strip().replace(" ","")
+
+def test_option(opt_code, received, expected):
     tmp = ""
+    decode_opts = [61]
+
+    if opt_code in decode_opts:
+        received = received[0], ByteToHex(received[1])
+
     for each in received:
         tmp += str(each) + ' '
         if str(each) == expected:
@@ -247,7 +262,7 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
-    outcome, received = test_option(received ,expected)
+    outcome, received = test_option(opt_code, received ,expected)
 
     if expect == None:
         assert outcome, "Invalid {opt_code} option received: {received}"\
