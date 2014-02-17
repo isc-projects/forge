@@ -161,6 +161,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     """
     Detailed parsing of received option. For more details please read manual section "Parsing respond"
     """
+    data_type, expected = test_define_value (data_type, expected)
     dhcpmsg.response_check_option_content(step, 0, opt_code, expect, data_type, expected)
         
 @step('Response sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
