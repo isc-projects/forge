@@ -4,10 +4,10 @@ Feature: DHCPv4 options part1
     Those are simple DHCPv4 assigned address tests.
     
 @v4 @request
-    Scenario: v4.request.success_chaddr
+    Scenario: v4.request.success-chaddr
 
     Test Setup:
-    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.1 pool.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server is started.
 
     Test Procedure:
@@ -17,50 +17,89 @@ Feature: DHCPv4 options part1
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 1.
-    Response MUST contain yiaddr 192.0.2.1.
+    Response MUST contain yiaddr 192.168.50.1.
     Response option 1 MUST contain value 255.255.255.0.
 
     Test Procedure:
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.0.2.1.
+	Client does include requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
     Pass Criteria:
     Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.0.2.1.
+    Response MUST contain yiaddr 192.168.50.1.
     Response option 1 MUST contain value 255.255.255.0.
 
 @v4 @request
-    Scenario: v4.request.success_client_id
-
+    Scenario: v4.request.success-chaddr-empty-pool
+    
     Test Setup:
-    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.1 pool.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server is started.
 
     Test Procedure:
-    Client sets chaddr value to 0.
-    Client does include client_id with value myownclientid.
     Client requests option 1.
     Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
     Response MUST include option 1.
-    Response MUST contain yiaddr 192.0.2.1.
+    Response MUST contain yiaddr 192.168.50.1.
     Response option 1 MUST contain value 255.255.255.0.
-	Response option 61 MUST contain value myownclientid.
+	Response option 54 MUST contain value $(SRV4_ADDR).
 	
     Test Procedure:
-    Client does include client_id with value myownclientid.
-    Client sets chaddr value to 0.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.0.2.1.
+	Client does include requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
     Pass Criteria:
     Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.0.2.1.
+    Response MUST contain yiaddr 192.168.50.1.
     Response option 1 MUST contain value 255.255.255.0.
-    Response option 61 MUST contain value myownclientid.
+	Response option 54 MUST contain value $(SRV4_ADDR).
+	
+    Test Procedure:
+    Client requests option 1.
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+	Response option 54 MUST contain value $(SRV4_ADDR).
+	
+@v4 @request
+    Scenario: v4.request.success-client-id
+
+    Test Setup:
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+    Server is started.
+
+    Test Procedure:
+    Client sets chaddr value to 00:00:00:00:00:00.
+    Client does include client_id with value 00010203040506.
+    Client requests option 1.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST include option 1.
+    Response MUST contain yiaddr 192.168.50.1.
+    Response option 1 MUST contain value 255.255.255.0.
+	Response option 61 MUST contain value 00010203040506.
+	
+    Test Procedure:
+    Client does include client_id with value 00010203040506.
+    Client sets chaddr value to 00:00:00:00:00:00.
+    Client copies server_id option from received message.
+	Client does include requested_addr with value 192.168.50.1.
+	Client requests option 1.
+	Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.1.
+    Response option 1 MUST contain value 255.255.255.0.
+    Response option 61 MUST contain value 00010203040506.
