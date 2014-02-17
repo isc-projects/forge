@@ -373,6 +373,40 @@ Feature: DHCPv4 options part2
     Response option 57 MUST contain value 2349.
 
 @v4 @options @subnet
+    Scenario: v4.options.renew-timer
+
+    Test Setup:
+    Time renew-timer is configured with value 999.
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is started. 
+
+    Test Procedure:
+    Client requests option 58.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST include option 58.
+    Response option 58 MUST contain value 999.
+    
+@v4 @options @subnet
+    Scenario: v4.options.rebind-timer
+
+    Test Setup:
+    Time rebind-timer is configured with value 1999.
+    Server is configured with 192.0.2.0/24 subnet with 192.0.2.1-192.0.2.10 pool.
+    Server is started. 
+
+    Test Procedure:
+    Client requests option 59.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST include option 59.
+    Response option 59 MUST contain value 1999.
+    
+@v4 @options @subnet
     Scenario: v4.options.nwip-domain-name
 
     Test Setup:
