@@ -1,7 +1,7 @@
 
 
-Feature: DHCPv4 options part1
-    Those are simple DHCPv4 assigned address tests.
+Feature: DHCPv4 address request process
+    Those are simple DHCPv4 tests for address assignment.
     
 @v4 @request
     Scenario: v4.request.success-chaddr
