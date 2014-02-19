@@ -424,6 +424,23 @@ Feature: DHCPv4 options part2
     Response option 62 MUST contain value some.domain.com.
 
 @v4 @options @subnet
+    Scenario: v4.options.boot-file-name
+
+    Test Setup:
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
+    Server is configured with boot-file-name option with value somefilename.
+    Server is started. 
+
+    Test Procedure:
+    Client requests option 67.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST include option 67.
+    Response option 67 MUST contain value somefilename.
+
+@v4 @options @subnet
     Scenario: v4.options.client-last-transaction-time
 
     Test Setup:
