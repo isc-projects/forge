@@ -80,6 +80,7 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "client_id": 61,
                 "nwip-domain-name": 62, # string
                 "nwip-suboptions": 63, # binary
+                "boot-file-name": 67, #string
                 "user-class": 77, # binary
                 "fqdn": 81, # record
                 "dhcp-agent-options": 82, # empty
@@ -197,6 +198,9 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
         config set Dhcp4/subnet4[{subnet}]/option-data[0]/csv-format {csv_format}
         config set Dhcp4/subnet4[{subnet}]/option-data[0]/data "{option_value}"
         '''.format(**locals())
+
+def run_command(step, command):
+    world.cfg["conf"] += ('\n'+command+'\n')
 
 def disanable_client_echo(step):
     # after using it, we should revert that at the end!
