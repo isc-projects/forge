@@ -32,8 +32,8 @@ def client_send_msg(step, msgname, iface, addr):
 
     if hasattr(world, 'prl') and len(world.prl) > 0:
         options += [("param_req_list", str(world.prl))]
-    else:
-        assert False, "No PRL defined"
+#     else:
+#         assert False, "No PRL defined"
 
     options += ["end"] # end option
 
@@ -210,16 +210,19 @@ def send_wait_for_message(step, type, presence, exp_message):
             
     get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
                               % (len(ans), len(unans)))
-
-    for x in unans:
-        get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
-        
-    if presence:
-        assert len(world.srvmsg) != 0, "No response received."
-        assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
-    elif not presence:
-        assert len(world.srvmsg) == 0, "Response received, not expected"
-    assert presence == bool(world.srvmsg), "No response received."
+    if exp_message != "None":
+        for x in unans:
+            get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
+            
+        if presence:
+            assert len(world.srvmsg) != 0, "No response received."
+            assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
+        elif not presence:
+            assert len(world.srvmsg) == 0, "Response received, not expected"
+        assert presence == bool(world.srvmsg), "No response received."
+    else:
+        pass
+        # make assertion for receiving message that not suppose to come!
 
 # Returns option of specified type
 def get_option(msg, opt_code):

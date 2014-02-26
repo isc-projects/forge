@@ -133,12 +133,19 @@ def add_vendor_suboption(step, code, data):
     dhcpmsg.add_vendor_suboption(step, int(code), data)
 
 ##checking respond
-@step('Server (\S+) (NOT )?respond with (\w+) message')
+@step('Server MUST NOT respond.')
+def send_wait_for_message(step):
+    """
+    This step causes to send message in cases when we don't expect any response.
+    Step used only for v4 testing
+    """
+    dhcpmsg.send_wait_for_message(step, "MUST", False, "None")
+
+@step('Server (\S+) (NOT )?respond with (\w+) message.')
 def send_wait_for_message(step, type, yes_or_no, message):
     """
     This step causes to send message to server and capture respond. 
     """
-    get_common_logger().debug("client_send_msg:{message}.\n".format(**locals()))
     presence = True if yes_or_no == None else False 
     dhcpmsg.send_wait_for_message(step, type, presence, message)
 
