@@ -1,6 +1,6 @@
 diff -Naur scapy-2.2.0/scapy/layers/dhcp6.py scapy-2.2.0-marcin/scapy/layers/dhcp6.py
---- scapy-2.2.0/scapy/layers/dhcp6.py	2013-04-12 08:56:43.000000000 +0200
-+++ scapy-2.2.0-marcin/scapy/layers/dhcp6.py	2013-05-09 14:44:26.000000000 +0200
+--- scapy/layers/dhcp6.py	2013-04-12 08:56:43.000000000 +0200
++++ scapy/layers/dhcp6.py	2013-05-09 14:44:26.000000000 +0200
 @@ -1122,9 +1122,6 @@
      name = "DHCPv6 Information Request Message"    
      msgtype = 11 

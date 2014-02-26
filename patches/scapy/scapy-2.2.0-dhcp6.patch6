@@ -1,5 +1,5 @@
---- /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-09-03 09:52:07.625901176 +0200
-+++ /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-09-03 10:16:45.321922425 +0200
+--- scapy/layers/dhcp6.py	2013-09-03 09:52:07.625901176 +0200
++++ scapy/layers/dhcp6.py	2013-09-03 10:16:45.321922425 +0200
 @@ -711,23 +711,28 @@
      name = "DHCP6 Option - IA_PD Prefix option"
      fields_desc = [ ShortEnumField("optcode", 26, dhcp6opts),

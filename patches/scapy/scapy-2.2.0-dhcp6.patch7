@@ -1,5 +1,5 @@
---- /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py_backup	2013-09-26 14:40:43.510593695 +0200
-+++ /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-09-26 14:41:49.129436621 +0200
+--- scapy/layers/dhcp6.py_backup	2013-09-26 14:40:43.510593695 +0200
++++ scapy/layers/dhcp6.py	2013-09-26 14:41:49.129436621 +0200
 @@ -292,7 +292,7 @@
      fields_desc = [ ShortEnumField("optcode", 5, dhcp6opts), 
                      FieldLenField("optlen", None, length_of="iaaddropts",

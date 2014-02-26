@@ -1,5 +1,5 @@
---- /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp.py_backup	2014-01-21 19:35:36.459460207 +0100
-+++ /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp.py	2014-02-19 15:25:06.956550004 +0100
+--- scapy/layers/dhcp.py_backup	2014-01-21 19:35:36.459460207 +0100
++++ scapy/layers/dhcp.py	2014-02-19 15:25:06.956550004 +0100
 @@ -36,7 +36,7 @@
                      IPField("yiaddr","0.0.0.0"),
                      IPField("siaddr","0.0.0.0"),
