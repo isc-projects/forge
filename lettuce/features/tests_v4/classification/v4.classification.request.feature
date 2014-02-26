@@ -1,6 +1,6 @@
 
 
-Feature: DHCPv4 Client Classification
+Feature: DHCPv4 Client Classification - request process
     Tests for Client Classification performed through option vendor class identification.
     
 @v4 @classification
