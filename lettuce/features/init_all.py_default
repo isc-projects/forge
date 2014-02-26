@@ -65,6 +65,12 @@ removelist = [ ]
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
+# When Forge sends a packet, it typically awaits for the server to respond.
+# Server typically does that promptly, but during debugging it is benefical for
+# the the test to wait a long time. If test concludes too early, it will remove
+# the configuration and kill the server (while the debugging still taking place)
+PACKET_WAIT_INTERVAL = 1
+
 # scope link server address for testing unicast messages 
 # Address 3000:: is strongly recommended for global address. Most tests are using pool
 # 3000::1-3000::ffff in this case recommended address will not cover any address form
@@ -112,7 +118,7 @@ MGMT_PASSWORD = ""
 # point to root directory of server installation and must end with /.
 # The framework appends subdirectories to this path to run applications.
 # For example, it appends "bin/" to obtain path to the bindctl.
-SERVER_INSTALL_DIR = ""
+SERVER_INSTALL_DIR = "/usr/local/"
 
 # Copy logs file, different file for each test.
 # WARRNING: this produce really big amount of data!

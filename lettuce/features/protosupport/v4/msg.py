@@ -193,7 +193,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
-    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 99)
+    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = world.cfg["PACKET_WAIT_INTERVAL"], multi = True, verbose = 99)
     #world.climsg[0].show()
     expected_type_found = False
     
