@@ -85,8 +85,16 @@ def client_sets_value(step, value_name, new_value):
 def client_does_include(step, opt_type, value):
     if opt_type == 'client_id':
         world.cliopts += [(opt_type, convert_MAC(value))]
+#     elif opt_type =='vendor_class_id':
+#         world.cliopts += [(opt_type, str(value), "my-other-class")]
     else:
-        world.cliopts += [(opt_type, value)]
+#         if isinstance(value, str):
+#             world.cliopts += [(opt_type, str(value))]
+#         elif isinstance(value, int):
+#             world.cliopts += [(opt_type, int(value))]
+#         else:
+#             assert False, "wtf"
+        world.cliopts += [(opt_type, str(value))]
 
 def response_check_content(step, expect, data_type, expected):
     
@@ -101,11 +109,12 @@ def response_check_content(step, expect, data_type, expected):
     elif data_type == 'src_address':
         received = world.srvmsg[0].src
     elif data_type == 'chaddr':
-        received += world.srvmsg[0].chaddr #decode!!
-#     elif data_type == 'sname':
-#         received += world.srvmsg[0].sname
-#     elif data_type == 'file':
-#         received += world.srvmsg[0].file
+        received = world.srvmsg[0].chaddr #decode!!
+    elif data_type == 'sname':
+        received = world.srvmsg[0].sname.replace('\x00', '')
+    elif data_type == 'file':
+        received = world.srvmsg[0].file.replace('\x00', '')
+        
     else:
         assert False, "Value %s is not supported" % data_type
     
@@ -115,10 +124,10 @@ def response_check_content(step, expect, data_type, expected):
 
     if expect == None:
         assert outcome, "Invalid received {received}"\
-                                    " but expected {expected}".format(**locals())
+                                " but expected: {expected}.".format(**locals())
     else:
         assert not outcome, "Invalid received {received}"\
-                                 " that value has been excluded from correct values".format(**locals())
+                                 " that value has been excluded from correct values.".format(**locals())
     return received
                              
 def client_copy_option(step, opt_name):
@@ -185,7 +194,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     """
     # We need to use srp() here (send and receive on layer 2)
     ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = 1, multi = True, verbose = 99)
-    world.climsg[0].show()
+    #world.climsg[0].show()
     expected_type_found = False
     
     received_names = ""
@@ -233,7 +242,7 @@ def get_option(msg, opt_code):
     return None
 
 def ByteToHex (byteStr):
-    return ''.join( [ "%02X " % ord( x ) for x in byteStr ] ).strip().replace(" ","")
+    return ''.join([ "%02X " % ord(x) for x in byteStr]).replace(" ","")
 
 def test_option(opt_code, received, expected):
     tmp = ""
