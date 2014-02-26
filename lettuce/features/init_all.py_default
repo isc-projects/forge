@@ -26,13 +26,20 @@ PROTO = ""
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ""
-REL4_ADDR = ""
-GIADDR4 = ""
+
+# This specifies relay agent address. Leave this as 0.0.0.0 if you don't want
+# to test relayed traffic.
+REL4_ADDR = "0.0.0.0"
+
+# This is a value client will set giaddr field to. Leave it as 0.0.0.0 if you
+# don't want to test relays
+GIADDR4 = "0.0.0.0"
 
 # defines client MAC (used for DUID generation)
-CLI_MAC = ""
+CLI_MAC = "00:02:03:04:05:06"
 
 # For all servers, choose ethernet interface on which server will be configured
+# to listen and respond.
 SERVER_IFACE = ""
 
 # In order to make sure we start all tests with a 'clean' environment,
@@ -114,9 +121,16 @@ SAVE_BIND_LOGS = False
 
 # Also we can decide which logging type choose, logging lvl,
 # and BIND10 module type 
-# for more accurate information plz read BIND10 documentation: Chapter 21. Logging
-BIND_LOG_TYPE = ""
-BIND_LOG_LVL = 
+# for more accurate information please read BIND10 Guide, Chapter 21. Logging
+
+# Allowed values for BINDX: FATAL, ERROR, WARN, INFO, DEBUG.
+BIND_LOG_TYPE = "INFO"
+
+# Log level applies to debuglevel in BINDX. Allowed values: 0...99
+BIND_LOG_LVL = 0
+
+# This corresponds to Logging/loggers[X]/name field. Leave this as "*" if you
+# want every BIND module to log something.
 BIND_MODULE = ""
 
 # =============== DIBBLER ================
