@@ -1,36 +1,45 @@
-  Forge info
- ------------
+  ISC Forge info
+ ----------------
 
-Forge is a temporary name for our automated DHCP validation framework.
-It uses Scapy and Lettuce to run various DHCP tests. It is in very
-early stages of development (think "pre-prototype").
-
+ISC Forge is an automated DHCP validation framework. It uses Scapy and Lettuce
+to run various DHCP tests. As of Feb. 2014, it features over 230 DHCPv6 and
+90 DHCPv4 conformance tests.
 
  Dependencies Installation
 ---------------------------
 
 Forge requires python 2.7.x, Scapy and lettuce. The following steps are
-necessary on Debian 6.0. If you use different operating system, your
+necessary on Debian 7.0. If you use different operating system, your
 steps may be slightly different:
 
 (Note: may have to edit /etc/apt/sources.list and place new mirror entry:
+
    deb http://mirror.cse.iitk.ac.in/debian/ testing main contrib
-...then run "sudo apt-get update")
 
- This will install pip (python package installer)
-sudo apt-get install python-pip
- It's strongly recommended to install lettuce manually after downloading newest version 
- from https://pypi.python.org/pypi/lettuce.
- If you're using any other source, make sure that installed lettuce version is
- at least 0.2.17.
+then run "sudo apt-get update")
 
- This will install scapy
-wget http://www.secdev.org/projects/scapy/files/scapy-latest.zip
-unzip scapy-latest.zip
+The folowing command will install pip (python package installer):
 
- Apply patches, see below
-cd scapy-2.2.0
-sudo python setup.py install
+$ sudo apt-get install python-pip
+
+The following command will install lettuce:
+
+$ sudo pip install lettuce
+
+It installs 0.2.19 on Debian 7.0. If you're using any other distro, make sure
+that installed lettuce version is at least 0.2.17. You may consider installing
+lettuce manually by downloading from https://pypi.python.org/pypi/lettuce.
+
+This will install scapy:
+
+$ wget http://www.secdev.org/projects/scapy/files/scapy-latest.zip
+$ unzip scapy-latest.zip
+
+Apply Scappy patches provided in Forge, see below. After that is done,
+you may install scapy:
+
+$ cd scapy-2.2.0
+$ sudo python setup.py install
 
 As of Feb. 2013, Scapy is quite outdated. When starting it may produce
 warnings similar to:
@@ -45,15 +54,23 @@ DeprecationWarning: The popen2 module is deprecated.  Use the subprocess module.
 
 Our understanding is that those can be safely ignored for now.
 
-  Also you need to install:
+Also you may want to install tcpdump for saving caputers of every test.
+This step is optional and tcpdump usage is controlled via init_all.py
 
-  tcpdump for saving caputers of every test.
- sudo apt-get install tcpdump
-  or manually using latest version
+$ sudo apt-get install tcpdump
 
- Fabric module for python using latest version available https://pypi.python.org/pypi/Fabric
- 
- 
+Scapy uses fabric module to control DUT. It is mandatory. Use the latest
+version available here: https://pypi.python.org/pypi/Fabric. You can also use
+pip to install it:
+
+$ sudo pip install fabric
+
+Scapy uses crypto libraries that may be needed:
+
+$ sudo apt-get install python-crypto
+$ sudo pip install ecdsa
+
+
  Scapy patches
 ---------------
 Currently the latest Scapy release seems to be 2.2.0. Its main
@@ -66,38 +83,38 @@ scapy-2.2.0/scapy/layers.
 Please apply each patch using the following (or similar) command:
 patch -p0 < name-of-the-patch
 
-For example, if Forge lives in ~/builds/forge, and the Scapy source 
+For example, if Forge lives in ~/builds/forge, and the Scapy source
 is in ~/builds/scapy-2.2.0, then you can patch the Scapy file
 "dhcp6.py" with patches 1 and 2 by performing the following:
-cd ~/scapy-2.2.0/scapy/layers
-patch dhcp6.py <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch1
-patch dhcp6.py <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch2
+cd ~/scapy-2.2.0
+patch -p 0 <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch1
+patch -p 0 <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch2
 
  Configuration
 ---------------
 Configuration management is not well designed yet. The default configuration
 is stored in forge/lettuce/features/init_all.py_default. Please copy this file
 to features/init_all.py and edit relevant values in this file. The configuration
-is not described here in detail example how you should fill it is stored in 
-forge/lettuce/features/init_all.py_example. Without init_all.py Forge will 
-not start at all. init_all.py is added to gitignore, so any local changes 
+is not described here in detail example how you should fill it is stored in
+forge/lettuce/features/init_all.py_example. Without init_all.py Forge will
+not start at all. init_all.py is added to gitignore, so any local changes
 you make to this file will be ignored by git.
 
 Also make sure that your ssh server is configured.
 
 Environment example:
 To use Forge you will need two PC's. In this configuration author used two virtual
-machines using VM VirtualBox. Those machines needs to be connected with internal network 
+machines using VM VirtualBox. Those machines needs to be connected with internal network
 (without any other access to interfaces) in VirtualBox this is called Host-Only network.
-You can establish internet connection on other interface if you want. Two different networks 
-should be used for: 
+You can establish internet connection on other interface if you want. Two different networks
+should be used for:
 	vboxnet0 - configuration server via ssh
 	vboxnet1 - testing.
 
 Author used this configuration:
- ______											   ______
-|	   | <----vboxnet0: configuration via ssh---> |      | 
-| VM 1 |										  | VM 2 |
+ ______                                            ______
+|      | <----vboxnet0: configuration via ssh---> |      |
+| VM 1 |                                          | VM 2 |
 |______| <----vboxnet1: testing DHCP        ----> |______|
 
 That's only example, other architectures not tested. If you set up other configuration please
@@ -107,8 +124,8 @@ report it on https://github.com/isc-projects/forge to update documentation.
 -------
 
 IMPORTANT:
-	You can dynamically generate user help by running forge/lettuce/help.py. UserHelp.txt 
-	will contain all informations about using and further developing Forge project. 
+	You can dynamically generate user help by running forge/lettuce/help.py. UserHelp.txt
+	will contain all informations about using and further developing Forge project.
 
 cd forge/lettuce
 
@@ -119,7 +136,7 @@ python run_test.py -6 -t basic
 
 The command above will execute the all existing DHCPv6 tests (as all of them
 are tagged "basic"). It is possible to run selected tests only, using appropriate
-tags which can be found in the test scenarios. 
+tags which can be found in the test scenarios.
 
 This is an example of running test:
 Feature: DHCPv6 options                                                              # features/v6.options.feature:3
@@ -160,7 +177,7 @@ root@debian64:/home/thomson/devel/dhcp-val/scripts/lettuce#
  Writing new tests
 -------------------
 
-Please edit existing *.feature file or create a new one. For example,
+Please extend existing *.feature file or create a new one. For example,
 see dhcp-val/scripts/lettuce/v6.options.feature. This is sample
 content:
 
@@ -200,9 +217,9 @@ stored in various .py files in features/ dir.
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
 def prepare_cfg_kea6_subnet(step, subnet, pool):
     if (subnet == "default"):
-        subnet = "2001:db8:1::/64"
+	subnet = "2001:db8:1::/64"
     if (pool == "default"):
-        pool = "2001:db8:1::0 - 2001:db8:1::ffff"
+	pool = "2001:db8:1::0 - 2001:db8:1::ffff"
     world.cfg["conf"] = world.cfg["conf"] + \
     "# subnet defintion Kea 6\n" + \
     "config add Dhcp6/subnet6\n" + \
