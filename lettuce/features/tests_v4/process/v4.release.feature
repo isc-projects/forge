@@ -64,8 +64,9 @@ Feature: DHCPv4 address release process
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST include option 1.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
@@ -78,6 +79,8 @@ Feature: DHCPv4 address release process
     Pass Criteria:
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
@@ -93,6 +96,7 @@ Feature: DHCPv4 address release process
     Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
+	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
     
     Test Procedure:
@@ -114,6 +118,8 @@ Feature: DHCPv4 address release process
     Server MUST respond with OFFER message.
     Response MUST include option 1.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
     
@@ -132,8 +138,10 @@ Feature: DHCPv4 address release process
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST include option 1.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00001FD0040111.
@@ -149,6 +157,9 @@ Feature: DHCPv4 address release process
     Pass Criteria:
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00001FD0040111.
@@ -176,6 +187,8 @@ Feature: DHCPv4 address release process
     Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040111.
 
@@ -194,8 +207,10 @@ Feature: DHCPv4 address release process
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST include option 1.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00001FD0040111.
@@ -211,6 +226,9 @@ Feature: DHCPv4 address release process
     Pass Criteria:
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00001FD0040111.
@@ -239,6 +257,8 @@ Feature: DHCPv4 address release process
     Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040111.
 
@@ -257,8 +277,10 @@ Feature: DHCPv4 address release process
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST include option 1.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00001FD0040111.
@@ -274,6 +296,9 @@ Feature: DHCPv4 address release process
     Pass Criteria:
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00001FD0040111.
@@ -302,6 +327,8 @@ Feature: DHCPv4 address release process
     Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
+	Response MUST include option 54.
+	Response MUST include option 61.
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040111.
     
@@ -319,8 +346,9 @@ Scenario: v4.release.only.chaddr.same-chaddr
 	
 	Pass Criteria:
 	Server MUST respond with OFFER message.
-	Response MUST include option 1.
 	Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
 	Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
@@ -334,6 +362,8 @@ Scenario: v4.release.only.chaddr.same-chaddr
 	Pass Criteria:
 	Server MUST respond with ACK message.
 	Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
 	Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
@@ -357,6 +387,8 @@ Scenario: v4.release.only.chaddr.same-chaddr
 	Server MUST respond with OFFER message.
 	Response MUST include option 1.
 	Response MUST contain yiaddr 192.168.50.1.
+	Response MUST include option 1.
+	Response MUST include option 54.
 	Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
@@ -375,6 +407,7 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
 	Pass Criteria:
 	Server MUST respond with OFFER message.
 	Response MUST include option 1.
+	Response MUST include option 54.
 	Response MUST contain yiaddr 192.168.50.1.
 	Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
@@ -388,6 +421,8 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
 	
 	Pass Criteria:
 	Server MUST respond with ACK message.
+	Response MUST include option 1.
+	Response MUST include option 54.
 	Response MUST contain yiaddr 192.168.50.1.
 	Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
@@ -414,4 +449,5 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
     Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
+	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).

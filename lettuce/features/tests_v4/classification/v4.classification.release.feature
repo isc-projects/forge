@@ -115,7 +115,7 @@ Feature: DHCPv4 Client Classification release process
 
     Test Procedure:
     Client sets chaddr value to 00:1F:D0:11:22:33.
-    Client does include client_id with value 00010203040506.
+    #Client does include client_id with value 00010203040506.
     Client does include vendor_class_id with value my-own-class.
     Client requests option 1.
     Client sends DISCOVER message.
@@ -123,7 +123,7 @@ Feature: DHCPv4 Client Classification release process
     Pass Criteria:
     Server MUST respond with NAK message.
     Response option 54 MUST contain value $(SRV4_ADDR).
-    Response option 61 MUST contain value 00010203040506.
+    #Response option 61 MUST contain value 00010203040506.
     Response MUST contain yiaddr 0.0.0.0.
     Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
