@@ -22,6 +22,13 @@ import sys
 import os
 from features.serversupport.multi_server_functions import fabric_send_file,fabric_download_file,\
         fabric_remove_file_command,remove_local_file
+from time import sleep
+
+def forge_sleep(time, type):
+    divide = 1.0
+    if type == 'milliseconds':
+        divide = 1000.0
+    sleep(time * 1.0 / divide)
 
 def test_pause(step):
     """

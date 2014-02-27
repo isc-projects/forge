@@ -239,6 +239,13 @@ def compare_values(step, value_name, option_name):
     dhcpmsg.compare_values(step, value_name, option_name)
     
 ##other
+@step('Sleep for (\d+) (seconds|milliseconds).')
+def forge_sleep(step, time, type):
+    """
+    Pause the test for selected amount of time counted in seconds or milliseconds. 
+    """
+    other.forge_sleep(int(time), str(type))
+    
 @step('Pause the Test.')
 def test_pause(step):
     """
