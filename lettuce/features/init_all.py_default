@@ -26,13 +26,20 @@ PROTO = ""
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ""
-REL4_ADDR = ""
-GIADDR4 = ""
+
+# This specifies relay agent address. Leave this as 0.0.0.0 if you don't want
+# to test relayed traffic.
+REL4_ADDR = "0.0.0.0"
+
+# This is a value client will set giaddr field to. Leave it as 0.0.0.0 if you
+# don't want to test relays
+GIADDR4 = "0.0.0.0"
 
 # defines client MAC (used for DUID generation)
-CLI_MAC = ""
+CLI_MAC = "00:02:03:04:05:06"
 
 # For all servers, choose ethernet interface on which server will be configured
+# to listen and respond.
 SERVER_IFACE = ""
 
 # In order to make sure we start all tests with a 'clean' environment,
@@ -57,6 +64,12 @@ removelist = [ ]
 # error (so as not to hang indefinitely). Values are counted in seconds.
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
+
+# When Forge sends a packet, it typically awaits for the server to respond.
+# Server typically does that promptly, but during debugging it is benefical for
+# the the test to wait a long time. If test concludes too early, it will remove
+# the configuration and kill the server (while the debugging still taking place)
+PACKET_WAIT_INTERVAL = 1
 
 # scope link server address for testing unicast messages 
 # Address 3000:: is strongly recommended for global address. Most tests are using pool
@@ -105,7 +118,7 @@ MGMT_PASSWORD = ""
 # point to root directory of server installation and must end with /.
 # The framework appends subdirectories to this path to run applications.
 # For example, it appends "bin/" to obtain path to the bindctl.
-SERVER_INSTALL_DIR = ""
+SERVER_INSTALL_DIR = "/usr/local/"
 
 # Copy logs file, different file for each test.
 # WARRNING: this produce really big amount of data!
@@ -114,9 +127,16 @@ SAVE_BIND_LOGS = False
 
 # Also we can decide which logging type choose, logging lvl,
 # and BIND10 module type 
-# for more accurate information plz read BIND10 documentation: Chapter 21. Logging
-BIND_LOG_TYPE = ""
-BIND_LOG_LVL = 
+# for more accurate information please read BIND10 Guide, Chapter 21. Logging
+
+# Allowed values for BINDX: FATAL, ERROR, WARN, INFO, DEBUG.
+BIND_LOG_TYPE = "INFO"
+
+# Log level applies to debuglevel in BINDX. Allowed values: 0...99
+BIND_LOG_LVL = 0
+
+# This corresponds to Logging/loggers[X]/name field. Leave this as "*" if you
+# want every BIND module to log something.
 BIND_MODULE = ""
 
 # =============== DIBBLER ================

@@ -18,7 +18,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES
+    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -141,6 +141,7 @@ def v4_initialize():
     world.cfg["rel4_addr"] = REL4_ADDR
     world.cfg["giaddr4"] = GIADDR4
     world.cfg["space"] = "dhcp4"
+    world.cfg["PACKET_WAIT_INTERVAL"] = PACKET_WAIT_INTERVAL
 
 def v6_initialize():
     # RFC 3315 define two addresess:

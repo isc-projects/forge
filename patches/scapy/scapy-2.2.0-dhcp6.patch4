@@ -1,5 +1,5 @@
---- /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-08-28 11:43:28.078760349 +0200
-+++ /usr/local/lib/python2.7/site-packages/scapy/layers/dhcp6.py	2013-08-28 12:10:35.326771156 +0200
+--- scapy/layers/dhcp6.py	2013-08-28 11:43:28.078760349 +0200
++++ scapy/layers/dhcp6.py	2013-08-28 12:10:35.326771156 +0200
 @@ -295,7 +295,6 @@
                      IP6Field("addr", "::"),
                      IntField("preflft", 0),
