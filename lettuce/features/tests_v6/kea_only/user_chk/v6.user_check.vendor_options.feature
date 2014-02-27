@@ -18,7 +18,7 @@ Feature: Kea6 User Check Hook Library
     Server is configured with 3000::/64 subnet with 3000::5-3000::20 pool.
     Server is configured with another subnet: 1000:1::/64 with 1000:1::5-1000:1::5 pool on interface eth3.
     Run configuration command: config add Dhcp6/hooks-libraries
-    Run configuration command: config set Dhcp6/hooks-libraries[0] $(SERVER_INSTALL_DIR)/lib/libdhcp_user_chk.so
+    Run configuration command: config set Dhcp6/hooks-libraries[0] $(SERVER_INSTALL_DIR)lib/libdhcp_user_chk.so
     On space vendor-4491 server is configured with tftp-servers option with value 7000::1.
     On space vendor-4491 server is configured with config-file option with value bootfile.from.server.
     Server is started.
