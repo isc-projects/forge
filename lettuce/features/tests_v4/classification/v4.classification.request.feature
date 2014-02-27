@@ -240,6 +240,9 @@ Feature: DHCPv4 Client Classification - request process
     Pass Criteria:
     Server MUST respond with NAK message.
     Response MUST contain yiaddr 0.0.0.0.
+    Response MUST contain ciaddr 0.0.0.0.
+    Response MUST contain siaddr 0.0.0.0.
+    Response MUST contain giaddr 0.0.0.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
 @v4 @classification
@@ -289,6 +292,9 @@ Feature: DHCPv4 Client Classification - request process
     Pass Criteria:
     Server MUST respond with NAK message.
     Response MUST contain yiaddr 0.0.0.0.
+    Response MUST contain ciaddr 0.0.0.0.
+    Response MUST contain siaddr 0.0.0.0.
+    Response MUST contain giaddr 0.0.0.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
 @v4 @classification

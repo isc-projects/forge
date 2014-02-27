@@ -4,7 +4,7 @@ Feature: DHCPv4 Client Classification - default classes
     Tests for Client Classification for classes: docsis3.0 and eRouter1.0. 
     Performed through option vendor class identification.
 
-@v4 @classification
+@v4 @classification @default_classes
 	Scenario: v4.client.classification.one.class.docsis3-boot-file-name
 	
 	Test Setup:
@@ -31,7 +31,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification
+@v4 @classification @default_classes
 	Scenario: v4.client.classification.one.class.docsis3-next-server
 	
 	Test Setup:
@@ -58,7 +58,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification
+@v4 @classification @default_classes
 	Scenario: v4.client.classification.one.class.eRouter1-global-next-server
 	
 	Test Setup:
@@ -86,7 +86,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification
+@v4 @classification @default_classes
 	Scenario: v4.client.classification.one.class.eRouter1-subnet-next-server
 	
 	Test Setup:
@@ -114,7 +114,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification
+@v4 @classification @default_classes
 	Scenario: v4.client.classification.one.class.eRouter1-two-next-servers
 	
 	Test Setup:
@@ -144,7 +144,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification
+@v4 @classification @default_classes
 	Scenario: v4.client.classification.multiple.classes.three-subnets-docsis-erouter
 	
 	Test Setup:
@@ -214,4 +214,3 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Response MUST contain yiaddr 192.168.50.100.
 	Response MUST contain siaddr 192.0.50.100.
-	
