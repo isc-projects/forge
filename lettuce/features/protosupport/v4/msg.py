@@ -151,7 +151,7 @@ def build_msg(opts):
 
     # we need to choose if we want to use chaddr, or client id. 
     # also we can include both: client_id and chaddr
-    if world.cfg["values"]["chaddr"] == None:
+    if world.cfg["values"]["chaddr"] == None or world.cfg["values"]["chaddr"] == "default":
         tmp_hw = hw
     elif world.cfg["values"]["chaddr"] == "empty":
         tmp_hw = convert_MAC("00:00:00:00:00:00")
