@@ -203,7 +203,7 @@ def send_wait_for_message(step, type, presence, exp_message):
     for x in ans:
         a,b = x
         world.srvmsg.append(b)
-        b.show()
+        #b.show()
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
             expected_type_found = True
