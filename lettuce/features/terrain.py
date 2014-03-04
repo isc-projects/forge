@@ -348,7 +348,10 @@ def say_goodbye(total):
             result.write(str(item)+'\n')
         result.close()
         
-    if SERVER_TYPE in ['kea', 'kea4', 'kea6']:    
+    if SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+        #TODO: import only one function!
+        clean_config = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
+        clean_config.run_bindctl (True, 'clean')  
         kill_bind10()
 #         try:
 #             if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
