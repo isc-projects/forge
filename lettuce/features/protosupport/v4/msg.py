@@ -109,6 +109,8 @@ def response_check_content(step, expect, data_type, expected):
     elif data_type == 'src_address':
         received = world.srvmsg[0].src
     elif data_type == 'chaddr':
+        pass
+        #TODO: implement this!
         received = world.srvmsg[0].chaddr #decode!!
     elif data_type == 'sname':
         received = world.srvmsg[0].sname.replace('\x00', '')
@@ -123,10 +125,10 @@ def response_check_content(step, expect, data_type, expected):
     outcome, received = test_option(0, ['value:', received], expected)
 
     if expect == None:
-        assert outcome, "Invalid received {received}"\
+        assert outcome, "Invalid {data_type} received {received}"\
                                 " but expected: {expected}.".format(**locals())
     else:
-        assert not outcome, "Invalid received {received}"\
+        assert not outcome, "Invalid {data_type} received {received}"\
                                  " that value has been excluded from correct values.".format(**locals())
     return received
                              
