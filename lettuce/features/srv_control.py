@@ -110,6 +110,17 @@ def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
     prefix, length, delegated_length, subnet = test_define_value(prefix, length, delegated_length, subnet)
     dhcpfun.prepare_cfg_prefix(step, prefix, length, delegated_length, subnet)
     
+@step('Next server value on subnet (\d+) is configured with address (\S+).')
+def subnet_add_siaddr(step, subnet_number, addr):
+    addr, subnet_number = test_define_value(addr, subnet_number)
+    dhcpfun.add_siaddr(step, addr, subnet_number)
+
+@step('Next server global value is configured with address (\S+).')
+def global_add_siaddr(step, addr):
+    #TODO: implement this
+    #addr, subnet_number = test_define_value(addr, "pass")
+    dhcpfun.add_siaddr(step, addr, None)
+    
 @step('Server is configured with (\S+) option with value (\S+).')
 def config_srv_opt(step, option_name, option_value):
     """
