@@ -174,13 +174,11 @@ def add_siaddr(step, addr, subnet_number):
     # not tested
     if subnet_number == None:
         world.cfg["conf"] += '''
-            config add Dhcp4/next-server
             config set Dhcp4/next-server "{addr}"
             '''.format(**locals())
     else:
         world.cfg["conf"] += '''
-            config add Dhcp4/subnet[{subnet_number}]/next-server
-            config set Dhcp4/subnet[{subnet_number}]/next-server "{addr}"
+            config set Dhcp4/subnet4[{subnet_number}]/next-server "{addr}"
             '''.format(**locals())
 
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
@@ -206,7 +204,6 @@ def disanable_client_echo(step):
     # after using it, we should revert that at the end!
     # keep that in mind when first time using it.
     world.cfg["conf"] += '''
-        config add Dhcp4/echo-client-id
         config set Dhcp4/echo-client-id False
         config commit
         '''.format(**locals())

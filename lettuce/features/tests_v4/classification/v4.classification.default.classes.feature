@@ -42,7 +42,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_docsis3.0.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
-	Run configuration command: config set Dhcp4/subnet4[0]/next-server 192.0.2.234
+	Next server value on subnet 0 is configured with address 192.0.2.234.
 	Server is started.
 	
 	Test Procedure:
@@ -72,7 +72,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
-	Run configuration command: config set Dhcp4/next-server 192.0.2.2
+	Next server global value is configured with address 192.0.2.2.
 	Server is started.
 	
 	Test Procedure:
@@ -104,7 +104,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
-	Run configuration command: config set Dhcp4/subnet4[0]/next-server 192.0.2.234
+	Next server value on subnet 0 is configured with address 192.0.2.234.
 	Server is started.
 	
 	Test Procedure:
@@ -136,8 +136,8 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
-	Run configuration command: config set Dhcp4/next-server 192.0.2.2
-	Run configuration command: config set Dhcp4/subnet4[0]/next-server 192.0.2.234
+	Next server global value is configured with address 192.0.2.2.
+	Next server value on subnet 0 is configured with address 192.0.2.234.
 	Server is started.
 	
 	Test Procedure:
@@ -167,16 +167,16 @@ Feature: DHCPv4 Client Classification - default classes
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
-	Run configuration command: config set Dhcp4/subnet4[0]/next-server 192.0.50.1
+	Next server value on subnet 0 is configured with address 192.0.50.1.
 	Server is configured with boot-file-name option in subnet 0 with value filename.
 	
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.50-192.168.50.50 pool.
 	Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_docsis3.0.
-	Run configuration command: config set Dhcp4/subnet4[1]/next-server 192.0.50.50
+	Next server value on subnet 1 is configured with address 192.0.50.50.
 	Server is configured with boot-file-name option in subnet 1 with value somefilename.
 	
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
-	Run configuration command: config set Dhcp4/next-server 192.0.50.100
+	Next server global value is configured with address 192.0.50.100.
 	Server is started.
 	
 	Test Procedure:
