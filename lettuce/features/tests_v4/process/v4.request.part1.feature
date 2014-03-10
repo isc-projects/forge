@@ -4,7 +4,7 @@ Feature: DHCPv4 address request process
     Those are simple DHCPv4 tests for address assignment. During SELECTING state.
 
 @v4 @request
-    Scenario: v4.request.selecting.selecting.success-chaddr
+    Scenario: v4.request.selecting.success-chaddr
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
