@@ -22,7 +22,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -41,7 +41,7 @@ Feature: DHCPv4 address release process
     
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:11.
-    Client does include client_id with value 00010203040111.
+    Client adds to the message client_id with value 00010203040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -72,7 +72,7 @@ Feature: DHCPv4 address release process
 	
     Test Procedure:
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -86,7 +86,7 @@ Feature: DHCPv4 address release process
 	
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -110,7 +110,7 @@ Feature: DHCPv4 address release process
     
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:11.
-    Client does include client_id with value 00010203040111.
+    Client adds to the message client_id with value 00010203040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -132,7 +132,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:1F:D0:00:00:11.
-    Client does include client_id with value 00001FD0040111.
+    Client adds to the message client_id with value 00001FD0040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -148,9 +148,9 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:d0:00:00:11.
-    Client does include client_id with value 00001FD0040111.
+    Client adds to the message client_id with value 00001FD0040111.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -166,7 +166,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:d0:11:22:33.
-    Client does include client_id with value 00001FD0112233.
+    Client adds to the message client_id with value 00001FD0112233.
     Client copies server_id option from received message.
     Client sets ciaddr value to 192.168.50.1.
     Client sends RELEASE message.
@@ -177,7 +177,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040111.
+    Client adds to the message client_id with value 00010203040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -201,7 +201,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:1F:D0:00:00:11.
-    Client does include client_id with value 00001FD0040111.
+    Client adds to the message client_id with value 00001FD0040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -217,9 +217,9 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:d0:00:00:11.
-    Client does include client_id with value 00001FD0040111.
+    Client adds to the message client_id with value 00001FD0040111.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -236,7 +236,7 @@ Feature: DHCPv4 address release process
     Test Procedure:
     #client id changed!
     Client sets chaddr value to 00:1f:d0:00:00:11.
-    Client does include client_id with value 00001FD0112233.
+    Client adds to the message client_id with value 00001FD0112233.
     Client copies server_id option from received message.
     Client sets ciaddr value to 192.168.50.1.
     Client sends RELEASE message.
@@ -247,7 +247,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040111.
+    Client adds to the message client_id with value 00010203040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -271,7 +271,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:1F:D0:00:00:11.
-    Client does include client_id with value 00001FD0040111.
+    Client adds to the message client_id with value 00001FD0040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -287,9 +287,9 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:d0:00:00:11.
-    Client does include client_id with value 00001FD0040111.
+    Client adds to the message client_id with value 00001FD0040111.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -306,7 +306,7 @@ Feature: DHCPv4 address release process
     Test Procedure:
     #chaddr changed!
     Client sets chaddr value to 00:1f:d0:11:11:11.
-    Client does include client_id with value 00001FD0040111.
+    Client adds to the message client_id with value 00001FD0040111.
     Client copies server_id option from received message.
     Client sets ciaddr value to 192.168.50.1.
     Client sends RELEASE message.
@@ -317,7 +317,7 @@ Feature: DHCPv4 address release process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040111.
+    Client adds to the message client_id with value 00010203040111.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -355,7 +355,7 @@ Scenario: v4.release.only.chaddr.same-chaddr
 	Test Procedure:
 	Client sets chaddr value to 00:1f:d0:00:00:11.
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -415,7 +415,7 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
 	Test Procedure:
 	Client sets chaddr value to 00:1f:d0:00:00:11.
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	

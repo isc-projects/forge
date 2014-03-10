@@ -22,7 +22,7 @@ Feature: DHCPv4 address request process
 
     Test Procedure:
     Client copies server_id option from received message.
-    Client does include requested_addr with value 192.168.50.1.
+    Client adds to the message requested_addr with value 192.168.50.1.
     Client requests option 1.
     Client sends REQUEST message.
 
@@ -53,7 +53,7 @@ Feature: DHCPv4 address request process
 
     Test Procedure:
     Client copies server_id option from received message.
-    Client does include requested_addr with value 192.168.50.1.
+    Client adds to the message requested_addr with value 192.168.50.1.
     Client requests option 1.
     Client sends REQUEST message.
 
@@ -88,7 +88,7 @@ Feature: DHCPv4 address request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -102,10 +102,10 @@ Feature: DHCPv4 address request process
     Response option 61 MUST contain value 00010203040506.
 
     Test Procedure:
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client sets chaddr value to 00:00:00:00:00:00.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -127,7 +127,7 @@ Feature: DHCPv4 address request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -141,10 +141,10 @@ Feature: DHCPv4 address request process
 	Response option 61 MUST contain value 00010203040506.
 
     Test Procedure:
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client sets chaddr value to 00:00:00:00:00:00.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -159,7 +159,7 @@ Feature: DHCPv4 address request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00020304050607.
+    Client adds to the message client_id with value 00020304050607.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -181,7 +181,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
+	Client adds to the message client_id with value 00010203040506.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -195,10 +195,10 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 	Response option 61 MUST contain value 00010203040506.
 	
 	Test Procedure:
-	Client does include client_id with value 00010203040506.
+	Client adds to the message client_id with value 00010203040506.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -213,7 +213,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:11.
-	Client does include client_id with value 11020304050607.
+	Client adds to the message client_id with value 11020304050607.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -228,7 +228,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 11020304050607.
+	Client adds to the message client_id with value 11020304050607.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -262,7 +262,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -276,7 +276,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
     Test Procedure:
     Client sets chaddr value to 00:00:00:22:11:00.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 

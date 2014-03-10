@@ -17,8 +17,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value docsis3.0.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value docsis3.0.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -47,8 +47,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value docsis3.0.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value docsis3.0.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -77,8 +77,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value eRouter1.0.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value eRouter1.0.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -109,8 +109,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value eRouter1.0.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value eRouter1.0.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -142,8 +142,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value eRouter1.0.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value eRouter1.0.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -181,8 +181,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value eRouter1.0.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value eRouter1.0.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -198,8 +198,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value docsis3.0.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value docsis3.0.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -224,7 +224,7 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
+	Client adds to the message client_id with value 00010203040506.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	

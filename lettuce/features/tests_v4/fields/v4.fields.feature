@@ -72,7 +72,7 @@ Scenario: v4.message.fields.ciaddr-incorrect-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -81,7 +81,7 @@ Scenario: v4.message.fields.ciaddr-incorrect-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client sets ciaddr value to 255.255.255.255.
 	Client requests option 1.
@@ -108,7 +108,7 @@ Scenario: v4.message.fields.ciaddr-correct-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -117,7 +117,7 @@ Scenario: v4.message.fields.ciaddr-correct-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client sets ciaddr value to 192.168.50.1.
 	Client requests option 1.
@@ -178,7 +178,7 @@ Scenario: v4.message.fields.siaddr-incorrect-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -187,7 +187,7 @@ Scenario: v4.message.fields.siaddr-incorrect-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client sets siaddr value to 255.255.255.255.
 	Client requests option 1.
@@ -214,7 +214,7 @@ Scenario: v4.message.fields.siaddr-correct-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -223,7 +223,7 @@ Scenario: v4.message.fields.siaddr-correct-nak
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client sets siaddr value to 192.168.50.1.
 	Client requests option 1.
@@ -283,7 +283,7 @@ Scenario: v4.message.fields.siaddr-correct-nak-configured-local
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -292,7 +292,7 @@ Scenario: v4.message.fields.siaddr-correct-nak-configured-local
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client requests option 1.
 	Client sends REQUEST message.
@@ -318,7 +318,7 @@ Scenario: v4.message.fields.siaddr-correct-nak-configured-global
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -327,7 +327,7 @@ Scenario: v4.message.fields.siaddr-correct-nak-configured-global
 	
 	Test Procedure:
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
+	Client adds to the message requested_addr with value 192.168.50.1.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client requests option 1.
 	Client sends REQUEST message.

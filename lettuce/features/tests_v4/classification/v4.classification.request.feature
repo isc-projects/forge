@@ -13,8 +13,8 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
-    Client does include vendor_class_id with value my-own-class.
+    Client adds to the message client_id with value 00010203040506.
+    Client adds to the message vendor_class_id with value my-own-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -30,10 +30,10 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message requested_addr with value 192.168.50.1.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -58,8 +58,8 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
-    Client does include vendor_class_id with value my-own-class.
+    Client adds to the message client_id with value 00010203040506.
+    Client adds to the message vendor_class_id with value my-own-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -75,10 +75,10 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message requested_addr with value 192.168.50.1.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -91,7 +91,7 @@ Feature: DHCPv4 Client Classification - request process
     
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -107,9 +107,9 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.50.100.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -134,8 +134,8 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
-    Client does include client_id with value 00010203040506.
-    Client does include vendor_class_id with value my-other-class.
+    Client adds to the message client_id with value 00010203040506.
+    Client adds to the message vendor_class_id with value my-other-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -160,7 +160,7 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
-    Client does include vendor_class_id with value my-own-class.
+    Client adds to the message vendor_class_id with value my-own-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -175,8 +175,8 @@ Feature: DHCPv4 Client Classification - request process
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message requested_addr with value 192.168.50.1.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -204,7 +204,7 @@ Feature: DHCPv4 Client Classification - request process
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.50.100.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -229,8 +229,8 @@ Feature: DHCPv4 Client Classification - request process
 
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message client_id with value 00010203040506.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -246,10 +246,10 @@ Feature: DHCPv4 Client Classification - request process
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
+	Client adds to the message client_id with value 00010203040506.
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message requested_addr with value 192.168.50.1.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -265,7 +265,7 @@ Feature: DHCPv4 Client Classification - request process
 
 	Test Procedure:
 	Client sets chaddr value to 00:00:11:11:11:11.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends DISCOVER message.
 
@@ -291,7 +291,7 @@ Feature: DHCPv4 Client Classification - request process
 
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
+	Client adds to the message client_id with value 00010203040506.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -307,9 +307,9 @@ Feature: DHCPv4 Client Classification - request process
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
-	Client does include client_id with value 00010203040506.
+	Client adds to the message client_id with value 00010203040506.
 	Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.50.100.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
@@ -349,7 +349,7 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
-    Client does include vendor_class_id with value my-own-class.
+    Client adds to the message vendor_class_id with value my-own-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -364,8 +364,8 @@ Feature: DHCPv4 Client Classification - request process
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message requested_addr with value 192.168.50.1.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -379,7 +379,7 @@ Feature: DHCPv4 Client Classification - request process
     
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
-    Client does include vendor_class_id with value my-other-class.
+    Client adds to the message vendor_class_id with value my-other-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -394,8 +394,8 @@ Feature: DHCPv4 Client Classification - request process
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.100.
-	Client does include vendor_class_id with value my-other-class.
+	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message vendor_class_id with value my-other-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -420,7 +420,7 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
-    Client does include vendor_class_id with value my-own-class.
+    Client adds to the message vendor_class_id with value my-own-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -435,8 +435,8 @@ Feature: DHCPv4 Client Classification - request process
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message requested_addr with value 192.168.50.1.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -450,7 +450,7 @@ Feature: DHCPv4 Client Classification - request process
     
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
-    Client does include vendor_class_id with value my-other-class.
+    Client adds to the message vendor_class_id with value my-other-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -465,8 +465,8 @@ Feature: DHCPv4 Client Classification - request process
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.100.
-	Client does include vendor_class_id with value my-other-class.
+	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message vendor_class_id with value my-other-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -491,8 +491,8 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
-    Client does include client_id with value 00010203040506.
-    Client does include vendor_class_id with value my-own-class.
+    Client adds to the message client_id with value 00010203040506.
+    Client adds to the message vendor_class_id with value my-own-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -508,10 +508,10 @@ Feature: DHCPv4 Client Classification - request process
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
-    Client does include client_id with value 00010203040506.
+    Client adds to the message client_id with value 00010203040506.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.1.
-	Client does include vendor_class_id with value my-own-class.
+	Client adds to the message requested_addr with value 192.168.50.1.
+	Client adds to the message vendor_class_id with value my-own-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -526,9 +526,9 @@ Feature: DHCPv4 Client Classification - request process
     Response option 61 MUST contain value 00010203040506.
     
     Test Procedure:
-    Client does include client_id with value 00030405060708.
+    Client adds to the message client_id with value 00030405060708.
     Client sets chaddr value to 00:1f:06:06:06:06.
-    Client does include vendor_class_id with value my-other-class.
+    Client adds to the message vendor_class_id with value my-other-class.
     Client requests option 1.
     Client sends DISCOVER message.
 
@@ -543,11 +543,11 @@ Feature: DHCPv4 Client Classification - request process
     Response option 61 MUST contain value 00030405060708.
 
     Test Procedure:
-    Client does include client_id with value 00030405060708.
+    Client adds to the message client_id with value 00030405060708.
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.100.
-	Client does include vendor_class_id with value my-other-class.
+	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message vendor_class_id with value my-other-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
@@ -576,7 +576,7 @@ Feature: DHCPv4 Client Classification - request process
     Test Procedure:
     Client sets chaddr value to 00:1f:11:22:33:44.
     Client copies server_id option from received message.
-	Client does include requested_addr with value 192.168.50.150.
+	Client adds to the message requested_addr with value 192.168.50.150.
 	Client requests option 1.
 	Client sends REQUEST message.
 
