@@ -70,6 +70,16 @@ def client_send_msg(step, msgname):
     Message will be send via interface set in init_all.py marked as IFACE.
     """
     dhcpmsg.client_send_msg(step, msgname, None, None)
+# 
+@step('Client adds to the message (\S+) with value (\S+).')
+def client_does_include_with_value(step, opt_type, value):
+    """
+    You can choose to include options to message with proposed value. Mostly used only with
+    DHCPv4. Also reason why that step is called "Client adds to message" not 
+    "Client does (NOT )?include" as other step is that lettuce step parser is really... weak.
+    What ever I'll do with that always takes wrong step.  
+    """
+    dhcpmsg.client_does_include(step, opt_type, value)
 
 @step('Client does (NOT )?include (\S+).')
 def client_does_include(step, yes_or_not, opt_type):
@@ -78,16 +88,7 @@ def client_does_include(step, yes_or_not, opt_type):
     in RFC 3315 and more) or to not include options like IA_NA or client_id.
     """
     dhcpmsg.client_does_include(step, opt_type, None)
-
-@step('Client does include (\S+) with value (\S+).')
-def client_does_include_with_value(step, opt_type, value):
-    """
-    You can choose to include options to message (support for every option listed
-    in RFC 3315 and more) or to not include options like IA_NA or client_id.
-    """
-    dhcpmsg.client_does_include(step, opt_type, value)
-
-
+    
 @step('Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
 def unicast_addres(step, addr_type, addr_type2):
     """
@@ -134,7 +135,7 @@ def add_vendor_suboption(step, code, data):
 
 ##checking respond
 @step('Server MUST NOT respond.')
-def send_wait_for_message(step):
+def send_dont_wait_for_message(step):
     """
     This step causes to send message in cases when we don't expect any response.
     Step used only for v4 testing
