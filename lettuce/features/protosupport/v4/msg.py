@@ -131,7 +131,8 @@ def response_check_content(step, expect, data_type, expected):
         assert not outcome, "Invalid {data_type} received {received}"\
                                  " that value has been excluded from correct values.".format(**locals())
     return received
-                             
+
+
 def client_copy_option(step, opt_name):
     from serversupport.kea4.functions import kea_options4
     opt_code = kea_options4.get(opt_name)
@@ -140,10 +141,12 @@ def client_copy_option(step, opt_name):
     
     received = get_option(world.srvmsg[0], opt_code)
     world.cliopts.append(received)
-    
+
+
 def convert_MAC(mac):
     # convert MAC address to hex representation
     return mac.replace(':', '').decode('hex')
+
 
 def build_msg(opts):
 
@@ -160,15 +163,22 @@ def build_msg(opts):
     else:
         tmp_hw = convert_MAC(world.cfg["values"]["chaddr"])
     
-    msg = Ether(dst = "ff:ff:ff:ff:ff:ff", src = hw)/IP(src = world.cfg["values"]["source_IP"], dst = world.cfg["values"]["dstination_IP"])
-    msg /= UDP(sport = 68, dport = 67)/BOOTP(chaddr = tmp_hw, giaddr = world.cfg["values"]["giaddr"])
+    msg = Ether(dst = "ff:ff:ff:ff:ff:ff",
+                src = hw)
+    msg /= IP(src = world.cfg["values"]["source_IP"],
+              dst = world.cfg["values"]["dstination_IP"])
+    msg /= UDP(sport = 68, dport = 67)
+    msg /= BOOTP(chaddr = tmp_hw,
+                 giaddr = world.cfg["values"]["giaddr"])
     msg /= DHCP(options = opts)
+
     msg.xid = randint(0, 256*256*256)
     msg.siaddr = world.cfg["values"]["siaddr"]
     msg.ciaddr = world.cfg["values"]["ciaddr"]
     msg.yiaddr = world.cfg["values"]["yiaddr"]
 
     return msg
+
 
 def get_msg_type(msg):
     
@@ -190,12 +200,18 @@ def get_msg_type(msg):
             return msg_types[msg_code]
         
     return "UNKNOWN-TYPE"
+
+
 def send_wait_for_message(step, type, presence, exp_message):
     """
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
-    ans,unans = srp(world.climsg, iface = world.cfg["iface"], timeout = world.cfg["PACKET_WAIT_INTERVAL"], multi = True, verbose = 99)
+    ans,unans = srp(world.climsg,
+                    iface = world.cfg["iface"],
+                    timeout = world.cfg["PACKET_WAIT_INTERVAL"],
+                    multi = True,
+                    verbose = 99)
     #world.climsg[0].show()
     expected_type_found = False
     
@@ -226,8 +242,9 @@ def send_wait_for_message(step, type, presence, exp_message):
         pass
         # make assertion for receiving message that not suppose to come!
 
-# Returns option of specified type
+
 def get_option(msg, opt_code):
+    # Returns option of specified type
     # We need to iterate over all options and see
     # if there's one we're looking for
     world.opts = []
@@ -235,7 +252,7 @@ def get_option(msg, opt_code):
     
     # dhcpv4 implementation in Scapy is a mess. The options array contains mix of 
     # strings, IPField, ByteEnumField and who knows what else. In each case the
-    # values are accessed differenty
+    # values are accessed differently
     if (isinstance(opt_name, Field)):
         opt_name = opt_name.name
 
