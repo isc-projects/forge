@@ -52,8 +52,6 @@ Feature: DHCPv6 Rebind
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
 	Response MUST include option 2.
-	Response MUST include option 3.
-	Response option 3 MUST contain sub-option 5.
 	Response option 3 MUST contain T1 0.
 	Response option 3 MUST contain T2 0.
 	

@@ -239,7 +239,7 @@ def send_wait_for_message(step, type, presence, exp_message):
             assert len(world.srvmsg) == 0, "Response received, not expected"
         assert presence == bool(world.srvmsg), "No response received."
     else:
-        pass
+        assert len(world.srvmsg) == 0, "Response message "+ received_names +"received but none message expected."
         # make assertion for receiving message that not suppose to come!
 
 
