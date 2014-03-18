@@ -171,7 +171,6 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
     world.kea["option_cnt"] += 1
 
 def add_siaddr(step, addr, subnet_number):
-    # not tested
     if subnet_number == None:
         world.cfg["conf"] += '''
             config set Dhcp4/next-server "{addr}"
@@ -318,7 +317,8 @@ def run_bindctl (succeed, opt):
     if opt == "restart":
         restart_srv()
     
-    result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
+    result = fabric_run_command('(echo "execute file '+cfg_file+'_processed" | '\
+                                + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
     
     search_for_errors (succeed, opt, result, ["ImportError:",'"config revert".',"Error"])
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
