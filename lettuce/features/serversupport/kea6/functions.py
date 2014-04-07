@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
-from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file 
+from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file, fabric_sudo_command
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SERVER_IFACE
@@ -187,20 +187,6 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
         config set Dhcp6/subnet6[{subnet}]/option-data[0]/data "{option_value}"
         '''.format(**locals())
 
-def prepare_cfg_kea6_for_kea6_start():
-    """
-    config file for kea6 start
-    """
-    config = '''
-        # This config file starts b10-dhcp6 server.
-        config add Init/components b10-dhcp6
-        config set Init/components/b10-dhcp6/kind dispensable
-        config commit
-        '''
-    cfg_file = open("kea6start.cfg", "w")
-    cfg_file.write(config)
-    cfg_file.close()
-
 def prepare_cfg_kea6_for_kea6_stop():
     """
     config file for kea6 clear configuration and stopping
@@ -224,6 +210,20 @@ def prepare_cfg_kea6_for_kea6_stop():
         Dhcp6 shutdown
         '''
     cfg_file = open("kea6stop.cfg", "w")
+    cfg_file.write(config)
+    cfg_file.close()
+
+def prepare_cfg_kea6_for_kea6_start():
+    """
+    config file for kea6 start
+    """
+    config = '''
+        # This config file starts b10-dhcp6 server.
+        config add Init/components b10-dhcp6
+        config set Init/components/b10-dhcp6/kind dispensable
+        config commit
+        '''
+    cfg_file = open("kea6start.cfg", "w")
     cfg_file.write(config)
     cfg_file.close()
 

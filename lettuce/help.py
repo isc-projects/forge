@@ -171,7 +171,7 @@ class UserHelp ():
         """
         Generate list of available steps in tests.
         """
-        files = ['srv_control','msg'] #if you add file that help will be generated, add also description below.
+        files = ['srv_control','srv_msg'] #if you add file that help will be generated, add also description below.
         message = ['All steps available in preparing DHCP server configuration:', 'All steps available in building tests procedure:']
         
         for file_name, text in zip(files, message):
@@ -187,9 +187,9 @@ class UserHelp ():
             steps.close()
         print "\nFor definitions of (\d+) (\w+) (\S+) check Python regular expressions at http://docs.python.org/2/library/re.html"
 
-def find_scenario(name, IPversion):
+def find_scenario(name, IPversion, testType):
     scenario = 0
-    for path, dirs, files in os.walk("features/tests_v" + IPversion + "/"):
+    for path, dirs, files in os.walk("features/tests_v" + IPversion + "/" + testType + "/"):
         for each_file in files:
             file_name = open (path +'/'+ each_file, 'r')
             for each_line in file_name:
@@ -257,7 +257,7 @@ if __name__ == '__main__':
     HOW TO DESIGN NEW SETPS?
     
     All the informations automatically generated and included in this file are result of parsing two files:
-        msg.py 
+        srv_msg.py
         srv_control.py 
         in directory isc-forge/lettuce/features/
     As you can see there are test steps marked with '@step' and steps family marked with '##' (don't remove #, it's need to be double).

@@ -7,7 +7,7 @@ from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sendp, sniff
 from random import randint
-import protosupport.v6.msg
+import protosupport.v6.srv_msg
 
 def client_requests_option(step, opt_type):
     if not hasattr(world, 'prl'):

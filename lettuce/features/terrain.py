@@ -18,7 +18,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL
+    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLIENT_TYPE
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -165,7 +165,7 @@ def v6_initialize():
 
 
 @before.all
-def server_start():
+def test_start():
     """
     Server starting before testing
     """
@@ -184,27 +184,34 @@ def server_start():
     # be instantiated by get_common_logger()
     logger_initialize(LOGLEVEL)
 
-    if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
-        get_common_logger().debug("Starting Bind:")
+    if world.testType == 'server':
+        if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
+            get_common_logger().debug("Starting Bind:")
 
-        try:
-            # Make sure there is noo garbage instance of bind10 running.
-            kill_bind10()
-            start_bind10()
-            get_common_logger().debug("Bind10 successfully started")
-        except:
-            get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\n\
-                                        Please make sure it's configured properly\nIP destination \
-                                        address: %s\nLocal Mac address: %s\nNetwork interface: %s"
-                                      % (MGMT_ADDRESS, CLI_MAC, IFACE))
-            sys.exit()
-    elif SERVER_TYPE in ["isc_dhcp6", "dibbler"]:
-        # TODO: import only one function
-        stop = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
-        stop.stop_srv()
+            try:
+                # Make sure there is noo garbage instance of bind10 running.
+                kill_bind10()
+                start_bind10()
+                get_common_logger().debug("Bind10 successfully started")
+            except:
+                get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\n\
+                                            Please make sure it's configured properly\nIP destination \
+                                            address: %s\nLocal Mac address: %s\nNetwork interface: %s"
+                                          % (MGMT_ADDRESS, CLI_MAC, IFACE))
+                sys.exit()
+        elif SERVER_TYPE in ["isc_dhcp6", "dibbler"]:
+            # TODO: import only one function
+            stop = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
+            stop.stop_srv()  # shouldn't we start the server here?
 
-    else:
-        get_common_logger().error("Server " + SERVER_TYPE + " not implemented yet")
+        else:
+            get_common_logger().error("Server " + SERVER_TYPE + " not implemented yet")
+    elif world.testType == 'client':
+        get_common_logger().debug("starting dibbler...")
+        clnt = importlib.import_module("clientsupport.%s.functions" % CLIENT_TYPE)
+        # clnt.stop_clnt()
+        clnt.start_clnt()
+
 
         #If relay is used routing needs to be reconfigured on DUT
 
@@ -244,15 +251,17 @@ def initialize(scenario):
     world.cfg["subnet"] = ""
 
     world.name = scenario.name
+    world.clntCounter = 0
+    world.srvCounter = 0
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
-    if (not hasattr(world.cfg, "cli_duid")):
+    if not hasattr(world.cfg, "cli_duid"):
         client_id(CLI_MAC)
 
-    if (not hasattr(world.cfg, "ia_id")):
+    if not hasattr(world.cfg, "ia_id"):
         ia_id()
 
-    if (not hasattr(world.cfg, "ia_pd")):
+    if not hasattr(world.cfg, "ia_pd"):
         ia_pd()
 
     # set couple things depending on used IP version:
@@ -353,6 +362,8 @@ def say_goodbye(total):
     """
     Server stopping after whole work
     """
+    world.clntCounter = 0
+    world.srvCounter = 0
     get_common_logger().info("%d of %d scenarios passed." % (
         total.scenarios_passed,
         total.scenarios_ran
@@ -362,21 +373,25 @@ def say_goodbye(total):
         for item in world.result:
             result.write(str(item) + '\n')
         result.close()
-
-    if SERVER_TYPE in ['kea', 'kea4', 'kea6']:
-        #TODO: import only one function!
-        clean_config = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
-        clean_config.run_bindctl(True, 'clean')
-        kill_bind10()
-    #         try:
-    #             if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
-    #                 with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-    #                     run("route del -host %s" % (GIADDR4))
-    #         except NameError:
-    #             pass # most likely REL4_ADDR caused this exception -> we do not use relay
-    elif SERVER_TYPE in ['isc_dhcp6', 'dibbler']:
-        stop = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
-        stop.stop_srv()
+    if world.testType == 'server':
+        if SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+            #TODO: import only one function!
+            clean_config = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
+            clean_config.run_bindctl(True, 'clean')
+            kill_bind10()
+        #         try:
+        #             if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+        #                 with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
+        #                     run("route del -host %s" % (GIADDR4))
+        #         except NameError:
+        #             pass # most likely REL4_ADDR caused this exception -> we do not use relay
+        elif SERVER_TYPE in ['isc_dhcp6', 'dibbler']:
+            stop = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
+            stop.stop_srv()
+    elif world.testType == 'client':
+        get_common_logger().debug("kill the dibbler...")
+        clnt = importlib.import_module("clientsupport.%s.functions" % CLIENT_TYPE)
+        clnt.stop_clnt()
 
     if AUTO_ARCHIVE:
         archive_name = PROTO + '_' + SERVER_TYPE + '_' + time.strftime("%Y-%m-%d-%H:%M")

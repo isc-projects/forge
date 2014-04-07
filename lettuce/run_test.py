@@ -15,7 +15,7 @@
 #
 # author: Wlodzimierz Wencel
 
-from lettuce import Runner
+from lettuce import Runner, world
 import importlib
 import optparse
 import os
@@ -56,12 +56,11 @@ def option_parser():
                       action = "store",
                       default = None,
                       help = "Specific tests sets")
-    
+
     parser.add_option("-n", "--name",
                       dest = "name",
                       default = None,
                       help = "Single scenario name, don't use that option with -s or -t")
-    
     parser.add_option("-t", "--tags",
                       dest = "tag",
                       action = "append",
@@ -75,6 +74,18 @@ def option_parser():
                       default = False,
                       help = "Generate results file in xUnit format")
 
+    parser.add_option("-S", "--server",
+                      dest = "server",
+                      action = "store_true",
+                      default = False,
+                      help = 'Run server tests')
+
+    parser.add_option("-C", "--client",
+                      dest = "client",
+                      action = "store_true",
+                      default = False,
+                      help = 'Run client tests')
+
     (opts, args) = parser.parse_args()
     
     if not opts.version6 and not opts.version4:
@@ -84,7 +95,18 @@ def option_parser():
     if opts.version6 and opts.version4:
         parser.print_help()
         parser.error("options -4 and -6 are exclusive.\n")
-        
+
+    if not opts.server and not opts.client:
+        parser.print_help()
+        parser.error("You must choose between --client or --server tests.\n")
+
+    if opts.server and opts.client:
+        parser.print_help()
+        parser.error("Options --client and --server are exclusive.\n")
+
+    testType = 'server' if opts.server else 'client'
+    world.testType = testType
+
     number = '6' if opts.version6 else '4'
     #Generate list of set tests and exit
     if opts.list:
@@ -92,6 +114,8 @@ def option_parser():
         hlp = UserHelp()
         hlp.test(number, 0)
         sys.exit()
+
+
         
     from features.init_all import HISTORY
     if HISTORY:
@@ -100,7 +124,7 @@ def option_parser():
         
     if opts.name is not None:
         from help import find_scenario
-        base_path, scenario = find_scenario(opts.name, number)
+        base_path, scenario = find_scenario(opts.name, number, testType)
         if base_path is None:
             print "Scenario named %s has been not found" %opts.name
             sys.exit()
@@ -116,12 +140,13 @@ def option_parser():
     path = ""
     #path for tests, all for specified IP version or only one set
     if opts.test_set is not None:
-        path = "/features/tests_v" + number + "/" + opts.test_set + "/"
-        base_path = os.getcwd() + path
+        if number == '6':
+            path = "/features/tests_v" + number + "/" + testType + "/" + opts.test_set + "/"
+            base_path = os.getcwd() + path
     elif opts.name is not None:
         pass
     else:
-        path = "/features/tests_v" + number + "/"
+        path = "/features/tests_v" + number + "/" + testType + "/"
         base_path = os.getcwd() + path
         
     if HISTORY: history.start()
@@ -147,7 +172,7 @@ def main():
     except ImportError:
         print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)"
         sys.exit()
-    if config.SERVER_TYPE == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
+    if config.SERVER_TYPE == "" or config.PROTO == "" or config.MGMT_ADDRESS == "" or config.CLIENT_TYPE == "":
         print "Please make sure your configuration is valid\nProject Forge shutting down."
         sys.exit()       
     option_parser()

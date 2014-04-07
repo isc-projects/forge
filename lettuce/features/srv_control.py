@@ -67,6 +67,7 @@ def test_define_value(*args):
             
     return tested_args
 
+
 ##server configurations
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(step, subnet, pool):
@@ -102,7 +103,7 @@ def config_srv_another_subnet_no_interface(step, subnet, pool):
     subnet, pool = test_define_value( subnet, pool)
     dhcpfun.config_srv_another_subnet(step, subnet, pool, None)
 
-@step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')#  
+@step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')#
 def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
     """
     Adds server configuration with specified prefix.

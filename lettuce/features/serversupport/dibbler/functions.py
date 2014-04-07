@@ -22,7 +22,7 @@ from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, DIBBLER_INSTALL_DIR
 
 def restart_srv():
-    fabric_run_command ("("+DIBBLER_INSTALL_DIR+"dibbler-server restart); sleep 1;")
+    fabric_run_command("("+DIBBLER_INSTALL_DIR+"dibbler-server restart); sleep 1;")
 
 def stop_srv():
     fabric_run_command ("("+DIBBLER_INSTALL_DIR+"dibbler-server stop); sleep 1;")
@@ -47,20 +47,20 @@ def add_defaults(rebinding_time = '1400', renewal_time = '10', preferred_lifetim
     world.cfg["conf"] += '''
 iface "{eth}" {pointer_open}
     '''.format(**locals())
-    
+
+
 def prepare_cfg_subnet(step, subnet, pool):
     get_common_logger().debug("Configure subnet...")
-    if (not "conf" in world.cfg):
+    if not "conf" in world.cfg:
         world.cfg["conf"] = ""
-    if (subnet == "default"):
+    if subnet == "default":
         subnet = "2001:db8:1::/64"
-       
-    if (pool == "default"):
+    if pool == "default":
         pool = "2001:db8:1::0-2001:db8:1::ffff"
 
     eth = SERVER_IFACE
     world.cfg["subnet"] = subnet
-    add_defaults() #add in future configuration of those functions
+    add_defaults()  # add in future configuration of those functions
     pointer_open = '{'
     pointer_close = '}'
     world.cfg["conf"] += '''\
