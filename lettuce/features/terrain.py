@@ -26,7 +26,7 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from serversupport.bind10 import kill_bind10, start_bind10
 from time import sleep
-from serversupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name
+from serversupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name, fabric_remove_file_command
 
 import importlib
 import os
