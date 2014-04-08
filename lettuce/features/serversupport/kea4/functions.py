@@ -280,7 +280,7 @@ def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
     """    
-    world.cfg['leases'] = SERVER_INSTALL_DIR + 'bind10/kea-leases4.csv'
+    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases4.csv'
     
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
