@@ -293,7 +293,7 @@ def start_srv(start, process):
     """
     Start kea with generated config
     """
-
+    
     # All 3 available processess set to 'True' it means that they should to succeed
     configuration = True
     start = True
@@ -362,6 +362,7 @@ def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
     """    
+    world.cfg['leases'] = SERVER_INSTALL_DIR + 'bind10/kea-leases6.csv'
     
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')

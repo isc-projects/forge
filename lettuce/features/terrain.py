@@ -259,6 +259,7 @@ def initialize(scenario):
     # IPv6:
     if world.proto == "v6":
         v6_initialize()
+        
     # IPv4:
     if world.proto == "v4":
         v4_initialize()
@@ -344,8 +345,13 @@ def cleanup(scenario):
     # copy log file from remote server:
     if SAVE_BIND_LOGS:
         fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
-    if SAVE_LEASES and SERVER_TYPE not in ['kea', 'kea4', 'kea6']:
-        fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+    if SAVE_LEASES:
+        if SERVER_TYPE not in ['kea', 'kea4', 'kea6']:
+            fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+        elif SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+            fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
+        else:
+            pass
 
 
 @after.all
