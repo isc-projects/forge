@@ -350,6 +350,7 @@ def cleanup(scenario):
             fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
         elif SERVER_TYPE in ['kea', 'kea4', 'kea6']:
             fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
+            fabric_remove_file_command(world.cfg['leases'])
         else:
             pass
 
