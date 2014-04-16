@@ -26,7 +26,7 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from serversupport.bind10 import kill_bind10, start_bind10
 from time import sleep
-from serversupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name
+from serversupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name, fabric_remove_file_command
 
 import importlib
 import os
@@ -268,6 +268,7 @@ def initialize(scenario):
     # IPv6:
     if world.proto == "v6":
         v6_initialize()
+        
     # IPv4:
     if world.proto == "v4":
         v4_initialize()
@@ -353,8 +354,16 @@ def cleanup(scenario):
     # copy log file from remote server:
     if SAVE_BIND_LOGS:
         fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
-    if SAVE_LEASES and SERVER_TYPE not in ['kea', 'kea4', 'kea6']:
-        fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+    if SAVE_LEASES:
+        if SERVER_TYPE not in ['kea', 'kea4', 'kea6']:
+            if hasattr(world.cfg, "leases"):
+                fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+        elif SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+            if hasattr(world.cfg, "leases"):
+                fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
+                fabric_remove_file_command(world.cfg['leases'])
+        else:
+            pass
 
 
 @after.all
