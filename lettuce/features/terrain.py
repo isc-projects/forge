@@ -16,17 +16,17 @@
 # Author: Wlodzimierz Wencel
 
 from Crypto.Random.random import randint
-from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
+from init_all import LOGLEVEL, MGMT_ADDRESS, SOFTWARE_UNDER_TEST, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLIENT_TYPE
+    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
-from serversupport.bind10 import kill_bind10, start_bind10
+from softwaresupport.bind10 import kill_bind10, start_bind10
 from time import sleep
-from serversupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name, fabric_remove_file_command
+from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name, fabric_remove_file_command
 
 import importlib
 import os
@@ -184,8 +184,8 @@ def test_start():
     # be instantiated by get_common_logger()
     logger_initialize(LOGLEVEL)
 
-    if world.testType == 'server':
-        if (SERVER_TYPE in ['kea', 'kea4', 'kea6']):
+    if "server" in SOFTWARE_UNDER_TEST:
+        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server']:
             get_common_logger().debug("Starting Bind:")
 
             try:
@@ -199,16 +199,16 @@ def test_start():
                                             address: %s\nLocal Mac address: %s\nNetwork interface: %s"
                                           % (MGMT_ADDRESS, CLI_MAC, IFACE))
                 sys.exit()
-        elif SERVER_TYPE in ["isc_dhcp6", "dibbler"]:
+        elif SOFTWARE_UNDER_TEST in ["isc_dhcp6_server", "dibbler_server"]:
             # TODO: import only one function
-            stop = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
+            stop = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             stop.stop_srv()  # shouldn't we start the server here?
 
         else:
-            get_common_logger().error("Server " + SERVER_TYPE + " not implemented yet")
-    elif world.testType == 'client':
+            get_common_logger().error("Server " + SOFTWARE_UNDER_TEST + " not implemented yet")
+    elif "client" in SOFTWARE_UNDER_TEST:
         get_common_logger().debug("starting dibbler...")
-        clnt = importlib.import_module("clientsupport.%s.functions" % CLIENT_TYPE)
+        clnt = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
         # clnt.stop_clnt()
         clnt.start_clnt()
 
@@ -240,7 +240,7 @@ def initialize(scenario):
 
     world.cfg = {}
     world.cfg["iface"] = IFACE
-    world.cfg["server_type"] = SERVER_TYPE
+    world.cfg["server_type"] = SOFTWARE_UNDER_TEST
 
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
@@ -355,10 +355,10 @@ def cleanup(scenario):
     if SAVE_BIND_LOGS:
         fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
     if SAVE_LEASES:
-        if SERVER_TYPE not in ['kea', 'kea4', 'kea6']:
+        if SOFTWARE_UNDER_TEST not in ['kea4_server', 'kea6_server']:
             if hasattr(world.cfg, "leases"):
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
-        elif SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+        elif SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server']:
             if hasattr(world.cfg, "leases"):
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
                 fabric_remove_file_command(world.cfg['leases'])
@@ -382,10 +382,10 @@ def say_goodbye(total):
         for item in world.result:
             result.write(str(item) + '\n')
         result.close()
-    if world.testType == 'server':
-        if SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+    if "server" in SOFTWARE_UNDER_TEST:
+        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server']:
             #TODO: import only one function!
-            clean_config = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
+            clean_config = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             clean_config.run_bindctl(True, 'clean')
             kill_bind10()
         #         try:
@@ -394,16 +394,17 @@ def say_goodbye(total):
         #                     run("route del -host %s" % (GIADDR4))
         #         except NameError:
         #             pass # most likely REL4_ADDR caused this exception -> we do not use relay
-        elif SERVER_TYPE in ['isc_dhcp6', 'dibbler']:
-            stop = importlib.import_module("serversupport.%s.functions" % (SERVER_TYPE))
+        elif SOFTWARE_UNDER_TEST in ['isc_dhcp6_server', 'dibbler_server']:
+            stop = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             stop.stop_srv()
-    elif world.testType == 'client':
+    elif "client" in SOFTWARE_UNDER_TEST:
+        # temporary content; it should not be implementation specific
         get_common_logger().debug("kill the dibbler...")
-        clnt = importlib.import_module("clientsupport.%s.functions" % CLIENT_TYPE)
+        clnt = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
         clnt.stop_clnt()
 
     if AUTO_ARCHIVE:
-        archive_name = PROTO + '_' + SERVER_TYPE + '_' + time.strftime("%Y-%m-%d-%H:%M")
+        archive_name = PROTO + '_' + SOFTWARE_UNDER_TEST + '_' + time.strftime("%Y-%m-%d-%H:%M")
         archive_name = archive_file_name(1, 'tests_results_archive/' + archive_name)
         make_tarfile(archive_name + '.tar.gz', 'tests_results')
 

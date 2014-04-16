@@ -1,4 +1,4 @@
-from features.serversupport.multi_server_functions import fabric_sudo_command, \
+from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
    fabric_send_file, fabric_run_command, fabric_remove_file_command
 from logging_facility import *
 from lettuce.registry import world

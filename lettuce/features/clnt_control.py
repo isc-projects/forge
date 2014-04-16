@@ -1,8 +1,8 @@
 from lettuce import world, step
-from init_all import CLIENT_TYPE
+from init_all import SOFTWARE_UNDER_TEST
 import importlib
 
-dhcpfun = importlib.import_module("clientsupport.%s.functions"  % (CLIENT_TYPE))
+dhcpfun = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
 
 @step('Client testing...')

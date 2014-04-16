@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
-from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file, fabric_sudo_command
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file, fabric_sudo_command
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SERVER_IFACE
@@ -337,7 +337,7 @@ def parsing_bind_stdout(stdout, opt, search = []):
             print "RESTART BIND10, found ", each 
             #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
             #error fixed, but I decided to keep it anyway.
-            from serversupport.bind10 import kill_bind10, start_bind10 
+            from softwaresupport.bind10 import kill_bind10, start_bind10
             kill_bind10()
             start_bind10()
             run_bindctl (True, opt)

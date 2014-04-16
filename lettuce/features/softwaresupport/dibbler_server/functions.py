@@ -16,7 +16,7 @@
 # Author: Wlodzimierz Wencel
 
 
-from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file 
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, DIBBLER_INSTALL_DIR

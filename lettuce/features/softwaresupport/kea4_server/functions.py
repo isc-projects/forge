@@ -13,14 +13,14 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-from serversupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file
 from lettuce import world
 from logging_facility import *
 from textwrap import dedent
 from logging_facility import get_common_logger
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS
 
-from serversupport.kea6.functions import search_for_errors, parsing_bind_stdout, prepare_config_file, set_logger, cfg_write, set_time
+from softwaresupport.kea6_server.functions import search_for_errors, parsing_bind_stdout, prepare_config_file, set_logger, cfg_write, set_time
 
 kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "time-offset": 2, 

@@ -14,11 +14,12 @@
 # case insensitive.
 LOGLEVEL = "info"
 
-# This defines server type. Allowed values are:
-# kea4, kea6, isc_dhcp4, isc_dhcp6, dibbler
-# Not all of those are functional yet. This is essentailly
-# name of the subdirectory in lettuce/features/serversupport
-SERVER_TYPE = ""
+# This defines which software will be tested.
+# Allowed values:
+# dibbler_client, dibbler_server, kea6_server, kea4_server, isc_dhcp4_server, isc_dhcp6_server
+# Not all of those are functional yet. This is essentially
+# name of the subdirectory in lettuce/features/softwaresupport
+SOFTWARE_UNDER_TEST = ""
 
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)

@@ -20,7 +20,7 @@ from lettuce.registry import world
 from locale import str
 import sys
 import os
-from features.serversupport.multi_server_functions import fabric_send_file,fabric_download_file,\
+from features.softwaresupport.multi_server_functions import fabric_send_file,fabric_download_file,\
         fabric_remove_file_command,remove_local_file
 from time import sleep
 

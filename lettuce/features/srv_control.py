@@ -16,9 +16,9 @@
 # Author: Wlodzimierz Wencel
 
 from lettuce import world, step
-from init_all import SERVER_TYPE
+from init_all import SOFTWARE_UNDER_TEST
 import importlib
-dhcpfun = importlib.import_module("serversupport.%s.functions"  % (SERVER_TYPE))
+dhcpfun = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
 def test_define_value(*args):
     """
@@ -88,7 +88,7 @@ def config_srv_another_subnet(step, interface, subnet, pool):
     """
     Add another subnet with specified subnet/pool/interface.
     """
-    if SERVER_TYPE in ['dibbler', 'isc_dhcp4', 'isc_dhcp6']:
+    if SOFTWARE_UNDER_TEST in ['dibbler_server', 'isc_dhcp4_server', 'isc_dhcp6_server']:
         assert False, "Test temporary available only for Kea servers."
     subnet, pool, interface = test_define_value( subnet, pool, interface)
     dhcpfun.config_srv_another_subnet(step, subnet, pool, interface)
@@ -98,7 +98,7 @@ def config_srv_another_subnet_no_interface(step, subnet, pool):
     """
     Add another subnet to config file without interface specified.
     """
-    if SERVER_TYPE in ['dibbler', 'isc_dhcp4', 'isc_dhcp6']:
+    if SOFTWARE_UNDER_TEST in ['dibbler_server', 'isc_dhcp4_server', 'isc_dhcp6_server']:
         assert False, "Test temporary available only for Kea servers."
     subnet, pool = test_define_value( subnet, pool)
     dhcpfun.config_srv_another_subnet(step, subnet, pool, None)

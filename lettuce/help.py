@@ -19,6 +19,11 @@
 import datetime
 import os
 import sys
+from features.init_all import SOFTWARE_UNDER_TEST
+if "server" in SOFTWARE_UNDER_TEST:
+    testType = "server"
+elif "client" in SOFTWARE_UNDER_TEST:
+    testType = "client"
 
 class TestHistory ():
     def __init__(self):
@@ -33,8 +38,7 @@ class TestHistory ():
         self.tags = None
         self.path = None
         
-        from features.init_all import SERVER_TYPE
-        self.server_type = SERVER_TYPE
+        self.software_type = SOFTWARE_UNDER_TEST
         
         #TODO: implement this
         self.bind10_version = "N/A"
@@ -87,7 +91,7 @@ class TestHistory ():
             
         report = open('history.html','a')
         self.time_elapsed = self.stop_time - self.start_time
-        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.year)+'.'+str(self.date.month)+'.'+str(self.date.day)+'; '+str(self.date.hour)+':'+str(self.date.minute)+'</td></tr><tr><td> SERVER TYPE: </td><td>'+self.server_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> PASS-RATE: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
+        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.year)+'.'+str(self.date.month)+'.'+str(self.date.day)+'; '+str(self.date.hour)+':'+str(self.date.minute)+'</td></tr><tr><td> SOFTWARE TYPE: </td><td>'+self.software_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> PASS-RATE: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
         report.close()
         
     def read_result(self):
@@ -135,8 +139,8 @@ class UserHelp ():
             outline_generate_test = 0
             outline_tag = False
             print "\nIPv" + each_number + " Tests:"
-            print "features/tests_v" + each_number + "/"
-            for path, dirs, files in os.walk("features/tests_v" + each_number + "/"):
+            print "features/dhcpv" + each_number + "/"
+            for path, dirs, files in os.walk("features/dhcpv" + each_number + "/"):
                 if len(path[18:]) > 1: 
                     print "\t" + path[18:]
                     sets_number += 1 
@@ -187,9 +191,9 @@ class UserHelp ():
             steps.close()
         print "\nFor definitions of (\d+) (\w+) (\S+) check Python regular expressions at http://docs.python.org/2/library/re.html"
 
-def find_scenario(name, IPversion, testType):
+def find_scenario(name, IPversion):
     scenario = 0
-    for path, dirs, files in os.walk("features/tests_v" + IPversion + "/" + testType + "/"):
+    for path, dirs, files in os.walk("features/dhcpv" + IPversion + "/" + testType + "/"):
         for each_file in files:
             file_name = open (path +'/'+ each_file, 'r')
             for each_line in file_name:
@@ -249,7 +253,7 @@ if __name__ == '__main__':
     help_file.flush()
     print """
     Step "Run configuration command: (.+)" is unique, it's for Kea servers only. All test with that step will automatically fail 
-    when variable SERVER_TYPE in init_all.py will be different then: kea, kea4 or kea6.
+    when variable SOFTWARE_UNDER_TEST in init_all.py will be different then: kea, kea4 or kea6.
     This step is designed to put one line commands to configuration file (e.g. config set Dhcp6/renew-timer 999)
     but it can be used to more complicated things if you put command in right order.
     Be aware of fact that command passed to config file it's all after "Run configuration command:" to the end of the line!

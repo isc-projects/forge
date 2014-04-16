@@ -21,7 +21,7 @@ from features.logging_facility import get_common_logger
 from lettuce.registry import world
 import os
 
-#from features.serversupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
+#from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
 # fabric_send_file,fabric_download_file,fabric_remove_file_command,remove_local_file
 
 def fabric_run_command(cmd):

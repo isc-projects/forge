@@ -134,7 +134,7 @@ def response_check_content(step, expect, data_type, expected):
 
 
 def client_copy_option(step, opt_name):
-    from serversupport.kea4.functions import kea_options4
+    from softwaresupport.kea4_server.functions import kea_options4
     opt_code = kea_options4.get(opt_name)
     
     assert opt_name in kea_options4, "Unsupported option name " + opt_name
