@@ -24,14 +24,16 @@ from features.init_all import SERVER_INSTALL_DIR
 from features.logging_facility import get_common_logger
 
 from multi_server_functions import fabric_sudo_command 
-    
+
+
 def kill_bind10():
     """
     Kill any running bind10 instance
     """
     get_common_logger().debug("Killing all running Bind instances")
     return fabric_sudo_command('pkill b10-*; sleep 2')
-            
+
+
 def start_bind10():
     """
     Start Bind10 instance
@@ -39,4 +41,3 @@ def start_bind10():
     get_common_logger().debug("Starting Bind instances")
 
     return fabric_sudo_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/bind10 &); sleep 2')
-            
