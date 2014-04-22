@@ -407,19 +407,18 @@ def client_option (msg):
         pass
     
     if world.cfg["add_option"]["IA_NA"] and world.cfg["relay"] == False:
-        for opt in world.cliopts:
-            if opt.optcode == 3:
-                break #if there is no IA_NA/TA in world.cliopts, break..
-        else:
-            pass
-        msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
         if world.oro is not None and len(world.cliopts):
-            pass
+            for opt in world.cliopts:
+                if opt.optcode == 3:
+                    break #if there is no IA_NA/TA in world.cliopts, break..
+            else:
+                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
         else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA   
+            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"], T1 = world.cfg["values"]["T1"], T2 = world.cfg["values"]["T2"]) # if not, add IA_NA
 
     if world.cfg["add_option"]["preference"]:
         msg /= DHCP6OptPref()
+
         
     if world.cfg["add_option"]["rapid_commit"]:
         msg /= DHCP6OptRapidCommit()
@@ -485,7 +484,6 @@ def client_option (msg):
 def build_msg(msg):
    
     msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport=546, dport=547)/msg
-    
     # get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"
 
@@ -585,7 +583,6 @@ def send_wait_for_message(step, type, presence, exp_message):
         
     # Uncomment this to get debug.recv filled with all received messages
     conf.debug_match = True
-    world.climsg[0].show()
     ans, unans = sr(world.climsg, iface = world.cfg["iface"], timeout = 1, nofilter = 1, verbose = 99)
 
     expected_type_found = False
@@ -595,9 +592,7 @@ def send_wait_for_message(step, type, presence, exp_message):
         a,b = x
         world.srvmsg.append(b)
         # a.show()
-        print a.command()
         # b.show() #uncomment this to see message
-        print b.command()
         get_common_logger().info("Received packet type = %s" % get_msg_type(b))
         received_names = get_msg_type(b) + " " + received_names
         if (get_msg_type(b) == exp_message):
