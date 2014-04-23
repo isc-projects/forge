@@ -209,8 +209,8 @@ def test_start():
     elif "client" in SOFTWARE_UNDER_TEST:
         get_common_logger().debug("starting dibbler...")
         clnt = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
-        # clnt.stop_clnt()
-        clnt.start_clnt()
+        clnt.stop_clnt()
+        # clnt.start_clnt()
 
 
         #If relay is used routing needs to be reconfigured on DUT

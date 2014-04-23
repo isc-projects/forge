@@ -14,6 +14,13 @@ def client_msg_capture(step, msgType):
     world.climsg.append(temp[-1])
     assert len(world.climsg[world.clntCounter]) is not 0, "different len: %d" %len(world.climsg[world.clntCounter])
     assert world.climsg[world.clntCounter].haslayer(clientMsg)
+    # temporary code for checking iaid
+    if clientMsg == DHCP6_Solicit:
+        world.iaid = world.climsg[world.clntCounter].iaid
+    if clientMsg == DHCP6_Request:
+        assert world.iaid == temp[0].iaid, "IA_IDs are different in clients messages."
+
+
 
 
 def send_msg_to_client(step, msgType):

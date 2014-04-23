@@ -5,10 +5,10 @@ Feature: DHCPv6 Client Prefix Delegation
     Scenario: prefix.delegation.client
 
     Test Procedure:
-    Client testing...
-    Server receives SOLICIT message from client.
-    Server answers with ADVERTISE message.
-    Server receives REQUEST message from client.
-    Server answers with REPLY message.
+    Client is started.
+    Client sent SOLICIT message.
+    Server sends back ADVERTISE message.
+    Client sent REQUEST message.
+    Server sends back REPLY message.
 
     References: RFC 3315
