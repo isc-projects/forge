@@ -27,7 +27,8 @@ Former participants
 
 Project homepage
 ================
-http://bind10.isc.org/wiki/IscForge
+http://kea.isc.org/wiki/IscForge
+[Note: project homepage has changed in April 2014]
 
 Project source code
 ===================
