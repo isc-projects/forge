@@ -284,8 +284,8 @@ def initialize(scenario):
         if PROTO == "v6":
             type = type + '6'
         cmd = TCPDUMP_INSTALL_DIR + 'tcpdump'
-        args = [cmd, type, "-i", world.cfg["iface"], "-U", "-w",
-                world.cfg["dir_name"] + "/capture.pcap", "-s", str(65535)]
+        args = [cmd, "-U", "-w", world.cfg["dir_name"] + "/capture.pcap",
+                "-s", str(65535), "-i", world.cfg["iface"], type]
         get_common_logger().debug("Running tcpdump: ")
         get_common_logger().debug(args)
         # TODO: hide stdout, log it in debug mode
