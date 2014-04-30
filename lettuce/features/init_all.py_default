@@ -106,7 +106,12 @@ SAVE_CONFIG_FILE = False
 # Auto archive it's feature that automatically create tar archive containing 
 # folder 'tests_results' and history.html (if created). Default disabled.
 AUTO_ARCHIVE = False
-  
+
+# SLEEP_TIME 1 and 2 are times Forge waiting after performing commands on remote DUT.
+# for slower devices it's recommended to set sleep time for longer then couple 1-2 seconds
+SLEEP_TIME_1 = 2 # wait after starting remote server
+SLEEP_TIME_2 = 2 # wait after all others commands
+
 # =============== SSH ===============
 
 # This are required management information about device under test (the one that
