@@ -348,15 +348,13 @@ def cleanup(scenario):
         fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
     if SAVE_LEASES:
         if SERVER_TYPE not in ['kea', 'kea4', 'kea6']:
-            if hasattr(world.cfg, "leases"):
-                fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+            fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
         elif SERVER_TYPE in ['kea', 'kea4', 'kea6']:
-            if hasattr(world.cfg, "leases"):
-                fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
-                fabric_remove_file_command(world.cfg['leases'])
+            fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
         else:
             pass
-
+    if SERVER_TYPE in ['kea', 'kea4', 'kea6']:
+        fabric_remove_file_command(world.cfg['leases'])
 
 @after.all
 def say_goodbye(total):
