@@ -482,7 +482,7 @@ def client_option (msg):
 
 def build_msg(msg):
    
-    msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport=546, dport=547)/msg
+    msg = IPv6(dst = world.cfg["address_v6"], src = world.cfg["cli_link_local"])/UDP(sport=546, dport=547)/msg
     
     # get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"
@@ -544,7 +544,7 @@ def create_relay_forward(step, level):
         tmp /= DHCP6_RelayForward(hopcount = level, linkaddr =  world.cfg["values"]["linkaddr"], peeraddr = world.cfg["values"]["peeraddr"])/DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])/DHCP6OptRelayMsg()
 
     #build full message
-    relay_msg = IPv6(dst = world.cfg["address_v6"])/UDP(sport = 547, dport = 547)/tmp/msg
+    relay_msg = IPv6(dst = world.cfg["address_v6"], src = world.cfg["cli_link_local"])/UDP(sport = 547, dport = 547)/tmp/msg
     
     # in case if unicast used, get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"

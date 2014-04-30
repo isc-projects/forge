@@ -18,7 +18,7 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SERVER_TYPE, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL
+    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL,CLI_LINK_LOCAL
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -155,6 +155,7 @@ def v6_initialize():
     # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
     # All DHCP_Servers ff05::1:3 that is deprecated. 
     world.cfg["address_v6"] = "ff02::1:2"
+    world.cfg["cli_link_local"] = CLI_LINK_LOCAL
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.cfg["space"] = "dhcp6"
