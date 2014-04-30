@@ -15,10 +15,14 @@
 
 # Author: Wlodzimierz Wencel
 
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file, fabric_sudo_command
+
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
+    remove_local_file, cpoy_configuration_file, fabric_sudo_command
+
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SERVER_IFACE
+from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
+    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2
 
 
 kea_options6 = { "client-id": 1,
@@ -255,7 +259,8 @@ def set_logger():
     prepare_config_file(cfg_file)
 
     fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
-    fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
+    fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | '
+                       + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
     remove_local_file(cfg_file + '_processed')
     
 def prepare_config_file(cfg):
@@ -411,13 +416,14 @@ def run_bindctl (succeed, opt):
         # restart server without changing it's configuration
         restart_srv()
         
-    result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 1')
+    result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | '
+                                + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
     
     # now let's test output, looking for errors, 
     # some times clean can fail, so we wanna test only start and conf
     # for now we fail test on any presence of stderr, probably this will
     # need some more specific search.
-    search_for_errors (succeed, opt, result, ["ImportError:",'"config revert".',"Error"])
+    search_for_errors (succeed, opt, result, ["ImportError:", '"config revert".', "Error"])
 
     # Error 32: Broken pipe
     # this error needs different aproach then others. Bind10 needs to be restarted.
