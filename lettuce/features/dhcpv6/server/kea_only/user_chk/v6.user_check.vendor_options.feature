@@ -13,7 +13,7 @@ Feature: Kea6 User Check Hook Library
     # Configure the server with two subnets.  The first subnet will be used 
     # for registeted users, the second for unregistered users.  
     Test Setup:
-    Client sends local file stored in: features/tests_v6/kea_only/user_chk/registry_1.txt to server, to location: /tmp/user_chk_registry.txt.
+    Client sends local file stored in: features/dhcpv6/server/kea_only/user_chk/registry_1.txt to server, to location: /tmp/user_chk_registry.txt.
     Client removes file from server located in: /tmp/user_chk_outcome.txt.
     Server is configured with 3000::/64 subnet with 3000::5-3000::20 pool.
     Server is configured with another subnet: 1000:1::/64 with 1000:1::5-1000:1::5 pool on interface eth3.

@@ -34,7 +34,7 @@ Feature: Kea6 User Check Hook Library
     # an unknown user should get last subnet
 
     Test Setup:
-    Client sends local file stored in: features/tests_v6/kea_only/user_chk/registry_1.txt to server, to location: /tmp/user_chk_registry.txt.
+    Client sends local file stored in: features/dhcpv6/server/kea_only/user_chk/registry_1.txt to server, to location: /tmp/user_chk_registry.txt.
     Client removes file from server located in: /tmp/user_chk_outcome.txt.
     Server is configured with 3000::/64 subnet with 3000::5-3000::5 pool.
     Server is configured with another subnet: 1000::/64 with 1000::5-1000::5 pool.
@@ -53,7 +53,7 @@ Feature: Kea6 User Check Hook Library
     Response sub-option 5 from option 3 MUST contain address 1000::5.
     # Check the outcome file for correct content
     Client download file from server stored in: /tmp/user_chk_outcome.txt.
-    Client compares downloaded file from server with local file stored in: features/tests_v6/kea_only/user_chk/outcome_1.txt.
+    Client compares downloaded file from server with local file stored in: features/dhcpv6/server/kea_only/user_chk/outcome_1.txt.
 
 @v6 @kea_only @user_check  @IA_NA
     Scenario: user_check.IA_NA.with_registry_known_user
@@ -61,7 +61,7 @@ Feature: Kea6 User Check Hook Library
     # an known user should get first subnet
 
     Test Setup:
-    Client sends local file stored in: features/tests_v6/kea_only/user_chk/registry_1.txt to server, to location: /tmp/user_chk_registry.txt.
+    Client sends local file stored in: features/dhcpv6/server/kea_only/user_chk/registry_1.txt to server, to location: /tmp/user_chk_registry.txt.
     Client removes file from server located in: /tmp/user_chk_outcome.txt.
     Server is configured with 3000::/64 subnet with 3000::5-3000::5 pool.
     Server is configured with another subnet: 1000::/64 with 1000::5-1000::5 pool.
@@ -80,4 +80,4 @@ Feature: Kea6 User Check Hook Library
     Response sub-option 5 from option 3 MUST contain address 3000::5.
     # Check the outcome file for correct content
     Client download file from server stored in: /tmp/user_chk_outcome.txt.
-    Client compares downloaded file from server with local file stored in: features/tests_v6/kea_only/user_chk/outcome_2.txt.
+    Client compares downloaded file from server with local file stored in: features/dhcpv6/server/kea_only/user_chk/outcome_2.txt.
