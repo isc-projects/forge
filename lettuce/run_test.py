@@ -145,9 +145,8 @@ def option_parser():
     elif "server" in SOFTWARE_UNDER_TEST:
         testType = "server"
     if opts.test_set is not None:
-        if number == '6':
-            path = "/features/dhcpv" + number + "/"  + testType + "/" + opts.test_set + "/"
-            base_path = os.getcwd() + path
+        path = "/features/dhcpv" + number + "/"  + testType + "/" + opts.test_set + "/"
+        base_path = os.getcwd() + path
     elif opts.name is not None:
         pass
     else:

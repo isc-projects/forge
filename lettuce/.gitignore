@@ -8,3 +8,5 @@ output/*
 /history.html
 /tests_results_archive
 /.idea/*
+/temp
+/server.cfg

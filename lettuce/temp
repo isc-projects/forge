@@ -1,8 +1,0 @@
-log-level 8
-log-mode syslog
-duid-type duid-llt
-iface eth1 {
-    pd {
-    }
-}
-   
