@@ -218,7 +218,7 @@ def test_start():
 
 
 #     try:
-#         if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+#         if REL4_ADDR and (SOFTWARE_UNDER_TEST  == 'kea4'):
 #             assert False, "we don't support ip v4 yet"
 # #             with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
 # #                 run("route add -host %s gw %s" % (GIADDR4, REL4_ADDR))
@@ -392,7 +392,7 @@ def say_goodbye(total):
             clean_config.run_bindctl(True, 'clean')
             kill_bind10()
         #         try:
-        #             if REL4_ADDR and (SERVER_TYPE  == 'kea4'):
+        #             if REL4_ADDR and (SOFTWARE_UNDER_TEST  == 'kea4'):
         #                 with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
         #                     run("route del -host %s" % (GIADDR4))
         #         except NameError:
