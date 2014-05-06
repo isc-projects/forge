@@ -4,11 +4,14 @@ Feature: DHCPv6 Client Prefix Delegation
 @v6 @PD @rfc3633
     Scenario: prefix.delegation.client
 
-    Test Procedure:
+    Setting up test.
+    Client is configured to request IA_PD option.
     Client is started.
     Client sent SOLICIT message.
+
+    Client message MUST contain option 25.
     Server sends back ADVERTISE message.
     Client sent REQUEST message.
     Server sends back REPLY message.
 
-    References: RFC 3315
+    References: RFC 3633

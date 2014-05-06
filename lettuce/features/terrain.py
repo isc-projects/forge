@@ -255,6 +255,8 @@ def initialize(scenario):
     world.clntCounter = 0
     world.srvCounter = 0
 
+    world.clntCfg = {}
+
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if not hasattr(world.cfg, "cli_duid"):
         client_id(CLI_MAC)
@@ -353,17 +355,19 @@ def cleanup(scenario):
         # TODO: log output in debug mode
 
     # copy log file from remote server:
-    if SAVE_BIND_LOGS:
-        fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
-    if SAVE_LEASES:
-        if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server']:
-            fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
-        elif SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
-            fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
-        else:
-            pass
-    if SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
-        fabric_remove_file_command(world.cfg['leases'])
+    if 'server' in SOFTWARE_UNDER_TEST:
+        if SAVE_BIND_LOGS:
+            fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
+
+        if SAVE_LEASES:
+            if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server']:
+                fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+            elif SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
+                fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
+            else:
+                pass
+        if SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
+            fabric_remove_file_command(world.cfg['leases'])
 
 @after.all
 def say_goodbye(total):
