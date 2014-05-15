@@ -124,6 +124,12 @@ MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
 
 
+# @wlodek: how about getting rid of SERVER_INSTALL_DIR and DIBBLER_INSTALL_DIR
+# variables and replacing it with SOFTWARE_INSTALL_DIR var? i think it would
+# fit present forge structure.
+SOFTWARE_INSTALL_DIR = ""
+
+
 # =============== Kea ===============
 # Specifies path to the server installation directory on DUT. This must
 # point to root directory of server installation and must end with /.
