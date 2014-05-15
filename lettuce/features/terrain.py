@@ -71,6 +71,15 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "DUID": None
              }
 
+srv_values_v6 = {"T1": 1000,
+                 "T2": 2000,
+                 "preferred-lifetime": 3000,
+                 "valid-lifetime": 4000,
+                 "prefix": "3000::",
+                 "prefix-len" : 64
+                }
+
+
 # times values, plz do not change this.
 # there is a test step to do this
 server_times_v6 = {"renew-timer": 1000,
@@ -107,6 +116,7 @@ def set_values():
     if PROTO == "v6":
         world.cfg["values"] = values_v6.copy()
         world.cfg["server_times"] = server_times_v6.copy()
+        world.clntCfg["values"] = srv_values_v6.copy()
     else:
         world.cfg["values"] = values_v4.copy()
         world.cfg["server_times"] = server_times_v4.copy()
@@ -117,6 +127,7 @@ def set_options():
         world.cfg["add_option"] = add_option_v6.copy()
     else:
         world.cfg["add_option"] = add_option_v4.copy()
+
 
 
 def add_result_to_raport(info):
@@ -208,10 +219,10 @@ def test_start():
         else:
             get_common_logger().error("Server " + SOFTWARE_UNDER_TEST + " not implemented yet")
     elif "client" in SOFTWARE_UNDER_TEST:
-        get_common_logger().debug("starting dibbler...")
+        idx = SOFTWARE_UNDER_TEST.find("_client")
+        get_common_logger().debug("cleaning " + SOFTWARE_UNDER_TEST[:idx] + "...")
         clnt = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
         clnt.stop_clnt()
-        # clnt.start_clnt()
 
 
         #If relay is used routing needs to be reconfigured on DUT
@@ -256,6 +267,13 @@ def initialize(scenario):
     world.srvCounter = 0
 
     world.clntCfg = {}
+    world.clntCfg["wasSniffed"] = False
+
+    world.srvopts = []
+    world.pref = None
+
+    world.time = None
+    world.iaid = None
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if not hasattr(world.cfg, "cli_duid"):
@@ -401,8 +419,8 @@ def say_goodbye(total):
             stop = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             stop.stop_srv()
     elif "client" in SOFTWARE_UNDER_TEST:
-        # temporary content; it should not be implementation specific
-        get_common_logger().debug("kill the dibbler...")
+        idx = SOFTWARE_UNDER_TEST.find("_client")
+        get_common_logger().debug("cleaning " + SOFTWARE_UNDER_TEST[:idx] + "...")
         clnt = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
         clnt.stop_clnt()
 
