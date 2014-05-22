@@ -115,19 +115,8 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
 
 def config_srv_another_subnet(step, subnet, pool, interface):
     pass
-    # count = world.kea["subnet_cnt"]
-    # world.cfg["conf"] += '''\
-    #     # subnet defintion Kea 6
-    #     config add Dhcp6/subnet6
-    #     config set Dhcp6/subnet6[{count}]/subnet "{subnet}"
-    #     config set Dhcp6/subnet6[{count}]/pool [ "{pool}" ]
-    #     '''.format(**locals())
-    # if interface is not None:
-    #     world.cfg["conf"] += '''\
-    #             config set Dhcp6/subnet6[{count}]/interface "{interface}"
-    #             '''.format(**locals())
-    #
-    # world.kea["subnet_cnt"] += 1
+    # TODO: implement this!
+
 
 def config_client_classification(step, subnet, option_value):
     # TODO: implement this!
@@ -147,11 +136,11 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
         .format(**locals())
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space, option_code = None, type = 'default'):
-    if not "options" in world.cfg:
-        world.cfg["options"] = '\n\t"option-data": ['
+def prepare_cfg_add_option(step, option_name, option_value, space, option_code=None, type='default', where='options'):
+    if not where in world.cfg:
+        world.cfg[where] = '\n\t"option-data": ['
     else:
-        world.cfg["options"] += ","
+        world.cfg[where] += ","
 
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     if type == 'default':
@@ -164,7 +153,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space, option_code =
 
     assert option_code is not None, "Unsupported option name for other Kea6 options: " + option_name
 
-    world.cfg["options"] += '''
+    world.cfg[where] += '''
             \t{pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
             \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
@@ -192,10 +181,8 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     if not "add_subnet" in world.cfg:
         assert False, "First you need to configure subnet."
 
-    pointer_start = "{"
-    pointer_end = "}"
-
-    assert False, "For now option unavailable!"
+    prepare_cfg_add_option(step, option_name, option_value, 'dhcp6', option_code = None,
+                           type = 'default', where = 'add_subnet_options')
 
 
 def run_command(step, command):
@@ -212,15 +199,22 @@ def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["main"])
     if "add_subnet" in world.cfg:
-        cfg_file.write(world.cfg["add_subnet"] + " }]")
+        cfg_file.write(world.cfg["add_subnet"])
+
+    if "add_subnet_options" in world.cfg:
+        cfg_file.write("," + world.cfg["add_subnet_options"] + " ] \n\t\t}]")
+    else:
+        cfg_file.write(" }]")
+
     if "options" in world.cfg:
         cfg_file.write(',' + world.cfg["options"])
         cfg_file.write("]")
+
     if "option_def" in world.cfg:
         cfg_file.write(',' + world.cfg["option_def"])
         cfg_file.write("]")
-
-    cfg_file.write('\n\t}\n\n\t}\n')
+    # TODO make available different database backends!
+    cfg_file.write(',\n\n\t"lease-database":{"type": "memfile"}\n\t}\n\n\t}\n')
     cfg_file.close()
 
 ## =============================================================
@@ -242,6 +236,7 @@ def start_srv(start, process):
     remove_local_file(world.cfg["cfg_file"])
     fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'libexec/bind10/b10-dhcp6 -c '
                        + world.cfg["cfg_file"] + '&); sleep 1')
+
 
 def stop_srv():
     pass
