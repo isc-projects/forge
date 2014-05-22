@@ -26,7 +26,8 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from softwaresupport.bind10 import kill_bind10, start_bind10
 from time import sleep
-from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name, fabric_remove_file_command
+from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
+    fabric_remove_file_command, fabric_run_command
 
 import importlib
 import os
@@ -186,7 +187,7 @@ def test_start():
     logger_initialize(LOGLEVEL)
 
     if "server" in SOFTWARE_UNDER_TEST:
-        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server']:
+        if SOFTWARE_UNDER_TEST in ['kea4_server_bind', 'kea6_server_bind']:
             get_common_logger().debug("Starting Bind:")
 
             try:
@@ -200,10 +201,15 @@ def test_start():
                                             address: %s\nLocal Mac address: %s\nNetwork interface: %s"
                                           % (MGMT_ADDRESS, CLI_MAC, IFACE))
                 sys.exit()
+
         elif SOFTWARE_UNDER_TEST in ["isc_dhcp6_server", "dibbler_server"]:
             # TODO: import only one function
             stop = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             stop.stop_srv()  # shouldn't we start the server here?
+
+        elif SOFTWARE_UNDER_TEST in ["kea6_server", "kea4_server"]:
+            # TODO: implement this
+            pass
 
         else:
             get_common_logger().error("Server " + SOFTWARE_UNDER_TEST + " not implemented yet")
@@ -345,6 +351,7 @@ def cleanup(scenario):
     """
     Global cleanup for each scenario. Implemented within tests by "Server is started."
     """
+    fabric_run_command("kill `ps auxwww | grep dhcp6 | grep b10- | awk '{print $2}'`")
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
         add_result_to_raport(info)
@@ -360,13 +367,13 @@ def cleanup(scenario):
             fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
 
         if SAVE_LEASES:
-            if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server']:
+            if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
-            elif SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
+            elif SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server', 'kea6_server_bind']:
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
             else:
                 pass
-        if SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
+        if SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server', 'kea6_server_bind']:
             fabric_remove_file_command(world.cfg['leases'])
 
 @after.all
@@ -386,7 +393,7 @@ def say_goodbye(total):
             result.write(str(item) + '\n')
         result.close()
     if "server" in SOFTWARE_UNDER_TEST:
-        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server']:
+        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server_bind']:
             #TODO: import only one function!
             clean_config = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             clean_config.run_bindctl(True, 'clean')

@@ -66,226 +66,161 @@ def set_time(step, which_time, value):
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK START =================
 
-def prepare_cfg_default(step):
-    world.cfg["conf"] = "# Default server config for Kea6 is just empty string\n"
 
-def prepare_cfg_subnet(step, subnet, pool):
-    get_common_logger().debug("Configure subnet...")
-    if (not "conf" in world.cfg):
-        world.cfg["conf"] = ""
-    if (subnet == "default"):
-        subnet = "2001:db8:1::/64"
-    if (pool == "default"):
-        pool = "2001:db8:1::1 - 2001:db8:1::ffff"
+def add_defaults():
     t1 = world.cfg["server_times"]["renew-timer"]
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["preferred-lifetime"]
     t4 = world.cfg["server_times"]["valid-lifetime"]
     eth = SERVER_IFACE
-    world.cfg["conf"] = '''\
-        # subnet defintion Kea 6
-        config set Dhcp6/renew-timer {t1} 
-        config set Dhcp6/rebind-timer {t2}
-        config set Dhcp6/preferred-lifetime {t3} 
-        config set Dhcp6/valid-lifetime {t4}
-        config add Dhcp6/subnet6
-        config set Dhcp6/subnet6[0]/subnet "{subnet}"
-        config set Dhcp6/subnet6[0]/pool [ "{pool}" ]
+    pointer_start = "{"
+    pointer_end = "}"
+
+    world.cfg["main"] = '''
+        {pointer_start} "Dhcp6" :
+
+        {pointer_start}
+        "renew-timer": {t1},
+        "rebind-timer": {t2},
+        "preferred-lifetime": {t3},
+        "valid-lifetime": {t4},
         '''.format(**locals())
+
     if eth is not None:
-        world.cfg["conf"] += '''\
-            config set Dhcp6/subnet6[0]/interface "{eth}"
-            '''.format(**locals())
+        world.cfg["main"] += '''"interfaces": ["{eth}"],
+        '''.format(**locals())
+
+
+def prepare_cfg_subnet(step, subnet, pool, eth = None):
+    if not "add_subnet" in world.cfg:
+        world.cfg["add_subnet"] = '"subnet6": [ '
+    else:
+        world.cfg["add_subnet"] += ',\n'
+    if subnet == "default":
+        subnet = "2001:db8:1::/64"
+    if pool == "default":
+        pool = "2001:db8:1::1 - 2001:db8:1::ffff"
+    if eth is None:
+        eth = SERVER_IFACE
+
+    pointer_start = "{"
+    pointer_end = "}"
+
+    world.cfg["add_subnet"] += '\n\t\t{pointer_start} "pool": [ "{pool}" ], "subnet": "{subnet}"'.format(**locals())
+    if eth is not None:
+        world.cfg["add_subnet"] += ', "interface": "{eth}" '.format(**locals())
 
     world.kea["subnet_cnt"] += 1
+
 
 def config_srv_another_subnet(step, subnet, pool, interface):
-    count = world.kea["subnet_cnt"]
-    world.cfg["conf"] += '''\
-        # subnet defintion Kea 6
-        config add Dhcp6/subnet6
-        config set Dhcp6/subnet6[{count}]/subnet "{subnet}"
-        config set Dhcp6/subnet6[{count}]/pool [ "{pool}" ]
-        '''.format(**locals())
-    if interface is not None:
-        world.cfg["conf"] += '''\
-                config set Dhcp6/subnet6[{count}]/interface "{interface}"
-                '''.format(**locals())
-
-    world.kea["subnet_cnt"] += 1
+    pass
+    # count = world.kea["subnet_cnt"]
+    # world.cfg["conf"] += '''\
+    #     # subnet defintion Kea 6
+    #     config add Dhcp6/subnet6
+    #     config set Dhcp6/subnet6[{count}]/subnet "{subnet}"
+    #     config set Dhcp6/subnet6[{count}]/pool [ "{pool}" ]
+    #     '''.format(**locals())
+    # if interface is not None:
+    #     world.cfg["conf"] += '''\
+    #             config set Dhcp6/subnet6[{count}]/interface "{interface}"
+    #             '''.format(**locals())
+    #
+    # world.kea["subnet_cnt"] += 1
 
 def config_client_classification(step, subnet, option_value):
     # TODO: implement this!
     pass
-    
+
+
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+    if not "add_subnet" in world.cfg:
+        assert False, "First you need to configure subnet."
 
-    world.cfg["conf"] += '''
-        config add Dhcp6/subnet6[{subnet}]/pd-pools
-        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix "{prefix}"
-        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/prefix-len {length}
-        config set Dhcp6/subnet6[{subnet}]/pd-pools[0]/delegated-len {delegated_length}
-        '''.format(**locals())
+    pointer_start = "{"
+    pointer_end = "}"
 
-def prepare_cfg_add_option(step, option_name, option_value, space):
-#     if (not "conf" in world.cfg):
-#         world.cfg["conf"] = ""
-    
-    option_code = kea_options6.get(option_name)
-    
-    if option_code == None:
-        option_code = kea_otheroptions.get(option_name)
-    
-    assert option_code != None, "Unsupported option name for other Kea6 options: " + option_name
-    number = world.kea["option_cnt"]
-    
-    world.cfg["conf"] += '''config add Dhcp6/option-data
-        config set Dhcp6/option-data[{number}]/name "{option_name}"
-        config set Dhcp6/option-data[{number}]/code {option_code}
-        config set Dhcp6/option-data[{number}]/space "{space}"
-        config set Dhcp6/option-data[{number}]/csv-format true
-        config set Dhcp6/option-data[{number}]/data "{option_value}"
-        '''.format(**locals())
+    world.cfg["add_subnet"] += ',\n'
+    world.cfg["add_subnet"] += '''\t\t"pd-pools": [
+            \t\t{pointer_start}"delegated-len": {delegated_length}, "prefix": "{prefix}", "prefix-len": {length} {pointer_end}]'''\
+        .format(**locals())
 
-    world.kea["option_cnt"] = world.kea["option_cnt"] + 1
+
+def prepare_cfg_add_option(step, option_name, option_value, space, option_code = None, type = 'default'):
+    if not "options" in world.cfg:
+        world.cfg["options"] = '\n\t"option-data": ['
+    else:
+        world.cfg["options"] += ","
+
+    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+    if type == 'default':
+        option_code = kea_options6.get(option_name)
+        if option_code is None:
+            option_code = kea_otheroptions.get(option_name)
+
+    pointer_start = "{"
+    pointer_end = "}"
+
+    assert option_code is not None, "Unsupported option name for other Kea6 options: " + option_name
+
+    world.cfg["options"] += '''
+            \t{pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
+            \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
+
 
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
-    if (not "conf" in world.cfg):
-        world.cfg["conf"] = ""
-        
-    number = world.kea["option_cnt"]
-    number_def = world.kea["option_usr_cnt"]
-    world.cfg["conf"] += '''config add Dhcp6/option-def
-        config set Dhcp6/option-def[{number_def}]/name "{opt_name}"
-        config set Dhcp6/option-def[{number_def}]/code {opt_code}
-        config set Dhcp6/option-def[{number_def}]/type "{opt_type}"
-        config set Dhcp6/option-def[{number_def}]/array false
-        config set Dhcp6/option-def[{number_def}]/record-types ""
-        config set Dhcp6/option-def[{number_def}]/space "{space}"
-        config set Dhcp6/option-def[{number_def}]/encapsulate ""
-        config add Dhcp6/option-data
-        config set Dhcp6/option-data[{number}]/name "{opt_name}"
-        config set Dhcp6/option-data[{number}]/code {opt_code}
-        config set Dhcp6/option-data[{number}]/space "{space}"
-        config set Dhcp6/option-data[{number}]/csv-format true
-        config set Dhcp6/option-data[{number}]/data "{opt_value}"
-        '''.format(**locals())
-        
-    world.kea["option_usr_cnt"] = world.kea["option_usr_cnt"] + 1
-    world.kea["option_cnt"] = world.kea["option_cnt"] + 1
-    
+    pointer_start = "{"
+    pointer_end = "}"
+
+    if not "option_def" in world.cfg:
+        world.cfg["option_def"] = '\n\t"option-def": ['
+    else:
+        world.cfg["option_def"] += ","
+
+    # make definition of the new option
+    world.cfg["option_def"] += '''
+            \t{pointer_start}"code": {opt_code}, "name": "{opt_name}", "space": "{space}",
+            \t"encapsulate": "", "record-types": "", "array": false, "type": "{opt_type}"{pointer_end}'''\
+        .format(**locals())
+
+    # add defined option
+    prepare_cfg_add_option(step, opt_name, opt_value, space, opt_code, 'user')
+
+
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
-    if (not "conf" in world.cfg):
-        world.cfg["conf"] = ""
+    if not "add_subnet" in world.cfg:
+        assert False, "First you need to configure subnet."
 
-    assert option_name in kea_options6, "Unsupported option name " + option_name
-    option_code = kea_options6.get(option_name)
-    
-    # need to have numbers for multiple options for each subnet! 
-    world.cfg["conf"] += '''
-        config add Dhcp6/subnet6[{subnet}]/option-data
-        config set Dhcp6/subnet6[{subnet}]/option-data[0]/name "{option_name}"
-        config set Dhcp6/subnet6[{subnet}]/option-data[0]/code {option_code}
-        config set Dhcp6/subnet6[{subnet}]/option-data[0]/space "dhcp6"
-        config set Dhcp6/subnet6[{subnet}]/option-data[0]/csv-format true
-        config set Dhcp6/subnet6[{subnet}]/option-data[0]/data "{option_value}"
-        '''.format(**locals())
+    pointer_start = "{"
+    pointer_end = "}"
 
-def prepare_cfg_kea6_for_kea6_stop():
-    """
-    config file for kea6 clear configuration and stopping
-    """
-    config = '''
-        # This config file stops b10-dhcp6 server and removes its configuration.
-        # Get rid of any subnets
-        config set Dhcp6/subnet6 []
-        # Get rid of any option format definitions
-        config set Dhcp6/option-def []
-        # Get rid of any option values
-        config set Dhcp6/option-data []
-        # clear loggers
-        config set Logging/loggers []
-        # Clear all library hooks
-        config set Dhcp6/hooks-libraries []
-        # Stop b10-dhcp6 server from starting again
-        config remove Init/components b10-dhcp6
-        config commit
-        # And stop it
-        Dhcp6 shutdown
-        '''
-    cfg_file = open("kea6stop.cfg", "w")
-    cfg_file.write(config)
-    cfg_file.close()
+    assert False, "For now option unavailable!"
 
-def prepare_cfg_kea6_for_kea6_start():
-    """
-    config file for kea6 start
-    """
-    config = '''
-        # This config file starts b10-dhcp6 server.
-        config add Init/components b10-dhcp6
-        config set Init/components/b10-dhcp6/kind dispensable
-        config commit
-        '''
-    cfg_file = open("kea6start.cfg", "w")
-    cfg_file.write(config)
-    cfg_file.close()
 
 def run_command(step, command):
-    world.cfg["conf"] += ('\n'+command+'\n') 
+    pass
+    # world.cfg["conf"] += ('\n'+command+'\n')
+
 
 def set_logger():
-    file_name = world.name.replace(".","_")
-    type = BIND_LOG_TYPE 
-    lvl = BIND_LOG_LVL
-    module = BIND_MODULE 
-    
-    logger_str ='''
-    config add Logging/loggers
-    config set Logging/loggers[0]/name "{module}"
-    config set Logging/loggers[0]/severity "{type}"
-    config set Logging/loggers[0]/debuglevel {lvl}
-    config add Logging/loggers[0]/output_options
-    config set Logging/loggers[0]/output_options[0]/destination file
-    config set Logging/loggers[0]/output_options[0]/output log_file
-    config commit
-    '''.format(**locals())
+    pass
+    assert False, "For now option unavailable!"
 
-    cfg_file = open("logger.cfg", "w")
-    cfg_file.write(logger_str)
-    cfg_file.close()
-
-    cfg_file = 'logger.cfg'
-    prepare_config_file(cfg_file)
-
-    fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
-    fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | '
-                       + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
-    remove_local_file(cfg_file + '_processed')
-    
-def prepare_config_file(cfg):
-    """
-    Prepare config file from generated world.cfg["cfg_file"] or START/STOP
-    """
-    tmpfile = cfg + "_processed"
-    conf = open(cfg, "rt")
-    process = open(tmpfile, "w")
-    # Copy input line by line, but skip empty and comment lines
-    for line in conf:
-        line = line.strip()
-        if len(line) < 2:
-            continue
-        if (line[0] == "#"):
-            continue
-        process.write(line + "\n")
-    conf.close()
-    process.close()
-
-    remove_local_file(cfg)
 
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
-    cfg_file.write(world.cfg["conf"])
+    cfg_file.write(world.cfg["main"])
+    if "add_subnet" in world.cfg:
+        cfg_file.write(world.cfg["add_subnet"] + " }]")
+    if "options" in world.cfg:
+        cfg_file.write(',' + world.cfg["options"])
+        cfg_file.write("]")
+    if "option_def" in world.cfg:
+        cfg_file.write(',' + world.cfg["option_def"])
+        cfg_file.write("]")
+
+    cfg_file.write('\n\t}\n\n\t}\n')
     cfg_file.close()
 
 ## =============================================================
@@ -294,140 +229,26 @@ def cfg_write():
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK START ==================
 
+
 def start_srv(start, process):
     """
     Start kea with generated config
     """
-    
-    # All 3 available processess set to 'True' it means that they should to succeed
-    configuration = True
-    start = True
-    clean = True
-
-    # Switch one of three processess to false, which? That is decided in 
-    # Server failed to start. During (\S+) process.) step.    
-    if process == None and start:
-        pass
-    elif process == 'configuration':
-        configuration = False
-    elif process == 'start':
-        start = False
-    elif process == 'clean':
-        clean = False
-    else:
-        assert False, "Process: '"+process+"' not supported."
-
-    cfg_write() 
-    get_common_logger().debug("Bind10, dhcp6 configuration procedure:")
-    run_bindctl (clean, 'clean')#clean and stop
-    run_bindctl (start, 'start')#start
-    run_bindctl (configuration,'configuration')#conf
+    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases6.csv'
+    add_defaults()
+    cfg_write()
+    fabric_send_file(world.cfg["cfg_file"], world.cfg["cfg_file"])
+    cpoy_configuration_file(world.cfg["cfg_file"])
+    remove_local_file(world.cfg["cfg_file"])
+    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'libexec/bind10/b10-dhcp6 -c '
+                       + world.cfg["cfg_file"] + '&); sleep 1')
 
 def stop_srv():
-    run_bindctl ('clean')
+    pass
+
 
 def restart_srv():
-    # can't be less then 7, server needs time to restart.
-    fabric_run_command('(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') 
-
-def parsing_bind_stdout(stdout, opt, search = []):
-    """
-    Modify this function if you wont react to some bind stdout
-    This function is particulary of one type of error that causes BIND to stop responding. 
-    BIND restart is necessary.
-    """
-    #search = []
-    for each in search: 
-        if each in stdout:
-            print "RESTART BIND10, found ", each 
-            #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
-            #error fixed, but I decided to keep it anyway.
-            from softwaresupport.bind10 import kill_bind10, start_bind10
-            kill_bind10()
-            start_bind10()
-            run_bindctl (True, opt)
-
-def search_for_errors(succeed, opt, result, search = []):
-    """
-    This function is for seeking and reporting errors in BIND configuration process.
-    """
-    if opt is not "clean":
-        if succeed:
-            for each in search: 
-                if each in result.stdout or each in result.stderr:
-                    assert False, 'Server operation: ' + opt + ' failed! '
-        if not succeed:
-            for each in search: 
-                if each in result.stdout or each in result.stderr:
-                    break
-            else:
-                assert False, 'Server operation: ' + opt + ' NOT failed!'
-                
-def run_bindctl (succeed, opt):
-    """
-    Run bindctl with prepered config file
-    """    
-    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases6.csv'
-    
-    if opt == "clean":
-        get_common_logger().debug('cleaning kea configuration')
-        # build configuration file with for:  
-        #  - stopping Kea
-        #  - cleaning configuration
-        #  - default logging
-        prepare_cfg_kea6_for_kea6_stop()
-        cfg_file = 'kea6stop.cfg'
-        prepare_config_file(cfg_file)
-        # send file
-        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
-        remove_local_file(cfg_file + '_processed')
-        
-    elif opt == "start":
-        # build configuration file with for:  
-        #  - clean start Kea
-        get_common_logger().debug('starting fresh kea')
-        prepare_cfg_kea6_for_kea6_start()
-        cfg_file = 'kea6start.cfg'
-        prepare_config_file(cfg_file)
-        # send file
-        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
-        remove_local_file(cfg_file + '_processed')
-        
-    elif opt == "configuration":
-        # start logging on different file:
-        if SAVE_BIND_LOGS:
-            set_logger()
-        # build configuration file with for:  
-        #  - configure all needed to test features
-        get_common_logger().debug('kea configuration')
-        cfg_file = world.cfg["cfg_file"]
-        prepare_config_file(cfg_file)
-        add_last = open (cfg_file + "_processed", 'a')
-
-        # add 'config commit' we don't put it before
-        add_last.write("config commit")
-        add_last.close()
-        # send file
-        fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
-        cpoy_configuration_file(cfg_file + '_processed')
-        remove_local_file(cfg_file + '_processed')
-        
-    elif opt == "restart":
-        # restart server without changing it's configuration
-        restart_srv()
-        
-    result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | '
-                                + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
-    
-    # now let's test output, looking for errors, 
-    # some times clean can fail, so we wanna test only start and conf
-    # for now we fail test on any presence of stderr, probably this will
-    # need some more specific search.
-    search_for_errors (succeed, opt, result, ["ImportError:", '"config revert".', "Error"])
-
-    # Error 32: Broken pipe
-    # this error needs different aproach then others. Bind10 needs to be restarted.
-    parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
+    pass
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
