@@ -20,7 +20,7 @@ from textwrap import dedent
 from logging_facility import get_common_logger
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS
 
-from softwaresupport.kea6_server.functions import search_for_errors, parsing_bind_stdout, prepare_config_file, set_logger, cfg_write, set_time
+from softwaresupport.kea6_server_bind.functions import search_for_errors, parsing_bind_stdout, prepare_config_file, set_logger, cfg_write, set_time
 
 kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "time-offset": 2, 
