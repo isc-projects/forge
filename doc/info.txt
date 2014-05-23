@@ -54,7 +54,7 @@ DeprecationWarning: The popen2 module is deprecated.  Use the subprocess module.
 
 Our understanding is that those can be safely ignored for now.
 
-Also you may want to install tcpdump for saving caputers of every test.
+Also you may want to install tcpdump for saving captures of every test.
 This step is optional and tcpdump usage is controlled via init_all.py
 
 $ sudo apt-get install tcpdump
@@ -70,6 +70,11 @@ Scapy uses crypto libraries that may be needed:
 $ sudo apt-get install python-crypto
 $ sudo pip install ecdsa
 
+In order to run properly client tests, you will need to install iscpy
+library. This is library that parses isc-dhcp config files.
+To do that, simply run command:
+
+$ sudo pip install iscpy
 
  Scapy patches
 ---------------
