@@ -11,7 +11,7 @@ Feature: DHCPv6 Client Message Validation
     Setting up test.
 
     Client is started.
-    Client sent SOLICIT message.
+    Sniffing client SOLICIT message from network.
 
     Client message MUST contain option 1.
     Client message MUST contain option 8.
@@ -25,13 +25,13 @@ Feature: DHCPv6 Client Message Validation
     Setting up test.
 
     Client is started.
-    Client sent SOLICIT message.
+    Sniffing client SOLICIT message from network.
 
     Client message MUST contain option 1.
     Client message MUST contain option 8.
 
     Restart client.
-    Client sent SOLICIT message.
+    Sniffing client SOLICIT message from network.
     IAID value in client message is the same as saved one.
 
     References: RFC 3315, section 22.9
@@ -45,7 +45,7 @@ Feature: DHCPv6 Client Message Validation
     Client is configured to include rapid_commit option.
     Client is configured to include IA_PD option.
     Client is started.
-    Client sent SOLICIT message.
+    Sniffing client SOLICIT message from network.
 
     Client message MUST contain option 1.
     Client message MUST contain option 8.
