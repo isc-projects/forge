@@ -1,0 +1,97 @@
+--- scapy/layers/dhcp6.py
++++ scapy/layers/dhcp6.py
+@@ -989,6 +989,11 @@ class DHCP6_Advertise(DHCP6):
+ class DHCP6_Request(DHCP6):
+     name = "DHCPv6 Request Message"
+     msgtype = 3
++    overload_fields = { UDP: {"sport": 546, "dport": 547} }
++
++    def answers(self, other):
++	return (isinstance(other, DHCP6_Advertise) and 
++	        other.msgtype == 2)
+ 
+ #####################################################################
+ # Confirm Message
+
+--- scapy/sendrecv.py
++++ scapy/sendrecv.py
+@@ -35,7 +35,12 @@ class debug:
+ 
+ 
+ 
+-def sndrcv(pks, pkt, timeout = None, inter = 0, verbose=None, chainCC=0, retry=0, multi=0):
++def sndrcv(pks, pkt, timeout = None, inter = 0, verbose=None, chainCC=0, retry=0, multi=0, **kargs):
++    if len(kargs.items()) > 0:
++	if "clnt" in kargs.keys():
++	    clnt = 1
++        else:
++            clnt = 0
+     if not isinstance(pkt, Gen):
+         pkt = SetGen(pkt)
+         
+@@ -139,22 +144,38 @@ def sndrcv(pks, pkt, timeout = None, inter = 0, verbose=None, chainCC=0, retry=0
+                                 continue
+                             ok = 0
+                             h = r.hashret()
+-                            if h in hsent:
+-                                hlst = hsent[h]
+-                                for i in range(len(hlst)):
+-                                    if r.answers(hlst[i]):
+-                                        ans.append((hlst[i],r))
+-                                        if verbose > 1:
+-                                            os.write(1, "*")
+-                                        ok = 1                                
+-                                        if not multi:
+-                                            del(hlst[i])
+-                                            notans -= 1;
+-                                        else:
+-                                            if not hasattr(hlst[i], '_answered'):
++                            if h in hsent or clnt == 1:
++                                if clnt == 1:
++				     for i in range(len(tobesent)):
++				         if r.answers(tobesent[i]):
++					     ans.append((tobesent[i],r))
++				             if verbose > 1:
++                                                 os.write(1, "*")
++                                             ok = 1                                
++                                             if not multi:
++                                                 del(tobesent[i])
++                                                 notans -= 1;
++                                             else:
++                                                 if not hasattr(tobesent[i], '_answered'):
++                                                     notans -= 1;
++                                                 hlst[i]._answered = 1;
++                                             break
++				else:	
++                                    hlst = hsent[h]
++                                    for i in range(len(hlst)):
++                                        if r.answers(hlst[i]):
++                                            ans.append((hlst[i],r))
++                                            if verbose > 1:
++                                                os.write(1, "*")
++                                            ok = 1                                
++                                            if not multi:
++                                                del(hlst[i])
+                                                 notans -= 1;
+-                                            hlst[i]._answered = 1;
+-                                        break
++                                            else:
++                                                if not hasattr(hlst[i], '_answered'):
++                                                    notans -= 1;
++                                                hlst[i]._answered = 1;
++                                            break
+                             if notans == 0 and not multi:
+                                 break
+                             if not ok:
+
+--- scapy/layers/inet6.py
++++ scapy/layers/inet6.py
+@@ -426,6 +426,8 @@ class IPv6(_IPv6GuessPayload, Packet, IPTools):
+             sd = inet_pton(socket.AF_INET6, self.dst)
+             os = inet_pton(socket.AF_INET6, other.src)
+             od = inet_pton(socket.AF_INET6, other.dst)
++	    if in6_ismlladdr(self.dst):
++                return self.payload.answers(other.payload)
+             # request was sent to a multicast address (other.dst)
+             # Check reply destination addr matches request source addr (i.e 
+             # sd == os) except when reply is multicasted too
