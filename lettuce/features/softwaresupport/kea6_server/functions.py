@@ -57,6 +57,7 @@ kea_otheroptions = {"tftp-servers": 32,
                     "time-offset": 38
                     }
 
+
 def set_time(step, which_time, value):
     if which_time in world.cfg["server_times"]:
             world.cfg["server_times"][which_time] = value
@@ -136,7 +137,8 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
         .format(**locals())
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space, option_code=None, type='default', where='options'):
+def prepare_cfg_add_option(step, option_name, option_value, space,
+                           option_code = None, type = 'default', where = 'options'):
     if not where in world.cfg:
         world.cfg[where] = '\n\t"option-data": ['
     else:
@@ -186,8 +188,10 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
 
 
 def run_command(step, command):
-    pass
-    # world.cfg["conf"] += ('\n'+command+'\n')
+    if not "custom_lines" in world.cfg:
+        world.cfg["custom_lines"] = ''
+
+    world.cfg["custom_lines"] += ('\n'+command+'\n')
 
 
 def set_logger():
@@ -213,6 +217,11 @@ def cfg_write():
     if "option_def" in world.cfg:
         cfg_file.write(',' + world.cfg["option_def"])
         cfg_file.write("]")
+
+    if "custom_lines" in world.cfg:
+        cfg_file.write(',' + world.cfg["custom_lines"])
+        cfg_file.write("]")
+
     # TODO make available different database backends!
     cfg_file.write(',\n\n\t"lease-database":{"type": "memfile"}\n\t}\n\n\t}\n')
     cfg_file.close()
@@ -240,10 +249,12 @@ def start_srv(start, process):
 
 def stop_srv():
     pass
+    # TODO: implement this!
 
 
 def restart_srv():
     pass
+    # TODO: implement this!
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
