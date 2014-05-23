@@ -3,44 +3,21 @@ from features.terrain import set_options, set_values
 from lettuce.registry import world
 from features.init_all import IFACE, CLI_MAC, CLI_LINK_LOCAL, SRV_IPV6_ADDR_LINK_LOCAL, SOFTWARE_UNDER_TEST
 from scapy.layers.dhcp6 import *
+from scapy.sendrecv import debug
 import time
 import importlib
+import random
 
 SRV_IP6 = CLI_LINK_LOCAL
 CLI_IP6 = SRV_IPV6_ADDR_LINK_LOCAL
 
 clntFunc = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
-def client_msg_wrong_capture(step, wrongMsgType, correctMsgType):
-    #step is used to check client answer for server's incorrect message
-    # tell client_msg_capture step that msg is already sniffed and it
-    # doesn't have to worry about it
-    world.clntCfg["wasSniffed"] = True
-
-    if wrongMsgType == "SOLICIT":
-        wrongClientMsg = DHCP6_Solicit
-    elif wrongMsgType == "REQUEST":
-        wrongClientMsg = DHCP6_Request
-
-    if correctMsgType == "SOLICIT":
-        correctClientMsg = DHCP6_Solicit
-    elif correctMsgType == "REQUEST":
-        correctClientMsg = DHCP6_Request
-
-    sniffedMsg = sniff(count=1, iface=IFACE, stop_filter=lambda x: x.haslayer(correctClientMsg))
-    world.climsg.append(sniffedMsg[0])
-
-    assert world.climsg[-1].haslayer(wrongClientMsg) == False, "%s message present in packet but " \
-                                                               "not expected." % (wrongClientMsg)
-    assert world.climsg[-1].haslayer(correctClientMsg) == True, "%s message is not present in packet but" \
-                                                                "expected." % (correctClientMsg)
 
 def client_msg_capture(step, msgType):
     # step sniffs message sent by client and stores it in list
 
     # prepare cliopts for new sniffed message
-    world.cliopts = []
-    #  sniffing client message on specified interface
     # TODO: support more types of messages;
     if msgType == "SOLICIT":
         clientMsg = DHCP6_Solicit
@@ -50,11 +27,8 @@ def client_msg_capture(step, msgType):
         clientMsg = DHCP6_Release
         clntFunc.release_command()
 
-    # if step client_msg_wrong_capture was not executed, the message was not sniffed;
-    # therefore the flag is still set to false and we need to sniff it :)
-    if world.clntCfg["wasSniffed"] is False:
-        sniffedMsg = sniff(count=1, iface=IFACE, stop_filter=lambda x: x.haslayer(clientMsg))
-        world.climsg.append(sniffedMsg[-1])
+    sniffedMsg = sniff(iface=IFACE, stop_filter=lambda x: x.haslayer(clientMsg))
+    world.climsg.append(sniffedMsg[-1])
 
     # world.time was set after sending generic server's msg to client;
     # this statement computes interval between receiving advertise
@@ -64,82 +38,17 @@ def client_msg_capture(step, msgType):
     if world.time is not None:
         world.time = time.time() - world.time
 
-    assert world.climsg[-1].iaid is not 0, "iaid can not be a 0 number."
     assert len(world.climsg[world.clntCounter]) is not 0, "Got empty message... Exiting."
 
     # double check if we sniffed packet that we wanted
     assert world.climsg[-1].haslayer(clientMsg), "sniffed wrong message."
 
-    # saving iaid value from first message received
-    if world.iaid is None:
-        if hasattr(world.climsg[-1], "iaid"):
-            world.iaid = world.climsg[-1].iaid
-        else:
-            get_common_logger().error("No IAID attribute in message.")
-
     # fill world.cliopts with dhcpv6 options from sniffed message
     msg_traverse(world.climsg[-1])
-
     sniffedMsg = None
 
-    # set this flag to false in case if it was set to true by client_msg_wrong_capture step;
-    # it is mandatory for further sniffing client messages without need to execute other steps
-    world.clntCfg["wasSniffed"] = False
 
-
-def send_msg_to_client(step, response, msgType, newLink):
-    # step sends created message to client
-
-    world.clntCfg["response"] = response
-    build_client_msg(msgType, newLink)
-
-    send(world.srvmsg[-1], realtime=True)
-
-    # set timestamp after sending msg
-    if world.time is None:
-        world.time = time.time()
-    if not response:
-        # if clntCounter is not increased, then we can fire packets with,
-        # for example, the same trid;
-        # useful when checking if client without preference 255 waits some
-        # amount of time (collects advertises) and then sends request.
-        world.clntCounter += 1
-
-
-def add_option(step, msgType, optcode):
-    # add options to server's generic message
-    # TODO: support for many different options :)
-
-    if msgType == "IA_PD":
-        world.cfg["add_option"]["IA_PD"] = True
-    elif msgType == "IA_Prefix":
-        world.cfg["add_option"]["IA_Prefix"] = True
-        world.srvopts.append(DHCP6OptIAPrefix(preflft=world.clntCfg["values"]["preferred-lifetime"],
-                                              validlft=world.clntCfg["values"]["valid-lifetime"],
-                                              plen=world.clntCfg["values"]["prefix-len"],
-                                              prefix=world.clntCfg["values"]["prefix"]))
-    elif msgType == "Status_Code":
-        world.cfg["add_option"]["status_code"] = True
-        world.srvopts = []
-        world.srvopts.append(DHCP6OptStatusCode(statuscode=int(optcode)))
-    elif msgType == "preference":
-        world.cfg["add_option"]["preference"] = True
-        world.pref = DHCP6OptPref(prefval=int(optcode))
-
-
-def add_another_option(step, msgType):
-    # add option that was already added - in case we want for example
-    # two prefixes in ia_pd, this option is used
-    # TODO: support for many different options :)
-
-    if msgType == "IA_Prefix":
-        world.srvopts.append(DHCP6OptIAPrefix(preflft=world.clntCfg["values"]["preferred-lifetime"],
-                                              validlft=world.clntCfg["values"]["valid-lifetime"],
-                                              plen=world.clntCfg["values"]["prefix-len"],
-                                              prefix=world.clntCfg["values"]["prefix"]))
-
-
-def build_client_msg(msgType, newLink):
+def server_build_msg(step, response, msgType):
     # step that creates server's message with additional options
 
     if msgType == "ADVERTISE":
@@ -150,37 +59,132 @@ def build_client_msg(msgType, newLink):
     msg = IPv6(src=SRV_IP6, dst=CLI_IP6)/UDP(dport=546, sport=547)/serverMsg
 
     # this needs some validation...
-    try:
-        msg.trid = world.climsg[world.clntCounter].trid
-        msg /= DHCP6OptClientId(duid=world.climsg[world.clntCounter].duid, optlen=14)
-    except IndexError:
-        msg.trid = world.climsg[-1].trid
-        msg /= DHCP6OptClientId(duid=world.climsg[-1].duid, optlen=14)
-
-    srvDuid = DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, timeval=434123369),
-                            optlen=14, optcode=2)
-    msg /= srvDuid
-    # add_option ia_pd doesn't make sense for server's msg
-    if world.cfg["add_option"]["IA_PD"]:
-        msg /= DHCP6OptIA_PD(optcode=25, T2=world.clntCfg["values"]["T2"], T1=world.clntCfg["values"]["T1"],
-                             iaid=world.climsg[-1].iaid)
-    if world.cfg["add_option"]["IA_Prefix"]:
-        msg /= DHCP6OptIA_PD(optcode=25, T2=world.clntCfg["values"]["T2"], T1=world.clntCfg["values"]["T1"],
-                             iaid=world.climsg[-1].iaid,
-                             iapdopt=[]
-                            )
-        for prefix in world.srvopts:
-            msg.iapdopt.append(prefix)
-    if world.cfg["add_option"]["status_code"]:
-        msg /= DHCP6OptIA_PD(optcode=25, T2=world.clntCfg["values"]["T2"], T1=world.clntCfg["values"]["T1"],
-                             iaid=world.climsg[-1].iaid, iapdopt=[])
-        for status_code in world.srvopts:
-            msg.iapdopt.append(status_code)
-    if world.cfg["add_option"]["preference"]:
-        if world.pref is not None:
-            msg /= world.pref
+    if not world.clntCfg['set_wrong']['trid']:
+        try:
+            msg.trid = world.climsg[world.clntCounter].trid
+        except IndexError:
+            msg.trid = world.climsg[-1].trid
+    else:
+        msg.trid = random.randint(0, 256*256*256)
+    if not world.clntCfg['set_wrong']['cliduid']:
+        try:
+            msg /= DHCP6OptClientId(duid=world.climsg[world.clntCounter].duid, optlen=14)
+        except IndexError:
+            msg /= DHCP6OptClientId(duid=world.climsg[-1].duid, optlen=14)
+    else:
+        msg /= DHCP6OptClientId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
+            timeval=world.clntCfg['timeval']), optlen=14, optcode=1)
+    if not world.clntCfg['set_wrong']['srvduid']:
+        msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
+            timeval=world.clntCfg['timeval']), optlen=14, optcode=2)
+    else:
+        msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr="00:01:02:03:04:05", type=1, 
+            timeval=random.randint(0, 256*256*256)), optlen=14, optcode=2)
+    
+    for option in world.srvopts:
+        msg /= option
 
     world.srvmsg.append(msg)
+    if msgType == "REPLY":
+        get_lease()
+        send(msg)
+
+    if not response:
+        # if clntCounter is not increased, then we can fire packets with,
+        # for example, the same trid;
+        # useful when checking if client without preference 255 waits some
+        # amount of time (collects advertises) and then sends request.
+        world.clntCounter += 1
+
+    set_values()
+
+
+def server_set_wrong_val(step, value):
+    if value == "trid":
+        world.clntCfg['set_wrong']['trid'] = True
+    elif value == "iaid":
+        world.clntCfg['set_wrong']['iaid'] = True
+    elif value == "cliduid":
+        world.clntCfg['set_wrong']['cliduid'] = True
+    elif value == "srvduid":
+        world.clntCfg['set_wrong']['srvduid'] = True
+
+
+def add_option(step, opt, optcode):
+    # add options to server's generic message
+    # TODO: support for many different options :)
+
+    if opt == "IA_PD":
+        if not world.clntCfg['set_wrong']['iaid']:
+            if len(world.iaid) > world.clntCounter:
+                if len(world.iaid[world.clntCounter]) > 1:
+                    id_ = world.iaid[world.clntCounter].pop()
+                else:
+                    id_ = world.iaid[world.clntCounter][0]
+            else:
+                id_ = world.iaid[0][0]
+        else:
+            id_ = random.randint(0, 256*256*256)
+        world.srvopts.append(DHCP6OptIA_PD(optcode=25, 
+                                           T2=world.clntCfg["values"]["T2"],
+                                           T1=world.clntCfg["values"]["T1"],
+                                           iaid=id_,
+                                           iapdopt=[]))
+
+                                           
+    elif opt == "IA_Prefix":
+        world.srvopts[-1].iapdopt.append(
+            DHCP6OptIAPrefix(preflft=world.clntCfg["values"]["preferred-lifetime"],
+                             validlft=world.clntCfg["values"]["valid-lifetime"],
+                             plen=world.clntCfg["values"]["prefix-len"],
+                             prefix=world.clntCfg["values"]["prefix"]))
+
+    elif opt == "Status_Code":
+        world.srvopts[-1].iapdopt.append(DHCP6OptStatusCode(statuscode=int(optcode)))
+
+    elif opt == "preference":
+       world.srvopts.append(DHCP6OptPref(prefval=int(optcode)))
+    elif opt == "rapid_commit":
+        world.srvopts.append(DHCP6OptRapidCommit())
+
+
+def client_send_receive(step, contain, msgType):
+    # step sends created message to client and waits for client's answer
+    found = False
+    debug.recv = []
+    conf.use_pcap = True
+    templen = len(world.climsg)
+
+    if msgType == "REQUEST":
+
+        conf.debug_match = True
+        ans, unans = sr(world.srvmsg, iface=IFACE, nofilter=1, timeout = 2, verbose = 99, clnt=1)
+        # print ans
+        for entry in ans:
+            sent, received = entry
+            # print sent.show(), received.show()
+            world.climsg.append(received)
+            get_common_logger().info("Received packet type = %s" % get_msg_type(received))
+            msg_traverse(world.climsg[-1])
+            if get_msg_type(received) == msgType:
+                found = True
+        # print unans
+        for x in unans:
+            get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
+        get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
+            % (len(ans), len(unans)))
+
+    # set timestamp after sending msg
+    if world.time is None:
+        world.time = time.time()
+
+    world.srvmsg = []
+
+    if contain:
+        assert len(world.climsg) > templen, " No response received."
+        assert found is True, "message not found"
+    else:
+        assert found is False, "message found but not expected"
 
 
 def srv_msg_clean(step):
@@ -188,6 +192,22 @@ def srv_msg_clean(step):
 
     world.srvopts = []
     world.pref = None
+
+
+def get_msg_type(msg):
+    msg_types = {
+                  "SOLICIT": DHCP6_Solicit,
+                  "REQUEST": DHCP6_Request,
+    }
+
+    # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
+    dhcp = msg.getlayer(2)
+
+    for msg_name in msg_types.keys():
+        if type(dhcp) == msg_types[msg_name]:
+            return msg_name
+
+    return "UNKNOWN-TYPE"
 
 
 # FIXME : probably wrong approach to measuring time interval for request message
@@ -201,13 +221,15 @@ def client_check_time_delay(step, timeval):
 
 def client_cmp_values(step, value):
     # compare saved value with value from present message
+    # currently this step is only for comparing iaid
+    # to support other fields, create a list for storing it
 
-    msg = world.climsg[-1]
     val = str(value).lower()
-    cmp1 = getattr(msg, val)
-    cmp2 = getattr(world, val)
-    assert cmp1 == cmp2, "%s values are different: %d != %d.\n" % (val, cmp1, cmp2)
-
+    toCheck = getattr(world, val)
+    assert isinstance(toCheck, list), "please store values to compare in lists." 
+    assert len(toCheck) > 1, "there should 2 entries in list"
+    assert toCheck[0].sort() is toCheck[-1].sort(), "compared %s values are different." % (val)
+    
 
 def msg_set_value(step, value_name, new_value):
     # set value different than value from values dictionary
@@ -229,13 +251,26 @@ def msg_traverse(msg):
     # cliopts will contain following lists for every layer:
     # optcode, layer; this will only parse options
 
+    world.cliopts = []
     localMsg = msg.copy()
-    localMsg = localMsg.getlayer(4)
+    tempIaid = []
+
+    if type(localMsg) == Ether:
+        localMsg = localMsg.getlayer(4)
+    else:
+        localMsg = localMsg.getlayer(3)
+
     while localMsg:
         layer = localMsg.copy()
         layer.remove_payload()
+        # it is important to save every iaid, not just one;
+        # client can request for multiple ia_pd's, so iaid's
+        # are stored in list
+        if hasattr(layer, "iaid"):
+            tempIaid.append(layer.iaid)
         world.cliopts.append([layer.optcode, layer])
         localMsg = localMsg.payload
+    world.iaid.append(tempIaid)
 
 
 def client_msg_contains_opt(step, contain, opt):
@@ -256,7 +291,10 @@ def find_option(opt):
     # received msg from client must not be changed - make a copy of it
     tmp = world.climsg[world.clntCounter].copy()
     # 0 - ether, 1 - ipv6, 2 - udp, 3 - dhcpv6, 4 - opts
-    tmp = tmp.getlayer(4)
+    if type(tmp) == Ether:
+        tmp = tmp.getlayer(4)
+    else:
+        tmp = tmp.getlayer(3)
     while tmp:
         if tmp.optcode == int(opt):
             return True
@@ -326,11 +364,12 @@ def client_msg_count_opt(step, contain, count, optcode):
             localCounter += 1
 
     if contain:
-        assert int(count) is localCounter, "count of option %d does not match with given value." % (int(optcode))
+        assert int(count) is localCounter, "count of option %d does not match with" \
+                                           " given value." % (int(optcode))
     else:
-        assert int(count) is not localCounter, "count of option %d does match with given value," \
+        assert int(count) is not localCounter, "count of option %d does match with " \
+                                               "given value," \
                                                " but it should not." % (int(optcode))
-
 
 def client_msg_count_subopt(step, contain, count, subopt_code, opt_code):
     localCounter = 0
@@ -339,13 +378,15 @@ def client_msg_count_subopt(step, contain, count, subopt_code, opt_code):
             localCounter += 1
 
     if contain:
-        assert localCounter is int(count), "count of suboption %d does not match with given value." % (int(subopt_code))
+        assert localCounter is int(count), "count of suboption %d does not match with" \
+                                           " given value." % (int(subopt_code))
     else:
-        assert int(count) is not localCounter, "count of suboption %d does match with given value," \
+        assert int(count) is not localCounter, "count of suboption %d does match with" \
+                                               " given value," \
                                                " but it should not." % (int(subopt_code))
 
 
-def client_check_field_presence(step, field, contain, optcode):
+def client_check_field_presence(step, contain, field, optcode):
     # step for checking fields presence in option;
 
     found = False
@@ -356,7 +397,33 @@ def client_check_field_presence(step, field, contain, optcode):
     if contain:
         assert found is True, "message has wrong format - no %s field." % (str(field))
     else:
-        assert found is False, "field %s was found in message but it was not expected." % (str(field))
+        assert found is False, "field %s was found in message but it" \
+                               " was not expected." % (str(field))
 
 
+def get_lease():
+    # make lease structure from scapy options
+    # format is the same as lease from ParseISCString
+    result = {}
+    result['lease6'] = {}
+    pdList = [iapd for iapd in world.srvopts if iapd.optcode == 25]
+    for pd in pdList:
+        pdDict = {}
+        pdDict['renew'] ='''"''' + str(pd.T1) + '''"'''
+        pdDict['rebind'] = '''"''' + str(pd.T2) + '''"'''
+        prefixList = [prefix for prefix in pd.iapdopt if prefix.optcode == 26]
+        for prefix in prefixList:
+            prefixDict = {}
+            prefixDict['preferred-life'] = '''"''' + str(prefix.preflft) + '''"'''
+            prefixDict['max-life'] = '''"''' + str(prefix.validlft) + '''"'''
+            pdDict['iaprefix ' + '''"''' + str(prefix.prefix) + '/' +
+                   str(prefix.plen) + '''"'''] = dict(prefixDict)
+            if SOFTWARE_UNDER_TEST == "isc_dhcp6_client":
+                hexIaid = hex(pd.iaid)[2:]
+                hexIaid = ':'.join(a+b for a,b in zip(hexIaid[::2], hexIaid[1::2]))
+            else:
+                hexIaid = pd.iaid
 
+        result['lease6']['ia-pd ' + '''"''' + str(hexIaid) + '''"'''] = dict(pdDict)
+    
+    world.clntCfg['scapy_lease'] = result
