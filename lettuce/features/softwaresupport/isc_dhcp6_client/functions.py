@@ -1,8 +1,9 @@
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
-    fabric_send_file, fabric_run_command, fabric_remove_file_command
+    fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SOFTWARE_INSTALL_DIR, IFACE
+import iscpy
 
 def prepare_default_command():
     build_leases_path()
@@ -54,6 +55,8 @@ def restart_clnt(step):
 def stop_clnt():
     fabric_run_command("sudo killall dhclient &>/dev/null")
 
+def kill_clnt():
+    stop_clnt()
 
 # release message; work on it!
 def release_command():
@@ -80,6 +83,59 @@ def make_script():
     script = open(world.clntCfg["script"], "w")
     script.write(world.clntCfg["content"])
     script.close()
+
+def client_parse_config(step, contain):
+    fabric_download_file(SOFTWARE_INSTALL_DIR + "dhclient.leases", "prefix_file")
+    file_ = open("prefix_file","r").readlines()
+    count = 0
+    # remove things that we do not want
+    for line in list(file_):
+        if "lease6" not in line:
+            del(file_[count])
+            count += 1
+        else:
+            break
+    count = 0
+    for line in list(file_):
+        if "option" in line:
+            del(file_[count])
+        else:
+            count += 1
+
+    # add required quotes and semicolons to file;
+    # it needs to have a dhcpd.conf syntax in order
+    # to got accepted by ParseISCString function;
+    copied = []
+    for line in file_:
+        line = line.lstrip().rstrip("\n")
+        line = line.split(" ")
+        if len(line) > 1:
+            if line[1][0].isdigit():
+                if line[1][-1] is ";":
+                    line[1] = '''"''' + line[1][:len(line[1])-1] + '''"''' + line[1][-1]
+                else:
+                    line[1] = '''"''' + line[1] + '''"'''
+        elif line[0] == "}":
+            line[0] += ";"
+        copied.append(line)
+    
+    copied = [" ".join(line) + "\n" for line in copied]
+    result = " ".join(copied)
+    parsed = iscpy.ParseISCString(result)
+    if 'lease6' in parsed:
+        del(parsed['lease6']['interface'])
+        for entry in parsed['lease6'].keys():
+            if entry.startswith("ia-pd"):
+                del(parsed['lease6'][entry]['starts'])
+                for key in parsed['lease6'][entry].keys():
+                    if key.startswith('iaprefix'):
+                        del(parsed['lease6'][entry][key]['starts'])
+   
+    world.clntCfg["real_lease"] = parsed 
+    if contain:
+        assert world.clntCfg["real_lease"] == world.clntCfg['scapy_lease'], "leases are different."
+    else:
+        assert world.clntCfg["real_lease"] != world.clntCfg['scapy_lease'], "leases are the same, but they should not be."
 
 
 def start_clnt(step):

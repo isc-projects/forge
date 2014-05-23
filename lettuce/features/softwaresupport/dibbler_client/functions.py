@@ -1,9 +1,12 @@
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
-    fabric_send_file, fabric_run_command, fabric_remove_file_command
+    fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file
 from logging_facility import *
 from lettuce.registry import world
 from init_all import DIBBLER_INSTALL_DIR, IFACE
-
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
 
 def restart_clnt(step):
     fabric_sudo_command("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
@@ -12,6 +15,9 @@ def restart_clnt(step):
 
 def stop_clnt():
     fabric_sudo_command ("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
+
+def kill_clnt():
+    fabric_run_command("sudo killall dibbler-client &>/dev/null")
 
 
 def create_clnt_cfg():
@@ -86,6 +92,40 @@ def write_clnt_cfg_to_file():
 def client_setup(step):
     # step for initializing client config
     create_clnt_cfg()
+
+
+def client_parse_config(step, contain):
+    # create a structure similar to structure returned
+    # by iscpy.ISCParseString function; it is easier to
+    # play with parsing xml, so we won't touch that much
+    # isc's dhclient dict; 
+    result = {}
+    result['lease6'] = {}
+    fabric_download_file("/var/lib/dibbler/client-AddrMgr.xml", "prefix_file")
+    tree = ET.ElementTree(file='prefix_file')
+    root = tree.getroot()
+    pdList = [iapd for iapd in root.iter() if iapd.tag == "AddrPD"]
+    if len(pdList) > 0:
+        for pd in pdList:
+            pdDict = {}
+            pdDict['renew'] = '''"''' + pd.attrib['T1'] + '''"'''
+            pdDict['rebind'] =  '''"''' + pd.attrib['T2'] + '''"'''
+            prefixList = [prefix for prefix in pd.getchildren() if prefix.tag == "AddrPrefix"]
+            for prefix in prefixList:
+                prefixDict = {}
+                prefixDict['preferred-life'] ='''"''' + prefix.attrib['pref'] + '''"'''
+                prefixDict['max-life'] = '''"''' + prefix.attrib['valid'] + '''"'''
+                pdDict['iaprefix ' + '''"''' + prefix.text + '/' + prefix.attrib['length'] +
+                       '''"'''] = dict(prefixDict)
+            result['lease6']['ia-pd ' + '''"''' + pd.attrib['IAID'] + '''"'''] = dict(pdDict)
+    print result
+    print "\n\n\n"
+    print world.clntCfg['scapy_lease'] 
+    print "\n\n\n"
+    if contain:
+        assert result == world.clntCfg['scapy_lease'], "leases are different."
+    else:
+        assert result != world.clntCfg['scapy_lease'], "leases are the same, but they should not be."
 
 
 def start_clnt(step):
