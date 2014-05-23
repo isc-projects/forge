@@ -79,6 +79,11 @@ srv_values_v6 = {"T1": 1000,
                  "prefix-len" : 64
                 }
 
+clnt_set_wrong = {"trid": False,
+                  "iaid": False,
+                  "cliduid": False,
+                  "srvduid": False
+                 }
 
 # times values, plz do not change this.
 # there is a test step to do this
@@ -117,6 +122,7 @@ def set_values():
         world.cfg["values"] = values_v6.copy()
         world.cfg["server_times"] = server_times_v6.copy()
         world.clntCfg["values"] = srv_values_v6.copy()
+        world.clntCfg["set_wrong"] = clnt_set_wrong.copy()
     else:
         world.cfg["values"] = values_v4.copy()
         world.cfg["server_times"] = server_times_v4.copy()
@@ -267,13 +273,13 @@ def initialize(scenario):
     world.srvCounter = 0
 
     world.clntCfg = {}
-    world.clntCfg["wasSniffed"] = False
 
     world.srvopts = []
     world.pref = None
 
     world.time = None
-    world.iaid = None
+    world.iaid = []
+    world.clntCfg['timeval'] = int(time.time())
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if not hasattr(world.cfg, "cli_duid"):
@@ -386,6 +392,11 @@ def cleanup(scenario):
                 pass
         if SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
             fabric_remove_file_command(world.cfg['leases'])
+    elif "client" in SOFTWARE_UNDER_TEST:
+        idx = SOFTWARE_UNDER_TEST.find("_client")
+        get_common_logger().debug("cleaning " + SOFTWARE_UNDER_TEST[:idx] + "...")
+        clnt = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
+        clnt.kill_clnt()
 
 @after.all
 def say_goodbye(total):

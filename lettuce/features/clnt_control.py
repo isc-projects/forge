@@ -21,3 +21,7 @@ def client_option_req(step, opt):
 def client_restart(step):
     clntFunc.restart_clnt(step)
 
+@step("Client MUST (NOT )?use prefix with values given by server.")
+def client_parse_config(step, yes_no):
+    contain = not (yes_no == "NOT ")
+    clntFunc.client_parse_config(step, contain)
