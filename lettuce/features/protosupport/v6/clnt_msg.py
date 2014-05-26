@@ -14,7 +14,7 @@ CLI_IP6 = SRV_IPV6_ADDR_LINK_LOCAL
 clntFunc = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
 
-def client_msg_capture(step, msgType):
+def client_msg_capture(step, msgType, tout_):
     # step sniffs message sent by client and stores it in list
 
     # prepare cliopts for new sniffed message
@@ -23,12 +23,22 @@ def client_msg_capture(step, msgType):
         clientMsg = DHCP6_Solicit
     elif msgType == "REQUEST":
         clientMsg = DHCP6_Request
+    elif msgType == "RENEW":
+        clientMsg = DHCP6_Renew
+    elif msgType == "REBIND":
+        clientMsg = DHCP6_Rebind
     elif msgType == "RELEASE":
         clientMsg = DHCP6_Release
         clntFunc.release_command()
 
-    sniffedMsg = sniff(iface=IFACE, stop_filter=lambda x: x.haslayer(clientMsg))
+    if not tout_:
+        sniffedMsg = sniff(iface=IFACE, timeout=10, stop_filter=lambda x: x.haslayer(clientMsg))
+    else:
+        sniffedMsg = sniff(iface=IFACE, stop_filter=lambda x: x.haslayer(clientMsg))
     world.climsg.append(sniffedMsg[-1])
+    received = ""
+    for msg in sniffedMsg:
+        received += get_msg_type(msg) + " "
 
     # world.time was set after sending generic server's msg to client;
     # this statement computes interval between receiving advertise
@@ -37,11 +47,13 @@ def client_msg_capture(step, msgType):
     # TODO: provide some flag in case of preference equal to 255
     if world.time is not None:
         world.time = time.time() - world.time
+        print world.time
 
     assert len(world.climsg[world.clntCounter]) is not 0, "Got empty message... Exiting."
 
     # double check if we sniffed packet that we wanted
-    assert world.climsg[-1].haslayer(clientMsg), "sniffed wrong message."
+    assert world.climsg[-1].haslayer(clientMsg), "Sniffed wrong message. " \
+                                                 "Following messages were sniffed: %s." % (received)
 
     # fill world.cliopts with dhcpv6 options from sniffed message
     msg_traverse(world.climsg[-1])
@@ -66,20 +78,25 @@ def server_build_msg(step, response, msgType):
             msg.trid = world.climsg[-1].trid
     else:
         msg.trid = random.randint(0, 256*256*256)
-    if not world.clntCfg['set_wrong']['cliduid']:
-        try:
-            msg /= DHCP6OptClientId(duid=world.climsg[world.clntCounter].duid, optlen=14)
-        except IndexError:
-            msg /= DHCP6OptClientId(duid=world.climsg[-1].duid, optlen=14)
-    else:
-        msg /= DHCP6OptClientId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
-            timeval=world.clntCfg['timeval']), optlen=14, optcode=1)
-    if not world.clntCfg['set_wrong']['srvduid']:
-        msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
-            timeval=world.clntCfg['timeval']), optlen=14, optcode=2)
-    else:
-        msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr="00:01:02:03:04:05", type=1, 
-            timeval=random.randint(0, 256*256*256)), optlen=14, optcode=2)
+
+    if world.cfg["add_option"]["client_id"]:
+        if not world.clntCfg['set_wrong']['client_id']:
+            try:
+                msg /= DHCP6OptClientId(duid=world.climsg[world.clntCounter].duid, optlen=14)
+            except IndexError:
+                msg /= DHCP6OptClientId(duid=world.climsg[-1].duid, optlen=14)
+        else:
+            msg /= DHCP6OptClientId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
+                                    timeval=world.clntCfg['timeval']), optlen=14, optcode=1)
+
+    if not world.cfg["add_option"]["server_id"]:
+        if not world.clntCfg['set_wrong']['server_id']:
+            msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
+                                    timeval=world.clntCfg['timeval']), optlen=14, optcode=2)
+        else:
+            # make it blank like wlodek does?
+            msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr="00:01:02:03:04:05", type=1, 
+                                    timeval=random.randint(0, 256*256*256)), optlen=14, optcode=2)
     
     for option in world.srvopts:
         msg /= option
@@ -88,6 +105,7 @@ def server_build_msg(step, response, msgType):
     if msgType == "REPLY":
         get_lease()
         send(msg)
+        world.time = time.time()
 
     if not response:
         # if clntCounter is not increased, then we can fire packets with,
@@ -97,6 +115,7 @@ def server_build_msg(step, response, msgType):
         world.clntCounter += 1
 
     set_values()
+    set_options()
 
 
 def server_set_wrong_val(step, value):
@@ -104,10 +123,17 @@ def server_set_wrong_val(step, value):
         world.clntCfg['set_wrong']['trid'] = True
     elif value == "iaid":
         world.clntCfg['set_wrong']['iaid'] = True
-    elif value == "cliduid":
-        world.clntCfg['set_wrong']['cliduid'] = True
-    elif value == "srvduid":
-        world.clntCfg['set_wrong']['srvduid'] = True
+    elif value == "client_id":
+        world.clntCfg['set_wrong']['client_id'] = True
+    elif value == "server_id":
+        world.clntCfg['set_wrong']['server_id'] = True
+
+
+def server_not_add(step, opt):
+    if opt == "client_id":
+        world.cfg["add_option"]["client_id"] = False
+    elif opt == "server_id":
+        world.cfg["add_option"]["server_id"] = True
 
 
 def add_option(step, opt, optcode):
@@ -144,8 +170,27 @@ def add_option(step, opt, optcode):
 
     elif opt == "preference":
        world.srvopts.append(DHCP6OptPref(prefval=int(optcode)))
+
     elif opt == "rapid_commit":
         world.srvopts.append(DHCP6OptRapidCommit())
+
+    elif opt == "option_request":
+        world.srvopts.append(DHCP6OptOptReq())
+
+    elif opt == "elapsed_time":
+        world.srvopts.append(DHCP6OptElapsedTime())
+
+    elif opt == "iface_id":
+        world.srvopts.append(DHCP6OptIfaceId(ifaceid=world.cfg["values"]["ifaceid"]))
+
+    elif opt == "reconfigure":
+        world.srvopts.append(DHCP6OptReconfMsg())
+
+    elif opt == "relay_message":
+        world.srvopts.append(DHCP6OptRelayMsg())
+
+    elif opt == "server_unicast":
+        world.srvopts.append(DHCP6OptServerUnicast(srvaddr=SRV_IP6))
 
 
 def client_send_receive(step, contain, msgType):
@@ -192,16 +237,23 @@ def srv_msg_clean(step):
 
     world.srvopts = []
     world.pref = None
+    set_values()
+    set_options()
 
 
 def get_msg_type(msg):
-    msg_types = {
-                  "SOLICIT": DHCP6_Solicit,
+    msg_types = { "SOLICIT": DHCP6_Solicit,
                   "REQUEST": DHCP6_Request,
-    }
+                  "RENEW": DHCP6_Renew,
+                  "REBIND": DHCP6_Rebind,
+                  "RELEASE": DHCP6_Release
+                }
 
     # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
-    dhcp = msg.getlayer(2)
+    if type(msg) == Ether:
+        dhcp = msg.getlayer(3)
+    else:
+        dhcp = msg.getlayer(2)
 
     for msg_name in msg_types.keys():
         if type(dhcp) == msg_types[msg_name]:
@@ -221,15 +273,15 @@ def client_check_time_delay(step, timeval):
 
 def client_cmp_values(step, value):
     # compare saved value with value from present message
-    # currently this step is only for comparing iaid
-    # to support other fields, create a list for storing it
+    # currently, only one value can be checked.
+    # clean container after comparing values.
 
     val = str(value).lower()
-    toCheck = getattr(world, val)
-    assert isinstance(toCheck, list), "please store values to compare in lists." 
-    assert len(toCheck) > 1, "there should 2 entries in list"
-    assert toCheck[0].sort() is toCheck[-1].sort(), "compared %s values are different." % (val)
-    
+    assert world.saved[-1].sort() is world.saved[len(world.saved)-2].sort(), \
+                                    "compared %s values are different." % (val)
+    world.saved = []
+    world.clntCfg['toSave'] = None
+
 
 def msg_set_value(step, value_name, new_value):
     # set value different than value from values dictionary
@@ -245,6 +297,9 @@ def msg_set_value(step, value_name, new_value):
     else:
         assert value_name in world.clntCfg["values"], "Unknown value name : %s" % value_name
 
+def save_value(step, value):
+    world.clntCfg['toSave'] = value.lower()
+    
 
 def msg_traverse(msg):
     # this function breaks into pieces present client message;
@@ -253,6 +308,7 @@ def msg_traverse(msg):
 
     world.cliopts = []
     localMsg = msg.copy()
+    temp = []
     tempIaid = []
 
     if type(localMsg) == Ether:
@@ -263,13 +319,18 @@ def msg_traverse(msg):
     while localMsg:
         layer = localMsg.copy()
         layer.remove_payload()
-        # it is important to save every iaid, not just one;
-        # client can request for multiple ia_pd's, so iaid's
-        # are stored in list
         if hasattr(layer, "iaid"):
             tempIaid.append(layer.iaid)
+        # it is important to save every value, not just one;
+        # client can request for multiple ia_pd's, so values
+        # are stored in list
+        if world.clntCfg['toSave'] is not None:
+            if hasattr(layer, world.clntCfg['toSave']):
+                saving = getattr(layer, world.clntCfg['toSave'])
+                temp.append(saving)
         world.cliopts.append([layer.optcode, layer])
         localMsg = localMsg.payload
+    world.saved.append(temp)
     world.iaid.append(tempIaid)
 
 
