@@ -81,8 +81,8 @@ srv_values_v6 = {"T1": 1000,
 
 clnt_set_wrong = {"trid": False,
                   "iaid": False,
-                  "cliduid": False,
-                  "srvduid": False
+                  "client_id": False,
+                  "server_id": False
                  }
 
 # times values, plz do not change this.
@@ -278,8 +278,10 @@ def initialize(scenario):
     world.pref = None
 
     world.time = None
+    world.saved = []
     world.iaid = []
     world.clntCfg['timeval'] = int(time.time())
+    world.clntCfg['toSave'] = None
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if not hasattr(world.cfg, "cli_duid"):

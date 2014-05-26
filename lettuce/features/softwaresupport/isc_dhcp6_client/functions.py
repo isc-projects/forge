@@ -63,7 +63,7 @@ def release_command():
     fabric_sudo_command('(rm nohup.out; nohup ' + world.clntCfg["command"] + ' -r & ); sleep 1;')
 
 
-def client_option_req(step, opt):
+def client_option_req(step, another1, opt):
     if opt == "IA_PD":
         if "command" not in world.clntCfg.keys():
             prepare_default_command()

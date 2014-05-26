@@ -19,7 +19,6 @@ def stop_clnt():
 def kill_clnt():
     fabric_run_command("sudo killall dibbler-client &>/dev/null")
 
-
 def create_clnt_cfg():
     # generate a default config for client
     openBracket = "{"
@@ -36,7 +35,7 @@ def release_command():
     fabric_sudo_command("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
 
 
-def client_option_req(step, opt):
+def client_option_req(step, another1, opt):
     # add option that client requests to default interface
     openBracket = "{"
     closeBracket = "}"

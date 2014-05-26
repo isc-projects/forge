@@ -10,9 +10,10 @@ if PROTO == "v6":
 
 ##############   getting client message   ##############
 
-    @step("Sniffing client (\S+) message from network.")
-    def client_msg_capture(step, msgType):
-        clntMsg.client_msg_capture(step, msgType)
+    @step("Sniffing client (\S+) message from network( with timeout)?.")
+    def client_msg_capture(step, msgType, tout):
+        tout_ = not (tout == " with timeout")
+        clntMsg.client_msg_capture(step, msgType, tout_)
 
 ##############   validating received message   ##############
 
@@ -71,6 +72,10 @@ if PROTO == "v6":
     def srv_msg_clean(step):
         clntMsg.srv_msg_clean(step)
 
+    @step("Save (\S+) value.")
+    def save_value(step, value):
+        clntMsg.save_value(step, value)
+
     @step("Server sets wrong (\S+) value.")
     def server_set_wrong_val(step, value):
         clntMsg.server_set_wrong_val(step, value)
@@ -83,9 +88,9 @@ if PROTO == "v6":
     def add_option(step, opt, optcode):
         clntMsg.add_option(step, opt, optcode)
 
-    @step("Server adds another (\S+) option to message.")
-    def add_another_option(step, opt):
-        clntMsg.add_another_option(step, opt)
+    @step("Server does NOT add (\S+) option to message.")
+    def server_not_add(step, opt):
+        clntMsg.server_not_add(step, opt)
 
     @step("Server sends (back )?(\S+) message.")
     def server_build_msg(step, back, msgType):
