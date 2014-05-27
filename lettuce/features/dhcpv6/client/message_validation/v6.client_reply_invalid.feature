@@ -236,14 +236,14 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message option 25 MUST include sub-option 26.
 
     Server builds new message.
-	Server sets wrong trid value.
+    Server sets wrong trid value.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends back REPLY message.
 
     Client MUST NOT use prefix with values given by server.
     Sniffing client REQUEST message from network.
-	
+
 
     References: RFC 3315
 

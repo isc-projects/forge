@@ -195,11 +195,11 @@ Feature: DHCPv6 Client Prefix Delegation
 
 @v6 @PD @rfc3633 @client
     Scenario: prefix.delegation.client_reply_success
-	# TODO: test should check that client took values
-	# from one of reply messages; however, if lease might
-	# be checked, scapy_lease would be made from the 
-	# latest reply message; so it's wrong. implement
-	# some other checking on client lease file
+    # TODO: test should check that client took values
+    # from one of reply messages; however, if lease might
+    # be checked, scapy_lease would be made from the 
+    # latest reply message; so it's wrong. implement
+    # some other checking on client lease file
 
     Setting up test.
 
@@ -218,24 +218,24 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message MUST contain option 25.
     Client message option 25 MUST include sub-option 26.
 
-	Server builds new message.
-	prefix value is set to 4321::.
-	Server adds rapid_commit option to message.
+    Server builds new message.
+    prefix value is set to 4321::.
+    Server adds rapid_commit option to message.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
-	Server sends back REPLY message.
+    Server sends back REPLY message.
 
-	Server builds new message.
+    Server builds new message.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
-	Server sends back REPLY message.
+    Server sends back REPLY message.
 
-	References: RFC 3315, section 17.1.4
+    References: RFC 3315, section 17.1.4
 
 
 @v6 @PD  @client
     Scenario: prefix.delegation.client_renew_unicast
-	# TODO: check that RENEW is sent to unicast address.
+    # TODO: check that RENEW is sent to unicast address.
 
     Setting up test.
 
@@ -244,7 +244,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Sniffing client SOLICIT message from network.
 
     Client message MUST contain option 25.
-	Server adds server_unicast option to message.
+    Server adds server_unicast option to message.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends back ADVERTISE message.
@@ -253,14 +253,14 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message MUST contain option 25.
     Client message option 25 MUST include sub-option 26.
 
-	Server builds new message.
-	T1 value is set to 10.
-	Server adds server_unicast option to message.
+    Server builds new message.
+    T1 value is set to 10.
+    Server adds server_unicast option to message.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends back REPLY message.
 
-	References: RFC 3315, section 22.12
+    References: RFC 3315, section 22.12
 
 
 @v6 @PD @rfc3633 @client
@@ -272,7 +272,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Client is started.
     Sniffing client SOLICIT message from network.
 
-	Save iaid value.
+    Save iaid value.
     Client message MUST contain option 25.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
@@ -604,7 +604,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message MUST contain option 1.
     Client message MUST contain option 25.
     Sniffing client SOLICIT message from network.
-    
+
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends back ADVERTISE message.
@@ -619,11 +619,11 @@ Feature: DHCPv6 Client Prefix Delegation
 
 @v6 @PD @rfc3633 @client
     Scenario: prefix.delegation.client_choose_server
-	# this step checks whether client stores information
-	# about plural servers that have sent response;
-	# if client did not receive reply for his request
-	# message and retransmission count is equal to REQ_MAX_RC,
-	# then client sends request to other server.
+    # this step checks whether client stores information
+    # about plural servers that have sent response;
+    # if client did not receive reply for his request
+    # message and retransmission count is equal to REQ_MAX_RC,
+    # then client sends request to other server.
 
     Setting up test.
 
@@ -633,24 +633,24 @@ Feature: DHCPv6 Client Prefix Delegation
 
     Client message MUST contain option 1.
     Client message MUST contain option 25.
-	Server adds preference 0 option to message.
-	prefix-len value is set to 56.
+    Server adds preference 0 option to message.
+    prefix-len value is set to 56.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends back ADVERTISE message.
 
-	Server builds new message.
-	Server adds preference 255 option to message.
-	prefix value is set to 6666::.
+    Server builds new message.
+    Server adds preference 255 option to message.
+    prefix value is set to 6666::.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends ADVERTISE message.
-	
+
     Client MUST respond with REQUEST message.
     Client message MUST contain option 25.
     Client message option 25 MUST include sub-option 26.
-	Client message sub-option 26 from option 25 MUST contain prefix 6666::.
-	# implement step that sniffs given count of messages.
+    Client message sub-option 26 from option 25 MUST contain prefix 6666::.
+    # implement step that sniffs given count of messages.
     Sniffing client REQUEST message from network.
     Sniffing client REQUEST message from network.
     Sniffing client REQUEST message from network.
@@ -664,7 +664,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Sniffing client REQUEST message from network.
     Client message MUST contain option 25.
     Client message option 25 MUST include sub-option 26.
-	Client message sub-option 26 from option 25 MUST contain plen 56.
+    Client message sub-option 26 from option 25 MUST contain plen 56.
 
     References: RFC 3315 / RFC 3633
 
