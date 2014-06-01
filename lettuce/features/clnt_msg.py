@@ -47,10 +47,21 @@ if PROTO == "v6":
         contain = not (yes_or_no == "NOT ")
         clntMsg.client_msg_contains_subopt(step, opt_code, contain, subopt_code)
 
-    @step("Message was sent after at least (\S+) second.")
-    def client_check_time_delay(step, timeval):
+    @step("Retransmission time has required value.")
+    def client_time_interval(step):
+        clntMsg.client_time_interval(step)
+
+    @step("Message was sent after maximum (\S+) second(s)?.")
+    def client_rt_delay(step, timeval, plural):
         preciseTimeVal = float(timeval)
-        clntMsg.client_check_time_delay(step, preciseTimeVal)
+        dont_care = (plural == "s")
+        clntMsg.client_rt_delay(step, preciseTimeVal, dont_care)
+
+    @step("Message was retransmitted after maximum (\S+) second(s)?.")
+    def client_rt_delay(step, timeval, plural):
+        preciseTimeVal = float(timeval)
+        dont_care = (plural == "s")
+        clntMsg.client_rt_delay(step, preciseTimeVal, dont_care)
 
     @step("(\S+) value in client message is the same as saved one.")
     def client_cmp_values(step, value):

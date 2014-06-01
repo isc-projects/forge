@@ -40,6 +40,11 @@ def client_msg_capture(step, msgType, tout_):
     for msg in sniffedMsg:
         received += get_msg_type(msg) + " "
 
+    world.timestamps.append(time.time())
+    if len(world.timestamps) >= 2:
+        world.RTlist.append(world.timestamps[-1] - world.timestamps[-2])
+        compute_rt_range()
+
     # world.time was set after sending generic server's msg to client;
     # this statement computes interval between receiving advertise
     # and sending request msg. note that preference option is not set to 255
@@ -47,7 +52,6 @@ def client_msg_capture(step, msgType, tout_):
     # TODO: provide some flag in case of preference equal to 255
     if world.time is not None:
         world.time = time.time() - world.time
-        print world.time
 
     assert len(world.climsg[world.clntCounter]) is not 0, "Got empty message... Exiting."
 
@@ -209,6 +213,9 @@ def client_send_receive(step, contain, msgType):
             sent, received = entry
             # print sent.show(), received.show()
             world.climsg.append(received)
+            world.timestamps.append(received.time)
+            if len(world.timestamps) >= 2:
+                world.RTlist.append(world.timestamps[-1] - world.timestamps[-2])
             get_common_logger().info("Received packet type = %s" % get_msg_type(received))
             msg_traverse(world.climsg[-1])
             if get_msg_type(received) == msgType:
@@ -222,7 +229,8 @@ def client_send_receive(step, contain, msgType):
     # set timestamp after sending msg
     if world.time is None:
         world.time = time.time()
-
+    
+    #world.timestamps.append(time.time())
     world.srvmsg = []
 
     if contain:
@@ -262,14 +270,42 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
-# FIXME : probably wrong approach to measuring time interval for request message
-def client_check_time_delay(step, timeval):
-    # actually, computed value seems to match time delta values from wireshark.
+def client_check_time_delay(step, timeval, dont_care):
+    # time delta between sending message by server and
+    # receiving response from client
 
-    assert world.time >= float(timeval), "Client respond in shorter time than %.3f " \
-                                         "second. Response time: %.3f" % (float(timeval), world.time)
+    assert world.time <= float(timeval), "Client respond in shorter time than " \
+                                         "%.3f second. Response time: %.3f" % \
+                                         (float(timeval), world.time)
     world.time = None
 
+
+def compute_rt_range():
+    lowTime = world.RTlist[-1] * 2 + world.RTlist[-1] * (-0.1)
+    highTime = world.RTlist[-1] * 2 + world.RTlist[-1] * 0.1
+    world.RTranges.append([lowTime, highTime])
+    #print "\n\n\n"
+    #print world.RTranges
+    #print "\n\n\n"
+
+
+def client_rt_delay(step, timeval, dont_care):
+    assert world.RTlist[-1] <= float(timeval)
+
+
+def client_time_interval(step):
+    # time delta between client messages;
+    # used for measuring retransmission times
+    
+    rt = world.timestamps[-1] - world.timestamps[-2]
+    assert rt >= world.RTranges[world.c][0], "Client respond in shorter time than" \
+                                         " %.3f s. Response time: %.3f" % \
+                                         (world.RTranges[world.c][0], rt)
+    assert rt <= world.RTranges[world.c][1], "Client respond in longer time than" \
+                                          " %.3f s. Response time: %.3f" % \
+                                          (world.RTranges[world.c][1], rt)
+    world.c += 1
+    
 
 def client_cmp_values(step, value):
     # compare saved value with value from present message
@@ -296,6 +332,7 @@ def msg_set_value(step, value_name, new_value):
             world.clntCfg["values"][value_name] = new_value
     else:
         assert value_name in world.clntCfg["values"], "Unknown value name : %s" % value_name
+
 
 def save_value(step, value):
     world.clntCfg['toSave'] = value.lower()

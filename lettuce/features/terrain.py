@@ -278,6 +278,14 @@ def initialize(scenario):
     world.pref = None
 
     world.time = None
+    # append single timestamp to list
+    world.timestamps = []
+    # response times list
+    world.RTlist = []
+    # time ranges that response time must fit in
+    world.RTranges = []
+    world.RTranges.append([0.9, 1.1])
+    world.c = 0
     world.saved = []
     world.iaid = []
     world.clntCfg['timeval'] = int(time.time())
