@@ -2,12 +2,12 @@
 # whether it would be good, bad or totally bad;
 
 
-Feature: DHCPv6 Client Prefix Delegation
-    Test for client behavior on receiving invalid reply message, RFC 3315
+Feature: DHCPv6 Client Reply Message Validation
+    Basic client reply message validation, based on RFC 3633 / RFC 3315
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_reply_oro
+    Scenario: message.validation.client_invalid_reply_oro
 
     Setting up test.
 
@@ -44,7 +44,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_reply_elapsed_time
+    Scenario: message.validation.client_invalid_reply_elapsed_time
 
     Setting up test.
 
@@ -81,7 +81,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_reply_relay_msg
+    Scenario: message.validation.client_invalid_reply_relay_msg
 
     Setting up test.
 
@@ -118,7 +118,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_reply_iface_id
+    Scenario: message.validation.client_invalid_reply_iface_id
 
     Setting up test.
 
@@ -155,7 +155,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_reply_reconfigure
+    Scenario: message.validation.client_invalid_reply_reconfigure
 
     Setting up test.
 
@@ -192,7 +192,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_reply_without_srv_id
+    Scenario: message.validation.client_reply_without_srv_id
 
     Setting up test.
 
@@ -229,7 +229,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_reply_without_cli_id
+    Scenario: message.validation.client_reply_without_cli_id
 
     Setting up test.
 
@@ -266,7 +266,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_reply_wrong_trid
+    Scenario: message.validation.client_reply_wrong_trid
 
     Setting up test.
 

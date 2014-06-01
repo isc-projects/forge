@@ -2,12 +2,12 @@
 # whether it would be good, bad or totally bad;
 
 
-Feature: DHCPv6 Client Prefix Delegation
-    Test for client behavior on receiving invalid advertise message, RFC 3315
+Feature: DHCPv6 Client Advertise Message Validation
+    Basic client advertise message validation, based on RFC 3633 / RFC 3315
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_adv_oro
+    Scenario: message.validation.client_invalid_adv_oro
 
     Setting up test.
 
@@ -34,7 +34,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_adv_srv_unicast
+    Scenario: message.validation.client_invalid_adv_srv_unicast
 
     Setting up test.
 
@@ -61,7 +61,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_adv_rapid_commit
+    Scenario: message.validation.client_invalid_adv_rapid_commit
 
     Setting up test.
 
@@ -88,7 +88,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_adv_elapsed_time
+    Scenario: message.validation.client_invalid_adv_elapsed_time
 
     Setting up test.
 
@@ -115,7 +115,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_adv_iface_id
+    Scenario: message.validation.client_invalid_adv_iface_id
 
     Setting up test.
 
@@ -142,7 +142,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_invalid_adv_reconf
+    Scenario: message.validation.client_invalid_adv_reconf
 
     Setting up test.
 
@@ -169,7 +169,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_adv_without_cli_id
+    Scenario: message.validation.client_adv_without_cli_id
 
     Setting up test.
 
@@ -196,7 +196,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: prefix.delegation.client_adv_without_srv_id
+    Scenario: message.validation.client_adv_without_srv_id
 
     Setting up test.
 
