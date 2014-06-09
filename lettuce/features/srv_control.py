@@ -20,6 +20,7 @@ from init_all import SOFTWARE_UNDER_TEST
 import importlib
 dhcpfun = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
+
 def test_define_value(*args):
     """
     Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
@@ -64,7 +65,6 @@ def test_define_value(*args):
                 tested_args.append(front + imported+tmp[index+1:])
         else:
             tested_args.append(args[i])
-            
     return tested_args
 
 
@@ -83,6 +83,7 @@ def config_srv_subnet(step, subnet, pool):
     subnet, pool = test_define_value( subnet, pool)
     dhcpfun.prepare_cfg_subnet(step, subnet, pool)
 
+
 @step('On interface (\S+) server is configured with another subnet: (\S+) with (\S+) pool.')
 def config_srv_another_subnet(step, interface, subnet, pool):
     """
@@ -92,6 +93,7 @@ def config_srv_another_subnet(step, interface, subnet, pool):
         assert False, "Test temporary available only for Kea servers."
     subnet, pool, interface = test_define_value( subnet, pool, interface)
     dhcpfun.config_srv_another_subnet(step, subnet, pool, interface)
+
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool.')
 def config_srv_another_subnet_no_interface(step, subnet, pool):
@@ -103,25 +105,29 @@ def config_srv_another_subnet_no_interface(step, subnet, pool):
     subnet, pool = test_define_value( subnet, pool)
     dhcpfun.config_srv_another_subnet(step, subnet, pool, None)
 
-@step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')#
+
+@step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')
 def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
     """
     Adds server configuration with specified prefix.
     """
     prefix, length, delegated_length, subnet = test_define_value(prefix, length, delegated_length, subnet)
     dhcpfun.prepare_cfg_prefix(step, prefix, length, delegated_length, subnet)
-    
+
+
 @step('Next server value on subnet (\d+) is configured with address (\S+).')
 def subnet_add_siaddr(step, subnet_number, addr):
     addr, subnet_number = test_define_value(addr, subnet_number)
     dhcpfun.add_siaddr(step, addr, subnet_number)
+
 
 @step('Next server global value is configured with address (\S+).')
 def global_add_siaddr(step, addr):
     #TODO: implement this
     #addr, subnet_number = test_define_value(addr, "pass")
     dhcpfun.add_siaddr(step, addr, None)
-    
+
+
 @step('Server is configured with (\S+) option with value (\S+).')
 def config_srv_opt(step, option_name, option_value):
     """
@@ -131,6 +137,7 @@ def config_srv_opt(step, option_name, option_value):
     option_name, option_value = test_define_value( option_name, option_value)
     dhcpfun.prepare_cfg_add_option(step, option_name, option_value, world.cfg["space"])
 
+
 @step('On space (\S+) server is configured with (\S+) option with value (\S+).')
 def config_srv_opt_space(step, space, option_name, option_value):
     """
@@ -139,6 +146,7 @@ def config_srv_opt_space(step, space, option_name, option_value):
     """
     option_name, option_value, space = test_define_value(option_name, option_value, space)
     dhcpfun.prepare_cfg_add_option(step, option_name, option_value, space)
+
 
 @step('Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
@@ -152,6 +160,7 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
     opt_name, opt_code, opt_type, opt_value = test_define_value(opt_name, opt_code, opt_type, opt_value)
     dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, world.cfg["space"])
 
+
 @step('On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_value):
     """
@@ -159,6 +168,7 @@ def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_v
     """
     opt_name, opt_code, opt_type, opt_value, space = test_define_value(opt_name, opt_code, opt_type, opt_value, space)
     dhcpfun.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space)
+
 
 @step('Time (\S+) is configured with value (\d+).')
 def set_time(step, which_time, value):
@@ -168,6 +178,7 @@ def set_time(step, which_time, value):
     which_time, value = test_define_value(which_time, value)
     dhcpfun.set_time(step, which_time, value)
 
+
 @step('Option (\S+) is configured with value (\S+).')
 def set_time_option(step, which_time, value):
     """
@@ -175,6 +186,7 @@ def set_time_option(step, which_time, value):
     """
     which_time, value = test_define_value(which_time, value)
     dhcpfun.set_time(step, which_time, value)
+
 
 @step('Run configuration command: (.+)')
 def run_command(step, command):
@@ -187,7 +199,8 @@ def run_command(step, command):
     """
     command = test_define_value(command)[0]
     dhcpfun.run_command(step, command)
-    
+
+
 ##subnet options
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
 def config_srv(step, option_name, subnet, option_value):
@@ -198,11 +211,13 @@ def config_srv(step, option_name, subnet, option_value):
     """
     dhcpfun.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
 
+
 @step('Server is configured with client-classification option in subnet (\d+) with name (\S+).')
 def config_client_classification(step, subnet, option_value):
     """
     """
     dhcpfun.config_client_classification(step, subnet, option_value)
+
 
 ##server management
 @step('(Server is started.)|(Server failed to start. During (\S+) process.)')
@@ -215,6 +230,7 @@ def start_srv(step, started , failed, process):
     start = True if started is not None else False
     dhcpfun.start_srv(start, process)
 
+
 @step('Restart server.')
 def restart_srv(step):
     """
@@ -222,10 +238,10 @@ def restart_srv(step):
     """
     dhcpfun.restart_srv()
 
+
 @step('Server is stopped.')
 def stop_srv(step):
     """
     For test that demands turning off server in the middle
     """
     dhcpfun.stop_srv()
-    
