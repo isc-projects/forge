@@ -99,17 +99,6 @@ def option_parser():
         parser.print_help()
         parser.error("options -4 and -6 are exclusive.\n")
 
-    # if not opts.server and not opts.client:
-    #     parser.print_help()
-    #     parser.error("You must choose between --client or --server tests.\n")
-    #
-    # if opts.server and opts.client:
-    #     parser.print_help()
-    #     parser.error("Options --client and --server are exclusive.\n")
-    #
-    # testType = 'server' if opts.server else 'client'
-    # world.testType = testType
-
     number = '6' if opts.version6 else '4'
     #Generate list of set tests and exit
     if opts.list:
@@ -118,73 +107,93 @@ def option_parser():
         hlp.test(number, 0)
         sys.exit()
 
-    from features.init_all import HISTORY
-    if HISTORY:
-        from help import TestHistory
-        history = TestHistory()
-        
-    if opts.name is not None:
-        from help import find_scenario
-        base_path, scenario = find_scenario(opts.name, number)
-        if base_path is None:
-            print "Scenario named %s has been not found" % opts.name
-            sys.exit()
-    else:
-        scenario = None
-        
-    #adding tags for lettuce
+    # adding tags for lettuce
     if opts.tag is not None:
         tag = opts.tag[0].split(',')
     else:
         tag = 'v6' if opts.version6 else 'v4'
-    
-    path = ""
+
+    return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit
+
+
+def test_path_select(number, test_set, name):
     #path for tests, all for specified IP version or only one set
     from features.init_all import SOFTWARE_UNDER_TEST
     if "client" in SOFTWARE_UNDER_TEST:
         testType = "client"
     elif "server" in SOFTWARE_UNDER_TEST:
         testType = "server"
-    if opts.test_set is not None:
-        path = "/features/dhcpv" + number + "/" + testType + "/" + opts.test_set + "/"
-        base_path = os.getcwd() + path
-    elif opts.name is not None:
-        pass
     else:
+        print "Are you sure that variable SOFTWARE_UNDER_TEST is correct?"
+        sys.exit()
+
+    if test_set is not None:
+        path = "/features/dhcpv" + number + "/" + testType + "/" + test_set + "/"
+        base_path = os.getcwd() + path
+    elif name is not None:
+        from help import find_scenario
+        base_path, scenario = find_scenario(name, number)
+        if base_path is None:
+            print "Scenario named %s has been not found" % name
+            sys.exit()
+    else:
+        scenario = None
         path = "/features/dhcpv" + number + "/" + testType + "/"
         base_path = os.getcwd() + path
-        
-    if HISTORY:
-        history.start()
 
-    #lettuce starter, adding options
-    from lettuce import Runner, world
-    runner = Runner(
-                    base_path,
-                    verbosity = opts.verbosity,
-                    scenarios = scenario,
-                    failfast = False,
-                    tags = tag,
-                    enable_xunit = opts.enable_xunit)\
-                     
-    result = runner.run() #start lettuce
-    
-    #build report if requested
-    if HISTORY:
-        history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
-        history.build_report() 
+    return base_path, scenario
 
 
-def main():
+def check_config_file():
     try:
         config = importlib.import_module("features.init_all")
     except ImportError:
-        print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)"
+        print "\n Error: You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)\n"
+        #option_parser().print_help()
         sys.exit()
     if config.SOFTWARE_UNDER_TEST == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
         print "Please make sure your configuration is valid\nProject Forge shutting down."
         sys.exit()       
-    option_parser()
+
+
+def start_all(base_path, verbosity, scenario, tag, enable_xunit):
+
+    from features.init_all import HISTORY
+    if HISTORY:
+        from help import TestHistory
+        history = TestHistory()
+
+    if HISTORY:
+        history.start()
+
+    #lettuce starter, adding options
+    try:
+        from lettuce import Runner, world
+    except ImportError:
+        print "You have not Lettuce installed (or in path)."
+        sys.exit()
+    print("path",base_path,
+    "verb", verbosity,
+    "scenario",scenario,
+    'tags', tag,
+    "xunit", enable_xunit)
+
+    runner = Runner(base_path,
+                    verbosity = verbosity,
+                    scenarios = scenario,
+                    failfast = False,
+                    tags = tag,
+                    enable_xunit = enable_xunit)
+
+    result = runner.run()  # start lettuce
+
+    if HISTORY:
+        history.information(result.scenarios_passed, result.scenarios_ran, tag, base_path)
+        history.build_report()
 
 if __name__ == '__main__':
-    main()
+    number, test_set, name, verbosity, tag, enable_xunit = option_parser()
+    check_config_file()
+    base_path, scenario = test_path_select(number, test_set, name)
+
+    start_all(base_path, verbosity, scenario, tag, enable_xunit)
