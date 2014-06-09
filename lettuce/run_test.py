@@ -172,11 +172,6 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
     except ImportError:
         print "You have not Lettuce installed (or in path)."
         sys.exit()
-    print("path",base_path,
-    "verb", verbosity,
-    "scenario",scenario,
-    'tags', tag,
-    "xunit", enable_xunit)
 
     runner = Runner(base_path,
                     verbosity = verbosity,
