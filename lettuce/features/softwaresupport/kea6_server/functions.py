@@ -98,13 +98,7 @@ def add_defaults():
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    # world.subcfg[0] = [[subnet], [pools], [prefixes], [options]]
-    # if not "add_subnet" in world.cfg:
-    #     world.cfg["add_subnet"] = '"subnet6": [ '
-    # else:
-    #     world.cfg["add_subnet"] += ',\n'
-    #world.subcfg[world.kea["subnet_cnt"]][0] = '"subnet6": [ '
-
+    # world.subcfg[0] = [pools, prefixes, options]
     if subnet == "default":
         subnet = "2001:db8:1::/64"
     if pool == "default":
@@ -251,6 +245,9 @@ def cfg_write():
     if "option_def" in world.cfg:
         cfg_file.write(',' + world.cfg["option_def"])
         cfg_file.write("]")
+
+    if "simple_options" in world.cfg:
+        cfg_file.write(',' + world.cfg["simple_options"])
 
     if "custom_lines" in world.cfg:
         cfg_file.write(',' + world.cfg["custom_lines"])
