@@ -353,6 +353,8 @@ def cleanup(scenario):
     Global cleanup for each scenario. Implemented within tests by "Server is started."
     """
     fabric_run_command("kill `ps auxwww | grep dhcp6 | grep b10- | awk '{print $2}'`")
+    fabric_run_command("kill `ps auxwww | grep dhcp4 | grep b10- | awk '{print $2}'`")
+
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
         add_result_to_raport(info)
