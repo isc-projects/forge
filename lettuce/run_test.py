@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # Copyright (C) 2013 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
@@ -15,11 +17,11 @@
 #
 # author: Wlodzimierz Wencel
 
-from lettuce import Runner, world
 import importlib
 import optparse
 import os
 import sys
+
 
 def option_parser():
     desc='''
@@ -65,8 +67,9 @@ def option_parser():
                       dest = "tag",
                       action = "append",
                       default = None,
-                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.\
-                      also if you want to skip some tests use minus sing before that test tag (e.g. -kea).")
+                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic." +
+                      "If you wont specify any tags, Forge will perform all test for chosen IP version." +
+                      "Also if you want to skip some tests use minus sing before that test tag (e.g. -kea).")
     
     parser.add_option("-x", "--with-xunit",
                       dest = "enable_xunit",
@@ -115,8 +118,6 @@ def option_parser():
         hlp.test(number, 0)
         sys.exit()
 
-
-        
     from features.init_all import HISTORY
     if HISTORY:
         from help import TestHistory
@@ -126,7 +127,7 @@ def option_parser():
         from help import find_scenario
         base_path, scenario = find_scenario(opts.name, number)
         if base_path is None:
-            print "Scenario named %s has been not found" %opts.name
+            print "Scenario named %s has been not found" % opts.name
             sys.exit()
     else:
         scenario = None
@@ -145,7 +146,7 @@ def option_parser():
     elif "server" in SOFTWARE_UNDER_TEST:
         testType = "server"
     if opts.test_set is not None:
-        path = "/features/dhcpv" + number + "/"  + testType + "/" + opts.test_set + "/"
+        path = "/features/dhcpv" + number + "/" + testType + "/" + opts.test_set + "/"
         base_path = os.getcwd() + path
     elif opts.name is not None:
         pass
@@ -153,8 +154,11 @@ def option_parser():
         path = "/features/dhcpv" + number + "/" + testType + "/"
         base_path = os.getcwd() + path
         
-    if HISTORY: history.start()
+    if HISTORY:
+        history.start()
+
     #lettuce starter, adding options
+    from lettuce import Runner, world
     runner = Runner(
                     base_path,
                     verbosity = opts.verbosity,
@@ -169,9 +173,10 @@ def option_parser():
     if HISTORY:
         history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
         history.build_report() 
-        
+
+
 def main():
-    try :
+    try:
         config = importlib.import_module("features.init_all")
     except ImportError:
         print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)"
