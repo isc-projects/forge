@@ -251,6 +251,7 @@ def initialize(scenario):
 
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
+    world.subcfg = [["", "", ""]]  # additional config structure
 
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
@@ -369,11 +370,11 @@ def cleanup(scenario):
         if SAVE_LEASES:
             if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
-            elif SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server', 'kea6_server_bind']:
+            elif SOFTWARE_UNDER_TEST in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
             else:
                 pass
-        if SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server', 'kea6_server_bind']:
+        if SOFTWARE_UNDER_TEST in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
             fabric_remove_file_command(world.cfg['leases'])
 
 @after.all
@@ -393,7 +394,7 @@ def say_goodbye(total):
             result.write(str(item) + '\n')
         result.close()
     if "server" in SOFTWARE_UNDER_TEST:
-        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server_bind']:
+        if SOFTWARE_UNDER_TEST in ['kea4_server_bind', 'kea6_server_bind']:
             #TODO: import only one function!
             clean_config = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             clean_config.run_bindctl(True, 'clean')

@@ -22,14 +22,14 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
-    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2
+    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2, SLEEP_TIME_1
 
 
 kea_options6 = { "client-id": 1,
-                 "server-id" : 2,
-                 "IA_NA" : 3,
+                 "server-id": 2,
+                 "IA_NA": 3,
                  "IN_TA": 4,
-                 "IA_address" : 5,
+                 "IA_address": 5,
                  "preference": 7,
                  "relay-msg": 9,
                  "status-code": 13,
@@ -66,6 +66,10 @@ def set_time(step, which_time, value):
 
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK START =================
+#  world.subcfg - is prepare for multi-subnet configuration
+#  it's concatenated lists:
+#  world.subcfg[0] - default subnet
+#  each another subnet is append to world.subcfg
 
 
 def add_defaults():
@@ -89,14 +93,18 @@ def add_defaults():
 
     if eth is not None:
         world.cfg["main"] += '''"interfaces": ["{eth}"],
+        "subnet6": [
         '''.format(**locals())
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    if not "add_subnet" in world.cfg:
-        world.cfg["add_subnet"] = '"subnet6": [ '
-    else:
-        world.cfg["add_subnet"] += ',\n'
+    # world.subcfg[0] = [[subnet], [pools], [prefixes], [options]]
+    # if not "add_subnet" in world.cfg:
+    #     world.cfg["add_subnet"] = '"subnet6": [ '
+    # else:
+    #     world.cfg["add_subnet"] += ',\n'
+    #world.subcfg[world.kea["subnet_cnt"]][0] = '"subnet6": [ '
+
     if subnet == "default":
         subnet = "2001:db8:1::/64"
     if pool == "default":
@@ -107,16 +115,25 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     pointer_start = "{"
     pointer_end = "}"
 
-    world.cfg["add_subnet"] += '\n\t\t{pointer_start} "pool": [ "{pool}" ], "subnet": "{subnet}"'.format(**locals())
-    if eth is not None:
-        world.cfg["add_subnet"] += ', "interface": "{eth}" '.format(**locals())
+    world.subcfg[world.kea["subnet_cnt"]][0] += '\n\t\t{pointer_start} "pool": [ "{pool}" ],' \
+                                                ' "subnet": "{subnet}"'.format(**locals())
 
+    if eth is not None:
+        world.subcfg[world.kea["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
+
+    #world.kea["subnet_cnt"] += 1
+
+
+def add_pool_to_subnet():
+    #TODO !
+    pass
+
+
+def config_srv_another_subnet(step, subnet, pool, eth):
+    world.subcfg.append(["", "", ""])
     world.kea["subnet_cnt"] += 1
 
-
-def config_srv_another_subnet(step, subnet, pool, interface):
-    pass
-    # TODO: implement this!
+    prepare_cfg_subnet(step, subnet, pool, eth)
 
 
 def config_client_classification(step, subnet, option_value):
@@ -125,16 +142,13 @@ def config_client_classification(step, subnet, option_value):
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
-    if not "add_subnet" in world.cfg:
-        assert False, "First you need to configure subnet."
-
+    subnet = int(subnet)
     pointer_start = "{"
     pointer_end = "}"
-
-    world.cfg["add_subnet"] += ',\n'
-    world.cfg["add_subnet"] += '''\t\t"pd-pools": [
-            \t\t{pointer_start}"delegated-len": {delegated_length}, "prefix": "{prefix}", "prefix-len": {length} {pointer_end}]'''\
-        .format(**locals())
+    world.subcfg[subnet][1] += """\n\t\t"pd-pools": [
+            \t\t{pointer_start}"delegated-len": {delegated_length},
+            \t\t"prefix": "{prefix}",
+            \t\t"prefix-len": {length} {pointer_end}]""".format(**locals())
 
 
 def prepare_cfg_add_option(step, option_name, option_value, space,
@@ -180,11 +194,23 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
 
 
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
-    if not "add_subnet" in world.cfg:
-        assert False, "First you need to configure subnet."
+    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+    space = world.cfg["space"]
+    subnet = int(subnet)
+    option_code = kea_options6.get(option_name)
+    if option_code is None:
+        option_code = kea_otheroptions.get(option_name)
 
-    prepare_cfg_add_option(step, option_name, option_value, 'dhcp6', option_code = None,
-                           type = 'default', where = 'add_subnet_options')
+    pointer_start = "{"
+    pointer_end = "}"
+
+    assert option_code is not None, "Unsupported option name for other Kea6 options: " + option_name
+    if len(world.subcfg[subnet][2]) > 10:
+        world.subcfg[subnet][2] += ','
+
+    world.subcfg[subnet][2] += '''
+            \t{pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
+            \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
 def run_command(step, command):
@@ -200,15 +226,23 @@ def set_logger():
 
 
 def cfg_write():
+    for number in range(0, len(world.subcfg)):
+        world.subcfg[number][2] = '\n\t\"option-data\": [\n' + world.subcfg[number][2] + "]"
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["main"])
-    if "add_subnet" in world.cfg:
-        cfg_file.write(world.cfg["add_subnet"])
-
-    if "add_subnet_options" in world.cfg:
-        cfg_file.write("," + world.cfg["add_subnet_options"] + " ] \n\t\t}]")
-    else:
-        cfg_file.write(" }]")
+    tmp = ''
+    counter = 0
+    for each_subnet in world.subcfg:
+        tmp = each_subnet[0]
+        counter += 1
+        for each_subnet_config_part in each_subnet[1:]:
+            if len(each_subnet_config_part) > 0:
+                tmp += ',' + each_subnet_config_part
+            #tmp += str(each_subnet[-1])
+        cfg_file.write(tmp + '\n}')
+        if counter != len(world.subcfg) and len(world.subcfg) > 1:
+            cfg_file.write(",")
+    cfg_file.write('\n]\n')
 
     if "options" in world.cfg:
         cfg_file.write(',' + world.cfg["options"])
@@ -244,7 +278,7 @@ def start_srv(start, process):
     cpoy_configuration_file(world.cfg["cfg_file"])
     remove_local_file(world.cfg["cfg_file"])
     fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'libexec/bind10/b10-dhcp6 -c '
-                       + world.cfg["cfg_file"] + '&); sleep 1')
+                       + world.cfg["cfg_file"] + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 
 def stop_srv():
