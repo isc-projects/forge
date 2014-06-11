@@ -130,6 +130,8 @@ Feature: DHCPv6 Client retransmission times
     Pass Criteria:
     Message was retransmitted after maximum 128 seconds.
 
+    References: RFC 3315
+
 
 @v6 @RT @client
     Scenario: retransmission.time.client_req_max_rt

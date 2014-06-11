@@ -41,7 +41,7 @@ Feature: DHCPv6 Client Message Validation
     Pass Criteria:
     IAID value in client message is the same as saved one.
 
-    References: RFC 3315, section 22.9
+    References: RFC 3315
 
 
 @v6 @rfc3315 @basic @client
@@ -61,4 +61,4 @@ Feature: DHCPv6 Client Message Validation
     Client message MUST contain option 14.
     Client message MUST contain option 25.
 
-    References: RFC 3315, section 22.9
+    References: RFC 3315

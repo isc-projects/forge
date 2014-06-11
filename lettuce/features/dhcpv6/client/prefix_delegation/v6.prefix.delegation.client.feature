@@ -43,7 +43,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @PD @rfc3633 @client
-    Scenario: prefix.delegation.client_prefixUsage
+    Scenario: prefix.delegation.client_IAPrefix_opt
 
     Setting up test.
 
@@ -64,6 +64,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Client MUST respond with REQUEST message.
     Client message MUST contain option 25.
     Client message option 25 MUST include sub-option 26.
+
+    References: RFC 3633
 
 
 @v6 @PD @rfc3633 @client
@@ -189,6 +191,8 @@ Feature: DHCPv6 Client Prefix Delegation
 
     Pass Criteria:
     Client MUST use prefix with values given by server.
+
+    References: RFC 3633 / RFC 3315
 
 
 @v6 @client
@@ -349,6 +353,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message option 25 MUST include sub-option 26.
     Client message MUST contain 2 sub-options with opt-code 26 within option 25.
     iaid value in client message is the same as saved one.
+
+    References: RFC 3633
 
 
 @v6 @PD @rfc3633 @client
@@ -614,6 +620,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message MUST contain option 25.
     Client message option 25 MUST include sub-option 26.
     Client message sub-option 26 from option 25 MUST contain prefix 3366:beef::.
+
+    References: RFC 3315
 
 
 @v6 @PD @rfc3633 @client
