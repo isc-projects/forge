@@ -118,6 +118,7 @@ def option_parser():
 
 def test_path_select(number, test_set, name):
     #path for tests, all for specified IP version or only one set
+    scenario = None
     from features.init_all import SOFTWARE_UNDER_TEST
     if "client" in SOFTWARE_UNDER_TEST:
         testType = "client"
@@ -162,8 +163,6 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
     if HISTORY:
         from help import TestHistory
         history = TestHistory()
-
-    if HISTORY:
         history.start()
 
     #lettuce starter, adding options
