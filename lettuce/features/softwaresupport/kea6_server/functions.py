@@ -98,7 +98,7 @@ def add_defaults():
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    # world.subcfg[0] = [pools, prefixes, options]
+    # world.subcfg[0] = [pools, prefixes, options, single options]
     if subnet == "default":
         subnet = "2001:db8:1::/64"
     if pool == "default":
@@ -124,15 +124,17 @@ def add_pool_to_subnet():
 
 
 def config_srv_another_subnet(step, subnet, pool, eth):
-    world.subcfg.append(["", "", ""])
+    world.subcfg.append(["", "", "", ""])
     world.kea["subnet_cnt"] += 1
 
     prepare_cfg_subnet(step, subnet, pool, eth)
 
 
 def config_client_classification(step, subnet, option_value):
-    # TODO: implement this!
-    pass
+    subnet = int(subnet)
+    if len(world.subcfg[subnet][3]) > 2:
+        world.subcfg[subnet][3] += ', '
+    world.subcfg[subnet][3] += '"client-class": "{option_value}"\n'.format(**locals())
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
