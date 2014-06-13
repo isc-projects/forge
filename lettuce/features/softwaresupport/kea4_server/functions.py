@@ -13,6 +13,8 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+# Author: Wlodzimierz Wencel
+
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
     cpoy_configuration_file
 from lettuce import world
@@ -196,6 +198,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     world.subcfg[subnet][2] += '''
             \t{pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
             \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
+
 
 def add_siaddr(step, addr, subnet_number):
     if subnet_number is None:
