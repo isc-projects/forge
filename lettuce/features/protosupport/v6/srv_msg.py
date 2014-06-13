@@ -428,7 +428,11 @@ def client_option(msg):
         #                                                   validlft = world.cfg["values"]["validlft"]))
 
     if world.cfg["add_option"]["vendor_class"]:
-        msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
+        if world.cfg["values"]["vendor_class_data"] == "":
+            msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
+        else:
+            msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"],
+                                       vcdata = VENDOR_CLASS_DATA(data = world.cfg["values"]["vendor_class_data"]))
 
     if world.cfg["add_option"]["vendor_specific_info"]:
         # convert data for world.vendor with code == 1 (option request)

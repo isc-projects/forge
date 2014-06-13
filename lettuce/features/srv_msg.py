@@ -83,6 +83,7 @@ def client_does_include_with_value(step, opt_type, value):
 
 @step('Client does (NOT )?include (\S+).')
 def client_does_include(step, yes_or_not, opt_type):
+    # add " option." to the end of the step - change all tests!
     """
     You can choose to include options to message (support for every option listed
     in RFC 3315 and more) or to not include options like IA_NA or client_id.

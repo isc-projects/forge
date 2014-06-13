@@ -55,7 +55,8 @@ add_option_v6 = {'client_id': True,
                  'IA_Prefix': False,
                  'IA_Address': False,
                  'vendor_class': False,
-                 'vendor_specific_info': False
+                 'vendor_specific_info': False,
+                 'fqdn': False
                  }
 
 values_v6 = {"T1": 0,  # IA_NA IA_PD
@@ -66,10 +67,12 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "preflft": 0,  # IA_Address IA_Prefix
              "validlft": 0,  # IA_Address IA_Prefix
              "enterprisenum": 0,  # vendor
+             "vendor_class_data": "",
              "linkaddr": "3000::ffff",  # relay
              "peeraddr": "2000::1",  # relay
              "ifaceid": "15",  # relay
-             "DUID": None
+             "DUID": None,
+             "FQDN_flags": None
              }
 
 # times values, plz do not change this.
@@ -251,7 +254,7 @@ def initialize(scenario):
 
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
-    world.subcfg = [["", "", ""]]  # additional config structure
+    world.subcfg = [["", "", "", ""]]  # additional config structure
 
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
@@ -297,18 +300,17 @@ def initialize(scenario):
             tmp = open(world.cfg["dir_name"] + '/capture.pcap', 'w+')
             tmp.close()
         # also IP version for tcpdump
-        type = 'ip'
+        ip_version = 'ip'
 
         if PROTO == "v6":
-            type = type + '6'
+            ip_version += '6'
         cmd = TCPDUMP_INSTALL_DIR + 'tcpdump'
         args = [cmd, "-U", "-w", world.cfg["dir_name"] + "/capture.pcap",
-                "-s", str(65535), "-i", world.cfg["iface"], type]
+                "-s", str(65535), "-i", world.cfg["iface"], ip_version]
         get_common_logger().debug("Running tcpdump: ")
         get_common_logger().debug(args)
         # TODO: hide stdout, log it in debug mode
         subprocess.Popen(args)
-
 
 @before.outline
 def outline_before(scenario, number, step, failed):
@@ -352,14 +354,19 @@ def cleanup(scenario):
     """
     Global cleanup for each scenario. Implemented within tests by "Server is started."
     """
-    fabric_run_command("kill `ps auxwww | grep dhcp6 | grep b10- | awk '{print $2}'`")
-    fabric_run_command("kill `ps auxwww | grep dhcp4 | grep b10- | awk '{print $2}'`")
+    #temporary solution for JSON config kea
+    if "kea" in SOFTWARE_UNDER_TEST:
+        if world.proto == "v6":
+            fabric_run_command("kill `ps auxwww | grep dhcp6 | grep b10- | awk '{print $2}'`")
+        else:
+            fabric_run_command("kill `ps auxwww | grep dhcp4 | grep b10- | awk '{print $2}'`")
 
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
         add_result_to_raport(info)
 
     if TCPDUMP:
+        time.sleep(1)
         args = ["killall tcpdump"]
         subprocess.call(args, shell=True)
         # TODO: log output in debug mode
