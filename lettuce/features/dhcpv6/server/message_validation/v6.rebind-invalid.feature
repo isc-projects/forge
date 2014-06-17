@@ -22,6 +22,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -82,6 +83,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -142,6 +144,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -203,6 +206,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -264,6 +268,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -325,6 +330,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -386,6 +392,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -447,6 +454,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -508,6 +516,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	
@@ -569,6 +578,7 @@ Feature: Standard DHCPv6 rebind message
 	##					server-id
 	##					IA-NA
 	##					IA-Address
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is started.
 	

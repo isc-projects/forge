@@ -100,7 +100,8 @@ Feature: DHCPv6 Renew
 	Response option 3 MUST contain sub-option 5.
 
 	Client saves IA_NA option from received message.
-	
+
+    Server reconfigure:
 	Server is configured with 3000::/64 subnet with 3000::100-3000::155 pool.
 	Server is started.
 

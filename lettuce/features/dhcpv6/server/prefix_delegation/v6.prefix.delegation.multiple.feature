@@ -253,3 +253,32 @@ Feature: DHCPv6 Prefix Delegation
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 
 	References: RFC 3633, Section: 12.2
+
+	@v6 @PD @rfc3633
+    Scenario: prefix.delegation.multiple.PD_and_IA_advertise_fail
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
+	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
+	Server is started.
+
+	Test Procedure:
+	Client requests option 7.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+	Generate new IA.
+	Client does include IA-PD.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
