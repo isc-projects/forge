@@ -19,12 +19,13 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
     cpoy_configuration_file
 from lettuce import world
 from logging_facility import *
-from textwrap import dedent
-from logging_facility import get_common_logger
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS
 
-from softwaresupport.kea6_server.functions import set_logger, cfg_write, set_time, \
-    run_command, config_srv_another_subnet, prepare_cfg_add_custom_option
+from logging_facility import get_common_logger
+from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS, SLEEP_TIME_1
+
+from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
+    run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
+    check_kea_process_result
 
 kea_options4 = {"subnet-mask": 1,  # ipv4-address (array)
                 "time-offset": 2, 
@@ -132,7 +133,7 @@ def add_defaults():
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    # world.subcfg[0] = [pools, advanced_options, options]
+    # world.subcfg[0] = [pools, simple_options, options]
     if subnet == "default":
         subnet = "192.168.0.0/24"
     if pool == "default":
@@ -246,22 +247,24 @@ def start_srv(start, process):
     """
     world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases4.csv'
     add_defaults()
+    set_kea_ctrl_config()
     cfg_write()
-    fabric_send_file(world.cfg["cfg_file"], world.cfg["cfg_file"])
+    fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/bind10/kea.conf")
+    fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/bind10/keactrl.conf")
     cpoy_configuration_file(world.cfg["cfg_file"])
+    cpoy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
-    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'libexec/bind10/b10-dhcp4 -c '
-                       + world.cfg["cfg_file"] + '&); sleep 1')
+    remove_local_file(world.cfg["cfg_file_2"])
+    v6, v4 = check_kea_status()
 
+    if not v4:
+        result = fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+    else:
+        result = fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl commit '
+                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
 
-def stop_srv():
-    pass
-    # TODO: implement this!
-
-
-def restart_srv():
-    pass
-    # TODO: implement this!
+    #check_kea_process_result(result)
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):

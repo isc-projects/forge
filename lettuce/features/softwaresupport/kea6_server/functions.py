@@ -19,10 +19,12 @@
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, cpoy_configuration_file, fabric_sudo_command
 
+from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
+
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
-    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2, SLEEP_TIME_1
+    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2, SLEEP_TIME_1, SOFTWARE_UNDER_TEST, SERVER_INSTALL_DIR
 
 
 kea_options6 = { "client-id": 1,
@@ -46,8 +48,7 @@ kea_options6 = { "client-id": 1,
                  "nis-domain-name": 29,
                  "nisp-domain-name": 30,
                  "sntp-servers": 31,
-                 "information-refresh-time": 32
-                  }
+                 "information-refresh-time": 32}
 # kea_otheoptions was originally designed for vendor options
 # because codes sometime overlap with basic options
 kea_otheroptions = {"tftp-servers": 32,
@@ -221,6 +222,40 @@ def set_logger():
     assert False, "For now option unavailable!"
 
 
+def check_kea_status():
+    result = fabric_run_command(SERVER_INSTALL_DIR + "sbin/keactrl status")
+    # not very sophisticated but easiest fastest way ;)
+    if "DHCPv4 server: inactive" in result:
+        v4 = 0
+    elif "DHCPv4 server: active" in result:
+        v4 = 1
+    if "DHCPv6 server: inactive" in result:
+        v6 = 0
+    elif "DHCPv6 server: active" in result:
+        v6 = 1
+    return v6, v4
+
+
+def set_kea_ctrl_config():
+    path = SERVER_INSTALL_DIR[:-1]
+
+    kea6 = 'no'
+    kea4 = 'no'
+    if SOFTWARE_UNDER_TEST == "kea6_server":
+        kea6 = 'yes'
+    elif SOFTWARE_UNDER_TEST == "kea4_server":
+        kea4 = 'yes'
+    else:
+        # we could probably add here ddns
+        pass
+
+    world.cfg["keactrl"] = '''prefix={path}
+    kea_config_file={path}/etc/bind10/kea.conf
+    kea4={kea4}
+    kea6={kea6}
+    kea_verbose=yes'''.format(**locals())
+
+
 def cfg_write():
     for number in range(0, len(world.subcfg)):
         world.subcfg[number][2] = '\n\t\"option-data\": [\n' + world.subcfg[number][2] + "]"
@@ -256,8 +291,30 @@ def cfg_write():
         cfg_file.write("]")
 
     # TODO make available different database backends!
-    cfg_file.write(',\n\n\t"lease-database":{"type": "memfile"}\n\t}\n\n\t}\n')
+    cfg_file.write(',\n\n\t"lease-database":{"type": "memfile"}\n\t}')
+
+    if world.ddns_enable:
+        build_ddns_config()
+        cfg_file.write(world.ddns)
+
+    cfg_file.write('\n\n\t}\n')  # end of the config file
     cfg_file.close()
+    # kea ctrl script config file
+    cfg_file = open(world.cfg["cfg_file_2"], 'w')
+    cfg_file.write(world.cfg["keactrl"])
+    cfg_file.close()
+
+
+def check_kea_process_result(succeed, result, process):
+    errors = ["Failed to apply configuration", "Failed to initialize server"]
+    for each in errors:
+        if succeed:
+            if each in result:
+                assert False, 'Server operation: ' + process + ' failed! '
+        if not succeed:
+            if each not in result:
+                assert False, 'Server operation: ' + process + ' NOT failed!'
+
 
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK END  ==================
@@ -272,22 +329,38 @@ def start_srv(start, process):
     """
     world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases6.csv'
     add_defaults()
+    set_kea_ctrl_config()
     cfg_write()
-    fabric_send_file(world.cfg["cfg_file"], world.cfg["cfg_file"])
+    fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/bind10/kea.conf")
+    fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/bind10/keactrl.conf")
     cpoy_configuration_file(world.cfg["cfg_file"])
+    cpoy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
-    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'libexec/bind10/b10-dhcp6 -c '
-                       + world.cfg["cfg_file"] + ' & ); sleep ' + str(SLEEP_TIME_1))
+    remove_local_file(world.cfg["cfg_file_2"])
+    v6, v4 = check_kea_status()
+
+    # check process - if None add some.
+    if not v6:
+        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+        check_kea_process_result(start, result, process)
+    else:
+        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
+                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+        check_kea_process_result(start, result, process)
+        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+        check_kea_process_result(start, result, process)
 
 
 def stop_srv():
-    pass
-    # TODO: implement this!
+    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep 1')
 
 
 def restart_srv():
-    pass
-    # TODO: implement this!
+    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep 1')
+    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep '
+                       + str(SLEEP_TIME_1))
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
