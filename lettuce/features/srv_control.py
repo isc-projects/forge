@@ -18,7 +18,8 @@
 from lettuce import world, step
 from init_all import SOFTWARE_UNDER_TEST
 import importlib
-dhcpfun = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
+dhcpfun = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
+ddns = importlib.import_module("softwaresupport.%s.functions_ddns" % SOFTWARE_UNDER_TEST)
 
 
 def test_define_value(*args):
@@ -26,9 +27,9 @@ def test_define_value(*args):
     Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
     Bash like define variables: $(variable_name)
     You can use steps like:
-		Client download file from server stored in: $(SERVER_SETUP_DIR)other_dir/my_file
-	or 
-		Client removes file from server located in: $(SERVER_INSTALL_DIR)my_file
+        Client download file from server stored in: $(SERVER_SETUP_DIR)other_dir/my_file
+    or
+        Client removes file from server located in: $(SERVER_INSTALL_DIR)my_file
 
     $ sign is very important without it Forge wont find variable in init_all.
 
@@ -36,7 +37,7 @@ def test_define_value(*args):
     should end with slash.
 
     You can use any variable form init_all in that way. Also you can add them using step:
-	"Client defines new variable: (\S+) with value (\S+)."
+    "Client defines new variable: (\S+) with value (\S+)."
 
     """
     imported = None
@@ -245,3 +246,23 @@ def stop_srv(step):
     For test that demands turning off server in the middle
     """
     dhcpfun.stop_srv()
+
+##DDNS server
+@step('DDNS server is configured on address (\S+) and port (\S+).')
+def add_ddns_server(step, address, port):
+    ddns.add_ddns_server(address, port)
+
+
+@step('Add forward DDNS with name (\S+), key (\S+) on address (\S+) and port (\S+).')
+def add_forward_ddns(step, name, key_name, ipaddress, port):
+    ddns.add_forward_ddns(name, key_name, ipaddress, port)
+
+
+@step('Add reverse DDNS with name (\S+) on address (\S+) and port (\S+).')
+def add_reverse_ddns(step, name, ipaddress, port):
+    ddns.add_reverse_ddns(name, ipaddress, port)
+
+
+@step('Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
+def add_keys(step, name, algorithm, secret):
+    ddns.add_keys(secret, name, algorithm)
