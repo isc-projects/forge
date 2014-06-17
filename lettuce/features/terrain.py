@@ -18,7 +18,8 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SOFTWARE_UNDER_TEST, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL,CLI_LINK_LOCAL
+    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLI_LINK_LOCAL, \
+    SERVER_INSTALL_DIR
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -72,7 +73,8 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "peeraddr": "2000::1",  # relay
              "ifaceid": "15",  # relay
              "DUID": None,
-             "FQDN_flags": None
+             "FQDN_flags": "",
+             "FQDN_domain_name": ""
              }
 
 # times values, plz do not change this.
@@ -253,6 +255,7 @@ def initialize(scenario):
     world.cfg["server_type"] = SOFTWARE_UNDER_TEST
 
     world.cfg["cfg_file"] = "server.cfg"
+    world.cfg["cfg_file_2"] = "second_server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
     world.subcfg = [["", "", "", ""]]  # additional config structure
 
@@ -262,6 +265,8 @@ def initialize(scenario):
     world.cfg["subnet"] = ""
 
     world.name = scenario.name
+    world.ddns_enable = False
+
     world.clntCounter = 0
     world.srvCounter = 0
 
@@ -354,13 +359,6 @@ def cleanup(scenario):
     """
     Global cleanup for each scenario. Implemented within tests by "Server is started."
     """
-    #temporary solution for JSON config kea
-    if "kea" in SOFTWARE_UNDER_TEST:
-        if world.proto == "v6":
-            fabric_run_command("kill `ps auxwww | grep dhcp6 | grep b10- | awk '{print $2}'`")
-        else:
-            fabric_run_command("kill `ps auxwww | grep dhcp4 | grep b10- | awk '{print $2}'`")
-
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
         add_result_to_raport(info)
@@ -402,21 +400,18 @@ def say_goodbye(total):
         for item in world.result:
             result.write(str(item) + '\n')
         result.close()
+
     if "server" in SOFTWARE_UNDER_TEST:
         if SOFTWARE_UNDER_TEST in ['kea4_server_bind', 'kea6_server_bind']:
             #TODO: import only one function!
             clean_config = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             clean_config.run_bindctl(True, 'clean')
             kill_bind10()
-        #         try:
-        #             if REL4_ADDR and (SOFTWARE_UNDER_TEST  == 'kea4'):
-        #                 with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-        #                     run("route del -host %s" % (GIADDR4))
-        #         except NameError:
-        #             pass # most likely REL4_ADDR caused this exception -> we do not use relay
-        elif SOFTWARE_UNDER_TEST in ['isc_dhcp6_server', 'dibbler_server']:
+
+        elif SOFTWARE_UNDER_TEST in ['isc_dhcp6_server', 'dibbler_server', "kea6_server", "kea4_server"]:
             stop = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             stop.stop_srv()
+
     elif "client" in SOFTWARE_UNDER_TEST:
         # temporary content; it should not be implementation specific
         get_common_logger().debug("kill the dibbler...")

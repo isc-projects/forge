@@ -452,10 +452,12 @@ def client_option(msg):
     # set all "add_option" True/False values to default.
 
     if world.cfg["add_option"]["fqdn"]:
-        # res flags fqdn
         if world.cfg["values"]["FQDN_flags"] is None:
             assert False, "Please define FQDN flags first."
-        msg /= DHCP6OptClientFQDN(flags = str(world.cfg["values"]["FQDN_flags"]))
+
+        converted_fqdn = world.cfg["values"]["FQDN_domain_name"]
+        msg /= DHCP6OptClientFQDN(flags = str(world.cfg["values"]["FQDN_flags"]),
+                                  fqdn = converted_fqdn)
 
     set_options()
     set_values()
