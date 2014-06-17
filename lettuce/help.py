@@ -19,16 +19,11 @@
 import datetime
 import os
 import sys
-from features.init_all import SOFTWARE_UNDER_TEST
-if "server" in SOFTWARE_UNDER_TEST:
-    testType = "server"
-elif "client" in SOFTWARE_UNDER_TEST:
-    testType = "client"
 
 
 class TestHistory ():
     def __init__(self):
-        self.date = self.present_time() 
+        self.date = self.present_time()
         self.start_time = None
         self.stop_time = None
         self.time_elapsed = None
@@ -38,7 +33,8 @@ class TestHistory ():
         self.percent = 0.0
         self.tags = None
         self.path = None
-        
+
+        from features.init_all import SOFTWARE_UNDER_TEST
         self.software_type = SOFTWARE_UNDER_TEST
         
         #TODO: implement this
@@ -193,7 +189,8 @@ class UserHelp ():
 
             if not more:
                 print 'For more information, use help.py to generate UserHelp document.\n'
-            
+
+
     def steps(self):
         """
         Generate list of available steps in tests.
@@ -219,6 +216,12 @@ class UserHelp ():
 
 
 def find_scenario(name, IPversion):
+    from features.init_all import SOFTWARE_UNDER_TEST
+    if "server" in SOFTWARE_UNDER_TEST:
+        testType = "server"
+    elif "client" in SOFTWARE_UNDER_TEST:
+        testType = "client"
+
     scenario = 0
     for path, dirs, files in os.walk("features/dhcpv" + IPversion + "/" + testType + "/"):
         for each_file in files:
