@@ -241,19 +241,23 @@ def set_kea_ctrl_config():
 
     kea6 = 'no'
     kea4 = 'no'
+    ddns = 'no'
     if SOFTWARE_UNDER_TEST == "kea6_server":
         kea6 = 'yes'
     elif SOFTWARE_UNDER_TEST == "kea4_server":
         kea4 = 'yes'
-    else:
-        # we could probably add here ddns
-        pass
+    if world.ddns_enable:
+        ddns = 'yes'
 
-    world.cfg["keactrl"] = '''prefix={path}
-    kea_config_file={path}/etc/bind10/kea.conf
-    kea4={kea4}
-    kea6={kea6}
-    kea_verbose=yes'''.format(**locals())
+    world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
+    dhcp4_srv={path}/libexec/kea/b10-dhcp4
+    dhcp6_srv={path}/libexec/kea/b10-dhcp6
+    dhcp_ddns_srv={path}/libexec/kea/b10-dhcp-ddns
+    dhcp4={kea4}
+    dhcp6={kea6}
+    dhcp_ddns={ddns}
+    kea_verbose=yes
+    '''.format(**locals())
 
 
 def cfg_write():
@@ -285,6 +289,9 @@ def cfg_write():
 
     if "simple_options" in world.cfg:
         cfg_file.write(',' + world.cfg["simple_options"])
+
+    if world.ddns_enable:
+        cfg_file.write(',' + world.ddns_add)
 
     if "custom_lines" in world.cfg:
         cfg_file.write(',' + world.cfg["custom_lines"])
@@ -327,12 +334,12 @@ def start_srv(start, process):
     """
     Start kea with generated config
     """
-    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases6.csv'
+    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/kea/kea-leases6.csv'
     add_defaults()
     set_kea_ctrl_config()
     cfg_write()
-    fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/bind10/kea.conf")
-    fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/bind10/keactrl.conf")
+    fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/kea/kea.conf")
+    fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/kea/keactrl.conf")
     cpoy_configuration_file(world.cfg["cfg_file"])
     cpoy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
@@ -354,13 +361,12 @@ def start_srv(start, process):
 
 
 def stop_srv():
-    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep 1')
+    fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 
 def restart_srv():
-    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep 1')
-    fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep '
-                       + str(SLEEP_TIME_1))
+    fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+    fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================

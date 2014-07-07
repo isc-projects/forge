@@ -372,7 +372,8 @@ def cleanup(scenario):
     # copy log file from remote server:
     if 'server' in SOFTWARE_UNDER_TEST:
         if SAVE_BIND_LOGS:
-            fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
+            fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
+            fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log')
 
         if SAVE_LEASES:
             if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:

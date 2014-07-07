@@ -19,7 +19,17 @@ from lettuce import world, step
 from init_all import SOFTWARE_UNDER_TEST
 import importlib
 dhcpfun = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
-ddns = importlib.import_module("softwaresupport.%s.functions_ddns" % SOFTWARE_UNDER_TEST)
+
+ddns_enable = True
+try:
+    ddns = importlib.import_module("softwaresupport.%s.functions_ddns" % SOFTWARE_UNDER_TEST)
+except ImportError:
+    ddns_enable = False
+
+
+def ddns_block():
+    if not ddns_enable:
+        assert False, "Forge couldn't import ddns support."
 
 
 def test_define_value(*args):
@@ -250,19 +260,23 @@ def stop_srv(step):
 ##DDNS server
 @step('DDNS server is configured on address (\S+) and port (\S+).')
 def add_ddns_server(step, address, port):
+    ddns_block()
     ddns.add_ddns_server(address, port)
 
 
 @step('Add forward DDNS with name (\S+), key (\S+) on address (\S+) and port (\S+).')
 def add_forward_ddns(step, name, key_name, ipaddress, port):
+    ddns_block()
     ddns.add_forward_ddns(name, key_name, ipaddress, port)
 
 
 @step('Add reverse DDNS with name (\S+) on address (\S+) and port (\S+).')
 def add_reverse_ddns(step, name, ipaddress, port):
+    ddns_block()
     ddns.add_reverse_ddns(name, ipaddress, port)
 
 
 @step('Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
 def add_keys(step, name, algorithm, secret):
+    ddns_block()
     ddns.add_keys(secret, name, algorithm)
