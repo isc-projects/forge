@@ -348,25 +348,25 @@ def start_srv(start, process):
 
     # check process - if None add some.
     if not v6:
-        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
     else:
-        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
+        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
-        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
 
 
 def stop_srv():
-    fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 
 def restart_srv():
-    fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
-    fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
