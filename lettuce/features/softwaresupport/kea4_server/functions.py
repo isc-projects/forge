@@ -245,7 +245,7 @@ def start_srv(start, process):
     """
     Start kea with generated config
     """
-    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases4.csv'
+    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/kea/kea-leases4.csv'
     add_defaults()
     set_kea_ctrl_config()
     cfg_write()
@@ -257,14 +257,18 @@ def start_srv(start, process):
     remove_local_file(world.cfg["cfg_file_2"])
     v6, v4 = check_kea_status()
 
+    # check process - if None add some.
     if not v4:
-        result = fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
+        check_kea_process_result(start, result, process)
     else:
-        result = fabric_run_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR + 'sbin/keactrl commit '
+        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
-
-    #check_kea_process_result(result)
+        check_kea_process_result(start, result, process)
+        result = fabric_run_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+        check_kea_process_result(start, result, process)
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
