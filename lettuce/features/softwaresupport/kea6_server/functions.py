@@ -250,9 +250,9 @@ def set_kea_ctrl_config():
         ddns = 'yes'
 
     world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
-    dhcp4_srv={path}/libexec/kea/b10-dhcp4
-    dhcp6_srv={path}/libexec/kea/b10-dhcp6
-    dhcp_ddns_srv={path}/libexec/kea/b10-dhcp-ddns
+    dhcp4_srv={path}/sbin/b10-dhcp4
+    dhcp6_srv={path}/sbin/b10-dhcp6
+    dhcp_ddns_srv={path}/sbin/b10-dhcp-ddns
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
