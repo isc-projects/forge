@@ -46,7 +46,7 @@ isc_dhcp_options6 = {
                  "nis-domain-name": "nis-domain-name",
                  "nisp-domain-name": "nisp-domain-name",
                  "sntp-servers": "sntp-servers",
-                 "information-refresh-time": "info-refresh-time" 
+                 "information-refresh-time": "info-refresh-time"
                      }
 
 needs_chenging = {
@@ -72,7 +72,7 @@ isc_dhcp_otheroptions_value_type = {"tftp-servers": "array of ip6-address",
                          }
 
 def switch_prefix6_lengths_to_pool(ip6_addr ,length, delegated_length):
-    
+
     ip6_addr_splited = ip6_addr.split(":")
     if len(ip6_addr_splited) < 3 or len(ip6_addr_splited) > 9:
         raise "Error! Please enter correct IPv6 address!"
@@ -82,20 +82,20 @@ def switch_prefix6_lengths_to_pool(ip6_addr ,length, delegated_length):
             if error_flag:
                 raise "Error! Please enter correct IPv6 address!"
             error_flag = True
-    
+
     for i in range (0, 6):
         if ip6_addr_splited[i]:
             continue
         else:
             ip6_addr_splited.append("")
-    
+
     bin_addr = []
     for each in ip6_addr_splited:
         if not each:
             bin_addr.append('')
             continue
         bin_addr.append(bin(int(each,16)))
-    
+
     str = ""
     for each in bin_addr:
         each = each.zfill(18)
@@ -106,17 +106,17 @@ def switch_prefix6_lengths_to_pool(ip6_addr ,length, delegated_length):
         str += each
     lowest_prefix = str
     highest_prefix = lowest_prefix[0:length] + '1'*(delegated_length - length) + lowest_prefix[delegated_length:]
-    
+
     ip6_addr_new = []
     for i in range (0,8):
         ip6_addr_new.append(highest_prefix[:16])
         highest_prefix = highest_prefix[16:]
-    
+
     tmp = []
     for each in ip6_addr_new:
         b = hex(int(each,2))
         tmp.append(b[2:])
-    
+
     prefix = []
     flag1 = False
     flag2 = False
@@ -132,7 +132,7 @@ def switch_prefix6_lengths_to_pool(ip6_addr ,length, delegated_length):
             flag2 = True
         else:
             prefix.append(tmp[i])
-    
+
     final = ":".join(prefix)
     if final[-1]==":":
         final+=":"
@@ -143,13 +143,13 @@ def restart_srv():
     fabric_run_command('echo y |rm ' + world.cfg['leases'])
     fabric_run_command('touch ' + world.cfg['leases'])
     fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 5;')
-    
+
 def stop_srv():
     try:
         fabric_run_command("sudo killall dhcpd &>/dev/null")
     except:
         pass
-    
+
 def set_time(step, which_time, value):
     if which_time in world.cfg["server_times"]:
             world.cfg["server_times"][which_time] = value
@@ -158,7 +158,7 @@ def set_time(step, which_time, value):
 
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# Config file for ISC-DHCPv6 \n"
-    
+
     #check this values!
 def add_defaults():
     if (not "conf_time" in world.cfg):
@@ -176,7 +176,7 @@ def add_defaults():
     if world.cfg["server_times"]["rapid-commit"]:
         world.cfg["conf_time"] += '''
             option dhcp6.rapid-commit;
-            '''    
+            '''
 def prepare_cfg_subnet(step, subnet, pool):
     get_common_logger().debug("Configure subnet...")
     if not "conf_subnet" in world.cfg:
@@ -184,15 +184,15 @@ def prepare_cfg_subnet(step, subnet, pool):
 
     world.cfg["subnet"] = subnet
     pointer = '{'
-    
+
     if subnet == "default":
         subnet = "2001:db8:1::/64"
-       
+
     if pool == "default":
         pool = "2001:db8:1::0 2001:db8:1::ffff"
     else:
         pool = pool.replace('-',' ')
-        
+
     world.cfg["conf_subnet"] += '''\
         subnet6 {subnet} {pointer}
             range6 {pool};
@@ -206,7 +206,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
     option_proper_name = isc_dhcp_options6.get(option_name)
 
     # is there is no such options check it in 'isc_dhcp_otheroptions'
-    # it's mostly vendor options    
+    # it's mostly vendor options
     if option_proper_name is None:
         option_proper_name = isc_dhcp_otheroptions.get(option_name)
 
@@ -215,13 +215,13 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
         assert False, "Unsupported option name " + option_name
 
     # some functions needs " " in it, so lets add them
-    # that's for all those functions which are configured 
+    # that's for all those functions which are configured
     # indifferent way then kea6 configuration, if you add
     # new such option, add it to needs_chenging dict.
     if needs_chenging.get(option_proper_name):
         tmp = option_value.split(",")
         option_value = ','.join('"' + item + '"' for item in tmp)
-    
+
     # for all common options
     if space == 'dhcp6':
         world.cfg["conf_option"] += ''' option dhcp6.{option_proper_name} {option_value};
@@ -249,30 +249,36 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
         assert False, 'Configure subnet/pool first, then subnet options'
 
     assert option_name in isc_dhcp_options6, "Unsupported option name " + option_name
-    
+
     option_proper_name = isc_dhcp_options6.get(option_name)
 
     if needs_chenging.get(option_proper_name):
         tmp = option_value.split(",")
         option_value = ','.join('"' + item + '"' for item in tmp)
-    
+
     world.cfg["conf_subnet"] += '''option dhcp6.{option_proper_name} {option_value};
          '''.format(**locals())
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
-    
+
     highest = switch_prefix6_lengths_to_pool(str(prefix),int(length),int(delegated_length))
-    
+
     world.cfg["conf_subnet"] += '''prefix6 {prefix} {highest} /{delegated_length};
          '''.format(**locals())
 
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])
+
+    if "custom_lines" in world.cfg:
+        cfg_file.write(world.cfg["custom_lines"])
+
     if "conf_option" in world.cfg:
         cfg_file.write(world.cfg["conf_option"])
+
     if "conf_vendor" in world.cfg:
         cfg_file.write(world.cfg["conf_vendor"])
+
     cfg_file.write(world.cfg["conf_subnet"])
     cfg_file.write('}')#add } for subnet block
 
@@ -292,7 +298,7 @@ def convert_cfg_file(cfg):
             continue
         if "}" in line:
             tab_flag = False
-        if tab_flag:            
+        if tab_flag:
             process.write("\t"+line + "\n")
         if not tab_flag :
             process.write(line + "\n")
@@ -306,16 +312,16 @@ def convert_cfg_file(cfg):
 
 def set_ethernet_interface():
     """
-    To start ISC-DHCPv6 we need set some address from chosen pool on one ethernet interface 
+    To start ISC-DHCPv6 we need set some address from chosen pool on one ethernet interface
     """
     tmp = world.cfg["subnet"].split('/')
     address = tmp[0] + "1/" + tmp[1]
     eth = SERVER_IFACE
     cmd = 'ip addr flush {eth}'.format(**locals())
     cmd1 = 'ip -6 addr add {address} dev {eth}'.format(**locals())
-    
+
     get_common_logger().debug("Set up ethernet interface for ISC-DHCP server:")
-    
+
 #     fabric_cmd(cmd,0)
 #     time.sleep(3)
 #     fabric_cmd(cmd1,0)
@@ -332,7 +338,7 @@ def start_srv(start, process):
     if (not "conf_option" in world.cfg):
         world.cfg["conf_option"] = ""
     add_defaults()
-    cfg_write() 
+    cfg_write()
     get_common_logger().debug("Start ISC-DHCPv6 with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
     fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
@@ -340,10 +346,19 @@ def start_srv(start, process):
     remove_local_file(world.cfg["cfg_file"])
     #set_ethernet_interface()
     stop_srv()
-        
+
     world.cfg['leases'] = build_leases_path()
 
     fabric_run_command('echo y |rm ' + world.cfg['leases'])
     fabric_run_command('touch ' + world.cfg['leases'])
 
-    fabric_run_command('( sudo '+ SERVER_INSTALL_DIR + 'sbin/dhcpd -6 -cf server.cfg_processed); sleep 5;')
+    fabric_run_command('( sudo '+ SERVER_INSTALL_DIR
+        + 'sbin/dhcpd -6 -cf server.cfg_processed'
+        + ' -lf ' + world.cfg['leases']
+        + '); sleep 5;')
+
+def run_command(step, command):
+    if not "custom_lines" in world.cfg:
+        world.cfg["custom_lines"] = ''
+
+    world.cfg["custom_lines"] += ('\n'+command+'\n')
