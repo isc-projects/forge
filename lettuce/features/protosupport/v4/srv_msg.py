@@ -234,7 +234,11 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
                     timeout = world.cfg["PACKET_WAIT_INTERVAL"],
                     multi = True,
                     verbose = 99)
-    #world.climsg[0].show()
+
+    from features.init_all import SHOW_DHCP_PACKETS_FROM
+    if SHOW_DHCP_PACKETS_FROM in ['both', 'client']:
+        world.climsg[0].show()
+
     expected_type_found = False
     
     received_names = ""
@@ -243,7 +247,9 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
     for x in ans:
         a, b = x
         world.srvmsg.append(b)
-        #b.show()
+        if SHOW_DHCP_PACKETS_FROM in ['both', 'server']:
+            b.show()
+
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:
             expected_type_found = True

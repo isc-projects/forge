@@ -14,6 +14,12 @@
 # case insensitive.
 LOGLEVEL = "info"
 
+# Controls whether packet contents are shown on stdout.  Choices are:
+# client - shows DHCP requeests sent from the test client
+# server -  shows DHCP responses received from the server under test
+# both - shows DHCP packets from both test client and server under test
+SHOW_DHCP_PACKETS_FROM = ""
+
 # This defines which software will be tested.
 # Allowed values:
 # dibbler_client, dibbler_server, kea6_server, kea4_server, isc_dhcp4_server, isc_dhcp6_server
@@ -164,7 +170,7 @@ SAVE_LOGS = False
 # you will need to modify /etc/syslog.conf (/etc/rsyslog.conf) to
 # contain a line as follows:
 #
-#     <ISC_LOG_FACILITY>.*        <ISC_LOG_FILE_NAME>
+#     <ISC_DHCP_LOG_FACILITY>.*        <ISC_DHCP_LOG_FILE_NAME>
 #
 # Example
 #
