@@ -22,9 +22,9 @@ import importlib
 dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % PROTO)
 other = importlib.import_module("protosupport.multi_protocol_functions")
 
-from srv_control import test_define_value 
+from srv_control import test_define_value
 
-##building messages 
+##building messages
 @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
     """
@@ -36,7 +36,7 @@ def client_requests_option(step, opt_type):
 @step('Client sets (\w+) value to (\S+).')
 def client_sets_value(step, value_name, new_value):
     """
-    User can set values like: address, T1 or DUID to make test scenario 
+    User can set values like: address, T1 or DUID to make test scenario
     more accurate.
     """
     dhcpmsg.client_sets_value(step, value_name, new_value)
@@ -74,9 +74,9 @@ def client_send_msg(step, msgname):
 def client_does_include_with_value(step, opt_type, value):
     """
     You can choose to include options to message with proposed value. Mostly used only with
-    DHCPv4. Also reason why that step is called "Client adds to message" not 
+    DHCPv4. Also reason why that step is called "Client adds to message" not
     "Client does (NOT )?include" as other step is that lettuce step parser is really... weak.
-    What ever I'll do with that always takes wrong step.  
+    What ever I'll do with that always takes wrong step.
     """
     dhcpmsg.client_does_include(step, opt_type, value)
 
@@ -89,7 +89,7 @@ def client_does_include(step, yes_or_not, opt_type):
     in RFC 3315 and more) or to not include options like IA_NA or client_id.
     """
     dhcpmsg.client_does_include(step, opt_type, None)
-    
+
 
 @step('Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
 def unicast_addres(step, addr_type, addr_type2):
@@ -107,7 +107,7 @@ def unicast_addres(step, addr_type, addr_type2):
 @step('Generate new (\S+).')
 def generate_new(step, opt):
     """
-    For some test scenarios there is a need for multiple different users, in this step you can 
+    For some test scenarios there is a need for multiple different users, in this step you can
     choose which value needs to be changed:
 	for client_id and IA: client
 	for client_id only: Client_ID
@@ -124,11 +124,11 @@ def create_relay_forward(step, level, s ):
     You can put only after that step. They can be seperated with other steps
     which causes to change values/include options
 
-    This step causes to encapsulate builded message in RELAY FORWARD. 
+    This step causes to encapsulate builded message in RELAY FORWARD.
     It makes possible testing RELAY-REPLY messages.
     """
     dhcpmsg.create_relay_forward(step, level)
-    
+
 
 @step('Client adds suboption for vendor specific information with code: (\d+) and data: (\w+).')
 def add_vendor_suboption(step, code, data):
@@ -152,9 +152,9 @@ def send_dont_wait_for_message(step):
 @step('Server (\S+) (NOT )?respond with (\w+) message.')
 def send_wait_for_message(step, type, yes_or_no, message):
     """
-    This step causes to send message to server and capture respond. 
+    This step causes to send message to server and capture respond.
     """
-    presence = True if yes_or_no == None else False 
+    presence = True if yes_or_no == None else False
     dhcpmsg.send_wait_for_message(step, type, presence, message)
 
 
@@ -181,7 +181,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     """
     data_type, expected = test_define_value (data_type, expected)
     dhcpmsg.response_check_option_content(step, 0, opt_code, expect, data_type, expected)
-        
+
 
 @step('Response sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_suboption_content(step, subopt_code, opt_code, yes_or_no, data_type, expected):
@@ -217,7 +217,7 @@ def client_copy_option(step, option_name):
 def client_save_option(step, option_name):
     """
     In time we need to include one option more then one time in different messages, we can
-    choose to save it in memory. Memory will be erased at the end of the test, or when we 
+    choose to save it in memory. Memory will be erased at the end of the test, or when we
     decide to clear it in step "Client adds saved options. And erase.
     """
     assert len(world.srvmsg), "No messages received, nothing to save."
@@ -227,7 +227,7 @@ def client_save_option(step, option_name):
 @step('Client adds saved options. And (DONT )?Erase.')
 def client_add_saved_option(step, yes_or_no):
     """
-    This step causes to include saved options to message. Also we can decide to keep or clear 
+    This step causes to include saved options to message. Also we can decide to keep or clear
     memory.
     """
     assert len(world.savedmsg), "No options to add."
@@ -254,12 +254,12 @@ def compare_values(step, value_name, option_name):
     be the same.
     """
     dhcpmsg.compare_values(step, value_name, option_name)
-    
+
 ##other
 @step('Sleep for (\d+) (seconds|milliseconds).')
 def forge_sleep(step, time, time_units):
     """
-    Pause the test for selected amount of time counted in seconds or milliseconds. 
+    Pause the test for selected amount of time counted in seconds or milliseconds.
     """
     other.forge_sleep(int(time), str(time_units))
 
@@ -268,7 +268,7 @@ def forge_sleep(step, time, time_units):
 def test_pause(step):
     """
     Pause the test for any reason. Very good to debug problems. Checking server configuration
-    and so on.... Do NOT put it in automatic tests, it blocks test until user will:  
+    and so on.... Do NOT put it in automatic tests, it blocks test until user will:
     	Press any key to continue.
     """
     other.test_pause(step)
@@ -302,7 +302,6 @@ def file_includes_line(step, condition, line):
     line = test_define_value(line)[0]
     other.file_includes_line(step, condition, line)
 
-
 @step('Client sends local file stored in: (\S+) to server, to location: (\S+).')
 def send_file_to_server(step, local_path, remote_path):
     """
@@ -326,7 +325,7 @@ def add_variable_temporary(step, variable_name, variable_val):
     """
     User can define his own variable, that can be called from any place in test scenario,
     by $(variable_name). Allowed signs in variable name are: capitalized letters and '_'.
-    
+
     Temporary variable will be stored in world.define and cleared at the end of scenario.
     """
     other.add_variable(step, variable_name, variable_val, 0)
@@ -337,7 +336,7 @@ def add_variable_permanent(step, variable_name, variable_val):
     """
     User can define his own variable, that can be called from any place in test scenario,
     by $(variable_name). Allowed signs in variable name are: capitalized letters and '_'.
-    
+
     Permanent variable will be placed at the end of the init_all.py file. It won't be removed.
     User can do so by removing it from file.
     """

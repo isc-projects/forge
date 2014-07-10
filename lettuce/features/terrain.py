@@ -19,7 +19,7 @@ from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SOFTWARE_UNDER_TEST, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
     SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLI_LINK_LOCAL, \
-    SERVER_INSTALL_DIR
+    SERVER_INSTALL_DIR, SAVE_LOGS
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -159,7 +159,7 @@ def v4_initialize():
 def v6_initialize():
     # RFC 3315 define two addresess:
     # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
-    # All DHCP_Servers ff05::1:3 that is deprecated. 
+    # All DHCP_Servers ff05::1:3 that is deprecated.
     world.cfg["address_v6"] = "ff02::1:2"
     world.cfg["cli_link_local"] = CLI_LINK_LOCAL
     world.cfg["unicast"] = False
@@ -286,7 +286,7 @@ def initialize(scenario):
     # IPv6:
     if world.proto == "v6":
         v6_initialize()
-        
+
     # IPv4:
     if world.proto == "v4":
         v4_initialize()
@@ -320,7 +320,7 @@ def initialize(scenario):
 @before.outline
 def outline_before(scenario, number, step, failed):
     """
-    For Outline Scenarios, 
+    For Outline Scenarios,
         scenario - name
         number - number of scenario
         step - which 'example' from test
@@ -333,7 +333,7 @@ def outline_before(scenario, number, step, failed):
 @after.outline
 def outline_result(scenario, number, step, failed):
     """
-    For Outline Scenarios, 
+    For Outline Scenarios,
         scenario - name
         number - number of scenario
         step - which 'example' from test
@@ -384,6 +384,10 @@ def cleanup(scenario):
                 pass
         if SOFTWARE_UNDER_TEST in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
             fabric_remove_file_command(world.cfg['leases'])
+
+        if SAVE_LOGS:
+            if SOFTWARE_UNDER_TEST in ['isc_dhcp6_server']:
+                fabric_download_file(world.cfg["log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
 
 @after.all
 def say_goodbye(total):

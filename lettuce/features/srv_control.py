@@ -87,8 +87,8 @@ def config_srv_subnet(step, subnet, pool):
     subnet may define specific subnet or use the word "default"
     pool may define specific pool range or use the word "default"
 
-    Setting subnet in that way, will cause to set in on interface you set in 
-    init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set 
+    Setting subnet in that way, will cause to set in on interface you set in
+    init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set
     interface.
     """
     subnet, pool = test_define_value( subnet, pool)
@@ -153,7 +153,7 @@ def config_srv_opt(step, option_name, option_value):
 def config_srv_opt_space(step, space, option_name, option_value):
     """
     Add to configuration options like: preference, dns servers.. but you can specify
-    to which space should that be included. 
+    to which space should that be included.
     """
     option_name, option_value, space = test_define_value(option_name, option_value, space)
     dhcpfun.prepare_cfg_add_option(step, option_name, option_value, space)
@@ -205,7 +205,7 @@ def run_command(step, command):
     Add single line to configuration, there is no validation within this step.
     Be aware what you are putting this and in what moment. If you use that
     I recommend set variable "SAVE_CONFIG_FILES" to True.
-    
+
     Includes everything after "command: " to the end of the line.
     """
     command = test_define_value(command)[0]
@@ -280,3 +280,12 @@ def add_reverse_ddns(step, name, ipaddress, port):
 def add_keys(step, name, algorithm, secret):
     ddns_block()
     ddns.add_keys(secret, name, algorithm)
+
+@step('Log MUST (NOT )?contain line: (.+)')
+def log_includes_line(step, condition, line):
+    """
+    Check if Log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    line = test_define_value(line)[0]
+    dhcpfun.log_contains(step, condition, line)

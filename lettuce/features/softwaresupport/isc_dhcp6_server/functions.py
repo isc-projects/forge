@@ -18,7 +18,7 @@
 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
+from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, cpoy_configuration_file
 
@@ -270,6 +270,9 @@ def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])
 
+    if "log_facility" in world.cfg:
+        cfg_file.write(world.cfg["log_facility"])
+
     if "custom_lines" in world.cfg:
         cfg_file.write(world.cfg["custom_lines"])
 
@@ -331,12 +334,31 @@ def build_leases_path():
         leases_file = SERVER_INSTALL_DIR + 'dhcpd6.leases'
     return leases_file
 
+def build_log_path():
+    # syslog/rsyslog typically will not write to log files unless
+    # they are in /var/log without manual intervention.
+    log_file = '/var/log/forge_dhcpd.log'
+    if ISC_DHCP_LOG_FILE != "":
+        log_file = ISC_DHCP_LOG_FILE;
+
+    return log_file
+
 def start_srv(start, process):
     """
     Start ISC-DHCPv6 with generated config.
     """
     if (not "conf_option" in world.cfg):
         world.cfg["conf_option"] = ""
+
+    world.cfg['log_file'] = build_log_path()
+    fabric_run_command('cat /dev/null >' + world.cfg['log_file'])
+
+    log  = "local7"
+    if (ISC_DHCP_LOG_FACILITY != ""):
+        log = ISC_DHCP_LOG_FACILITY;
+
+    world.cfg['log_facility'] = '''\nlog-facility {log};\n'''.format(**locals())
+
     add_defaults()
     cfg_write()
     get_common_logger().debug("Start ISC-DHCPv6 with generated config:")
@@ -362,3 +384,14 @@ def run_command(step, command):
         world.cfg["custom_lines"] = ''
 
     world.cfg["custom_lines"] += ('\n'+command+'\n')
+
+def log_contains(step, condition, line):
+    result = fabric_run_command('sudo grep -c \"' + line + '\" '
+                                + world.cfg["log_file"])
+    if condition is not None:
+        if result.succeeded:
+            assert False, 'Log contains line: "%s" But it should NOT.' % line
+    else:
+        if result.failed:
+            assert False, 'Log does NOT contain line: "%s"' % line
+
