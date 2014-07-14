@@ -189,6 +189,13 @@ def set_time(step, which_time, value):
     which_time, value = test_define_value(which_time, value)
     dhcpfun.set_time(step, which_time, value)
 
+@step('Time (\S+) is not configured.')
+def unset_time(step, which_time):
+    """
+    Remove default values of T1, T2, preferred lifetime and valid lifetime.
+    """
+    which_time = test_define_value(which_time)[0]
+    dhcpfun.unset_time(step, which_time)
 
 @step('Option (\S+) is configured with value (\S+).')
 def set_time_option(step, which_time, value):

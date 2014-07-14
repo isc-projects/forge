@@ -163,6 +163,11 @@ def set_time(step, which_time, value):
     else:
         assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
+def unset_time(step, which_time):
+    if which_time in world.cfg["server_times"]:
+            world.cfg["server_times"][which_time] = None
+    else:
+        assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# Config file for ISC-DHCPv6 \n"
@@ -172,21 +177,27 @@ def prepare_cfg_default(step):
 def add_defaults():
     if not "conf_time" in world.cfg:
         world.cfg["conf_time"] = ""
-    t1 = world.cfg["server_times"]["renew-timer"]
-    t2 = world.cfg["server_times"]["rebind-timer"]
-    t3 = world.cfg["server_times"]["preferred-lifetime"]
-    t4 = world.cfg["server_times"]["valid-lifetime"]
-    world.cfg["conf_time"] = '''
-    option dhcp-rebinding-time {t2};
-    option dhcp-renewal-time {t1};
-    preferred-lifetime {t3};
-    default-lease-time {t4};
-    '''.format(**locals())
+
+    value = world.cfg["server_times"]["renew-timer"]
+    if value != None:
+        world.cfg["conf_time"] += '''option dhcp-renewal-time {0};\n'''.format(value);
+
+    value = world.cfg["server_times"]["rebind-timer"]
+    if value != None:
+        world.cfg["conf_time"] += '''option dhcp-rebinding-time {0};\n'''.format(value);
+
+    value = world.cfg["server_times"]["preferred-lifetime"]
+    if value != None:
+        world.cfg["conf_time"] += '''preferred-lifetime {0};\n'''.format(value);
+
+    value = world.cfg["server_times"]["valid-lifetime"]
+    if value != None:
+        world.cfg["conf_time"] += '''default-lease-time {0};\n'''.format(value);
+
     if world.cfg["server_times"]["rapid-commit"]:
         world.cfg["conf_time"] += '''
             option dhcp6.rapid-commit;
             '''
-
 
 def prepare_cfg_subnet(step, subnet, pool):
     get_common_logger().debug("Configure subnet...")
