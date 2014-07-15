@@ -21,9 +21,6 @@ from features.logging_facility import get_common_logger
 from lettuce.registry import world
 import os
 
-#from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_sudo_command,\
-# fabric_send_file,fabric_download_file,fabric_remove_file_command,remove_local_file
-
 
 def fabric_run_command(cmd):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
@@ -60,9 +57,7 @@ def make_tarfile(output_filename, source_dir):
 
 def fabric_remove_file_command(remote_path):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
-        result = run("rm -f " + remote_path)
-        if result.failed:
-            result = run("sudo rm -f " + remote_path)
+        result = sudo("rm -f " + remote_path)
     return result
 
 
@@ -102,7 +97,7 @@ def cpoy_configuration_file(local_file, file_name = 'configuration_file'):
         copy(local_file, world.cfg["dir_name"] + '/' + file_name)
 
 
-def json_file_copmose():
+def json_file_layout():
     # make json file more readable!
     config = open(world.cfg["cfg_file"], 'r')
     new_config = ""
@@ -144,4 +139,3 @@ def json_file_copmose():
     config = open(world.cfg["cfg_file"], 'w')
     config.write(real_config)
     config.close()
-    #cpoy_configuration_file("my_config", "my_config")
