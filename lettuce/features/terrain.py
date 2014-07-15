@@ -19,7 +19,7 @@ from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SOFTWARE_UNDER_TEST, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
     SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLI_LINK_LOCAL, \
-    SERVER_INSTALL_DIR, SAVE_LOGS
+    SERVER_INSTALL_DIR, DNS_IFACE, DNS_ADDR, SERVER_INSTALL_DIR, SAVE_LOGS
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -63,6 +63,7 @@ add_option_v6 = {'client_id': True,
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
              "address": "::",
+             "IA_Address": "::",
              "prefix": "::",
              "plen": 0,  # prefix; plz remember, to add prefix and prefix length!
              "preflft": 0,  # IA_Address IA_Prefix
@@ -76,6 +77,10 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "FQDN_flags": "",
              "FQDN_domain_name": ""
              }
+
+values_dns = {"qname": "",
+              "qtype": "",
+              "qclass": ""}
 
 # times values, plz do not change this.
 # there is a test step to do this
@@ -108,6 +113,7 @@ add_option_v4 = {"vendor_class_id": False,
 
 # we should consider transfer most of functions to separate v4 and v6 files
 # TODO: make separate files after branch merge
+
 
 def set_values():
     if PROTO == "v6":
@@ -153,7 +159,6 @@ def v4_initialize():
     world.cfg["rel4_addr"] = REL4_ADDR
     world.cfg["giaddr4"] = GIADDR4
     world.cfg["space"] = "dhcp4"
-    world.cfg["PACKET_WAIT_INTERVAL"] = PACKET_WAIT_INTERVAL
 
 
 def v6_initialize():
@@ -169,6 +174,11 @@ def v6_initialize():
     # Setup scapy for v6
     conf.iface6 = IFACE
     conf.use_pcap = True
+
+
+def dns_initialize():
+    world.cfg["dns_iface"] = DNS_IFACE
+    world.cfg["dns_addr"] = DNS_ADDR
 
 
 @before.all
@@ -241,7 +251,7 @@ def initialize(scenario):
     world.climsg = []  # Message(s) to be sent
     world.cliopts = []  # Option(s) to be included in the next message sent
     world.srvmsg = []  # Server's response(s)
-    world.savedmsg = []  # Saved option(s)
+    world.savedmsg = {0: []}  # Saved option(s)
     world.define = []  # temporary define variables
 
     world.proto = PROTO
@@ -253,6 +263,8 @@ def initialize(scenario):
     world.cfg = {}
     world.cfg["iface"] = IFACE
     world.cfg["server_type"] = SOFTWARE_UNDER_TEST
+    world.cfg["PACKET_WAIT_INTERVAL"] = PACKET_WAIT_INTERVAL
+    world.cfg["wait_interval"] = PACKET_WAIT_INTERVAL
 
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["cfg_file_2"] = "second_server.cfg"
@@ -291,6 +303,7 @@ def initialize(scenario):
     if world.proto == "v4":
         v4_initialize()
 
+    dns_initialize()  # TODO make it 'in case..'
     set_values()
     set_options()
 
@@ -393,7 +406,7 @@ def cleanup(scenario):
 def say_goodbye(total):
     """
     Server stopping after whole work
-    """
+    # """
     world.clntCounter = 0
     world.srvCounter = 0
     get_common_logger().info("%d of %d scenarios passed." % (

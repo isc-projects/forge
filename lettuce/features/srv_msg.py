@@ -20,11 +20,13 @@ from lettuce import world, step
 import importlib
 
 dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % PROTO)
+dns = importlib.import_module("protosupport.dns")
 other = importlib.import_module("protosupport.multi_protocol_functions")
 
 from srv_control import test_define_value
 
-##building messages
+
+##building DHCP messages
 @step('Client requests option (\d+).')
 def client_requests_option(step, opt_type):
     """
@@ -39,6 +41,7 @@ def client_sets_value(step, value_name, new_value):
     User can set values like: address, T1 or DUID to make test scenario
     more accurate.
     """
+    # that is also used for DNS messages
     dhcpmsg.client_sets_value(step, value_name, new_value)
 
 
@@ -61,9 +64,9 @@ def client_send_msg(step, msgname):
     """
     This step actually build message (e.g. SOLICIT) with all details
     specified in steps like:
-	Client sets (\w+) value to (\S+).
-	Client does include (\S+).
-	and others..
+    Client sets (\w+) value to (\S+).
+    Client does include (\S+).
+    and others..
     Message builded here will be send in step: Server must response with...
     Message will be send via interface set in init_all.py marked as IFACE.
     """
@@ -95,9 +98,9 @@ def client_does_include(step, yes_or_not, opt_type):
 def unicast_addres(step, addr_type, addr_type2):
     """
     Message can be send on 3 different addresses:
-	- multicast for DHCPv6
-	- unicast global address of the server
-	- unicast local address of the server
+    - multicast for DHCPv6
+    - unicast global address of the server
+    - unicast local address of the server
     Proper configuration in ini_all.py required.
     """
     # send true when GLOBAL and False when LINK_LOCAL
@@ -109,10 +112,10 @@ def generate_new(step, opt):
     """
     For some test scenarios there is a need for multiple different users, in this step you can
     choose which value needs to be changed:
-	for client_id and IA: client
-	for client_id only: Client_ID
-	for IA: IA
-	for IA_PD: IA_PD
+    for client_id and IA: client
+    for client_id only: Client_ID
+    for IA: IA
+    for IA_PD: IA_PD
     """
     dhcpmsg.generate_new(step,opt)
 
@@ -139,7 +142,7 @@ def add_vendor_suboption(step, code, data):
     dhcpmsg.add_vendor_suboption(step, int(code), data)
 
 
-##checking respond
+##checking DHCP respond
 @step('Server MUST NOT respond.')
 def send_dont_wait_for_message(step):
     """
@@ -202,6 +205,62 @@ def test_content(step, test_value):
     #dhcpmsg.test_content(test_value)
 
 
+##building DNS messages
+@step('Client for DNS Question Record uses address: (\S+) type (\S+) class (\S+).')
+def dns_question_record(step, addr, qtype, qclass):
+    dns.dns_question_record(addr, qtype, qclass)
+
+
+@step('For DNS query client sets (\w+) value to (\S+).')
+def dns_query_set_value(step, variable_name, value):
+    dns.set_val()
+
+
+@step('Client sends DNS query.')
+def client_send_dns_query(step):
+    dns.send_query()
+
+
+@step('Through (\S+) interface client sends DNS query.')
+def client_send_dns_query_interface(step, iface):
+    world.cfg["dns_iface"] = iface
+    dns.send_query()
+
+
+@step('Through (\S+) interface to address (\S+) client sends DNS query.')
+def client_send_dns_query_interface_address(step, iface, addr):
+    world.cfg["dns_iface"] = iface
+    world.cfg["dns_addr"] = addr
+    dns.send_query()
+
+
+##checking DNS respond
+@step('DNS server (\S+) (NOT )?respond with DNS query.')
+def send_wait_for_query(step, type, yes_or_no):
+    """
+    This step causes to send message to server and capture respond.
+    """
+    presence = True if yes_or_no == None else False
+    dns.send_wait_for_query(type, presence)
+
+
+@step('Received DNS query MUST (NOT )?contain (\S+) with value (\S+).')
+def dns_check(step, expect, data_type, expected_data_value):
+    dns.check_dns_respond(step, expect, str(data_type), expected_data_value)
+    # later probably we'll have to change MUST on (\S+) for sth like MAY
+
+
+@step('Received DNS query MUST include (NOT )?empty (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) part.')
+def dns_option(step, expect_empty, part_name):
+    dns.check_dns_option(step, expect_empty, str(part_name))
+    # later probably we'll have to change MUST on (\S+) for sth like MAY
+
+
+@step('Received DNS part (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) MUST (NOT )?contain (\S+) with value (\S+).')
+def dns_option_content(step, part_name, expect, value_name, value):
+    dns.dns_option_content(step, part_name, expect, str(value_name), str(value))
+    # later probably we'll have to change MUST on (\S+) for sth like MAY
+
 ##save option from received message
 @step('Client copies (\S+) option from received message.')
 def client_copy_option(step, option_name):
@@ -223,6 +282,12 @@ def client_save_option(step, option_name):
     assert len(world.srvmsg), "No messages received, nothing to save."
     dhcpmsg.client_save_option(step, option_name)
 
+@step('Client saves into set no. (\d+) (\S+) option from received message.')
+def client_save_option(step, count, option_name):
+    """
+    """
+    assert len(world.srvmsg), "No messages received, nothing to save."
+    dhcpmsg.client_save_option(step, option_name, count)
 
 @step('Client adds saved options. And (DONT )?Erase.')
 def client_add_saved_option(step, yes_or_no):
@@ -234,6 +299,13 @@ def client_add_saved_option(step, yes_or_no):
     erase = True if yes_or_no == None else False
     dhcpmsg.client_add_saved_option(step, erase)
 
+@step('Client adds saved options in set no. (\d+). And (DONT )?Erase.')
+def client_add_saved_option(step, count, yes_or_no):
+    """
+    """
+    assert len(world.savedmsg), "No options to add."
+    erase = True if yes_or_no == None else False
+    dhcpmsg.client_add_saved_option(step, erase, count)
 
 @step('Save (\S+) value from (\d+) option.')
 def save_value_from_option(step, value_name, option_name):
@@ -269,7 +341,7 @@ def test_pause(step):
     """
     Pause the test for any reason. Very good to debug problems. Checking server configuration
     and so on.... Do NOT put it in automatic tests, it blocks test until user will:
-    	Press any key to continue.
+        Press any key to continue.
     """
     other.test_pause(step)
 
@@ -349,3 +421,10 @@ def test_victory(step):
     Use your imagination.
     """
     other.user_victory(step)
+
+
+# ##memory graph
+# for some in range (10):
+#     #build graph
+#     client_send_msg(step, msgname)
+#     send_wait_for_message(step, type, yes_or_no, message)
