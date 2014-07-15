@@ -100,3 +100,48 @@ def cpoy_configuration_file(local_file, file_name = 'configuration_file'):
         if not os.path.exists(world.cfg["dir_name"]):
             os.makedirs(world.cfg["dir_name"])
         copy(local_file, world.cfg["dir_name"] + '/' + file_name)
+
+
+def json_file_copmose():
+    # make json file more readable!
+    config = open(world.cfg["cfg_file"], 'r')
+    new_config = ""
+
+    for each in config:
+        new_line = each.strip()
+        new_line = new_line.replace(" ", "")
+        new_config += new_line
+    config.close()
+
+    real_config = ""
+    counter = 0
+    space = "  "
+    flag = 0
+
+    for each in new_config:
+        if each == '"' and flag == 0:
+            flag = 1
+            real_config += each
+
+        elif each == '"' and flag == 1:
+            flag = 0
+            real_config += each
+
+        elif each == "{" and flag == 0:
+            real_config += "\n" + space * counter + each
+            counter += 2
+            real_config += "\n" + space * counter
+
+        elif each == "}" and flag == 0:
+            counter -= 2
+            real_config += "\n" + space * counter + each + "\n" + space * counter
+
+        elif each == "," and flag == 0:
+            real_config += each + "\n" + space * counter
+        else:
+            real_config += each
+
+    config = open(world.cfg["cfg_file"], 'w')
+    config.write(real_config)
+    config.close()
+    #cpoy_configuration_file("my_config", "my_config")
