@@ -257,6 +257,8 @@ def start_srv(start, process):
     remove_local_file(world.cfg["cfg_file_2"])
     v6, v4 = check_kea_status()
 
+    if process is None:
+        process = "starting"
     # check process - if None add some.
     if not v4:
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
