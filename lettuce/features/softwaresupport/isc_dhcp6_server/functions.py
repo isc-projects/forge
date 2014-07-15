@@ -429,3 +429,9 @@ def log_contains(step, condition, line):
         if result.failed:
             assert False, 'Log does NOT contain line: "%s"' % line
 
+def log_contains_count(step, count, line):
+    result = fabric_run_command('sudo grep -c \"' + line + '\" '
+                                + world.cfg["log_file"])
+    if count != result:
+        assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
+
