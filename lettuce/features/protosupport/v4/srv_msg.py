@@ -147,11 +147,11 @@ def response_check_content(step, expect, data_type, expected):
     outcome, received = test_option(0, ['value:', received], expected)
 
     if expect is None:
-        assert outcome, "Invalid {data_type} received {received}"\
-                                " but expected: {expected}.".format(**locals())
+        assert outcome, "Invalid {data_type} received {received}" \
+                        " but expected: {expected}.".format(**locals())
     else:
-        assert not outcome, "Invalid {data_type} received {received}"\
-                                 " that value has been excluded from correct values.".format(**locals())
+        assert not outcome, "Invalid {data_type} received {received}" \
+                            " that value has been excluded from correct values.".format(**locals())
     return received
 
 
@@ -229,9 +229,10 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
+
     ans, unans = srp(world.climsg,
                     iface = world.cfg["iface"],
-                    timeout = world.cfg["PACKET_WAIT_INTERVAL"],
+                    timeout = world.cfg["wait_interval"],
                     multi = True,
                     verbose = 99)
 
