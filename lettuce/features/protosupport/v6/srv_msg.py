@@ -248,16 +248,24 @@ def add_option_to_msg(msg, option):
     return msg
 
 
-def client_add_saved_option(step, erase):
+def client_add_saved_option(step, erase, count = "all"):
     """
     Add saved option to message, and erase.
     """
-    if len(world.savedmsg) < 1:
-        assert "No saved option!"
-    for each in world.savedmsg:
-        world.cliopts.append(each)
-    if erase:
-        world.savedmsg = []
+    if count == "all":
+        for each_key in world.savedmsg.keys():
+            for every_opt in world.savedmsg[each_key]:
+                world.cliopts.append(every_opt)
+            if erase:
+                world.savedmsg = {}
+    else:
+        if not world.savedmsg.has_key(count):
+            assert False, "There is no set no. {count} in saved opotions".format(**locals())
+
+        for each in world.savedmsg[count]:
+            world.cliopts.append(each)
+        if erase:
+            world.savedmsg[count] = []
 
 
 def vendor_option_request_convert():
@@ -316,7 +324,7 @@ def convert_DUID():
 
     if world.cfg["values"]["DUID"][2] == ":":
         if world.cfg["values"]["DUID"][:11] == "00:03:00:01":
-            return DUID_LL( lladdr = world.cfg["values"]["DUID"][12:])
+            return DUID_LL(lladdr = world.cfg["values"]["DUID"][12:])
         elif world.cfg["values"]["DUID"][:11] == "00:01:00:01":
             time_tmp = world.cfg["values"]["DUID"][12:23]
             time_tmp = int(time_tmp.replace(":", ""), 16)
@@ -359,7 +367,7 @@ def client_option(msg):
         #world.cfg["add_option"]["client_id"] = True
         pass
 
-    if world.cfg["add_option"]["IA_NA"] and world.cfg["relay"] == False:
+    if world.cfg["add_option"]["IA_NA"] and world.cfg["relay"] == False and world.cfg["add_option"]["IA_Address"] == "::":
         if world.oro is not None and len(world.cliopts):
             for opt in world.cliopts:
                 if opt.optcode == 3:
@@ -417,15 +425,14 @@ def client_option(msg):
                                  plen = world.cfg["values"]["plen"],
                                  prefix = world.cfg["values"]["prefix"])
 
-    if world.cfg["add_option"]["IA_Address"]:
+    if world.cfg["add_option"]["IA_Address"] != "::":
         world.cfg["add_option"]["IA_NA"] = False
-        # IT'S MESSED UP!!
-        # msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"],
-        #                       T1 = world.cfg["values"]["T1"],
-        #                       T2 = world.cfg["values"]["T2"],
-        #                       ianaopt = DHCP6OptIAAddress(address = world.cfg["values"]["address"],
-        #                                                   preflft = world.cfg["values"]["preflft"],
-        #                                                   validlft = world.cfg["values"]["validlft"]))
+        msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"],
+                              T1 = world.cfg["values"]["T1"],
+                              T2 = world.cfg["values"]["T2"],
+                              ianaopts = DHCP6OptIAAddress(address = world.cfg["values"]["IA_Address"],
+                                                          preflft = world.cfg["values"]["preflft"],
+                                                          validlft = world.cfg["values"]["validlft"]))
 
     if world.cfg["add_option"]["vendor_class"]:
         if world.cfg["values"]["vendor_class_data"] == "":
@@ -580,7 +587,11 @@ def send_wait_for_message(step, type, presence, exp_message):
 
     # Uncomment this to get debug.recv filled with all received messages
     conf.debug_match = True
-    ans, unans = sr(world.climsg, iface = world.cfg["iface"], timeout = 1, nofilter = 1, verbose = 99)
+    ans, unans = sr(world.climsg,
+                    iface = world.cfg["iface"],
+                    timeout = world.cfg["wait_interval"],
+                    nofilter = 1,
+                    verbose = 99)
 
     from features.init_all import SHOW_DHCP_PACKETS_FROM
     if SHOW_DHCP_PACKETS_FROM in ['both', 'client']:
@@ -660,14 +671,19 @@ def get_msg_type(msg):
 # Returns option of specified type
 
 
-def client_save_option(step, option_name):
+def client_save_option(step, option_name, count = 0):
     assert option_name in options6, "Unsupported option name " + option_name
     opt_code = options6.get(option_name)
     opt = get_option(get_last_response(), opt_code)
 
     assert opt, "Received message does not contain option " + option_name
     opt.payload = None
-    world.savedmsg.append(opt)
+
+    if not world.savedmsg.has_key(count):
+        world.savedmsg[count] = [opt]
+        print "tutaj"
+    else:
+        world.savedmsg[count].append(opt)
 
 
 def client_copy_option(step, option_name):
@@ -725,19 +741,19 @@ def get_option(msg, opt_code):
 #                     world.subopts.append([number,each])
         if x.optcode == 3:
             for each in x.ianaopts:
-                world.subopts.append([3,each])
+                world.subopts.append([3, each])
 
         # add IA PrefixDelegation and Status Code as separate option
         if x.optcode == 25:
             for each in x.iapdopt:
-                world.subopts.append([25,each])
+                world.subopts.append([25, each])
         # add suboptions for vendor specific information
         if x.optcode == 17:
             for each in x.vso:
-                world.subopts.append([17,each])
+                world.subopts.append([17, each])
         # add Status Code to suboptions even if it is option in main message
         if x.optcode == 13:
-                world.subopts.append([0,x])
+                world.subopts.append([0, x])
         x = x.payload
     return tmp
 
