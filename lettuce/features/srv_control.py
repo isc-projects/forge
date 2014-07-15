@@ -242,7 +242,7 @@ def config_client_classification(step, subnet, option_value):
 
 ##server management
 @step('(Server is started.)|(Server failed to start. During (\S+) process.)')
-def start_srv(step, started , failed, process):
+def start_srv(step, started, failed, process):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
