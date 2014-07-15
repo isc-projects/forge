@@ -17,7 +17,7 @@
 
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
-    remove_local_file, cpoy_configuration_file, fabric_sudo_command
+    remove_local_file, cpoy_configuration_file, fabric_sudo_command, json_file_layout
 
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
@@ -291,7 +291,7 @@ def cfg_write():
         cfg_file.write(',' + world.cfg["simple_options"])
 
     if world.ddns_enable:
-        cfg_file.write(',' + world.ddns_add)
+        cfg_file.write(',' + world.ddns_add + '}')
 
     if "custom_lines" in world.cfg:
         cfg_file.write(',' + world.cfg["custom_lines"])
@@ -303,6 +303,7 @@ def cfg_write():
     if world.ddns_enable:
         build_ddns_config()
         cfg_file.write(world.ddns)
+        #cfg_file.write("}")
 
     cfg_file.write('\n\n\t}\n')  # end of the config file
     cfg_file.close()
@@ -310,6 +311,7 @@ def cfg_write():
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
     cfg_file.write(world.cfg["keactrl"])
     cfg_file.close()
+    json_file_layout()
 
 
 def check_kea_process_result(succeed, result, process):
@@ -346,7 +348,9 @@ def start_srv(start, process):
     remove_local_file(world.cfg["cfg_file_2"])
     v6, v4 = check_kea_status()
 
-    # check process - if None add some.
+    if process is None:
+        process = "starting"
+
     if not v6:
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
                                     + ' & ); sleep ' + str(SLEEP_TIME_1))

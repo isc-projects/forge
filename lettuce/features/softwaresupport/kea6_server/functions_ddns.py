@@ -15,7 +15,6 @@
 
 # Author: Wlodzimierz Wencel
 
-
 from lettuce.registry import world
 
 
@@ -32,7 +31,7 @@ def add_ddns_server(address, port):
 
     world.ddns_main += ',\n"DhcpDdns": {pointer_start} "ip_address": "{address}", "port": {port},'.format(**locals())
     world.ddns_add += '"dhcp-ddns": {pointer_start} "server-ip": "{address}", "enable-updates": true'.format(**locals())
-#"qualifying-suffix": "four.example.com."
+    # that is tmp action, it operates only for one dns domain name!
 
 
 def add_forward_ddns(name, key_name, ipaddress, port):
@@ -46,7 +45,7 @@ def add_forward_ddns(name, key_name, ipaddress, port):
                                 ]
                             {pointer_end} '''.format(**locals()))
 
-    world.ddns_add += ',qualifying-suffix": "{name}'.format(**locals())
+    world.ddns_add += ', "qualifying-suffix": "{name}"'.format(**locals())
 
 
 def add_reverse_ddns(name, ipaddress, port):
