@@ -29,7 +29,7 @@ except ImportError:
 
 def ddns_block():
     if not ddns_enable:
-        assert False, "Forge couldn't import ddns support."
+        assert False, "Forge couldn't import DDNS support."
 
 
 def test_define_value(*args):
@@ -53,27 +53,30 @@ def test_define_value(*args):
     imported = None
     front = None
     tested_args = []
+
     for i in range(len(args)):
         tmp = str(args[i])
         if "$" in args[i]:
             index = tmp.find('$')
             front = tmp[:index]
             tmp = tmp[index:]
+
         if tmp[:2] == "$(":
             index = tmp.find(')')
             assert index > 2, "Defined variable not complete. Missing ')'. "
+
             for each in world.define:
-                if str(each[0]) == tmp[2:index]:
+                if str(each[0]) == tmp[2: index]:
                     imported = int(each[1]) if each[1].isdigit() else str(each[1])
-            if imported == None:
+            if imported is None:
                 try:
-                    imported = getattr(__import__('init_all', fromlist = [tmp[2:index]]), tmp[2:index])
-                except:
-                    assert False, "No variable in init_all.py or in world.define named: " + tmp[2:index]
-            if front == None:
-                tested_args.append(imported+tmp[index+1:])
+                    imported = getattr(__import__('init_all', fromlist = [tmp[2: index]]), tmp[2: index])
+                except ImportError:
+                    assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
+            if front is None:
+                tested_args.append(imported + tmp[index + 1:])
             else:
-                tested_args.append(front + imported+tmp[index+1:])
+                tested_args.append(front + imported + tmp[index + 1:])
         else:
             tested_args.append(args[i])
     return tested_args
