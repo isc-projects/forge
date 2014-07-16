@@ -799,6 +799,18 @@ def sub_option_help(expected, opt_code):
         return x, received
 
 
+def extract_duid(option):
+    if option.type == 1:
+        # DUID_LLT
+        return "00010001" + str(option.timeval) + str(option.lladdr).replace(":", "")
+    elif option.type == 2:
+        # DUID_EN
+        return ("00020001" + str(option.enterprisenum) + str(option.id)).replace(":", "")
+    elif option.type == 3:
+        # DUID_LL
+        return "00030001" + str(option.lladdr).replace(":", "")
+
+
 def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
@@ -826,9 +838,17 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     # test all collected options,:
     if subopt_code is 0:
         for each in world.opts:
+            if opt_code == 1:
+                if data_type == "diud":
+                    received += extract_duid(each.duid)
+                    expected = expected.replace(":", "")
+            elif opt_code == 2:
+                if data_type == "diud":
+                    received += extract_duid(each.duid)
+                    expected = expected.replace(":", "")
             # uncomment to print all pocket fields
             #assert False, each.fields.keys()
-            if opt_code == 3:
+            elif opt_code == 3:
                 # looking for all kinds of variables, specified in test step (e.g. T1 )
                 received += str(each.fields.get(data_type))
             elif opt_code == 4:
