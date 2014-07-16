@@ -299,3 +299,12 @@ def log_includes_line(step, condition, line):
     """
     line = test_define_value(line)[0]
     dhcpfun.log_contains(step, condition, line)
+
+@step('Log contains (\d+) of line: (.+)')
+def log_includes_count(step, count, line):
+    """
+    Check if Log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    count, line = test_define_value(count, line)
+    dhcpfun.log_contains_count(step, count, line)
