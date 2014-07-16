@@ -841,11 +841,11 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     if subopt_code is 0:
         for each in world.opts:
             if opt_code == 1:
-                if data_type == "diud":
+                if data_type == "duid":
                     received += extract_duid(each.duid)
                     expected = expected.replace(":", "")
             elif opt_code == 2:
-                if data_type == "diud":
+                if data_type == "duid":
                     received += extract_duid(each.duid)
                     expected = expected.replace(":", "")
             # uncomment to print all pocket fields
