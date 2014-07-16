@@ -354,20 +354,20 @@ def client_option(msg):
 
     #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
     if world.cfg["add_option"]["wrong_server_id"]:
-        msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC() ))
+        msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC()))
 
     #client id
-    if world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"] == False:
-        if world.cfg["relay"] == False:
+    if world.cfg["add_option"]["client_id"] and not world.cfg["add_option"]["wrong_client_id"]:
+        if not world.cfg["relay"]:
             msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
     elif world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"]:
-        msg /= DHCP6OptClientId()#it needs to stay blank!
+        msg /= DHCP6OptClientId()  # it needs to stay blank!
 
-    elif world.cfg["add_option"]["client_id"] == False:
+    elif not world.cfg["add_option"]["client_id"]:
         #world.cfg["add_option"]["client_id"] = True
         pass
 
-    if world.cfg["add_option"]["IA_NA"] and world.cfg["relay"] == False and world.cfg["add_option"]["IA_Address"] == "::":
+    if world.cfg["add_option"]["IA_NA"] and not world.cfg["relay"] and world.cfg["add_option"]["IA_Address"] == "::":
         if world.oro is not None and len(world.cliopts):
             for opt in world.cliopts:
                 if opt.optcode == 3:
@@ -526,8 +526,10 @@ def create_relay_forward(step, level):
                              hopcount = level)/DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
     #tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)
 
-    #add options (used only when checking "wrong option" test for relay-forward message. to add some options to relay-forward
-    #you need to put "Client does include opt_name." before "...using relay-agent encapsulated in 1 level." and after "Client sends SOLICIT message."
+    #  add options (used only when checking "wrong option" test for
+    #  relay-forward message. to add some options to relay-forward
+    #  you need to put "Client does include opt_name." before "...using
+    #  relay-agent encapsulated in 1 level." and after "Client sends SOLICIT message."
     tmp = client_option(tmp)
 
     #add RelayMsg option
@@ -535,7 +537,7 @@ def create_relay_forward(step, level):
     #message encapsulation
     while True:
         level -= 1
-        if not level: break;
+        if not level: break
         tmp /= DHCP6_RelayForward(hopcount = level,
                                   linkaddr =  world.cfg["values"]["linkaddr"],
                                   peeraddr = world.cfg["values"]["peeraddr"])\
@@ -778,7 +780,7 @@ def response_check_include_option(step, must_include, opt_code):
     if must_include:
         assert opt, "Expected option " + opt_code + " not present in the message."
     else:
-        assert opt == None, "Unexpected option " + opt_code + " found in the message."
+        assert opt is None, "Unexpected option " + opt_code + " found in the message."
 
 # Returns text representation of the option, interpreted as specified by data_type
 
