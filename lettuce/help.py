@@ -237,6 +237,29 @@ def find_scenario(name, IPversion):
                 scenario = 0
                 file_name.close()
     return None, 0
+
+def find_scenario_in_path(name, path):
+    from features.init_all import SOFTWARE_UNDER_TEST
+    if "server" in SOFTWARE_UNDER_TEST:
+        testType = "server"
+    elif "client" in SOFTWARE_UNDER_TEST:
+        testType = "client"
+
+    scenario = 0
+    for path, dirs, files in os.walk(path):
+        for each_file in files:
+            file_name = open(path + '/' + each_file, 'r')
+            for each_line in file_name:
+                if 'Scenario' in each_line:
+                    scenario += 1
+                    tmp_line = each_line.strip()
+                    if name == tmp_line[10:]:
+                        file_name.close()
+                        return path + '/' + each_file, str(scenario)
+            else:
+                scenario = 0
+                file_name.close()
+    return None, 0
     
 if __name__ == '__main__':
     #orginal_stdout = sys.stdout

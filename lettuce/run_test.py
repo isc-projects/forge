@@ -33,20 +33,20 @@ def option_parser():
                       action = "store_true",
                       default = False,
                       help = 'Declare IP version 4 tests')
-    
+
     parser.add_option("-6", "--version6",
                       dest = "version6",
                       action = "store_true",
                       default = False,
                       help = "Declare IP version 6 tests")
-    
+
     parser.add_option("-v", "--verbosity",
                       dest = "verbosity",
                       type = "int",
                       action = "store",
                       default = 4,
                       help = "Level of the lettuce verbosity")
-    
+
     parser.add_option("-l", "--list",
                       dest = "list",
                       action = "store_true",
@@ -70,12 +70,17 @@ def option_parser():
                       help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic." +
                       "If you wont specify any tags, Forge will perform all test for chosen IP version." +
                       "Also if you want to skip some tests use minus sing before that test tag (e.g. -kea).")
-    
+
     parser.add_option("-x", "--with-xunit",
                       dest = "enable_xunit",
                       action = "store_true",
                       default = False,
                       help = "Generate results file in xUnit format")
+
+    parser.add_option("-p", "--explicit-path",
+                      dest = "explicit_path",
+                      default = None,
+                      help = "Search path, relative to <forge>/lettuce/features for tests regardless of SUT or protocol")
 
     # parser.add_option("-S", "--server",
     #                   dest = "server",
@@ -90,11 +95,11 @@ def option_parser():
     #                   help = 'Run client tests')
 
     (opts, args) = parser.parse_args()
-    
+
     if not opts.version6 and not opts.version4:
         parser.print_help()
         parser.error("You must choose between -4 or -6.\n")
-        
+
     if opts.version6 and opts.version4:
         parser.print_help()
         parser.error("options -4 and -6 are exclusive.\n")
@@ -113,10 +118,11 @@ def option_parser():
     else:
         tag = 'v6' if opts.version6 else 'v4'
 
-    return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit
+    return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit, opts.explicit_path
 
 
-def test_path_select(number, test_set, name):
+
+def test_path_select(number, test_set, name, explicit_path):
     #path for tests, all for specified IP version or only one set
     scenario = None
     from features.init_all import SOFTWARE_UNDER_TEST
@@ -128,7 +134,18 @@ def test_path_select(number, test_set, name):
         print "Are you sure that variable SOFTWARE_UNDER_TEST is correct?"
         sys.exit()
 
-    if test_set is not None:
+    if explicit_path is not None:
+        # Test search path will be <forge>/letttuce/features/<explicit_path/
+        # without regard to SUT or protocol.  Can be used with -n to run
+        # specific scenarios.
+        base_path = os.getcwd() +  "/features/" + explicit_path +  "/"
+        if name is not None:
+            from help import find_scenario_in_path
+            base_path, scenario = find_scenario_in_path(name, base_path)
+            if base_path is None:
+                print "Scenario named %s has been not found" % name
+                sys.exit()
+    elif test_set is not None:
         path = "/features/dhcpv" + number + "/" + testType + "/" + test_set + "/"
         base_path = os.getcwd() + path
     elif name is not None:
@@ -154,7 +171,7 @@ def check_config_file():
         sys.exit()
     if config.SOFTWARE_UNDER_TEST == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
         print "Please make sure your configuration is valid\nProject Forge shutting down."
-        sys.exit()       
+        sys.exit()
 
 
 def start_all(base_path, verbosity, scenario, tag, enable_xunit):
@@ -186,8 +203,8 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
         history.build_report()
 
 if __name__ == '__main__':
-    number, test_set, name, verbosity, tag, enable_xunit = option_parser()
+    number, test_set, name, verbosity, tag, enable_xunit, explicit_path = option_parser()
     check_config_file()
-    base_path, scenario = test_path_select(number, test_set, name)
+    base_path, scenario = test_path_select(number, test_set, name, explicit_path)
 
     start_all(base_path, verbosity, scenario, tag, enable_xunit)
