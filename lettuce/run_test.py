@@ -110,7 +110,7 @@ def option_parser():
         from help import UserHelp
         hlp = UserHelp()
         hlp.test(number, 0)
-        sys.exit()
+        sys.exit(-1)
 
     # adding tags for lettuce
     if opts.tag is not None:
@@ -132,7 +132,7 @@ def test_path_select(number, test_set, name, explicit_path):
         testType = "server"
     else:
         print "Are you sure that variable SOFTWARE_UNDER_TEST is correct?"
-        sys.exit()
+        sys.exit(-1)
 
     if explicit_path is not None:
         # Test search path will be <forge>/letttuce/features/<explicit_path/
@@ -144,7 +144,7 @@ def test_path_select(number, test_set, name, explicit_path):
             base_path, scenario = find_scenario_in_path(name, base_path)
             if base_path is None:
                 print "Scenario named %s has been not found" % name
-                sys.exit()
+                sys.exit(-1)
     elif test_set is not None:
         path = "/features/dhcpv" + number + "/" + testType + "/" + test_set + "/"
         base_path = os.getcwd() + path
@@ -153,7 +153,7 @@ def test_path_select(number, test_set, name, explicit_path):
         base_path, scenario = find_scenario(name, number)
         if base_path is None:
             print "Scenario named %s has been not found" % name
-            sys.exit()
+            sys.exit(-1)
     else:
         scenario = None
         path = "/features/dhcpv" + number + "/" + testType + "/"
@@ -168,10 +168,10 @@ def check_config_file():
     except ImportError:
         print "\n Error: You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)\n"
         #option_parser().print_help()
-        sys.exit()
+        sys.exit(-1)
     if config.SOFTWARE_UNDER_TEST == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
         print "Please make sure your configuration is valid\nProject Forge shutting down."
-        sys.exit()
+        sys.exit(-1)
 
 
 def start_all(base_path, verbosity, scenario, tag, enable_xunit):
@@ -187,7 +187,7 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
         from lettuce import Runner, world
     except ImportError:
         print "You have not Lettuce installed (or in path)."
-        sys.exit()
+        sys.exit(-1)
 
     runner = Runner(base_path,
                     verbosity = verbosity,
@@ -202,9 +202,16 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
         history.information(result.scenarios_passed, result.scenarios_ran, tag, base_path)
         history.build_report()
 
+    return (result.scenarios_ran - result.scenarios_passed)
+
 if __name__ == '__main__':
     number, test_set, name, verbosity, tag, enable_xunit, explicit_path = option_parser()
     check_config_file()
     base_path, scenario = test_path_select(number, test_set, name, explicit_path)
 
-    start_all(base_path, verbosity, scenario, tag, enable_xunit)
+    failed = start_all(base_path, verbosity, scenario, tag, enable_xunit)
+    if failed > 0:
+        print "SCENARIOS FAILED: %d" % failed
+        sys.exit(1)
+
+    sys.exit(0)

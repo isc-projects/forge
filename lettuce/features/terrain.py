@@ -215,7 +215,7 @@ def test_start():
                                             Please make sure it's configured properly\nIP destination \
                                             address: %s\nLocal Mac address: %s\nNetwork interface: %s"
                                           % (MGMT_ADDRESS, CLI_MAC, IFACE))
-                sys.exit()
+                sys.exit(-1)
 
         elif SOFTWARE_UNDER_TEST in ["isc_dhcp6_server", "dibbler_server"]:
             # TODO: import only one function
