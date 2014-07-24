@@ -290,6 +290,7 @@ def initialize(scenario):
     world.iaid = []
     world.clntCfg['timeval'] = int(time.time())
     world.clntCfg['toSave'] = None
+    world.clntCfg['insist'] = False
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if not hasattr(world.cfg, "cli_duid"):

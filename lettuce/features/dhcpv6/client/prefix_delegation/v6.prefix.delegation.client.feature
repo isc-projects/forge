@@ -631,6 +631,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
     Test Procedure:
     Client is configured to include IA_PD option.
+    Client is configured to include IA_PD option.
     Client is started.
     Sniffing client SOLICIT message from network.
 
@@ -649,7 +650,10 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message option 25 MUST include sub-option 26.
 
     Test Procedure:
+    Server builds new message.
     Server sends back REPLY message.
+
+    Pause the Test.
 
     Pass Criteria:
     Client MUST use prefix with values given by server.
@@ -810,6 +814,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Setting up test.
 
     Client is configured to include IA_PD option.
+    Client is configured to include IA_PD option.
     Client is started.
     Sniffing client SOLICIT message from network.
 
@@ -828,13 +833,14 @@ Feature: DHCPv6 Client Prefix Delegation
 
     Client MUST respond with REQUEST message.
 
-    #Client message MUST contain option 25.
+    Client message MUST contain option 25.
     Server sends back REPLY message.
-    Client MUST use prefix with values given by server.
-    Sniffing client RENEW message from network.
+    #Client MUST use prefix with values given by server.
+    #Sniffing client RENEW message from network.
     #Message was sent after maximum 10 second.
     #Client sent RELEASE message.
     #Server sends back REPLY message.
+    Sniffing client SOLICIT message from network.
     Pause the Test.
 
     References: RFC 3633 / RFC 3315

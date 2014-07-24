@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# Author: Maciek Fijałkowski
+# Author: Maciek Fijalkowski
 
 
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \

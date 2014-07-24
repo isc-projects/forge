@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# Author: Maciek Fijałkowski
+# Author: Maciek Fijalkowski
 
 
 from lettuce import world, step
@@ -33,7 +33,7 @@ def config_srv_subnet(step):
 
 @step("Client is configured to include (another )?(\S+) option.")
 def client_option_req(step, another, opt):
-    another1 = not (another == "another ")
+    another1 = (another == "another ")
     clntFunc.client_option_req(step, another1, opt)
 
 @step("Restart client.")

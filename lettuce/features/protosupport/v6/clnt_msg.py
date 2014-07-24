@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# Author: Maciek Fijałkowski
+# Author: Maciek Fijalkowski
 
 
 from features.logging_facility import get_common_logger
@@ -172,6 +172,7 @@ def add_option(step, opt, optcode):
             else:
                 id_ = world.iaid[0][0]
         else:
+            world.clntCfg['set_wrong']['iaid'] = False
             id_ = random.randint(0, 256*256*256)
         world.srvopts.append(DHCP6OptIA_PD(optcode=25, 
                                            T2=world.clntCfg["values"]["T2"],
@@ -495,7 +496,8 @@ def client_msg_count_subopt(step, contain, count, subopt_code, opt_code):
 
     if contain:
         assert localCounter is int(count), "count of suboption %d does not match with" \
-                                           " given value." % (int(subopt_code))
+                                           " given value. got: %d, expected: %d." \
+                                           % (int(subopt_code), localCounter, int(count))
     else:
         assert int(count) is not localCounter, "count of suboption %d does match with" \
                                                " given value," \
@@ -528,6 +530,8 @@ def get_lease():
         pdDict['renew'] ='''"''' + str(pd.T1) + '''"'''
         pdDict['rebind'] = '''"''' + str(pd.T2) + '''"'''
         prefixList = [prefix for prefix in pd.iapdopt if prefix.optcode == 26]
+        if len(prefixList) == 0:
+            hexIaid = pd.iaid
         for prefix in prefixList:
             prefixDict = {}
             prefixDict['preferred-life'] = '''"''' + str(prefix.preflft) + '''"'''
@@ -543,3 +547,4 @@ def get_lease():
         result['lease6']['ia-pd ' + '''"''' + str(hexIaid) + '''"'''] = dict(pdDict)
     
     world.clntCfg['scapy_lease'] = result
+

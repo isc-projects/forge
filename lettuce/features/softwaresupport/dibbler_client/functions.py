@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# Author: Maciek Fijałkowski
+# Author: Maciek Fijalkowski
 
 
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
@@ -55,6 +55,9 @@ def release_command():
 
 def client_option_req(step, another1, opt):
     # add option that client requests to default interface
+    # in order to add another IA_PD option to client's config,
+    # another1 flag must be set to true; it's not needed for adding
+    # next ia_prefix options.
     openBracket = "{"
     closeBracket = "}"
     t1 = world.clntCfg["values"]["T1"]
@@ -65,23 +68,24 @@ def client_option_req(step, another1, opt):
     prefix_len = world.clntCfg["values"]["prefix-len"]
     assert opt is not None, "No option given."
 
-
+    if another1:
+        world.clntCfg["config"] += """\n{closeBracket}\n""".format(**locals())
     if opt == "IA_PD":
         world.clntCfg["config"] += """\n    pd {openBracket}
         T1 {t1}
         T2 {t2}
-    {closeBracket}""".format(**locals())
+        """.format(**locals())
     elif opt == "IA_Prefix":
-        world.clntCfg["config"] += """\n    pd {openBracket}
-        T1 {t1}
-        T2 {t2}
-        prefix {openBracket}
+        world.clntCfg["config"] += """
+        prefix {prefix} / {prefix_len} {openBracket}
             preferred-lifetime {preflft}
             valid-lifetime {validlft}
         {closeBracket}
-    {closeBracket}""".format(**locals())
+        """.format(**locals())
     elif opt == "rapid_commit":
         world.clntCfg["config"] += """  rapid-commit yes"""
+    elif opt == "insist_mode":
+        world.clntCfg['insist'] = True
 
 
 def make_script():
@@ -97,12 +101,19 @@ def write_clnt_cfg_to_file():
     # check if there are equal count of open/closing brackets
     openCount = world.clntCfg["config"].count("{")
     closeCount = world.clntCfg["config"].count("}")
-    if openCount == closeCount + 1:
-        world.clntCfg["config"] += "\n}\n"
     # write generated config to a file
     world.clntCfg["Filename"] = "temp"
     cfgFile = open(world.clntCfg["Filename"], "w")
     cfgFile.write(world.clntCfg["config"])
+    # check for insist-mode in dibbler
+    if world.clntCfg['insist']:
+        cfgFile.seek(0,0)
+        cfgFile.write("insist-mode\n")
+        world.clntCfg['insist'] = False
+    while closeCount < openCount:
+        cfgFile.seek(0,2)
+        cfgFile.write("\n}\n")
+        closeCount += 1
     cfgFile.close()
 
 
@@ -116,6 +127,7 @@ def client_parse_config(step, contain):
     # by iscpy.ISCParseString function; it is easier to
     # play with parsing xml, so we won't touch that much
     # isc's dhclient dict; 
+    # it looks ugly, but it works...
     result = {}
     result['lease6'] = {}
     fabric_download_file("/var/lib/dibbler/client-AddrMgr.xml", "prefix_file")
