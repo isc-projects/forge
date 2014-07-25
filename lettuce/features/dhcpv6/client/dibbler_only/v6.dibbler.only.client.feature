@@ -12,6 +12,8 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.1pd_1pref_OK
+    # 1 IA_PD with 1 IA_Prefix included. Everything is
+    # valid and client accepts received prefix.
 
     Setting up test.
 
@@ -45,7 +47,9 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.1pd_0pref_REJECT
-    # there are no prefixes in IA_PD. Drop that answer.
+    # 1 IA_PD with 0 IA_Prefix included.
+    # There are no prefixes in IA_PD. Drop that answer.
+    # Test includes checks if ADVERTISE and REPLY were rejected.
 
     Setting up test.
 
@@ -94,6 +98,8 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.1pd_2pref_OK
+    # 1 IA_PD with 2 IA_Prefix options included.
+    # Everything is valid. Client accepts two prefixes.
 
     Setting up test.
 
@@ -138,6 +144,10 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.1pd_1pref_1prefWrong_OK
+    # insist-mode is off.
+    # 1 IA_PD with 2 IA_Prefix options included.
+    # One of prefixes is not valid (validlft < preflft).
+    # Drop the malformed one and accept valid one.
 
     Setting up test.
 
@@ -172,6 +182,9 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.2pd_OK
+    # 2 IA_PDs with 1 IA_Prefix option included.
+    # Everything is valid. Client accepts two prefixes
+    # from two IA_PDs.
 
     Setting up test.
 
@@ -211,6 +224,8 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.1pdOK_1pd0pref_OK
+    # 2 IA_PDs with 1 IA_Prefix option included.
+    # One of IA_PD has no prefixes, therefore is not valid.
     # insist-mode is off, so if at least one IA_PD is valid, answer
     # is still accepted.
 
@@ -251,6 +266,8 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.2pd_2prefEach_OK
+    # 2 IA_PDs with 2 IA_Prefix option included.
+    # Everything is valid. Client accepts prefixes.
 
     Setting up test.
 
@@ -296,8 +313,11 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
 
 @v6 @PD @rfc3633 @client
     Scenario: dibbler.only.client.2pd_1prefOK_1prefWrong_OK
-    # one of IA_PD has malformed prefix. since insist-mode is not enabled,
-    # message is still accepted.
+    # 2 IA_PDs with 1 IA_Prefix option included.
+    # One of prefixes is not valid, therefore the IA_PD
+    # that was a parent of that prefix is not valid.
+    # insist-mode is off, so if at least one IA_PD is valid, answer
+    # is still accepted.
 
     Setting up test.
 
@@ -328,6 +348,7 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
     
     Test Procedure:
     Server sends back REPLY message.
+    Pause the Test.
 
     Pass Criteria:
     # Client MUST use prefix with values given by server.
