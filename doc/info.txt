@@ -70,12 +70,6 @@ Scapy uses crypto libraries that may be needed:
 $ sudo apt-get install python-crypto
 $ sudo pip install ecdsa
 
-In order to run properly client tests, you will need to install iscpy
-library. This is library that parses isc-dhcp config files.
-To do that, simply run command:
-
-$ sudo pip install iscpy
-
  Scapy patches
 ---------------
 Currently the latest Scapy release seems to be 2.2.0. Its main

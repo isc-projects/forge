@@ -21,7 +21,8 @@ from features.softwaresupport.multi_server_functions import fabric_sudo_command,
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SOFTWARE_INSTALL_DIR, IFACE
-import iscpy
+from features.softwaresupport.core import *
+#import iscpy
 
 def prepare_default_command():
     build_leases_path()
@@ -139,7 +140,7 @@ def client_parse_config(step, contain):
     
     copied = [" ".join(line) + "\n" for line in copied]
     result = " ".join(copied)
-    parsed = iscpy.ParseISCString(result)
+    parsed = ParseISCString(result)
     if 'lease6' in parsed:
         del(parsed['lease6']['interface'])
         for entry in parsed['lease6'].keys():
