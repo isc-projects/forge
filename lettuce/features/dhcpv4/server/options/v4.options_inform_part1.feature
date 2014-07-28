@@ -17,6 +17,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 1.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -36,6 +37,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 2.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -53,6 +55,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 3.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -71,6 +74,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 4.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -89,6 +93,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 5.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -107,6 +112,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 6.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -125,6 +131,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 7.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -143,6 +150,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 8.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -161,6 +169,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 9.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -179,6 +188,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 10.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -197,6 +207,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 11.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -215,6 +226,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 12.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -232,6 +244,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 13.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -249,6 +262,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 14.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -266,6 +280,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 16.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -283,6 +298,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 17.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -300,6 +316,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 18.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -317,6 +334,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 21.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -335,6 +353,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 22.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -352,6 +371,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 23.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:
@@ -369,6 +389,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
     Test Procedure:
     Client requests option 24.
+	Client sets ciaddr value to 192.168.50.9.
     Client sends INFORM message.
 
     Pass Criteria:

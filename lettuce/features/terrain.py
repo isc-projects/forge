@@ -18,7 +18,8 @@
 from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SOFTWARE_UNDER_TEST, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL,CLI_LINK_LOCAL
+    SAVE_BIND_LOGS, AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLI_LINK_LOCAL, \
+    SERVER_INSTALL_DIR, DNS_IFACE, DNS_ADDR, SERVER_INSTALL_DIR, SAVE_LOGS
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.all import sniff
@@ -26,7 +27,8 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 from softwaresupport.bind10 import kill_bind10, start_bind10
 from time import sleep
-from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name, fabric_remove_file_command
+from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
+    fabric_remove_file_command, fabric_run_command
 
 import importlib
 import os
@@ -54,21 +56,26 @@ add_option_v6 = {'client_id': True,
                  'IA_Prefix': False,
                  'IA_Address': False,
                  'vendor_class': False,
-                 'vendor_specific_info': False
+                 'vendor_specific_info': False,
+                 'fqdn': False
                  }
 
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
              "address": "::",
+             "IA_Address": "::",
              "prefix": "::",
              "plen": 0,  # prefix; plz remember, to add prefix and prefix length!
              "preflft": 0,  # IA_Address IA_Prefix
              "validlft": 0,  # IA_Address IA_Prefix
              "enterprisenum": 0,  # vendor
+             "vendor_class_data": "",
              "linkaddr": "3000::ffff",  # relay
              "peeraddr": "2000::1",  # relay
              "ifaceid": "15",  # relay
-             "DUID": None
+             "DUID": None,
+             "FQDN_flags": "",
+             "FQDN_domain_name": ""
              }
 
 srv_values_v6 = {"T1": 1000,
@@ -84,6 +91,10 @@ clnt_set_wrong = {"trid": False,
                   "client_id": False,
                   "server_id": False
                  }
+
+values_dns = {"qname": "",
+              "qtype": "",
+              "qclass": ""}
 
 # times values, plz do not change this.
 # there is a test step to do this
@@ -116,6 +127,7 @@ add_option_v4 = {"vendor_class_id": False,
 
 # we should consider transfer most of functions to separate v4 and v6 files
 # TODO: make separate files after branch merge
+
 
 def set_values():
     if PROTO == "v6":
@@ -164,13 +176,12 @@ def v4_initialize():
     world.cfg["rel4_addr"] = REL4_ADDR
     world.cfg["giaddr4"] = GIADDR4
     world.cfg["space"] = "dhcp4"
-    world.cfg["PACKET_WAIT_INTERVAL"] = PACKET_WAIT_INTERVAL
 
 
 def v6_initialize():
     # RFC 3315 define two addresess:
     # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
-    # All DHCP_Servers ff05::1:3 that is deprecated. 
+    # All DHCP_Servers ff05::1:3 that is deprecated.
     world.cfg["address_v6"] = "ff02::1:2"
     world.cfg["cli_link_local"] = CLI_LINK_LOCAL
     world.cfg["unicast"] = False
@@ -180,6 +191,11 @@ def v6_initialize():
     # Setup scapy for v6
     conf.iface6 = IFACE
     conf.use_pcap = True
+
+
+def dns_initialize():
+    world.cfg["dns_iface"] = DNS_IFACE
+    world.cfg["dns_addr"] = DNS_ADDR
 
 
 @before.all
@@ -203,7 +219,7 @@ def test_start():
     logger_initialize(LOGLEVEL)
 
     if "server" in SOFTWARE_UNDER_TEST:
-        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server']:
+        if SOFTWARE_UNDER_TEST in ['kea4_server_bind', 'kea6_server_bind']:
             get_common_logger().debug("Starting Bind:")
 
             try:
@@ -216,11 +232,16 @@ def test_start():
                                             Please make sure it's configured properly\nIP destination \
                                             address: %s\nLocal Mac address: %s\nNetwork interface: %s"
                                           % (MGMT_ADDRESS, CLI_MAC, IFACE))
-                sys.exit()
+                sys.exit(-1)
+
         elif SOFTWARE_UNDER_TEST in ["isc_dhcp6_server", "dibbler_server"]:
             # TODO: import only one function
             stop = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             stop.stop_srv()  # shouldn't we start the server here?
+
+        elif SOFTWARE_UNDER_TEST in ["kea6_server", "kea4_server"]:
+            # TODO: implement this
+            pass
 
         else:
             get_common_logger().error("Server " + SOFTWARE_UNDER_TEST + " not implemented yet")
@@ -247,7 +268,7 @@ def initialize(scenario):
     world.climsg = []  # Message(s) to be sent
     world.cliopts = []  # Option(s) to be included in the next message sent
     world.srvmsg = []  # Server's response(s)
-    world.savedmsg = []  # Saved option(s)
+    world.savedmsg = {0: []}  # Saved option(s)
     world.define = []  # temporary define variables
 
     world.proto = PROTO
@@ -259,9 +280,13 @@ def initialize(scenario):
     world.cfg = {}
     world.cfg["iface"] = IFACE
     world.cfg["server_type"] = SOFTWARE_UNDER_TEST
+    world.cfg["PACKET_WAIT_INTERVAL"] = PACKET_WAIT_INTERVAL
+    world.cfg["wait_interval"] = PACKET_WAIT_INTERVAL
 
     world.cfg["cfg_file"] = "server.cfg"
+    world.cfg["cfg_file_2"] = "second_server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
+    world.subcfg = [["", "", "", ""]]  # additional config structure
 
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
@@ -269,6 +294,8 @@ def initialize(scenario):
     world.cfg["subnet"] = ""
 
     world.name = scenario.name
+    world.ddns_enable = False
+
     world.clntCounter = 0
     world.srvCounter = 0
 
@@ -306,11 +333,12 @@ def initialize(scenario):
     # IPv6:
     if world.proto == "v6":
         v6_initialize()
-        
+
     # IPv4:
     if world.proto == "v4":
         v4_initialize()
 
+    dns_initialize()  # TODO make it 'in case..'
     set_values()
     set_options()
 
@@ -325,23 +353,22 @@ def initialize(scenario):
             tmp = open(world.cfg["dir_name"] + '/capture.pcap', 'w+')
             tmp.close()
         # also IP version for tcpdump
-        type = 'ip'
+        ip_version = 'ip'
 
         if PROTO == "v6":
-            type = type + '6'
+            ip_version += '6'
         cmd = TCPDUMP_INSTALL_DIR + 'tcpdump'
         args = [cmd, "-U", "-w", world.cfg["dir_name"] + "/capture.pcap",
-                "-s", str(65535), "-i", world.cfg["iface"], type]
+                "-s", str(65535), "-i", world.cfg["iface"], ip_version]
         get_common_logger().debug("Running tcpdump: ")
         get_common_logger().debug(args)
         # TODO: hide stdout, log it in debug mode
         subprocess.Popen(args)
 
-
 @before.outline
 def outline_before(scenario, number, step, failed):
     """
-    For Outline Scenarios, 
+    For Outline Scenarios,
         scenario - name
         number - number of scenario
         step - which 'example' from test
@@ -354,7 +381,7 @@ def outline_before(scenario, number, step, failed):
 @after.outline
 def outline_result(scenario, number, step, failed):
     """
-    For Outline Scenarios, 
+    For Outline Scenarios,
         scenario - name
         number - number of scenario
         step - which 'example' from test
@@ -385,6 +412,7 @@ def cleanup(scenario):
         add_result_to_raport(info)
 
     if TCPDUMP:
+        time.sleep(1)
         args = ["killall tcpdump"]
         subprocess.call(args, shell=True)
         # TODO: log output in debug mode
@@ -392,16 +420,17 @@ def cleanup(scenario):
     # copy log file from remote server:
     if 'server' in SOFTWARE_UNDER_TEST:
         if SAVE_BIND_LOGS:
-            fabric_download_file('log_file', world.cfg["dir_name"] + '/log_file')
+            fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
+            fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log')
 
         if SAVE_LEASES:
-            if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server']:
+            if SOFTWARE_UNDER_TEST not in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
-            elif SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
+            elif SOFTWARE_UNDER_TEST in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
                 fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
             else:
                 pass
-        if SOFTWARE_UNDER_TEST in ['kea','kea4_server', 'kea6_server']:
+        if SOFTWARE_UNDER_TEST in ['kea', 'kea4_server', 'kea6_server', 'kea6_server_bind']:
             fabric_remove_file_command(world.cfg['leases'])
     elif "client" in SOFTWARE_UNDER_TEST:
         idx = SOFTWARE_UNDER_TEST.find("_client")
@@ -409,11 +438,15 @@ def cleanup(scenario):
         clnt = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
         clnt.kill_clnt()
 
+        if SAVE_LOGS:
+            if SOFTWARE_UNDER_TEST in ['isc_dhcp6_server']:
+                fabric_download_file(world.cfg["log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+
 @after.all
 def say_goodbye(total):
     """
     Server stopping after whole work
-    """
+    # """
     world.clntCounter = 0
     world.srvCounter = 0
     get_common_logger().info("%d of %d scenarios passed." % (
@@ -425,21 +458,18 @@ def say_goodbye(total):
         for item in world.result:
             result.write(str(item) + '\n')
         result.close()
+
     if "server" in SOFTWARE_UNDER_TEST:
-        if SOFTWARE_UNDER_TEST in ['kea4_server', 'kea6_server']:
+        if SOFTWARE_UNDER_TEST in ['kea4_server_bind', 'kea6_server_bind']:
             #TODO: import only one function!
             clean_config = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             clean_config.run_bindctl(True, 'clean')
             kill_bind10()
-        #         try:
-        #             if REL4_ADDR and (SOFTWARE_UNDER_TEST  == 'kea4'):
-        #                 with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD):
-        #                     run("route del -host %s" % (GIADDR4))
-        #         except NameError:
-        #             pass # most likely REL4_ADDR caused this exception -> we do not use relay
-        elif SOFTWARE_UNDER_TEST in ['isc_dhcp6_server', 'dibbler_server']:
+
+        elif SOFTWARE_UNDER_TEST in ['isc_dhcp6_server', 'dibbler_server', "kea6_server", "kea4_server"]:
             stop = importlib.import_module("softwaresupport.%s.functions" % SOFTWARE_UNDER_TEST)
             stop.stop_srv()
+
     elif "client" in SOFTWARE_UNDER_TEST:
         idx = SOFTWARE_UNDER_TEST.find("_client")
         get_common_logger().debug("cleaning " + SOFTWARE_UNDER_TEST[:idx] + "...")

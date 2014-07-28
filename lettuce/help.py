@@ -19,15 +19,11 @@
 import datetime
 import os
 import sys
-from features.init_all import SOFTWARE_UNDER_TEST
-if "server" in SOFTWARE_UNDER_TEST:
-    testType = "server"
-elif "client" in SOFTWARE_UNDER_TEST:
-    testType = "client"
+
 
 class TestHistory ():
     def __init__(self):
-        self.date = self.present_time() 
+        self.date = self.present_time()
         self.start_time = None
         self.stop_time = None
         self.time_elapsed = None
@@ -37,7 +33,8 @@ class TestHistory ():
         self.percent = 0.0
         self.tags = None
         self.path = None
-        
+
+        from features.init_all import SOFTWARE_UNDER_TEST
         self.software_type = SOFTWARE_UNDER_TEST
         
         #TODO: implement this
@@ -67,7 +64,7 @@ class TestHistory ():
         
     def check_file(self):
         if not os.path.exists('history.html'):
-            new_file = open('history.html','w')
+            new_file = open('history.html', 'w')
             new_file.close()
     
     def build_report(self):
@@ -89,21 +86,30 @@ class TestHistory ():
                 color = 'black'                
             scenarios_html += '<tr><td>'+name+'</td><td bgcolor = \''+color+'\'>'+result+'</td></tr>'
             
-        report = open('history.html','a')
+        report = open('history.html', 'a')
         self.time_elapsed = self.stop_time - self.start_time
-        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'+str(self.date.year)+'.'+str(self.date.month)+'.'+str(self.date.day)+'; '+str(self.date.hour)+':'+str(self.date.minute)+'</td></tr><tr><td> SOFTWARE TYPE: </td><td>'+self.software_type+'</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'+str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)+' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'+str(self.failed)+' </td></tr><tr><td> PASS-RATE: </td><td>'+str('%2.3f' % self.percent)+' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)+' </td></tr>'+scenarios_html+'</table><br/>\n')
+        report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'
+                     + str(self.date.year)+'.'+str(self.date.month)+'.'+str(self.date.day)+'; '+str(self.date.hour)+':'
+                     + str(self.date.minute)+'</td></tr><tr><td> SOFTWARE TYPE: </td><td>'+self.software_type
+                     + '</td></tr><tr><td> TAGS: </td><td>'+str(self.tags)+' </td></tr><tr><td> PATH: </td><td>'
+                     + str(self.path)+' </td></tr><tr><td> RAN: </td><td>'+str(self.ran)
+                     + ' </td></tr><tr><td> PASSED: </td><td>'+str(self.passed)+' </td></tr><tr><td> FAILED: </td><td>'
+                     + str(self.failed)+' </td></tr><tr><td> PASS-RATE: </td><td>'+str('%2.3f' % self.percent)
+                     + ' </td></tr><tr><td> TIME ELAPSED: </td><td>'+str(self.time_elapsed)
+                     + ' </td></tr>'+scenarios_html+'</table><br/>\n')
         report.close()
-        
+
     def read_result(self):
         res = []
-        result = open ('result','r')
+        result = open('result', 'r')
         for line in result:
             res.append(line)
         result.close()
         
         os.remove('result')
         return res
-        
+
+
 class UserHelp ():
     def __init__(self):
         self.tags = ''
@@ -126,10 +132,13 @@ class UserHelp ():
         """
         Generate list of test sets, features, test names and all available tags
         """
-        #make for each in number because it starts in two points: in run_test.py by using -l option, then it create list only for one IP version, 
-        #and in help.py generating whole test list.
+        #  make for each in number because it starts in two points: in run_test.py by using -l option,
+        #  then it create list only for one IP version,
+        #  and in help.py generating whole test list.
+
         print "Test tree schema:\nroot directory\n\ttest set (available by option -s in run_test.py)\n\t\ttest feature"
-        if more: print "\t\t\ttest name (available by option -n in run_test.py)"
+        if more:
+            print "\t\t\ttest name (available by option -n in run_test.py)"
         for each_number in ip_version: 
             self.tags = ''
             sets_number = 0
@@ -138,16 +147,20 @@ class UserHelp ():
             outline_tests_number = 0
             outline_generate_test = 0
             outline_tag = False
+            freespace = "  "
+            #  this code is ugly hack! make it much better
             print "\nIPv" + each_number + " Tests:"
             print "features/dhcpv" + each_number + "/"
             for path, dirs, files in os.walk("features/dhcpv" + each_number + "/"):
-                if len(path[18:]) > 1: 
-                    print "\t" + path[18:]
+                if len(path[16:]) > 1 and len(path[16:]) < 10:
+                    print freespace + path[16:]
+                if len(path[23:]) > 1:
+                    print freespace*2 + path[23:]
                     sets_number += 1 
                 for each_file in files:
-                    print "\t\t", each_file[:-8]
+                    print freespace*3, each_file[:-8], '\n', freespace*4, 'Test Names:'
                     features_number += 1
-                    names = open(path +'/'+ each_file, 'r')
+                    names = open(path + '/' + each_file, 'r')
                     for line in names:
                         line = line.strip()
                         if len(line) > 0:
@@ -157,56 +170,96 @@ class UserHelp ():
                                 if "Outline" in line:
                                     outline_tag = True
                                     outline_tests_number += 1
-                                    if more: print "\t\t\t" + line[18:]
+                                    if more:
+                                        print freespace*6 + line[18:]
                                 else:
                                     outline_tag = False
                                     tests_number += 1
-                                    if more: print "\t\t\t" + line[10:]
+                                    if more:
+                                        print freespace*6 + line[10:]
                             elif "|" in line and outline_tag:
                                 outline_generate_test += 1
                             else:
-                                pass    
-                                
+                                pass
+
                     names.close()
-            print "Totally: \n\t",outline_generate_test + tests_number - outline_tests_number,"tests. ",tests_number,"simple tests and",outline_tests_number,"multi-tests. Grouped in",features_number,"features, and in",sets_number,"sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
-            if not more: print 'For more information, use help.py to generate UserHelp document.\n'
-            
+            print "Totally: \n\t", outline_generate_test + tests_number - outline_tests_number, "tests. ",\
+                tests_number, "simple tests and", outline_tests_number, "multi-tests. Grouped in", features_number,\
+                "features, and in", sets_number, "sets.\n\nTest tags you can use: \n", self.tags[:-2], "\n"
+
+            if not more:
+                print 'For more information, use help.py to generate UserHelp document.\n'
+
+
     def steps(self):
         """
         Generate list of available steps in tests.
         """
-        files = ['srv_control','srv_msg'] #if you add file that help will be generated, add also description below.
-        message = ['All steps available in preparing DHCP server configuration:', 'All steps available in building tests procedure:']
+        files = ['srv_control', 'srv_msg']  # if you add file that help will be generated, add also description below.
+        message = ['All steps available in preparing DHCP server configuration:',
+                   'All steps available in building tests procedure:']
         
         for file_name, text in zip(files, message):
-            steps = open ('features/'+file_name+'.py', 'r')
-            print '\n',text,
+            steps = open('features/' + file_name + '.py', 'r')
+            print '\n', text,
             for line in steps:
                 line = line.strip()
                 if len(line) > 0:
-                    if line[0] == '#' and line[1] == '#':
-                        print '\n\t',line[2:]
+                    if line[0] == '#' and len(line) > 1:
+                        if line[1] == '#':
+                            print '\n\t', line[2:]
                     elif line[0] == '@':
-                        print "\t\t    ",line[7:-2]
+                        print "\t\t    ", line[7:-2]
             steps.close()
-        print "\nFor definitions of (\d+) (\w+) (\S+) check Python regular expressions at http://docs.python.org/2/library/re.html"
+        print "\nFor definitions of (\d+) (\w+) (\S+) check Python " \
+              "regular expressions at http://docs.python.org/2/library/re.html"
+
 
 def find_scenario(name, IPversion):
+    from features.init_all import SOFTWARE_UNDER_TEST
+    if "server" in SOFTWARE_UNDER_TEST:
+        testType = "server"
+    elif "client" in SOFTWARE_UNDER_TEST:
+        testType = "client"
+
     scenario = 0
     for path, dirs, files in os.walk("features/dhcpv" + IPversion + "/" + testType + "/"):
         for each_file in files:
-            file_name = open (path +'/'+ each_file, 'r')
+            file_name = open(path + '/' + each_file, 'r')
             for each_line in file_name:
                 if 'Scenario' in each_line:
                     scenario += 1
                     tmp_line = each_line.strip()
                     if name == tmp_line[10:]:
                         file_name.close()
-                        return (path+'/'+each_file, str(scenario))
+                        return path + '/' + each_file, str(scenario)
             else:
                 scenario = 0
                 file_name.close()
-    return (None,0)
+    return None, 0
+
+def find_scenario_in_path(name, path):
+    from features.init_all import SOFTWARE_UNDER_TEST
+    if "server" in SOFTWARE_UNDER_TEST:
+        testType = "server"
+    elif "client" in SOFTWARE_UNDER_TEST:
+        testType = "client"
+
+    scenario = 0
+    for path, dirs, files in os.walk(path):
+        for each_file in files:
+            file_name = open(path + '/' + each_file, 'r')
+            for each_line in file_name:
+                if 'Scenario' in each_line:
+                    scenario += 1
+                    tmp_line = each_line.strip()
+                    if name == tmp_line[10:]:
+                        file_name.close()
+                        return path + '/' + each_file, str(scenario)
+            else:
+                scenario = 0
+                file_name.close()
+    return None, 0
     
 if __name__ == '__main__':
     #orginal_stdout = sys.stdout
@@ -214,7 +267,8 @@ if __name__ == '__main__':
     sys.stdout = help_file
     generate_help = UserHelp()
     print """
-    This is User Help to Forge project. If you looking for installation guide, plz read documentation or visit Forge project web site.
+    This is User Help to Forge project. If you looking for installation guide,
+    plz read documentation or visit Forge project web site.
     
     First part of help is guide how to use existing test and test steps.
     
@@ -252,11 +306,12 @@ if __name__ == '__main__':
     generate_help.steps()
     help_file.flush()
     print """
-    Step "Run configuration command: (.+)" is unique, it's for Kea servers only. All test with that step will automatically fail 
-    when variable SOFTWARE_UNDER_TEST in init_all.py will be different then: kea, kea4 or kea6.
+    Step "Run configuration command: (.+)" is unique, it's for Kea servers only. All test with that step will
+    automatically fail when variable SOFTWARE_UNDER_TEST in init_all.py will be different then: kea, kea4 or kea6.
     This step is designed to put one line commands to configuration file (e.g. config set Dhcp6/renew-timer 999)
     but it can be used to more complicated things if you put command in right order.
-    Be aware of fact that command passed to config file it's all after "Run configuration command:" to the end of the line!
+    Be aware of fact that command passed to config file it's all after "Run configuration command:"
+    to the end of the line!
     
     HOW TO DESIGN NEW SETPS?
     
@@ -264,8 +319,10 @@ if __name__ == '__main__':
         srv_msg.py
         srv_control.py 
         in directory isc-forge/lettuce/features/
-    As you can see there are test steps marked with '@step' and steps family marked with '##' (don't remove #, it's need to be double).
-    When designing new step please put them in correct family. 
+    As you can see there are test steps marked with '@step' and steps family marked with '##'
+    (don't remove #, it's need to be double).
+
+    When designing new step please put them in correct family.
     
     Test example:
     

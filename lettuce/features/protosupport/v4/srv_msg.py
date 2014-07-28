@@ -1,3 +1,20 @@
+# Copyright (C) 2013 Internet Systems Consortium.
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SYSTEMS CONSORTIUM
+# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+# INTERNET SYSTEMS CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
+# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+# Author: Wlodzimierz Wencel
+
 from lettuce import world
 from logging_facility import *
 from scapy.all import get_if_raw_hwaddr, Ether, srp 
@@ -9,10 +26,12 @@ from scapy.sendrecv import send, sendp, sniff
 from random import randint
 import protosupport.v6.srv_msg
 
+
 def client_requests_option(step, opt_type):
     if not hasattr(world, 'prl'):
-        world.prl = "" # don't request anything by default
-    world.prl += chr(int(opt_type)) # put a single byte there
+        world.prl = ""  # don't request anything by default
+    world.prl += chr(int(opt_type))  # put a single byte there
+
 
 def client_send_msg(step, msgname, iface, addr):
     """
@@ -23,7 +42,7 @@ def client_send_msg(step, msgname, iface, addr):
     opt_type: option type
     """
     # set different ethernet interface then default one.
-    if iface != None:
+    if iface is not None:
         world.cfg["iface"] = iface
         world.cfg["srv4_addr"] = addr
         
@@ -35,31 +54,31 @@ def client_send_msg(step, msgname, iface, addr):
 #     else:
 #         assert False, "No PRL defined"
 
-    options += ["end"] # end option
+    options += ["end"]  # end option
 
     # What about messages: "force_renew","lease_query",
     # "lease_unassigned","lease_unknown","lease_active",
     # messages from server: offer, ack, nak
 
-    if (msgname == "DISCOVER"):
+    if msgname == "DISCOVER":
         # msg code: 1
-        msg = build_msg([("message-type","discover")] + options)
+        msg = build_msg([("message-type", "discover")] + options)
         
-    elif (msgname == "REQUEST"):
+    elif msgname == "REQUEST":
         # msg code: 3
-        msg = build_msg([("message-type","request")] + options)
+        msg = build_msg([("message-type", "request")] + options)
         
-    elif (msgname == "DECLINE"):
+    elif msgname == "DECLINE":
         # msg code: 4
-        msg = build_msg([("message-type","decline")] + options)
+        msg = build_msg([("message-type", "decline")] + options)
         
-    elif (msgname == "RELEASE"):
+    elif msgname == "RELEASE":
         # msg code: 7
-        msg = build_msg([("message-type","release")] + options)
+        msg = build_msg([("message-type", "release")] + options)
         
-    elif (msgname == "INFORM"):
+    elif msgname == "INFORM":
         # msg code: 8
-        msg = build_msg([("message-type","inform")] + options)
+        msg = build_msg([("message-type", "inform")] + options)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -71,6 +90,7 @@ def client_send_msg(step, msgname, iface, addr):
 
     get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
+
 def client_sets_value(step, value_name, new_value):
     if value_name in world.cfg["values"]:
         if isinstance(world.cfg["values"][value_name], str):
@@ -81,6 +101,7 @@ def client_sets_value(step, value_name, new_value):
             world.cfg["values"][value_name] = new_value
     else:
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
+
 
 def client_does_include(step, opt_type, value):
     if opt_type == 'client_id':
@@ -95,6 +116,7 @@ def client_does_include(step, opt_type, value):
 #         else:
 #             assert False, "wtf"
         world.cliopts += [(opt_type, str(value))]
+
 
 def response_check_content(step, expect, data_type, expected):
     
@@ -124,12 +146,12 @@ def response_check_content(step, expect, data_type, expected):
     # I did little hack, added 'value:' as option code, and changed assertion message
     outcome, received = test_option(0, ['value:', received], expected)
 
-    if expect == None:
-        assert outcome, "Invalid {data_type} received {received}"\
-                                " but expected: {expected}.".format(**locals())
+    if expect is None:
+        assert outcome, "Invalid {data_type} received {received}" \
+                        " but expected: {expected}.".format(**locals())
     else:
-        assert not outcome, "Invalid {data_type} received {received}"\
-                                 " that value has been excluded from correct values.".format(**locals())
+        assert not outcome, "Invalid {data_type} received {received}" \
+                            " that value has been excluded from correct values.".format(**locals())
     return received
 
 
@@ -182,14 +204,14 @@ def build_msg(opts):
 
 def get_msg_type(msg):
     
-    msg_types = {1:"DISCOVER",
-                 2:"OFFER",
-                 3:"REQUEST",
-                 4:"DECLINE",
-                 5:"ACK",
-                 6:"NAK",
-                 7:"RELEASE",
-                 8:"INFORM"
+    msg_types = {1: "DISCOVER",
+                 2: "OFFER",
+                 3: "REQUEST",
+                 4: "DECLINE",
+                 5: "ACK",
+                 6: "NAK",
+                 7: "RELEASE",
+                 8: "INFORM"
                  }
     # option 53 it's message type
     opt = get_option(msg, 53)
@@ -202,28 +224,35 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
-def send_wait_for_message(step, type, presence, exp_message):
+def send_wait_for_message(step, msgtype, presence, exp_message):
     """
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
-    ans,unans = srp(world.climsg,
+
+    ans, unans = srp(world.climsg,
                     iface = world.cfg["iface"],
-                    timeout = world.cfg["PACKET_WAIT_INTERVAL"],
+                    timeout = world.cfg["wait_interval"],
                     multi = True,
                     verbose = 99)
-    #world.climsg[0].show()
+
+    from features.init_all import SHOW_DHCP_PACKETS_FROM
+    if SHOW_DHCP_PACKETS_FROM in ['both', 'client']:
+        world.climsg[0].show()
+
     expected_type_found = False
     
     received_names = ""
     world.cliopts = []
     world.srvmsg = []
     for x in ans:
-        a,b = x
+        a, b = x
         world.srvmsg.append(b)
-        #b.show()
+        if SHOW_DHCP_PACKETS_FROM in ['both', 'server']:
+            b.show()
+
         received_names = get_msg_type(b) + " " + received_names
-        if (get_msg_type(b) == exp_message):
+        if get_msg_type(b) == exp_message:
             expected_type_found = True
             
     get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
@@ -239,7 +268,7 @@ def send_wait_for_message(step, type, presence, exp_message):
             assert len(world.srvmsg) == 0, "Response received, not expected"
         assert presence == bool(world.srvmsg), "No response received."
     else:
-        assert len(world.srvmsg) == 0, "Response message "+ received_names +"received but none message expected."
+        assert len(world.srvmsg) == 0, "Response message " + received_names + "received but none message expected."
         # make assertion for receiving message that not suppose to come!
 
 
@@ -253,18 +282,20 @@ def get_option(msg, opt_code):
     # dhcpv4 implementation in Scapy is a mess. The options array contains mix of 
     # strings, IPField, ByteEnumField and who knows what else. In each case the
     # values are accessed differently
-    if (isinstance(opt_name, Field)):
+    if isinstance(opt_name, Field):
         opt_name = opt_name.name
 
-    x = msg.getlayer(4) # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
+    x = msg.getlayer(4)  # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
     for opt in x.options:
         if opt[0] == opt_name:
             world.opts.append(opt)
             return opt
     return None
 
+
 def ByteToHex (byteStr):
-    return ''.join([ "%02X " % ord(x) for x in byteStr]).replace(" ","")
+    return ''.join(["%02X " % ord(x) for x in byteStr]).replace(" ", "")
+
 
 def test_option(opt_code, received, expected):
     tmp = ""
@@ -279,6 +310,7 @@ def test_option(opt_code, received, expected):
             return True, each
     return False, tmp
 
+
 def response_check_include_option(step, expected, opt_code):
     assert len(world.srvmsg) != 0, "No response received."
     opt = get_option(world.srvmsg[0], opt_code)
@@ -286,6 +318,7 @@ def response_check_include_option(step, expected, opt_code):
         assert opt, "Expected option " + opt_code + " not present in the message."
     else:
         assert opt == None, "Expected option " + opt_code + " present in the message. But not expected!"
+
 
 def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
     # expect == None when we want that content and NOT when we dont want! that's messy correct that!

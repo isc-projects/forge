@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # Copyright (C) 2013 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
@@ -15,11 +17,11 @@
 #
 # author: Wlodzimierz Wencel
 
-from lettuce import Runner, world
 import importlib
 import optparse
 import os
 import sys
+
 
 def option_parser():
     desc='''
@@ -31,20 +33,20 @@ def option_parser():
                       action = "store_true",
                       default = False,
                       help = 'Declare IP version 4 tests')
-    
+
     parser.add_option("-6", "--version6",
                       dest = "version6",
                       action = "store_true",
                       default = False,
                       help = "Declare IP version 6 tests")
-    
+
     parser.add_option("-v", "--verbosity",
                       dest = "verbosity",
                       type = "int",
                       action = "store",
                       default = 4,
                       help = "Level of the lettuce verbosity")
-    
+
     parser.add_option("-l", "--list",
                       dest = "list",
                       action = "store_true",
@@ -65,14 +67,20 @@ def option_parser():
                       dest = "tag",
                       action = "append",
                       default = None,
-                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic. If you wont specify any tags, Forge will perform all test for chosen IP version.\
-                      also if you want to skip some tests use minus sing before that test tag (e.g. -kea).")
-    
+                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic." +
+                      "If you wont specify any tags, Forge will perform all test for chosen IP version." +
+                      "Also if you want to skip some tests use minus sing before that test tag (e.g. -kea).")
+
     parser.add_option("-x", "--with-xunit",
                       dest = "enable_xunit",
                       action = "store_true",
                       default = False,
                       help = "Generate results file in xUnit format")
+
+    parser.add_option("-p", "--explicit-path",
+                      dest = "explicit_path",
+                      default = None,
+                      help = "Search path, relative to <forge>/lettuce/features for tests regardless of SUT or protocol")
 
     # parser.add_option("-S", "--server",
     #                   dest = "server",
@@ -87,25 +95,14 @@ def option_parser():
     #                   help = 'Run client tests')
 
     (opts, args) = parser.parse_args()
-    
+
     if not opts.version6 and not opts.version4:
         parser.print_help()
         parser.error("You must choose between -4 or -6.\n")
-        
+
     if opts.version6 and opts.version4:
         parser.print_help()
         parser.error("options -4 and -6 are exclusive.\n")
-
-    # if not opts.server and not opts.client:
-    #     parser.print_help()
-    #     parser.error("You must choose between --client or --server tests.\n")
-    #
-    # if opts.server and opts.client:
-    #     parser.print_help()
-    #     parser.error("Options --client and --server are exclusive.\n")
-    #
-    # testType = 'server' if opts.server else 'client'
-    # world.testType = testType
 
     number = '6' if opts.version6 else '4'
     #Generate list of set tests and exit
@@ -113,73 +110,108 @@ def option_parser():
         from help import UserHelp
         hlp = UserHelp()
         hlp.test(number, 0)
-        sys.exit()
+        sys.exit(-1)
 
-
-        
-    from features.init_all import HISTORY
-    if HISTORY:
-        from help import TestHistory
-        history = TestHistory()
-        
-    if opts.name is not None:
-        from help import find_scenario
-        base_path, scenario = find_scenario(opts.name, number)
-        if base_path is None:
-            print "Scenario named %s has been not found" %opts.name
-            sys.exit()
-    else:
-        scenario = None
-        
-    #adding tags for lettuce
+    # adding tags for lettuce
     if opts.tag is not None:
         tag = opts.tag[0].split(',')
     else:
         tag = 'v6' if opts.version6 else 'v4'
-    
-    path = ""
+
+    return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit, opts.explicit_path
+
+
+
+def test_path_select(number, test_set, name, explicit_path):
     #path for tests, all for specified IP version or only one set
+    scenario = None
     from features.init_all import SOFTWARE_UNDER_TEST
     if "client" in SOFTWARE_UNDER_TEST:
         testType = "client"
     elif "server" in SOFTWARE_UNDER_TEST:
         testType = "server"
-    if opts.test_set is not None:
-        path = "/features/dhcpv" + number + "/"  + testType + "/" + opts.test_set + "/"
-        base_path = os.getcwd() + path
-    elif opts.name is not None:
-        pass
     else:
+        print "Are you sure that variable SOFTWARE_UNDER_TEST is correct?"
+        sys.exit(-1)
+
+    if explicit_path is not None:
+        # Test search path will be <forge>/letttuce/features/<explicit_path/
+        # without regard to SUT or protocol.  Can be used with -n to run
+        # specific scenarios.
+        base_path = os.getcwd() +  "/features/" + explicit_path +  "/"
+        if name is not None:
+            from help import find_scenario_in_path
+            base_path, scenario = find_scenario_in_path(name, base_path)
+            if base_path is None:
+                print "Scenario named %s has been not found" % name
+                sys.exit(-1)
+    elif test_set is not None:
+        path = "/features/dhcpv" + number + "/" + testType + "/" + test_set + "/"
+        base_path = os.getcwd() + path
+    elif name is not None:
+        from help import find_scenario
+        base_path, scenario = find_scenario(name, number)
+        if base_path is None:
+            print "Scenario named %s has been not found" % name
+            sys.exit(-1)
+    else:
+        scenario = None
         path = "/features/dhcpv" + number + "/" + testType + "/"
         base_path = os.getcwd() + path
-        
-    if HISTORY: history.start()
+
+    return base_path, scenario
+
+
+def check_config_file():
+    try:
+        config = importlib.import_module("features.init_all")
+    except ImportError:
+        print "\n Error: You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)\n"
+        #option_parser().print_help()
+        sys.exit(-1)
+    if config.SOFTWARE_UNDER_TEST == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
+        print "Please make sure your configuration is valid\nProject Forge shutting down."
+        sys.exit(-1)
+
+
+def start_all(base_path, verbosity, scenario, tag, enable_xunit):
+
+    from features.init_all import HISTORY
+    if HISTORY:
+        from help import TestHistory
+        history = TestHistory()
+        history.start()
+
     #lettuce starter, adding options
-    runner = Runner(
-                    base_path,
-                    verbosity = opts.verbosity,
+    try:
+        from lettuce import Runner, world
+    except ImportError:
+        print "You have not Lettuce installed (or in path)."
+        sys.exit(-1)
+
+    runner = Runner(base_path,
+                    verbosity = verbosity,
                     scenarios = scenario,
                     failfast = False,
                     tags = tag,
-                    enable_xunit = opts.enable_xunit)\
-                     
-    result = runner.run() #start lettuce
-    
-    #build report if requested
+                    enable_xunit = enable_xunit)
+
+    result = runner.run()  # start lettuce
+
     if HISTORY:
-        history.information(result.scenarios_passed, result.scenarios_ran, tag, path)
-        history.build_report() 
-        
-def main():
-    try :
-        config = importlib.import_module("features.init_all")
-    except ImportError:
-        print "You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)"
-        sys.exit()
-    if config.SOFTWARE_UNDER_TEST == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
-        print "Please make sure your configuration is valid\nProject Forge shutting down."
-        sys.exit()       
-    option_parser()
+        history.information(result.scenarios_passed, result.scenarios_ran, tag, base_path)
+        history.build_report()
+
+    return (result.scenarios_ran - result.scenarios_passed)
 
 if __name__ == '__main__':
-    main()
+    number, test_set, name, verbosity, tag, enable_xunit, explicit_path = option_parser()
+    check_config_file()
+    base_path, scenario = test_path_select(number, test_set, name, explicit_path)
+
+    failed = start_all(base_path, verbosity, scenario, tag, enable_xunit)
+    if failed > 0:
+        print "SCENARIOS FAILED: %d" % failed
+        sys.exit(1)
+
+    sys.exit(0)

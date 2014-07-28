@@ -22,6 +22,7 @@ from lettuce import step, world
 from scapy.layers.dhcp6 import DHCP6OptOptReq
 from features.init_all import SOFTWARE_UNDER_TEST
 
+
 def set_world_kea():
     """
     Set counters which are being used to server configuration in Kea
@@ -33,15 +34,23 @@ def set_world_kea():
     world.kea["option_cnt"] = 0
     world.kea["subnet_cnt"] = 0
     world.kea["option_usr_cnt"] = 0
-    
+
+
 @step('Pass Criteria:')
 def pass_criteria(step):
     # Do nothing, "Pass criteria:" appears in the text as beautification only
     pass
 
+
 @step('Test Setup:')
 def test_setup(step):
     set_world_kea()
+
+
+@step('Server reconfigure:')
+def reconfigure(step):
+    set_world_kea()
+
 
 @step('Test Procedure:')
 def test_procedure(step):

@@ -409,7 +409,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	
+
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
@@ -420,7 +420,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	
+
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
@@ -431,17 +431,17 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	
+
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client adds saved options. And DONT Erase.
 	Client sends REQUEST message.
-	
+
 	Pass Criteria:
-	Server MUST respond with REPLY message.  
+	Server MUST respond with REPLY message.
 	Response option 3 MUST contain sub-option 5.
 	Response sub-option 5 from option 3 MUST contain address 3000::1.
 	Response sub-option 5 from option 3 MUST contain address 3000::2.
-	Response option 3 MUST contain sub-option 13. 
+	Response option 3 MUST contain sub-option 13.
 	Response sub-option 13 from option 3 MUST contain statuscode 2.

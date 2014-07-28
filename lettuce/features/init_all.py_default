@@ -1,18 +1,24 @@
 #Configuration file, please copy this to the init_all.py and fill it with your
 #variables. init_all.py is added to gitignore.
 
-# All configurations are separated to different sections: 
+# All configurations are separated to different sections:
 # general - for general Forge configuration ;)
 # ssh - for ssh connection between virtual machines
 # kea - for kea configuration
 # ISC-DHCP - for ISC-DHCP configurations
 
- 
+
 # =============== GENERAL ===============
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
 # case insensitive.
 LOGLEVEL = "info"
+
+# Controls whether packet contents are shown on stdout.  Choices are:
+# client - shows DHCP requeests sent from the test client
+# server -  shows DHCP responses received from the server under test
+# both - shows DHCP packets from both test client and server under test
+SHOW_DHCP_PACKETS_FROM = ""
 
 # This defines which software will be tested.
 # Allowed values:
@@ -80,7 +86,7 @@ OUTPUT_WAIT_MAX_INTERVALS = 5
 # the configuration and kill the server (while the debugging still taking place)
 PACKET_WAIT_INTERVAL = 1
 
-# scope link server address for testing unicast messages 
+# scope link server address for testing unicast messages
 # Address 3000:: is strongly recommended for global address. Most tests are using pool
 # 3000::1-3000::ffff in this case recommended address will not cover any address form
 # server pool (what could cause some tests to fail)
@@ -92,10 +98,10 @@ SRV_IPV6_ADDR_LINK_LOCAL = ""
 # when starting run_test.py
 HISTORY = False
 
-# Also you can save separate .pcap file of every test. In default it's disabled 
+# Also you can save separate .pcap file of every test. In default it's disabled
 # If you recieve error tcpdump: <file name>: Permission denied
-# please use command as a root: aa-complain /usr/sbin/tcpdump 
-TCPDUMP = False 
+# please use command as a root: aa-complain /usr/sbin/tcpdump
+TCPDUMP = False
 
 # If your tcpdump is installed in different location place that in TCPDUMP_INSTALL_DIR
 # otherwise leave it blank
@@ -103,8 +109,8 @@ TCPDUMP_INSTALL_DIR = ""
 
 # Also we can decide to keep main configuration file in tests_results.
 SAVE_CONFIG_FILE = False
- 
-# Auto archive it's feature that automatically create tar archive containing 
+
+# Auto archive it's feature that automatically create tar archive containing
 # folder 'tests_results' and history.html (if created). Default disabled.
 AUTO_ARCHIVE = False
 
@@ -143,7 +149,7 @@ SERVER_INSTALL_DIR = "/usr/local/"
 SAVE_BIND_LOGS = False
 
 # Also we can decide which logging type choose, logging lvl,
-# and BIND10 module type 
+# and BIND10 module type
 # for more accurate information please read BIND10 Guide, Chapter 21. Logging
 
 # Allowed values for BINDX: FATAL, ERROR, WARN, INFO, DEBUG.
@@ -162,3 +168,19 @@ DIBBLER_INSTALL_DIR = ""
 # =============== ISC-DHCP ================
 # Save leases file in tests result folder
 SAVE_LEASES = False
+
+# Save log file in tests result folder
+SAVE_LOGS = False
+
+# ISC_DHCP dhcpd uses syslog (rsyslog). In order to capture logging
+# you will need to modify /etc/syslog.conf (/etc/rsyslog.conf) to
+# contain a line as follows:
+#
+#     <ISC_DHCP_LOG_FACILITY>.*        <ISC_DHCP_LOG_FILE_NAME>
+#
+# Example
+#
+#    local7.*      /varlog/forge_dhcpd.log
+#
+ISC_DHCP_LOG_FACILITY = "local7"
+ISC_DHCP_LOG_FILE = "/var/log/forge_dhcpd.log"
