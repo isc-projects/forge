@@ -21,7 +21,7 @@ Feature: Kea6 User Check Hook Library
     Run configuration command: config set Dhcp6/hooks-libraries[0] $(SERVER_INSTALL_DIR)lib/libdhcp_user_chk.so
     On space vendor-4491 server is configured with tftp-servers option with value 7000::1.
     On space vendor-4491 server is configured with config-file option with value bootfile.from.server.
-    Server is started.
+    DHCP server is started.
 
     #
     # Send a query from an unknown user

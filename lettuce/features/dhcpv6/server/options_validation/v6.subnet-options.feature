@@ -19,7 +19,7 @@ Feature: DHCPv6 options defined in subnet
 	Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with preference option in subnet 0 with value 123.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -60,7 +60,7 @@ Feature: DHCPv6 options defined in subnet
 	Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with dns-servers option in subnet 0 with value 2001:db8::1,2001:db8::2.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client requests option 23.
@@ -101,7 +101,7 @@ Feature: DHCPv6 options defined in subnet
 	Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with domain-search option in subnet 0 with value domain1.example.com,domain2.isc.org.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client requests option 24.
@@ -146,7 +146,7 @@ Feature: DHCPv6 options defined in subnet
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with domain-search option with value global.example.com.
     Server is configured with domain-search option in subnet 0 with value subnet.example.com.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client requests option 24.

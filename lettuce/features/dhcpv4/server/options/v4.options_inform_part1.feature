@@ -13,7 +13,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with subnet-mask option with value 255.255.255.0.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -33,7 +33,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with time-offset option with value 50.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 2.
@@ -51,7 +51,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with routers option with value 100.100.100.10,50.50.50.5.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 3.
@@ -70,7 +70,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with time-servers option with value 199.199.199.1,199.199.199.2.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 4.
@@ -89,7 +89,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with name-servers option with value 199.199.199.1,100.100.100.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 5.
@@ -108,7 +108,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 6.
@@ -127,7 +127,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with log-servers option with value 199.199.199.1,100.100.100.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 7.
@@ -146,7 +146,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with cookie-servers option with value 199.199.199.1,100.100.100.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 8.
@@ -165,7 +165,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with lpr-servers option with value 199.199.199.1,150.150.150.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 9.
@@ -184,7 +184,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with impress-servers option with value 199.199.199.1,150.150.150.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 10.
@@ -203,7 +203,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with resource-location-servers option with value 199.199.199.1,150.150.150.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 11.
@@ -222,7 +222,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with host-name option with value isc.example.com.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 12.
@@ -240,7 +240,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with boot-size option with value 55.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 13.
@@ -258,7 +258,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with merit-dump option with value some-string.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 14.
@@ -276,7 +276,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with swap-server option with value 199.199.199.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 16.
@@ -294,7 +294,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with root-path option with value /some/location/example/.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 17.
@@ -312,7 +312,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with extensions-path option with value /some/location/example/.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 18.
@@ -330,7 +330,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with policy-filter option with value 199.199.199.1,50.50.50.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 21.
@@ -349,7 +349,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with max-dgram-reassembly option with value 600.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 22.
@@ -367,7 +367,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with default-ip-ttl option with value 86.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 23.
@@ -385,7 +385,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with path-mtu-aging-timeout option with value 85.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 24.

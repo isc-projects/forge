@@ -18,7 +18,7 @@ Feature: DHCPv6 Release
 	##					Status code with code NoBinding.
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -66,7 +66,7 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -126,7 +126,7 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -195,7 +195,7 @@ Feature: DHCPv6 Release
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -263,7 +263,7 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -289,7 +289,7 @@ Feature: DHCPv6 Release
 	Client copies server-id option from received message.
 
 	Test Procedure:	
-	Restart server.
+	Restart DHCP server.
 	Client requests option 7.
 	Client sends RELEASE message.
 	
@@ -317,10 +317,10 @@ Feature: DHCPv6 Release
 	##					client-id
 	##					server-id
 	##					status-code with code Success
-			
+
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.

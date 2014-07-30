@@ -7,7 +7,7 @@ Feature: DHCPv6 Prefix Delegation
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -52,7 +52,7 @@ Feature: DHCPv6 Prefix Delegation
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sends SOLICIT message.
@@ -79,7 +79,7 @@ Feature: DHCPv6 Prefix Delegation
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -98,7 +98,7 @@ Feature: DHCPv6 Prefix Delegation
  	Test Setup:
 	Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client sends REBIND message.

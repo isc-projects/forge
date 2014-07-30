@@ -17,7 +17,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with preference option with value 123.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -47,7 +47,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 21.
@@ -76,7 +76,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with sip-server-addr option with value 2001:db8::1,2001:db8::2.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 22.
@@ -107,7 +107,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 23.
@@ -139,7 +139,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 24.
@@ -169,7 +169,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 27.
@@ -199,7 +199,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nisp-servers option with value 2001:db8::abc,3000::1,2000::1234.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 28.
@@ -229,7 +229,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nis-domain-name option with value ntp.example.com.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 29.
@@ -258,7 +258,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nisp-domain-name option with value ntp.example.com.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 30.
@@ -288,7 +288,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with sntp-servers option with value 2001:db8::abc,3000::1,2000::1234.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 31.
@@ -316,7 +316,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with information-refresh-time option with value 12345678.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 32.
@@ -350,7 +350,7 @@ Feature: Standard DHCPv6 options part 2
 	Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
 	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
 	Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -392,7 +392,7 @@ Feature: Standard DHCPv6 options part 2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 24.

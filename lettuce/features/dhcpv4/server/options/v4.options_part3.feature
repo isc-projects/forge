@@ -12,7 +12,7 @@ Feature: DHCPv4 options part3
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with ip-forwarding option with value True.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 19.
@@ -30,7 +30,7 @@ Feature: DHCPv4 options part3
  	Test Setup:   
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with non-local-source-routing option with value True.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 20.
@@ -48,7 +48,7 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with perform-mask-discovery option with value False.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 29.
@@ -66,7 +66,7 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with mask-supplier option with value True.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 30.
@@ -84,7 +84,7 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with router-discovery option with value True.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 31.
@@ -102,7 +102,7 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with trailer-encapsulation option with value True.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 34.
@@ -120,7 +120,7 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with ieee802-3-encapsulation option with value True.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 36.
@@ -138,7 +138,7 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with tcp-keepalive-garbage option with value True.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 39.

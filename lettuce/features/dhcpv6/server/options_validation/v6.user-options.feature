@@ -20,7 +20,7 @@ Feature: DHCPv6 custom options
 	Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with custom option foo/100 with type uint8 and value 123.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client requests option 100.

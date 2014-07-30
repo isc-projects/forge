@@ -8,7 +8,7 @@ Scenario: v4.request.initreboot.success
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -47,7 +47,7 @@ Scenario: v4.request.initreboot.fail
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -84,7 +84,7 @@ Scenario: v4.request.initreboot.no-leases
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sends REQUEST message.

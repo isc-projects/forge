@@ -22,7 +22,7 @@ Feature: DHCPv6 vendor specific information
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	On space vendor-4491 server is configured with tftp-servers option with value 2001:558::76.
-	Server is started.
+	DHCP server is started.
 
 	Client sets enterprisenum value to 4491.
 	Client does include vendor-class.
@@ -57,7 +57,7 @@ Feature: DHCPv6 vendor specific information
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	On space vendor-4491 server is configured with config-file option with value normal_erouter_v6.cm.
-	Server is started.
+	DHCP server is started.
 
 	Client sets enterprisenum value to 4491.
 	Client does include vendor-class.
@@ -92,7 +92,7 @@ Feature: DHCPv6 vendor specific information
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	On space vendor-4491 server is configured with syslog-servers option with value 2001::101.
-	Server is started.
+	DHCP server is started.
 
 	Client sets enterprisenum value to 4491.
 	Client does include vendor-class.
@@ -128,7 +128,7 @@ Feature: DHCPv6 vendor specific information
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	On space vendor-4491 server is configured with time-servers option with value 2001::76.
-	Server is started.
+	DHCP server is started.
 
 	Client sets enterprisenum value to 4491.
 	Client does include vendor-class.
@@ -163,7 +163,7 @@ Feature: DHCPv6 vendor specific information
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	On space vendor-4491 server is configured with time-offset option with value -18000.
-	Server is started.
+	DHCP server is started.
 
 	Client sets enterprisenum value to 4491.
 	Client does include vendor-class.
@@ -214,7 +214,7 @@ Feature: DHCPv6 vendor specific information
 	On space vendor-4491 server is configured with syslog-servers option with value 2001:558:ff18:10:10:253:124:101.
 	On space vendor-4491 server is configured with time-servers option with value 2001:558:ff18:16:10:253:175:76.
 	On space vendor-4491 server is configured with time-offset option with value -10000.
-	Server is started.
+	DHCP server is started.
 
 	Client sets enterprisenum value to 4491.
 	Client does include vendor-class.
