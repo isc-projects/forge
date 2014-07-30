@@ -12,3 +12,15 @@ def start_srv_isc_dhcp(step, config_file):
                                                      ["Accepting connections.",
                                                       "exiting"])
     assert message == "Accepting connections.", "Got: " + str(line)
+
+
+def save_leases():
+    assert False, "TODO!"
+
+
+def save_logs():
+    assert False, "TODO!"
+
+
+def clear_all():
+    assert False, "TODO!"
