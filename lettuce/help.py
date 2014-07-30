@@ -35,7 +35,7 @@ class TestHistory ():
         self.path = None
 
         from features.init_all import SOFTWARE_UNDER_TEST
-        self.software_type = SOFTWARE_UNDER_TEST
+        self.software_type = str(SOFTWARE_UNDER_TEST)
         
         #TODO: implement this
         self.bind10_version = "N/A"
@@ -190,7 +190,6 @@ class UserHelp ():
             if not more:
                 print 'For more information, use help.py to generate UserHelp document.\n'
 
-
     def steps(self):
         """
         Generate list of available steps in tests.
@@ -217,10 +216,12 @@ class UserHelp ():
 
 def find_scenario(name, IPversion):
     from features.init_all import SOFTWARE_UNDER_TEST
-    if "server" in SOFTWARE_UNDER_TEST:
-        testType = "server"
-    elif "client" in SOFTWARE_UNDER_TEST:
-        testType = "client"
+    testType = ""
+    for each in SOFTWARE_UNDER_TEST:
+        if "client" in each:
+            testType = "client"
+        elif "server" in each:
+            testType = "server"
 
     scenario = 0
     for path, dirs, files in os.walk("features/dhcpv" + IPversion + "/" + testType + "/"):
@@ -238,12 +239,14 @@ def find_scenario(name, IPversion):
                 file_name.close()
     return None, 0
 
+
 def find_scenario_in_path(name, path):
     from features.init_all import SOFTWARE_UNDER_TEST
-    if "server" in SOFTWARE_UNDER_TEST:
-        testType = "server"
-    elif "client" in SOFTWARE_UNDER_TEST:
-        testType = "client"
+    for each_software_name in SOFTWARE_UNDER_TEST:
+        if "server" in each_software_name:
+            testType = "server"
+        elif "client" in each_software_name:
+            testType = "client"
 
     scenario = 0
     for path, dirs, files in os.walk(path):
