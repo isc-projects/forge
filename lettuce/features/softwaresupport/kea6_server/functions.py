@@ -17,13 +17,14 @@
 
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
-    remove_local_file, cpoy_configuration_file, fabric_sudo_command, json_file_layout
+    remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
+    fabric_download_file, fabric_remove_file_command
 
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SAVE_BIND_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
+from init_all import SERVER_INSTALL_DIR, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
     BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2, SLEEP_TIME_1, SOFTWARE_UNDER_TEST, SERVER_INSTALL_DIR
 
 
@@ -242,9 +243,9 @@ def set_kea_ctrl_config():
     kea6 = 'no'
     kea4 = 'no'
     ddns = 'no'
-    if SOFTWARE_UNDER_TEST == "kea6_server":
+    if "kea6" in world.cfg["dhcp_under_test"]:
         kea6 = 'yes'
-    elif SOFTWARE_UNDER_TEST == "kea4_server":
+    elif "kea4" in world.cfg["dhcp_under_test"]:
         kea4 = 'yes'
     if world.ddns_enable:
         ddns = 'yes'
@@ -342,8 +343,8 @@ def start_srv(start, process):
     cfg_write()
     fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/kea/kea.conf")
     fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/kea/keactrl.conf")
-    cpoy_configuration_file(world.cfg["cfg_file"])
-    cpoy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
+    copy_configuration_file(world.cfg["cfg_file"])
+    copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
     remove_local_file(world.cfg["cfg_file_2"])
     v6, v4 = check_kea_status()
@@ -364,8 +365,8 @@ def start_srv(start, process):
         check_kea_process_result(start, result, process)
 
 
-def stop_srv():
-    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+def stop_srv(value = False):
+    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1), value)
 
 
 def restart_srv():
@@ -374,3 +375,16 @@ def restart_srv():
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
+
+
+def save_leases():
+    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
+
+
+def save_logs():
+    fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
+
+
+def clear_all():
+    fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log')
+    fabric_remove_file_command(world.cfg['leases'])
