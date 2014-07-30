@@ -23,8 +23,6 @@ from lettuce.decorators import step
 #
 
 
-
-
 @step('References: (\S+).')
 def references_check(step, references):
     assert len(references), "References cannot be empty."
