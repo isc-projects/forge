@@ -21,7 +21,8 @@ from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
-    remove_local_file, cpoy_configuration_file, fabric_sudo_command
+    remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file,\
+    fabric_remove_file_command
 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
@@ -47,8 +48,7 @@ isc_dhcp_options6 = {
                  "nis-domain-name": "nis-domain-name",
                  "nisp-domain-name": "nisp-domain-name",
                  "sntp-servers": "sntp-servers",
-                 "information-refresh-time": "info-refresh-time"
-                     }
+                 "information-refresh-time": "info-refresh-time"}
 
 needs_chenging = {
                   "sip-servers-names": True,
@@ -56,7 +56,7 @@ needs_chenging = {
                   "domain-search": True,
                   "nis-domain-name": True,
                   "nisp-domain-name": True,
-                  33: True #for 'config file', that will need more work:)
+                  33: True  # for 'config file', that will need more work:)
                   }
 
 isc_dhcp_otheroptions = {"tftp-servers": 32,
@@ -150,9 +150,9 @@ def restart_srv():
                         + world.cfg['leases'] + '); sleep 5;')
 
 
-def stop_srv():
+def stop_srv(value = False):
     try:
-        fabric_sudo_command("killall dhcpd &>/dev/null")
+        fabric_sudo_command("killall dhcpd &>/dev/null", value)
     except:
         pass
 
@@ -163,11 +163,13 @@ def set_time(step, which_time, value):
     else:
         assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
+
 def unset_time(step, which_time):
     if which_time in world.cfg["server_times"]:
             world.cfg["server_times"][which_time] = None
     else:
         assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+
 
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# Config file for ISC-DHCPv6 \n"
@@ -180,24 +182,25 @@ def add_defaults():
 
     value = world.cfg["server_times"]["renew-timer"]
     if value != None:
-        world.cfg["conf_time"] += '''option dhcp-renewal-time {0};\n'''.format(value);
+        world.cfg["conf_time"] += '''option dhcp-renewal-time {0};\n'''.format(value)
 
     value = world.cfg["server_times"]["rebind-timer"]
     if value != None:
-        world.cfg["conf_time"] += '''option dhcp-rebinding-time {0};\n'''.format(value);
+        world.cfg["conf_time"] += '''option dhcp-rebinding-time {0};\n'''.format(value)
 
     value = world.cfg["server_times"]["preferred-lifetime"]
     if value != None:
-        world.cfg["conf_time"] += '''preferred-lifetime {0};\n'''.format(value);
+        world.cfg["conf_time"] += '''preferred-lifetime {0};\n'''.format(value)
 
     value = world.cfg["server_times"]["valid-lifetime"]
     if value != None:
-        world.cfg["conf_time"] += '''default-lease-time {0};\n'''.format(value);
+        world.cfg["conf_time"] += '''default-lease-time {0};\n'''.format(value)
 
     if world.cfg["server_times"]["rapid-commit"]:
         world.cfg["conf_time"] += '''
             option dhcp6.rapid-commit;
             '''
+
 
 def prepare_cfg_subnet(step, subnet, pool):
     get_common_logger().debug("Configure subnet...")
@@ -215,7 +218,7 @@ def prepare_cfg_subnet(step, subnet, pool):
     else:
         pool = pool.replace('-', ' ')
 
-    world.cfg["conf_subnet"] += '''\
+    world.cfg["conf_subnet"] += '''
         subnet6 {subnet} {pointer}
             range6 {pool};
         '''.format(**locals())
@@ -257,9 +260,9 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
                 option space {space} code width 2 length width 2;
                 '''.format(**locals())
                 #code width 2 length width 2 hash size 3
-        type = isc_dhcp_otheroptions_value_type.get(option_name)
+        value_type = isc_dhcp_otheroptions_value_type.get(option_name)
         world.cfg["conf_vendor"] += '''
-            option {space}.{option_name} code {option_proper_name} = {type};
+            option {space}.{option_name} code {option_proper_name} = {value_type};
             option {space}.{option_name} {option_value};
             '''.format(**locals())
 
@@ -396,7 +399,7 @@ def start_srv(start, process):
     get_common_logger().debug("Start ISC-DHCPv6 with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
     fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
-    cpoy_configuration_file(world.cfg["cfg_file"] + '_processed')
+    copy_configuration_file(world.cfg["cfg_file"] + '_processed')
     remove_local_file(world.cfg["cfg_file"])
     #set_ethernet_interface()
     stop_srv()
@@ -420,8 +423,9 @@ def run_command(step, command):
 
 
 def log_contains(step, condition, line):
-    result = fabric_run_command('sudo grep -c \"' + line + '\" '
-                                + world.cfg["log_file"])
+    #TODO move it to multi_server_functions.
+    result = fabric_sudo_command('grep -c \"' + line + '\" '
+                                 + world.cfg["log_file"])
     if condition is not None:
         if result.succeeded:
             assert False, 'Log contains line: "%s" But it should NOT.' % line
@@ -429,9 +433,24 @@ def log_contains(step, condition, line):
         if result.failed:
             assert False, 'Log does NOT contain line: "%s"' % line
 
+
 def log_contains_count(step, count, line):
-    result = fabric_run_command('sudo grep -c \"' + line + '\" '
-                                + world.cfg["log_file"])
+    result = fabric_sudo_command('grep -c \"' + line + '\" '
+                                 + world.cfg["log_file"])
     if count != result:
         assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
 
+
+def save_leases():
+    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+
+
+def save_logs():
+    fabric_download_file(world.cfg["log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+
+
+def clear_all():
+    # TODO we should consider moving it to multi_server_functions, and set just world.cfg["log_file"]
+    #  and world.cfg["leases"] in every supported server files
+    fabric_remove_file_command(world.cfg["log_file"])
+    fabric_remove_file_command(world.cfg["leases"])
