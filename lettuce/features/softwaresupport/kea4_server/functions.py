@@ -16,16 +16,16 @@
 # Author: Wlodzimierz Wencel
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
-    cpoy_configuration_file, fabric_sudo_command
+    copy_configuration_file, fabric_sudo_command, fabric_download_file
 from lettuce import world
 from logging_facility import *
 
 from logging_facility import get_common_logger
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_BIND_LOGS, SLEEP_TIME_1
+from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
-    check_kea_process_result
+    check_kea_process_result, save_logs, clear_all
 
 kea_options4 = {"subnet-mask": 1,  # ipv4-address (array)
                 "time-offset": 2, 
@@ -251,8 +251,8 @@ def start_srv(start, process):
     cfg_write()
     fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/kea/kea.conf")
     fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/kea/keactrl.conf")
-    cpoy_configuration_file(world.cfg["cfg_file"])
-    cpoy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
+    copy_configuration_file(world.cfg["cfg_file"])
+    copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
     remove_local_file(world.cfg["cfg_file_2"])
     v6, v4 = check_kea_status()
@@ -275,3 +275,7 @@ def start_srv(start, process):
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"
+
+
+def save_leases():
+    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd4.leases')
