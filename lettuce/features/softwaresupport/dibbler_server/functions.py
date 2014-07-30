@@ -26,9 +26,9 @@ def restart_srv():
     fabric_run_command("("+SERVER_INSTALL_DIR+"sbin/dibbler-server restart); sleep 1;")
 
 
-def stop_srv():
+def stop_srv(value = False):
     #pass
-    fabric_run_command("("+SERVER_INSTALL_DIR+"sbin/dibbler-server stop); sleep 1;")
+    fabric_run_command("("+SERVER_INSTALL_DIR+"sbin/dibbler-server stop); sleep 1;", value)
 
 
 def prepare_cfg_default(step):
@@ -135,3 +135,15 @@ def start_srv(a, b):
     fabric_send_file(world.cfg["cfg_file"], '/etc/dibbler/server.conf')
     remove_local_file(world.cfg["cfg_file"])
     fabric_run_command ('('+SERVER_INSTALL_DIR+'sbin/dibbler-server start & ); sleep 4;')
+
+
+def save_leases():
+    assert False, "TODO!"
+
+
+def save_logs():
+    assert False, "TODO!"
+
+
+def clear_all():
+    assert False, "TODO!"
