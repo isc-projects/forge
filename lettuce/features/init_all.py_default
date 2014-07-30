@@ -7,7 +7,14 @@
 # kea - for kea configuration
 # ISC-DHCP - for ISC-DHCP configurations
 
+# DO NOT CHANGE THAT UNTIL YOU ADD SUPPORT FOR ANOTHER SOFTWARE
+# then place it's name in DNS or DHCP list.
+DNS = "bind9_server",
+DHCP = "dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server",\
+       "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind"
 
+
+# =======================================
 # =============== GENERAL ===============
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
@@ -18,14 +25,23 @@ LOGLEVEL = "info"
 # client - shows DHCP requeests sent from the test client
 # server -  shows DHCP responses received from the server under test
 # both - shows DHCP packets from both test client and server under test
-SHOW_DHCP_PACKETS_FROM = ""
+SHOW_PACKETS_FROM = ""
 
 # This defines which software will be tested.
 # Allowed values:
-# dibbler_client, dibbler_server, kea6_server, kea4_server, isc_dhcp4_server, isc_dhcp6_server
+# dibbler_client, dibbler_server, kea6_server, kea4_server, isc_dhcp4_server, isc_dhcp6_server,
+# kea4_server_bind, kea6_server_bind, bind9_server
 # Not all of those are functional yet. This is essentially
 # name of the subdirectory in lettuce/features/softwaresupport
-SOFTWARE_UNDER_TEST = ""
+# This is list of software under test, you can test server or client (not both!) at the same time,
+# also you can use only one DHCP and one DNS server and must end with coma ","
+# in e.g.:
+# SOFTWARE_UNDER_TEST = "kea6_server","bind9_server",
+
+SOFTWARE_UNDER_TEST = "",
+
+# INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = "kea6_server","kea4_server"
+# or SOFTWARE_UNDER_TEST = "kea6_server","dibbler_client"
 
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
@@ -45,6 +61,18 @@ GIADDR4 = "0.0.0.0"
 # Defines name of the DUT-facing network interface
 IFACE = ""
 
+# Defines port numbers for each DHCP version, default values are:
+# dhcp v4 source = 68
+# dhcp v4 destination = 67
+# dhcp v6 source = 546
+# dhcp v6 destination = 547
+
+DHCP4_PORT_S = 68  # source port
+DHCP4_PORT_D = 67  # destination port
+
+DHCP6_PORT_S = 546  # source port
+DHCP6_PORT_D = 547  # destination port
+
 # defines client MAC (used for DUID generation)
 CLI_MAC = "00:02:03:04:05:06"
 
@@ -56,22 +84,6 @@ CLI_LINK_LOCAL = ""
 # For all servers, choose ethernet interface on which server will be configured
 # to listen and respond.
 SERVER_IFACE = ""
-
-# In order to make sure we start all tests with a 'clean' environment,
-# We perform a number of initialization steps, like restoring configuration
-# files, and removing generated data files.
-
-# This approach may not scale; if so we should probably provide specific
-# initialization steps for scenarios. But until that is shown to be a problem,
-# It will keep the scenarios cleaner.
-
-# This is a list of files that are freshly copied before each scenario
-# The first element is the original, the second is the target that will be
-# used by the tests that need them
-copylist = [ ]
-
-# This is a list of files that, if present, will be removed before each scenario
-removelist = [ ]
 
 # When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
 # as the interval in which to check again if it has not been found yet.
@@ -98,6 +110,12 @@ SRV_IPV6_ADDR_LINK_LOCAL = ""
 # when starting run_test.py
 HISTORY = False
 
+# Save log file in tests result folder
+SAVE_LOGS = False
+
+# Save leases file in tests result folder
+SAVE_LEASES = False
+
 # Also you can save separate .pcap file of every test. In default it's disabled
 # If you recieve error tcpdump: <file name>: Permission denied
 # please use command as a root: aa-complain /usr/sbin/tcpdump
@@ -119,8 +137,27 @@ AUTO_ARCHIVE = False
 SLEEP_TIME_1 = 2 # wait after starting remote server
 SLEEP_TIME_2 = 2 # wait after all others commands
 
-# =============== SSH ===============
 
+# =============== DATABASE BACKENDS ===============
+# If server is capable to use different database backends, fill this section
+
+# Backend type:
+DB_TYPE = ""
+
+# Data base name:
+DB_NAME = ""
+
+# User name for databased named DB_NAME
+DB_USER = ""
+
+# Password for user DB_USER:
+DB_PASSWD = ""
+
+# Host address where is our data base, most likely it will be 'localhost'
+DB_HOST = "localhost"
+
+
+# =============== SSH ===============
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required! So edit sudoers
 # file, or use root account.
@@ -137,11 +174,7 @@ MGMT_PASSWORD = ""
 # For example, it appends "bin/" to obtain path to the bindctl.
 SERVER_INSTALL_DIR = "/usr/local/"
 
-# Copy logs file, different file for each test.
-# WARRNING: this produce really big amount of data!
-# Default - False
-SAVE_BIND_LOGS = False
-
+# === For Bundy configuration backend ===
 # Also we can decide which logging type choose, logging lvl,
 # and BIND10 module type
 # for more accurate information please read BIND10 Guide, Chapter 21. Logging
@@ -156,16 +189,8 @@ BIND_LOG_LVL = 0
 # want every BIND module to log something.
 BIND_MODULE = ""
 
-# =============== DIBBLER ================
-DIBBLER_INSTALL_DIR = ""
 
 # =============== ISC-DHCP ================
-# Save leases file in tests result folder
-SAVE_LEASES = False
-
-# Save log file in tests result folder
-SAVE_LOGS = False
-
 # ISC_DHCP dhcpd uses syslog (rsyslog). In order to capture logging
 # you will need to modify /etc/syslog.conf (/etc/rsyslog.conf) to
 # contain a line as follows:
@@ -178,3 +203,23 @@ SAVE_LOGS = False
 #
 ISC_DHCP_LOG_FACILITY = "local7"
 ISC_DHCP_LOG_FILE = "/var/log/forge_dhcpd.log"
+
+
+# =============== DNS ===============
+# When DNS protocol used to testing.
+
+# Interface on which we are sending DNS queries
+DNS_IFACE = ""
+
+# DNS server address:
+DNS_ADDR = ""
+
+# DNS port number, default value is 53
+DNS_PORT = 53
+
+# Absolute path to server installation:
+DNS_SERVER_INSTALL_DIR = ""
+
+# Additional path for server management:
+DNS_DATA_DIR = ""
+
