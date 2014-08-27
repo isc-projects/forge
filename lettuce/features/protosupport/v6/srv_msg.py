@@ -682,7 +682,6 @@ def client_save_option(step, option_name, count = 0):
 
     if not world.savedmsg.has_key(count):
         world.savedmsg[count] = [opt]
-        print "tutaj"
     else:
         world.savedmsg[count].append(opt)
 
@@ -890,6 +889,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 received = ",".join(each.sntpservers)
             elif opt_code == 32:
                 received = str(each.reftime)
+            elif opt_code == 39:
+                received = str(each.fields.get(data_type))
+
             else:
                 # if you came to this place, need to do some implementation with new options
                 received = unknown_option_to_str(data_type, each)
