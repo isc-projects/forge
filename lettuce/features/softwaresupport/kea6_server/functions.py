@@ -25,9 +25,8 @@ from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_d
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SERVER_INSTALL_DIR, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
-    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2, SLEEP_TIME_1, SOFTWARE_UNDER_TEST, SERVER_INSTALL_DIR
-
-
+    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2, SLEEP_TIME_1, SOFTWARE_UNDER_TEST, \
+    SERVER_INSTALL_DIR, DB_TYPE, DB_NAME, DB_USER, DB_PASSWD, DB_HOST
 kea_options6 = { "client-id": 1,
                  "server-id": 2,
                  "IA_NA": 3,
@@ -79,6 +78,7 @@ def add_defaults():
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["preferred-lifetime"]
     t4 = world.cfg["server_times"]["valid-lifetime"]
+    #rapid = world.cfg["server_times"]["rapid-commit"] # temporary action to make rapid possible TODO: fix it!
     eth = SERVER_IFACE
     pointer_start = "{"
     pointer_end = "}"
@@ -111,7 +111,8 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     pointer_start = "{"
     pointer_end = "}"
 
-    world.subcfg[world.kea["subnet_cnt"]][0] += '\n\t\t{pointer_start} "pool": [ "{pool}" ],' \
+    world.subcfg[world.kea["subnet_cnt"]][0] += '\n\t\t{pointer_start} "pools":' \
+                                                ' [ {pointer_start}"pool": "{pool}" {pointer_end} ],' \
                                                 ' "subnet": "{subnet}"'.format(**locals())
 
     if eth is not None:
@@ -261,12 +262,51 @@ def set_kea_ctrl_config():
     '''.format(**locals())
 
 
+def add_simple_opt(passed_option):
+    if not "simple_options" in world.cfg:
+        world.cfg["simple_options"] = ''
+    else:
+        world.cfg["simple_options"] += ","
+
+    world.cfg["simple_options"] += passed_option
+
+
+def add_option_to_main(option, value):
+    pass
+    # if value in ["True", "true", "TRUE", "False", "FALSE", "false"]:
+    #     world.cfg["main"] += ',"{option}":{value}'.format(**locals())
+    # else:
+    #     world.cfg["main"] += ',"{option}":"{value}"'.format(**locals())
+
+
+def config_db_backend():
+    if DB_TYPE == "" or DB_TYPE == "memfile":
+        add_simple_opt('"lease-database":{"type": "memfile"}')
+
+    else:
+        pointer_start = '{'
+        pointer_end = '}'
+        db_type = DB_TYPE
+        db_name = DB_NAME
+        db_user = DB_USER
+        db_passwd = DB_PASSWD
+
+        if DB_HOST == "" or DB_HOST == "localhost":
+            db_host = ""
+        else:
+            db_host = DB_HOST
+
+        add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
+                       "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+                       "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+
+
 def cfg_write():
+    config_db_backend()
     for number in range(0, len(world.subcfg)):
-        world.subcfg[number][2] = '\n\t\"option-data\": [\n' + world.subcfg[number][2] + "]"
+        world.subcfg[number][2] = '\"option-data\": [' + world.subcfg[number][2] + "]"
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["main"])
-    tmp = ''
     counter = 0
     for each_subnet in world.subcfg:
         tmp = each_subnet[0]
@@ -275,21 +315,24 @@ def cfg_write():
             if len(each_subnet_config_part) > 0:
                 tmp += ',' + each_subnet_config_part
             #tmp += str(each_subnet[-1])
-        cfg_file.write(tmp + '\n}')
+        cfg_file.write(tmp + '}')
         if counter != len(world.subcfg) and len(world.subcfg) > 1:
             cfg_file.write(",")
-    cfg_file.write('\n]\n')
+    cfg_file.write(']')
 
     if "options" in world.cfg:
         cfg_file.write(',' + world.cfg["options"])
         cfg_file.write("]")
+        del world.cfg["options"]
 
     if "option_def" in world.cfg:
         cfg_file.write(',' + world.cfg["option_def"])
         cfg_file.write("]")
+        del world.cfg["option_def"]
 
     if "simple_options" in world.cfg:
         cfg_file.write(',' + world.cfg["simple_options"])
+        del world.cfg["simple_options"]
 
     if world.ddns_enable:
         cfg_file.write(',' + world.ddns_add + '}')
@@ -297,26 +340,31 @@ def cfg_write():
     if "custom_lines" in world.cfg:
         cfg_file.write(',' + world.cfg["custom_lines"])
         cfg_file.write("]")
+        del world.cfg["custom_lines"]
 
-    # TODO make available different database backends!
-    cfg_file.write(',\n\n\t"lease-database":{"type": "memfile"}\n\t}')
+    cfg_file.write('}')
 
     if world.ddns_enable:
         build_ddns_config()
         cfg_file.write(world.ddns)
         #cfg_file.write("}")
 
-    cfg_file.write('\n\n\t}\n')  # end of the config file
+    logging_file = SERVER_INSTALL_DIR + 'var/kea/kea.log'
+    cfg_file.write(''',"Logging": {"loggers": [{"name": "kea-dhcp-ddns.dhcpddns","output_options": [{"output": "''' +
+                   logging_file + '''","destination": "file"}],"debuglevel": 99,"severity": "DEBUG"}]}''')
+    cfg_file.write('}')  # end of the config file
     cfg_file.close()
     # kea ctrl script config file
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
     cfg_file.write(world.cfg["keactrl"])
     cfg_file.close()
     json_file_layout()
+    world.subcfg = [["", "", "", ""]]
 
 
 def check_kea_process_result(succeed, result, process):
-    errors = ["Failed to apply configuration", "Failed to initialize server"]
+    errors = ["Failed to apply configuration", "Failed to initialize server",
+              "Service failed", "failed to initialize Kea server"]
     for each in errors:
         if succeed:
             if each in result:
@@ -371,20 +419,66 @@ def stop_srv(value = False):
 
 def restart_srv():
     fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+    #clear_all()
     fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
 
 
+def clear_leases():
+    db_name = DB_NAME
+    db_user = DB_USER
+    db_passwd = DB_PASSWD
+
+    if DB_TYPE == "mysql":
+        # that is tmp solution - just clearing not saving.
+        command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        fabric_run_command(command)
+    elif DB_TYPE == "postgresql":
+        pointer_start = '{'
+        pointer_end = '}'
+        command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        fabric_run_command(command)
+    else:
+        fabric_remove_file_command(world.cfg['leases'])
+
+
 def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
+    db_name = DB_NAME
+    db_user = DB_USER
+    db_passwd = DB_PASSWD
+
+    if DB_TYPE == "mysql":
+        # that is tmp solution - just clearing not saving.
+        command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        fabric_run_command(command)
+    elif DB_TYPE == "postgresql":
+        pointer_start = '{'
+        pointer_end = '}'
+        command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        fabric_run_command(command)
+    else:
+        fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
 
 
 def save_logs():
     fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
+    #fabric_download_file("/var/log/kea-debug.log", world.cfg["dir_name"] + '/log_file')
 
 
 def clear_all():
     fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log')
-    fabric_remove_file_command(world.cfg['leases'])
+    db_name = DB_NAME
+    db_user = DB_USER
+    db_passwd = DB_PASSWD
+    if DB_TYPE in ["memfile", ""]:
+        fabric_remove_file_command(world.cfg['leases'])
+    elif DB_TYPE == "mysql":
+        command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        fabric_run_command(command)
+    elif DB_TYPE == "postgresql":
+        pointer_start = '{'
+        pointer_end = '}'
+        command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        fabric_run_command(command)
