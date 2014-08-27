@@ -422,35 +422,16 @@ def run_command(step, command):
     world.cfg["custom_lines"] += ('\n'+command+'\n')
 
 
-def log_contains(step, condition, line):
-    #TODO move it to multi_server_functions.
-    result = fabric_sudo_command('grep -c \"' + line + '\" '
-                                 + world.cfg["log_file"])
-    if condition is not None:
-        if result.succeeded:
-            assert False, 'Log contains line: "%s" But it should NOT.' % line
-    else:
-        if result.failed:
-            assert False, 'Log does NOT contain line: "%s"' % line
-
-
-def log_contains_count(step, count, line):
-    result = fabric_sudo_command('grep -c \"' + line + '\" '
-                                 + world.cfg["log_file"])
-    if count != result:
-        assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
-
-
 def save_leases():
     fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
 
 
 def save_logs():
-    fabric_download_file(world.cfg["log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
 
 
 def clear_all():
-    # TODO we should consider moving it to multi_server_functions, and set just world.cfg["log_file"]
+    # TODO we should consider moving it to multi_server_functions, and set just world.cfg["dhcp_log_file"]
     #  and world.cfg["leases"] in every supported server files
-    fabric_remove_file_command(world.cfg["log_file"])
+    fabric_remove_file_command(world.cfg["dhcp_log_file"])
     fabric_remove_file_command(world.cfg["leases"])
