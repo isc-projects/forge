@@ -307,50 +307,41 @@ def stop_srv(step, name):
         assert False, "I don't think there is support for something else than DNS or DHCP"
 
 
+@step('Clear leases.')
+def clear_leases(step):
+    dhcp.clear_leases()
+
 ##DDNS server
-@step('DDNS server is configured on address (\S+) and port (\S+).')
+@step('DDNS server is configured on (\S+) address and (\S+) port.')
 def add_ddns_server(step, address, port):
     ddns_block()
+    address, port = test_define_value(address, port)
     ddns.add_ddns_server(address, port)
 
 
-@step('Add forward DDNS with name (\S+), key (\S+) on address (\S+) and port (\S+).')
+@step('DDNS server is configured with (\S+) option set to (\S+).')
+def add_ddns_server_options(step, option, value):
+    ddns_block()
+    option, value = test_define_value(option, value)
+    ddns.add_ddns_server_options(option, value)
+
+
+@step('Add forward DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
 def add_forward_ddns(step, name, key_name, ipaddress, port):
     ddns_block()
     ddns.add_forward_ddns(name, key_name, ipaddress, port)
 
 
-@step('Add reverse DDNS with name (\S+) on address (\S+) and port (\S+).')
-def add_reverse_ddns(step, name, ipaddress, port):
+@step('Add reverse DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
+def add_reverse_ddns(step, name, key_name, ipaddress, port):
     ddns_block()
-    ddns.add_reverse_ddns(name, ipaddress, port)
+    ddns.add_reverse_ddns(name, key_name, ipaddress, port)
 
 
 @step('Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
 def add_keys(step, name, algorithm, secret):
     ddns_block()
     ddns.add_keys(secret, name, algorithm)
-
-
-# that should be moved to srv_msg.py
-@step('Log MUST (NOT )?contain line: (.+)')
-def log_includes_line(step, condition, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    line = test_define_value(line)[0]
-    dhcp.log_contains(step, condition, line)
-
-
-@step('Log contains (\d+) of line: (.+)')
-def log_includes_count(step, count, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    count, line = test_define_value(count, line)
-    dhcp.log_contains_count(step, count, line)
 
 
 @step('Use DNS set no. (\d+).')
