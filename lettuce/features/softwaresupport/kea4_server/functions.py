@@ -144,7 +144,8 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     pointer_start = "{"
     pointer_end = "}"
 
-    world.subcfg[world.kea["subnet_cnt"]][0] += '\n\t\t{pointer_start} "pool": [ "{pool}" ],' \
+    world.subcfg[world.kea["subnet_cnt"]][0] += '\n\t\t{pointer_start} "pools":' \
+                                                ' [ {pointer_start}"pool": "{pool}" {pointer_end} ],' \
                                                 ' "subnet": "{subnet}"'.format(**locals())
 
     if eth is not None:
