@@ -1,7 +1,7 @@
 Feature: DHCPv6 Prefix Delegation 
     Test for basic Prefix Delegation, based on RFC 3633
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.server_configuration
     
  	Test Setup:
@@ -11,7 +11,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_advertise
   
  	Test Setup:
@@ -31,7 +31,7 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section: 9
 
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD
 
     Test Setup:
@@ -52,7 +52,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 9
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.without_server_configuration
 
  	Test Setup:

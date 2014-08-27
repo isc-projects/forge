@@ -2,7 +2,7 @@
 Feature: Standard DHCPv6 renew message 
     This feature is designed for checking server response for invalid renew messages. RFC 3315 section 15.6 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
-@v6 @renew_invalid
+@v6 @dhcp6 @renew_invalid
     Scenario: v6.renew.invalid.without_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -72,7 +72,7 @@ Feature: Standard DHCPv6 renew message
 
 	References: RFC3315 section 15.6
 	
-@v6 @renew_invalid
+@v6 @dhcp6 @renew_invalid
     Scenario: v6.renew.invalid.wrong_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -144,7 +144,7 @@ Feature: Standard DHCPv6 renew message
 
 	References: RFC3315 section 15.6 
 	
-@v6 @renew_invalid 
+@v6 @dhcp6 @renew_invalid
     Scenario: v6.renew.invalid.without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -207,7 +207,7 @@ Feature: Standard DHCPv6 renew message
 
 	References: RFC3315 section 15.6
 
-@v6 @renew_invalid
+@v6 @dhcp6 @renew_invalid
     Scenario: v6.renew.invalid.blank_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -270,7 +270,7 @@ Feature: Standard DHCPv6 renew message
 	
 	References: RFC3315 section 15.6
 	
-@v6 @renew_invalid @invalid_option @outline
+@v6 @dhcp6 @renew_invalid @invalid_option @outline
     Scenario: v6.renew.invalid.options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -333,7 +333,7 @@ Feature: Standard DHCPv6 renew message
 	
 	References: RFC3315 section 15.6, table A: Appearance of Options in Message Types
 	
-@v6 @renew_invalid @invalid_option @outline
+@v6 @dhcp6 @renew_invalid @invalid_option @outline
     Scenario: v6.renew.invalid.options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -396,7 +396,7 @@ Feature: Standard DHCPv6 renew message
 	
 	References: RFC3315 section 15.6, table A: Appearance of Options in Message Types
 	
-@v6 @renew_invalid @invalid_option @outline
+@v6 @dhcp6 @renew_invalid @invalid_option @outline
     Scenario: v6.renew.invalid.options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -459,7 +459,7 @@ Feature: Standard DHCPv6 renew message
 	
 	References: RFC3315 section 15.6, table A: Appearance of Options in Message Types
 		
-@v6 @renew_invalid @invalid_option @outline
+@v6 @dhcp6 @renew_invalid @invalid_option @outline
     Scenario: v6.renew.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -522,7 +522,7 @@ Feature: Standard DHCPv6 renew message
 	
 	References: RFC3315 section 15.6, table A: Appearance of Options in Message Types
 	
-@v6 @renew_invalid @invalid_option @outline
+@v6 @dhcp6 @renew_invalid @invalid_option @outline
     Scenario: v6.renew.invalid.options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -585,7 +585,7 @@ Feature: Standard DHCPv6 renew message
 	
 	References: RFC3315 section 15.6, table A: Appearance of Options in Message Types
 	
-@v6 @renew_invalid @invalid_option @outline
+@v6 @dhcp6 @renew_invalid @invalid_option @outline
     Scenario: v6.renew.invalid.options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -648,7 +648,7 @@ Feature: Standard DHCPv6 renew message
 	
 	References: RFC3315 section 15.6, table A: Appearance of Options in Message Types
 
-@v6 @renew_invalid @invalid_option @outline
+@v6 @dhcp6 @renew_invalid @invalid_option @outline
     Scenario: v6.renew.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 

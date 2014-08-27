@@ -1,7 +1,7 @@
 Feature: DHCPv6 Prefix Delegation 
     Test for Prefix Delegation using Request messages,multiple IA/PD in one request, based on RFC 3633.
 	
-@v6 @PD @rfc3633 @multiplePD
+@v6 @dhcp6 @PD @rfc3633 @multiplePD
     Scenario: prefix.delegation.multiple.request
     
    	Test Setup:
@@ -64,7 +64,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633 @multiplePD
+@v6 @dhcp6 @PD @rfc3633 @multiplePD
     Scenario: prefix.delegation.multiple.PD_and_IA_request
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::4 pool.
@@ -136,7 +136,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633 @multiplePD
+@v6 @dhcp6 @PD @rfc3633 @multiplePD
     Scenario: prefix.delegation.multiple.PD_and_IA_request_partial_success
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
@@ -206,7 +206,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.multiple.PD_and_IA_request_partial_fail
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
@@ -254,7 +254,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 
-	@v6 @PD @rfc3633
+	@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.multiple.PD_and_IA_advertise_fail
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.

@@ -1,7 +1,7 @@
 Feature: DHCPv6 Prefix Delegation 
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_renew
   
  	Test Setup:
@@ -43,7 +43,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_renew_nobinding
   
  	Test Setup:
@@ -73,7 +73,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_renew_nobinding_new_IA_PD
   
  	Test Setup:
@@ -104,7 +104,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2	
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_renew
   
  	Test Setup:
@@ -149,7 +149,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_renew_nobindig
 	
  	Test Setup:

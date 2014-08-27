@@ -1,7 +1,7 @@
 Feature: DHCPv6 Prefix Delegation 
     Testing Server's politics about Confirm and Decline messages, based on RFC 3633.
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_confirm
 
 	Test Setup:
@@ -44,7 +44,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633 Section 12.1.
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_decline
 
 	Test Setup:

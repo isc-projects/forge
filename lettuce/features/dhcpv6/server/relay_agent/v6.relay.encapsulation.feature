@@ -1,7 +1,7 @@
 Feature: DHCPv6 Relay Agent encapsulation and Interface ID 
     This is a simple DHCPv6 message exchange between server and relay-agent using message encapsulation and Interface ID  
 
-@v6 @relay
+@v6 @dhcp6 @relay
     Scenario: v6.relay.message.interfaceid
 
 	Test Setup:
@@ -20,7 +20,7 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 	
 	References: RFC3315 section 18.2.8
 
-@v6 @relay 
+@v6 @dhcp6 @relay
     Scenario: v6.relay.encapsulate.31lvl
 
 	Test Setup:
@@ -38,7 +38,7 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 	
 	References: RFC3315 section 18.2.8 20.
 
-@v6 @relay 
+@v6 @dhcp6 @relay
     Scenario: v6.relay.encapsulate.15lvl
 
 	Test Setup:

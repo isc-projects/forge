@@ -1,7 +1,7 @@
 Feature: DHCPv6 Rebind
     Those are tests for rebind - reply exchange.
     
-@v6 @rebind
+@v6 @dhcp6 @rebind
     Scenario: v6.message.rebind-reply-zerotime
 	## Testing server ability server ability perform REBIND - REPLY message exchange.
 	## Message details 		Client		Server
@@ -57,7 +57,7 @@ Feature: DHCPv6 Rebind
 	
 	References: RFC3315 sections 5.3, 18.2.4 
 	
-@v6 @rebind
+@v6 @dhcp6 @rebind
     Scenario: v6.message.rebind-reply-newtime
 	## Testing server ability server ability perform REBIND - REPLY message exchange.
 	## Additional server configuration: 

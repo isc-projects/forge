@@ -6,7 +6,7 @@ Feature: Kea6 User Check Hook Library
 # automatically addes "config set Dhcp6/subnet[0]/interface <SERVER_IFACE>"
 # to the server configuration.
 
-@v6 @kea_only @user_check @vendor_options
+@v6 @dhcp6 @kea_only @user_check @vendor_options
     Scenario: user_check.vendor_options.all
 
     # Install the requisite user registry file onto the server and then 

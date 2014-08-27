@@ -2,7 +2,7 @@
 Feature: Standard DHCPv6 decline message 
     This feature is designed for checking server response for invalid decline messages. RFC 3315 section 15.8 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
-@v6 @decline_invalid
+@v6 @dhcp6 @decline_invalid
     Scenario: v6.decline.invalid.without_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -70,7 +70,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8
 	
-@v6 @decline_invalid
+@v6 @dhcp6 @decline_invalid
     Scenario: v6.decline.invalid.wrong_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -139,7 +139,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8
 	
-@v6 @decline_invalid 
+@v6 @dhcp6 @decline_invalid
     Scenario: v6.decline.invalid.without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -199,7 +199,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8
 
-@v6 @decline_invalid
+@v6 @dhcp6 @decline_invalid
     Scenario: v6.decline.invalid.blank_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -258,7 +258,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8
 		
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -317,7 +317,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -376,7 +376,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -435,7 +435,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-reconfigure-accept
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -494,7 +494,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -553,7 +553,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -612,7 +612,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -671,7 +671,7 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline
     Scenario: v6.decline.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 

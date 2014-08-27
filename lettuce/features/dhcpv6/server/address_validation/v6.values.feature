@@ -1,7 +1,7 @@
 Feature: DHCPv6 values
     Those are tests for DHCPv6 values like lifetime, address.. Check that DHCPv6 server wont send invalid values to client
 
-@v6 @values
+@v6 @dhcp6 @values
     Scenario: v6.values.address1
 	#that test will probably fail in step 'server is configured in case servers like ISC-DHCPv6, OS wont assign multicast address
 
@@ -11,7 +11,7 @@ Feature: DHCPv6 values
 
 	References: RFC3315 section 11	
 	
-@v6 @values
+@v6 @dhcp6 @values
     Scenario: v6.values.address2
 
 	Test Setup:

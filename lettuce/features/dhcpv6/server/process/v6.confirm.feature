@@ -1,7 +1,7 @@
 Feature: DHCPv6 Confirm 
     Those are tests for confirm - reply exchange.
 	
-@v6 @status_code @confirm
+@v6 @dhcp6 @status_code @confirm
     Scenario: v6.statuscode.success-confirm
     ## Testing server ability perform CONFIRM - REPLY message exchange. 
 	## Message details 		Client		Server
@@ -51,7 +51,7 @@ Feature: DHCPv6 Confirm
 	
 	References: RFC3315 sections 18.1.2, 18.2.2
 	
-@v6 @status_code @confirm
+@v6 @dhcp6 @status_code @confirm
     Scenario: v6.statuscode.notonlink-confirm
     ## Testing server ability perform CONFIRM - REPLY message exchange,
     ## with unsuccessful confirmation process.  

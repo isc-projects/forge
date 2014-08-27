@@ -2,7 +2,7 @@ Feature: DHCPv6 options defined in subnet
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly.
 
-@v6 @options @subnet
+@v6 @dhcp6 @options @subnet
     Scenario: v6.options.subnet.preference
 	## Testing server ability to configure it with option
 	## preference (code 7) with value 123 per subnet(to override global)
@@ -42,7 +42,7 @@ Feature: DHCPv6 options defined in subnet
 
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
-@v6 @options @subnet @rfc3646
+@v6 @dhcp6 @options @subnet @rfc3646
     Scenario: v6.options.subnet.dns-servers
 	## Testing server ability to configure it with option
 	## DNS servers (code 23) with addresses 2001:db8::1 per subnet(to override global)
@@ -83,7 +83,7 @@ Feature: DHCPv6 options defined in subnet
 	
 	References: v6.options, v6.oro, RFC3646
 
-@v6 @options @subnet @rfc3646
+@v6 @dhcp6 @options @subnet @rfc3646
     Scenario: v6.options.subnet.domains
 	## Testing server ability to configure it with option
 	## domains (code 24) with domains domain1.example.com 
@@ -124,7 +124,7 @@ Feature: DHCPv6 options defined in subnet
 	
 	References: v6.options, v6.oro, RFC3646 
 
-@v6 @options @subnet @rfc3646
+@v6 @dhcp6 @options @subnet @rfc3646
     Scenario: v6.options.subnet.override
 	## Testing server ability to configure it with option
 	## domains (code 24) with domains subnet.example.com per subnet

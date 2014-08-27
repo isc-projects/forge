@@ -1,7 +1,7 @@
 Feature: DHCPv6 Renew
     Those are tests for renew - reply exchange.
     
-@v6 @renew
+@v6 @dhcp6 @renew
     Scenario: v6.message.renew-reply
     ## Testing server ability to perform message exchange RENEW - REPLY 
 	## Message details 		Client		Server
@@ -55,7 +55,7 @@ Feature: DHCPv6 Renew
 
 	References: RFC 3315, Section: 18.2.3.
 	
-@v6 @renew
+@v6 @dhcp6 @renew
     Scenario: v6.message.renew-reply-time-zero
     ## Testing server ability to perform message exchange RENEW - REPLY
     ## In case when we expect that address is not appropriate for the link. 

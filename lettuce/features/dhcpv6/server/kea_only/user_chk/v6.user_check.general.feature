@@ -6,7 +6,7 @@ Feature: Kea6 User Check Hook Library
 # automatically addes "config set Dhcp6/subnet[0]/interface <SERVER_IFACE>"
 # to the server configuration.
 
-@v6 @kea_only @user_check  @IA_NA
+@v6 @dhcp6 @kea_only @user_check  @IA_NA
     Scenario: user_check.IA_NA.no_registry
     # Without a user registry and multiple subnets 
     # Subnet selection will use subnet interface for subnet selection hint
@@ -28,7 +28,7 @@ Feature: Kea6 User Check Hook Library
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::5.
 
-@v6 @kea_only @user_check  @IA_NA
+@v6 @dhcp6 @kea_only @user_check  @IA_NA
     Scenario: user_check.IA_NA.with_registry_unknown_user
     # With a user registry and multiple subnets
     # an unknown user should get last subnet
@@ -55,7 +55,7 @@ Feature: Kea6 User Check Hook Library
     Client download file from server stored in: /tmp/user_chk_outcome.txt.
     Client compares downloaded file from server with local file stored in: features/dhcpv6/server/kea_only/user_chk/outcome_1.txt.
 
-@v6 @kea_only @user_check  @IA_NA
+@v6 @dhcp6 @kea_only @user_check  @IA_NA
     Scenario: user_check.IA_NA.with_registry_known_user
     # With a user registry and multiple subnets
     # an known user should get first subnet

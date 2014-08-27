@@ -1,7 +1,7 @@
 Feature: DHCPv6 Client Prefix Delegation
     Test for basic Prefix Delegation for client, based on RFC 3633
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.client
 
     Setting up test.

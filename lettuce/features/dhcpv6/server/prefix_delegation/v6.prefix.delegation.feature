@@ -1,7 +1,7 @@
 Feature: DHCPv6 Prefix Delegation 
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_request
   
  	Test Setup:
@@ -32,7 +32,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_request
   
  	Test Setup:
@@ -68,7 +68,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.onlyPD_request_release
 
  	Test Setup:	
@@ -112,7 +112,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.onlyPD_multiple_request_release
  	
  	Test Setup:
@@ -188,7 +188,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_request_release
  	
  	Test Setup:	
@@ -232,7 +232,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_multiple_request_release
  	
  	Test Setup:
@@ -312,7 +312,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.request_release_restart
 
  	Test Setup:
@@ -410,7 +410,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.request_release_restart	
 
  	Test Setup:
@@ -531,7 +531,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail_release
   	#assign 2 prefixes, try third, fail, release one, assign one more time with success.
  	Test Setup:
@@ -621,7 +621,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 11.2 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail
    	
    	Test Setup:
@@ -686,7 +686,7 @@ Feature: DHCPv6 Prefix Delegation
 		
 	References: RFC 3633, Section: 11.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.release_nobinding
 
  	Test Setup:
@@ -717,7 +717,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633/3315
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.release_dual_nobinding
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
@@ -749,7 +749,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633/3315
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.release_nobinding2
 
  	Test Setup:
@@ -803,7 +803,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633/3315
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD-relay
   
  	Test Setup:
@@ -825,7 +825,7 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 14
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.ignore_lifetimes
 
     Test Setup:
@@ -867,7 +867,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 10
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.ignore_timers
 
     Test Setup:
@@ -911,7 +911,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 10
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.assign_saved_iapd
 
     Test Setup:
@@ -993,7 +993,7 @@ Feature: DHCPv6 Prefix Delegation
 
     References: RFC 3633, Section: 11.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.compare_prefixes_after_client_reboot
 
     Test Setup:

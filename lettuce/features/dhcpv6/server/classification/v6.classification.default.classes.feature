@@ -4,7 +4,7 @@ Feature: DHCPv6 Client Classification - default classes
     Tests for Client Classification for classes: docsis3.0 and eRouter1.0.
     Performed through option vendor class.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.docsis3.advertise.success
 
     Test Setup:
@@ -23,7 +23,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.docsis3.advertise.fail
 
     Test Setup:
@@ -40,7 +40,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response option 3 MUST contain sub-option 13.
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.docsis3.request.success
 
     Test Setup:
@@ -72,7 +72,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.docsis3.request.fail
 
     Test Setup:
@@ -103,7 +103,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response option 3 MUST contain sub-option 13.
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.eRouter1.0.advertise.success
 
     Test Setup:
@@ -122,7 +122,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.eRouter1.0.advertise.fail
 
     Test Setup:
@@ -139,7 +139,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response option 3 MUST contain sub-option 13.
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.eRouter1.0.request.success
 
     Test Setup:
@@ -171,7 +171,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @classification @default_classes
+@v6 @dhcp6 @classification @default_classes
     Scenario: v6.client.classification.onesubnet.eRouter1.0.request.fail
 
     Test Setup:

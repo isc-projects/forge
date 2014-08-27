@@ -3,7 +3,7 @@ Feature: DHCPv6 vendor specific information
     This feature is designed for vendor specific information option (option code = 17).
     Testing suboption - option request and others.
 
-@v6 @options @vendor
+@v6 @dhcp6 @options @vendor
     Scenario: v6.vendor.options.tftp-servers
 	## Testing server ability to configure it with vendor-specific options
 	## and share it with user.
@@ -38,7 +38,7 @@ Feature: DHCPv6 vendor specific information
 	
 	References: RFC3315 section 22.17
 
-@v6 @options @vendor
+@v6 @dhcp6 @options @vendor
     Scenario: v6.vendor.options.config-file
 	## Testing server ability to configure it with vendor-specific options
 	## and share it with user.
@@ -73,7 +73,7 @@ Feature: DHCPv6 vendor specific information
 
 	References: RFC3315 section 22.17
 
-@v6 @options @vendor
+@v6 @dhcp6 @options @vendor
     Scenario: v6.vendor.options.syslog-servers
  	## Testing server ability to configure it with vendor-specific options
 	## and share it with user.
@@ -108,7 +108,7 @@ Feature: DHCPv6 vendor specific information
 	
 	References: RFC3315 section 22.17
 
-@v6 @options @vendor
+@v6 @dhcp6 @options @vendor
     Scenario: v6.vendor.options.time-servers
  	## Testing server ability to configure it with vendor-specific options
 	## and share it with user.
@@ -144,7 +144,7 @@ Feature: DHCPv6 vendor specific information
 	
 	References: RFC3315 section 22.17
 
-@v6 @options @vendor
+@v6 @dhcp6 @options @vendor
     Scenario: v6.vendor.options.time-offset
  	## Testing server ability to configure it with vendor-specific options
 	## and share it with user.
@@ -181,7 +181,7 @@ Feature: DHCPv6 vendor specific information
 	References: RFC3315 section 22.17
 
 
-@v6 @options @vendor
+@v6 @dhcp6 @options @vendor
     Scenario: v6.vendor.options.multiple
  	## Testing server ability to configure it with vendor-specific options
 	## and share it with user.

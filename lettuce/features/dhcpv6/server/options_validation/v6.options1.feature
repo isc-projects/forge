@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 options part 1
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested options are assigned properly. Also testing information-request message.
 
-@v6 @options @preference
+@v6 @dhcp6 @options @preference
     Scenario: v6.options.preference
 	## Testing server ability to configure it with option
 	## preference (code 7)with value 123, and ability to share that value 
@@ -44,7 +44,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
 
-@v6 @options @sip
+@v6 @dhcp6 @options @sip
     Scenario: v6.options.sip-domains
 	## Testing server ability to configure it with option
 	## SIP domains (code 21) with domains srv1.example.com 
@@ -86,7 +86,7 @@ Feature: Standard DHCPv6 options part 1
 
 	References: v6.options RFC3319
 
-@v6 @options @sip @rfc3319
+@v6 @dhcp6 @options @sip @rfc3319
     Scenario: v6.options.sip-servers
 	## Testing server ability to configure it with option
 	## SIP servers (code 22) with addresses 2001:db8::1 
@@ -129,7 +129,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options RFC3319
 
 
-@v6 @options @dns @rfc3646
+@v6 @dhcp6 @options @dns @rfc3646
     Scenario: v6.options.dns-servers
 	## Testing server ability to configure it with option
 	## DNS servers (code 23) with addresses 2001:db8::1 
@@ -171,7 +171,7 @@ Feature: Standard DHCPv6 options part 1
 
 	References: v6.options, v6.oro, RFC3646
 
-@v6 @options @rfc3646
+@v6 @dhcp6 @options @rfc3646
     Scenario: v6.options.domains
 	## Testing server ability to configure it with option
 	## domains (code 24) with domains domain1.example.com 
@@ -213,7 +213,7 @@ Feature: Standard DHCPv6 options part 1
 
 	References: v6.options, v6.oro, RFC3646 
 
-@v6 @options @nis @rfc3898
+@v6 @dhcp6 @options @nis @rfc3898
     Scenario: v6.options.nis-servers
 	## Testing server ability to configure it with option
 	## NIS servers (code 27) with addresses 2001:db8::abc, 3000::1
@@ -255,7 +255,7 @@ Feature: Standard DHCPv6 options part 1
 
 	References: v6.options, v6.oro, RFC3898
 
-@v6 @options @nis @nisp @rfc3898
+@v6 @dhcp6 @options @nis @nisp @rfc3898
     Scenario: v6.options.nisp-servers
 	## Testing server ability to configure it with option
 	## NIS+ servers (code 28) with addresses 2001:db8::abc, 3000::1
@@ -285,7 +285,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3898
 
 	
-@v6 @options @nis @rfc3898
+@v6 @dhcp6 @options @nis @rfc3898
     Scenario: v6.options.nisdomain
 	## Testing server ability to configure it with option
 	## NIS domain (code 29) with domains ntp.example.com and ability to share that 
@@ -326,7 +326,7 @@ Feature: Standard DHCPv6 options part 1
 	References: v6.options, v6.oro, RFC3898
 
 
-@v6 @options @rfc3898
+@v6 @dhcp6 @options @rfc3898
     Scenario: v6.options.nispdomain
 	## Testing server ability to configure it with option
 	## NIS+ domain (code 30) with domain ntp.example.com, and ability to share that 
@@ -365,7 +365,7 @@ Feature: Standard DHCPv6 options part 1
 	Response option 30 MUST contain domain ntp.example.com.
 	References: v6.options, v6.oro, RFC3898 
 
-@v6 @options @sntp @rfc4075
+@v6 @dhcp6 @options @sntp @rfc4075
     Scenario: v6.options.sntp-servers
 	## Testing server ability to configure it with option
 	## SNTP servers (code 31) with addresses 2001:db8::abc, 3000::1
@@ -407,7 +407,7 @@ Feature: Standard DHCPv6 options part 1
 
 	References: v6.options, v6.oro, RFC4075
 	
-@v6 @options @rfc4242
+@v6 @dhcp6 @options @rfc4242
     Scenario: v6.options.info-refresh
 	## Testing server ability to configure it with option
 	## information refresh time (code 32) with value 12345678 and ability to share that 
@@ -447,7 +447,7 @@ Feature: Standard DHCPv6 options part 1
 	
 	References: v6.options, v6.oro, RFC4242
 
-@v6 @options
+@v6 @dhcp6 @options
     Scenario: v6.options.multiple
 	## Testing server ability to configure it with option multiple options:
 	## preference (code 7), SIP domain (code 21), DNS servers (code 23), domains (code 24)
@@ -511,7 +511,7 @@ Feature: Standard DHCPv6 options part 1
 
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
-@v6 @options @dns @rfc3646
+@v6 @dhcp6 @options @dns @rfc3646
     Scenario: v6.options.negative
 	## Testing if server does not return option that it was not configured with.
 	## Server configured with option 23, requesting option 24.

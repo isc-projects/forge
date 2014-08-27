@@ -2,7 +2,7 @@
 Feature: DHCPv6 Relay Agent 
     This is test for DHCPv6 message exchange between server and relay-agent with not permitted options in Relay-Forward message.  
 
-@v6 @relay @relay_invalid
+@v6 @dhcp6 @relay @relay_invalid
     Scenario: v6.relay.invalid.with_client_id
 
 	Test Setup:
@@ -31,7 +31,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8	
 	
-@v6 @relay @relay_invalid
+@v6 @dhcp6 @relay @relay_invalid
     Scenario: v6.relay.invalid.with_server_id
 	#add just serverid
 	
@@ -61,7 +61,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-preference
 	
 	Test Setup:
@@ -90,7 +90,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-time
 	
 	Test Setup:
@@ -119,7 +119,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-option-request
 	
 	Test Setup:
@@ -147,7 +147,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-server-unicast
 	
 	Test Setup:
@@ -176,7 +176,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-status-code
 	
 	Test Setup:
@@ -205,7 +205,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-rapid-commit
 	
 	Test Setup:
@@ -234,7 +234,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-reconfigure
 	
 	Test Setup:
@@ -263,7 +263,7 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
     Scenario: v6.relay.invalid.options-reconfigure-accept
 	
 	Test Setup:

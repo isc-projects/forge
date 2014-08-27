@@ -1,7 +1,7 @@
 Feature: DHCPv6 Status Codes 
     Those are tests for DHCPv6 status codes. RFC 3315 24.4  Test for Status Code - UseMulticast are in address_validation feature or process feature.
 
-@v6 @status_code
+@v6 @dhcp6 @status_code
     Scenario: v6.statuscode.noaddravail-solicit
 
 	Test Setup:
@@ -37,7 +37,7 @@ Feature: DHCPv6 Status Codes
 	
 	References: RFC3315 section 17.2.2.
 	
-@v6 @status_code @request
+@v6 @dhcp6 @status_code @request
     Scenario: v6.statuscode.noaddravail-request
 
 	Test Setup:
@@ -76,7 +76,7 @@ Feature: DHCPv6 Status Codes
 	References: RFC3315 section 18.2.1.
 	
 	
-@v6 @status_code @renew
+@v6 @dhcp6 @status_code @renew
     Scenario: v6.statuscode.nobinding-renew
 	#when client id not known
 	Test Setup:
@@ -103,7 +103,7 @@ Feature: DHCPv6 Status Codes
 	
 	References: RFC3315 section 18.2.3
 	
-@v6 @status_code @renew
+@v6 @dhcp6 @status_code @renew
     Scenario: v6.statuscode.nobinding-renew-newIA
 	#when client id not known
 	Test Setup:
