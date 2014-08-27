@@ -2,3 +2,7 @@
  - reconfigure message support
  
  - Write more reasonable documentation (tomek)
+
+
+ - For DNS tests files removed with commit 	352a58996286e777be89209cd5bf342cff10ac7c from git.kea.isc.org can be
+ used for adding DNS tests into Forge
