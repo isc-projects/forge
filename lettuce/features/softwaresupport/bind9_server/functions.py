@@ -24,7 +24,7 @@ from logging_facility import *
 from logging_facility import get_common_logger
 from init_all import DNS_SERVER_INSTALL_DIR, DNS_DATA_DIR, SLEEP_TIME_1
 
-from softwaresupport.bind9_server.bind_configs import config_file_set
+from softwaresupport.bind9_server.bind_configs import config_file_set, keys
 
 
 def make_file(name, content):
@@ -40,6 +40,8 @@ def use_config_set(number):
     make_file('rndc.conf', config_file_set[number][1])
     make_file('fwd.db', config_file_set[number][2])
     make_file('rev.db', config_file_set[number][3])
+    world.cfg["dns_log_file"] = '/tmp/dns.log'
+    make_file('bind.keys', keys)
 
     fabric_send_file('named.conf', DNS_DATA_DIR + 'named.conf')
     copy_configuration_file('named.conf', 'dns/DNS_named.conf')
@@ -57,6 +59,10 @@ def use_config_set(number):
     copy_configuration_file('rev.db', 'dns/DNS_rev.db')
     remove_local_file('rev.db')
 
+    fabric_send_file('bind.keys', DNS_DATA_DIR + 'managed-keys.bind')
+    copy_configuration_file('bind.keys', 'dns/DNS_managed-keys.bind')
+    remove_local_file('bind.keys')
+
 
 def stop_srv(value = False):
     fabric_sudo_command('(killall named & ); sleep ' + str(SLEEP_TIME_1), value)
@@ -73,6 +79,7 @@ def start_srv(success, process):
 
 
 def save_leases():
+    # pointless here, but we don't want import error here.
     pass
 
 
@@ -82,3 +89,4 @@ def save_logs():
 
 def clear_all():
     fabric_remove_file_command('/tmp/dns.log')
+    fabric_remove_file_command(DNS_DATA_DIR + 'namedb/*')
