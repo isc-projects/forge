@@ -166,3 +166,21 @@ def start_clnt(step):
     fabric_send_file(world.clntCfg["script"], DIBBLER_INSTALL_DIR+'comm.sh')
     fabric_remove_file_command(world.clntCfg["Filename"])
     fabric_run_command ('(rm nohup.out; nohup bash '+DIBBLER_INSTALL_DIR+'comm.sh &); sleep 1;')
+
+
+# that could be use for making terrain.py even more generic ;)
+def stop_srv():
+    stop_clnt()
+
+
+# We probably should use those functions
+def save_leases():
+    assert False, "TODO!"
+
+
+def save_logs():
+    assert False, "TODO!"
+
+
+def clear_all():
+    assert False, "TODO!"

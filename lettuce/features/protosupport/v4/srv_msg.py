@@ -187,9 +187,9 @@ def build_msg(opts):
     
     msg = Ether(dst = "ff:ff:ff:ff:ff:ff",
                 src = hw)
-    msg /= IP(src = world.cfg["values"]["source_IP"],
-              dst = world.cfg["values"]["dstination_IP"])
-    msg /= UDP(sport = 68, dport = 67)
+    msg /= IP(src = world.cfg["source_IP"],
+              dst = world.cfg["destination_IP"])
+    msg /= UDP(sport = world.cfg["source_port"], dport = world.cfg["destination_port"])
     msg /= BOOTP(chaddr = tmp_hw,
                  giaddr = world.cfg["values"]["giaddr"])
     msg /= DHCP(options = opts)
@@ -236,8 +236,8 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
                     multi = True,
                     verbose = 99)
 
-    from features.init_all import SHOW_DHCP_PACKETS_FROM
-    if SHOW_DHCP_PACKETS_FROM in ['both', 'client']:
+    from features.init_all import SHOW_PACKETS_FROM
+    if SHOW_PACKETS_FROM in ['both', 'client']:
         world.climsg[0].show()
 
     expected_type_found = False
@@ -248,7 +248,7 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
     for x in ans:
         a, b = x
         world.srvmsg.append(b)
-        if SHOW_DHCP_PACKETS_FROM in ['both', 'server']:
+        if SHOW_PACKETS_FROM in ['both', 'server']:
             b.show()
 
         received_names = get_msg_type(b) + " " + received_names

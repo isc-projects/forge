@@ -1,13 +1,13 @@
 Feature: DHCPv6 Prefix Delegation 
     Testing Server's politics about Confirm and Decline messages, based on RFC 3633.
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_confirm
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::2-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -44,13 +44,13 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633 Section 12.1.
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_decline
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::5-3000::5 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.

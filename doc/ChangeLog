@@ -1,3 +1,8 @@
+23. [func] wlodek
+        - support for DNS
+        - support for DDNS
+        (no backwards compatibility)
+
 22. [func] wlodek
 		- copy log files for Kea servers
 		

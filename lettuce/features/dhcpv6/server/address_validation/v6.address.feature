@@ -1,7 +1,7 @@
 Feature: Standard DHCPv6 address validation
     This feature is for checking respond on messages send on GLOBAL UNICAST address. Solicit, Confirm, Rebind, Info-Request should be discarded. Request should be answered with Reply message containing option StatusCode with code 5. 
     
-@basic @v6 @unicast
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.global.solicit
 	## Server MUST discard any Solicit it receives with   
 	## a unicast address destination
@@ -12,7 +12,7 @@ Feature: Standard DHCPv6 address validation
 	## 		   						<--	ADVERTISE	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -33,7 +33,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15
 	
-@basic @v6 @unicast
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.global.confirm	
 	## Server MUST discard any Confirm it receives with   
 	## a unicast address destination
@@ -53,7 +53,7 @@ Feature: Standard DHCPv6 address validation
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -94,7 +94,7 @@ Feature: Standard DHCPv6 address validation
 		
 	References: RFC3315 section 15	
 	
-@basic @v6 @unicast 
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.global.rebind	
 	## Server MUST discard any Rebind it receives with   
 	## a unicast address destination.
@@ -114,7 +114,7 @@ Feature: Standard DHCPv6 address validation
 	##					IA-NA
 
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -154,7 +154,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15
 	
-@basic @v6 @unicast 
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.global.inforequest	
 	## Server MUST discard any Information-Request it receives with   
 	## a unicast address destination.
@@ -170,7 +170,7 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -191,7 +191,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15
 	
-@basic @v6 @unicast @status_code
+@basic @v6 @dhcp6 @unicast @status_code
     Scenario: v6.basic.message.unicast.global.request	
 	## Server MUST discard any Request message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -222,7 +222,7 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -257,7 +257,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 18.2.1
 	
-@basic @v6 @unicast @status_code
+@basic @v6 @dhcp6 @unicast @status_code
     Scenario: v6.basic.message.unicast.global.renew	
 	## Server MUST discard any RENEW message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -284,7 +284,7 @@ Feature: Standard DHCPv6 address validation
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -326,7 +326,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 18.2.3
 	
-@basic @v6 @unicast @status_code
+@basic @v6 @dhcp6 @unicast @status_code
     Scenario: v6.basic.message.unicast.global.release	
 	## Server MUST discard any RELEASE message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -353,7 +353,7 @@ Feature: Standard DHCPv6 address validation
 	##					status-code with Success
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -394,7 +394,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 18.2.6.
 
-@basic @v6 @unicast
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.local.solicit
 	## Server MUST discard any Solicit it receives with   
 	## a unicast address destination
@@ -405,7 +405,7 @@ Feature: Standard DHCPv6 address validation
 	## 		   						<--	ADVERTISE	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -426,7 +426,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15
 
-@basic @v6 @unicast
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.local.confirm	
 	## Server MUST discard any Confirm it receives with   
 	## a unicast address destination
@@ -446,7 +446,7 @@ Feature: Standard DHCPv6 address validation
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -487,7 +487,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15	
 
-@basic @v6 @unicast 
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.local.rebind	
 	## Server MUST discard any Rebind it receives with   
 	## a unicast address destination.
@@ -508,7 +508,7 @@ Feature: Standard DHCPv6 address validation
 	##					IA-NA
 
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -548,7 +548,7 @@ Feature: Standard DHCPv6 address validation
 
 	References: RFC3315 section 15
 	
-@basic @v6 @unicast 
+@basic @v6 @dhcp6 @unicast
     Scenario: v6.basic.message.unicast.local.inforequest	
 	## Server MUST discard any Information-Request it receives with   
 	## a unicast address destination.
@@ -565,7 +565,7 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -586,7 +586,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 15
 	
-@basic @v6 @unicast @status_code
+@basic @v6 @dhcp6 @unicast @status_code
     Scenario: v6.basic.message.unicast.local.request	
 	## Server MUST discard any Request message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -618,7 +618,7 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -653,7 +653,7 @@ Feature: Standard DHCPv6 address validation
 	
 	References: RFC3315 section 18.2.1
 	
-@basic @v6 @unicast @status_code
+@basic @v6 @dhcp6 @unicast @status_code
     Scenario: v6.basic.message.unicast.local.renew	
 	## Server MUST discard any RENEW message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -681,7 +681,7 @@ Feature: Standard DHCPv6 address validation
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -723,7 +723,7 @@ Feature: Standard DHCPv6 address validation
 		
 	References: RFC3315 section 18.2.3
 	
-@basic @v6 @unicast @status_code
+@basic @v6 @dhcp6 @unicast @status_code
     Scenario: v6.basic.message.unicast.local.release	
 	## Server MUST discard any RELEASE message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -751,7 +751,7 @@ Feature: Standard DHCPv6 address validation
 	##					status-code with Success
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.

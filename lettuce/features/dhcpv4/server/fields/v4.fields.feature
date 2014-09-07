@@ -11,7 +11,7 @@ Scenario: v4.message.fields.chaddr
 	# that test needs more work with chaddr
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -27,7 +27,7 @@ Scenario: v4.message.fields.ciaddr-correct-offer
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -44,7 +44,7 @@ Scenario: v4.message.fields.ciaddr-incorrect-offer
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -61,7 +61,7 @@ Scenario: v4.message.fields.ciaddr-incorrect-nak
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -97,7 +97,7 @@ Scenario: v4.message.fields.ciaddr-correct-nak
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -133,7 +133,7 @@ Scenario: v4.message.fields.siaddr-correct-offer
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -150,7 +150,7 @@ Scenario: v4.message.fields.siaddr-incorrect-offer
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -167,7 +167,7 @@ Scenario: v4.message.fields.siaddr-incorrect-nak
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -203,7 +203,7 @@ Scenario: v4.message.fields.siaddr-correct-nak
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -240,7 +240,7 @@ Scenario: v4.message.fields.siaddr-correct-offer-configured-global
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
 	Next server global value is configured with address 192.0.2.234.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -256,7 +256,7 @@ Scenario: v4.message.fields.siaddr-correct-offer-configured-local
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -272,7 +272,7 @@ Scenario: v4.message.fields.siaddr-correct-nak-configured-local
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
@@ -307,7 +307,7 @@ Scenario: v4.message.fields.siaddr-correct-nak-configured-global
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Next server global value is configured with address 192.0.2.234.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.

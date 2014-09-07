@@ -367,7 +367,7 @@ def client_option(msg):
         #world.cfg["add_option"]["client_id"] = True
         pass
 
-    if world.cfg["add_option"]["IA_NA"] and not world.cfg["relay"] and world.cfg["add_option"]["IA_Address"] == "::":
+    if world.cfg["add_option"]["IA_NA"] and not world.cfg["relay"] and world.cfg["values"]["IA_Address"] == "::":
         if world.oro is not None and len(world.cliopts):
             for opt in world.cliopts:
                 if opt.optcode == 3:
@@ -425,7 +425,7 @@ def client_option(msg):
                                  plen = world.cfg["values"]["plen"],
                                  prefix = world.cfg["values"]["prefix"])
 
-    if world.cfg["add_option"]["IA_Address"] != "::":
+    if world.cfg["add_option"]["IA_Address"] and world.cfg["values"]["IA_Address"] != "::":
         world.cfg["add_option"]["IA_NA"] = False
         msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"],
                               T1 = world.cfg["values"]["T1"],
@@ -474,7 +474,8 @@ def client_option(msg):
 def build_msg(msg):
 
     msg = IPv6(dst = world.cfg["address_v6"],
-               src = world.cfg["cli_link_local"])/UDP(sport = 546, dport = 547)/msg
+               src = world.cfg["cli_link_local"])/UDP(sport = world.cfg["source_port"],
+                                                      dport = world.cfg["destination_port"])/msg
 
     # get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"
@@ -547,8 +548,8 @@ def create_relay_forward(step, level):
     #build full message
     relay_msg = IPv6(dst = world.cfg["address_v6"],
                      src = world.cfg["cli_link_local"])\
-                / UDP(sport = 547,
-                      dport = 547)\
+                / UDP(sport = world.cfg["source_port"],
+                      dport = world.cfg["destination_port"])\
                 / tmp/msg
 
     # in case if unicast used, get back to multicast address.
@@ -595,8 +596,8 @@ def send_wait_for_message(step, type, presence, exp_message):
                     nofilter = 1,
                     verbose = 99)
 
-    from features.init_all import SHOW_DHCP_PACKETS_FROM
-    if SHOW_DHCP_PACKETS_FROM in ['both', 'client']:
+    from features.init_all import SHOW_PACKETS_FROM
+    if SHOW_PACKETS_FROM in ['both', 'client']:
             world.climsg[0].show()
 
     expected_type_found = False
@@ -606,7 +607,7 @@ def send_wait_for_message(step, type, presence, exp_message):
         a, b = x
         world.srvmsg.append(b)
 
-        if SHOW_DHCP_PACKETS_FROM in ['both', 'server']:
+        if SHOW_PACKETS_FROM in ['both', 'server']:
             b.show()
 
         get_common_logger().info("Received packet type = %s" % get_msg_type(b))
@@ -654,12 +655,10 @@ def test_content(value_name):
 
 
 def get_msg_type(msg):
-    msg_types = {
-                  "ADVERTISE": DHCP6_Advertise,
-                  "REQUEST": DHCP6_Request,
-                  "REPLY": DHCP6_Reply,
-                  "RELAYREPLY": DHCP6_RelayReply
-    }
+    msg_types = {"ADVERTISE": DHCP6_Advertise,
+                 "REQUEST": DHCP6_Request,
+                 "REPLY": DHCP6_Reply,
+                 "RELAYREPLY": DHCP6_RelayReply}
 
     # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
     dhcp = msg.getlayer(2)
@@ -683,7 +682,6 @@ def client_save_option(step, option_name, count = 0):
 
     if not world.savedmsg.has_key(count):
         world.savedmsg[count] = [opt]
-        print "tutaj"
     else:
         world.savedmsg[count].append(opt)
 
@@ -891,6 +889,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 received = ",".join(each.sntpservers)
             elif opt_code == 32:
                 received = str(each.reftime)
+            elif opt_code == 39:
+                received = str(each.fields.get(data_type))
+
             else:
                 # if you came to this place, need to do some implementation with new options
                 received = unknown_option_to_str(data_type, each)

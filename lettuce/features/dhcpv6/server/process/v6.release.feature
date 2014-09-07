@@ -1,7 +1,7 @@
 Feature: DHCPv6 Release
     Those are tests for DHCPv6 release process.
     
-@v6 @status_code @release
+@v6 @dhcp6 @status_code @release
     Scenario: v6.statuscode.nobinding-release-noleases
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Try to release non-existing leases.
@@ -18,7 +18,7 @@ Feature: DHCPv6 Release
 	##					Status code with code NoBinding.
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -48,7 +48,7 @@ Feature: DHCPv6 Release
 
 	References: RFC3315 section 18.2.6.	
 
-@v6 @status_code @release
+@v6 @dhcp6 @status_code @release
     Scenario: v6.statuscode.nobinding-release
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Message details 		Client		Server
@@ -66,7 +66,7 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -107,7 +107,7 @@ Feature: DHCPv6 Release
 	
 	References: RFC3315 section 18.2.6.
 	
-@v6 @status_code @release
+@v6 @dhcp6 @status_code @release
     Scenario: v6.statuscode.nobinding-release-new-client-id
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Try to release existing leases but using different client ID.
@@ -126,7 +126,7 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -167,7 +167,7 @@ Feature: DHCPv6 Release
 	
 	References: RFC3315 section 18.2.6.	
 
-@v6 @status_code @release	
+@v6 @dhcp6 @status_code @release
     Scenario: v6.statuscode.nobinding-release-advertise
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## That's 'double check' after v6.statuscode.nobinding-release test,
@@ -195,7 +195,7 @@ Feature: DHCPv6 Release
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -245,7 +245,7 @@ Feature: DHCPv6 Release
 	
 	References: RFC3315 section 18.2.6.
 		
-@v6 @status_code @release
+@v6 @dhcp6 @status_code @release
     Scenario: v6.statuscode.nobinding-release-restart
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Message details 		Client		Server
@@ -263,7 +263,7 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -289,7 +289,7 @@ Feature: DHCPv6 Release
 	Client copies server-id option from received message.
 
 	Test Procedure:	
-	Restart server.
+	Restart DHCP server.
 	Client requests option 7.
 	Client sends RELEASE message.
 	
@@ -301,7 +301,7 @@ Feature: DHCPv6 Release
 	
 	References: RFC3315 section 18.2.6.
 	
-@v6 @status_code @release
+@v6 @dhcp6 @status_code @release
     Scenario: v6.statuscode.success-release
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Message details 		Client		Server
@@ -317,10 +317,10 @@ Feature: DHCPv6 Release
 	##					client-id
 	##					server-id
 	##					status-code with code Success
-			
+
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.

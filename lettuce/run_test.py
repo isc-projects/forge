@@ -121,24 +121,25 @@ def option_parser():
     return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit, opts.explicit_path
 
 
-
 def test_path_select(number, test_set, name, explicit_path):
     #path for tests, all for specified IP version or only one set
     scenario = None
     from features.init_all import SOFTWARE_UNDER_TEST
-    if "client" in SOFTWARE_UNDER_TEST:
-        testType = "client"
-    elif "server" in SOFTWARE_UNDER_TEST:
-        testType = "server"
-    else:
-        print "Are you sure that variable SOFTWARE_UNDER_TEST is correct?"
-        sys.exit(-1)
+    testType = ""
+    for each in SOFTWARE_UNDER_TEST:
+        if "client" in each:
+            testType = "client"
+        elif "server" in each:
+            testType = "server"
+        else:
+            print "Are you sure that variable SOFTWARE_UNDER_TEST is correct?"
+            sys.exit(-1)
 
     if explicit_path is not None:
         # Test search path will be <forge>/letttuce/features/<explicit_path/
         # without regard to SUT or protocol.  Can be used with -n to run
         # specific scenarios.
-        base_path = os.getcwd() +  "/features/" + explicit_path +  "/"
+        base_path = os.getcwd() + "/features/" + explicit_path + "/"
         if name is not None:
             from help import find_scenario_in_path
             base_path, scenario = find_scenario_in_path(name, base_path)
@@ -169,7 +170,10 @@ def check_config_file():
         print "\n Error: You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)\n"
         #option_parser().print_help()
         sys.exit(-1)
-    if config.SOFTWARE_UNDER_TEST == "" or config.PROTO == "" or config.MGMT_ADDRESS == "":
+    if not isinstance(config.SOFTWARE_UNDER_TEST, tuple):
+        print 'If you are listing only one software in SOFTWARE_UNDER_TEST please make sure that it ends with coma ","'
+        sys.exit(-1)
+    elif len(config.SOFTWARE_UNDER_TEST) == 0 or config.PROTO == "" or config.MGMT_ADDRESS == "":
         print "Please make sure your configuration is valid\nProject Forge shutting down."
         sys.exit(-1)
 

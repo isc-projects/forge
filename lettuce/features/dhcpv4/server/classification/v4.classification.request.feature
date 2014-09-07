@@ -9,7 +9,7 @@ Feature: DHCPv4 Client Classification - request process
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
@@ -54,7 +54,7 @@ Feature: DHCPv4 Client Classification - request process
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
@@ -130,7 +130,7 @@ Feature: DHCPv4 Client Classification - request process
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
@@ -156,7 +156,7 @@ Feature: DHCPv4 Client Classification - request process
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
@@ -225,7 +225,7 @@ Feature: DHCPv4 Client Classification - request process
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -287,7 +287,7 @@ Feature: DHCPv4 Client Classification - request process
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -345,7 +345,7 @@ Feature: DHCPv4 Client Classification - request process
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_my-other-class.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
@@ -416,7 +416,7 @@ Feature: DHCPv4 Client Classification - request process
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_my-other-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.150-192.168.50.150 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.
@@ -487,7 +487,7 @@ Feature: DHCPv4 Client Classification - request process
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_my-other-class.
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.150-192.168.50.150 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:1f:05:05:05:05.

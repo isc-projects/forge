@@ -6,7 +6,7 @@ Feature: Kea6 User Check Hook Library
 # automatically addes "config set Dhcp6/subnet[0]/interface <SERVER_IFACE>"
 # to the server configuration.
 
-@v6 @kea_only @user_check @vendor_options
+@v6 @dhcp6 @kea_only @user_check @vendor_options
     Scenario: user_check.vendor_options.all
 
     # Install the requisite user registry file onto the server and then 
@@ -21,7 +21,7 @@ Feature: Kea6 User Check Hook Library
     Run configuration command: config set Dhcp6/hooks-libraries[0] $(SERVER_INSTALL_DIR)lib/libdhcp_user_chk.so
     On space vendor-4491 server is configured with tftp-servers option with value 7000::1.
     On space vendor-4491 server is configured with config-file option with value bootfile.from.server.
-    Server is started.
+    DHCP server is started.
 
     #
     # Send a query from an unknown user

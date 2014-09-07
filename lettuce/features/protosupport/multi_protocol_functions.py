@@ -20,14 +20,14 @@ from lettuce.registry import world
 from locale import str
 import sys
 import os
-from features.softwaresupport.multi_server_functions import fabric_send_file,fabric_download_file,\
-        fabric_remove_file_command,remove_local_file
+from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
+        fabric_remove_file_command, remove_local_file, fabric_sudo_command
 from time import sleep
 
 
-def forge_sleep(time, type):
+def forge_sleep(time, time_units):
     divide = 1.0
-    if type == 'milliseconds':
+    if time_units == 'milliseconds' or time_units == 'millisecond':
         divide = 1000.0
     sleep(time * 1.0 / divide)
 
@@ -165,3 +165,47 @@ def user_victory(step):
     if not os.path.exists(world.cfg["dir_name"]):
         os.makedirs(world.cfg["dir_name"])
     copy('../doc/.victory.jpg', world.cfg["dir_name"] + '/celebrate_success.jpg')
+
+
+def log_contains(step, server_type, condition, line):
+    if server_type == "DHCP":
+        log_file = world.cfg["dhcp_log_file"]
+    elif server_type == "DNS":
+        log_file = world.cfg["dns_log_file"]
+    else:
+        assert False, "No such name as: {server_type}".format(**locals())
+
+    result = fabric_sudo_command('grep -c \"' + line + '\" ' + log_file)
+
+    if condition is not None:
+        if result.succeeded:
+            assert False, 'Log contains line: "%s" But it should NOT.' % line
+    else:
+        if result.failed:
+            assert False, 'Log does NOT contain line: "%s"' % line
+
+
+def log_contains_count(step, server_type, count, line):
+    if server_type == "DHCP":
+        log_file = world.cfg["dhcp_log_file"]
+    elif server_type == "DNS":
+        log_file = world.cfg["dns_log_file"]
+    else:
+        assert False, "No such name as: {server_type}".format(**locals())
+
+    result = fabric_sudo_command('grep -c \"' + line + '\" ' + log_file)
+
+    if count != result:
+        assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
+
+
+def change_network_variables():
+    pass
+    #TODO !
+    # world.cfg["dns_iface"] = DNS_IFACE
+    # world.cfg["dns_addr"] = DNS_ADDR
+    # world.cfg["dns_port"] = DNS_PORT
+    # world.cfg["address_v6"] = "ff02::1:2"
+    # world.cfg["cli_link_local"] = CLI_LINK_LOCAL
+    #  world.cfg["values"]["source_IP"],
+    #           dst = world.cfg["values"]["dstination_IP"]

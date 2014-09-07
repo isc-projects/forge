@@ -16,23 +16,36 @@
 # Author: Wlodzimierz Wencel
 
 from fabric.api import get, settings, put, sudo, run, hide
+from fabric.exceptions import NetworkError
 from features.init_all import MGMT_ADDRESS, MGMT_USERNAME, MGMT_PASSWORD, SAVE_CONFIG_FILE
 from features.logging_facility import get_common_logger
 from lettuce.registry import world
 import os
 
 
-def fabric_run_command(cmd):
+def fabric_run_command(cmd, hide_all = False):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
-        #with hide('running', 'stdout', 'stderr'):
-        result = run(cmd, pty = True)
+        if hide_all:
+            with hide('running', 'stdout', 'stderr'):
+                result = run(cmd, pty = True)
+        else:
+            result = run(cmd, pty = True)
     return result
 
 
-def fabric_sudo_command(cmd):
+def fabric_sudo_command(cmd, hide_all = False):
     with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
-        #with hide('running', 'stdout', 'stderr'):
-        result = sudo(cmd, pty = True)
+            if hide_all:
+                with hide('running', 'stdout', 'stderr'):
+                    try:
+                        result = sudo(cmd, pty = True)
+                    except NetworkError:
+                        assert False, "Network connection failed"
+            else:
+                try:
+                    result = sudo(cmd, pty = True)
+                except NetworkError:
+                    assert False, "Network connection failed"
     return result
 
 
@@ -88,7 +101,7 @@ def archive_file_name(counter, file_name):
     return file_name
 
 
-def cpoy_configuration_file(local_file, file_name = 'configuration_file'):
+def copy_configuration_file(local_file, file_name = 'configuration_file'):
     if SAVE_CONFIG_FILE:
         file_name = configuration_file_name(1, file_name)
         from shutil import copy

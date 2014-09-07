@@ -1,13 +1,13 @@
 Feature: DHCPv6 Prefix Delegation 
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_request
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -32,13 +32,13 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_request
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -68,14 +68,14 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.onlyPD_request_release
 
  	Test Setup:	
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -112,14 +112,14 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.onlyPD_multiple_request_release
  	
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -188,14 +188,14 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_request_release
  	
  	Test Setup:	
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -232,14 +232,14 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_multiple_request_release
  	
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -312,13 +312,13 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.request_release_restart
 
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -361,7 +361,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
 
-	Restart server.
+	Restart DHCP server.
 	
 	Test Procedure:
 	Client copies IA_PD option from received message.
@@ -410,13 +410,13 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.request_release_restart	
 
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -459,7 +459,7 @@ Feature: DHCPv6 Prefix Delegation
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
 
-	Restart server.
+	Restart DHCP server.
 	
 	Test Procedure:
 	Client copies IA_PD option from received message.
@@ -531,14 +531,14 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail_release
   	#assign 2 prefixes, try third, fail, release one, assign one more time with success.
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -621,14 +621,14 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 11.2 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.noprefixavail
    	
    	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
 	#pool of two prefixes
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -686,13 +686,13 @@ Feature: DHCPv6 Prefix Delegation
 		
 	References: RFC 3633, Section: 11.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.release_nobinding
 
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -717,12 +717,12 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633/3315
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.release_dual_nobinding
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
@@ -749,13 +749,13 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633/3315
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.release_nobinding2
 
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -803,13 +803,13 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633/3315
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD-relay
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -825,13 +825,13 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 14
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.ignore_lifetimes
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::200 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	# Client sets preflft value bigger than validlft. Server MUST ignore those values.
@@ -867,13 +867,13 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 10
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.ignore_timers
 
     Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::200 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	# Client sets T1, T2 values bigger than preflft. Server MUST ignore those values.
@@ -911,14 +911,14 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 10
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.assign_saved_iapd
 
     Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	#two prefixes - 3000::/91; 3000::20:0:0/91;
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client does include IA-PD.
@@ -968,7 +968,7 @@ Feature: DHCPv6 Prefix Delegation
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 80 prefix length and 95 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 
     Test Procedure:
 	Client adds saved options. And Erase.
@@ -993,13 +993,13 @@ Feature: DHCPv6 Prefix Delegation
 
     References: RFC 3633, Section: 11.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.compare_prefixes_after_client_reboot
 
     Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::300 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client does include IA-PD.

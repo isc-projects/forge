@@ -2,7 +2,7 @@
 Feature: Standard DHCPv6 request message 
     This feature is designed for checking server response for invalid request messages. RFC 3315 section 15.4 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
-@v6 @request_invalid 
+@v6 @dhcp6 @request_invalid
     Scenario: v6.request.invalid.without_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -25,7 +25,7 @@ Feature: Standard DHCPv6 request message
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -63,7 +63,7 @@ Feature: Standard DHCPv6 request message
 	
 	References: RFC3315 section 15.4
 	
-@v6 @request_invalid 
+@v6 @dhcp6 @request_invalid
     Scenario: v6.request.invalid.without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -83,7 +83,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -115,7 +115,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4 
 
-@v6 @request_invalid
+@v6 @dhcp6 @request_invalid
     Scenario: v6.request.invalid.wrong_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -137,7 +137,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -176,7 +176,7 @@ Feature: Standard DHCPv6 request message
 	
 	References: RFC3315 section 15.4 
 	
-@v6 @request_invalid
+@v6 @dhcp6 @request_invalid
     Scenario: v6.request.invalid.blank_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -196,7 +196,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -228,7 +228,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4 
 	
-@v6 @request_invalid @invalid_option @outline
+@v6 @dhcp6 @request_invalid @invalid_option @outline
     Scenario: v6.request.invalid.options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -249,7 +249,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -281,7 +281,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4, table A: Appearance of Options in Message Types
 	
-@v6 @request_invalid @invalid_option @outline
+@v6 @dhcp6 @request_invalid @invalid_option @outline
     Scenario: v6.request.invalid.options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -302,7 +302,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -334,7 +334,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4, table A: Appearance of Options in Message Types 
 	
-@v6 @request_invalid @invalid_option @outline
+@v6 @dhcp6 @request_invalid @invalid_option @outline
     Scenario: v6.request.invalid.options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -355,7 +355,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -387,7 +387,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4, table A: Appearance of Options in Message Types
 	
-@v6 @request_invalid @invalid_option @outline
+@v6 @dhcp6 @request_invalid @invalid_option @outline
     Scenario: v6.request.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -408,7 +408,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -440,7 +440,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4, table A: Appearance of Options in Message Types
 	
-@v6 @request_invalid @invalid_option @outline
+@v6 @dhcp6 @request_invalid @invalid_option @outline
     Scenario: v6.request.invalid.options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -461,7 +461,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -493,7 +493,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4, table A: Appearance of Options in Message Types
 	
-@v6 @request_invalid @invalid_option @outline
+@v6 @dhcp6 @request_invalid @invalid_option @outline
     Scenario: v6.request.invalid.options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -514,7 +514,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -546,7 +546,7 @@ Feature: Standard DHCPv6 request message
 
 	References: RFC3315 section 15.4, table A: Appearance of Options in Message Types
 	
-@v6 @request_invalid @invalid_option @outline
+@v6 @dhcp6 @request_invalid @invalid_option @outline
     Scenario: v6.request.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -567,7 +567,7 @@ Feature: Standard DHCPv6 request message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.

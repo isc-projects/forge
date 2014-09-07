@@ -117,11 +117,11 @@ def generate_new(step, opt):
     for IA: IA
     for IA_PD: IA_PD
     """
-    dhcpmsg.generate_new(step,opt)
+    dhcpmsg.generate_new(step, opt)
 
 
 @step('...using relay-agent encapsulated in (\d+) level(s)?.')
-def create_relay_forward(step, level, s ):
+def create_relay_forward(step, level, s):
     """
     This step is strictly related to step: Client sends message.
     You can put only after that step. They can be seperated with other steps
@@ -208,7 +208,7 @@ def test_content(step, test_value):
 ##building DNS messages
 @step('Client for DNS Question Record uses address: (\S+) type (\S+) class (\S+).')
 def dns_question_record(step, addr, qtype, qclass):
-    dns.dns_question_record(addr, qtype, qclass)
+    dns.dns_question_record(str(addr), qtype, qclass)
 
 
 @step('For DNS query client sets (\w+) value to (\S+).')
@@ -327,8 +327,29 @@ def compare_values(step, value_name, option_name):
     """
     dhcpmsg.compare_values(step, value_name, option_name)
 
+
 ##other
-@step('Sleep for (\d+) (seconds|milliseconds).')
+@step('(\S+) log MUST (NOT )?contain line: (.+)')
+def log_includes_line(step, server_type, condition, line):
+    """
+    Check if Log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    line = test_define_value(line)[0]
+    other.log_contains(step, server_type, condition, line)
+
+
+@step('(\S+) log contains (\d+) of line: (.+)')
+def log_includes_count(step, server_type, count, line):
+    """
+    Check if Log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    count, line = test_define_value(count, line)
+    dhcpmsg.log_contains_count(step, server_type, count, line)
+
+
+@step('Sleep for (\d+) (seconds|second|milliseconds|millisecond).')
 def forge_sleep(step, time, time_units):
     """
     Pause the test for selected amount of time counted in seconds or milliseconds.

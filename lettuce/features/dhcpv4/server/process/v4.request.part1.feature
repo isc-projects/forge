@@ -8,7 +8,7 @@ Feature: DHCPv4 address request process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -37,7 +37,7 @@ Feature: DHCPv4 address request process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -84,7 +84,7 @@ Feature: DHCPv4 address request process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
@@ -123,7 +123,7 @@ Feature: DHCPv4 address request process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
@@ -177,7 +177,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -246,7 +246,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Server is started.
+    DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.

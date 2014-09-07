@@ -1,7 +1,7 @@
 Feature: DHCPv6 Rebind
     Those are tests for rebind - reply exchange.
     
-@v6 @rebind
+@v6 @dhcp6 @rebind
     Scenario: v6.message.rebind-reply-zerotime
 	## Testing server ability server ability perform REBIND - REPLY message exchange.
 	## Message details 		Client		Server
@@ -21,7 +21,7 @@ Feature: DHCPv6 Rebind
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -42,7 +42,7 @@ Feature: DHCPv6 Rebind
 
 	Test Setup:
 	Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
-	Server is started.	
+	DHCP server is started.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
@@ -57,7 +57,7 @@ Feature: DHCPv6 Rebind
 	
 	References: RFC3315 sections 5.3, 18.2.4 
 	
-@v6 @rebind
+@v6 @dhcp6 @rebind
     Scenario: v6.message.rebind-reply-newtime
 	## Testing server ability server ability perform REBIND - REPLY message exchange.
 	## Additional server configuration: 
@@ -80,7 +80,7 @@ Feature: DHCPv6 Rebind
 	Time renew-timer is configured with value 111.
 	Time rebind-timer is configured with value 222.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.

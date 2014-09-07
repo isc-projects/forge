@@ -1,7 +1,7 @@
 Feature: DHCPv6 Renew
     Those are tests for renew - reply exchange.
     
-@v6 @renew
+@v6 @dhcp6 @renew
     Scenario: v6.message.renew-reply
     ## Testing server ability to perform message exchange RENEW - REPLY 
 	## Message details 		Client		Server
@@ -19,7 +19,7 @@ Feature: DHCPv6 Renew
 	##					
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::5-3000::55 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sends SOLICIT message.
@@ -55,7 +55,7 @@ Feature: DHCPv6 Renew
 
 	References: RFC 3315, Section: 18.2.3.
 	
-@v6 @renew
+@v6 @dhcp6 @renew
     Scenario: v6.message.renew-reply-time-zero
     ## Testing server ability to perform message exchange RENEW - REPLY
     ## In case when we expect that address is not appropriate for the link. 
@@ -79,7 +79,7 @@ Feature: DHCPv6 Renew
 	##					IA-NA with suboption IA-Address with validlft set to 0.
   	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::66-3000::66 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sends SOLICIT message.
@@ -103,7 +103,7 @@ Feature: DHCPv6 Renew
 
     Server reconfigure:
 	Server is configured with 3000::/64 subnet with 3000::100-3000::155 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client sends SOLICIT message.

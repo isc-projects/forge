@@ -1,23 +1,23 @@
 Feature: DHCPv6 Prefix Delegation 
     Test for basic Prefix Delegation, based on RFC 3633
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.server_configuration
     
  	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 5 prefix length and 33 delegated prefix length.
-	Server failed to start. During configuration process.	
+	DHCP server failed to start. During configuration process.
 
 	References: RFC 3633
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_advertise
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -31,13 +31,13 @@ Feature: DHCPv6 Prefix Delegation
 	References: RFC 3633, Section: 9
 
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD
 
     Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::2-3000::2 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 91 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -52,12 +52,12 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 9
 	
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.without_server_configuration
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -75,7 +75,7 @@ Feature: DHCPv6 Prefix Delegation
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::3-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.

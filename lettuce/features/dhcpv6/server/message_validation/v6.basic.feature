@@ -1,7 +1,7 @@
 Feature: Standard DHCPv6 message types
     This is a simple DHCPv6 message exchange validation. Its purpose is to verify that server responds with messages of expected types, specified in RFC 3315, section 5.3.
     
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.solicit-advertise
 	## Basic message test, testing only server ability to respond with 'ADVERTISE' to received 'SOLICIT'
 	## Client		Server
@@ -11,7 +11,7 @@ Feature: Standard DHCPv6 message types
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -22,7 +22,7 @@ Feature: Standard DHCPv6 message types
 
 	References: RFC3315 section 5.3
 
-@basic @v6 @rapid
+@basic @v6 @dhcp6 @rapid
     Scenario: v6.basic.message.solicit-reply
     ## Basic message test, testing only server ability to respond with 'REPLY' 
     ## to received 'SOLICIT' with RAPID COMMIT option. Without testing content
@@ -31,7 +31,7 @@ Feature: Standard DHCPv6 message types
 	Test Setup:
 	Option rapid-commit is configured with value True.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client does include rapid-commit.
@@ -42,7 +42,7 @@ Feature: Standard DHCPv6 message types
 
 	References: RFC3315 section 17.2.1.
 	
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.request-reply
 	## Basic message test, testing only server ability message exchange 
 	## between him and client.
@@ -55,7 +55,7 @@ Feature: Standard DHCPv6 message types
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -74,7 +74,7 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 section 5.3 
 	
-@basic @v6 
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.confirm-reply
 	## Basic message test, testing only server ability message exchange 
 	## between him and client.
@@ -89,7 +89,7 @@ Feature: Standard DHCPv6 message types
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -116,7 +116,7 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 sections 5.3, 18.2.2 
 
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.renew-reply
 	## Basic message test, testing only server ability message exchange 
 	## between him and client.
@@ -131,7 +131,7 @@ Feature: Standard DHCPv6 message types
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -156,7 +156,7 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 section 5.3 
 	
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.rebind-reply
 	## Basic message test, testing only server ability message exchange 
 	## between him and client.
@@ -171,7 +171,7 @@ Feature: Standard DHCPv6 message types
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -198,7 +198,7 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 sections 5.3, 18.1.4 
 	
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.release-reply
 	## Basic message test, testing only server ability message exchange 
 	## between him and client.
@@ -213,7 +213,7 @@ Feature: Standard DHCPv6 message types
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -239,7 +239,7 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 section 5.3 
 	
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.decline-reply
 	## Basic message test, testing only server ability message exchange 
 	## between him and client.
@@ -254,7 +254,7 @@ Feature: Standard DHCPv6 message types
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.	
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -283,14 +283,14 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 section 5.3
 	
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.information_request-reply
 	## Basic message test, testing only server ability to respond with 'REPLY' 
 	## to received 'INFOREQUEST'. Without testing content of a message.
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -301,7 +301,7 @@ Feature: Standard DHCPv6 message types
 	
 	References: RFC3315 section 5.3 
 
-@basic @v6
+@basic @v6 @dhcp6
     Scenario: v6.basic.message.information_request-reply_without_client_id
 	## Basic message test, testing only server ability to respond with 'REPLY' 
 	## to received 'INFOREQUEST' message that not include CLIENT-ID option.
@@ -309,7 +309,7 @@ Feature: Standard DHCPv6 message types
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.

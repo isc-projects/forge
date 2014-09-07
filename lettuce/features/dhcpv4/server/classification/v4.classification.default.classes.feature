@@ -13,7 +13,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Server is configured with boot-file-name option with value someotherfilename.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -43,7 +43,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -73,7 +73,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server global value is configured with address 192.0.2.2.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -105,7 +105,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -138,7 +138,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server global value is configured with address 192.0.2.2.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -177,7 +177,7 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Next server global value is configured with address 192.0.50.100.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.

@@ -3,7 +3,7 @@ Feature: DHCPv6 custom options
     This is a simple DHCPv6 options validation. Its purpose is to check if
     requested custom options are assigned properly.
 
-@v6 @options @user
+@v6 @dhcp6 @options @user
     Scenario: v6.options.user.preference
 	## Testing server ability to configure it with user custom option
 	## in this case: option code 100, value unit8 123. 
@@ -20,7 +20,7 @@ Feature: DHCPv6 custom options
 	Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with custom option foo/100 with type uint8 and value 123.
-    Server is started.
+    DHCP server is started.
 
 	Test Procedure:
 	Client requests option 100.

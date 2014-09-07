@@ -15,18 +15,13 @@
 
 # Author: Wlodzimierz Wencel
 
-from _pyio import open
 from lettuce.registry import world
 from locale import str
-import sys
-import os
-
-from time import sleep
-from scapy.all import get_if_raw_hwaddr, Ether, sr
-from scapy.config import conf
-from scapy.fields import Field
+from scapy.all import sr
 from scapy.layers.dns import *
 from scapy.layers.inet import IP, UDP
+from scapy.layers.dhcp6 import IPv6
+from init_all import SHOW_PACKETS_FROM
 
 dnstypes = {"ANY": 0,
             "ALL": 255,
@@ -76,14 +71,18 @@ r_codes = {"OK": 0,
 
 
 def send_query():
+    world.climsg = []
     build_query()
     build_msg()
 
 
 def send_wait_for_query(choose_must, presence):
+    if SHOW_PACKETS_FROM in ['both', 'client']:
+            world.climsg[0].show()
+
     ans, unans = sr(world.climsg,
                     iface = world.cfg["dns_iface"],
-                    timeout = world.cfg["PACKET_WAIT_INTERVAL"],
+                    timeout = world.cfg["wait_interval"],
                     multi = True,
                     verbose = 99)
 
@@ -93,10 +92,25 @@ def send_wait_for_query(choose_must, presence):
     world.dns_ar = []
 
     world.srvmsg = []
+    world.climsg = []
+
     for x in ans:
         a, b = x
         world.srvmsg.append(b.getlayer(2))
-        b.getlayer(2).show()
+
+        if SHOW_PACKETS_FROM in ['both', 'server']:
+            try:  # that is temp solution until we have good respond system checking!
+                world.srvmsg[0].show()
+            except:
+                pass
+
+    if presence:
+        assert len(world.srvmsg) != 0, "No response received."
+        #TODO testing should be more sophisticated, it's not working for dns queries
+        #TODO make assertion for getting message that we didn't expected
+
+    elif not presence:
+        assert len(world.srvmsg) == 0, "Response received, not expected"
 
     if world.srvmsg[0].qd is not None:
         for each in world.srvmsg[0].qd:
@@ -147,7 +161,7 @@ def dns_question_record(addr, my_qtype, my_qclass):
 
 
 def build_msg():
-    msg = IP(dst = world.cfg["dns_addr"])/UDP(sport = 53, dport = 53)
+    msg = IPv6(dst = world.cfg["dns_addr"])/UDP(sport = world.cfg["dns_port"], dport = world.cfg["dns_port"])
     msg.trid = random.randint(0, 256*256*256)
     world.climsg.append(msg/world.dns_query)
 

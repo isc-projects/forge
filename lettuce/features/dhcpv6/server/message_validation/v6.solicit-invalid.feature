@@ -2,7 +2,7 @@
 Feature: Standard DHCPv6 solicit message 
     This feature is designed for checking server response for invalid solicit messages. RFC 3315 section 15.2 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running. Also parts of tests with valid message refers to RFC 17.2.1  
     
-@v6 @solicit_invalid
+@v6 @dhcp6 @solicit_invalid
     Scenario: v6.solicit.invalid.without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -20,7 +20,7 @@ Feature: Standard DHCPv6 solicit message
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -42,7 +42,7 @@ Feature: Standard DHCPv6 solicit message
 	
 	References: RFC3315 section 15.2, 17.2.1
 	
-@v6 @solicit_invalid
+@v6 @dhcp6 @solicit_invalid
     Scenario: v6.solicit.invalid.with_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -62,7 +62,7 @@ Feature: Standard DHCPv6 solicit message
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -91,7 +91,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2, 17.2.1
 
-@v6 @solicit_invalid 
+@v6 @dhcp6 @solicit_invalid
     Scenario: v6.solicit.invalid.with_blank_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -109,7 +109,7 @@ Feature: Standard DHCPv6 solicit message
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -131,7 +131,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2, 17.2.1
 
-@v6 @solicit_invalid 
+@v6 @dhcp6 @solicit_invalid
     Scenario: v6.solicit.invalid.with_multiple_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -151,7 +151,7 @@ Feature: Standard DHCPv6 solicit message
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -179,7 +179,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2
 
-@v6 @solicit_invalid @invalid_option 
+@v6 @dhcp6 @solicit_invalid @invalid_option
     Scenario: v6.solicit.invalid.options-relaymsg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -198,7 +198,7 @@ Feature: Standard DHCPv6 solicit message
 		 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -220,7 +220,7 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @solicit_invalid @invalid_option 
+@v6 @dhcp6 @solicit_invalid @invalid_option
     Scenario: v6.solicit.invalid.options-interfaceid
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -238,7 +238,7 @@ Feature: Standard DHCPv6 solicit message
 	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -260,7 +260,7 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @solicit_invalid @invalid_option 
+@v6 @dhcp6 @solicit_invalid @invalid_option
     Scenario: v6.solicit.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -278,7 +278,7 @@ Feature: Standard DHCPv6 solicit message
 	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -300,7 +300,7 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @solicit_invalid @invalid_option 
+@v6 @dhcp6 @solicit_invalid @invalid_option
     Scenario: v6.solicit.invalid.options-serverunicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -318,7 +318,7 @@ Feature: Standard DHCPv6 solicit message
 	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -340,7 +340,7 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @solicit_invalid @invalid_option 
+@v6 @dhcp6 @solicit_invalid @invalid_option
     Scenario: v6.solicit.invalid.options-statuscode
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -358,7 +358,7 @@ Feature: Standard DHCPv6 solicit message
 	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -380,7 +380,7 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @solicit_invalid @invalid_option 
+@v6 @dhcp6 @solicit_invalid @invalid_option
     Scenario: v6.solicit.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -398,7 +398,7 @@ Feature: Standard DHCPv6 solicit message
 	##					IA-NA
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.

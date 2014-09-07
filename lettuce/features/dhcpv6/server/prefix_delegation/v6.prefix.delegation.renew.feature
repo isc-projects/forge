@@ -1,13 +1,13 @@
 Feature: DHCPv6 Prefix Delegation 
     Test for Prefix Delegation using Request messages, based on RFC 3633.
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_renew
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -43,13 +43,13 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_renew_nobinding
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -73,13 +73,13 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_renew_nobinding_new_IA_PD
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -104,13 +104,13 @@ Feature: DHCPv6 Prefix Delegation
 	
 	References: RFC 3633, Section: 12.2	
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.IA_and_PD_renew
   
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client does NOT include IA-NA.
@@ -149,13 +149,13 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 
-@v6 @PD @rfc3633
+@v6 @dhcp6 @PD @rfc3633
 	Scenario: prefix.delegation.IA_and_PD_renew_nobindig
 	
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Server is started.
+	DHCP server is started.
 	
 	Test Procedure:
 	Client sends SOLICIT message.

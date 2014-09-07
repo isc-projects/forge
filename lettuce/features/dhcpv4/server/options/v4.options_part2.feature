@@ -12,7 +12,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with path-mtu-plateau-table option with value 100,300,500.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 25.
@@ -31,7 +31,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with interface-mtu option with value 321.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 26.
@@ -48,7 +48,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with broadcast-address option with value 255.255.255.0.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 28.
@@ -65,7 +65,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with router-solicitation-address option with value 199.199.199.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 32.
@@ -82,7 +82,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with static-routes option with value 199.199.199.1,70.70.70.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 33.
@@ -100,7 +100,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with arp-cache-timeout option with value 48.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 35.
@@ -117,7 +117,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with default-tcp-ttl option with value 44.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 37.
@@ -134,7 +134,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with tcp-keepalive-internal option with value 4896.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 38.
@@ -151,7 +151,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with nis-domain option with value some.domain.com.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 40.
@@ -168,7 +168,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with nis-servers option with value 199.199.199.1,100.100.100.15.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 41.
@@ -186,7 +186,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with ntp-servers option with value 199.199.199.1,100.100.100.15.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 42.
@@ -204,7 +204,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with netbios-name-servers option with value 188.188.188.2,100.100.100.15.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 44.
@@ -222,7 +222,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with netbios-dd-server option with value 188.188.188.2,70.70.70.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 45.
@@ -240,7 +240,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with netbios-node-type option with value 8.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 46.
@@ -257,7 +257,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with netbios-scope option with value global.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 47.
@@ -274,7 +274,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with font-servers option with value 188.188.188.2,100.100.100.1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 48.
@@ -292,7 +292,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with x-display-manager option with value 188.188.188.2,150.150.150.10.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 49.
@@ -310,7 +310,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with dhcp-requested-address option with value 188.188.188.2.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 50.
@@ -327,7 +327,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with dhcp-option-overload option with value 1.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 52.
@@ -344,7 +344,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with dhcp-message option with value some-message.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 56.
@@ -361,7 +361,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with dhcp-max-message-size option with value 2349.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 57.
@@ -378,7 +378,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Time renew-timer is configured with value 999.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 58.
@@ -395,7 +395,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Time rebind-timer is configured with value 1999.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 59.
@@ -412,7 +412,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with nwip-domain-name option with value some.domain.com.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 62.
@@ -429,7 +429,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with boot-file-name option with value somefilename.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 67.
@@ -446,7 +446,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with client-last-transaction-time option with value 3424.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 91.
@@ -463,7 +463,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with associated-ip option with value 188.188.188.2,199.188.188.12.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 92.
@@ -481,7 +481,7 @@ Feature: DHCPv4 options part2
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with subnet-selection option with value 188.188.188.2.
-    Server is started. 
+    DHCP server is started.
 
     Test Procedure:
     Client requests option 118.

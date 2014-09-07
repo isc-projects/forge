@@ -1,7 +1,7 @@
 Feature: Multiple Identity Association Option in single DHCPv6 message
     This feature testing ability distinguish multiple IA_NA options and concurrent processing of those options.
   
-@v6 @multipleIA
+@v6 @dhcp6 @multipleIA
     Scenario: v6.multipleIA.addresses
 	## Testing server ability to parse and allocate addresses
 	## when multiple IA option are included in one message.
@@ -22,7 +22,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					IA-Address with 3000::3 address	
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -69,7 +69,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response sub-option 5 from option 3 MUST contain address 3000::2.
 	Response sub-option 5 from option 3 MUST contain address 3000::3.
 	
-@v6 @multipleIA
+@v6 @dhcp6 @multipleIA
     Scenario: v6.multipleIA.addresses-release-success
 	## Testing server ability to parse multiple IA's included into message
 	## and release included addresses.
@@ -93,7 +93,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					Status code 'success'
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -159,7 +159,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response MUST include option 13.
 	Response option 13 MUST contain status-code 0. 
 	
-@v6 @multipleIA
+@v6 @dhcp6 @multipleIA
     Scenario: v6.multipleIA.addresses-release-partial-success
 	## Testing server ability to parse multiple IA's included into message
 	## and release included addresses. One of the IA's are released twice.
@@ -191,7 +191,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					IA_Address with status code: NoBinding
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -270,7 +270,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response option 3 MUST contain sub-option 13. 
 	Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
-@v6 @multipleIA
+@v6 @dhcp6 @multipleIA
     Scenario: v6.multipleIA.addresses-rebind-partial-success
 	## Testing servers ability to rebind two IA form three received
 	## One IA_NA released before. 
@@ -300,7 +300,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					abut what should happen in such case. 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -377,7 +377,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response option 3 MUST contain sub-option 13.
 	#Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
-@v6 @multipleIA
+@v6 @dhcp6 @multipleIA
     Scenario: v6.multipleIA.addresses-noaddravail
    	## Testing server ability to assign two addresses and 
    	## send one status code: NoAddrAvail in one message.
@@ -399,7 +399,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
-	Server is started.
+	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
