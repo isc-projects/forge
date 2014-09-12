@@ -80,7 +80,9 @@ srv_values_v6 = {"T1": 1000,
                  "preferred-lifetime": 3000,
                  "valid-lifetime": 4000,
                  "prefix": "3000::",
-                 "prefix-len" : 64
+                 "prefix-len" : 64,
+                 "timer" : 10,
+                 "dst_addr" : ()
                 }
 
 clnt_set_wrong = {"trid": False,
@@ -320,6 +322,7 @@ def initialize(scenario):
     world.RTranges = []
     world.RTranges.append([0.9, 1.1])
     world.c = 0
+    world.notSolicit = 0
     world.saved = []
     world.iaid = []
     world.clntCfg['timeval'] = int(time.time())
@@ -463,8 +466,8 @@ def say_goodbye(total):
             kill_bind10()
 
         elif "client" in each:
-            # temporary content; it should not be implementation specific
-            get_common_logger().debug("kill the dibbler...")
+            kill_msg = "kill the " + each[:each.find("_client")]
+            get_common_logger().debug(kill_msg)
             clnt = importlib.import_module("softwaresupport.%s.functions" % each)
             clnt.stop_clnt()
 

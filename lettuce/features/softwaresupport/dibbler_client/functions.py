@@ -26,19 +26,35 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
+
 def restart_clnt(step):
+    """
+    This function shut downs and later starts dibbler-client on DUT.
+    @step("Restart client.")
+    """
     fabric_sudo_command("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
     fabric_sudo_command("("+DIBBLER_INSTALL_DIR+"dibbler-client start); sleep 1;")
 
 
 def stop_clnt():
+    """
+    Command that shut downs one instance of running dibbler-client on DUT.
+    """
     fabric_sudo_command ("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
 
 def kill_clnt():
+    """
+    Command that stops every instance of dibbler-client being run on a
+    DUT.
+    """
     fabric_run_command("sudo killall dibbler-client &>/dev/null")
 
 def create_clnt_cfg():
-    # generate a default config for client
+    """
+    This command generates a starting template for dibbler-client config
+    file. Config is stored in variable and will be handled by other 
+    functions.
+    """
     openBracket = "{"
     closeBracket = "}"
     eth = IFACE
@@ -48,16 +64,38 @@ duid-type duid-llt
 iface {eth} {openBracket}""".format(**locals())
 
 
-# release message; work on it!
 def release_command():
-    fabric_sudo_command("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
+    """
+    This command is used when there's a need to sniff a RELEASE message
+    sent by dibbler client. That happens when, for example, client is
+    shut down. So This is basically the same as starting dibbler-client -
+    running a script that executes a command with some delay. Whole thing
+    is necessary, because firstly we need to start sniffing for particular
+    message. On shutdown, dibbler-client sends exactly one RELEASE message.
+    """
+    world.clntCfg["script"] = ""
+    make_script("stop")
+    get_common_logger().debug("Stopping Dibbler Client and waiting for RELEASE.")
+    fabric_send_file(world.clntCfg["script"], DIBBLER_INSTALL_DIR+'comm.sh')
+    fabric_run_command ('(rm nohup.out; nohup bash ' \
+                        + DIBBLER_INSTALL_DIR + 'comm.sh &); sleep 3;')
 
 
 def client_option_req(step, another1, opt):
-    # add option that client requests to default interface
-    # in order to add another IA_PD option to client's config,
-    # another1 flag must be set to true; it's not needed for adding
-    # next ia_prefix options.
+    """
+    @step("Client is configured to include (another )?(\S+) option.")
+
+    This function adds option that client requests to default interface
+    in order to add another IA_PD option to client's config,
+    another1 flag must be set to true; it's not needed for adding
+    next ia_prefix options.
+    Supported options:
+    - IA_PD
+    - IA_Prefix
+    - rapid_commit
+    - insist_mode
+
+    """
     openBracket = "{"
     closeBracket = "}"
     t1 = world.clntCfg["values"]["T1"]
@@ -88,9 +126,19 @@ def client_option_req(step, another1, opt):
         world.clntCfg['insist'] = True
 
 
-def make_script():
+def make_script(option):
+    """
+    This function generates a script that will be executed on DUT.
+    It is used for starting client and when there's a need to sniff
+    a RELEASE message. Without the delay provided by this script, dibbler-client
+    was starting before sniffing was started. It resulted in sniffing not
+    first SOLICIT sent by client, but the second one. Later, client was
+    ignoring any preference options in ADVERTISE messages.
+    option argument can be equal to "start" or "stop".
+    """
     world.clntCfg["content"] = "!#/bin/sh\nsleep 10;\n"
-    world.clntCfg["content"] += "sudo " + DIBBLER_INSTALL_DIR + "dibbler-client start &\n"
+    world.clntCfg["content"] += "sudo " + DIBBLER_INSTALL_DIR + \
+                                "dibbler-client " + str(option) + "&\n"
     world.clntCfg["script"] = "temp1"
     script = open(world.clntCfg["script"], "w")
     script.write(world.clntCfg["content"])
@@ -98,6 +146,11 @@ def make_script():
 
 
 def write_clnt_cfg_to_file():
+    """
+    This function creates a valid config file from config template
+    stored in variable. It also checks for equal count of brackets,
+    in order to satisfy a config parser.
+    """
     # check if there are equal count of open/closing brackets
     openCount = world.clntCfg["config"].count("{")
     closeCount = world.clntCfg["config"].count("}")
@@ -118,16 +171,22 @@ def write_clnt_cfg_to_file():
 
 
 def client_setup(step):
-    # step for initializing client config
+    """
+    @step("Setting up test.")
+
+    This function provides a lettuce step for initializing clients' config.
+    """
     create_clnt_cfg()
 
 
 def client_parse_config(step, contain):
-    # create a structure similar to structure returned
-    # by iscpy.ISCParseString function; it is easier to
-    # play with parsing xml, so we won't touch that much
-    # isc's dhclient dict; 
-    # it looks ugly, but it works...
+    """
+    @step("Client MUST (NOT )?use prefix with values given by server.")
+    This step creates a structure similar to structure returned
+    by iscpy.ISCParseString function; it is easier to
+    play with parsing xml, so we won't touch that much
+    isc's dhclient dict; 
+    """
     result = {}
     result['lease6'] = {}
     fabric_download_file("/var/lib/dibbler/client-AddrMgr.xml", "prefix_file")
@@ -137,16 +196,16 @@ def client_parse_config(step, contain):
     if len(pdList) > 0:
         for pd in pdList:
             pdDict = {}
-            pdDict['renew'] = '''"''' + pd.attrib['T1'] + '''"'''
-            pdDict['rebind'] =  '''"''' + pd.attrib['T2'] + '''"'''
+            pdDict['renew'] = "\"" + pd.attrib['T1'] + "\""
+            pdDict['rebind'] =  "\"" + pd.attrib['T2'] + "\""
             prefixList = [prefix for prefix in pd.getchildren() if prefix.tag == "AddrPrefix"]
             for prefix in prefixList:
                 prefixDict = {}
-                prefixDict['preferred-life'] ='''"''' + prefix.attrib['pref'] + '''"'''
-                prefixDict['max-life'] = '''"''' + prefix.attrib['valid'] + '''"'''
-                pdDict['iaprefix ' + '''"''' + prefix.text + '/' + prefix.attrib['length'] +
-                       '''"'''] = dict(prefixDict)
-            result['lease6']['ia-pd ' + '''"''' + pd.attrib['IAID'] + '''"'''] = dict(pdDict)
+                prefixDict['preferred-life'] ="\"" + prefix.attrib['pref'] + "\""
+                prefixDict['max-life'] = "\"" + prefix.attrib['valid'] + "\""
+                pdDict['iaprefix ' + "\"" + prefix.text + '/' + prefix.attrib['length'] +
+                       "\""] = dict(prefixDict)
+            result['lease6']['ia-pd ' + "\"" + pd.attrib['IAID'] + "\""] = dict(pdDict)
     print result
     print "\n\n\n"
     print world.clntCfg['scapy_lease'] 
@@ -154,18 +213,24 @@ def client_parse_config(step, contain):
     if contain:
         assert result == world.clntCfg['scapy_lease'], "leases are different."
     else:
-        assert result != world.clntCfg['scapy_lease'], "leases are the same, but they should not be."
+        assert result != world.clntCfg['scapy_lease'], "leases are the same," \
+                                                       " but they should not be."
 
 
 def start_clnt(step):
-    # step for writing config to file, send it and start client
+    """
+    @step("Client is started.")
+
+    Lettuce step for writing config to file, sending it and starting client.
+    """
     write_clnt_cfg_to_file()
-    make_script()
+    make_script("start")
     get_common_logger().debug("Starting Dibbler Client with generated config:")
     fabric_send_file(world.clntCfg["Filename"], '/etc/dibbler/client.conf')
     fabric_send_file(world.clntCfg["script"], DIBBLER_INSTALL_DIR+'comm.sh')
     fabric_remove_file_command(world.clntCfg["Filename"])
-    fabric_run_command ('(rm nohup.out; nohup bash '+DIBBLER_INSTALL_DIR+'comm.sh &); sleep 1;')
+    fabric_run_command ('(rm nohup.out; nohup bash ' \
+                        + DIBBLER_INSTALL_DIR + 'comm.sh &); sleep 3;')
 
 
 # that could be use for making terrain.py even more generic ;)
@@ -183,4 +248,4 @@ def save_logs():
 
 
 def clear_all():
-    assert False, "TODO!"
+    pass

@@ -22,9 +22,13 @@ from logging_facility import *
 from lettuce.registry import world
 from init_all import SOFTWARE_INSTALL_DIR, IFACE
 from features.softwaresupport.core import *
-#import iscpy
+
 
 def prepare_default_command():
+    """
+    This function stores a command that is used to run a dhclient on DUT.
+    It specifies a lease file and a config file.
+    """
     build_leases_path()
     build_config_path()
     world.clntCfg["command"] = SOFTWARE_INSTALL_DIR + 'sbin/dhclient -6 -v ' + IFACE + " -lf " + \
@@ -32,19 +36,33 @@ def prepare_default_command():
 
 
 def build_leases_path():
+    """
+    This small function stores in variable a path for leases file.
+    """
     world.clntCfg["leases"] = SOFTWARE_INSTALL_DIR + "dhclient.leases"
 
+
 def build_config_path():
+    """
+    This small function stores in variable a path for config file.
+    """
     world.clntCfg["confpath"] = SOFTWARE_INSTALL_DIR + "dhclient.conf"
 
 
 def clean_leases():
+    """
+    Function that executes command on DUT, which removes the old lease
+    file and creates an empty, new one.
+    """
     fabric_run_command('echo y | rm ' + world.clntCfg['leases'])
     fabric_run_command('touch ' + world.clntCfg['leases'])
 
 
 def create_clnt_cfg():
-    # generate a default config for client
+    """
+    Function that stores in variable a template for config file
+    that is being generated.
+    """
     world.clntCfg["config"] = "# Config file for ISC-DHCPv6 client\n"
     openBracket = "{"
     closeBracket = "}"
@@ -53,7 +71,10 @@ def create_clnt_cfg():
 
 
 def write_clnt_cfg_to_file():
-    # check if there are equal count of open/closing brackets
+    """
+    Function creates a config file from previously specified template.
+    It checks whether there are equal count of open/closing brackets.
+    """
     openCount = world.clntCfg["config"].count("{")
     closeCount = world.clntCfg["config"].count("}")
     if openCount == closeCount + 1:
@@ -66,23 +87,48 @@ def write_clnt_cfg_to_file():
 
 
 def restart_clnt(step):
+    """
+    This function shut downs and later starts dhclient on DUT.
+    @step("Restart client.")
+    """
     stop_clnt()
     # clean_leases()  ## ?
-    fabric_sudo_command('(rm nohup.out; nohup ' + world.clntCfg["command"] + ' & ); sleep 1;')
+    fabric_sudo_command('(rm nohup.out; nohup ' + \
+                        world.clntCfg["command"] + ' & ); sleep 1;')
 
 
 def stop_clnt():
+    """
+    This function destroys every running instance of dhclient on DUT.
+    """
     fabric_run_command("sudo killall dhclient &>/dev/null")
 
+
 def kill_clnt():
+    """
+    Same as stop_clnt().
+    """
     stop_clnt()
 
-# release message; work on it!
+
 def release_command():
-    fabric_sudo_command('(rm nohup.out; nohup ' + world.clntCfg["command"] + ' -r & ); sleep 1;')
+    """
+    Function that executes a previously generated command with "-r" 
+    option, which results in sending by dhclient RELEASE repeatedly, until
+    REPLY is received. There's no need to execute it with delay like in
+    dibbler-client's case, since message will being retransmitted.
+    """
+    fabric_sudo_command('(rm nohup.out; nohup ' + \
+                        world.clntCfg["command"] + ' -r & ); sleep 1;')
 
 
 def client_option_req(step, another1, opt):
+    """
+    @step("Client is configured to include (another )?(\S+) option.")
+
+    Lettuce step for adding particular option to dhclient's config file.
+    Currently only supported options are IA_PD and rapid_commit.
+    """
     if opt == "IA_PD":
         if "command" not in world.clntCfg.keys():
             prepare_default_command()
@@ -90,12 +136,24 @@ def client_option_req(step, another1, opt):
     elif opt == "rapid_commit":
         world.clntCfg["config"] += "\n  send dhcp6.rapid-commit;"
 
+
 def client_setup(step):
+    """
+    @step("Setting up test.")
+
+    This function provides a lettuce step for initializing clients' config.
+    """
     prepare_default_command()
     create_clnt_cfg()
 
 
 def make_script():
+    """
+    Function creates a script file that will execute a previously created
+    command with delay. Execution will take place on DUT. It is important
+    to sniff first SOLICIT message sent by client, hence the delay.
+    See also more detailed description of it in dibbler_client/functions.py.
+    """
     world.clntCfg["content"] = "!#/bin/sh\nsleep 10;\n"
     world.clntCfg["content"] += world.clntCfg["command"] + " &\n"
     world.clntCfg["script"] = "temp1"
@@ -104,6 +162,12 @@ def make_script():
     script.close()
 
 def client_parse_config(step, contain):
+    """
+    @step("Client MUST (NOT )?use prefix with values given by server.")
+
+    Step firstly downloads a lease file from DUT. Then, the needed parts
+    are further parsed and specific lease structure is created. 
+    """
     fabric_download_file(SOFTWARE_INSTALL_DIR + "dhclient.leases", "prefix_file")
     file_ = open("prefix_file","r").readlines()
     count = 0
@@ -151,13 +215,27 @@ def client_parse_config(step, contain):
                         del(parsed['lease6'][entry][key]['starts'])
    
     world.clntCfg["real_lease"] = parsed 
+    """
+    print "\n\n\n"
+    print world.clntCfg["real_lease"] 
+    print "\n\n\n"
+    print world.clntCfg['scapy_lease']
+    print "\n\n\n"
+    """
     if contain:
-        assert world.clntCfg["real_lease"] == world.clntCfg['scapy_lease'], "leases are different."
+        assert world.clntCfg["real_lease"] == world.clntCfg['scapy_lease'], \
+               "leases are different."
     else:
-        assert world.clntCfg["real_lease"] != world.clntCfg['scapy_lease'], "leases are the same, but they should not be."
+        assert world.clntCfg["real_lease"] != world.clntCfg['scapy_lease'], \
+               "leases are the same, but they should not be."
 
 
 def start_clnt(step):
+    """
+    @step("Client is started.")
+
+    Lettuce step for writing config to file, sending it and starting client.
+    """
     write_clnt_cfg_to_file()
     make_script()
     get_common_logger().debug("Start dhclient6 with generated config:")
@@ -166,4 +244,10 @@ def start_clnt(step):
     fabric_send_file(world.clntCfg["script"], SOFTWARE_INSTALL_DIR + "comm.sh")
     fabric_remove_file_command(world.clntCfg["Filename"])
     # fabric_sudo_command('(rm nohup.out; nohup ' + world.clntCfg["command"] + ' & ); sleep 1;')
-    fabric_sudo_command('(rm nohup.out; nohup bash ' + SOFTWARE_INSTALL_DIR + 'comm.sh &); sleep 1;')
+    fabric_sudo_command('(rm nohup.out; nohup bash ' + \
+                        SOFTWARE_INSTALL_DIR + 'comm.sh &); sleep 1;')
+
+
+def clear_all():
+    pass
+
