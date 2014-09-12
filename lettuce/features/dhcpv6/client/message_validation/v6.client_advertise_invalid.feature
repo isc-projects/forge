@@ -48,6 +48,7 @@ Feature: DHCPv6 Client Advertise Message Validation
     Client message MUST contain option 25.
 
     Test Procedure:
+    # Server unicast option can appear only in REPLY.
     Server adds server_unicast option to message.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.

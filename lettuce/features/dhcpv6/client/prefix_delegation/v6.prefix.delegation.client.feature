@@ -291,9 +291,8 @@ Feature: DHCPv6 Client Prefix Delegation
     References: RFC 3315, section 17.1.4
 
 
-@v6 @PD  @client
+@v6 @PD @client
     Scenario: prefix.delegation.client_renew_unicast
-    # TODO: check that RENEW is sent to unicast address.
 
     Setting up test.
 
@@ -306,7 +305,6 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message MUST contain option 25.
 
     Test Procedure:
-    Server adds server_unicast option to message.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends back ADVERTISE message.
@@ -323,6 +321,71 @@ Feature: DHCPv6 Client Prefix Delegation
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
     Server sends back REPLY message.
+
+    Pass Criteria:
+    Client MUST use prefix with values given by server.
+
+    Test Procedure:
+    Set timer to T1.
+    Sniffing client RENEW message from network with timeout.
+
+    Pass Criteria:
+    # step : "Message was sent after maximum 10 second." would work correctly
+    # for test where valid retransmission are updated properly - see tests
+    # in dhcpv6/client/retransmission_time_validation/ directory.
+    # Therefore, timer is set to T1 value and RENEW MUST be sniffed in that 
+    # time.
+    Message was sent to unicast address.
+
+
+    References: RFC 3315, section 22.12
+
+
+@v6 @PD @client
+    Scenario: prefix.delegation.client_rebind_multicast
+
+    Setting up test.
+
+    Test Procedure:
+    Client is configured to include IA_PD option.
+    Client is started.
+    Sniffing client SOLICIT message from network.
+
+    Pass Criteria:
+    Client message MUST contain option 25.
+
+    Test Procedure:
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
+    Server sends back ADVERTISE message.
+
+    Pass Criteria:
+    Client MUST respond with REQUEST message.
+    Client message MUST contain option 25.
+    Client message option 25 MUST include sub-option 26.
+
+    Test Procedure:
+    Server builds new message.
+    T1 value is set to 5.
+    T2 value is set to 10.
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
+    Server sends back REPLY message.
+
+    Pass Criteria:
+    Client MUST use prefix with values given by server.
+
+    Test Procedure:
+    Set timer to T2.
+    Sniffing client REBIND message from network with timeout.
+
+    Pass Criteria:
+    # step : "Message was sent after maximum 10 second." would work correctly
+    # for test where valid retransmission are updated properly - see tests
+    # in dhcpv6/client/retransmission_time_validation/ directory.
+    # Therefore, timer is set to T1 value and RENEW MUST be sniffed in that 
+    # time.
+    Message was sent to multicast address.
 
     References: RFC 3315, section 22.12
 
@@ -694,10 +757,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Client MUST use prefix with values given by server.
 
     Test Procedure:
-    Sniffing client RENEW message from network.
-
-    Pass Criteria:
-    Message was sent after maximum 5 second.
+    Set timer to T1.
+    Sniffing client RENEW message from network with timeout.
 
     References: RFC 3633 / RFC 3315
 
@@ -735,12 +796,106 @@ Feature: DHCPv6 Client Prefix Delegation
     Client MUST use prefix with values given by server.
 
     Test Procedure:
-    Sniffing client REBIND message from network.
-
-    Pass Criteria:
-    Message was sent after maximum 6 second.
+    Set timer to T2.
+    Sniffing client REBIND message from network with timeout.
 
     References: RFC 3633 / RFC 3315
+
+
+@v6 @client
+    Scenario: retransmission.time.client_rebind_reply
+
+    Setting up test.
+
+    Test Procedure:
+    Client is configured to include IA_PD option.
+    Client is started.
+    Sniffing client SOLICIT message from network.
+
+    Pass Criteria:
+    Client message MUST contain option 1.
+    Client message MUST contain option 25.
+
+    Test Procedure:
+    T1 value is set to 3.
+    T2 value is set to 6.
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
+    Server sends back ADVERTISE message.
+
+    Pass Criteria:
+    Client MUST respond with REQUEST message.
+    Client message MUST contain option 25.
+    Client message option 25 MUST include sub-option 26.
+
+    Test Procedure:
+    T1 value is set to 3.
+    T2 value is set to 6.
+    Server sends back REPLY message.
+
+    Pass Criteria:
+    Sniffing client REBIND message from network.
+
+    Test Procedure:
+    Server builds new message.
+    T1 value is set to 1337.
+    T2 value is set to 3030.
+    preferred-lifetime value is set to 4444.
+    valid-lifetime value is set to 6666.
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
+    Server sends back REPLY message.
+
+    Test Procedure:
+    Client MUST use prefix with values given by server.
+
+    References: RFC 3315, section _.
+
+
+@v6 @client
+    Scenario: retransmission.time.client_renew_reply
+
+    Setting up test.
+
+    Test Procedure:
+    Client is configured to include IA_PD option.
+    Client is started.
+    Sniffing client SOLICIT message from network.
+
+    Pass Criteria:
+    Client message MUST contain option 1.
+    Client message MUST contain option 25.
+
+    Test Procedure:
+    T1 value is set to 3.
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
+    Server sends back ADVERTISE message.
+
+    Pass Criteria:
+    Client MUST respond with REQUEST message.
+    Client message MUST contain option 25.
+    Client message option 25 MUST include sub-option 26.
+
+    Test Procedure:
+    T1 value is set to 3.
+    Server sends back REPLY message.
+
+    Pass Criteria:
+    Sniffing client RENEW message from network.
+
+    Test Procedure:
+    Server builds new message.
+    T1 value is set to 1337.
+    T2 value is set to 3030.
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
+    Server sends back REPLY message.
+
+    Test Procedure:
+    Client MUST use prefix with values given by server.
+
+    References: RFC 3315, section _.
 
 
 @v6 @PD @rfc3633 @client
@@ -803,6 +958,46 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message sub-option 26 from option 25 MUST contain plen 56.
 
     References: RFC 3315 / RFC 3633
+
+
+@v6 @PD @rfc3633 @client
+    Scenario: prefix.delegation.client_release
+
+    Setting up test.
+
+    Test Procedure:
+    Client is configured to include IA_PD option.
+    Client is started.
+    Sniffing client SOLICIT message from network.
+
+    Pass Criteria:
+    Client message MUST contain option 1.
+    Client message MUST contain option 25.
+
+    Test Procedure:
+    T1 value is set to 1.
+    T2 value is set to 2.
+    preferred-lifetime value is set to 3.
+    valid-lifetime value is set to 40.
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
+    Server sends back ADVERTISE message.
+
+    Pass Criteria:
+    Client MUST respond with REQUEST message.
+    Client message MUST contain option 25.
+    Client message option 25 MUST include sub-option 26.
+
+    Test Procedure:
+    Server sends back REPLY message.
+
+    Pass Criteria:
+    Client MUST use prefix with values given by server.
+
+    Test Procedure:
+    Sniffing client RELEASE message from network with timeout.
+
+    References: RFC 3633 / RFC 3315
 
 
 ################    useful tests end here.    ################
