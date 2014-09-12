@@ -19,12 +19,14 @@
 from features.logging_facility import get_common_logger
 from features.terrain import set_options, set_values
 from lettuce.registry import world
-from features.init_all import IFACE, CLI_MAC, CLI_LINK_LOCAL, SRV_IPV6_ADDR_LINK_LOCAL, SOFTWARE_UNDER_TEST
+from features.init_all import IFACE, CLI_MAC, CLI_LINK_LOCAL, \
+                              SRV_IPV6_ADDR_LINK_LOCAL, SOFTWARE_UNDER_TEST
 from scapy.layers.dhcp6 import *
 from scapy.sendrecv import debug
 import time
 import importlib
 import random
+
 
 SRV_IP6 = CLI_LINK_LOCAL
 CLI_IP6 = SRV_IPV6_ADDR_LINK_LOCAL
@@ -32,25 +34,66 @@ CLI_IP6 = SRV_IPV6_ADDR_LINK_LOCAL
 clntFunc = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
 
-def client_msg_capture(step, msgType, tout_):
-    # step sniffs message sent by client and stores it in list
+def set_timer(step, timer_val):
+    """
+    @step("Set timer to (\S+).")
 
-    # prepare cliopts for new sniffed message
-    # TODO: support more types of messages;
+    This step sets a timer to a provided value. It can take values from
+    world.clntCfg["values"] dictionary (T1, T2, preferred-lifetime,
+    valid-lifetime) or be set to an implicit value, like 1234. By default,
+    timer value is set to 10.
+    """
+    #if timer_val is T1, T2 or prev/valid
+    if str(timer_val) in world.clntCfg["values"].keys():
+        if isinstance(world.clntCfg["values"][str(timer_val)], int):
+            world.clntCfg["values"]["timer"] = world.clntCfg["values"][str(timer_val)]
+        else:
+            assert False, "If you are passing a timer not as number, then it" \
+                          " has to be an int in values dictionary."
+    #else check if it was passed as number
+    else:
+        try:
+            tmp = int(timer_val)
+        except ValueError:
+            assert False, "Wrong timer value was given. It was neither a " \
+                          "number, nor a T1/T2/prev/valid. Aborting."
+        world.clntCfg["values"]["timer"] = tmp
+
+
+def client_msg_capture(step, msgType, tout_):
+    """
+    @step("Sniffing client (\S+) message from network( with timeout)?.")
+
+    Step sniffs message(s) sent by client and stores it in list. It is an 
+    important step and a lot of things take place here. We can sniff a
+    message with or without a timeout. If, after reaching timeout, specific
+    message was not sniffed, whole test fails. 
+    Sniffed message is splitted onto particular options and stored in 
+    variable. Time of receiving message is also saved.
+    """
+
     if msgType == "SOLICIT":
         clientMsg = DHCP6_Solicit
     elif msgType == "REQUEST":
         clientMsg = DHCP6_Request
     elif msgType == "RENEW":
         clientMsg = DHCP6_Renew
+        # RTranges is a set for measuring retransmission times of messages;
+        # It was designed initially to support SOLICIT and REQUEST msgs;
+        # In order to use it for RENEW/REBIND messages, we need to ignore
+        # previous values and T1/T2 timers - therefore we are erasing 
+        # RTranges two times;
+        check_is_solicit_rt()
     elif msgType == "REBIND":
         clientMsg = DHCP6_Rebind
+        check_is_solicit_rt()
     elif msgType == "RELEASE":
         clientMsg = DHCP6_Release
         clntFunc.release_command()
 
     if not tout_:
-        sniffedMsg = sniff(iface=IFACE, timeout=10, stop_filter=lambda x: x.haslayer(clientMsg))
+        sniffedMsg = sniff(iface=IFACE, timeout=world.clntCfg["values"]["timer"],
+                           stop_filter=lambda x: x.haslayer(clientMsg))
     else:
         sniffedMsg = sniff(iface=IFACE, stop_filter=lambda x: x.haslayer(clientMsg))
     world.climsg.append(sniffedMsg[-1])
@@ -71,11 +114,13 @@ def client_msg_capture(step, msgType, tout_):
     if world.time is not None:
         world.time = time.time() - world.time
 
-    assert len(world.climsg[world.clntCounter]) is not 0, "Got empty message... Exiting."
+    assert len(world.climsg[world.clntCounter]) is not 0, "Got empty message..."\
+                                                          "Exiting."
 
     # double check if we sniffed packet that we wanted
     assert world.climsg[-1].haslayer(clientMsg), "Sniffed wrong message. " \
-                                                 "Following messages were sniffed: %s." % (received)
+                                                 "Following messages were " \
+                                                 "sniffed: %s." % (received)
 
     # fill world.cliopts with dhcpv6 options from sniffed message
     msg_traverse(world.climsg[-1])
@@ -83,7 +128,14 @@ def client_msg_capture(step, msgType, tout_):
 
 
 def server_build_msg(step, response, msgType):
-    # step that creates server's message with additional options
+    """
+    @step("Server sends (back )?(\S+) message.")
+
+    Step is used for sending server's message to client. Mostly, it is
+    used to send a REPLY message. If current message is ADVERTISE, the
+    message is only build with this step and it would be sent with
+    "Client MUST (NOT )?respond with (\S+) message." step.
+    """
 
     if msgType == "ADVERTISE":
         serverMsg = DHCP6_Advertise(msgtype=2)
@@ -92,7 +144,6 @@ def server_build_msg(step, response, msgType):
 
     msg = IPv6(src=SRV_IP6, dst=CLI_IP6)/UDP(dport=546, sport=547)/serverMsg
 
-    # this needs some validation...
     if not world.clntCfg['set_wrong']['trid']:
         try:
             msg.trid = world.climsg[world.clntCounter].trid
@@ -104,21 +155,27 @@ def server_build_msg(step, response, msgType):
     if world.cfg["add_option"]["client_id"]:
         if not world.clntCfg['set_wrong']['client_id']:
             try:
-                msg /= DHCP6OptClientId(duid=world.climsg[world.clntCounter].duid, optlen=14)
+                msg /= DHCP6OptClientId(duid=world.climsg[world.clntCounter].duid, 
+                                        optlen=14)
             except IndexError:
                 msg /= DHCP6OptClientId(duid=world.climsg[-1].duid, optlen=14)
         else:
             msg /= DHCP6OptClientId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
-                                    timeval=world.clntCfg['timeval']), optlen=14, optcode=1)
+                                    timeval=world.clntCfg['timeval']),
+                                    optlen=14, optcode=1)
 
     if not world.cfg["add_option"]["server_id"]:
         if not world.clntCfg['set_wrong']['server_id']:
             msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr=CLI_MAC, type=1, 
-                                    timeval=world.clntCfg['timeval']), optlen=14, optcode=2)
+                                    timeval=world.clntCfg['timeval']),
+                                    optlen=14, optcode=2)
         else:
-            # make it blank like wlodek does?
-            msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1, lladdr="00:01:02:03:04:05", type=1, 
-                                    timeval=random.randint(0, 256*256*256)), optlen=14, optcode=2)
+            msg /= DHCP6OptServerId(duid=DUID_LLT(hwtype=1,
+                                                  lladdr="00:01:02:03:04:05",
+                                                  type=1, 
+                                                  timeval=random.randint(0, 256*256*256)),
+                                                  optlen=14,
+                                                  optcode=2)
     
     for option in world.srvopts:
         msg /= option
@@ -140,7 +197,31 @@ def server_build_msg(step, response, msgType):
     set_options()
 
 
+def check_is_solicit_rt():
+    """
+    This is a helper function that provides retransmission time
+    scopes for messages RENEW and REBIND. By default, retransmission
+    times are computed for SOL_TIMEOUT and REQ_TIMEOUT (1s). This function
+    provides those for REN_TIMEOUT and REB_TIMEOUT (10s).
+    """
+    if world.notSolicit < 2:
+        world.RTranges = []
+        world.RTranges.append([9.0, 11.0])
+        world.notSolicit += 1
+
+
 def server_set_wrong_val(step, value):
+    """
+    @step("Server sets wrong (\S+) value.")
+
+    Step sets deliberately wrong value of given server's message
+    component. It can be:
+    - iaid,
+    - client Id,
+    - server Id,
+    - transaction id.
+    """
+
     if value == "trid":
         world.clntCfg['set_wrong']['trid'] = True
     elif value == "iaid":
@@ -152,6 +233,14 @@ def server_set_wrong_val(step, value):
 
 
 def server_not_add(step, opt):
+    """
+    @step("Server does NOT add (\S+) option to message.")
+
+    By default, to generic server message, options client id and server
+    id are included. This step can provide not adding one of them, in
+    order to check client's behaviour in that situation.
+    """
+
     if opt == "client_id":
         world.cfg["add_option"]["client_id"] = False
     elif opt == "server_id":
@@ -159,8 +248,22 @@ def server_not_add(step, opt):
 
 
 def add_option(step, opt, optcode):
-    # add options to server's generic message
-    # TODO: support for many different options :)
+    """
+    @step("Server adds (\S+) (\d+ )?option to message.")
+
+    Step adds an option to server's message. Options that can be added:
+    -  IA_PD
+    -  IA_Prefix
+    -  Status_Code
+    -  preference
+    -  rapid_commit
+    -  option_request
+    -  elapsed_time
+    -  iface_id
+    -  reconfigure
+    -  relay_message
+    -  server_unicast
+    """
 
     if opt == "IA_PD":
         if not world.clntCfg['set_wrong']['iaid']:
@@ -180,7 +283,6 @@ def add_option(step, opt, optcode):
                                            iaid=id_,
                                            iapdopt=[]))
 
-                                           
     elif opt == "IA_Prefix":
         world.srvopts[-1].iapdopt.append(
             DHCP6OptIAPrefix(preflft=world.clntCfg["values"]["preferred-lifetime"],
@@ -217,7 +319,13 @@ def add_option(step, opt, optcode):
 
 
 def client_send_receive(step, contain, msgType):
-    # step sends created message to client and waits for client's answer
+    """
+    @step("Client MUST (NOT )?respond with (\S+) message.")
+
+    Step is responsible for sending previously prepared server's
+    message and checking the response of a client. Scapy's sr()
+    function is used here.
+    """
     found = False
     debug.recv = []
     conf.use_pcap = True
@@ -226,7 +334,8 @@ def client_send_receive(step, contain, msgType):
     if msgType == "REQUEST":
 
         conf.debug_match = True
-        ans, unans = sr(world.srvmsg, iface=IFACE, nofilter=1, timeout = 2, verbose = 99, clnt=1)
+        ans, unans = sr(world.srvmsg, iface=IFACE, nofilter=1, timeout = 2,
+                        verbose = 99, clnt=1)
         # print ans
         for entry in ans:
             sent, received = entry
@@ -260,7 +369,12 @@ def client_send_receive(step, contain, msgType):
 
 
 def srv_msg_clean(step):
-    # flush server options list
+    """
+    @step("Server builds new message.")
+
+    Step prepares fresh instance of server's message. Previously saved
+    values are removed and every other values are set to default.
+    """
 
     world.srvopts = []
     world.pref = None
@@ -289,32 +403,41 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
-def client_check_time_delay(step, timeval, dont_care):
-    # time delta between sending message by server and
-    # receiving response from client
-
-    assert world.time <= float(timeval), "Client respond in shorter time than " \
-                                         "%.3f second. Response time: %.3f" % \
-                                         (float(timeval), world.time)
-    world.time = None
-
-
 def compute_rt_range():
+    """
+    RFC 3315, section 14:
+    RT for each subsequent message transmission is based on the previous
+    value of RT:
+    RT = 2*RTprev + RAND*RTprev, RAND = <-0.1, 0.1>
+
+    RTprev is stored by default in world.RTlist, so function can
+    always count next RT based on a previous RT.
+    """
     lowTime = world.RTlist[-1] * 2 + world.RTlist[-1] * (-0.1)
     highTime = world.RTlist[-1] * 2 + world.RTlist[-1] * 0.1
     world.RTranges.append([lowTime, highTime])
-    #print "\n\n\n"
-    #print world.RTranges
-    #print "\n\n\n"
 
 
 def client_rt_delay(step, timeval, dont_care):
+    """
+    @step("Message was (sent|retransmitted) after maximum (\S+) second(s)?.")
+
+    Step for checking the time between last received message and the previous
+    received message. This has nothing to do with retransmission times.
+    This is used for example when we want to check that we have reached
+    a maximum timeout for retransmission time.
+    """
     assert world.RTlist[-1] <= float(timeval)
 
 
 def client_time_interval(step):
-    # time delta between client messages;
-    # used for measuring retransmission times
+    """
+    @step("Retransmission time has required value.")
+
+    Step is used for measuring message retransmission time and verifying
+    it whether it fits in given time scope (which was previously computed).
+    See retransmission_time_validation directory and tests in it.
+    """
     
     rt = world.timestamps[-1] - world.timestamps[-2]
     assert rt >= world.RTranges[world.c][0], "Client respond in shorter time than" \
@@ -327,45 +450,73 @@ def client_time_interval(step):
     
 
 def client_cmp_values(step, value):
-    # compare saved value with value from present message
-    # currently, only one value can be checked.
-    # clean container after comparing values.
+    """
+    @step("(\S+) value in client message is the same as saved one.")
+
+    This step compares value from received client message with the value
+    saved with "Save (\S+) value." step.
+    """
 
     val = str(value).lower()
+    # currently, only one value can be checked.
     assert world.saved[-1].sort() is world.saved[len(world.saved)-2].sort(), \
                                     "compared %s values are different." % (val)
+    # clean container after comparing values.
     world.saved = []
     world.clntCfg['toSave'] = None
 
 
 def msg_set_value(step, value_name, new_value):
-    # set value different than value from values dictionary
-    # it is for server's message of course
+    """
+    @step("(\S+) value is set to (\S+).")
 
-    if value_name in world.clntCfg["values"]:
-        if isinstance(world.clntCfg["values"][value_name], str):
-            world.clntCfg["values"][value_name] = str(new_value)
-        elif isinstance(world.clntCfg["values"][value_name], int):
-            world.clntCfg["values"][value_name] = int(new_value)
+    Server sets value of one key from world.clntCfg["values"] 
+    to different than its default value. It can be for example
+    T1, T2, preferred-lifetime, valid-lifetime, prefix.
+    """
+
+    if new_value == '0xffffffff':
+        new_value = 0xffffffff
+
+    if str(value_name) in world.clntCfg["values"]:
+        if isinstance(world.clntCfg["values"][str(value_name)], str):
+            world.clntCfg["values"][str(value_name)] = str(new_value)
+        elif isinstance(world.clntCfg["values"][str(value_name)], int):
+            world.clntCfg["values"][str(value_name)] = int(new_value)
         else:
-            world.clntCfg["values"][value_name] = new_value
+            world.clntCfg["values"][str(value_name)] = new_value
     else:
-        assert value_name in world.clntCfg["values"], "Unknown value name : %s" % value_name
+        assert str(value_name) in world.clntCfg["values"], "Unknown value " \
+                                                           "name : %s" % str(value_name)
 
 
 def save_value(step, value):
+    """
+    @step("Save (\S+) value.")
+
+    Step saves value in variable for further comparison. One case of usage
+    is checking the consistency of IAID value over message exchange.
+    """
     world.clntCfg['toSave'] = value.lower()
     
 
 def msg_traverse(msg):
-    # this function breaks into pieces present client message;
-    # cliopts will contain following lists for every layer:
-    # optcode, layer; this will only parse options
+    """
+    This function breaks into pieces present client message;
+    cliopts will contain following lists for every layer:
+    optcode, layer; this will only parse options
+    """
 
+    world.clntCfg["values"]["dst_addr"] = ()
     world.cliopts = []
     localMsg = msg.copy()
     temp = []
     tempIaid = []
+
+    if localMsg.haslayer(IPv6):
+        dst_addr = localMsg.getlayer(IPv6).dst
+        type_addr = "multicast" if dst_addr[0:2] == 'ff' else "unicast"
+        world.clntCfg["values"]["dst_addr"] += (type_addr, dst_addr)
 
     if type(localMsg) == Ether:
         localMsg = localMsg.getlayer(4)
@@ -390,9 +541,27 @@ def msg_traverse(msg):
     world.iaid.append(tempIaid)
 
 
+def client_dst_address_check(step, dst_type):
+    """
+    @step("Message was sent to (multicast|unicast) address.")
+
+    Step checks whether message sent by dhcp client was sent to
+    multicast or unicast address. If the destination address
+    begins with 'ff', then it is interpreted as a multicast
+    address. Otherwise, we assume that it is an unicast address.
+    """
+    assert str(dst_type) == world.clntCfg["values"]["dst_addr"][0], \
+           "Destination address is %s and it's different than " \
+           "expected." % world.clntCfg["values"]["dst_addr"][0]
+
+
 def client_msg_contains_opt(step, contain, opt):
-    # this step checks by optcode whether present client message
-    # contains option that we are looking for
+    """
+    @step("Client message MUST (NOT )?contain option (\d+).")
+
+    Step verifies the presence of particular option in received
+    message from client. Options are checked by their option code.
+    """
 
     isFound = find_option(opt)
     if contain:
@@ -402,8 +571,10 @@ def client_msg_contains_opt(step, contain, opt):
 
 
 def find_option(opt):
-    # this function checks for option defined with optcode;
-    # it could be implemented differently - by checking entries in world.cliopts
+    """
+    This function checks for option defined with optcode;
+    it could be implemented differently - by checking entries in world.cliopts
+    """
 
     # received msg from client must not be changed - make a copy of it
     tmp = world.climsg[world.clntCounter].copy()
@@ -420,7 +591,13 @@ def find_option(opt):
 
 
 def client_msg_contains_subopt(step, opt_code, contain, subopt_code):
-    # this step verifies whether in specific option exists specific suboption;
+    """
+    @step("Client message MUST (NOT )?contain (\d+) options with opt-code (\d+).")
+
+    Step verifies the presence of particular sub-option within option 
+    in received message from client. Sub-options and options are checked 
+    by their option code.
+    """
 
     for entry in world.cliopts:
         if int(opt_code) == entry[0]:
@@ -441,7 +618,13 @@ def client_msg_contains_subopt(step, opt_code, contain, subopt_code):
 
 
 def client_opt_check_value(step, opt_code, expect, value_name, value):
-    # this step compares proper value from message with value given in step;
+    """
+    @step("Client message option (\d+) MUST (NOT )?contain (\S+) (\S+).")
+
+    Step checks the value of field within a specific option. It is compared
+    with the value given in step. It might be used as following:
+    Client message option 25 MUST NOT contain T1 2000.
+    """
 
     found = False
     for entry in world.cliopts:
@@ -450,13 +633,17 @@ def client_opt_check_value(step, opt_code, expect, value_name, value):
                 if getattr(entry[1], value_name) == int(value):
                     found = True
     if expect:
-        assert found is True, "%s has different value than expected." % str(value_name)
+        assert found is True, "%s has different value than " \
+                              "expected." % str(value_name)
     else:
-        assert found is False, "%s has %s value, but it shouldn't." % (str(value_name), str(value))
+        assert found is False, "%s has %s value, but it " \
+                               "shouldn't." % (str(value_name), str(value))
 
 
 def client_subopt_check_value(step, subopt_code, opt_code, expect, value_name, value):
-    # same as client_opt_check_value, but for suboption;
+    """
+    This is the same as client_opt_check_value, but for suboption;
+    """
 
     found = False
     for entry in world.subopts:
@@ -473,7 +660,12 @@ def client_subopt_check_value(step, subopt_code, opt_code, expect, value_name, v
 
 
 def client_msg_count_opt(step, contain, count, optcode):
-    # step for checking count of option with certain opt-code in message;
+    """
+    @step("Client message MUST (NOT )?contain (\d+) options with opt-code (\d+).")
+
+    Step checks whether client had included a expected number of particular
+    option in message.
+    """
 
     localCounter = 0
     for entry in world.cliopts:
@@ -488,7 +680,14 @@ def client_msg_count_opt(step, contain, count, optcode):
                                                "given value," \
                                                " but it should not." % (int(optcode))
 
+
 def client_msg_count_subopt(step, contain, count, subopt_code, opt_code):
+    """
+    @step("Client message MUST (NOT )?contain (\d+) sub-options with opt-code (\d+) within option (\d+).")
+
+    Step checks whether client had included a expected number of particular
+    sub-option within option in message.
+    """
     localCounter = 0
     for entry in world.subopts:
         if entry[0] == int(opt_code) and entry[1] == int(subopt_code):
@@ -505,7 +704,12 @@ def client_msg_count_subopt(step, contain, count, subopt_code, opt_code):
 
 
 def client_check_field_presence(step, contain, field, optcode):
-    # step for checking fields presence in option;
+    """
+    @step("Client message MUST (NOT )?contain (\S+) field in option (\d+).")
+
+    Step checks if in specified option, specific field is present - like
+    T1 field in option 25 (IA_PD).
+    """
 
     found = False
     for entry in world.cliopts:
@@ -520,31 +724,36 @@ def client_check_field_presence(step, contain, field, optcode):
 
 
 def get_lease():
-    # make lease structure from scapy options
-    # format is the same as lease from ParseISCString
+    """
+    Function makes lease structure from scapy options.
+    Format is the same as lease from ParseISCString.
+    """
+
     result = {}
     result['lease6'] = {}
     pdList = [iapd for iapd in world.srvopts if iapd.optcode == 25]
     for pd in pdList:
         pdDict = {}
-        pdDict['renew'] ='''"''' + str(pd.T1) + '''"'''
-        pdDict['rebind'] = '''"''' + str(pd.T2) + '''"'''
+        pdDict['renew'] ="\"" + str(pd.T1) + "\""
+        pdDict['rebind'] = "\"" + str(pd.T2) + "\""
         prefixList = [prefix for prefix in pd.iapdopt if prefix.optcode == 26]
         if len(prefixList) == 0:
             hexIaid = pd.iaid
         for prefix in prefixList:
             prefixDict = {}
-            prefixDict['preferred-life'] = '''"''' + str(prefix.preflft) + '''"'''
-            prefixDict['max-life'] = '''"''' + str(prefix.validlft) + '''"'''
-            pdDict['iaprefix ' + '''"''' + str(prefix.prefix) + '/' +
-                   str(prefix.plen) + '''"'''] = dict(prefixDict)
-            if SOFTWARE_UNDER_TEST == "isc_dhcp6_client":
+            prefixDict['preferred-life'] = "\"" + str(prefix.preflft) + "\""
+            prefixDict['max-life'] = "\"" + str(prefix.validlft) + "\""
+            pdDict['iaprefix ' + "\"" + str(prefix.prefix) + '/' +
+                   str(prefix.plen) + "\""] = dict(prefixDict)
+            # dhclient stores iaid in hex value; if that's software that is 
+            # currently tested, convert iaid to hexadecimal and add colons
+            if "isc_dhcp6_client" in SOFTWARE_UNDER_TEST:
                 hexIaid = hex(pd.iaid)[2:]
                 hexIaid = ':'.join(a+b for a,b in zip(hexIaid[::2], hexIaid[1::2]))
             else:
                 hexIaid = pd.iaid
 
-        result['lease6']['ia-pd ' + '''"''' + str(hexIaid) + '''"'''] = dict(pdDict)
+        result['lease6']['ia-pd ' + "\"" + str(hexIaid) + "\""] = dict(pdDict)
     
     world.clntCfg['scapy_lease'] = result
 
