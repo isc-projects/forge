@@ -174,8 +174,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Setting up test.
 
     Test Procedure:
-    Client is configured to include IA_PD option.
     Client is configured to include rapid_commit option.
+    Client is configured to include IA_PD option.
     Client is started.
     Sniffing client SOLICIT message from network.
 
@@ -201,8 +201,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Setting up test.
 
     Test Procedure:
-    Client is configured to include IA_PD option.
     Client is configured to include rapid_commit option.
+    Client is configured to include IA_PD option.
     Client is started.
     Sniffing client SOLICIT message from network.
 
@@ -227,8 +227,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Setting up test.
 
     Test Procedure:
-    Client is configured to include IA_PD option.
     Client is configured to include rapid_commit option.
+    Client is configured to include IA_PD option.
     Client is started.
     Sniffing client SOLICIT message from network.
 
@@ -256,8 +256,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Setting up test.
 
     Test Procedure:
-    Client is configured to include IA_PD option.
     Client is configured to include rapid_commit option.
+    Client is configured to include IA_PD option.
     Client is started.
     Sniffing client SOLICIT message from network.
 
@@ -648,6 +648,8 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message option 25 MUST include sub-option 26.
     Client message sub-option 26 from option 25 MUST contain prefix 4444::.
 
+    Pause the Test.
+
     References: RFC 3633
 
 
@@ -694,7 +696,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
     Test Procedure:
     Client is configured to include IA_PD option.
-    Client is configured to include IA_PD option.
+    Client is configured to include another IA_PD option.
     Client is started.
     Sniffing client SOLICIT message from network.
 
@@ -705,6 +707,9 @@ Feature: DHCPv6 Client Prefix Delegation
     Test Procedure:
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
+    prefix value is set to c0de:beef::.
+    Server adds IA_PD option to message.
+    Server adds IA_Prefix option to message.
     Server sends back ADVERTISE message.
 
     Pass Criteria:
@@ -713,10 +718,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message option 25 MUST include sub-option 26.
 
     Test Procedure:
-    Server builds new message.
     Server sends back REPLY message.
-
-    Pause the Test.
 
     Pass Criteria:
     Client MUST use prefix with values given by server.
@@ -734,6 +736,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Client is started.
     Sniffing client SOLICIT message from network.
 
+    #Pause the Test.
     Pass Criteria:
     Client message MUST contain option 1.
     Client message MUST contain option 25.
@@ -900,7 +903,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 @v6 @PD @rfc3633 @client
     Scenario: prefix.delegation.client_choose_server
-    # this step checks whether client stores information
+    # this scenario checks whether client stores information
     # about plural servers that have sent response;
     # if client did not receive reply for his request
     # message and retransmission count is equal to REQ_MAX_RC,
@@ -922,7 +925,7 @@ Feature: DHCPv6 Client Prefix Delegation
     prefix-len value is set to 56.
     Server adds IA_PD option to message.
     Server adds IA_Prefix option to message.
-    Server sends back ADVERTISE message.
+    Server sends ADVERTISE message.
 
     Server builds new message.
     Server adds preference 100 option to message.
@@ -1000,42 +1003,3 @@ Feature: DHCPv6 Client Prefix Delegation
     References: RFC 3633 / RFC 3315
 
 
-################    useful tests end here.    ################
-
-
-@v6 @PD @rfc3633 @client
-    Scenario: prefix.delegation.client_garbage
-
-    Setting up test.
-
-    Client is configured to include IA_PD option.
-    Client is configured to include IA_PD option.
-    Client is started.
-    Sniffing client SOLICIT message from network.
-
-    Client message MUST contain option 1.
-    Client message MUST contain option 25.
-    T1 value is set to 20.
-    T2 value is set to 40.
-    Server adds IA_PD option to message.
-    Server adds IA_Prefix option to message.
-    #    prefix value is set to 1234::.
-    #    Server adds IA_Prefix option to message.
-    #    Server adds IA_PD option to message.
-    #    Server adds IA_Prefix option to message.
-    #    Server adds IA_Prefix option to message.
-    Server sends back ADVERTISE message.
-
-    Client MUST respond with REQUEST message.
-
-    Client message MUST contain option 25.
-    Server sends back REPLY message.
-    #Client MUST use prefix with values given by server.
-    #Sniffing client RENEW message from network.
-    #Message was sent after maximum 10 second.
-    #Client sent RELEASE message.
-    #Server sends back REPLY message.
-    Sniffing client SOLICIT message from network.
-    Pause the Test.
-
-    References: RFC 3633 / RFC 3315

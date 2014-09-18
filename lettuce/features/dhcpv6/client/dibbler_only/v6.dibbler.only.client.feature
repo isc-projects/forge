@@ -348,7 +348,6 @@ Feature: DHCPv6 Dibbler Client IA_PD tests without insist-mode
     
     Test Procedure:
     Server sends back REPLY message.
-    Pause the Test.
 
     Pass Criteria:
     # Client MUST use prefix with values given by server.
