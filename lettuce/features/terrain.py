@@ -269,16 +269,16 @@ def test_start():
                     sys.exit(-1)
                 get_common_logger().debug("Bind10 successfully started")
 
-            elif "client" in each:
-                clnt = importlib.import_module("softwaresupport.%s.functions" % each)
-                clnt.stop_clnt()
+        elif "client" in each:
+            clnt = importlib.import_module("softwaresupport.%s.functions" % each)
+            clnt.stop_clnt()
 
-            else:
-                stop = importlib.import_module("softwaresupport.%s.functions" % each)
-                # True passed to stop_srv is to hide output in console.
-                stop.stop_srv(True)
-                #  that is pointless, we should use same name for stop_srv and stop_clnt functions,
-                #  and erase that last elif.
+        else:
+            stop = importlib.import_module("softwaresupport.%s.functions" % each)
+            # True passed to stop_srv is to hide output in console.
+            stop.stop_srv(True)
+            #  that is pointless, we should use same name for stop_srv and stop_clnt functions,
+            #  and erase that last elif.
 
 
 @before.each_scenario
@@ -328,6 +328,7 @@ def initialize(scenario):
     world.clntCfg['timeval'] = int(time.time())
     world.clntCfg['toSave'] = None
     world.clntCfg['insist'] = False
+    world.clntCfg['lease_file'] = ""
 
     # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
     if not hasattr(world.cfg, "cli_duid"):
@@ -440,6 +441,9 @@ def cleanup(scenario):
 
         # every software have something else to clear. Put in clear_all() whatever you need
         functions.clear_all()
+
+        if '_client' in each:
+            functions.kill_clnt()
 
 
 @after.all
