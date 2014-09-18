@@ -32,45 +32,44 @@ for each_client_name in SOFTWARE_UNDER_TEST:
         pass
 
 
-@step("Setting up test.")
 """
 Step provides client initialization. Needs to be included before
 step "Client is started."
 """
+@step("Setting up test.")
 def client_setup(step):
     dhcp.client_setup(step)
 
 
-@step("Client is started.")
 """
 Step executes a command specific to currently tested software, which
 results in running a client on DUT.
 """
+@step("Client is started.")
 def client_start(step):
     dhcp.start_clnt(step)
 
 
-@step("Client is configured to include (another )?(\S+) option.")
 """
 This step adds another client option to a config that is being generated.
 Supported options may differ for particular implementation. Please see
 in softwaresupport/SOFTWARE_UNDER_TEST/functions.py file what options
 you can include with this step.
 """
+@step("Client is configured to include (another )?(\S+) option.")
 def client_option_req(step, another, opt):
     another1 = (another == "another ")
     dhcp.client_option_req(step, another1, opt)
 
 
-@step("Restart client.")
 """
 Step executes a commands that result in restarting client on DUT.
 """
+@step("Restart client.")
 def client_restart(step):
     dhcp.restart_clnt(step)
 
 
-@step("Client MUST (NOT )?use prefix with values given by server.")
 """
 Step provides following functionality:
 - download a lease (or config) file that was created by specific software
@@ -82,6 +81,7 @@ Step checks whether client uses a configuration parameters given by server.
 Currently, this step supports only IA_PDs. Support for IA_NAs should be
 provided also.
 """
+@step("Client MUST (NOT )?use prefix with values given by server.")
 def client_parse_config(step, yes_no):
     contain = not (yes_no == "NOT ")
     dhcp.client_parse_config(step, contain)
