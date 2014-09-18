@@ -17,7 +17,8 @@
 
 
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
-    fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file
+    fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file, \
+    remove_local_file
 from logging_facility import *
 from lettuce.registry import world
 from init_all import SOFTWARE_INSTALL_DIR, IFACE
@@ -31,8 +32,11 @@ def prepare_default_command():
     """
     build_leases_path()
     build_config_path()
-    world.clntCfg["command"] = SOFTWARE_INSTALL_DIR + 'sbin/dhclient -6 -v ' + IFACE + " -lf " + \
-                               world.clntCfg["leases"] + " -cf " + world.clntCfg["confpath"]
+    world.clntCfg["log_file"] = SOFTWARE_INSTALL_DIR + "dhclient.log"
+    world.clntCfg["command"] = SOFTWARE_INSTALL_DIR + 'sbin/dhclient -6 -v ' \
+                               + IFACE + " -lf " +  world.clntCfg["leases"] + \
+                               " -cf " + world.clntCfg["confpath"] + " -P &> " + \
+                               world.clntCfg["log_file"] + " &"
 
 
 def build_leases_path():
@@ -168,8 +172,9 @@ def client_parse_config(step, contain):
     Step firstly downloads a lease file from DUT. Then, the needed parts
     are further parsed and specific lease structure is created. 
     """
-    fabric_download_file(SOFTWARE_INSTALL_DIR + "dhclient.leases", "prefix_file")
-    file_ = open("prefix_file","r").readlines()
+    world.clntCfg["lease_file"] = world.cfg["dir_name"] + "/dhclient.leases"
+    fabric_download_file(world.clntCfg["leases"], world.clntCfg["lease_file"])
+    file_ = open(world.clntCfg["lease_file"],"r").readlines()
     count = 0
     # remove things that we do not want
     for line in list(file_):
@@ -240,14 +245,31 @@ def start_clnt(step):
     make_script()
     get_common_logger().debug("Start dhclient6 with generated config:")
     clean_leases()
+    world.clntCfg["keep_lease"] = False
     fabric_send_file(world.clntCfg["Filename"], SOFTWARE_INSTALL_DIR + "dhclient.conf")
     fabric_send_file(world.clntCfg["script"], SOFTWARE_INSTALL_DIR + "comm.sh")
     fabric_remove_file_command(world.clntCfg["Filename"])
-    # fabric_sudo_command('(rm nohup.out; nohup ' + world.clntCfg["command"] + ' & ); sleep 1;')
+    fabric_remove_file_command(world.clntCfg["log_file"])
     fabric_sudo_command('(rm nohup.out; nohup bash ' + \
                         SOFTWARE_INSTALL_DIR + 'comm.sh &); sleep 1;')
 
 
+def save_leases():
+    world.clntCfg["keep_lease"] = True
+
+
+def save_logs():
+    fabric_download_file(world.clntCfg["log_file"], world.cfg["dir_name"] + \
+                         "/dhclient.log")
+
+
 def clear_all():
-    pass
+    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'comm.sh')
+    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'dhclient.conf')
+    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'dhclient.leases')
+    remove_local_file(world.clntCfg["Filename"])
+    remove_local_file(world.clntCfg["script"])
+    if not world.clntCfg["keep_lease"] and world.clntCfg['lease_file'] is not "":
+        remove_local_file(world.clntCfg['lease_file'])
+
 

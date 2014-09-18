@@ -17,7 +17,8 @@
 
 
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
-    fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file
+    fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file, \
+    remove_local_file
 from logging_facility import *
 from lettuce.registry import world
 from init_all import DIBBLER_INSTALL_DIR, IFACE
@@ -59,7 +60,7 @@ def create_clnt_cfg():
     closeBracket = "}"
     eth = IFACE
     world.clntCfg["config"] = """log-level 8
-log-mode syslog
+log-mode precise
 duid-type duid-llt
 iface {eth} {openBracket}""".format(**locals())
 
@@ -189,8 +190,9 @@ def client_parse_config(step, contain):
     """
     result = {}
     result['lease6'] = {}
-    fabric_download_file("/var/lib/dibbler/client-AddrMgr.xml", "prefix_file")
-    tree = ET.ElementTree(file='prefix_file')
+    world.clntCfg['lease_file'] = world.cfg["dir_name"] + "/dibbler_lease.xml"
+    fabric_download_file("/var/lib/dibbler/client-AddrMgr.xml", world.clntCfg['lease_file'])
+    tree = ET.ElementTree(file=world.clntCfg['lease_file'])
     root = tree.getroot()
     pdList = [iapd for iapd in root.iter() if iapd.tag == "AddrPD"]
     if len(pdList) > 0:
@@ -223,12 +225,16 @@ def start_clnt(step):
 
     Lettuce step for writing config to file, sending it and starting client.
     """
+    world.clntCfg["keep_lease"] = False
+    world.clntCfg["log_file"] = "/var/log/dibbler/dibbler-client.log"
     write_clnt_cfg_to_file()
     make_script("start")
     get_common_logger().debug("Starting Dibbler Client with generated config:")
     fabric_send_file(world.clntCfg["Filename"], '/etc/dibbler/client.conf')
     fabric_send_file(world.clntCfg["script"], DIBBLER_INSTALL_DIR+'comm.sh')
     fabric_remove_file_command(world.clntCfg["Filename"])
+    # start client with clean log file
+    fabric_remove_file_command(world.clntCfg["log_file"])
     fabric_run_command ('(rm nohup.out; nohup bash ' \
                         + DIBBLER_INSTALL_DIR + 'comm.sh &); sleep 3;')
 
@@ -240,12 +246,20 @@ def stop_srv():
 
 # We probably should use those functions
 def save_leases():
-    assert False, "TODO!"
+    world.clntCfg["keep_lease"] = True
 
 
 def save_logs():
-    assert False, "TODO!"
+    fabric_download_file(world.clntCfg["log_file"], world.cfg["dir_name"] + \
+                         "/dibbler-client.log")
 
 
 def clear_all():
-    pass
+    fabric_remove_file_command(DIBBLER_INSTALL_DIR + 'comm.sh')
+    fabric_remove_file_command('/etc/dibbler/client.conf')
+    remove_local_file(world.clntCfg["Filename"])
+    remove_local_file(world.clntCfg["script"])
+    if not world.clntCfg["keep_lease"] and world.clntCfg['lease_file'] is not "":
+        remove_local_file(world.clntCfg['lease_file'])
+
+
