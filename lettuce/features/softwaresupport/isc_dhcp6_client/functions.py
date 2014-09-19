@@ -11,8 +11,6 @@
 # INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
 # FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
 # Author: Maciek Fijalkowski
 
 
@@ -35,8 +33,8 @@ def prepare_default_command():
     world.clntCfg["log_file"] = SOFTWARE_INSTALL_DIR + "dhclient.log"
     world.clntCfg["command"] = SOFTWARE_INSTALL_DIR + 'sbin/dhclient -6 -v ' \
                                + IFACE + " -lf " +  world.clntCfg["leases"] + \
-                               " -cf " + world.clntCfg["confpath"] + " -P &> " + \
-                               world.clntCfg["log_file"] + " &"
+                               " -cf " + world.clntCfg["confpath"] + " &> " + \
+                               world.clntCfg["log_file"] 
 
 
 def build_leases_path():
@@ -136,7 +134,9 @@ def client_option_req(step, another1, opt):
     if opt == "IA_PD":
         if "command" not in world.clntCfg.keys():
             prepare_default_command()
-        world.clntCfg["command"] += " -P"
+        idx = world.clntCfg["command"].find("&")
+        world.clntCfg["command"] = world.clntCfg["command"][:idx] + "-P " + \
+                                   world.clntCfg["command"][idx:]
     elif opt == "rapid_commit":
         world.clntCfg["config"] += "\n  send dhcp6.rapid-commit;"
 
