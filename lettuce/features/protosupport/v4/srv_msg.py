@@ -171,27 +171,33 @@ def convert_MAC(mac):
 
 
 def build_msg(opts):
-
     conf.checkIPaddr = False
-    fam,hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    msg_flag = 0
+    fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
     tmp_hw = None
 
     # we need to choose if we want to use chaddr, or client id. 
     # also we can include both: client_id and chaddr
-    if world.cfg["values"]["chaddr"] == None or world.cfg["values"]["chaddr"] == "default":
+    if world.cfg["values"]["chaddr"] is None or world.cfg["values"]["chaddr"] == "default":
         tmp_hw = hw
     elif world.cfg["values"]["chaddr"] == "empty":
         tmp_hw = convert_MAC("00:00:00:00:00:00")
     else:
         tmp_hw = convert_MAC(world.cfg["values"]["chaddr"])
-    
+
+    if world.cfg["values"]["broadcastBit"]:
+        # value for setting 1000 0000 0000 0000 in bootp message in field 'flags' for broadcast msg.
+        msg_flag = 32768
+
     msg = Ether(dst = "ff:ff:ff:ff:ff:ff",
                 src = hw)
     msg /= IP(src = world.cfg["source_IP"],
-              dst = world.cfg["destination_IP"])
+              dst = world.cfg["destination_IP"],)
     msg /= UDP(sport = world.cfg["source_port"], dport = world.cfg["destination_port"])
     msg /= BOOTP(chaddr = tmp_hw,
-                 giaddr = world.cfg["values"]["giaddr"])
+                 giaddr = world.cfg["values"]["giaddr"],
+                 flags = msg_flag,
+                 hops = world.cfg["values"]["hops"])
     msg /= DHCP(options = opts)
 
     msg.xid = randint(0, 256*256*256)
@@ -317,7 +323,7 @@ def response_check_include_option(step, expected, opt_code):
     if expected:
         assert opt, "Expected option " + opt_code + " not present in the message."
     else:
-        assert opt == None, "Expected option " + opt_code + " present in the message. But not expected!"
+        assert opt is None, "Expected option " + opt_code + " present in the message. But not expected!"
 
 
 def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
@@ -328,9 +334,8 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     received = get_option(world.srvmsg[0], opt_code)
     outcome, received = test_option(opt_code, received ,expected)
 
-    if expect == None:
-        assert outcome, "Invalid {opt_code} option received: {received}"\
-                                    " but expected {expected}".format(**locals())
+    if expect is None:
+        assert outcome, "Invalid {opt_code} option received: {received} but expected {expected}".format(**locals())
     else:
-        assert not outcome, "Invalid {opt_code} option received: {received}"\
-                                 " that value has been excluded from correct values".format(**locals())
+        assert not outcome, "Invalid {opt_code} option received: {received}" \
+                            " that value has been excluded from correct values".format(**locals())
