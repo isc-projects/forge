@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS removing forward and reverse entries in time of releasing leases.
 
 @v6 @ddns @notsig @forward_reverse_remove
-    Scenario: ddns.notsig.forw_and_rev.release
+    Scenario: ddns6.notsig.forw_and_rev.release
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -97,7 +97,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @forward_reverse_remove
-    Scenario: ddns.notsig.forw_and_rev.release-notenabled
+    Scenario: ddns6.notsig.forw_and_rev.release-notenabled
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -205,7 +205,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @reverse_remove
-    Scenario: ddns.notsig.rev.release
+    Scenario: ddns6.notsig.rev.release
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
