@@ -97,7 +97,9 @@ server_times_v4 = {"renew-timer": 1000,
 values_v4 = {"ciaddr": "0.0.0.0",
              "yiaddr": "0.0.0.0",
              "siaddr": "0.0.0.0",
-             "giaddr": GIADDR4,
+             "giaddr": "0.0.0.0",
+             "broadcastBit": False,
+             "hops": 0,
              "chaddr": None}
 
 add_option_v4 = {"vendor_class_id": False,

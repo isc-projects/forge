@@ -42,6 +42,7 @@ def client_sets_value(step, value_name, new_value):
     more accurate.
     """
     # that is also used for DNS messages
+    value_name, new_value = test_define_value(value_name, new_value)
     dhcpmsg.client_sets_value(step, value_name, new_value)
 
 
@@ -174,6 +175,7 @@ def response_check_include_option(step, yes_or_no, opt_code):
 def response_check_content(step, expect, data_type, expected):
     """
     """
+    #expect, data_type, expected = test_define_value(expect, data_type, expected)
     dhcpmsg.response_check_content(step, expect, data_type, expected)
 
 
@@ -182,7 +184,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     """
     Detailed parsing of received option. For more details please read manual section "Parsing respond"
     """
-    data_type, expected = test_define_value (data_type, expected)
+    data_type, expected = test_define_value(data_type, expected)
     dhcpmsg.response_check_option_content(step, 0, opt_code, expect, data_type, expected)
 
 
@@ -329,6 +331,12 @@ def compare_values(step, value_name, option_name):
 
 
 ##other
+@step('Set network variable (\S+) with value (\S+).')
+def network_variable(step, value_name, value):
+    value_name, value = test_define_value(value_name, value)
+    other.change_network_variables(value_name, value)
+
+
 @step('(\S+) log MUST (NOT )?contain line: (.+)')
 def log_includes_line(step, server_type, condition, line):
     """

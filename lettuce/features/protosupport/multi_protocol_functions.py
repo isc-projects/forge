@@ -199,13 +199,22 @@ def log_contains_count(step, server_type, count, line):
         assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
 
 
-def change_network_variables():
-    pass
-    #TODO !
-    # world.cfg["dns_iface"] = DNS_IFACE
-    # world.cfg["dns_addr"] = DNS_ADDR
-    # world.cfg["dns_port"] = DNS_PORT
-    # world.cfg["address_v6"] = "ff02::1:2"
-    # world.cfg["cli_link_local"] = CLI_LINK_LOCAL
-    #  world.cfg["values"]["source_IP"],
-    #           dst = world.cfg["values"]["dstination_IP"]
+def change_network_variables(value_name, value):
+    if value_name == "source_port":
+        world.cfg["source_port"] = int(value)
+    elif value_name == "destination_port":
+        world.cfg["destination_port"] = int(value)
+    elif value_name == "client_link_local_address":
+        world.cfg["cli_link_local"] = value
+    elif value_name == "source_address":
+        world.cfg["source_IP"] = value
+    elif value_name == "destination_address":
+        world.cfg["destination_IP"] = value
+    elif value_name == "dns_iface":
+        world.cfg["dns_iface"] = value
+    elif value_name == "dns_address":
+        world.cfg["dns_addr"] = value
+    elif value_name == "dns_port":
+        world.cfg["dns_port"] = int(value)
+    else:
+        assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
