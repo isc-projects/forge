@@ -3,7 +3,7 @@
 Feature: DHCPv4 address request process
     Those are simple DHCPv4 tests for address assignment. During RENEWING/REBINDING state.
  
-@v4 @request
+@v4 @dhcp4 @request
 Scenario: v4.request.renewing.success
 
 	Test Setup:
@@ -52,7 +52,7 @@ Scenario: v4.request.renewing.success
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
-@v4 @request
+@v4 @dhcp4 @request
 Scenario: v4.request.rebinding.success
 
 	Test Setup:
@@ -101,7 +101,7 @@ Scenario: v4.request.rebinding.success
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @request
+@v4 @dhcp4 @request
 Scenario: v4.request.rebinding.fail
 
 	Test Setup:

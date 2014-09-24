@@ -6,7 +6,7 @@ Feature: DHCPv4 message fields
 
 	# References in all tests are temporary empty, that's intentional.
 
-@v4 @fields
+@v4 @dhcp4 @fields
 Scenario: v4.message.fields.chaddr
 	# that test needs more work with chaddr
 	Test Setup:
@@ -22,7 +22,7 @@ Scenario: v4.message.fields.chaddr
 	Server MUST respond with OFFER message.
 	#Response MUST contain chaddr ff:01:02:03:ff:04.
 
-@v4 @fields @ciaddr
+@v4 @dhcp4 @fields @ciaddr
 Scenario: v4.message.fields.ciaddr-correct-offer
 
 	Test Setup:
@@ -39,7 +39,7 @@ Scenario: v4.message.fields.ciaddr-correct-offer
 	Response MUST contain ciaddr 0.0.0.0.
 	Response MUST NOT contain ciaddr 192.168.50.9.
 	
-@v4 @fields @ciaddr
+@v4 @dhcp4 @fields @ciaddr
 Scenario: v4.message.fields.ciaddr-incorrect-offer
 	
 	Test Setup:
@@ -56,7 +56,7 @@ Scenario: v4.message.fields.ciaddr-incorrect-offer
 	Response MUST contain ciaddr 0.0.0.0.
 	Response MUST NOT contain ciaddr 255.255.255.255.
 
-@v4 @fields @ciaddr
+@v4 @dhcp4 @fields @ciaddr
 Scenario: v4.message.fields.ciaddr-incorrect-nak
 
 	Test Setup:
@@ -92,7 +92,7 @@ Scenario: v4.message.fields.ciaddr-incorrect-nak
 	Response MUST contain ciaddr 0.0.0.0.
 	Response MUST NOT contain ciaddr 255.255.255.255.
 
-@v4 @fields @ciaddr
+@v4 @dhcp4 @fields @ciaddr
 Scenario: v4.message.fields.ciaddr-correct-nak
 
 	Test Setup:
@@ -128,7 +128,7 @@ Scenario: v4.message.fields.ciaddr-correct-nak
 	Response MUST contain ciaddr 0.0.0.0.
 	Response MUST NOT contain ciaddr 192.168.50.1.
 
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-correct-offer
 
 	Test Setup:
@@ -145,7 +145,7 @@ Scenario: v4.message.fields.siaddr-correct-offer
 	Response MUST contain siaddr 0.0.0.0.
 	Response MUST NOT contain siaddr 192.168.50.9.
 	
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-incorrect-offer
 	
 	Test Setup:
@@ -162,7 +162,7 @@ Scenario: v4.message.fields.siaddr-incorrect-offer
 	Response MUST contain siaddr 0.0.0.0.
 	Response MUST NOT contain siaddr 255.255.255.255.
 
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-incorrect-nak
 
 	Test Setup:
@@ -198,7 +198,7 @@ Scenario: v4.message.fields.siaddr-incorrect-nak
 	Response MUST contain siaddr 0.0.0.0.
 	Response MUST NOT contain siaddr 255.255.255.255.
 
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-correct-nak   
 	
 	Test Setup:
@@ -234,7 +234,7 @@ Scenario: v4.message.fields.siaddr-correct-nak
 	Response MUST contain siaddr 0.0.0.0.
 	Response MUST NOT contain siaddr 192.168.50.1.
 	
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-correct-offer-configured-global
 
 	Test Setup:
@@ -250,7 +250,7 @@ Scenario: v4.message.fields.siaddr-correct-offer-configured-global
 	Server MUST respond with OFFER message.
 	Response MUST contain siaddr 192.0.2.234.
 
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-correct-offer-configured-local
 
 	Test Setup:
@@ -266,7 +266,7 @@ Scenario: v4.message.fields.siaddr-correct-offer-configured-local
 	Server MUST respond with OFFER message.
 	Response MUST contain siaddr 192.0.2.234.
 
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-correct-nak-configured-local
 	
 	Test Setup:
@@ -301,7 +301,7 @@ Scenario: v4.message.fields.siaddr-correct-nak-configured-local
 	Server MUST respond with NAK message.
 	Response MUST contain siaddr 192.0.2.234.
 
-@v4 @fields @siaddr
+@v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-correct-nak-configured-global
 	
 	Test Setup:

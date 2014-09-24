@@ -6,7 +6,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 
 	# References in all tests are temporary empty, that's intentional.
 
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.subnet-mask
     # Checks that server is able to serve subnet-mask option to clients.
 
@@ -27,7 +27,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     
     #References: v4.options, v4.prl, RFC2131
 
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.time-offset
 
     Test Setup:
@@ -45,7 +45,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 2.
     Response option 2 MUST contain value 50.
 
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.routers
 
     Test Setup:
@@ -64,7 +64,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 3 MUST contain value 100.100.100.10.
     Response option 3 MUST contain value 50.50.50.5.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.time-servers
 
     Test Setup:
@@ -83,7 +83,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 4 MUST contain value 199.199.199.1.
     Response option 4 MUST contain value 199.199.199.2.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.name-servers
 
     Test Setup:
@@ -102,7 +102,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 5 MUST contain value 199.199.199.1.
     Response option 5 MUST contain value 100.100.100.1.
 
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.domain-name-servers
 
     Test Setup:
@@ -121,7 +121,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 6 MUST contain value 199.199.199.1.
     Response option 6 MUST contain value 100.100.100.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.log-servers
 
     Test Setup:
@@ -140,7 +140,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 7 MUST contain value 199.199.199.1.
     Response option 7 MUST contain value 100.100.100.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.cookie-servers
 
     Test Setup:
@@ -159,7 +159,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 8 MUST contain value 199.199.199.1.
     Response option 8 MUST contain value 100.100.100.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.lpr-servers
 
     Test Setup:
@@ -178,7 +178,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 9 MUST contain value 199.199.199.1.
     Response option 9 MUST contain value 150.150.150.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.impress-servers
 
     Test Setup:
@@ -197,7 +197,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 10 MUST contain value 199.199.199.1.
     Response option 10 MUST contain value 150.150.150.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.resource-location-servers
 
     Test Setup:
@@ -216,7 +216,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 11 MUST contain value 199.199.199.1.
     Response option 11 MUST contain value 150.150.150.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.host-name
 
     Test Setup:
@@ -234,7 +234,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 12.
     Response option 12 MUST contain value isc.example.com.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.boot-size
 
     Test Setup:
@@ -252,7 +252,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 13.
     Response option 13 MUST contain value 55.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.merit-dump
 
     Test Setup:
@@ -270,7 +270,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 14.
     Response option 14 MUST contain value some-string.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.swap-server
 
     Test Setup:
@@ -288,7 +288,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 16.
     Response option 16 MUST contain value 199.199.199.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.root-path
 
     Test Setup:
@@ -306,7 +306,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 17.
     Response option 17 MUST contain value /some/location/example/.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.extensions-path
 
     Test Setup:
@@ -324,7 +324,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 18.
     Response option 18 MUST contain value /some/location/example/.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.policy-filter
 
     Test Setup:
@@ -343,7 +343,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response option 21 MUST contain value 199.199.199.1.
     Response option 21 MUST contain value 50.50.50.1.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.max-dgram-reassembly
 
     Test Setup:
@@ -361,7 +361,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 22.
     Response option 22 MUST contain value 600.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.default-ip-ttl
 
     Test Setup:
@@ -379,7 +379,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Response MUST include option 23.
     Response option 23 MUST contain value 86.
     
-@v4 @options @subnet @dhcp_inform
+@v4 @dhcp4 @options @subnet @dhcp_inform
     Scenario: v4.options.inform.path-mtu-aging-timeout
 
     Test Setup:
@@ -396,3 +396,66 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
     Server MUST respond with ACK message.
     Response MUST include option 24.
     Response option 24 MUST contain value 85.
+
+@v4 @dhcp4 @options @subnet @dhcp_inform
+    Scenario: v4.options.inform.invalid
+
+    Test Setup:
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
+    Server is configured with subnet-mask option with value 255.255.255.0.
+    DHCP server is started.
+
+    Test Procedure:
+    Client requests option 1.
+    Client sends INFORM message.
+
+    Pass Criteria:
+    Server MUST NOT respond.
+
+@v4 @dhcp4 @options @subnet @dhcp_inform
+    Scenario: v4.options.inform.relay
+
+    Test Setup:
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
+    Server is configured with path-mtu-aging-timeout option with value 85.
+    DHCP server is started.
+
+    Test Procedure:
+    Set network variable source_port with value 67.
+    Set network variable source_address with value $(GIADDR4).
+    Set network variable destination_address with value $(SRV4_ADDR).
+    Client sets giaddr value to $(GIADDR4).
+    Client sets broadcastBit value to 1.
+    Client sets hops value to 1.
+    Client requests option 24.
+	Client sets ciaddr value to 192.168.50.9.
+    Client sends INFORM message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST include option 24.
+    Response option 24 MUST contain value 85.
+
+@v4 @dhcp4 @options @subnet @dhcp_inform
+    Scenario: v4.options.inform.invalid-with-serverid
+
+    Test Setup:
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
+    Server is configured with path-mtu-aging-timeout option with value 85.
+    DHCP server is started.
+
+	Test Procedure:
+	Client requests option 1.
+	Client sends DISCOVER message.
+
+	Pass Criteria:
+	Server MUST respond with OFFER message.
+
+    Test Procedure:
+    Client requests option 24.
+	Client sets ciaddr value to 192.168.50.9.
+    Client copies server_id option from received message.
+    Client sends INFORM message.
+
+    Pass Criteria:
+    Server MUST NOT respond.

@@ -3,7 +3,7 @@
 Feature: DHCPv4 address request process
     Those are simple DHCPv4 tests for address assignment. During INIT-REBOOT state.
  
-@v4 @request
+@v4 @dhcp4 @request
 Scenario: v4.request.initreboot.success
 
 	Test Setup:
@@ -42,7 +42,7 @@ Scenario: v4.request.initreboot.success
 	Response MUST include option 1.
 	Response option 1 MUST contain value 255.255.255.0.
 
-@v4 @request
+@v4 @dhcp4 @request
 Scenario: v4.request.initreboot.fail
 
 	Test Setup:
@@ -79,7 +79,7 @@ Scenario: v4.request.initreboot.fail
 	Server MUST respond with NAK message.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @request
+@v4 @dhcp4 @request
 Scenario: v4.request.initreboot.no-leases
 
 	Test Setup:

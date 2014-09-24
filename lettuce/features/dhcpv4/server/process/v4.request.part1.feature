@@ -3,7 +3,7 @@
 Feature: DHCPv4 address request process
     Those are simple DHCPv4 tests for address assignment. During SELECTING state.
 
-@v4 @request
+@v4 @dhcp4 @request
     Scenario: v4.request.selecting.success-chaddr
 
     Test Setup:
@@ -32,7 +32,7 @@ Feature: DHCPv4 address request process
 	Response MUST include option 1.
     Response option 1 MUST contain value 255.255.255.0.
 
-@v4 @request
+@v4 @dhcp4 @request
     Scenario: v4.request.selecting.success-chaddr-empty-pool
 
     Test Setup:
@@ -79,7 +79,7 @@ Feature: DHCPv4 address request process
 	Response MUST include option 54.
     Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @request
+@v4 @dhcp4 @request
     Scenario: v4.request.selecting.success-client-id
 
     Test Setup:
@@ -118,7 +118,7 @@ Feature: DHCPv4 address request process
     Response option 1 MUST contain value 255.255.255.0.
     Response option 61 MUST contain value 00010203040506.
 
-@v4 @request
+@v4 @dhcp4 @request
     Scenario: v4.request.selecting.success-client-id-empty-pool
 
     Test Setup:
@@ -172,7 +172,7 @@ Feature: DHCPv4 address request process
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
-@v4 @request
+@v4 @dhcp4 @request
 Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 	
 	Test Setup:
@@ -241,7 +241,7 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @request
+@v4 @dhcp4 @request
     Scenario: v4.request.selecting.success-second-request-fail
 
     Test Setup:
@@ -282,9 +282,5 @@ Scenario: v4.request.selecting.success-client-id-chaddr-empty-pool
 
     Pass Criteria:
     Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).

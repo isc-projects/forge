@@ -3,7 +3,7 @@
 Feature: DHCPv4 address release process
     Those are simple DHCPv4 tests for address releasing.
     
-@v4 @release
+@v4 @dhcp4 @release
     Scenario: v4.release.success
 
     Test Setup:
@@ -51,7 +51,7 @@ Feature: DHCPv4 address release process
     Response MUST contain yiaddr 192.168.50.1.
     Response option 1 MUST contain value 255.255.255.0.
     
-@v4 @release
+@v4 @dhcp4 @release
     Scenario: v4.release.success-with-additional-offer
 
     Test Setup:
@@ -123,7 +123,7 @@ Feature: DHCPv4 address release process
     Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
     
-@v4 @release
+@v4 @dhcp4 @release
     Scenario: v4.release.fail-with-different-chaddr-client-id
 
     Test Setup:
@@ -192,7 +192,7 @@ Feature: DHCPv4 address release process
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040111.
 
-@v4 @release
+@v4 @dhcp4 @release
     Scenario: v4.release.fail-with-same-chaddr-different-client-id
 
     Test Setup:
@@ -254,7 +254,7 @@ Feature: DHCPv4 address release process
     Pass Criteria:
     Server MUST respond with NAK message.
     Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
+    #Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
 	Response MUST include option 54.
@@ -262,7 +262,7 @@ Feature: DHCPv4 address release process
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040111.
 
-@v4 @release
+@v4 @dhcp4 @release
     Scenario: v4.release.fail-with-different-chaddr-same-client-id
 
     Test Setup:
@@ -324,7 +324,7 @@ Feature: DHCPv4 address release process
     Pass Criteria:
     Server MUST respond with NAK message.
     Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
+    #Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
 	Response MUST include option 54.
@@ -332,7 +332,7 @@ Feature: DHCPv4 address release process
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040111.
     
-@v4 @release
+@v4 @dhcp4 @release
 Scenario: v4.release.only.chaddr.same-chaddr
 
 	Test Setup:
@@ -392,7 +392,7 @@ Scenario: v4.release.only.chaddr.same-chaddr
 	Response option 1 MUST contain value 255.255.255.0.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @release
+@v4 @dhcp4 @release
 Scenario: v4.release.fail.only.chaddr.different-chaddr
 
 	Test Setup:
@@ -446,13 +446,13 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
 	Pass Criteria:
 	Server MUST respond with NAK message.
     Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
+    #Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @release
+@v4 @dhcp4 @release
     Scenario: v4.release.leases-expired
 
     Test Setup:

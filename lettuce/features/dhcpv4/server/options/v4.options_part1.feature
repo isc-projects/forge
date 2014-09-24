@@ -6,7 +6,7 @@ Feature: DHCPv4 options part1
 
 	# References in all tests are temporary empty, that's intentional.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.subnet-mask
     # Checks that server is able to serve subnet-mask option to clients.
 
@@ -26,7 +26,7 @@ Feature: DHCPv4 options part1
     
     #References: v4.options, v4.prl, RFC2131
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.time-offset
 
     Test Setup:
@@ -43,7 +43,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 2.
     Response option 2 MUST contain value 50.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.routers
 
     Test Setup:
@@ -61,7 +61,7 @@ Feature: DHCPv4 options part1
     Response option 3 MUST contain value 100.100.100.10.
     Response option 3 MUST contain value 50.50.50.5.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.time-servers
 
     Test Setup:
@@ -79,7 +79,7 @@ Feature: DHCPv4 options part1
     Response option 4 MUST contain value 199.199.199.1.
     Response option 4 MUST contain value 199.199.199.2.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.name-servers
 
     Test Setup:
@@ -97,7 +97,7 @@ Feature: DHCPv4 options part1
     Response option 5 MUST contain value 199.199.199.1.
     Response option 5 MUST contain value 100.100.100.1.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.domain-name-servers
 
     Test Setup:
@@ -115,7 +115,7 @@ Feature: DHCPv4 options part1
     Response option 6 MUST contain value 199.199.199.1.
     Response option 6 MUST contain value 100.100.100.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.log-servers
 
     Test Setup:
@@ -133,7 +133,7 @@ Feature: DHCPv4 options part1
     Response option 7 MUST contain value 199.199.199.1.
     Response option 7 MUST contain value 100.100.100.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.cookie-servers
 
     Test Setup:
@@ -151,7 +151,7 @@ Feature: DHCPv4 options part1
     Response option 8 MUST contain value 199.199.199.1.
     Response option 8 MUST contain value 100.100.100.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.lpr-servers
 
     Test Setup:
@@ -169,7 +169,7 @@ Feature: DHCPv4 options part1
     Response option 9 MUST contain value 199.199.199.1.
     Response option 9 MUST contain value 150.150.150.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.impress-servers
 
     Test Setup:
@@ -187,7 +187,7 @@ Feature: DHCPv4 options part1
     Response option 10 MUST contain value 199.199.199.1.
     Response option 10 MUST contain value 150.150.150.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.resource-location-servers
 
     Test Setup:
@@ -205,7 +205,7 @@ Feature: DHCPv4 options part1
     Response option 11 MUST contain value 199.199.199.1.
     Response option 11 MUST contain value 150.150.150.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.host-name
 
     Test Setup:
@@ -222,7 +222,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 12.
     Response option 12 MUST contain value isc.example.com.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.boot-size
 
     Test Setup:
@@ -239,7 +239,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 13.
     Response option 13 MUST contain value 55.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.merit-dump
 
     Test Setup:
@@ -256,7 +256,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 14.
     Response option 14 MUST contain value some-string.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.swap-server
 
     Test Setup:
@@ -273,7 +273,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 16.
     Response option 16 MUST contain value 199.199.199.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.root-path
 
     Test Setup:
@@ -290,7 +290,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 17.
     Response option 17 MUST contain value /some/location/example/.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.extensions-path
 
     Test Setup:
@@ -307,7 +307,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 18.
     Response option 18 MUST contain value /some/location/example/.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.policy-filter
 
     Test Setup:
@@ -325,7 +325,7 @@ Feature: DHCPv4 options part1
     Response option 21 MUST contain value 199.199.199.1.
     Response option 21 MUST contain value 50.50.50.1.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.max-dgram-reassembly
 
     Test Setup:
@@ -342,7 +342,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 22.
     Response option 22 MUST contain value 600.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.default-ip-ttl
 
     Test Setup:
@@ -359,7 +359,7 @@ Feature: DHCPv4 options part1
     Response MUST include option 23.
     Response option 23 MUST contain value 86.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.path-mtu-aging-timeout
 
     Test Setup:

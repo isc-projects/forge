@@ -3,7 +3,7 @@
 Feature: DHCPv4 Client Classification release process
     Tests for Client Classification performed through option vendor class identification.
     
-@v4 @classification @release
+@v4 @dhcp4 @classification @release
     Scenario: v4.client.classification.release.same-chaddr-client-id
 
     Test Setup:
@@ -65,7 +65,7 @@ Feature: DHCPv4 Client Classification release process
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification @release
+@v4 @dhcp4 @classification @release
     Scenario: v4.client.classification.release.different-chaddr-client-id
 
     Test Setup:
@@ -125,6 +125,6 @@ Feature: DHCPv4 Client Classification release process
     Response option 54 MUST contain value $(SRV4_ADDR).
     #Response option 61 MUST contain value 00010203040506.
     Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
+    #Response MUST contain ciaddr 0.0.0.0.
     Response MUST contain siaddr 0.0.0.0.
     Response MUST contain giaddr 0.0.0.0.
