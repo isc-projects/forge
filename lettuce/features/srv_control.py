@@ -106,7 +106,7 @@ def config_srv_subnet(step, subnet, pool):
     init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set
     interface.
     """
-    subnet, pool = test_define_value( subnet, pool)
+    subnet, pool = test_define_value(subnet, pool)
     dhcp.prepare_cfg_subnet(step, subnet, pool)
 
 
@@ -115,8 +115,6 @@ def config_srv_another_subnet(step, interface, subnet, pool):
     """
     Add another subnet with specified subnet/pool/interface.
     """
-    if 'kea' not in world.cfg["dhcp_under_test"]:
-        assert False, "Test temporary available only for Kea servers."
     subnet, pool, interface = test_define_value(subnet, pool, interface)
     dhcp.config_srv_another_subnet(step, subnet, pool, interface)
 
@@ -126,8 +124,6 @@ def config_srv_another_subnet_no_interface(step, subnet, pool):
     """
     Add another subnet to config file without interface specified.
     """
-    if 'kea' not in world.cfg["dhcp_under_test"]:
-        assert False, "Test temporary available only for Kea servers."
     subnet, pool = test_define_value(subnet, pool)
     dhcp.config_srv_another_subnet(step, subnet, pool, None)
 
@@ -160,7 +156,7 @@ def config_srv_opt(step, option_name, option_value):
     Add to configuration options like: preference, dns servers..
     This step causes to set in to main space!
     """
-    option_name, option_value = test_define_value( option_name, option_value)
+    option_name, option_value = test_define_value(option_name, option_value)
     dhcp.prepare_cfg_add_option(step, option_name, option_value, world.cfg["space"])
 
 
@@ -235,6 +231,11 @@ def run_command(step, command):
 
 
 ##subnet options
+@step('Server is configured with another pool (\S+) in subnet (\d+).')
+def new_pool(step, pool, subnet):
+    dhcp.add_pool_to_subnet(step, pool, int(subnet))
+
+
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
 def config_srv(step, option_name, subnet, option_value):
     """
@@ -243,6 +244,16 @@ def config_srv(step, option_name, subnet, option_value):
     option_value value of the configuration
     """
     dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
+
+
+@step('On space (\S+) server is configured with (\S+) option in subnet (\d+) with value (\S+).')
+def config_srv(step, space, option_name, subnet, option_value):
+    """
+    Prepare server configuration with the specified option.
+    option_name name of the option, e.g. dns-servers (number may be used here)
+    option_value value of the configuration
+    """
+    dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space)
 
 
 @step('Server is configured with client-classification option in subnet (\d+) with name (\S+).')
