@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
-    copy_configuration_file, fabric_sudo_command, fabric_download_file
+    copy_configuration_file, fabric_sudo_command, fabric_download_file, simple_file_layout
 
 from lettuce import world
 from logging_facility import *
@@ -24,7 +24,7 @@ from logging_facility import get_common_logger
 from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY
 
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
-    fabric_remove_file_command, clear_all
+    fabric_remove_file_command, clear_all, run_command, check_process_result
 
 # option names in isc-dhcp v4, list is that you can check which one is different then Kea names - Kea names are used
 # in test scenarios.
@@ -124,8 +124,41 @@ isc_dhcp_options4 = [
 ]
 
 isc_dhcp_options4_different_name = {
-    "name-servers": "ien116-name-servers"
+    "name-servers": "ien116-name-servers",
+    "boot-file-name": "bootfile-name",
+    "nwip-domain-name": "nwip-domain"
 }
+
+# for vendor options, not checked with specs, that could need changes!
+isc_dhcp_otheroptions = {
+    "tftp-servers": 32,
+    "config-file": 33,
+    "syslog-servers": 34,
+    "time-servers": 37,
+    "time-offset": 38
+}
+
+isc_dhcp_otheroptions_value_type = {
+    "tftp-servers": "array of ip-address",
+    "config-file": "text",
+    "syslog-servers": "array of ip-address",
+    "time-servers": "array of ip-address",
+    "time-offset": "integer 16"
+}
+
+# add " "
+needs_changing_quote = [
+    "host-name",
+    "root-path",
+    "extensions-path",
+    "nis-domain",
+    "nwip-domain"
+]
+
+needs_changing_coma = [
+    "policy-filter",
+    "static-routes"
+]
 
 
 def restart_srv():
@@ -141,14 +174,10 @@ def add_siaddr(step, addr, subnet_number):
     if subnet_number is None:
         if not "simple_options" in world.cfg:
             world.cfg["simple_options"] = ''
-        else:
-            world.cfg["simple_options"] += ','
-        world.cfg["simple_options"] += '"next-server": "{addr}"'.format(**locals())
+        world.cfg["simple_options"] += 'next-server {addr};'.format(**locals())
     else:
         subnet = int(subnet_number)
-        if len(world.subcfg[subnet][1]) > 2:
-            world.subcfg[subnet][1] += ', '
-        world.subcfg[subnet][1] += '"next-server": "{addr}"\n'.format(**locals())
+        world.subcfg[subnet][0] += 'next-server {addr};'.format(**locals())
 
 
 def add_defaults():
@@ -180,7 +209,7 @@ def netmask(subnet):
         return tmp_subnet[0] + " netmask 255.255.255.0 "
 
 
-def prepare_cfg_subnet(step, subnet, pool):
+def prepare_cfg_subnet(step, subnet, pool, eth = None):
     get_common_logger().debug("Configure subnet...")
     if not "conf_subnet" in world.cfg:
         world.cfg["conf_subnet"] = ""
@@ -200,46 +229,79 @@ def prepare_cfg_subnet(step, subnet, pool):
         # isc-dhcp uses whitespace to separate.
         pool = pool.replace('-', ' ')
 
-    world.cfg["conf_subnet"] += '''
+    #world.cfg["conf_subnet"] += '''
+    world.subcfg[world.dhcp["subnet_cnt"]][0] += '''
         subnet {subnet} {pointer}
             range {pool};
         '''.format(**locals())
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space):
+def add_pool_to_subnet(step, pool, subnet):
+    if pool == "default":
+        pool = "192.168.0.1 192.168.0.254"
+    else:
+        pool = pool.replace('-', ' ')
+
+    world.subcfg[subnet][0] += 'range {pool};'.format(**locals())
+
+
+def config_srv_another_subnet(step, subnet, pool, eth):
+    ## it will pass ethernet interface but it will have no impact on config files
+    world.subcfg.append(["", "", "", ""])
+    world.dhcp["subnet_cnt"] += 1
+
+    prepare_cfg_subnet(step, subnet, pool, eth)
+
+
+def prepare_cfg_add_option(step, option_name, option_value, space = 'dhcp'):
     if not "conf_option" in world.cfg:
         world.cfg["conf_option"] = ""
 
+    if space == 'dhcp4':
+        space = 'dhcp'
     # first check it in options that names are different then those used in kea
     option_proper_name = isc_dhcp_options4_different_name.get(option_name)
     # if there is no changes pass name directly to config file:
     if option_proper_name is None:
         option_proper_name = option_name
 
-    # # some functions needs " " in it, so lets add them
-    # # that's for all those functions which are configured
-    # # indifferent way then kea6 configuration, if you add
-    # # new such option, add it to needs_chenging dict.
-    # if needs_chenging.get(option_proper_name):
-    #     tmp = option_value.split(",")
-    #     option_value = ','.join('"' + item + '"' for item in tmp)
+    # some functions needs " " in it, so lets add them
+    # that's for all those functions which are configured
+    # indifferent way then kea6 configuration, if you add
+    # new such option, add it to needs_changing list.
+    if option_proper_name in needs_changing_quote:
+        tmp = option_value.split(",")
+        option_value = ','.join('"' + item + '"' for item in tmp)
+
+    if option_proper_name in needs_changing_coma:
+        option_value = option_value.replace(",", " ")
 
     # for all common options
-    world.cfg["conf_option"] += ''' option {option_proper_name} {option_value};'''.format(**locals())
+    if space == 'dhcp':
+        world.cfg["conf_option"] += ''' option dhcp.{option_proper_name} {option_value};
+                '''.format(**locals())
 
-    # TODO enable vendor options
     # for vendor option, for now we support only one vendor in config file
-    # else:
-    #     if not "conf_vendor" in world.cfg:
-    #         world.cfg["conf_vendor"] = '''
-    #             option space {space} code width 2 length width 2;
-    #             '''.format(**locals())
-    #             #code width 2 length width 2 hash size 3
-    #     value_type = isc_dhcp_otheroptions_value_type.get(option_name)
-    #     world.cfg["conf_vendor"] += '''
-    #         option {space}.{option_name} code {option_proper_name} = {value_type};
-    #         option {space}.{option_name} {option_value};
-    #         '''.format(**locals())
+    else:
+        ## check if we already have space in config
+        if not "conf_vendor" in world.cfg:
+            ## if not add new
+            world.cfg["conf_vendor"] = '''
+                option space {space} code width 2 length width 2;
+                '''.format(**locals())
+                #code width 2 length width 2 hash size 3
+
+        ## if we have space configured check if we try to add new vendor
+        elif "conf_vendor" in world.cfg and not space in world.cfg["conf_vendor"]:
+            world.cfg["conf_vendor"] += '''
+                option space {space} code width 2 length width 2;
+                '''.format(**locals())
+
+        value_type = isc_dhcp_otheroptions_value_type.get(option_name)
+        world.cfg["conf_vendor"] += '''
+            option {space}.{option_name} code {option_proper_name} = {value_type};
+            option {space}.{option_name} {option_value};
+            '''.format(**locals())
 
 
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
@@ -247,23 +309,48 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
     pass #http://linux.die.net/man/5/dhcp-options
 
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
+def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space = 'dhcp'):
     if not "conf_subnet" in world.cfg:
         assert False, 'Configure subnet/pool first, then subnet options'
 
-    # first check it in options that names are different then those used in kea
     option_proper_name = isc_dhcp_options4_different_name.get(option_name)
     # if there is no changes pass name directly to config file:
     if option_proper_name is None:
         option_proper_name = option_name
 
-    # TODO check this!
-    # if needs_chenging.get(option_proper_name):
-    #     tmp = option_value.split(",")
-    #     option_value = ','.join('"' + item + '"' for item in tmp)
+    subnet = int(subnet)
+    if option_proper_name in needs_changing_quote:
+        tmp = option_value.split(",")
+        option_value = ','.join('"' + item + '"' for item in tmp)
 
-    world.cfg["conf_subnet"] += '''option {option_proper_name} {option_value};
-         '''.format(**locals())
+    if option_proper_name in needs_changing_coma:
+        option_value = option_value.replace(",", " ")
+
+    if space == 'dhcp':
+        world.subcfg[subnet][0] += 'option {space}.{option_proper_name} {option_value};'.format(**locals())
+
+    # for vendor option, for now we support only one vendor in config file
+    else:
+        ## check if we already have space in config
+        value_type = isc_dhcp_otheroptions_value_type.get(option_name)
+        if not "conf_vendor" in world.cfg:
+            ## if not add new
+            world.cfg["conf_vendor"] = '''
+                option space {space} code width 2 length width 2;
+                option {space}.{option_name} code {option_proper_name} = {value_type};
+                '''.format(**locals())
+                #code width 2 length width 2 hash size 3
+
+        ## if we have space configured check if we try to add new vendor
+        elif "conf_vendor" in world.cfg and not space in world.cfg["conf_vendor"]:
+            world.cfg["conf_vendor"] += '''
+                option {space}.{option_name} code {option_proper_name} = {value_type};
+                option space {space} code width 2 length width 2;
+                '''.format(**locals())
+
+        world.subcfg[subnet][0] += '''
+            option {space}.{option_name} {option_value};
+            '''.format(**locals())
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
@@ -286,10 +373,12 @@ def cfg_write():
     if "conf_vendor" in world.cfg:
         cfg_file.write(world.cfg["conf_vendor"])
 
-    cfg_file.write(world.cfg["conf_subnet"])
-    cfg_file.write('}')  # add } for subnet block
+    for each_subnet in world.subcfg:
+        cfg_file.write(each_subnet[0])
+        cfg_file.write('}')  # add } for subnet block
 
     cfg_file.close()
+    simple_file_layout()
 
 
 def build_leases_path():
@@ -342,17 +431,18 @@ def start_srv(start, process):
     fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
 
-    fabric_sudo_command('(' + SERVER_INSTALL_DIR
-                        + 'sbin/dhcpd -cf server.cfg_processed'
-                        + ' -lf ' + world.cfg['leases']
-                        + '); sleep ' + str(SLEEP_TIME_1) + ';')
+    result = fabric_sudo_command('(' + SERVER_INSTALL_DIR
+                                 + 'sbin/dhcpd -cf server.cfg_processed'
+                                 + ' -lf ' + world.cfg['leases']
+                                 + '); sleep ' + str(SLEEP_TIME_1) + ';')
 
-
-def run_command(step, command):
-    if not "custom_lines" in world.cfg:
-        world.cfg["custom_lines"] = ''
-
-    world.cfg["custom_lines"] += ('\n' + command + '\n')
+    check_process_result(start, result, process)
+    # clear configs in case we would like make couple configs in one test
+    world.cfg["conf_time"] = ""
+    world.cfg["log_facility"] = ""
+    world.cfg["custom_lines"] = ""
+    world.cfg["conf_option"] = ""
+    world.cfg["conf_vendor"] = ""
 
 
 def save_leases():
@@ -361,6 +451,7 @@ def save_leases():
 
 def save_logs():
     fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+
 
 def config_client_classification(step, subnet, option_value):
     assert False, "TODO!"
