@@ -100,10 +100,10 @@ def prepare_cfg_subnet(step, subnet, pool):
             config set Dhcp6/subnet6[0]/interface "{eth}"
             '''.format(**locals())
 
-    world.kea["subnet_cnt"] += 1
+    world.dhcp["subnet_cnt"] += 1
 
 def config_srv_another_subnet(step, subnet, pool, interface):
-    count = world.kea["subnet_cnt"]
+    count = world.dhcp["subnet_cnt"]
     world.cfg["conf"] += '''\
         # subnet defintion Kea 6
         config add Dhcp6/subnet6
@@ -115,7 +115,7 @@ def config_srv_another_subnet(step, subnet, pool, interface):
                 config set Dhcp6/subnet6[{count}]/interface "{interface}"
                 '''.format(**locals())
 
-    world.kea["subnet_cnt"] += 1
+    world.dhcp["subnet_cnt"] += 1
 
 
 def config_client_classification(step, subnet, option_value):
@@ -142,7 +142,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
         option_code = kea_otheroptions.get(option_name)
     
     assert option_code is not None, "Unsupported option name for other Kea6 options: " + option_name
-    number = world.kea["option_cnt"]
+    number = world.dhcp["option_cnt"]
     
     world.cfg["conf"] += '''config add Dhcp6/option-data
         config set Dhcp6/option-data[{number}]/name "{option_name}"
@@ -152,15 +152,15 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
         config set Dhcp6/option-data[{number}]/data "{option_value}"
         '''.format(**locals())
 
-    world.kea["option_cnt"] = world.kea["option_cnt"] + 1
+    world.dhcp["option_cnt"] = world.dhcp["option_cnt"] + 1
 
 
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
     if not "conf" in world.cfg:
         world.cfg["conf"] = ""
 
-    number = world.kea["option_cnt"]
-    number_def = world.kea["option_usr_cnt"]
+    number = world.dhcp["option_cnt"]
+    number_def = world.dhcp["option_usr_cnt"]
     world.cfg["conf"] += '''config add Dhcp6/option-def
         config set Dhcp6/option-def[{number_def}]/name "{opt_name}"
         config set Dhcp6/option-def[{number_def}]/code {opt_code}
@@ -177,8 +177,8 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
         config set Dhcp6/option-data[{number}]/data "{opt_value}"
         '''.format(**locals())
 
-    world.kea["option_usr_cnt"] = world.kea["option_usr_cnt"] + 1
-    world.kea["option_cnt"] = world.kea["option_cnt"] + 1
+    world.dhcp["option_usr_cnt"] = world.dhcp["option_usr_cnt"] + 1
+    world.dhcp["option_cnt"] = world.dhcp["option_cnt"] + 1
 
 
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):

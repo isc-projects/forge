@@ -61,7 +61,7 @@ kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "arp-cache-timeout": 35,
                 "ieee802-3-encapsulation": 36,
                 "default-tcp-ttl": 37,
-                "tcp-keepalive-internal": 38,
+                "tcp-keepalive-interval": 38,
                 "tcp-keepalive-garbage": 39, # boolean
                 "nis-domain": 40, # string (single)
                 "nis-servers": 41, # ipv4-address (array)
@@ -125,11 +125,11 @@ def prepare_cfg_subnet(step, subnet, pool):
             '''.format(**locals())
 
     world.cfg["conf"] += dedent(subnetcfg)
-    world.kea["subnet_cnt"] += 1
+    world.dhcp["subnet_cnt"] += 1
 
 
 def config_srv_another_subnet(step, subnet, pool, interface):
-    count = world.kea["subnet_cnt"]
+    count = world.dhcp["subnet_cnt"]
 
     subnetcfg = '''
         config add Dhcp4/subnet4
@@ -143,7 +143,7 @@ def config_srv_another_subnet(step, subnet, pool, interface):
                 '''.format(**locals())
 
     world.cfg["conf"] += dedent(subnetcfg)
-    world.kea["subnet_cnt"] += 1
+    world.dhcp["subnet_cnt"] += 1
 
 
 def config_client_classification(step, subnet, option_value):
@@ -156,8 +156,8 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
     if not "conf" in world.cfg:
         world.cfg["conf"] = ""
 
-    number = world.kea["option_cnt"]
-    number_def = world.kea["option_usr_cnt"]
+    number = world.dhcp["option_cnt"]
+    number_def = world.dhcp["option_usr_cnt"]
     csv_format, opt_value = check_empty_value(opt_value)
     world.cfg["conf"] += '''config add Dhcp4/option-def
         config set Dhcp4/option-def[{number_def}]/name "{opt_name}"
@@ -175,8 +175,8 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
         config set Dhcp4/option-data[{number}]/data "{opt_value}"
         '''.format(**locals())
 
-    world.kea["option_usr_cnt"] += 1
-    world.kea["option_cnt"] += 1
+    world.dhcp["option_usr_cnt"] += 1
+    world.dhcp["option_cnt"] += 1
 
 
 def add_siaddr(step, addr, subnet_number):
@@ -233,7 +233,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
     assert option_name in kea_options4, "Unsupported option name " + option_name
     option_code = kea_options4.get(option_name)
     csv_format, option_value = check_empty_value(option_value)
-    option_cnt = world.kea["option_cnt"]
+    option_cnt = world.dhcp["option_cnt"]
 
     options = '''
     config add Dhcp4/option-data
@@ -244,7 +244,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
     config set Dhcp4/option-data[{option_cnt}]/data "{option_value}"
     '''.format(**locals())
     world.cfg["conf"] += dedent(options)
-    world.kea["option_cnt"] += 1
+    world.dhcp["option_cnt"] += 1
 
 
 def prepare_cfg_kea4_for_kea4_start(filename):
