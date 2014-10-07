@@ -1,0 +1,14 @@
+--- scapy/layers/dhcp6.py	2010-08-11 01:09:46.000000000 +0200
++++ scapy/layers/dhcp6.py	2013-02-18 19:51:53.679259436 +0100
+@@ -1057,7 +1057,10 @@
+     msgtype = 7
+     
+     def answers(self, other):
+-        return (isinstance(other, DHCP6_InfoRequest) and
++
++        types = (DHCP6_Solicit, DHCP6_InfoRequest, DHCP6_Confirm, DHCP6_Rebind, DHCP6_Decline, DHCP6_Request, DHCP6_Release, DHCP6_Renew)
++
++        return (isinstance(other, types) and
+                 self.trid == other.trid)
+ 
+ #####################################################################

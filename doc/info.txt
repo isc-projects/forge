@@ -87,7 +87,8 @@ For example, if Forge lives in ~/builds/forge, and the Scapy source
 is in ~/builds/scapy-2.2.0, then you can patch the Scapy file
 "dhcp6.py" with patches 1 and 2 by performing the following:
 cd ~/scapy-2.2.0
-patch -p 0 <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch
+patch -p 0 <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch1
+patch -p 0 <~/builds/forge/patches/scapy/scapy-2.2.0-dhcp6.patch2
 
  Configuration
 ---------------
