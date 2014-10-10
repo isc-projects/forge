@@ -21,7 +21,7 @@ from locale import str
 import sys
 import os
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
-        fabric_remove_file_command, remove_local_file, fabric_sudo_command
+        fabric_remove_file_command, remove_local_file, fabric_sudo_command, configuration_file_name
 from time import sleep
 
 
@@ -218,3 +218,27 @@ def change_network_variables(value_name, value):
         world.cfg["dns_port"] = int(value)
     else:
         assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
+
+
+def execute_shell_script(path, arguments):
+    result = fabric_sudo_command(path + ' ' + arguments, False)
+
+    file_name = path.split("/")[-1] + '_output'
+    file_name = configuration_file_name(1, file_name)
+
+    #assert False, type(result.stdout)
+    if not os.path.exists(world.cfg["dir_name"]):
+        os.makedirs(world.cfg["dir_name"])
+
+    myfile = open(world.cfg["dir_name"] + '/' + file_name, 'w')
+    myfile.write('Script: ' + path)
+    if arguments == '':
+        arguments = "no arguments used!"
+    myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))
+    if result.failed:
+        myfile.write(unicode('\nStatus: FAILED\n'))
+    else:
+        myfile.write(unicode('\nStatus: SUCCEED\n'))
+
+    myfile.write(unicode('\nScript stdout:\n' + result.stdout))
+    myfile.close()

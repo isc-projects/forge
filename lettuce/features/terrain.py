@@ -280,7 +280,7 @@ def initialize(scenario):
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["cfg_file_2"] = "second_server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
-    world.subcfg = [["", "", "", ""]]  # additional config structure
+    world.subcfg = [["", "", "", "", ""]]  # additional config structure
 
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
