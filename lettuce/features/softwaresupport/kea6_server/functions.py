@@ -62,11 +62,17 @@ kea_otheroptions = {
 }
 
 
-def set_time(step, which_time, value):
-    if which_time in world.cfg["server_times"]:
+def set_time(step, which_time, value, subnet = None):
+    assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+
+    if subnet is None:
             world.cfg["server_times"][which_time] = value
+
     else:
-        assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+        subnet = int(subnet)
+        if len(world.subcfg[subnet][3]) > 2:
+            world.subcfg[subnet][3] += ', '
+        world.subcfg[subnet][3] += '"{which_time}": {value}'.format(**locals())
 
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK START =================
@@ -76,12 +82,17 @@ def set_time(step, which_time, value):
 #  each another subnet is append to world.subcfg
 
 
+def add_interface(eth):
+    if len(world.cfg["interfaces"]) > 3:
+        world.cfg["interfaces"] += ','
+    world.cfg["interfaces"] += '"{eth}"'.format(**locals())
+
+
 def add_defaults():
     t1 = world.cfg["server_times"]["renew-timer"]
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["preferred-lifetime"]
     t4 = world.cfg["server_times"]["valid-lifetime"]
-    #rapid = world.cfg["server_times"]["rapid-commit"] # temporary action to make rapid possible TODO: fix it!
     eth = SERVER_IFACE
     pointer_start = "{"
     pointer_end = "}"
@@ -96,14 +107,12 @@ def add_defaults():
         "valid-lifetime": {t4},
         '''.format(**locals())
 
-    if eth is not None:
-        world.cfg["main"] += '''"interfaces": ["{eth}"],
-        "subnet6": [
-        '''.format(**locals())
+    if eth is not None and not eth in world.cfg["interfaces"]:
+        add_interface(eth)
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    # world.subcfg[0] = [pools, prefixes, options, single options]
+    # world.subcfg[0] = [main, prefixes, options, single options, pools]
     if subnet == "default":
         subnet = "2001:db8:1::/64"
     if pool == "default":
@@ -111,26 +120,33 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if eth is None:
         eth = SERVER_IFACE
 
+    if not "interfaces" in world.cfg:
+        world.cfg["interfaces"] = ''
+
     pointer_start = "{"
     pointer_end = "}"
 
-    world.subcfg[world.dhcp["subnet_cnt"]][0] += '{pointer_start} "pools":' \
-                                                ' [ {pointer_start}"pool": "{pool}" {pointer_end} ],' \
-                                                ' "subnet": "{subnet}"'.format(**locals())
+    world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
+         '''.format(**locals())
+    world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
 
     if eth is not None:
         world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
 
-    #world.dhcp["subnet_cnt"] += 1
+    if not eth in world.cfg["interfaces"]:
+        add_interface(eth)
 
 
-def add_pool_to_subnet():
-    #TODO ! multiple pools in one subnet must be available
+def add_pool_to_subnet(step, pool, subnet):
+    pointer_start = "{"
+    pointer_end = "}"
+
+    world.subcfg[subnet][4] += ',{pointer_start}"pool": "{pool}"{pointer_end}'.format(**locals())
     pass
 
 
 def config_srv_another_subnet(step, subnet, pool, eth):
-    world.subcfg.append(["", "", "", ""])
+    world.subcfg.append(["", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
     prepare_cfg_subnet(step, subnet, pool, eth)
@@ -310,9 +326,20 @@ def config_db_backend():
 def cfg_write():
     config_db_backend()
     for number in range(0, len(world.subcfg)):
-        world.subcfg[number][2] = '\"option-data\": [' + world.subcfg[number][2] + "]"
+        world.subcfg[number][2] = '"option-data": [' + world.subcfg[number][2] + "]"
+        world.subcfg[number][4] = '"pools": [' + world.subcfg[number][4] + "]"
     cfg_file = open(world.cfg["cfg_file"], 'w')
+    ## add timers
     cfg_file.write(world.cfg["main"])
+    ## add interfaces
+    cfg_file.write('"interfaces":[' + world.cfg["interfaces"] + "],")
+    ## add header for subnets
+    if "kea6" in world.cfg["dhcp_under_test"]:
+        cfg_file.write('"subnet6":[')
+    elif "kea4" in world.cfg["dhcp_under_test"]:
+        cfg_file.write('"subnet4":[')
+
+    ## add subnets
     counter = 0
     for each_subnet in world.subcfg:
         tmp = each_subnet[0]
@@ -372,7 +399,7 @@ def cfg_write():
     cfg_file.write(world.cfg["keactrl"])
     cfg_file.close()
     json_file_layout()
-    world.subcfg = [["", "", "", ""]]
+    world.subcfg = [["", "", "", "", ""]]
 
 
 def check_kea_process_result(succeed, result, process):

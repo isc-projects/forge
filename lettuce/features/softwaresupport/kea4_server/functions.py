@@ -25,7 +25,7 @@ from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
-    check_kea_process_result, save_logs, clear_all
+    check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -124,10 +124,8 @@ def add_defaults():
         "valid-lifetime": {t3},
         '''.format(**locals())
 
-    if eth is not None:
-        world.cfg["main"] += '''"interfaces": ["{eth}"],
-        "subnet4": [
-        '''.format(**locals())
+    if eth is not None and not eth in world.cfg["interfaces"]:
+        add_interface(eth)
 
     #world.cfg["conf"] += dedent(subnetcfg)
     #world.dhcp["subnet_cnt"] += 1
@@ -142,18 +140,21 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if eth is None:
         eth = SERVER_IFACE
 
+    if not "interfaces" in world.cfg:
+        world.cfg["interfaces"] = ''
+
     pointer_start = "{"
     pointer_end = "}"
 
-    world.subcfg[world.dhcp["subnet_cnt"]][0] += '{pointer_start} "pools":' \
-                                                ' [ {pointer_start}"pool": "{pool}" {pointer_end} ],' \
-                                                ' "subnet": "{subnet}"'.format(**locals())
+    world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
+         '''.format(**locals())
+    world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
 
     if eth is not None:
         world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
 
-    #world.cfg["conf"] += dedent(subnetcfg)
-    #world.dhcp["subnet_cnt"] += 1
+    if not eth in world.cfg["interfaces"]:
+        add_interface(eth)
 
 
 def config_client_classification(step, subnet, option_value):
@@ -166,7 +167,7 @@ def config_client_classification(step, subnet, option_value):
 def prepare_cfg_add_option(step, option_name, option_value, space,
                            option_code = None, type = 'default', where = 'options'):
     if not where in world.cfg:
-        world.cfg[where] = '\n\t"option-data": ['
+        world.cfg[where] = '"option-data": ['
     else:
         world.cfg[where] += ","
 
@@ -225,15 +226,6 @@ def disanable_client_echo(step):
     else:
         world.cfg["simple_options"] += ','
     world.cfg["simple_options"] += '"echo-client-id": "False"'.format(**locals())
-
-
-def add_interface(step, interface):
-    # not jet tested!
-    if not "simple_options" in world.cfg:
-        world.cfg["simple_options"] = ''
-    else:
-        world.cfg["simple_options"] += ','
-    world.cfg["simple_options"] += '"interfaces": "{interface}"'.format(**locals())
 
 
 ## =============================================================
