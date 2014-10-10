@@ -253,6 +253,24 @@ def config_srv_another_subnet(step, subnet, pool, eth):
     prepare_cfg_subnet(step, subnet, pool, eth)
 
 
+def remove_coma(string):
+    ## because we in ISC-DHCP we separate ip addresses with whitespace and
+    ## pairs of ip addresses with coma we need to remove every odd coma from configuration
+    flag = False
+    tmp = ""
+    for each in string:
+        if each == "," and not flag:
+            flag = True
+            tmp += " "
+        elif each == "," and flag:
+            tmp += each + " "
+            flag = False
+        else:
+            tmp += each
+
+    return tmp
+
+
 def prepare_cfg_add_option(step, option_name, option_value, space = 'dhcp'):
     if not "conf_option" in world.cfg:
         world.cfg["conf_option"] = ""
@@ -274,7 +292,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space = 'dhcp'):
         option_value = ','.join('"' + item + '"' for item in tmp)
 
     if option_proper_name in needs_changing_coma:
-        option_value = option_value.replace(",", " ")
+        option_value = remove_coma(option_value)
 
     # for all common options
     if space == 'dhcp':

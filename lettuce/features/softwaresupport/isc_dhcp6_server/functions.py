@@ -153,14 +153,25 @@ def stop_srv(value = False):
         pass
 
 
-def set_time(step, which_time, value):
-    if which_time in world.cfg["server_times"]:
-            world.cfg["server_times"][which_time] = value
+def set_time(step, which_time, value, subnet = None):
+    assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+    if subnet is None:
+        world.cfg["server_times"][which_time] = value
     else:
-        assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+        subnet = int(subnet)
+        if which_time == "renew-timer":
+            world.subcfg[subnet][0] += 'option dhcp-renewal-time {value};'.format(**locals())
+        elif which_time == "rebind-timer":
+            world.subcfg[subnet][0] += 'option dhcp-rebinding-time {value};'.format(**locals())
+        elif which_time == "preferred-lifetime":
+            world.subcfg[subnet][0] += 'preferred-lifetime {value};'.format(**locals())
+        elif which_time == "valid-lifetime":
+            world.subcfg[subnet][0] += 'default-lease-time {value};'.format(**locals())
+        else:
+            assert False, "If you see that message something went terribly wrong! Please report bug!"
 
 
-def unset_time(step, which_time):
+def unset_time(step, which_time, subnet = None):
     if which_time in world.cfg["server_times"]:
             world.cfg["server_times"][which_time] = None
     else:
@@ -204,7 +215,7 @@ def add_pool_to_subnet(step, pool, subnet):
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
     get_common_logger().debug("Configure subnet...")
-    ## structure of world.subcfg is [["", "", "", ""]] but we need only one argument in the list
+    ## structure of world.subcfg is [["", "", "", "",""]] but we need only one argument in the list
     ## every configuration added for subnets in ISC-DHCP is configured on the same level
     ## so we use here: world.subcfg[0] = [all_options]
     if not "conf_subnet" in world.cfg:
@@ -223,11 +234,19 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     else:
         pool = pool.replace('-', ' ')
 
+    tmp = None
+    if len(world.subcfg[world.dhcp["subnet_cnt"]][0]) > 0:
+        tmp = world.subcfg[world.dhcp["subnet_cnt"]][0]
+        world.subcfg[world.dhcp["subnet_cnt"]][0] = ""
+
     #world.cfg["conf_subnet"] += '''
     world.subcfg[world.dhcp["subnet_cnt"]][0] += '''
         subnet6 {subnet} {pointer}
             range6 {pool};
         '''.format(**locals())
+
+    if tmp is not None:
+        world.subcfg[world.dhcp["subnet_cnt"]][0] += tmp
 
 
 def config_srv_another_subnet(step, subnet, pool, eth):
