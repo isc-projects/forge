@@ -35,7 +35,7 @@ def set_world():
     world.dhcp["option_usr_cnt"] = 0
     # clear all config files
     world.cfg["conf"] = ""
-    world.subcfg = [["", "", "", ""]]
+    world.subcfg = [["", "", "", "", ""]]
 
 
 @step('Pass Criteria:')

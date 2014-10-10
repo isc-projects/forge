@@ -110,7 +110,7 @@ def config_srv_subnet(step, subnet, pool):
     dhcp.prepare_cfg_subnet(step, subnet, pool)
 
 
-@step('On interface (\S+) server is configured with another subnet: (\S+) with (\S+) pool.')
+@step('Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
 def config_srv_another_subnet(step, interface, subnet, pool):
     """
     Add another subnet with specified subnet/pool/interface.
@@ -145,8 +145,7 @@ def subnet_add_siaddr(step, subnet_number, addr):
 
 @step('Next server global value is configured with address (\S+).')
 def global_add_siaddr(step, addr):
-    #TODO: implement this
-    #addr, subnet_number = test_define_value(addr, "pass")
+    addr = test_define_value(addr)[0]
     dhcp.add_siaddr(step, addr, None)
 
 
@@ -198,7 +197,8 @@ def set_time(step, which_time, value):
     Change values of T1, T2, preffered lifetime and valid lifetime.
     """
     which_time, value = test_define_value(which_time, value)
-    dhcp.set_time(step, which_time, value)
+    dhcp.set_time(step, which_time, value, None)
+
 
 @step('Time (\S+) is not configured.')
 def unset_time(step, which_time):
@@ -231,6 +231,15 @@ def run_command(step, command):
 
 
 ##subnet options
+@step('Time (\S+) in subnet (\d+) is configured with value (\d+).')
+def set_time(step, which_time, subnet, value):
+    """
+    Change values of T1, T2, preffered lifetime and valid lifetime.
+    """
+    which_time, subnet, value = test_define_value(which_time, subnet, value)
+    dhcp.set_time(step, which_time, value, subnet)
+
+
 @step('Server is configured with another pool (\S+) in subnet (\d+).')
 def new_pool(step, pool, subnet):
     dhcp.add_pool_to_subnet(step, pool, int(subnet))
