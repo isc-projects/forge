@@ -392,8 +392,9 @@ def cfg_write():
         cfg_file.write(world.cfg["conf_vendor"])
 
     for each_subnet in world.subcfg:
-        cfg_file.write(each_subnet[0])
-        cfg_file.write('}')  # add } for subnet block
+        if (each_subnet[0] != ""):
+            cfg_file.write(each_subnet[0])
+            cfg_file.write('}')  # add } for subnet block
 
     cfg_file.close()
     simple_file_layout()
@@ -473,3 +474,4 @@ def save_logs():
 
 def config_client_classification(step, subnet, option_value):
     assert False, "TODO!"
+

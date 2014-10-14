@@ -531,7 +531,9 @@ def clear_all():
     # TODO we should consider moving it to multi_server_functions, and set just world.cfg["dhcp_log_file"]
     #  and world.cfg["leases"] in every supported server files
     try:
-        fabric_remove_file_command(world.cfg["dhcp_log_file"])
+        # ISC_DHCP logs using syslog/rsyslog (OS dependent). DO NOT delete the log file as
+        # not all implementations will re-create it.
+        # fabric_remove_file_command(world.cfg["dhcp_log_file"])
         fabric_remove_file_command(world.cfg["leases"])
     except:
         pass
