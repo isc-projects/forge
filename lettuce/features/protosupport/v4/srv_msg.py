@@ -54,11 +54,10 @@ def client_send_msg(step, msgname, iface, addr):
 #     else:
 #         assert False, "No PRL defined"
 
-    options += ["end"]  # end option
-
     # What about messages: "force_renew","lease_query",
     # "lease_unassigned","lease_unknown","lease_active",
     # messages from server: offer, ack, nak
+
 
     if msgname == "DISCOVER":
         # msg code: 1
@@ -79,6 +78,9 @@ def client_send_msg(step, msgname, iface, addr):
     elif msgname == "INFORM":
         # msg code: 8
         msg = build_msg([("message-type", "inform")] + options)
+
+    elif msgname == "BOOTP_REQUEST":
+        msg = build_msg(options)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -198,7 +200,11 @@ def build_msg(opts):
                  giaddr = world.cfg["values"]["giaddr"],
                  flags = msg_flag,
                  hops = world.cfg["values"]["hops"])
-    msg /= DHCP(options = opts)
+
+    # BOOTP requests can be optionless
+    if (len(opts) > 0):
+        opts += ["end"]  # end option
+        msg /= DHCP(options = opts)
 
     msg.xid = randint(0, 256*256*256)
     msg.siaddr = world.cfg["values"]["siaddr"]
@@ -221,6 +227,10 @@ def get_msg_type(msg):
                  }
     # option 53 it's message type
     opt = get_option(msg, 53)
+
+    # BOOTP_REPLYs have no message type   
+    if (opt == None): 
+        return "BOOTP_REPLY"
     
     # opt[1] it's value of message-type option
     for msg_code in msg_types.keys():
@@ -292,10 +302,13 @@ def get_option(msg, opt_code):
         opt_name = opt_name.name
 
     x = msg.getlayer(4)  # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
-    for opt in x.options:
-        if opt[0] == opt_name:
-            world.opts.append(opt)
-            return opt
+    # BOOTP messages may be optionless, so check first
+    if (x != None):
+        for opt in x.options:
+            if opt[0] == opt_name:
+                world.opts.append(opt)
+                return opt
+
     return None
 
 
