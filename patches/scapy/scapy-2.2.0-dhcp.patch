@@ -1,5 +1,5 @@
---- scapy/layers/dhcp.py_backup	2014-01-21 19:35:36.459460207 +0100
-+++ scapy/layers/dhcp.py	2014-02-19 15:25:06.956550004 +0100
+--- a/scapy/layers/dhcp.py	Tue Sep 30 14:51:53 2014 +0200
++++ b/scapy/layers/dhcp.py	Mon Oct 20 13:32:02 2014 -0700
 @@ -36,7 +36,7 @@
                      IPField("yiaddr","0.0.0.0"),
                      IPField("siaddr","0.0.0.0"),
@@ -92,9 +92,11 @@
      69: IPField("SMTP_server","0.0.0.0"),
      70: IPField("POP3_server","0.0.0.0"),
      71: IPField("NNTP_server","0.0.0.0"),
-@@ -133,6 +157,9 @@
+@@ -132,7 +156,11 @@
+     74: IPField("IRC_server","0.0.0.0"),
      75: IPField("StreetTalk_server","0.0.0.0"),
      76: "StreetTalk_Dir_Assistance",
++    81: "client_FQDN",
      82: "relay_agent_Information",
 +    91: IntField("client-last-transaction-time", 1000),
 +    92: IPField("associated-ip","0.0.0.0"),
