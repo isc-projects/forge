@@ -103,18 +103,31 @@ def client_sets_value(step, value_name, new_value):
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
 
 
+def convert_flags_fqdn():
+    flag_filed = 0
+    if 'N' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 8
+    if 'E' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 4
+    if 'O' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 2
+    if 'S' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 1
+    return flag_filed
+
+
 def client_does_include(step, opt_type, value):
     if opt_type == 'client_id':
         world.cliopts += [(opt_type, convert_MAC(value))]
 #     elif opt_type =='vendor_class_id':
 #         world.cliopts += [(opt_type, str(value), "my-other-class")]
+    elif opt_type == 'fqdn':
+        flags = chr(int(convert_flags_fqdn()))
+        ## flags, RCODE1, RCODE2, domain name
+        ## RCODE1 and RCODE2 are deprecated but we need to add them.
+        fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
+        world.cliopts += [('client_FQDN', fqdn)]
     else:
-#         if isinstance(value, str):
-#             world.cliopts += [(opt_type, str(value))]
-#         elif isinstance(value, int):
-#             world.cliopts += [(opt_type, int(value))]
-#         else:
-#             assert False, "wtf"
         world.cliopts += [(opt_type, str(value))]
 
 
@@ -332,7 +345,20 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
-    outcome, received = test_option(opt_code, received ,expected)
+
+    # FQDN is being parsed different way because of scapy imperfections
+    if opt_code == 81:
+        tmp = received[0]
+        if data_type == 'flags':
+            received = tmp, int(ByteToHex(received[1][0]), 16)
+        elif data_type == 'fqdn':
+            received = tmp, received[1][3:-1] #that is domain should not be with -1
+        else:
+            assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
+
+        #assert False, bytes(received[1][0])
+
+    outcome, received = test_option(opt_code, received, expected)
 
     if expect is None:
         assert outcome, "Invalid {opt_code} option received: {received} but expected {expected}".format(**locals())

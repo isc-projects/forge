@@ -100,7 +100,9 @@ values_v4 = {"ciaddr": "0.0.0.0",
              "giaddr": "0.0.0.0",
              "broadcastBit": False,
              "hops": 0,
-             "chaddr": None}
+             "chaddr": None,
+             "FQDN_flags": "",
+             "FQDN_domain_name": ""}
 
 add_option_v4 = {"vendor_class_id": False,
                  "client_id": True}
