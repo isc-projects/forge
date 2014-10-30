@@ -358,7 +358,7 @@ def log_includes_count(step, server_type, count, line):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     count, line = test_define_value(count, line)
-    dhcpmsg.log_contains_count(step, server_type, count, line)
+    other.log_contains_count(step, server_type, count, line)
 
 
 @step('Sleep for (\d+) (seconds|second|milliseconds|millisecond).')
