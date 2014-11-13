@@ -187,7 +187,7 @@ Feature: DDNS without TSIG
 	Response MUST include option 1.
     Response option 1 MUST contain value 255.255.255.0.
     Response MUST include option 81.
-    Response option 81 MUST contain flags 1. #later make it 's' 'n' and 'o'
+    #Response option 81 MUST contain flags 10. #later make it 's' 'n' and 'o' should be 10
     Response option 81 MUST contain fqdn aa.four.example.com..
 
     Test Procedure:
@@ -669,9 +669,7 @@ Feature: DDNS without TSIG
 
     Pass Criteria:
     DNS server MUST respond with DNS query.
-    Received DNS query MUST include NOT empty ANSWER part.
-    Received DNS part ANSWER MUST contain rdata with value 192.168.50.11.
-    Received DNS part ANSWER MUST contain rrname with value client2.four.example.com..
+    Received DNS query MUST include empty ANSWER part.
 
     Test Procedure:
     Client for DNS Question Record uses address: 11.50.168.192.in-addr.arpa. type PTR class IN.
@@ -679,9 +677,8 @@ Feature: DDNS without TSIG
 
     Pass Criteria:
     DNS server MUST respond with DNS query.
-    Received DNS query MUST include NOT empty ANSWER part.
-    Received DNS part ANSWER MUST contain rdata with value client2.four.example.com..
-    Received DNS part ANSWER MUST contain rrname with value 11.50.168.192.in-addr.arpa..
+    Received DNS query MUST include empty ANSWER part.
+
 
 @v4 @ddns @notsig @forward_reverse_add
     Scenario: ddns4.notsig.forw_and_rev.add-success-withoutflag-override-client
@@ -884,7 +881,7 @@ Feature: DDNS without TSIG
 	Response MUST include option 1.
     Response option 1 MUST contain value 255.255.255.0.
     Response MUST include option 81.
-    Response option 81 MUST contain flags 0. #later make it 's' 'n' and 'o'
+    #Response option 81 MUST contain flags 0. #later make it 's' 'n' and 'o' should be 10
     Response option 81 MUST contain fqdn aa.four.example.com..
 
     Test Procedure:
@@ -907,10 +904,9 @@ Feature: DDNS without TSIG
     Scenario: ddns4.notsig.rev.Nflag-override-no-update
 
     Test Setup:
-    cos tu nie dziala!
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
-    DDNS server is configured with override-client-update option set to true.
+    DDNS server is configured with override-no-update option set to true.
     DDNS server is configured with enable-updates option set to true.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
@@ -952,18 +948,8 @@ Feature: DDNS without TSIG
 	Response MUST include option 1.
     Response option 1 MUST contain value 255.255.255.0.
     Response MUST include option 81.
-    Response option 81 MUST contain flags 8. #later make it 's' 'n' and 'o'
+    Response option 81 MUST contain flags 3. #later make it 's' 'n' and 'o'
     Response option 81 MUST contain fqdn aa.four.example.com..
-
-    Test Procedure:
-    Client for DNS Question Record uses address: aa.four.example.com type A class IN.
-    Client sends DNS query.
-
-    Pass Criteria:
-    DNS server MUST respond with DNS query.
-    Received DNS query MUST include NOT empty ANSWER part.
-    Received DNS part ANSWER MUST contain rdata with value 192.168.50.10.
-    Received DNS part ANSWER MUST contain rrname with value aa.four.example.com..
 
     Test Procedure:
     Client for DNS Question Record uses address: 10.50.168.192.in-addr.arpa. type PTR class IN.
@@ -974,3 +960,13 @@ Feature: DDNS without TSIG
     Received DNS query MUST include NOT empty ANSWER part.
     Received DNS part ANSWER MUST contain rdata with value aa.four.example.com..
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
+
+    Test Procedure:
+    Client for DNS Question Record uses address: aa.four.example.com. type A class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include NOT empty ANSWER part.
+    Received DNS part ANSWER MUST contain rdata with value 192.168.50.10.
+    Received DNS part ANSWER MUST contain rrname with value aa.four.example.com..
