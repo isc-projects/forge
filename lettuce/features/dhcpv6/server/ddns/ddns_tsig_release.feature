@@ -1,5 +1,5 @@
 Feature: DDNS without TSIG
-    This feature is testing DHCPv6 + DDNS in cooperation with DNS server BIND9 without TSIG authorisation. It's primary
+    This feature is testing DHCPv6 + DDNS in cooperation with DNS server BIND9 with TSIG authorisation. It's primary
     target is DDNS removing forward and reverse entries in time of releasing leases.
 
 @v6 @ddns @tsig @forward_reverse_remove
