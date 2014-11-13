@@ -33,6 +33,67 @@ def make_file(name, content):
     configfile.close()
 
 
+def add_defaults(ip_type, address, port, direct):
+    world.cfg["named.conf"] = 'options {'
+    if ip_type == 'v4':
+        listen = 'listen-on'
+    elif ip_type == 'v6':
+        listen = 'listen-on-v6'
+    else:
+        assert False, "IP type can be set to: v4 or v6"
+
+    pointer_s = "{"
+    pointer_e = "}"
+    world.cfg["named.conf"] += 'directory "{direct}";' \
+                               ' listen-on-v6 port {port} {pointer_s} {address}; {pointer_e};'.format(**locals())
+    world.cfg["named.conf"] += 'allow-query-cache { none; }; ' \
+                               'allow-update { any; }; allow-query { any; }; recursion no; };'
+
+
+def add_zone(zone, zone_type, file_nem, key):
+    if not "named.conf" in world.cfg:
+        assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
+
+    world.cfg["named.conf"] += 'zone "{zone}"'.format(**locals())
+    world.cfg["named.conf"] += '{'
+    world.cfg["named.conf"] += 'type {zone_type}; file "{file_nem}"; notify no;'.format(**locals())
+    world.cfg["named.conf"] += 'allow-update {'
+    if key in ['EMPTY_KEY', 'ANY_KEY']:
+        world.cfg["named.conf"] += 'any;'
+    else:
+        world.cfg["named.conf"] += 'key {key};'.format(**locals())
+    world.cfg["named.conf"] += '}; allow-query { any; };};'
+
+
+def add_key(key_name, algorithm, key_value):
+    if not "named.conf" in world.cfg:
+        assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
+
+    pointer_s = "{"
+    pointer_s = "}"
+    world.cfg["named.conf"] += 'key "{key_name}" {pointer_s} algorithm {algorithm};' \
+                               'secret "{key_value}";{pointer_e};'.format(**locals())
+
+
+def add_rndc(address, port, alg, value):
+    if not "named.conf" in world.cfg:
+        assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
+
+    world.cfg["named.conf"] += 'key "rndc-key" {'
+    world.cfg["named.conf"] += 'algorithm {alg}; secret "{value}";'.format(**locals())
+    world.cfg["named.conf"] += '}; controls {'
+
+    pointer_s = '{'
+    pointer_e = '}'
+    world.cfg["named.conf"] += 'inet {address} port {port} allow {pointer_s} {address};'.format(**locals())
+    world.cfg["named.conf"] += '} keys { "rndc-key"; };};'
+
+    world.cfg["rndc-key"] = 'key "rndc-key" {'
+    world.cfg["rndc-key"] += 'algorithm {alg}; secret "{value}";'.format(**locals())
+    world.cfg["rndc-key"] += '}; options { default-key "rndc-key";'
+    world.cfg["rndc-key"] += 'default-server {address};	default-port 953;{pointer_e};'.format(**locals())
+
+
 def use_config_set(number):
     if not number in config_file_set:
         assert False, "There is no such config file set"
