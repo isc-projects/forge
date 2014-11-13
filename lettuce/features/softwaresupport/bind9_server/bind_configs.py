@@ -958,7 +958,789 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
     12: ["", "", "", ""],
     13: ["", "", "", ""],
     14: ["", "", "", ""],
-    15: ["", "", "", ""]
+    15: ["", "", "", ""],
+
+    ## v4 configs!
+20: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""],
+
+21: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { key forge.sha1.key; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { key forge.sha1.key; };
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+key "forge.sha1.key" {
+    algorithm hmac-sha1;
+    secret "PN4xKZ/jDobCMlo4rpr70w==";
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""],
+22: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { key forge.sha224.key; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { key forge.sha224.key; };
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+key "forge.sha224.key" {
+    algorithm hmac-sha224;
+    secret "TxAiO5TRKkFyHSCa4erQZQ==";
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""],
+23: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { key forge.sha256.key; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { key forge.sha256.key; };
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+key "forge.sha256.key" {
+    algorithm hmac-sha256;
+    secret "5AYMijv0rhZJyQqK/caV7g==";
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""],
+24: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { key forge.sha384.key; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { key forge.sha384.key; };
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+key "forge.sha384.key" {
+    algorithm hmac-sha384;
+    secret "21upyvp7zcG0S2PB4+kuQQ==";
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""],
+25: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { key forge.sha512.key; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { key forge.sha512.key; };
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+key "forge.sha512.key" {
+    algorithm hmac-sha512;
+    secret "jBng5D6QL4f8cfLUUwE7OQ==";
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""],
+26: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { key forge.md5.key; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { key forge.md5.key; };
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+key "forge.md5.key" {
+    algorithm hmac-md5;
+    secret "bX3Hs+fG/tThidQPuhK1mA==";
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""],
+27: ["""
+options {
+    directory "/home/test/dns/namedb";  // Working directory
+    listen-on port 53 { 192.168.50.252; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { key forge.sha512.key; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { key forge.md5.key; };
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+key "forge.md5.key" {
+    algorithm hmac-md5;
+    secret "bX3Hs+fG/tThidQPuhK1mA==";
+};
+
+key "forge.sha512.key" {
+    algorithm hmac-sha512;
+    secret "jBng5D6QL4f8cfLUUwE7OQ==";
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""]
+
+
+
+
+
 }
 #["filename","""file""","filename","file"]
 
