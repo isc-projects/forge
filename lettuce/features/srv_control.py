@@ -94,7 +94,7 @@ def test_define_value(*args):
     return tested_args
 
 
-##server configurations
+##DHCP server configurations
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(step, subnet, pool):
     """
@@ -272,7 +272,32 @@ def config_client_classification(step, subnet, option_value):
     dhcp.config_client_classification(step, subnet, option_value)
 
 
-##server management
+##DNS server configuration
+@step('DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
+def dns_conf(step, ip_type, address, port, direct):
+    ip_type, address, port, direct = test_define_value(ip_type, address, port, direct)
+    dns.add_defaults(ip_type, address, port, direct)
+
+
+@step('DNS server is configured with zone (\S+) with type: (\S+) file: (\S+) with dynamic update key: (\S+).')
+def add_zone(step, zone, zone_type, file_nem, key):
+    zone, zone_type, file_nem, key = test_define_value(zone, zone_type, file_nem, key)
+    dns.add_zone(zone, zone_type, file_nem, key)
+
+
+@step('Add DNS key named: (\S+) algorithm: (\S+) and value: (\S+).')
+def dns_add_key(step, key_name, algorithm, key_value):
+    key_name, algorithm, key_value = test_define_value(key_name, algorithm, key_value)
+    dns.add_key(key_name, algorithm, key_value)
+
+
+@step('Add DNS rndc-key on address (\S+) and port (\d+). Using algorithm: (\S+) with value: (\S+)')
+def dns_rest(step, address, port, alg, value):
+    address, port, alg, value = test_define_value(address, port, alg, value)
+    dns.add_rndc(address, port, alg, value)
+
+
+##servers management
 @step('(\S+) server is started.')
 def start_srv(step, name):
     """
