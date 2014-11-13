@@ -24,7 +24,7 @@ from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sendp, sniff
 from random import randint
-import protosupport.v6.srv_msg
+from protosupport.v6.srv_msg import client_add_saved_option
 
 
 def client_requests_option(step, opt_type):
@@ -57,7 +57,6 @@ def client_send_msg(step, msgname, iface, addr):
     # What about messages: "force_renew","lease_query",
     # "lease_unassigned","lease_unknown","lease_active",
     # messages from server: offer, ack, nak
-
 
     if msgname == "DISCOVER":
         # msg code: 1
@@ -127,7 +126,13 @@ def client_does_include(step, opt_type, value):
         flags = chr(int(convert_flags_fqdn()))
         ## flags, RCODE1, RCODE2, domain name
         ## RCODE1 and RCODE2 are deprecated but we need to add them.
-        fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
+        if 'E' not in world.cfg["values"]["FQDN_flags"]:
+            fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
+        else:
+            ## code domain name:
+
+            domain = "".join(map(lambda z: chr(len(z))+z, world.cfg["values"]["FQDN_domain_name"].split('.')))
+            fqdn = (flags + '\x00\x00' + domain)
         world.cliopts += [('client_FQDN', fqdn)]
     else:
         world.cliopts += [(opt_type, str(value))]
@@ -168,6 +173,18 @@ def response_check_content(step, expect, data_type, expected):
         assert not outcome, "Invalid {data_type} received {received}" \
                             " that value has been excluded from correct values.".format(**locals())
     return received
+
+
+def client_save_option(step, opt_name, count = 0):
+    from softwaresupport.kea4_server.functions import kea_options4
+    opt_code = kea_options4.get(opt_name)
+
+    assert opt_name in kea_options4, "Unsupported option name " + opt_name
+
+    if not count in world.savedmsg:
+        world.savedmsg[count] = [get_option(world.srvmsg[0], opt_code)]
+    else:
+        world.savedmsg[count].append(get_option(world.srvmsg[0], opt_code))
 
 
 def client_copy_option(step, opt_name):
@@ -365,7 +382,7 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
         if data_type == 'flags':
             received = tmp, int(ByteToHex(received[1][0]), 16)
         elif data_type == 'fqdn':
-            received = tmp, received[1][3:-1] #that is domain should not be with -1
+            received = tmp, received[1][3:]
         else:
             assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
 
