@@ -6,7 +6,7 @@ Feature: DHCPv4 options part2
 
 	# References in all tests are temporary empty, that's intentional.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.path-mtu-plateau-table
 
     Test Setup:
@@ -25,7 +25,7 @@ Feature: DHCPv4 options part2
     Response option 25 MUST contain value 300.
 	Response option 25 MUST contain value 500.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.interface-mtu
 
     Test Setup:
@@ -42,7 +42,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 26.
     Response option 26 MUST contain value 321.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.broadcast-address
 
     Test Setup:
@@ -59,7 +59,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 28.
     Response option 28 MUST contain value 255.255.255.0.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.router-solicitation-address
 
     Test Setup:
@@ -76,7 +76,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 32.
     Response option 32 MUST contain value 199.199.199.1.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.static-routes
 
     Test Setup:
@@ -94,7 +94,7 @@ Feature: DHCPv4 options part2
     Response option 33 MUST contain value 199.199.199.1.
     Response option 33 MUST contain value 70.70.70.1.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.arp-cache-timeout
 
     Test Setup:
@@ -111,7 +111,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 35.
     Response option 35 MUST contain value 48.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.default-tcp-ttl
 
     Test Setup:
@@ -128,12 +128,12 @@ Feature: DHCPv4 options part2
     Response MUST include option 37.
     Response option 37 MUST contain value 44.
 
-@v4 @options @subnet
-    Scenario: v4.options.tcp-keepalive-internal
+@v4 @dhcp4 @options @subnet
+    Scenario: v4.options.tcp-keepalive-interval
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-    Server is configured with tcp-keepalive-internal option with value 4896.
+    Server is configured with tcp-keepalive-interval option with value 4896.
     DHCP server is started.
 
     Test Procedure:
@@ -145,7 +145,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 38.
     Response option 38 MUST contain value 4896.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.nis-domain
 
     Test Setup:
@@ -162,7 +162,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 40.
     Response option 40 MUST contain value some.domain.com.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.nis-servers
 
     Test Setup:
@@ -180,7 +180,7 @@ Feature: DHCPv4 options part2
     Response option 41 MUST contain value 199.199.199.1.
     Response option 41 MUST contain value 100.100.100.15.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.ntp-servers
 
     Test Setup:
@@ -198,7 +198,7 @@ Feature: DHCPv4 options part2
     Response option 42 MUST contain value 199.199.199.1.
     Response option 42 MUST contain value 100.100.100.15.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.netbios-name-servers
 
     Test Setup:
@@ -216,7 +216,7 @@ Feature: DHCPv4 options part2
     Response option 44 MUST contain value 188.188.188.2.
     Response option 44 MUST contain value 100.100.100.15.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.netbios-dd-server
 
     Test Setup:
@@ -234,7 +234,7 @@ Feature: DHCPv4 options part2
     Response option 45 MUST contain value 188.188.188.2.
     Response option 45 MUST contain value 70.70.70.1.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.netbios-node-type
 
     Test Setup:
@@ -251,7 +251,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 46.
     Response option 46 MUST contain value 8.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.netbios-scope
 
     Test Setup:
@@ -268,7 +268,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 47.
     Response option 47 MUST contain value global.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.font-servers
 
     Test Setup:
@@ -286,7 +286,7 @@ Feature: DHCPv4 options part2
     Response option 48 MUST contain value 188.188.188.2.
     Response option 48 MUST contain value 100.100.100.1.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.x-display-manager
 
     Test Setup:
@@ -304,7 +304,7 @@ Feature: DHCPv4 options part2
     Response option 49 MUST contain value 188.188.188.2.
     Response option 49 MUST contain value 150.150.150.10.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.dhcp-requested-address
 
     Test Setup:
@@ -321,7 +321,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 50.
     Response option 50 MUST contain value 188.188.188.2.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.dhcp-option-overload
 
     Test Setup:
@@ -338,7 +338,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 52.
     Response option 52 MUST contain value 1.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.dhcp-message
 
     Test Setup:
@@ -355,7 +355,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 56.
     Response option 56 MUST contain value some-message.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.dhcp-max-message-size
 
     Test Setup:
@@ -372,7 +372,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 57.
     Response option 57 MUST contain value 2349.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.renew-timer
 
     Test Setup:
@@ -389,7 +389,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 58.
     Response option 58 MUST contain value 999.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.rebind-timer
 
     Test Setup:
@@ -406,7 +406,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 59.
     Response option 59 MUST contain value 1999.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.nwip-domain-name
 
     Test Setup:
@@ -423,7 +423,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 62.
     Response option 62 MUST contain value some.domain.com.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.boot-file-name
 
     Test Setup:
@@ -440,7 +440,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 67.
     Response option 67 MUST contain value somefilename.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.client-last-transaction-time
 
     Test Setup:
@@ -457,7 +457,7 @@ Feature: DHCPv4 options part2
     Response MUST include option 91.
     Response option 91 MUST contain value 3424. 
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.associated-ip
 
     Test Setup:
@@ -475,7 +475,7 @@ Feature: DHCPv4 options part2
     Response option 92 MUST contain value 188.188.188.2.
 	Response option 92 MUST contain value 199.188.188.12.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.subnet-selection
 
     Test Setup:

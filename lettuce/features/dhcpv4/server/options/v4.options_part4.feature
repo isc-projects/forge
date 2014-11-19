@@ -6,7 +6,7 @@ Feature: DHCPv4 options part4
 
 	# References in all tests are temporary empty, that's intentional.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.pool
 
     Test Setup:
@@ -21,7 +21,7 @@ Feature: DHCPv4 options part4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     DHCP server is started.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.ip-forwarding
 
     Test Setup:
@@ -34,7 +34,7 @@ Feature: DHCPv4 options part4
     Server is configured with ip-forwarding option with value 1.
     DHCP server is started.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.subnet-mask
 
     Test Setup:
@@ -47,7 +47,7 @@ Feature: DHCPv4 options part4
     Server is configured with subnet-mask option with value 255.255.255.0.
     DHCP server is started.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.time-offset
 
     Test Setup:
@@ -80,7 +80,7 @@ Feature: DHCPv4 options part4
     Server is configured with time-offset option with value 0.
     DHCP server is started.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.boot-size
 
     Test Setup:
@@ -98,7 +98,7 @@ Feature: DHCPv4 options part4
     Server is configured with boot-size option with value 655.
     DHCP server is started.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.policy-filter
 	# Allowed only pairs of addresses
     Test Setup:
@@ -116,7 +116,7 @@ Feature: DHCPv4 options part4
     Server is configured with policy-filter option with value 199.199.199.1,50.50.50.1.
     DHCP server is started.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.max-dgram-reassembly
 	#Unsigned integer (0 to 65535) minimum value: 576
 	
@@ -150,7 +150,7 @@ Feature: DHCPv4 options part4
     Server is configured with max-dgram-reassembly option with value 65535.
     DHCP server is started.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.default-ip-ttl
 
     Test Setup:
@@ -173,7 +173,7 @@ Feature: DHCPv4 options part4
     Server is configured with default-ip-ttl option with value 256.
     DHCP server failed to start. During configuration process.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.path-mtu-aging-timeout
 	#Unsigned integer (0 to 65535) minimum: 68
 
@@ -203,7 +203,7 @@ Feature: DHCPv4 options part4
     DHCP server is started.
 
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.static-routes
 	# pair of addresses 0.0.0.0 forbidden
 
@@ -227,7 +227,7 @@ Feature: DHCPv4 options part4
     Server is configured with static-routes option with value 199.199.199.1,70.70.70.5,80.80.80.80,10.10.10.5.
     DHCP server is started.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.arp-cache-timeout
 
     Test Setup:
@@ -250,7 +250,7 @@ Feature: DHCPv4 options part4
     Server is configured with arp-cache-timeout option with value 4294967295.
     DHCP server is started.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.default-tcp-ttl
 
     Test Setup:
@@ -273,7 +273,7 @@ Feature: DHCPv4 options part4
     Server is configured with default-tcp-ttl option with value 1.
     DHCP server is started.
     
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.dhcp-option-overload
 
     Test Setup:
@@ -301,7 +301,7 @@ Feature: DHCPv4 options part4
     Server is configured with dhcp-option-overload option with value 3.
     DHCP server is started.
 
-@v4 @options @subnet
+@v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.dhcp-max-message-size
 
     Test Setup:

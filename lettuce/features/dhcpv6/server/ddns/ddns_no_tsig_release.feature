@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS removing forward and reverse entries in time of releasing leases.
 
 @v6 @ddns @notsig @forward_reverse_remove
-    Scenario: ddns.notsig.forw_and_rev.release
+    Scenario: ddns6.notsig.forw_and_rev.release
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -97,7 +97,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @forward_reverse_remove
-    Scenario: ddns.notsig.forw_and_rev.release-notenabled
+    Scenario: ddns6.notsig.forw_and_rev.release-notenabled
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -205,7 +205,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @reverse_remove
-    Scenario: ddns.notsig.rev.release
+    Scenario: ddns6.notsig.rev.release
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -304,3 +304,91 @@ Feature: DDNS without TSIG
     DNS server MUST respond with DNS query.
     Received DNS query MUST include empty ANSWER part.
 
+@v6 @ddns @notsig @ddns_expired
+    Scenario: ddns6.notsig.expired
+
+    Test Setup:
+	Time renew-timer is configured with value 1.
+	Time rebind-timer is configured with value 2.
+    Time preferred-lifetime is configured with value 3.
+    Time valid-lifetime is configured with value 4.
+    Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
+    DDNS server is configured on 127.0.0.1 address and 53001 port.
+    DDNS server is configured with enable-updates option set to true.
+    Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
+    Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
+    DHCP server is started.
+
+    Use DNS set no. 1.
+    DNS server is started.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: sth6.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include empty ANSWER part.
+
+    Test Procedure:
+    Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client sends SOLICIT message.
+
+    Pass Criteria:
+    Server MUST respond with ADVERTISE message.
+    Response MUST include option 1.
+    Response MUST include option 2.
+
+    Test Procedure:
+    Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client copies IA_NA option from received message.
+    Client copies server-id option from received message.
+    Client sets FQDN_domain_name value to sth6.six.example.com..
+    Client sets FQDN_flags value to S.
+    Client does include fqdn.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with REPLY message.
+    Response MUST include option 1.
+    Response MUST include option 2.
+    Response MUST include option 39.
+    Response option 39 MUST contain flags 1. #later make it 's' 'n' and 'o'
+    Response option 39 MUST contain fqdn sth6.six.example.com.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: sth6.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include NOT empty ANSWER part.
+    Received DNS part ANSWER MUST contain rdata with value 2001:db8:1::50.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. type PTR class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include NOT empty ANSWER part.
+    Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
+    Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
+
+    Sleep for 10 seconds.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: sth6.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include empty ANSWER part.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. type PTR class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include empty ANSWER part.

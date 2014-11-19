@@ -20,11 +20,12 @@ from lettuce import world, step
 from init_all import SOFTWARE_UNDER_TEST, DHCP
 from terrain import declare_all
 import importlib
+from terrain import declare_all
 
 declare_all()
 DNS = ""
 for each_client_name in SOFTWARE_UNDER_TEST:
-    if each_client_name in DHCP:
+    if each_client_name in DHCP and "client" in each_client_name:
         dhcp = importlib.import_module("softwaresupport.%s.functions" % each_client_name)
         world.cfg["dhcp_under_test"] = each_client_name
     elif each_client_name in DNS:

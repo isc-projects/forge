@@ -21,7 +21,7 @@ from locale import str
 import sys
 import os
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
-        fabric_remove_file_command, remove_local_file, fabric_sudo_command
+        fabric_remove_file_command, remove_local_file, fabric_sudo_command, configuration_file_name
 from time import sleep
 
 
@@ -199,13 +199,46 @@ def log_contains_count(step, server_type, count, line):
         assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
 
 
-def change_network_variables():
-    pass
-    #TODO !
-    # world.cfg["dns_iface"] = DNS_IFACE
-    # world.cfg["dns_addr"] = DNS_ADDR
-    # world.cfg["dns_port"] = DNS_PORT
-    # world.cfg["address_v6"] = "ff02::1:2"
-    # world.cfg["cli_link_local"] = CLI_LINK_LOCAL
-    #  world.cfg["values"]["source_IP"],
-    #           dst = world.cfg["values"]["dstination_IP"]
+def change_network_variables(value_name, value):
+    if value_name == "source_port":
+        world.cfg["source_port"] = int(value)
+    elif value_name == "destination_port":
+        world.cfg["destination_port"] = int(value)
+    elif value_name == "client_link_local_address":
+        world.cfg["cli_link_local"] = value
+    elif value_name == "source_address":
+        world.cfg["source_IP"] = value
+    elif value_name == "destination_address":
+        world.cfg["destination_IP"] = value
+    elif value_name == "dns_iface":
+        world.cfg["dns_iface"] = value
+    elif value_name == "dns_address":
+        world.cfg["dns_addr"] = value
+    elif value_name == "dns_port":
+        world.cfg["dns_port"] = int(value)
+    else:
+        assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
+
+
+def execute_shell_script(path, arguments):
+    result = fabric_sudo_command(path + ' ' + arguments, False)
+
+    file_name = path.split("/")[-1] + '_output'
+    file_name = configuration_file_name(1, file_name)
+
+    #assert False, type(result.stdout)
+    if not os.path.exists(world.cfg["dir_name"]):
+        os.makedirs(world.cfg["dir_name"])
+
+    myfile = open(world.cfg["dir_name"] + '/' + file_name, 'w')
+    myfile.write('Script: ' + path)
+    if arguments == '':
+        arguments = "no arguments used!"
+    myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))
+    if result.failed:
+        myfile.write(unicode('\nStatus: FAILED\n'))
+    else:
+        myfile.write(unicode('\nStatus: SUCCEED\n'))
+
+    myfile.write(unicode('\nScript stdout:\n' + result.stdout))
+    myfile.close()

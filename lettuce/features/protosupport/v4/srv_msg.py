@@ -24,7 +24,7 @@ from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sendp, sniff
 from random import randint
-import protosupport.v6.srv_msg
+from protosupport.v6.srv_msg import client_add_saved_option
 
 
 def client_requests_option(step, opt_type):
@@ -54,8 +54,6 @@ def client_send_msg(step, msgname, iface, addr):
 #     else:
 #         assert False, "No PRL defined"
 
-    options += ["end"]  # end option
-
     # What about messages: "force_renew","lease_query",
     # "lease_unassigned","lease_unknown","lease_active",
     # messages from server: offer, ack, nak
@@ -80,6 +78,9 @@ def client_send_msg(step, msgname, iface, addr):
         # msg code: 8
         msg = build_msg([("message-type", "inform")] + options)
 
+    elif msgname == "BOOTP_REQUEST":
+        msg = build_msg(options)
+
     else:
         assert False, "Invalid message type: %s" % msgname
 
@@ -103,18 +104,37 @@ def client_sets_value(step, value_name, new_value):
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
 
 
+def convert_flags_fqdn():
+    flag_filed = 0
+    if 'N' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 8
+    if 'E' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 4
+    if 'O' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 2
+    if 'S' in world.cfg["values"]["FQDN_flags"]:
+        flag_filed += 1
+    return flag_filed
+
+
 def client_does_include(step, opt_type, value):
     if opt_type == 'client_id':
         world.cliopts += [(opt_type, convert_MAC(value))]
 #     elif opt_type =='vendor_class_id':
 #         world.cliopts += [(opt_type, str(value), "my-other-class")]
+    elif opt_type == 'fqdn':
+        flags = chr(int(convert_flags_fqdn()))
+        ## flags, RCODE1, RCODE2, domain name
+        ## RCODE1 and RCODE2 are deprecated but we need to add them.
+        if 'E' not in world.cfg["values"]["FQDN_flags"]:
+            fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
+        else:
+            ## code domain name:
+
+            domain = "".join(map(lambda z: chr(len(z))+z, world.cfg["values"]["FQDN_domain_name"].split('.')))
+            fqdn = (flags + '\x00\x00' + domain)
+        world.cliopts += [('client_FQDN', fqdn)]
     else:
-#         if isinstance(value, str):
-#             world.cliopts += [(opt_type, str(value))]
-#         elif isinstance(value, int):
-#             world.cliopts += [(opt_type, int(value))]
-#         else:
-#             assert False, "wtf"
         world.cliopts += [(opt_type, str(value))]
 
 
@@ -155,6 +175,18 @@ def response_check_content(step, expect, data_type, expected):
     return received
 
 
+def client_save_option(step, opt_name, count = 0):
+    from softwaresupport.kea4_server.functions import kea_options4
+    opt_code = kea_options4.get(opt_name)
+
+    assert opt_name in kea_options4, "Unsupported option name " + opt_name
+
+    if not count in world.savedmsg:
+        world.savedmsg[count] = [get_option(world.srvmsg[0], opt_code)]
+    else:
+        world.savedmsg[count].append(get_option(world.srvmsg[0], opt_code))
+
+
 def client_copy_option(step, opt_name):
     from softwaresupport.kea4_server.functions import kea_options4
     opt_code = kea_options4.get(opt_name)
@@ -171,28 +203,38 @@ def convert_MAC(mac):
 
 
 def build_msg(opts):
-
     conf.checkIPaddr = False
-    fam,hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    msg_flag = 0
+    fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
     tmp_hw = None
 
     # we need to choose if we want to use chaddr, or client id. 
     # also we can include both: client_id and chaddr
-    if world.cfg["values"]["chaddr"] == None or world.cfg["values"]["chaddr"] == "default":
+    if world.cfg["values"]["chaddr"] is None or world.cfg["values"]["chaddr"] == "default":
         tmp_hw = hw
     elif world.cfg["values"]["chaddr"] == "empty":
         tmp_hw = convert_MAC("00:00:00:00:00:00")
     else:
         tmp_hw = convert_MAC(world.cfg["values"]["chaddr"])
-    
+
+    if world.cfg["values"]["broadcastBit"]:
+        # value for setting 1000 0000 0000 0000 in bootp message in field 'flags' for broadcast msg.
+        msg_flag = 32768
+
     msg = Ether(dst = "ff:ff:ff:ff:ff:ff",
                 src = hw)
     msg /= IP(src = world.cfg["source_IP"],
-              dst = world.cfg["destination_IP"])
+              dst = world.cfg["destination_IP"],)
     msg /= UDP(sport = world.cfg["source_port"], dport = world.cfg["destination_port"])
     msg /= BOOTP(chaddr = tmp_hw,
-                 giaddr = world.cfg["values"]["giaddr"])
-    msg /= DHCP(options = opts)
+                 giaddr = world.cfg["values"]["giaddr"],
+                 flags = msg_flag,
+                 hops = world.cfg["values"]["hops"])
+
+    # BOOTP requests can be optionless
+    if (len(opts) > 0):
+        opts += ["end"]  # end option
+        msg /= DHCP(options = opts)
 
     msg.xid = randint(0, 256*256*256)
     msg.siaddr = world.cfg["values"]["siaddr"]
@@ -215,6 +257,10 @@ def get_msg_type(msg):
                  }
     # option 53 it's message type
     opt = get_option(msg, 53)
+
+    # BOOTP_REPLYs have no message type   
+    if (opt == None): 
+        return "BOOTP_REPLY"
     
     # opt[1] it's value of message-type option
     for msg_code in msg_types.keys():
@@ -286,10 +332,13 @@ def get_option(msg, opt_code):
         opt_name = opt_name.name
 
     x = msg.getlayer(4)  # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
-    for opt in x.options:
-        if opt[0] == opt_name:
-            world.opts.append(opt)
-            return opt
+    # BOOTP messages may be optionless, so check first
+    if (x != None):
+        for opt in x.options:
+            if opt[0] == opt_name:
+                world.opts.append(opt)
+                return opt
+
     return None
 
 
@@ -317,7 +366,7 @@ def response_check_include_option(step, expected, opt_code):
     if expected:
         assert opt, "Expected option " + opt_code + " not present in the message."
     else:
-        assert opt == None, "Expected option " + opt_code + " present in the message. But not expected!"
+        assert opt is None, "Expected option " + opt_code + " present in the message. But not expected!"
 
 
 def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
@@ -326,11 +375,23 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
     
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
-    outcome, received = test_option(opt_code, received ,expected)
 
-    if expect == None:
-        assert outcome, "Invalid {opt_code} option received: {received}"\
-                                    " but expected {expected}".format(**locals())
+    # FQDN is being parsed different way because of scapy imperfections
+    if opt_code == 81:
+        tmp = received[0]
+        if data_type == 'flags':
+            received = tmp, int(ByteToHex(received[1][0]), 16)
+        elif data_type == 'fqdn':
+            received = tmp, received[1][3:]
+        else:
+            assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
+
+        #assert False, bytes(received[1][0])
+
+    outcome, received = test_option(opt_code, received, expected)
+
+    if expect is None:
+        assert outcome, "Invalid {opt_code} option received: {received} but expected {expected}".format(**locals())
     else:
-        assert not outcome, "Invalid {opt_code} option received: {received}"\
-                                 " that value has been excluded from correct values".format(**locals())
+        assert not outcome, "Invalid {opt_code} option received: {received}" \
+                            " that value has been excluded from correct values".format(**locals())

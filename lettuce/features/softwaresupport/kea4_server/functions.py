@@ -25,79 +25,80 @@ from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
-    check_kea_process_result, save_logs, clear_all
+    check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases
 
-kea_options4 = {"subnet-mask": 1,  # ipv4-address (array)
-                "time-offset": 2, 
-                "routers": 3,  # ipv4-address (single)
-                "time-servers": 4,  # ipv4-address (single)
-                "name-servers": 5,  # ipv4-address (array)
-                "domain-name-servers": 6,  # ipv4-address (array)
-                "log-servers": 7,  # ipv4-address (single)
-                "cookie-servers": 8,  # ipv4-address (single)
-                "lpr-servers": 9,  # ipv4-address (single)
-                "impress-servers": 10,  # ipv4-address (single)
-                "resource-location-servers": 11,  # ipv4-address (single)
-                "host-name": 12,  # string
-                "boot-size": 13,
-                "merit-dump": 14,  # string
-                "domain-name": 15,  # fqdn (single)
-                "swap-server": 16,  # ipv4-address (single)
-                "root-path": 17,  # string
-                "extensions-path": 18,  # string
-                "ip-forwarding": 19,  # boolean
-                "non-local-source-routing": 20,  # boolean
-                "policy-filter": 21,  # ipv4-address (single)
-                "max-dgram-reassembly": 22,
-                "default-ip-ttl": 23,
-                "path-mtu-aging-timeout": 24,
-                "path-mtu-plateau-table": 25,
-                "interface-mtu": 26,
-                "all-subnets-local": 27,  # boolean
-                "broadcast-address": 28,  # ipv4-address (single)
-                "perform-mask-discovery": 29,  # boolean
-                "mask-supplier": 30,  # boolean
-                "router-discovery": 31,  # boolean
-                "router-solicitation-address": 32,  # ipv4-address (single)
-                "static-routes": 33,  # ipv4-address (array)
-                "trailer-encapsulation": 34,  # boolean
-                "arp-cache-timeout": 35,
-                "ieee802-3-encapsulation": 36,
-                "default-tcp-ttl": 37,
-                "tcp-keepalive-internal": 38,
-                "tcp-keepalive-garbage": 39,  # boolean
-                "nis-domain": 40,  # string (single)
-                "nis-servers": 41,  # ipv4-address (array)
-                "ntp-servers": 42,  # ipv4-address (array)
-                "vendor-encapsulated-options": 43,  # empty
-                "netbios-name-servers": 44,  # ipv4-address
-                "netbios-dd-server": 45,  # ipv4-address
-                "netbios-node-type": 46,  # uint8
-                "netbios-scope": 47,  # string
-                "font-servers": 48,  # ipv4-address
-                "x-display-manager": 49,  # ipv4-address
-                "dhcp-requested-address": 50,  # ipv4-address
-                "dhcp-option-overload": 52,  # uint8
-                "server_id": 54,
-                "dhcp-message": 56,  # string
-                "dhcp-max-message-size": 57,  # uint16
-                "vendor-class-identifier": 60,  # binary
-                "client_id": 61,
-                "nwip-domain-name": 62,  # string
-                "nwip-suboptions": 63,  # binary
-                "boot-file-name": 67,  # string
-                "user-class": 77,  # binary
-                "fqdn": 81,  # record
-                "dhcp-agent-options": 82,  # empty
-                "authenticate": 90,  # binary
-                "client-last-transaction-time": 91,  # uint32
-                "associated-ip": 92,  # ipv4-address
-                "subnet-selection": 118,  # ipv4-address
-                "domain-search": 119,  # binary
-                "vivco-suboptions": 124,  # binary
-                "vivso-suboptions": 125,  # binary
-                "end": 255
-                 }
+kea_options4 = {
+    "subnet-mask": 1,  # ipv4-address (array)
+    "time-offset": 2,
+    "routers": 3,  # ipv4-address (single)
+    "time-servers": 4,  # ipv4-address (single)
+    "name-servers": 5,  # ipv4-address (array)
+    "domain-name-servers": 6,  # ipv4-address (array)
+    "log-servers": 7,  # ipv4-address (single)
+    "cookie-servers": 8,  # ipv4-address (single)
+    "lpr-servers": 9,  # ipv4-address (single)
+    "impress-servers": 10,  # ipv4-address (single)
+    "resource-location-servers": 11,  # ipv4-address (single)
+    "host-name": 12,  # string
+    "boot-size": 13,
+    "merit-dump": 14,  # string
+    "domain-name": 15,  # fqdn (single)
+    "swap-server": 16,  # ipv4-address (single)
+    "root-path": 17,  # string
+    "extensions-path": 18,  # string
+    "ip-forwarding": 19,  # boolean
+    "non-local-source-routing": 20,  # boolean
+    "policy-filter": 21,  # ipv4-address (single)
+    "max-dgram-reassembly": 22,
+    "default-ip-ttl": 23,
+    "path-mtu-aging-timeout": 24,
+    "path-mtu-plateau-table": 25,
+    "interface-mtu": 26,
+    "all-subnets-local": 27,  # boolean
+    "broadcast-address": 28,  # ipv4-address (single)
+    "perform-mask-discovery": 29,  # boolean
+    "mask-supplier": 30,  # boolean
+    "router-discovery": 31,  # boolean
+    "router-solicitation-address": 32,  # ipv4-address (single)
+    "static-routes": 33,  # ipv4-address (array)
+    "trailer-encapsulation": 34,  # boolean
+    "arp-cache-timeout": 35,
+    "ieee802-3-encapsulation": 36,
+    "default-tcp-ttl": 37,
+    "tcp-keepalive-interval": 38,
+    "tcp-keepalive-garbage": 39,  # boolean
+    "nis-domain": 40,  # string (single)
+    "nis-servers": 41,  # ipv4-address (array)
+    "ntp-servers": 42,  # ipv4-address (array)
+    "vendor-encapsulated-options": 43,  # empty
+    "netbios-name-servers": 44,  # ipv4-address
+    "netbios-dd-server": 45,  # ipv4-address
+    "netbios-node-type": 46,  # uint8
+    "netbios-scope": 47,  # string
+    "font-servers": 48,  # ipv4-address
+    "x-display-manager": 49,  # ipv4-address
+    "dhcp-requested-address": 50,  # ipv4-address
+    "dhcp-option-overload": 52,  # uint8
+    "server_id": 54,
+    "dhcp-message": 56,  # string
+    "dhcp-max-message-size": 57,  # uint16
+    "vendor-class-identifier": 60,  # binary
+    "client_id": 61,
+    "nwip-domain-name": 62,  # string
+    "nwip-suboptions": 63,  # binary
+    "boot-file-name": 67,  # string
+    "user-class": 77,  # binary
+    "fqdn": 81,  # record
+    "dhcp-agent-options": 82,  # empty
+    "authenticate": 90,  # binary
+    "client-last-transaction-time": 91,  # uint32
+    "associated-ip": 92,  # ipv4-address
+    "subnet-selection": 118,  # ipv4-address
+    "domain-search": 119,  # binary
+    "vivco-suboptions": 124,  # binary
+    "vivso-suboptions": 125,  # binary
+    "end": 255
+}
 
 
 def check_empty_value(val):
@@ -123,13 +124,11 @@ def add_defaults():
         "valid-lifetime": {t3},
         '''.format(**locals())
 
-    if eth is not None:
-        world.cfg["main"] += '''"interfaces": ["{eth}"],
-        "subnet4": [
-        '''.format(**locals())
+    if eth is not None and not eth in world.cfg["interfaces"]:
+        add_interface(eth)
 
     #world.cfg["conf"] += dedent(subnetcfg)
-    #world.kea["subnet_cnt"] += 1
+    #world.dhcp["subnet_cnt"] += 1
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
@@ -141,18 +140,21 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if eth is None:
         eth = SERVER_IFACE
 
+    if not "interfaces" in world.cfg:
+        world.cfg["interfaces"] = ''
+
     pointer_start = "{"
     pointer_end = "}"
 
-    world.subcfg[world.kea["subnet_cnt"]][0] += '\n\t\t{pointer_start} "pools":' \
-                                                ' [ {pointer_start}"pool": "{pool}" {pointer_end} ],' \
-                                                ' "subnet": "{subnet}"'.format(**locals())
+    world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
+         '''.format(**locals())
+    world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
 
     if eth is not None:
-        world.subcfg[world.kea["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
+        world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
 
-    #world.cfg["conf"] += dedent(subnetcfg)
-    #world.kea["subnet_cnt"] += 1
+    if not eth in world.cfg["interfaces"]:
+        add_interface(eth)
 
 
 def config_client_classification(step, subnet, option_value):
@@ -165,7 +167,7 @@ def config_client_classification(step, subnet, option_value):
 def prepare_cfg_add_option(step, option_name, option_value, space,
                            option_code = None, type = 'default', where = 'options'):
     if not where in world.cfg:
-        world.cfg[where] = '\n\t"option-data": ['
+        world.cfg[where] = '"option-data": ['
     else:
         world.cfg[where] += ","
 
@@ -226,21 +228,11 @@ def disanable_client_echo(step):
     world.cfg["simple_options"] += '"echo-client-id": "False"'.format(**locals())
 
 
-def add_interface(step, interface):
-    # not jet tested!
-    if not "simple_options" in world.cfg:
-        world.cfg["simple_options"] = ''
-    else:
-        world.cfg["simple_options"] += ','
-    world.cfg["simple_options"] += '"interfaces": "{interface}"'.format(**locals())
-
-
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK END  ==================
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK START ==================
-
 
 def start_srv(start, process):
     """
@@ -263,14 +255,14 @@ def start_srv(start, process):
     # check process - if None add some.
     if not v4:
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
-                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
     else:
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
-                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
-                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
 
 

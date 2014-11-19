@@ -42,6 +42,7 @@ def client_sets_value(step, value_name, new_value):
     more accurate.
     """
     # that is also used for DNS messages
+    value_name, new_value = test_define_value(value_name, new_value)
     dhcpmsg.client_sets_value(step, value_name, new_value)
 
 
@@ -174,6 +175,7 @@ def response_check_include_option(step, yes_or_no, opt_code):
 def response_check_content(step, expect, data_type, expected):
     """
     """
+    #expect, data_type, expected = test_define_value(expect, data_type, expected)
     dhcpmsg.response_check_content(step, expect, data_type, expected)
 
 
@@ -182,7 +184,7 @@ def response_check_option_content(step, opt_code, expect, data_type, expected):
     """
     Detailed parsing of received option. For more details please read manual section "Parsing respond"
     """
-    data_type, expected = test_define_value (data_type, expected)
+    data_type, expected = test_define_value(data_type, expected)
     dhcpmsg.response_check_option_content(step, 0, opt_code, expect, data_type, expected)
 
 
@@ -261,6 +263,7 @@ def dns_option_content(step, part_name, expect, value_name, value):
     dns.dns_option_content(step, part_name, expect, str(value_name), str(value))
     # later probably we'll have to change MUST on (\S+) for sth like MAY
 
+
 ##save option from received message
 @step('Client copies (\S+) option from received message.')
 def client_copy_option(step, option_name):
@@ -282,12 +285,14 @@ def client_save_option(step, option_name):
     assert len(world.srvmsg), "No messages received, nothing to save."
     dhcpmsg.client_save_option(step, option_name)
 
+
 @step('Client saves into set no. (\d+) (\S+) option from received message.')
 def client_save_option(step, count, option_name):
     """
     """
     assert len(world.srvmsg), "No messages received, nothing to save."
     dhcpmsg.client_save_option(step, option_name, count)
+
 
 @step('Client adds saved options. And (DONT )?Erase.')
 def client_add_saved_option(step, yes_or_no):
@@ -298,6 +303,7 @@ def client_add_saved_option(step, yes_or_no):
     assert len(world.savedmsg), "No options to add."
     erase = True if yes_or_no == None else False
     dhcpmsg.client_add_saved_option(step, erase)
+
 
 @step('Client adds saved options in set no. (\d+). And (DONT )?Erase.')
 def client_add_saved_option(step, count, yes_or_no):
@@ -329,6 +335,12 @@ def compare_values(step, value_name, option_name):
 
 
 ##other
+@step('Set network variable (\S+) with value (\S+).')
+def network_variable(step, value_name, value):
+    value_name, value = test_define_value(value_name, value)
+    other.change_network_variables(value_name, value)
+
+
 @step('(\S+) log MUST (NOT )?contain line: (.+)')
 def log_includes_line(step, server_type, condition, line):
     """
@@ -346,7 +358,7 @@ def log_includes_count(step, server_type, count, line):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     count, line = test_define_value(count, line)
-    dhcpmsg.log_contains_count(step, server_type, count, line)
+    other.log_contains_count(step, server_type, count, line)
 
 
 @step('Sleep for (\d+) (seconds|second|milliseconds|millisecond).')
@@ -394,6 +406,7 @@ def file_includes_line(step, condition, line):
     """
     line = test_define_value(line)[0]
     other.file_includes_line(step, condition, line)
+
 
 @step('Client sends local file stored in: (\S+) to server, to location: (\S+).')
 def send_file_to_server(step, local_path, remote_path):
@@ -443,6 +456,17 @@ def test_victory(step):
     """
     other.user_victory(step)
 
+
+@step('Execute shell script in path: (\S+) with arguments: (.+)')
+def execute_shell(step, path, arg):
+    path, arg = test_define_value(path, arg)
+    other.execute_shell_script(path, arg)
+
+
+@step('Execute shell script in path: (\S+) with no arguments.')
+def execute_shell(step, path):
+    path = test_define_value(path)[0]
+    other.execute_shell_script(path, '')
 
 # ##memory graph
 # for some in range (10):

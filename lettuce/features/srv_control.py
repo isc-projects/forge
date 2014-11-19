@@ -94,7 +94,7 @@ def test_define_value(*args):
     return tested_args
 
 
-##server configurations
+##DHCP server configurations
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(step, subnet, pool):
     """
@@ -106,17 +106,15 @@ def config_srv_subnet(step, subnet, pool):
     init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set
     interface.
     """
-    subnet, pool = test_define_value( subnet, pool)
+    subnet, pool = test_define_value(subnet, pool)
     dhcp.prepare_cfg_subnet(step, subnet, pool)
 
 
-@step('On interface (\S+) server is configured with another subnet: (\S+) with (\S+) pool.')
+@step('Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
 def config_srv_another_subnet(step, interface, subnet, pool):
     """
     Add another subnet with specified subnet/pool/interface.
     """
-    if 'kea' not in world.cfg["dhcp_under_test"]:
-        assert False, "Test temporary available only for Kea servers."
     subnet, pool, interface = test_define_value(subnet, pool, interface)
     dhcp.config_srv_another_subnet(step, subnet, pool, interface)
 
@@ -126,8 +124,6 @@ def config_srv_another_subnet_no_interface(step, subnet, pool):
     """
     Add another subnet to config file without interface specified.
     """
-    if 'kea' not in world.cfg["dhcp_under_test"]:
-        assert False, "Test temporary available only for Kea servers."
     subnet, pool = test_define_value(subnet, pool)
     dhcp.config_srv_another_subnet(step, subnet, pool, None)
 
@@ -149,8 +145,7 @@ def subnet_add_siaddr(step, subnet_number, addr):
 
 @step('Next server global value is configured with address (\S+).')
 def global_add_siaddr(step, addr):
-    #TODO: implement this
-    #addr, subnet_number = test_define_value(addr, "pass")
+    addr = test_define_value(addr)[0]
     dhcp.add_siaddr(step, addr, None)
 
 
@@ -160,7 +155,7 @@ def config_srv_opt(step, option_name, option_value):
     Add to configuration options like: preference, dns servers..
     This step causes to set in to main space!
     """
-    option_name, option_value = test_define_value( option_name, option_value)
+    option_name, option_value = test_define_value(option_name, option_value)
     dhcp.prepare_cfg_add_option(step, option_name, option_value, world.cfg["space"])
 
 
@@ -202,7 +197,8 @@ def set_time(step, which_time, value):
     Change values of T1, T2, preffered lifetime and valid lifetime.
     """
     which_time, value = test_define_value(which_time, value)
-    dhcp.set_time(step, which_time, value)
+    dhcp.set_time(step, which_time, value, None)
+
 
 @step('Time (\S+) is not configured.')
 def unset_time(step, which_time):
@@ -235,6 +231,20 @@ def run_command(step, command):
 
 
 ##subnet options
+@step('Time (\S+) in subnet (\d+) is configured with value (\d+).')
+def set_time(step, which_time, subnet, value):
+    """
+    Change values of T1, T2, preffered lifetime and valid lifetime.
+    """
+    which_time, subnet, value = test_define_value(which_time, subnet, value)
+    dhcp.set_time(step, which_time, value, subnet)
+
+
+@step('Server is configured with another pool (\S+) in subnet (\d+).')
+def new_pool(step, pool, subnet):
+    dhcp.add_pool_to_subnet(step, pool, int(subnet))
+
+
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
 def config_srv(step, option_name, subnet, option_value):
     """
@@ -245,6 +255,16 @@ def config_srv(step, option_name, subnet, option_value):
     dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
 
 
+@step('On space (\S+) server is configured with (\S+) option in subnet (\d+) with value (\S+).')
+def config_srv(step, space, option_name, subnet, option_value):
+    """
+    Prepare server configuration with the specified option.
+    option_name name of the option, e.g. dns-servers (number may be used here)
+    option_value value of the configuration
+    """
+    dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space)
+
+
 @step('Server is configured with client-classification option in subnet (\d+) with name (\S+).')
 def config_client_classification(step, subnet, option_value):
     """
@@ -252,7 +272,32 @@ def config_client_classification(step, subnet, option_value):
     dhcp.config_client_classification(step, subnet, option_value)
 
 
-##server management
+##DNS server configuration
+@step('DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
+def dns_conf(step, ip_type, address, port, direct):
+    ip_type, address, port, direct = test_define_value(ip_type, address, port, direct)
+    dns.add_defaults(ip_type, address, port, direct)
+
+
+@step('DNS server is configured with zone (\S+) with type: (\S+) file: (\S+) with dynamic update key: (\S+).')
+def add_zone(step, zone, zone_type, file_nem, key):
+    zone, zone_type, file_nem, key = test_define_value(zone, zone_type, file_nem, key)
+    dns.add_zone(zone, zone_type, file_nem, key)
+
+
+@step('Add DNS key named: (\S+) algorithm: (\S+) and value: (\S+).')
+def dns_add_key(step, key_name, algorithm, key_value):
+    key_name, algorithm, key_value = test_define_value(key_name, algorithm, key_value)
+    dns.add_key(key_name, algorithm, key_value)
+
+
+@step('Add DNS rndc-key on address (\S+) and port (\d+). Using algorithm: (\S+) with value: (\S+)')
+def dns_rest(step, address, port, alg, value):
+    address, port, alg, value = test_define_value(address, port, alg, value)
+    dns.add_rndc(address, port, alg, value)
+
+
+##servers management
 @step('(\S+) server is started.')
 def start_srv(step, name):
     """

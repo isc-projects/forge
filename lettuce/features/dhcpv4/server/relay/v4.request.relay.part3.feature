@@ -1,10 +1,10 @@
 
 
 Feature: DHCPv4 address request process
-    Those are simple DHCPv4 tests for address assignment. During RENEWING/REBINDING state.
+    Those are simple DHCPv4 tests for address assignment. During RENEWING/REBINDING state in relay traffic.
  
-@v4 @dhcp4 @request
-Scenario: v4.request.renewing.success
+@v4 @dhcp4 @relay @request
+Scenario: v4.request.relay.renewing.success
 
 	Test Setup:
 	Time renew-timer is configured with value 2.
@@ -14,6 +14,11 @@ Scenario: v4.request.renewing.success
 	DHCP server is started.
 	
 	Test Procedure:
+    Set network variable source_port with value 67.
+    Set network variable source_address with value $(GIADDR4).
+    Set network variable destination_address with value $(SRV4_ADDR).
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -26,6 +31,8 @@ Scenario: v4.request.renewing.success
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
 	Test Procedure:
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client copies server_id option from received message.
 	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
@@ -43,6 +50,8 @@ Scenario: v4.request.renewing.success
 	Sleep for 3 seconds.
 	
 	Test Procedure:
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client sets ciaddr value to 192.168.50.1.
 	Client sends REQUEST message.
 
@@ -52,8 +61,8 @@ Scenario: v4.request.renewing.success
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
-@v4 @dhcp4 @request
-Scenario: v4.request.rebinding.success
+@v4 @dhcp4 @relay @request
+Scenario: v4.request.relay.rebinding.success
 
 	Test Setup:
 	Time renew-timer is configured with value 2.
@@ -63,6 +72,11 @@ Scenario: v4.request.rebinding.success
 	DHCP server is started.
 	
 	Test Procedure:
+    Set network variable source_port with value 67.
+    Set network variable source_address with value $(GIADDR4).
+    Set network variable destination_address with value $(SRV4_ADDR).
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client requests option 1.
 	Client sends DISCOVER message.
 	
@@ -75,6 +89,8 @@ Scenario: v4.request.rebinding.success
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
 	Test Procedure:
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client copies server_id option from received message.
 	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
@@ -92,6 +108,8 @@ Scenario: v4.request.rebinding.success
 	Sleep for 4 seconds.
 	
 	Test Procedure:
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client sets ciaddr value to 192.168.50.1.
 	Client sends REQUEST message.
 
@@ -101,8 +119,8 @@ Scenario: v4.request.rebinding.success
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @dhcp4 @request
-Scenario: v4.request.rebinding.fail
+@v4 @dhcp4 @relay @request
+Scenario: v4.request.relay.rebinding.fail
 
 	Test Setup:
 	Time renew-timer is configured with value 2.
@@ -112,6 +130,11 @@ Scenario: v4.request.rebinding.fail
 	DHCP server is started.
 
 	Test Procedure:
+    Set network variable source_port with value 67.
+    Set network variable source_address with value $(GIADDR4).
+    Set network variable destination_address with value $(SRV4_ADDR).
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client requests option 1.
 	Client sends DISCOVER message.
 
@@ -124,6 +147,8 @@ Scenario: v4.request.rebinding.fail
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
 	Test Procedure:
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client copies server_id option from received message.
 	Client adds to the message requested_addr with value 192.168.50.1.
 	Client requests option 1.
@@ -141,6 +166,8 @@ Scenario: v4.request.rebinding.fail
 	Sleep for 5 seconds.
 
 	Test Procedure:
+    Client sets giaddr value to $(GIADDR4).
+    Client sets hops value to 1.
 	Client sets ciaddr value to 192.168.50.1.
 	Client sends REQUEST message.
 

@@ -3,7 +3,7 @@
 Feature: DHCPv4 Client Classification - request process
     Tests for Client Classification performed through option vendor class identification.
     
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.one.class.one-subnet
 
     Test Setup:
@@ -47,7 +47,7 @@ Feature: DHCPv4 Client Classification - request process
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040506.
 	
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.one.class.two-subnets-same-values
 
     Test Setup:
@@ -123,7 +123,7 @@ Feature: DHCPv4 Client Classification - request process
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.one.class.two-subnets-different-class-id-included
 
     Test Setup:
@@ -149,7 +149,7 @@ Feature: DHCPv4 Client Classification - request process
     Response option 54 MUST contain value $(SRV4_ADDR).
     Response option 61 MUST contain value 00010203040506.
 
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.one.class.two-subnets-different-chaddr
 
     Test Setup:
@@ -216,7 +216,7 @@ Feature: DHCPv4 Client Classification - request process
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.one.class.empty-pool-with-classification
 
 	# test if server is assigning addresses from pool without classification after 
@@ -278,7 +278,7 @@ Feature: DHCPv4 Client Classification - request process
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.one.class.empty-pool-without-classification
 
 	# test if server is assigning addresses from pool with classification after 
@@ -337,7 +337,7 @@ Feature: DHCPv4 Client Classification - request process
 	Response MUST include option 54.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.multiple.classes.two-subnets-different-chaddr
 
     Test Setup:
@@ -407,7 +407,7 @@ Feature: DHCPv4 Client Classification - request process
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
     
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.multiple.classes.three-subnets-different-chaddr
 
     Test Setup:
@@ -478,7 +478,7 @@ Feature: DHCPv4 Client Classification - request process
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
 
-@v4 @classification
+@v4 @dhcp4 @classification
     Scenario: v4.client.classification.multiple.classes.three-subnets-different-values
 
     Test Setup:

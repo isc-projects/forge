@@ -3,7 +3,7 @@
 Feature: DHCPv4 address decline process
     Those are simple DHCPv4 tests for declining assigned address.
     
-@v4 @decline
+@v4 @dhcp4 @decline
 Scenario: v4.decline.success
 
     Test Setup:
@@ -44,7 +44,7 @@ Scenario: v4.decline.success
     Server MUST respond with OFFER message.
     Response MUST contain yiaddr 192.168.50.1.
 
-@v4 @decline
+@v4 @dhcp4 @decline
 Scenario: v4.decline.fail-without-serverid
 
     Test Setup:
@@ -83,7 +83,7 @@ Scenario: v4.decline.fail-without-serverid
     Pass Criteria:
     Server MUST respond with NAK message.
 
-@v4 @decline
+@v4 @dhcp4 @decline
 Scenario: v4.decline.fail-without-serverid
 
     Test Setup:
@@ -122,7 +122,7 @@ Scenario: v4.decline.fail-without-serverid
     Pass Criteria:
     Server MUST respond with NAK message.
 
-@v4 @decline
+@v4 @dhcp4 @decline
 Scenario: v4.decline.fail-without-requested-ip-address
 
     Test Setup:
@@ -161,7 +161,7 @@ Scenario: v4.decline.fail-without-requested-ip-address
     Pass Criteria:
     Server MUST respond with NAK message.
 
-@v4 @decline
+@v4 @dhcp4 @decline
 Scenario: v4.decline.fail-without-client-id
 
     Test Setup:
@@ -206,7 +206,7 @@ Scenario: v4.decline.fail-without-client-id
     Pass Criteria:
     Server MUST respond with NAK message.
 
-@v4 @decline
+@v4 @dhcp4 @decline
 Scenario: v4.decline.fail-different-client-id
 
     Test Setup:
@@ -253,7 +253,7 @@ Scenario: v4.decline.fail-different-client-id
     Server MUST respond with NAK message.
 
 
-@v4 @decline
+@v4 @dhcp4 @decline
 Scenario: v4.decline.fail-different-chaddr
 
     Test Setup:

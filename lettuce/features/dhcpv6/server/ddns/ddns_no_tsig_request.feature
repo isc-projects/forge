@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS forward and reverse update.
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns.notsig.forw_and_rev.add-success-Sflag
+    Scenario: ddns6.notsig.forw_and_rev.add-success-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -73,7 +73,7 @@ Feature: DDNS without TSIG
 
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns.notsig.forw_and_rev.add-fail-Sflag
+    Scenario: ddns6.notsig.forw_and_rev.add-fail-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -148,7 +148,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns.notsig.forw_and_rev.notenabled-Sflag
+    Scenario: ddns6.notsig.forw_and_rev.notenabled-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -220,7 +220,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @forward_update
-    Scenario: ddns.notsig.forw_and_rev.update-success-Sflag
+    Scenario: ddns6.notsig.forw_and_rev.update-success-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -381,7 +381,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 1.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns.notsig.forw_and_rev.two-dhci-Sflag
+    Scenario: ddns6.notsig.forw_and_rev.two-dhci-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
@@ -490,7 +490,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value client2.six.example.com..
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns.notsig.forw_and_rev.dhci-conflicts-Sflag
+    Scenario: ddns6.notsig.forw_and_rev.dhci-conflicts-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
@@ -651,7 +651,165 @@ Feature: DDNS without TSIG
 
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns.notsig.forw_and_rev.add-success-withoutflag-override-client
+    Scenario: ddns6.notsig.forw_and_rev.dhci-conflicts-remove-Sflag
+
+    Test Setup:
+    Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
+    DDNS server is configured on 127.0.0.1 address and 53001 port.
+    DDNS server is configured with enable-updates option set to true.
+    Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
+    Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
+    DHCP server is started.
+
+    Use DNS set no. 1.
+    DNS server is started.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: client1.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include empty ANSWER part.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: client2.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include empty ANSWER part.
+
+    ## Client 1 add
+    Test Procedure:
+    Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client sends SOLICIT message.
+
+    Pass Criteria:
+    Server MUST respond with ADVERTISE message.
+    Response MUST include option 1.
+    Response MUST include option 2.
+
+    Test Procedure:
+    Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client saves into set no. 1 IA_NA option from received message.
+    Client adds saved options in set no. 1. And DONT Erase.
+    Client copies server-id option from received message.
+    Client sets FQDN_domain_name value to client1.six.example.com..
+    Client sets FQDN_flags value to S.
+    Client does include fqdn.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with REPLY message.
+    Response MUST include option 1.
+    Response MUST include option 2.
+    Response MUST include option 39.
+    Response option 39 MUST contain flags 1. #later make it 's' 'n' and 'o'
+    Response option 39 MUST contain fqdn client1.six.example.com.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: client1.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include NOT empty ANSWER part.
+    Received DNS part ANSWER MUST contain rdata with value 2001:db8:1::51.
+    Received DNS part ANSWER MUST contain rrname with value client1.six.example.com..
+
+    ## Client 2 add
+    Test Procedure:
+    Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:02.
+    Client sends SOLICIT message.
+
+    Pass Criteria:
+    Server MUST respond with ADVERTISE message.
+    Response MUST include option 1.
+    Response MUST include option 2.
+
+    Test Procedure:
+    Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:02.
+    Client saves into set no. 2 IA_NA option from received message.
+    Client saves into set no. 2 server-id option from received message.
+    Client adds saved options in set no. 2. And DONT Erase.
+    Client sets FQDN_domain_name value to client2.six.example.com..
+    Client sets FQDN_flags value to S.
+    Client does include fqdn.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with REPLY message.
+    Response MUST include option 1.
+    Response MUST include option 2.
+    Response MUST include option 39.
+    Response option 39 MUST contain flags 1. #later make it 's' 'n' and 'o'
+    Response option 39 MUST contain fqdn client2.six.example.com.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: client1.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include NOT empty ANSWER part.
+    Received DNS part ANSWER MUST contain rdata with value 2001:db8:1::51.
+    Received DNS part ANSWER MUST contain rrname with value client1.six.example.com..
+
+    Test Procedure:
+    Client for DNS Question Record uses address: client2.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include NOT empty ANSWER part.
+    Received DNS part ANSWER MUST contain rdata with value 2001:db8:1::52.
+    Received DNS part ANSWER MUST contain rrname with value client2.six.example.com..
+
+    Test Procedure:
+    Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:02.
+    Client adds saved options in set no. 2. And DONT Erase.
+    Client sets FQDN_domain_name value to client1.six.example.com..
+    Client sets FQDN_flags value to S.
+    Client does include fqdn.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with REPLY message.
+    Response MUST include option 1.
+    Response MUST include option 2.
+    Response MUST include option 39.
+    Response option 39 MUST contain flags 1. #later make it 's' 'n' and 'o'
+    Response option 39 MUST contain fqdn client1.six.example.com.
+
+    Test Procedure:
+    Client for DNS Question Record uses address: client2.six.example.com type AAAA class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include empty ANSWER part..
+
+    Test Procedure:
+    Client for DNS Question Record uses address: 1.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. type PTR class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include NOT empty ANSWER part.
+    Received DNS part ANSWER MUST contain rdata with value client1.six.example.com..
+    Received DNS part ANSWER MUST contain rrname with value 1.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
+
+    Test Procedure:
+    Client for DNS Question Record uses address: 2.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. type PTR class IN.
+    Client sends DNS query.
+
+    Pass Criteria:
+    DNS server MUST respond with DNS query.
+    Received DNS query MUST include empty ANSWER part.
+
+@v6 @ddns @notsig @forward_reverse_add
+    Scenario: ddns6.notsig.forw_and_rev.add-success-withoutflag-override-client
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -727,7 +885,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @reverse_add
-    Scenario: ddns.notsig.rev.success-withoutflag
+    Scenario: ddns6.notsig.rev.success-withoutflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -801,7 +959,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @reverse_add
-    Scenario: ddns.notsig.rev.withoutflag-notenabled
+    Scenario: ddns6.notsig.rev.withoutflag-notenabled
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -865,7 +1023,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @reverse_add
-    Scenario: ddns.notsig.rev.Nflag-override-no-update
+    Scenario: ddns6.notsig.rev.Nflag-override-no-update
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -933,3 +1091,4 @@ Feature: DDNS without TSIG
     Received DNS query MUST include NOT empty ANSWER part.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
+

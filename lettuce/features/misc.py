@@ -23,17 +23,20 @@ from scapy.layers.dhcp6 import DHCP6OptOptReq
 from features.init_all import SOFTWARE_UNDER_TEST
 
 
-def set_world_kea():
+def set_world():
     """
     Set counters which are being used to server configuration in Kea
     """
-    if not hasattr(world, 'kea'):
-        world.kea = {}
+    if not hasattr(world, 'dhcp'):
+        world.dhcp = {}
     else:
-        world.kea.clear()
-    world.kea["option_cnt"] = 0
-    world.kea["subnet_cnt"] = 0
-    world.kea["option_usr_cnt"] = 0
+        world.dhcp.clear()
+    world.dhcp["option_cnt"] = 0
+    world.dhcp["subnet_cnt"] = 0
+    world.dhcp["option_usr_cnt"] = 0
+    # clear all config files
+    world.cfg["conf"] = ""
+    world.subcfg = [["", "", "", "", ""]]
 
 
 @step('Pass Criteria:')
@@ -44,12 +47,12 @@ def pass_criteria(step):
 
 @step('Test Setup:')
 def test_setup(step):
-    set_world_kea()
+    set_world()
 
 
 @step('Server reconfigure:')
 def reconfigure(step):
-    set_world_kea()
+    set_world()
 
 
 @step('Test Procedure:')
