@@ -132,13 +132,13 @@ class UserHelp ():
         """
         Generate list of test sets, features, test names and all available tags
         """
-        #  make for each in number because it starts in two points: in run_test.py by using -l option,
+        #  make for each in number because it starts in two points: in forge.py by using -l option,
         #  then it create list only for one IP version,
         #  and in help.py generating whole test list.
 
-        print "Test tree schema:\nroot directory\n\ttest set (available by option -s in run_test.py)\n\t\ttest feature"
+        print "Test tree schema:\nroot directory\n\ttest set (available by option -s in forge.py)\n\t\ttest feature"
         if more:
-            print "\t\t\ttest name (available by option -n in run_test.py)"
+            print "\t\t\ttest name (available by option -n in forge.py)"
         for each_number in ip_version: 
             self.tags = ''
             sets_number = 0
@@ -277,17 +277,17 @@ if __name__ == '__main__':
     
     How to run specific tests:
         - all tests for IPv6
-            run_test.py -6
+            forge.py -6
         - all tests from specific set e.g. relay_agent (one test set is a whole directory e.g. test_v6/address_validation):
-            run_test.py -6 -s relay_agent
+            forge.py -6 -s relay_agent
         - all tests from specific set with specific tag:
-            run_test.py -6 -s relay_agent -t basic
+            forge.py -6 -s relay_agent -t basic
         - you can also use only tags:
-            run_test.py -6 -t basic
+            forge.py -6 -t basic
         - or multiple tags (then you start tests with both of tags):
-            run_test.py -6 -t basic, relay
+            forge.py -6 -t basic, relay
         - you can start test with specific name, only one name at the time:
-            run_test.py -6 -n v6.basic.message.unicast.solicit
+            forge.py -6 -n v6.basic.message.unicast.solicit
     
     Lettuce verbosity (-v option):
         1 - dots for each feature
