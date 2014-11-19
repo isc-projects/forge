@@ -1,5 +1,8 @@
-# WARNING: this is only a prototype of file; i need some feedback about
-# whether it would be good, bad or totally bad;
+# This file contains client specific tests with main focus on verifying 
+# values from table that is presented below. Table comes from RFC 3315.
+
+# Author: Maciek Fijalkowski
+
 
 
 Feature: DHCPv6 Client retransmission times
@@ -31,102 +34,6 @@ Feature: DHCPv6 Client retransmission times
     # REC_TIMEOUT       2 secs  Initial Reconfigure timeout
     # REC_MAX_RC        8       Max Reconfigure attempts
     # HOP_COUNT_LIMIT  32       Max hop count in a Relay-forward message
-
-
-@v6 @RT @client
-    Scenario: retransmission.time.client_rebind_reply
-
-    Setting up test.
-
-    Test Procedure:
-    Client is configured to include IA_PD option.
-    Client is started.
-    Sniffing client SOLICIT message from network.
-
-    Pass Criteria:
-    Client message MUST contain option 1.
-    Client message MUST contain option 25.
-
-    Test Procedure:
-    T1 value is set to 3.
-    T2 value is set to 6.
-    Server adds IA_PD option to message.
-    Server adds IA_Prefix option to message.
-    Server sends back ADVERTISE message.
-
-    Pass Criteria:
-    Client MUST respond with REQUEST message.
-    Client message MUST contain option 25.
-    Client message option 25 MUST include sub-option 26.
-
-    Test Procedure:
-    T1 value is set to 3.
-    T2 value is set to 6.
-    Server sends back REPLY message.
-
-    Pass Criteria:
-    Sniffing client REBIND message from network.
-
-    Test Procedure:
-    Server builds new message.
-    T1 value is set to 1337.
-    T2 value is set to 3030.
-    preferred-lifetime value is set to 4444.
-    valid-lifetime value is set to 6666.
-    Server adds IA_PD option to message.
-    Server adds IA_Prefix option to message.
-    Server sends back REPLY message.
-
-    Test Procedure:
-    Client MUST use prefix with values given by server.
-
-    References: RFC 3315, section _.
-
-
-@v6 @RT @client
-    Scenario: retransmission.time.client_renew_reply
-
-    Setting up test.
-
-    Test Procedure:
-    Client is configured to include IA_PD option.
-    Client is started.
-    Sniffing client SOLICIT message from network.
-
-    Pass Criteria:
-    Client message MUST contain option 1.
-    Client message MUST contain option 25.
-
-    Test Procedure:
-    T1 value is set to 3.
-    Server adds IA_PD option to message.
-    Server adds IA_Prefix option to message.
-    Server sends back ADVERTISE message.
-
-    Pass Criteria:
-    Client MUST respond with REQUEST message.
-    Client message MUST contain option 25.
-    Client message option 25 MUST include sub-option 26.
-
-    Test Procedure:
-    T1 value is set to 3.
-    Server sends back REPLY message.
-
-    Pass Criteria:
-    Sniffing client RENEW message from network.
-
-    Test Procedure:
-    Server builds new message.
-    T1 value is set to 1337.
-    T2 value is set to 3030.
-    Server adds IA_PD option to message.
-    Server adds IA_Prefix option to message.
-    Server sends back REPLY message.
-
-    Test Procedure:
-    Client MUST use prefix with values given by server.
-
-    References: RFC 3315, section _.
 
 
 @v6 @RT @client

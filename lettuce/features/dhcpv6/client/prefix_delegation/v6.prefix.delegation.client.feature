@@ -806,7 +806,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: retransmission.time.client_rebind_reply
+    Scenario: prefix.delegation.client_rebind_reply
 
     Setting up test.
 
@@ -856,7 +856,7 @@ Feature: DHCPv6 Client Prefix Delegation
 
 
 @v6 @client
-    Scenario: retransmission.time.client_renew_reply
+    Scenario: prefix.delegation.client_renew_reply
 
     Setting up test.
 

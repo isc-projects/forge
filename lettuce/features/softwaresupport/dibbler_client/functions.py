@@ -208,10 +208,12 @@ def client_parse_config(step, contain):
                 pdDict['iaprefix ' + "\"" + prefix.text + '/' + prefix.attrib['length'] +
                        "\""] = dict(prefixDict)
             result['lease6']['ia-pd ' + "\"" + pd.attrib['IAID'] + "\""] = dict(pdDict)
+    """
     print result
     print "\n\n\n"
     print world.clntCfg['scapy_lease'] 
     print "\n\n\n"
+    """
     if contain:
         assert result == world.clntCfg['scapy_lease'], "leases are different."
     else:
