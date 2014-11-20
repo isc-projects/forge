@@ -74,6 +74,6 @@ def test_procedure(step):
             # some tests skip "test setup" procedure and goes to "test procedure"
             # e.g. tests for server configuration. Then we need to setup 
             # world.kea["option_cnt"] here.
-            set_world_kea()
+            set_world()
         else:
             pass
