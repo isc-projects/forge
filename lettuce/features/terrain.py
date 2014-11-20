@@ -19,7 +19,7 @@ from Crypto.Random.random import randint
 from init_all import LOGLEVEL, MGMT_ADDRESS, SOFTWARE_UNDER_TEST, CLI_MAC, IFACE, \
     REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
     AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLI_LINK_LOCAL, DNS, DHCP, \
-    SERVER_INSTALL_DIR, DNS_IFACE, DNS_ADDR, SAVE_LOGS, DNS_PORT
+    SERVER_INSTALL_DIR, DNS_IFACE, DNS_ADDR, SAVE_LOGS, DNS_PORT, SRV_IPV6_ADDR_GLOBAL
 
 from lettuce import world, before, after
 from logging_facility import *
@@ -68,8 +68,8 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "validlft": 0,  # IA_Address IA_Prefix
              "enterprisenum": 0,  # vendor
              "vendor_class_data": "",
-             "linkaddr": "3000::ffff",  # relay
-             "peeraddr": "2000::1",  # relay
+             "linkaddr": SRV_IPV6_ADDR_GLOBAL,  # relay
+             "peeraddr": CLI_LINK_LOCAL,  # relay
              "ifaceid": "15",  # relay
              "DUID": None,
              "FQDN_flags": "",

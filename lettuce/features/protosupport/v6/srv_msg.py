@@ -142,6 +142,7 @@ def unicast_addres(step,addr_type):
         from features.init_all import SRV_IPV6_ADDR_LINK_LOCAL
         world.cfg["address_v6"] = SRV_IPV6_ADDR_LINK_LOCAL
 
+
 def client_does_include(step, opt_type, value):
     """
     Include options to message. This function refers to @step in lettuce
@@ -513,7 +514,7 @@ def create_relay_forward(step, level):
     world.cfg["relay"] = True
 
     # we pretend to be relay-server so we need to listen on 547 port
-    world.reciveport = 547
+    world.cfg["source_port"] = 547
 
     #get only DHCPv6 part of the message
     msg = world.climsg.pop().getlayer(2)
@@ -680,7 +681,7 @@ def client_save_option(step, option_name, count = 0):
     assert opt, "Received message does not contain option " + option_name
     opt.payload = None
 
-    if not world.savedmsg.has_key(count):
+    if not count in world.savedmsg:
         world.savedmsg[count] = [opt]
     else:
         world.savedmsg[count].append(opt)
