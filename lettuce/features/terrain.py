@@ -213,8 +213,10 @@ def define_software():
     for each_name in SOFTWARE_UNDER_TEST:
         if each_name in DHCP:
             world.cfg["dhcp_under_test"] = each_name
+            world.cfg["dns_under_test"] = ""
         elif each_name in DNS:
             world.cfg["dns_under_test"] = each_name
+            world.cfg["dhcp_under_test"] = ""
 
 
 def declare_all():
