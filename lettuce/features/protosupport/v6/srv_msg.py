@@ -50,7 +50,10 @@ options6 = {"client-id": 1,
             "nisp-domain-name": 30,
             "sntp-servers": 31,
             "information-refresh-time": 32,
-            "fqdn": 39}
+            "remote-id": 37,
+            "subscriber-id": 38,
+            "fqdn": 39,
+            "client-link-layer-addr": 79}
 
 ## ======================================================================
 ## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
@@ -190,6 +193,12 @@ def client_does_include(step, opt_type, value):
         world.cfg["add_option"]["vendor_specific_info"] = True
     elif opt_type == "fqdn":
         world.cfg["add_option"]["fqdn"] = True
+    elif opt_type == "client-link-layer-addr":
+        world.cfg["add_option"]["client-link-layer-addr"] = True
+    elif opt_type == "remote-id":
+        world.cfg["add_option"]["remote-id"] = True
+    elif opt_type == "subscriber-id":
+        world.cfg["add_option"]["subscriber-id"] = True
     else:
         assert "unsupported option: " + opt_type
 
@@ -276,6 +285,8 @@ def vendor_option_request_convert():
             for number in each[1]:
                 data_tmp += '\00' + str(chr(number))
             each[1] = data_tmp
+        else:
+            each[1] = each[1].replace(':', '').decode('hex')
 
 
 def convert_DUID_hwaddr(value):
@@ -420,11 +431,11 @@ def client_option(msg):
     if world.cfg["add_option"]["IA_Prefix"]:
         msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"],
                              T1 = world.cfg["values"]["T1"],
-                             T2 = world.cfg["values"]["T2"])\
-               /DHCP6OptIAPrefix(preflft = world.cfg["values"]["preflft"],
+                             T2 = world.cfg["values"]["T2"],
+                             iapdopt = DHCP6OptIAPrefix(preflft = world.cfg["values"]["preflft"],
                                  validlft = world.cfg["values"]["validlft"],
                                  plen = world.cfg["values"]["plen"],
-                                 prefix = world.cfg["values"]["prefix"])
+                                 prefix = world.cfg["values"]["prefix"]))
 
     if world.cfg["add_option"]["IA_Address"] and world.cfg["values"]["IA_Address"] != "::":
         world.cfg["add_option"]["IA_NA"] = False
@@ -466,6 +477,17 @@ def client_option(msg):
         converted_fqdn = world.cfg["values"]["FQDN_domain_name"]
         msg /= DHCP6OptClientFQDN(flags = str(world.cfg["values"]["FQDN_flags"]),
                                   fqdn = converted_fqdn)
+
+    if world.cfg["add_option"]["client-link-layer-addr"]:
+        msg /= DHCP6OptClientLinkLayerAddr(address_type = world.cfg["values"]["address_type"],
+                                           lladdr = world.cfg["values"]["link_local_mac_addr"])
+
+    if world.cfg["add_option"]["remote-id"]:
+        msg /= DHCP6OptRemoteID(enterprisenum = world.cfg["values"]["enterprisenum"],
+                                remoteid = world.cfg["values"]["remote_id"].replace(':', '').decode('hex'))
+
+    if world.cfg["add_option"]["subscriber-id"]:
+        msg /= DHCP6OptSubscriberID(subscriberid = world.cfg["values"]["subscriber_id"].replace(':', '').decode('hex'))
 
     set_options()
     set_values()
