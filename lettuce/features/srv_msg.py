@@ -134,7 +134,7 @@ def create_relay_forward(step, level, s):
     dhcpmsg.create_relay_forward(step, level)
 
 
-@step('Client adds suboption for vendor specific information with code: (\d+) and data: (\w+).')
+@step('Client adds suboption for vendor specific information with code: (\d+) and data: (\S+).')
 def add_vendor_suboption(step, code, data):
     """
     After adding Vendor Specific Option we can deside to add suboptions to it. Please make sure which are
@@ -349,6 +349,16 @@ def log_includes_line(step, server_type, condition, line):
     """
     line = test_define_value(line)[0]
     other.log_contains(step, server_type, condition, line)
+
+
+@step('File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
+def log_includes_line(step, file_path, condition, line):
+    """
+    Check if Log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    file_path, line = test_define_value(file_path, line)
+    other.regular_file_contain(file_path, condition, line)
 
 
 @step('(\S+) log contains (\d+) of line: (.+)')
