@@ -56,7 +56,10 @@ add_option_v6 = {'client_id': True,
                  'IA_Address': False,
                  'vendor_class': False,
                  'vendor_specific_info': False,
-                 'fqdn': False}
+                 'fqdn': False,
+                 'client-link-layer-addr': False,
+                 'remote-id': False,
+                 'subscriber-id': False}
 
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
@@ -73,23 +76,27 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "ifaceid": "15",  # relay
              "DUID": None,
              "FQDN_flags": "",
-             "FQDN_domain_name": ""}
+             "FQDN_domain_name": "",
+             "address_type": 1,
+             "link_local_mac_addr": CLI_MAC,
+             "remote_id": "",
+             "subscriber_id": "",
+             "ia_id": 0,
+             "ia_pd": 0}
 
 srv_values_v6 = {"T1": 1000,
                  "T2": 2000,
                  "preferred-lifetime": 3000,
                  "valid-lifetime": 4000,
                  "prefix": "3000::",
-                 "prefix-len" : 64,
-                 "timer" : 10,
-                 "dst_addr" : ()
-                }
+                 "prefix-len": 64,
+                 "timer": 10,
+                 "dst_addr": ()}
 
 clnt_set_wrong = {"trid": False,
                   "iaid": False,
                   "client_id": False,
-                  "server_id": False
-                 }
+                  "server_id": False}
 
 values_dns = {"qname": "",
               "qtype": "",
@@ -143,7 +150,6 @@ def set_options():
         world.cfg["add_option"] = add_option_v6.copy()
     else:
         world.cfg["add_option"] = add_option_v4.copy()
-
 
 
 def add_result_to_raport(info):
@@ -231,8 +237,11 @@ def declare_all():
     world.vendor = []
     world.opts = []
     world.subopts = []
-
     world.cfg = {}
+
+    world.loops = {"active": False,
+                   "save_leases_details": False}
+    world.scapy_verbose = 99
 
     world.dns_enable = False
     world.dhcp_enable = False
@@ -303,7 +312,7 @@ def initialize(scenario):
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["cfg_file_2"] = "second_server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
-    world.subcfg = [["", "", "", "", ""]]  # additional config structure
+    world.subcfg = [["", "", "", "", "", ""]]  # additional config structure
 
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
