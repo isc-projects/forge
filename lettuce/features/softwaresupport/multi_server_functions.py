@@ -153,6 +153,14 @@ def simple_file_layout():
     config.close()
 
 
+def locate_entry(where_we_looking, what_we_looking, n):
+    start = where_we_looking.find(what_we_looking)
+    while start >= 0 and n > 1:
+        start = where_we_looking.find(what_we_looking, start+len(what_we_looking))
+        n -= 1
+    return start
+
+
 def json_file_layout():
     # make json file more readable!
     config = open(world.cfg["cfg_file"], 'r')
