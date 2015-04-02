@@ -129,7 +129,7 @@ def config_srv_another_subnet_no_interface(step, subnet, pool):
 
 
 @step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')
-def config_srv_prefix(step, prefix, subnet, length, delegated_length ):
+def config_srv_prefix(step, prefix, subnet, length, delegated_length):
     """
     Adds server configuration with specified prefix.
     """
@@ -230,7 +230,46 @@ def run_command(step, command):
     dhcp.run_command(step, command)
 
 
+@step('Reserve (\S+) (\S+) for host uniquely identified by (\S+).')
+def host_reservation(step, reservation_type, reserved_value, unique_host_value):
+    """
+    Ability to configure simple host reservations.
+    """
+    reservation_type, reserved_value, unique_host_value = test_define_value(reservation_type,
+                                                                            reserved_value, unique_host_value)
+    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value, None)
+
+
+@step('Add hooks library located (\S+).')
+def add_hooks(step, library_path):
+    """
+    Add hooks library to configuration. Only Kea.
+    """
+    library_path = test_define_value(library_path)[0]
+    dhcp.add_hooks(library_path)
+
+
 ##subnet options
+@step('Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+).')
+def host_reservation(step, reservation_type, reserved_value, subnet, unique_host_value):
+    """
+    Ability to configure simple host reservations in subnet.
+    """
+
+    reservation_type, reserved_value, unique_host_value = test_define_value(reservation_type,
+                                                                            reserved_value, unique_host_value)
+    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value, int(subnet))
+
+
+@step('For host reservation entry no. (\d+) in subnet (\d+) add (\S+) with value (\S+).')
+def host_reservation(step, reservation_number, subnet, reservation_type, reserved_value):
+    """
+    Ability to configure simple host reservations in subnet.
+    """
+    reservation_type, reserved_value = test_define_value(reservation_type, reserved_value)
+    dhcp.host_reservation_extension(int(reservation_number), int(subnet), reservation_type, reserved_value)
+
+
 @step('Time (\S+) in subnet (\d+) is configured with value (\d+).')
 def set_time(step, which_time, subnet, value):
     """
@@ -355,6 +394,7 @@ def stop_srv(step, name):
 @step('Clear leases.')
 def clear_leases(step):
     dhcp.clear_leases()
+
 
 ##DDNS server
 @step('DDNS server is configured on (\S+) address and (\S+) port.')
