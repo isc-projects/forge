@@ -158,7 +158,7 @@ def send_wait_for_message(step, type, yes_or_no, message):
     """
     This step causes to send message to server and capture respond.
     """
-    presence = True if yes_or_no == None else False
+    presence = True if yes_or_no is None else False
     dhcpmsg.send_wait_for_message(step, type, presence, message)
 
 
@@ -196,15 +196,7 @@ def response_check_suboption_content(step, subopt_code, opt_code, yes_or_no, dat
     """
     expect = not (yes_or_no == "NOT ")
     dhcpmsg.response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected)
-
-
-@step('Test (\S+) content.')
-def test_content(step, test_value):
-    """
-    Temporary unavailable
-    """
-    pass
-    #dhcpmsg.test_content(test_value)
+    dhcpmsg.response_check_option_content(step, 13, 3, "NOT", "statuscode", "6")
 
 
 ##building DNS messages
@@ -242,7 +234,7 @@ def send_wait_for_query(step, type, yes_or_no):
     """
     This step causes to send message to server and capture respond.
     """
-    presence = True if yes_or_no == None else False
+    presence = True if yes_or_no is None else False
     dns.send_wait_for_query(type, presence)
 
 
@@ -301,7 +293,7 @@ def client_add_saved_option(step, yes_or_no):
     memory.
     """
     assert len(world.savedmsg), "No options to add."
-    erase = True if yes_or_no == None else False
+    erase = True if yes_or_no is None else False
     dhcpmsg.client_add_saved_option(step, erase)
 
 
@@ -310,8 +302,9 @@ def client_add_saved_option(step, count, yes_or_no):
     """
     """
     assert len(world.savedmsg), "No options to add."
-    erase = True if yes_or_no == None else False
+    erase = True if yes_or_no is None else False
     dhcpmsg.client_add_saved_option(step, erase, count)
+
 
 @step('Save (\S+) value from (\d+) option.')
 def save_value_from_option(step, value_name, option_name):
@@ -387,6 +380,11 @@ def test_pause(step):
         Press any key to continue.
     """
     other.test_pause(step)
+
+
+@step('End test.')
+def test_pause(step):
+    assert False, "Test ended."
 
 
 @step('Client download file from server stored in: (\S+).')
@@ -478,8 +476,20 @@ def execute_shell(step, path):
     path = test_define_value(path)[0]
     other.execute_shell_script(path, '')
 
-# ##memory graph
-# for some in range (10):
-#     #build graph
-#     client_send_msg(step, msgname)
-#     send_wait_for_message(step, type, yes_or_no, message)
+
+## loops
+## testing in loops is new feature that gives possibility to send lot of messages without
+## writing usual steps for each message. This feature is not fully tested.
+@step('Loops config: Save leases details.')
+def loops_config_sld(step):
+    dhcpmsg.loops_config_sld()
+
+
+@step('Loops config: choose (\S+) from (file )?(.+)')
+def values_for_loops(step, value_name, file_flag, values):
+    dhcpmsg.values_for_loops(step, value_name, file_flag, values)
+
+
+@step('Exchange messages (\S+) - (\S+) (\d+) times.')
+def loops(step, message_type_1, message_type_2, repeat):
+    dhcpmsg.loops(step, message_type_1, message_type_2, repeat)
