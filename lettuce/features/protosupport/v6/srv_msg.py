@@ -983,3 +983,110 @@ def compare_values(step, value_name, option_name):
         world.subopts = []
 
 ## ================ PARSING RECEIVED MESSAGE BLOCK END ===================
+
+
+## =======================================================================
+## ==================== TESTING IN LOOPS BLOCK START =====================
+
+def loops_config_sld(step):
+    world.loops["save_leases_details"] = True
+
+
+def values_for_loops(step, value_name, file_flag, values):
+    value_name = str(value_name)
+    if value_name == "client-id":
+        world.loops[value_name] = []
+        for each in str(values).split(" "):
+            world.cfg["values"]["DUID"] = each
+            world.loops[value_name].append(convert_DUID())
+
+
+def loops(step, message_type_1, message_type_2, repeat):
+    import importlib
+    testsetup = importlib.import_module("misc")
+    repeat = int(repeat)
+    testsetup.set_world()
+    testsetup.test_procedure(None)
+
+    if repeat < 1000:
+        x_range = 10
+    else:
+        x_range = 250
+
+    world.loops["active"] = True
+    world.scapy_verbose = 0
+
+    if message_type_1 == "SOLICIT" and message_type_2 == "ADVERTISE":
+        # short two message exchange without saving leases.
+        for x in range(0, repeat):
+            client_send_msg(step, message_type_1, None, None)
+            send_wait_for_message(step, "MAY", True, message_type_2)
+
+    elif message_type_1 == "SOLICIT" and message_type_2 == "REPLY":
+        # first save server-id option
+        client_send_msg(step, message_type_1, None, None)
+        send_wait_for_message(step, "MAY", True, "ADVERTISE")
+        client_save_option(step, "server-id")
+
+        # long 4 message exchange with saving leases.
+        for x in range(1, repeat):
+            # if x % x_range == 0:
+            #     get_common_logger().info("Message exchane no. %d", x)
+            generate_new(step, "client")
+            client_send_msg(step, message_type_1, None, None)
+            send_wait_for_message(step, "MAY", True, "ADVERTISE")
+
+            try:
+                client_add_saved_option(step, False)
+                client_copy_option(step, "IA_NA")
+            except AssertionError:
+                pass
+
+            client_send_msg(step, "REQUEST", None, None)
+            send_wait_for_message(step, "MAY", True, message_type_2)
+
+    elif message_type_1 == "REQUEST" and message_type_2 == "REPLY":
+        # first save server-id option
+        client_send_msg(step, "SOLICIT", None, None)
+        send_wait_for_message(step, "MAY", True, "ADVERTISE")
+        client_save_option(step, "server-id")
+
+        # long 4 message exchange with saving leases.
+        for x in range(1, repeat):
+            if x % x_range == 0:
+                get_common_logger().info("Message exchane no. %d", x)
+            generate_new(step, "client")
+            client_add_saved_option(step, False)
+            client_send_msg(step, "REQUEST", None, None)
+            send_wait_for_message(step, "MAY", True, message_type_2)
+            response_check_option_content(step, 13, 3, "NOT", "statuscode", "2")
+
+    elif message_type_1 == "RELEASE" and message_type_2 == "REPLY":
+        # first save server-id option
+        client_send_msg(step, "SOLICIT", None, None)
+        send_wait_for_message(step, "MAY", True, "ADVERTISE")
+        client_save_option(step, "server-id")
+
+        # long 4 message exchange with saving leases.
+        for x in range(1, repeat):
+            if x % x_range == 0:
+                get_common_logger().info("Message exchane no. %d", x)
+
+            client_add_saved_option(step, False)
+            client_send_msg(step, "REQUEST", None, None)
+            send_wait_for_message(step, "MAY", True, message_type_2)
+
+            client_add_saved_option(step, False)
+            client_copy_option(step, "IA_NA")
+            client_send_msg(step, "RELEASE", None, None)
+            send_wait_for_message(step, "MAY", True, message_type_2)
+            #dhcpmsg.generate_new(step, "client")
+
+    else:
+        pass
+    for x in range(0, len(world.savedmsg)):
+        world.savedmsg[x] = []
+
+
+def save_info():
+    pass
