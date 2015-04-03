@@ -1,56 +1,93 @@
 #Configuration file, please copy this to the init_all.py and fill it with your
 #variables. init_all.py is added to gitignore.
 
-# All configurations are separated to different sections: 
+# All configurations are separated to different sections:
 # general - for general Forge configuration ;)
 # ssh - for ssh connection between virtual machines
 # kea - for kea configuration
 # ISC-DHCP - for ISC-DHCP configurations
 
- 
+# DO NOT CHANGE THAT UNTIL YOU ADD SUPPORT FOR ANOTHER SOFTWARE
+# then place it's name in DNS or DHCP list.
+DNS = "bind9_server",
+DHCP = "dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server",\
+       "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind"
+
+
+# =======================================
 # =============== GENERAL ===============
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
 # case insensitive.
 LOGLEVEL = "info"
 
+# Controls whether packet contents are shown on stdout.  Choices are:
+# client - shows DHCP requests sent from the test client
+# server -  shows DHCP responses received from the server under test
+# both - shows DHCP packets from both test client and server under test
+SHOW_PACKETS_FROM = "both"
+
 # This defines which software will be tested.
 # Allowed values:
-# dibbler_client, dibbler_server, kea6_server, kea4_server, isc_dhcp4_server, isc_dhcp6_server
+# dibbler_client, dibbler_server, kea6_server, kea4_server, isc_dhcp4_server, isc_dhcp6_server,
+# kea4_server_bind, kea6_server_bind, bind9_server
 # Not all of those are functional yet. This is essentially
 # name of the subdirectory in lettuce/features/softwaresupport
-SOFTWARE_UNDER_TEST = "kea6_server"
+# This is list of software under test, you can test server or client (not both!) at the same time,
+# also you can use only one DHCP and one DNS server and must end with coma ","
+# in e.g.:
+# SOFTWARE_UNDER_TEST = "kea6_server","bind9_server",
+
+SOFTWARE_UNDER_TEST = "kea6_server",
+
+# INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = "kea6_server","kea4_server"
+# or SOFTWARE_UNDER_TEST = "kea6_server","dibbler_client"
 
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
 PROTO = "v6"
 
 # Parameters specific to DHCPv4 tests
-SRV4_ADDR = "192.168.56.2"
-REL4_ADDR = "192.168.56.3"
-GIADDR4 = ""
+SRV4_ADDR = ""
+
+# This specifies relay agent address. Leave this as 0.0.0.0 if you don't want
+# to test relayed traffic.
+REL4_ADDR = "0.0.0.0"
+
+# This is a value client will set giaddr field to. Leave it as 0.0.0.0 if you
+# don't want to test relays
+GIADDR4 = "0.0.0.0"
+
+# Defines name of the DUT-facing network interface
+IFACE = "eth1"
+
+# Defines port numbers for each DHCP version, default values are:
+# dhcp v4 source = 68
+# dhcp v4 destination = 67
+# dhcp v6 source = 546
+# dhcp v6 destination = 547
+
+DHCP4_PORT_S = 68  # source port
+DHCP4_PORT_D = 67  # destination port
+
+DHCP6_PORT_S = 546  # source port
+DHCP6_PORT_D = 547  # destination port
 
 # defines client MAC (used for DUID generation)
-CLI_MAC = "08:00:27:58:f1:e8"
+CLI_MAC = "00:02:03:04:05:06"
 
-# For servers: ISC-DHCP, ISC-DHCPv6 and Dibbler choose ethernet interface to bind server.
+# Because Scapy have problems with reading IPv6 link local addresses on some OS,
+# to be sure that your packet don't get dropped fill CLI_LINK_LOCAL with link local
+# IPv6 address (it is from pool fe80::/64) assigned to interface you choose in IFACE
+CLI_LINK_LOCAL = "fe80::800:27ff:fe00:1"
+
+# For all servers, choose ethernet interface on which server will be configured
+# to listen and respond.
 SERVER_IFACE = "eth2"
 
-# In order to make sure we start all tests with a 'clean' environment,
-# We perform a number of initialization steps, like restoring configuration
-# files, and removing generated data files.
-
-# This approach may not scale; if so we should probably provide specific
-# initialization steps for scenarios. But until that is shown to be a problem,
-# It will keep the scenarios cleaner.
-
-# This is a list of files that are freshly copied before each scenario
-# The first element is the original, the second is the target that will be
-# used by the tests that need them
-copylist = [ ]
-
-# This is a list of files that, if present, will be removed before each scenario
-removelist = [ ]
+# Specifies path to the server installation directory on DUT. This must
+# point to root directory of server installation and must end with /.
+SOFTWARE_INSTALL_DIR = "/usr/local/"
 
 # When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
 # as the interval in which to check again if it has not been found yet.
@@ -59,51 +96,129 @@ removelist = [ ]
 OUTPUT_WAIT_INTERVAL = 3
 OUTPUT_WAIT_MAX_INTERVALS = 5
 
-# scope link server address for testing unicast messages  
-SRV_IPV6_ADDR_GLOBAL = "3000::55"
-SRV_IPV6_ADDR_LINK_LOCAL = "fe80::a00:27ff:fe11:c767"
+# When Forge sends a packet, it typically awaits for the server to respond.
+# Server typically does that promptly, but during debugging it is benefical for
+# the the test to wait a long time. If test concludes too early, it will remove
+# the configuration and kill the server (while the debugging still taking place)
+PACKET_WAIT_INTERVAL = 1
 
-# Defines name of the DUT-facing network interface
-IFACE = "eth4"
+# scope link server address for testing unicast messages
+# Address 3000:: is strongly recommended for global address. Most tests are using pool
+# 3000::1-3000::ffff in this case recommended address will not cover any address form
+# server pool (what could cause some tests to fail)
+SRV_IPV6_ADDR_GLOBAL = "3000::1000"
+SRV_IPV6_ADDR_LINK_LOCAL = "fe80::a00:27ff:fef7:c4ee"
 
-# If you wont to build tests history in history.html set HISTORY on True if not, on False
-# but for more detailed information about tests, use --with_xunit option when starting run_test.py
+# If you wont to build tests history in history.html set HISTORY on True if not,
+# on False but for more detailed information about tests, use --with_xunit option
+# when starting run_test.py
 HISTORY = False
 
-# Also you can save separate .pcap file of every test. In default it's disabled 
+# Save log file in tests result folder
+SAVE_LOGS = False
+
+# Save leases file in tests result folder
+SAVE_LEASES = False
+
+# Also you can save separate .pcap file of every test. In default it's disabled
 # If you recieve error tcpdump: <file name>: Permission denied
-# please use command as a root: aa-complain /usr/sbin/tcpdump 
-TCPDUMP = False 
+# please use command as a root: aa-complain /usr/sbin/tcpdump
+TCPDUMP = False
+
 # If your tcpdump is installed in different location place that in TCPDUMP_INSTALL_DIR
 # otherwise leave it blank
-TCPDUMP_INSTALL_DIR = "/usr/local/"
+TCPDUMP_INSTALL_DIR = ""
+
+# Also we can decide to keep main configuration file in tests_results.
+SAVE_CONFIG_FILE = False
+
+# Auto archive it's feature that automatically create tar archive containing
+# folder 'tests_results' and history.html (if created). Default disabled.
+AUTO_ARCHIVE = False
+
+# SLEEP_TIME 1 and 2 are times Forge waiting after performing commands on remote DUT.
+# for slower devices it's recommended to set sleep time for longer then couple 1-2 seconds
+SLEEP_TIME_1 = 2  # wait after starting remote server
+SLEEP_TIME_2 = 2  # wait after all others commands
+
+# EMPTY value is introduced for cases when in test you want configure (or send)
+# specific variable without any value.
+EMPTY = ""
+
+# =============== DATABASE BACKENDS ===============
+# If server is capable to use different database backends, fill this section
+
+# Backend type:
+DB_TYPE = ""
+
+# Data base name:
+DB_NAME = ""
+
+# User name for databased named DB_NAME
+DB_USER = ""
+
+# Password for user DB_USER:
+DB_PASSWD = ""
+
+# Host address where is our data base, most likely it will be 'localhost'
+DB_HOST = "localhost"
+
 
 # =============== SSH ===============
-
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required! So edit sudoers
 # file, or use root account.
 # ip address and port. ssh port default 22
-MGMT_ADDRESS='192.168.50.50'
-MGMT_USERNAME='test'
-MGMT_PASSWORD='m'
-
-
+MGMT_ADDRESS = "192.168.59.101"
+MGMT_USERNAME = "test"
+MGMT_PASSWORD = "m"
 
 # =============== Kea ===============
-# Specifies path to the server installation directory on DUT. This must
-# point to root directory of server installation and must end with /.
-# The framework appends subdirectories to this path to run applications.
-# For example, it appends "bin/" to obtain path to the bindctl.
-SERVER_INSTALL_DIR = "/home/rafal/local/bind10/"
+# === For Bundy configuration backend ===
+# Also we can decide which logging type choose, logging lvl,
+# and BIND10 module type
+# for more accurate information please read BIND10 Guide, Chapter 21. Logging
 
-# Copy logs file, different file for each test.
-# WARRNING: this produce really big amount of data!
-# Default - False
-LOGFILE = False
+# Allowed values for BINDX: FATAL, ERROR, WARN, INFO, DEBUG.
+BIND_LOG_TYPE = "INFO"
 
-# =============== DIBBLER ================
-DIBBLER_INSTALL_DIR = ""
+# Log level applies to debuglevel in BINDX. Allowed values: 0...99
+BIND_LOG_LVL = 0
+
+# This corresponds to Logging/loggers[X]/name field. Leave this as "*" if you
+# want every BIND module to log something.
+BIND_MODULE = ""
 
 
+# =============== ISC-DHCP ================
+# ISC_DHCP dhcpd uses syslog (rsyslog). In order to capture logging
+# you will need to modify /etc/syslog.conf (/etc/rsyslog.conf) to
+# contain a line as follows:
+#
+#     <ISC_DHCP_LOG_FACILITY>.*        <ISC_DHCP_LOG_FILE_NAME>
+#
+# Example
+#
+#    local7.*      /varlog/forge_dhcpd.log
+#
+ISC_DHCP_LOG_FACILITY = "local7"
+ISC_DHCP_LOG_FILE = "/var/log/forge_dhcpd.log"
 
+
+# =============== DNS ===============
+# When DNS protocol used to testing.
+
+# Interface on which we are sending DNS queries
+DNS_IFACE = ""
+
+# DNS server address:
+DNS_ADDR = ""
+
+# DNS port number, default value is 53
+DNS_PORT = 53
+
+# Absolute path to server installation:
+DNS_SERVER_INSTALL_DIR = ""
+
+# Additional path for server management:
+DNS_DATA_DIR = ""
