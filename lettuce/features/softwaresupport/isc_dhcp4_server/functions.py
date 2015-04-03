@@ -375,6 +375,23 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"
 
 
+def host_reservation(reservation_type, reserved_value, unique_host_value, un_used):
+    pointer_start = "{"
+    pointer_end = "}"
+    if not "custom_lines" in world.cfg:
+        world.cfg["custom_lines"] = ""
+    host_name = "anyhostname_"+str(len(world.cfg["custom_lines"]))
+
+    if reservation_type == "address":
+        world.cfg["custom_lines"] += '''host {host_name} {pointer_start} hardware ethernet {unique_host_value};
+                                    fixed-address {reserved_value}; {pointer_end}'''.format(**locals())
+
+
+def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
+    assert False, "not used in isc-dhcp"
+    #TODO implement this if needed
+
+
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])
@@ -392,7 +409,7 @@ def cfg_write():
         cfg_file.write(world.cfg["conf_vendor"])
 
     for each_subnet in world.subcfg:
-        if (each_subnet[0] != ""):
+        if each_subnet[0] != "":
             cfg_file.write(each_subnet[0])
             cfg_file.write('}')  # add } for subnet block
 
@@ -426,7 +443,7 @@ def start_srv(start, process):
         world.cfg["conf_option"] = ""
 
     world.cfg['log_file'] = build_log_path()
-    fabric_run_command('cat /dev/null >' + world.cfg['log_file'])
+    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
     world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     log = "local7"
@@ -453,7 +470,7 @@ def start_srv(start, process):
     result = fabric_sudo_command('(' + SERVER_INSTALL_DIR
                                  + 'sbin/dhcpd -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
-                                 + '); sleep ' + str(SLEEP_TIME_1) + ';')
+                                 + '&); sleep ' + str(SLEEP_TIME_1) + ';')
 
     check_process_result(start, result, process)
     # clear configs in case we would like make couple configs in one test

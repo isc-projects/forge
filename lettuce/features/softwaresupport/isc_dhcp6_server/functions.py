@@ -251,7 +251,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
 
 def config_srv_another_subnet(step, subnet, pool, eth):
     ## it will pass ethernet interface but it will have no impact on config files
-    world.subcfg.append(["", "", "", ""])
+    world.subcfg.append(["", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
     prepare_cfg_subnet(step, subnet, pool, eth)
@@ -371,6 +371,26 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space
             '''.format(**locals())
 
 
+def host_reservation(reservation_type, reserved_value, unique_host_value, un_used):
+    pointer_start = "{"
+    pointer_end = "}"
+    if not "custom_lines" in world.cfg:
+        world.cfg["custom_lines"] = ""
+    host_name = "anyhostname_"+str(len(world.cfg["custom_lines"]))
+
+    if reservation_type == "address":
+        world.cfg["custom_lines"] += '''host {host_name} {pointer_start} hardware ethernet {unique_host_value};
+                                    fixed-address6 {reserved_value}; {pointer_end}'''.format(**locals())
+    else:
+        assert False, "Not supported"
+        #TODO! implement this!
+
+
+def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
+    assert False, "not used in isc-dhcp"
+    #TODO implement this if needed
+
+
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])
@@ -463,13 +483,13 @@ def start_srv(start, process):
 
     world.cfg['log_file'] = build_log_path()
     fabric_run_command('cat /dev/null >' + world.cfg['log_file'])
+    world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     log = "local7"
     if ISC_DHCP_LOG_FACILITY != "":
         log = ISC_DHCP_LOG_FACILITY
 
     world.cfg['log_facility'] = '''\nlog-facility {log};\n'''.format(**locals())
-    world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     add_defaults()
     cfg_write()
@@ -483,13 +503,13 @@ def start_srv(start, process):
 
     world.cfg['leases'] = build_leases_path()
 
-    fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
+    fabric_run_command('echo y |rm ' + world.cfg['leases'])
+    fabric_run_command('touch ' + world.cfg['leases'])
 
     result = fabric_sudo_command('(' + SERVER_INSTALL_DIR
                                  + 'sbin/dhcpd -6 -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
-                                 + '); sleep ' + str(SLEEP_TIME_1) + ';')
+                                 + '&); sleep ' + str(SLEEP_TIME_1) + ';')
 
     check_process_result(start, result, process)
 
