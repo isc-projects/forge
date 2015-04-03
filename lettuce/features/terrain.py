@@ -137,6 +137,9 @@ add_option_v4 = {"vendor_class_id": False,
 def set_values():
     if PROTO == "v6":
         world.cfg["values"] = values_v6.copy()
+        client_id(CLI_MAC)
+        ia_id()
+        ia_pd()
         world.cfg["server_times"] = server_times_v6.copy()
         world.clntCfg["values"] = srv_values_v6.copy()
         world.clntCfg["set_wrong"] = clnt_set_wrong.copy()
@@ -157,15 +160,15 @@ def add_result_to_raport(info):
 
 
 def client_id(mac):
-    world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac)
+    world.cfg["values"]["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac)
 
 
 def ia_id():
-    world.cfg["ia_id"] = randint(1, 99999)
+    world.cfg["values"]["ia_id"] = randint(1, 99999)
 
 
 def ia_pd():
-    world.cfg["ia_pd"] = randint(1, 99999)
+    world.cfg["values"]["ia_pd"] = randint(1, 99999)
 
 
 def multiprotocol_initialize():
@@ -344,16 +347,6 @@ def initialize(scenario):
     world.clntCfg['toSave'] = None
     world.clntCfg['insist'] = False
     world.clntCfg['lease_file'] = ""
-
-    # Setup DUID for DHCPv6 (and also for DHCPv4, see RFC4361)
-    if not hasattr(world.cfg, "cli_duid"):
-        client_id(CLI_MAC)
-
-    if not hasattr(world.cfg, "ia_id"):
-        ia_id()
-
-    if not hasattr(world.cfg, "ia_pd"):
-        ia_pd()
 
     if "dhcp_under_test" in world.cfg:
         # IPv6:

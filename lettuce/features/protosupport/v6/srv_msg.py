@@ -362,7 +362,7 @@ def client_option(msg):
     """
 
     if world.cfg["values"]["DUID"] is not None:
-        world.cfg["cli_duid"] = convert_DUID()
+        world.cfg["values"]["cli_duid"] = convert_DUID()
 
     #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
     if world.cfg["add_option"]["wrong_server_id"]:
@@ -371,7 +371,7 @@ def client_option(msg):
     #client id
     if world.cfg["add_option"]["client_id"] and not world.cfg["add_option"]["wrong_client_id"]:
         if not world.cfg["relay"]:
-            msg /= DHCP6OptClientId(duid = world.cfg["cli_duid"])
+            msg /= DHCP6OptClientId(duid = world.cfg["values"]["cli_duid"])
     elif world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"]:
         msg /= DHCP6OptClientId()  # it needs to stay blank!
 
@@ -385,11 +385,11 @@ def client_option(msg):
                 if opt.optcode == 3:
                     break  # if there is no IA_NA/TA in world.cliopts, break..
             else:
-                msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"],
+                msg /= DHCP6OptIA_NA(iaid = int(world.cfg["values"]["ia_id"]),
                                      T1 = world.cfg["values"]["T1"],
                                      T2 = world.cfg["values"]["T2"])  # if not, add IA_NA
         else:
-            msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"],
+            msg /= DHCP6OptIA_NA(iaid = int(world.cfg["values"]["ia_id"]),
                                  T1 = world.cfg["values"]["T1"],
                                  T2 = world.cfg["values"]["T2"])  # if not, add IA_NA
 
@@ -418,7 +418,7 @@ def client_option(msg):
         msg /= DHCP6OptReconfAccept()
 
     if world.cfg["add_option"]["IA_PD"]:
-        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"],
+        msg /= DHCP6OptIA_PD(iaid = int(world.cfg["values"]["ia_pd"]),
                              T1 = world.cfg["values"]["T1"],
                              T2 = world.cfg["values"]["T2"])
 
@@ -429,7 +429,7 @@ def client_option(msg):
         msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
 
     if world.cfg["add_option"]["IA_Prefix"]:
-        msg /= DHCP6OptIA_PD(iaid = world.cfg["ia_pd"],
+        msg /= DHCP6OptIA_PD(iaid = int(world.cfg["values"]["ia_pd"]),
                              T1 = world.cfg["values"]["T1"],
                              T2 = world.cfg["values"]["T2"],
                              iapdopt = DHCP6OptIAPrefix(preflft = world.cfg["values"]["preflft"],
@@ -439,7 +439,7 @@ def client_option(msg):
 
     if world.cfg["add_option"]["IA_Address"] and world.cfg["values"]["IA_Address"] != "::":
         world.cfg["add_option"]["IA_NA"] = False
-        msg /= DHCP6OptIA_NA(iaid = world.cfg["ia_id"],
+        msg /= DHCP6OptIA_NA(iaid = int(world.cfg["values"]["ia_id"]),
                               T1 = world.cfg["values"]["T1"],
                               T2 = world.cfg["values"]["T2"],
                               ianaopts = DHCP6OptIAAddress(address = world.cfg["values"]["IA_Address"],
@@ -617,7 +617,7 @@ def send_wait_for_message(step, type, presence, exp_message):
                     iface = world.cfg["iface"],
                     timeout = world.cfg["wait_interval"],
                     nofilter = 1,
-                    verbose = 99)
+                    verbose = world.scapy_verbose)
 
     from features.init_all import SHOW_PACKETS_FROM
     if SHOW_PACKETS_FROM in ['both', 'client']:
@@ -633,7 +633,9 @@ def send_wait_for_message(step, type, presence, exp_message):
         if SHOW_PACKETS_FROM in ['both', 'server']:
             b.show()
 
-        get_common_logger().info("Received packet type = %s" % get_msg_type(b))
+        if not world.loops["active"]:
+            get_common_logger().info("Received packet type = %s" % get_msg_type(b))
+
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:
             expected_type_found = True
@@ -641,8 +643,9 @@ def send_wait_for_message(step, type, presence, exp_message):
     for x in unans:
         get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
 
-    get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
-                              % (len(ans), len(unans)))
+    if not world.loops["active"]:
+        get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
+
     if may_flag:
         if len(world.srvmsg) != 0:
             assert True, "Response received."
@@ -899,6 +902,9 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
                 received = ",".join(each.dnsdomains)
             elif opt_code == 25:
                 # looking for all kinds of variables, specified in test step (e.g. T1 )
+                # temporary fix until it wont be fixed in scapy
+                if data_type == "iapd":
+                    data_type = "iaid"
                 received += str(each.fields.get(data_type))
             elif opt_code == 27:
                 received = ",".join(each.nisservers)
