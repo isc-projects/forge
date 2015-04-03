@@ -103,7 +103,7 @@ def prepare_cfg_add_option(step, option_name, option_value):
     if not "conf" in world.cfg:
         world.cfg["conf"] = ""
 
-    world.kea["option_cnt"] = world.kea["option_cnt"] + 1
+    world.dhcp["option_cnt"] = world.dhcp["option_cnt"] + 1
 
 
 def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value):
