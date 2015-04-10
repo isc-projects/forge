@@ -18,7 +18,7 @@
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
-    fabric_download_file, fabric_remove_file_command
+    fabric_download_file, fabric_remove_file_command, locate_entry
 
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
@@ -57,6 +57,7 @@ kea_otheroptions = {
     "tftp-servers": 32,
     "config-file": 33,
     "syslog-servers": 34,
+    "device-id": 36,
     "time-servers": 37,
     "time-offset": 38
 }
@@ -112,7 +113,7 @@ def add_defaults():
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    # world.subcfg[0] = [main, prefixes, options, single options, pools]
+    # world.subcfg[0] = [main, prefixes, options, single options, pools, host reservation]
     if subnet == "default":
         subnet = "2001:db8:1::/64"
     if pool == "default":
@@ -128,10 +129,8 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
 
     world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
          '''.format(**locals())
+    world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
     world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
-
-    if eth is not None:
-        world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
 
     if not eth in world.cfg["interfaces"]:
         add_interface(eth)
@@ -146,7 +145,7 @@ def add_pool_to_subnet(step, pool, subnet):
 
 
 def config_srv_another_subnet(step, subnet, pool, eth):
-    world.subcfg.append(["", "", "", "", ""])
+    world.subcfg.append(["", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
     prepare_cfg_subnet(step, subnet, pool, eth)
@@ -244,6 +243,45 @@ def set_logger():
     assert False, "For now option unavailable!"
 
 
+def host_reservation(reservation_type, reserved_value, unique_host_value, subnet):
+    if len(world.subcfg[subnet][5]) > 20:
+        world.subcfg[subnet][5] += ','
+
+    if len(unique_host_value.replace(':', '')) == 12:
+        unique_host_value_type = "hw-address"
+    elif len(unique_host_value.replace(':', '')) > 12:
+        unique_host_value_type = "duid"
+    world.subcfg[subnet][5] += "{"
+    if reservation_type == "address":
+        world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}",' \
+                                   '"ip-addresses":["{reserved_value}"]'.format(**locals())
+    elif reservation_type == "prefix":
+        world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}",' \
+                                   '"prefixes":["{reserved_value}"]'.format(**locals())
+    elif reservation_type == "hostname":
+        world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}",' \
+                                   '"hostname":"{reserved_value}"'.format(**locals())
+    world.subcfg[subnet][5] += "}"
+
+
+def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
+    pointer = locate_entry(world.subcfg[subnet][5], '}', reservation_number)
+
+    if reservation_type == "address":
+        tmp = world.subcfg[subnet][5][:pointer] + ',"ip-addresses":["{reserved_value}"]'.format(**locals())
+        tmp += world.subcfg[subnet][5][pointer:]
+    elif reservation_type == "prefix":
+        tmp = world.subcfg[subnet][5][:pointer] + ',"prefixes":["{reserved_value}"]'.format(**locals())
+        tmp += world.subcfg[subnet][5][pointer:]
+    elif reservation_type == "hostname":
+        tmp = world.subcfg[subnet][5][:pointer] + ',"hostname":"{reserved_value}"'.format(**locals())
+        tmp += world.subcfg[subnet][5][pointer:]
+    else:
+        assert False, "Not supported"
+        #TODO implement this if we needs it.
+    world.subcfg[subnet][5] = tmp
+
+
 def check_kea_status():
     v6 = 0
     v4 = 0
@@ -323,16 +361,31 @@ def config_db_backend():
                        "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
 
 
+def add_hooks(library_path):
+    if not "hooks" in world.cfg:
+        world.cfg["hooks"] = ''
+    else:
+        # if hooks are already created it means we have at least one library there
+        # so we need just comma
+        world.cfg["hooks"] += ','
+
+    world.cfg["hooks"] += '"' + library_path + '"'
+
+
 def cfg_write():
     config_db_backend()
     for number in range(0, len(world.subcfg)):
-        world.subcfg[number][2] = '"option-data": [' + world.subcfg[number][2] + "]"
-        world.subcfg[number][4] = '"pools": [' + world.subcfg[number][4] + "]"
+        if len(world.subcfg[number][2]) > 10:
+            world.subcfg[number][2] = '"option-data": [' + world.subcfg[number][2] + "]"
+        if len(world.subcfg[number][4]) > 10:
+            world.subcfg[number][4] = '"pools": [' + world.subcfg[number][4] + "]"
+        if len(world.subcfg[number][5]) > 10:
+            world.subcfg[number][5] = '"reservations":[' + world.subcfg[number][5] + "]"
     cfg_file = open(world.cfg["cfg_file"], 'w')
     ## add timers
     cfg_file.write(world.cfg["main"])
     ## add interfaces
-    cfg_file.write('"interfaces":[' + world.cfg["interfaces"] + "],")
+    cfg_file.write('"interfaces-config": { "interfaces": [ ' + world.cfg["interfaces"] + ' ] },')
     ## add header for subnets
     if "kea6" in world.cfg["dhcp_under_test"]:
         cfg_file.write('"subnet6":[')
@@ -363,6 +416,10 @@ def cfg_write():
         cfg_file.write("]")
         del world.cfg["option_def"]
 
+    if "hooks" in world.cfg:
+        cfg_file.write(',"hooks-libraries": [' + world.cfg["hooks"] + ']')
+        del world.cfg["hooks"]
+
     if "simple_options" in world.cfg:
         cfg_file.write(',' + world.cfg["simple_options"])
         del world.cfg["simple_options"]
@@ -372,7 +429,7 @@ def cfg_write():
 
     if "custom_lines" in world.cfg:
         cfg_file.write(',' + world.cfg["custom_lines"])
-        cfg_file.write("]")
+        #cfg_file.write("]")
         del world.cfg["custom_lines"]
 
     cfg_file.write('}')
@@ -389,8 +446,16 @@ def cfg_write():
         log_type = 'kea-dhcp6'
     elif "kea4" in world.cfg["dhcp_under_test"]:
         log_type = 'kea-dhcp4'
-    cfg_file.write(',"Logging": {"loggers": [{"name": "' + log_type + '","output_options": [{"output": "' +
-                   logging_file + '''","destination": "file"}],"debuglevel": 99,"severity": "DEBUG"}]}''') #kea-dhcp-ddns.dhcpddns
+
+    cfg_file.write(',"Logging": {"loggers": [')
+    cfg_file.write('{"name": "' + log_type + '","output_options": [{"output": "' + logging_file + '",'
+                   '"destination": "file"}')
+    cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
+    if world.ddns_enable:
+        cfg_file.write(',{"name": "kea-dhcp-ddns.dhcpddns","output_options": [{"output": "' + logging_file + '_ddns",'
+                       '"destination": "file"}')
+        cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
+    cfg_file.write(']}''')
 
     cfg_file.write('}')  # end of the config file
     cfg_file.close()
@@ -399,19 +464,19 @@ def cfg_write():
     cfg_file.write(world.cfg["keactrl"])
     cfg_file.close()
     json_file_layout()
-    world.subcfg = [["", "", "", "", ""]]
+    world.subcfg = [["", "", "", "", "", ""]]
 
 
 def check_kea_process_result(succeed, result, process):
     errors = ["Failed to apply configuration", "Failed to initialize server",
-              "Service failed", "failed to initialize Kea server"]
-    for each in errors:
-        if succeed:
-            if each in result:
-                assert False, 'Server operation: ' + process + ' failed! '
-        if not succeed:
-            if each not in result:
-                assert False, 'Server operation: ' + process + ' NOT failed!'
+              "Service failed", "failed to initialize Kea server", "failed to initialize Kea"]
+
+    if succeed:
+        if any(error_message in result for error_message in errors):
+            assert False, 'Server operation: ' + process + ' failed! '
+    if not succeed:
+        if not any(error_message in result for error_message in errors):
+            assert False, 'Server operation: ' + process + ' NOT failed!'
 
 
 ## =============================================================
@@ -421,10 +486,7 @@ def check_kea_process_result(succeed, result, process):
 ## ================ REMOTE SERVER BLOCK START ==================
 
 
-def start_srv(start, process):
-    """
-    Start kea with generated config
-    """
+def build_and_send_config_files():
     world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/kea/kea-leases6.csv'
     add_defaults()
     set_kea_ctrl_config()
@@ -435,6 +497,13 @@ def start_srv(start, process):
     copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
     remove_local_file(world.cfg["cfg_file_2"])
+
+
+def start_srv(start, process):
+    """
+    Start kea with generated config
+    """
+    build_and_send_config_files()
     v6, v4 = check_kea_status()
 
     if process is None:
@@ -442,15 +511,22 @@ def start_srv(start, process):
 
     if not v6:
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
-                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
     else:
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
-                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
         result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
-                                    + ' & ); sleep ' + str(SLEEP_TIME_1))
+                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
+
+
+def reconfigure_srv():
+    build_and_send_config_files()
+    result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl reload '
+                                 + ' & ); sleep ' + str(SLEEP_TIME_1))
+    check_kea_process_result(True, result, 'reconfigure')
 
 
 def stop_srv(value = False):
@@ -459,7 +535,6 @@ def stop_srv(value = False):
 
 def restart_srv():
     fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
-    #clear_all()
     fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 ## =============================================================
@@ -504,11 +579,15 @@ def save_leases():
 
 def save_logs():
     fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
-    #fabric_download_file("/var/log/kea-debug.log", world.cfg["dir_name"] + '/log_file')
+    if world.ddns_enable:
+        fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log_ddns', world.cfg["dir_name"] + '/log_file_ddns')
 
 
 def clear_all():
     fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log')
+    if world.ddns_enable:
+        fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log_ddns')
+
     db_name = DB_NAME
     db_user = DB_USER
     db_passwd = DB_PASSWD

@@ -16,7 +16,7 @@
 # Author: Wlodzimierz Wencel
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
-    copy_configuration_file, fabric_sudo_command, fabric_download_file
+    copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
 from lettuce import world
 from logging_facility import *
 
@@ -25,7 +25,8 @@ from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
-    check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases
+    check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases, add_hooks, \
+    save_leases, reconfigure_srv
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -132,7 +133,7 @@ def add_defaults():
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    # world.subcfg[0] = [pools, simple_options, options]
+    # world.subcfg[0] = [subnet, client class/simple options, options, pools, host reservation]
     if subnet == "default":
         subnet = "192.168.0.0/24"
     if pool == "default":
@@ -228,11 +229,43 @@ def disanable_client_echo(step):
     world.cfg["simple_options"] += '"echo-client-id": "False"'.format(**locals())
 
 
+def host_reservation(reservation_type, reserved_value, unique_host_value, subnet):
+    if len(world.subcfg[subnet][5]) > 20:
+        world.subcfg[subnet][5] += ','
+
+    world.subcfg[subnet][5] += "{"
+    if reservation_type == "address":
+        world.subcfg[subnet][5] += '"hw-address":"{unique_host_value}","ip-address":"{reserved_value}"'.format(**locals())
+    elif reservation_type == "hostname":
+        world.subcfg[subnet][5] += '"hw-address":"{unique_host_value}","hostname":"{reserved_value}"'.format(**locals())
+    else:
+        assert False, "Not supported yet."
+        # if reservation will allow on another value - add it here
+
+    world.subcfg[subnet][5] += "}"
+
+
+def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
+    pointer = locate_entry(world.subcfg[subnet][5], '}', reservation_number)
+    if reservation_type == "address":
+        tmp = world.subcfg[subnet][5][:pointer] + ',"ip-adsdresses":"{reserved_value}"'.format(**locals())
+        tmp += world.subcfg[subnet][5][pointer:]
+    elif reservation_type == "hostname":
+        tmp = world.subcfg[subnet][5][:pointer] + ',"hostname":"{reserved_value}"'.format(**locals())
+        tmp += world.subcfg[subnet][5][pointer:]
+    else:
+        assert False, "Not supported"
+        # if reservation will allow on another value - add it here
+
+    world.subcfg[subnet][5] = tmp
+
+
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK END  ==================
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK START ==================
+
 
 def start_srv(start, process):
     """
@@ -268,7 +301,3 @@ def start_srv(start, process):
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"
-
-
-def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd4.leases')
