@@ -135,14 +135,16 @@ add_option_v4 = {"vendor_class_id": False,
 
 
 def set_values():
+    # this function is called after each message send.
     if PROTO == "v6":
         world.cfg["values"] = values_v6.copy()
-        client_id(CLI_MAC)
-        ia_id()
-        ia_pd()
         world.cfg["server_times"] = server_times_v6.copy()
         world.clntCfg["values"] = srv_values_v6.copy()
         world.clntCfg["set_wrong"] = clnt_set_wrong.copy()
+        # reset values to 'default for scenario'
+        world.cfg["values"]["cli_duid"] = world.cfg["cli_duid"]
+        world.cfg["values"]["ia_id"] = world.cfg["ia_id"]
+        world.cfg["values"]["ia_pd"] = world.cfg["ia_pd"]
     else:
         world.cfg["values"] = values_v4.copy()
         world.cfg["server_times"] = server_times_v4.copy()
@@ -155,20 +157,26 @@ def set_options():
         world.cfg["add_option"] = add_option_v4.copy()
 
 
-def add_result_to_raport(info):
+def add_result_to_report(info):
     world.result.append(info)
 
 
 def client_id(mac):
-    world.cfg["values"]["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac)
+    world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac)
+    if "values" in world.cfg:
+        world.cfg["values"]["cli_duid"] = world.cfg["cli_duid"]
 
 
 def ia_id():
-    world.cfg["values"]["ia_id"] = randint(1, 99999)
+    world.cfg["ia_id"] = randint(1, 99999)
+    if "values" in world.cfg:
+        world.cfg["values"]["ia_id"] = world.cfg["ia_id"]
 
 
 def ia_pd():
-    world.cfg["values"]["ia_pd"] = randint(1, 99999)
+    world.cfg["ia_pd"] = randint(1, 99999)
+    if "values" in world.cfg:
+        world.cfg["values"]["ia_pd"] = world.cfg["ia_pd"]
 
 
 def multiprotocol_initialize():
@@ -208,6 +216,12 @@ def v6_initialize():
     # Setup scapy for v6
     conf.iface6 = IFACE
     conf.use_pcap = True
+
+    # those values should be initialized once each test
+    # if you are willing to change it use 'client set value' steps
+    client_id(CLI_MAC)
+    ia_id()
+    ia_pd()
 
 
 def dns_initialize():
@@ -414,7 +428,7 @@ def outline_result(scenario, number, step, failed):
     else:
         result = 'True'
     info = str(scenario.name) + str(step) + '\n' + result
-    add_result_to_raport(info)
+    add_result_to_report(info)
 
 
 @after.each_step
@@ -430,7 +444,7 @@ def cleanup(scenario):
     """
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
-        add_result_to_raport(info)
+        add_result_to_report(info)
 
     if TCPDUMP:
         time.sleep(1)
