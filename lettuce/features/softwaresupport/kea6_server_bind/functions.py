@@ -21,7 +21,7 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
+from init_all import SOFTWARE_INSTALL_DIR, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
     BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2
 
 
@@ -271,7 +271,7 @@ def set_logger():
 
     fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
     fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | '
-                       + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
+                       + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
     remove_local_file(cfg_file + '_processed')
 
 
@@ -345,7 +345,7 @@ def stop_srv(value = False):
 
 def restart_srv():
     # can't be less then 7, server needs time to restart.
-    fabric_run_command('(echo "Dhcp6 shutdown" | ' + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep 10') 
+    fabric_run_command('(echo "Dhcp6 shutdown" | ' + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep 10')
 
 
 def parsing_bind_stdout(stdout, opt, search = []):
@@ -387,7 +387,7 @@ def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
     """    
-    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/bind10/kea-leases6.csv'
+    world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/bind10/kea-leases6.csv'
 
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
@@ -437,7 +437,7 @@ def run_bindctl (succeed, opt):
         restart_srv()
 
     result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | '
-                                + SERVER_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
+                                + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
 
     # now let's test output, looking for errors,
     # some times clean can fail, so we wanna test only start and conf

@@ -20,7 +20,7 @@
 # 
 #
 
-from features.init_all import SERVER_INSTALL_DIR, SLEEP_TIME_1
+from features.init_all import SOFTWARE_INSTALL_DIR, SLEEP_TIME_1
 from features.logging_facility import get_common_logger
 
 from multi_server_functions import fabric_sudo_command 
@@ -40,5 +40,5 @@ def start_bind10():
     """
     get_common_logger().debug("Starting Bind instances")
 
-    return fabric_sudo_command('(rm nohup.out; nohup ' + SERVER_INSTALL_DIR +
+    return fabric_sudo_command('(rm nohup.out; nohup ' + SOFTWARE_INSTALL_DIR +
                                'sbin/bind10 &); sleep ' + str(SLEEP_TIME_1))

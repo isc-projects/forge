@@ -24,9 +24,9 @@ from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_d
 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
+from init_all import SOFTWARE_INSTALL_DIR, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
     BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2, SLEEP_TIME_1, SOFTWARE_UNDER_TEST, \
-    SERVER_INSTALL_DIR, DB_TYPE, DB_NAME, DB_USER, DB_PASSWD, DB_HOST
+    SOFTWARE_INSTALL_DIR, DB_TYPE, DB_NAME, DB_USER, DB_PASSWD, DB_HOST
 kea_options6 = {
     "client-id": 1,
     "server-id": 2,
@@ -285,7 +285,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 def check_kea_status():
     v6 = 0
     v4 = 0
-    result = fabric_run_command(SERVER_INSTALL_DIR + "sbin/keactrl status")
+    result = fabric_run_command(SOFTWARE_INSTALL_DIR + "sbin/keactrl status")
     # not very sophisticated but easiest fastest way ;)
     if "DHCPv4 server: inactive" in result:
         v4 = 0
@@ -299,7 +299,7 @@ def check_kea_status():
 
 
 def set_kea_ctrl_config():
-    path = SERVER_INSTALL_DIR[:-1]
+    path = SOFTWARE_INSTALL_DIR[:-1]
 
     kea6 = 'no'
     kea4 = 'no'
@@ -439,7 +439,7 @@ def cfg_write():
         cfg_file.write(world.ddns)
         #cfg_file.write("}")
 
-    logging_file = SERVER_INSTALL_DIR + 'var/kea/kea.log'
+    logging_file = SOFTWARE_INSTALL_DIR + 'var/kea/kea.log'
 
     log_type = ''
     if "kea6" in world.cfg["dhcp_under_test"]:
@@ -487,12 +487,12 @@ def check_kea_process_result(succeed, result, process):
 
 
 def build_and_send_config_files():
-    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/kea/kea-leases6.csv'
+    world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases6.csv'
     add_defaults()
     set_kea_ctrl_config()
     cfg_write()
-    fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/kea/kea.conf")
-    fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/kea/keactrl.conf")
+    fabric_send_file(world.cfg["cfg_file"], SOFTWARE_INSTALL_DIR + "etc/kea/kea.conf")
+    fabric_send_file(world.cfg["cfg_file_2"], SOFTWARE_INSTALL_DIR + "etc/kea/keactrl.conf")
     copy_configuration_file(world.cfg["cfg_file"])
     copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
@@ -510,32 +510,32 @@ def start_srv(start, process):
         process = "starting"
 
     if not v6:
-        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
     else:
-        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
+        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl stop '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
-        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
 
 
 def reconfigure_srv():
     build_and_send_config_files()
-    result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl reload '
+    result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl reload '
                                  + ' & ); sleep ' + str(SLEEP_TIME_1))
     check_kea_process_result(True, result, 'reconfigure')
 
 
 def stop_srv(value = False):
-    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1), value)
+    fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1), value)
 
 
 def restart_srv():
-    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
-    fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+    fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl stop ' + ' & ); sleep ' + str(SLEEP_TIME_1))
+    fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start ' + ' & ); sleep ' + str(SLEEP_TIME_1))
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
@@ -578,15 +578,15 @@ def save_leases():
 
 
 def save_logs():
-    fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
+    fabric_download_file(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
     if world.ddns_enable:
-        fabric_download_file(SERVER_INSTALL_DIR + 'var/kea/kea.log_ddns', world.cfg["dir_name"] + '/log_file_ddns')
+        fabric_download_file(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log_ddns', world.cfg["dir_name"] + '/log_file_ddns')
 
 
 def clear_all():
-    fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log')
+    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log')
     if world.ddns_enable:
-        fabric_remove_file_command(SERVER_INSTALL_DIR + 'var/kea/kea.log_ddns')
+        fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log_ddns')
 
     db_name = DB_NAME
     db_user = DB_USER

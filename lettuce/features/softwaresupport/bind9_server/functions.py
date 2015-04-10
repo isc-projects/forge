@@ -144,6 +144,11 @@ def save_leases():
     pass
 
 
+def reconfigure_srv():
+    #TODO implement this when needed
+    pass
+
+
 def save_logs():
     fabric_download_file('/tmp/dns.log', world.cfg["dir_name"] + '/dns/dns_log_file')
 

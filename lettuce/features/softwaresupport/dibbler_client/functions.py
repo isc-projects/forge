@@ -21,7 +21,7 @@ from features.softwaresupport.multi_server_functions import fabric_sudo_command,
     remove_local_file
 from logging_facility import *
 from lettuce.registry import world
-from init_all import DIBBLER_INSTALL_DIR, IFACE
+from init_all import SOFTWARE_INSTALL_DIR, IFACE
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -33,15 +33,15 @@ def restart_clnt(step):
     This function shut downs and later starts dibbler-client on DUT.
     @step("Restart client.")
     """
-    fabric_sudo_command("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
-    fabric_sudo_command("("+DIBBLER_INSTALL_DIR+"dibbler-client start); sleep 1;")
+    fabric_sudo_command("("+SOFTWARE_INSTALL_DIR+"dibbler-client stop); sleep 1;")
+    fabric_sudo_command("("+SOFTWARE_INSTALL_DIR+"dibbler-client start); sleep 1;")
 
 
 def stop_clnt():
     """
     Command that shut downs one instance of running dibbler-client on DUT.
     """
-    fabric_sudo_command ("("+DIBBLER_INSTALL_DIR+"dibbler-client stop); sleep 1;")
+    fabric_sudo_command ("("+SOFTWARE_INSTALL_DIR+"dibbler-client stop); sleep 1;")
 
 def kill_clnt():
     """
@@ -77,9 +77,9 @@ def release_command():
     world.clntCfg["script"] = ""
     make_script("stop")
     get_common_logger().debug("Stopping Dibbler Client and waiting for RELEASE.")
-    fabric_send_file(world.clntCfg["script"], DIBBLER_INSTALL_DIR+'comm.sh')
+    fabric_send_file(world.clntCfg["script"], SOFTWARE_INSTALL_DIR+'comm.sh')
     fabric_run_command ('(rm nohup.out; nohup bash ' \
-                        + DIBBLER_INSTALL_DIR + 'comm.sh &); sleep 3;')
+                        + SOFTWARE_INSTALL_DIR + 'comm.sh &); sleep 3;')
 
 
 def client_option_req(step, another1, opt):
@@ -138,7 +138,7 @@ def make_script(option):
     option argument can be equal to "start" or "stop".
     """
     world.clntCfg["content"] = "!#/bin/sh\nsleep 10;\n"
-    world.clntCfg["content"] += "sudo " + DIBBLER_INSTALL_DIR + \
+    world.clntCfg["content"] += "sudo " + SOFTWARE_INSTALL_DIR + \
                                 "dibbler-client " + str(option) + "&\n"
     world.clntCfg["script"] = "temp1"
     script = open(world.clntCfg["script"], "w")
@@ -233,12 +233,12 @@ def start_clnt(step):
     make_script("start")
     get_common_logger().debug("Starting Dibbler Client with generated config:")
     fabric_send_file(world.clntCfg["Filename"], '/etc/dibbler/client.conf')
-    fabric_send_file(world.clntCfg["script"], DIBBLER_INSTALL_DIR+'comm.sh')
+    fabric_send_file(world.clntCfg["script"], SOFTWARE_INSTALL_DIR+'comm.sh')
     fabric_remove_file_command(world.clntCfg["Filename"])
     # start client with clean log file
     fabric_remove_file_command(world.clntCfg["log_file"])
     fabric_run_command ('(rm nohup.out; nohup bash ' \
-                        + DIBBLER_INSTALL_DIR + 'comm.sh &); sleep 3;')
+                        + SOFTWARE_INSTALL_DIR + 'comm.sh &); sleep 3;')
 
 
 # that could be use for making terrain.py even more generic ;)
@@ -257,7 +257,7 @@ def save_logs():
 
 
 def clear_all():
-    fabric_remove_file_command(DIBBLER_INSTALL_DIR + 'comm.sh')
+    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'comm.sh')
     fabric_remove_file_command('/etc/dibbler/client.conf')
     remove_local_file(world.clntCfg["Filename"])
     remove_local_file(world.clntCfg["script"])

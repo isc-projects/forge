@@ -21,7 +21,7 @@ from lettuce import world
 from logging_facility import *
 
 from logging_facility import get_common_logger
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY
+from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY
 
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
     fabric_remove_file_command, clear_all, run_command, check_process_result
@@ -165,7 +165,7 @@ def restart_srv():
     stop_srv()
     fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
-    fabric_sudo_command('(' + SERVER_INSTALL_DIR
+    fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR
                         + 'sbin/dhcpd -cf server.cfg_processed -lf '
                         + world.cfg['leases'] + '); sleep ' + str(SLEEP_TIME_1) + ';')
 
@@ -419,8 +419,8 @@ def cfg_write():
 
 def build_leases_path():
     leases_file = '/var/db/dhcpd.leases'
-    if SERVER_INSTALL_DIR != "/usr/local/":
-        leases_file = SERVER_INSTALL_DIR + 'dhcpd.leases'
+    if SOFTWARE_INSTALL_DIR != "/usr/local/":
+        leases_file = SOFTWARE_INSTALL_DIR + 'dhcpd.leases'
     return leases_file
 
 
@@ -467,7 +467,7 @@ def start_srv(start, process):
     fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
 
-    result = fabric_sudo_command('(' + SERVER_INSTALL_DIR
+    result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR
                                  + 'sbin/dhcpd -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
                                  + '&); sleep ' + str(SLEEP_TIME_1) + ';')

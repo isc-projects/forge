@@ -21,7 +21,7 @@ from lettuce import world
 from logging_facility import *
 
 from logging_facility import get_common_logger
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
+from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
@@ -271,12 +271,12 @@ def start_srv(start, process):
     """
     Start kea with generated config
     """
-    world.cfg['leases'] = SERVER_INSTALL_DIR + 'var/kea/kea-leases4.csv'
+    world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases4.csv'
     add_defaults()
     set_kea_ctrl_config()
     cfg_write()
-    fabric_send_file(world.cfg["cfg_file"], SERVER_INSTALL_DIR + "etc/kea/kea.conf")
-    fabric_send_file(world.cfg["cfg_file_2"], SERVER_INSTALL_DIR + "etc/kea/keactrl.conf")
+    fabric_send_file(world.cfg["cfg_file"], SOFTWARE_INSTALL_DIR + "etc/kea/kea.conf")
+    fabric_send_file(world.cfg["cfg_file_2"], SOFTWARE_INSTALL_DIR + "etc/kea/keactrl.conf")
     copy_configuration_file(world.cfg["cfg_file"])
     copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
@@ -287,14 +287,14 @@ def start_srv(start, process):
         process = "starting"
     # check process - if None add some.
     if not v4:
-        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
     else:
-        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl stop '
+        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl stop '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
-        result = fabric_sudo_command('(' + SERVER_INSTALL_DIR + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)
 

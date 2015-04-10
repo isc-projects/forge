@@ -19,16 +19,16 @@
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE
+from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE
 
 
 def restart_srv():
-    fabric_run_command("("+SERVER_INSTALL_DIR+"sbin/dibbler-server restart); sleep 1;")
+    fabric_run_command("("+SOFTWARE_INSTALL_DIR+"sbin/dibbler-server restart); sleep 1;")
 
 
 def stop_srv(value = False):
     #pass
-    fabric_run_command("("+SERVER_INSTALL_DIR+"sbin/dibbler-server stop); sleep 1;", value)
+    fabric_run_command("("+SOFTWARE_INSTALL_DIR+"sbin/dibbler-server stop); sleep 1;", value)
 
 
 def prepare_cfg_default(step):
@@ -134,7 +134,7 @@ def start_srv(a, b):
     get_common_logger().debug("Starting Dibbler with generated config:")
     fabric_send_file(world.cfg["cfg_file"], '/etc/dibbler/server.conf')
     remove_local_file(world.cfg["cfg_file"])
-    fabric_run_command ('('+SERVER_INSTALL_DIR+'sbin/dibbler-server start & ); sleep 4;')
+    fabric_run_command ('('+SOFTWARE_INSTALL_DIR+'sbin/dibbler-server start & ); sleep 4;')
 
 
 def save_leases():

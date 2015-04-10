@@ -18,7 +18,7 @@
 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SERVER_INSTALL_DIR, SERVER_IFACE, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY, SLEEP_TIME_1
+from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY, SLEEP_TIME_1
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file,\
@@ -141,7 +141,7 @@ def restart_srv():
     stop_srv()
     fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
-    fabric_sudo_command('(' + SERVER_INSTALL_DIR
+    fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR
                         + 'sbin/dhcpd -6 -cf server.cfg_processed -lf '
                         + world.cfg['leases'] + '); sleep ' + str(SLEEP_TIME_1) + ';')
 
@@ -459,8 +459,8 @@ def set_ethernet_interface():
 #     fabric_cmd(cmd1,0)
 def build_leases_path():
     leases_file = '/var/db/dhcpd6.leases'
-    if SERVER_INSTALL_DIR != "/usr/local/":
-        leases_file = SERVER_INSTALL_DIR + 'dhcpd6.leases'
+    if SOFTWARE_INSTALL_DIR != "/usr/local/":
+        leases_file = SOFTWARE_INSTALL_DIR + 'dhcpd6.leases'
     return leases_file
 
 
@@ -506,7 +506,7 @@ def start_srv(start, process):
     fabric_run_command('echo y |rm ' + world.cfg['leases'])
     fabric_run_command('touch ' + world.cfg['leases'])
 
-    result = fabric_sudo_command('(' + SERVER_INSTALL_DIR
+    result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR
                                  + 'sbin/dhcpd -6 -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
                                  + '&); sleep ' + str(SLEEP_TIME_1) + ';')
