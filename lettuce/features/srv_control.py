@@ -230,6 +230,14 @@ def run_command(step, command):
     dhcp.run_command(step, command)
 
 
+@step('Add to config file line: (.+)')
+def add_line(step, command):
+    """
+    The same step as 'Run configuration command: (.+)'
+    """
+    run_command(step, command)
+
+
 @step('Reserve (\S+) (\S+) for host uniquely identified by (\S+).')
 def host_reservation(step, reservation_type, reserved_value, unique_host_value):
     """
@@ -368,12 +376,25 @@ def start_srv(step, name, process):
 @step('Restart (\S+) server.')
 def restart_srv(step, name):
     """
-    Restart DHCPv6 without changing server configuration
+    Restart DHCP/DNS server without reconfiguration.
     """
     if name == "DHCP":
         dhcp.restart_srv()
     elif name == "DNS":
         dns.restart_srv()
+    else:
+        assert False, "I don't think there is support for something else than DNS or DHCP"
+
+
+@step('Reconfigure (\S+) server.')
+def restart_srv(step, name):
+    """
+    Reconfigure DHCP/DNS server.
+    """
+    if name == "DHCP":
+        dhcp.reconfigure_srv()
+    elif name == "DNS":
+        dns.reconfigure_srv()
     else:
         assert False, "I don't think there is support for something else than DNS or DHCP"
 
