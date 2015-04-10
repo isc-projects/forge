@@ -1,0 +1,3 @@
+{ "type" : "HW_ADDR", "id" : "0c:0e:0a:01:ff:04" }
+{ "type" : "HW_ADDR", "id" : "0c:0e:0a:01:ff:08", "bootfile" : "/tmp/v4bootfile" }
+{ "type" : "HW_ADDR", "id" : "0c:0e:0a:01:ff:12", "tftp_server" : "8000::1" }

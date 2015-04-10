@@ -1,0 +1,4 @@
+id_type=HW_ADDR
+client=hwtype=1 0c:0e:0a:01:ff:04
+addr=192.168.50.5
+registered=yes

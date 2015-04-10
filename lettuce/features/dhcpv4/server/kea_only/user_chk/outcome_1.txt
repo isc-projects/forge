@@ -1,0 +1,4 @@
+id_type=HW_ADDR
+client=hwtype=1 0c:0e:0a:01:ff:01
+addr=10.0.0.5
+registered=no
