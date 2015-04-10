@@ -53,7 +53,26 @@ Feature: DHCPv6 Prefix Delegation
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
 	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	DHCP server is started.
-	
+
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client does include IA-PD.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+	Client does NOT include IA-NA.
+	Client copies server-id option from received message.
+	Client saves IA_PD option from received message.
+	Client adds saved options. And DONT Erase.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+
+
 	Test Procedure:
 	Client sends SOLICIT message.
 
@@ -62,7 +81,9 @@ Feature: DHCPv6 Prefix Delegation
 
 	Test Procedure:
 	Client does NOT include IA-NA.
-	Client does include IA-PD.
+    Client does include IA_Prefix.
+    Client sets plen value to 90.
+    Client sets prefix value to 3001::.
 	Client copies server-id option from received message.
 	Client sends REBIND message.
 
