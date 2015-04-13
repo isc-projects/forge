@@ -1,7 +1,7 @@
 Feature: MAC in DHCPv6
     All tests are designed to check Kea ability to extract MAC address from message using various techniques.
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.duid-type3
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -25,7 +25,7 @@ Feature: MAC in DHCPv6
 	Server MUST respond with REPLY message.
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.duid-type1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -49,7 +49,7 @@ Feature: MAC in DHCPv6
 	Server MUST respond with REPLY message.
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,08:00:27:58:f1:e8
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.any
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -74,7 +74,7 @@ Feature: MAC in DHCPv6
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.ipv6-link-local
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -98,7 +98,7 @@ Feature: MAC in DHCPv6
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.client-link-addr-1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -126,7 +126,7 @@ Feature: MAC in DHCPv6
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.client-link-addr-2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -155,7 +155,7 @@ Feature: MAC in DHCPv6
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.remote-id-1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -185,7 +185,7 @@ Feature: MAC in DHCPv6
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:01
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.remote-id-2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -213,7 +213,7 @@ Feature: MAC in DHCPv6
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:01
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.subscriber-id-1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -241,7 +241,7 @@ Feature: MAC in DHCPv6
 	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:02
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.subscriber-id-2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -268,7 +268,7 @@ Feature: MAC in DHCPv6
 	Server MUST respond with RELAYREPLY message.
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:02
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.docsis-modem
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -296,7 +296,7 @@ Feature: MAC in DHCPv6
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01
 
 
-@v6 @MACinDHCP6
+@v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.docsic-cmts
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
