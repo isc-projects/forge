@@ -62,11 +62,11 @@ def test_define_value(*args):
     "Client defines new variable: (\S+) with value (\S+)."
 
     """
-    imported = None
-    front = None
     tested_args = []
 
     for i in range(len(args)):
+        imported = None
+        front = None
         tmp = str(args[i])
         if "$" in args[i]:
             index = tmp.find('$')
