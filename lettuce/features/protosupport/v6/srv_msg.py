@@ -290,14 +290,9 @@ def vendor_option_request_convert():
 
 
 def convert_DUID_hwaddr(value):
-    counter = 0
-    addr = ""
-    for each in world.cfg["values"]["DUID"][value:]:
-        addr += each
-        counter += 1
-        if counter % 2 == 0 and counter < 12:
-            addr += ":"
-    return addr
+    tmp = world.cfg["values"]["DUID"][value:]
+    hwaddr = ':'.join(tmp[i:i+2] for i in range(0, len(tmp), 2))
+    return hwaddr
 
 
 def convert_DUID():
@@ -333,27 +328,14 @@ def convert_DUID():
 
         Other configurations will cause to fail test.
     """
+    world.cfg["values"]["DUID"] = world.cfg["values"]["DUID"].replace(":", "")
 
-    if world.cfg["values"]["DUID"][2] == ":":
-        if world.cfg["values"]["DUID"][:11] == "00:03:00:01":
-            return DUID_LL(lladdr = world.cfg["values"]["DUID"][12:])
-        elif world.cfg["values"]["DUID"][:11] == "00:01:00:01":
-            time_tmp = world.cfg["values"]["DUID"][12:23]
-            time_tmp = int(time_tmp.replace(":", ""), 16)
-            return DUID_LLT(timeval = time_tmp, lladdr = world.cfg["values"]["DUID"][24:])
-        else:
-            assert False, "DUID value is not valid! DUID: " + world.cfg["values"]["DUID"]
+    if world.cfg["values"]["DUID"][:8] == "00030001":
+        return DUID_LL(lladdr = convert_DUID_hwaddr(8))
+    elif world.cfg["values"]["DUID"][:8] == "00010001":
+        return DUID_LLT(timeval = int(world.cfg["values"]["DUID"][8:16], 16), lladdr = convert_DUID_hwaddr(16))
     else:
-        if world.cfg["values"]["DUID"][:8] == "00030001":
-            addr = convert_DUID_hwaddr(8)
-            return DUID_LL(lladdr = addr)
-        elif world.cfg["values"]["DUID"][:8] == "00010001":
-            addr = convert_DUID_hwaddr(16)
-            time_tmp = world.cfg["values"]["DUID"][8:16]
-            time_tmp = int(time_tmp, 16)
-            return DUID_LLT(timeval = time_tmp, lladdr = addr)
-        else:
-            assert False, "DUID value is not valid! DUID: " + world.cfg["values"]["DUID"]
+        assert False, "DUID value is not valid! DUID: " + world.cfg["values"]["DUID"]
 
 
 def client_option(msg):
@@ -548,6 +530,7 @@ def create_relay_forward(step, level):
     tmp = DHCP6_RelayForward(linkaddr = world.cfg["values"]["linkaddr"],
                              peeraddr = world.cfg["values"]["peeraddr"],
                              hopcount = level)/DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
+
     #tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)
 
     #  add options (used only when checking "wrong option" test for
