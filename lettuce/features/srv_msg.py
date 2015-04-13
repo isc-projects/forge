@@ -196,7 +196,6 @@ def response_check_suboption_content(step, subopt_code, opt_code, yes_or_no, dat
     """
     expect = not (yes_or_no == "NOT ")
     dhcpmsg.response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected)
-    dhcpmsg.response_check_option_content(step, 13, 3, "NOT", "statuscode", "6")
 
 
 ##building DNS messages
