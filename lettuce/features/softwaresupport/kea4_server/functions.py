@@ -26,7 +26,7 @@ from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
     check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases, add_hooks, \
-    save_leases, reconfigure_srv
+    save_leases
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -108,7 +108,6 @@ def check_empty_value(val):
 
 def add_defaults():
     eth = SERVER_IFACE
-    # subnet defintion Kea4
     t1 = world.cfg["server_times"]["renew-timer"]
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["valid-lifetime"]
@@ -248,7 +247,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value, subnet
 def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
     pointer = locate_entry(world.subcfg[subnet][5], '}', reservation_number)
     if reservation_type == "address":
-        tmp = world.subcfg[subnet][5][:pointer] + ',"ip-adsdresses":"{reserved_value}"'.format(**locals())
+        tmp = world.subcfg[subnet][5][:pointer] + ',"ip-addresses":"{reserved_value}"'.format(**locals())
         tmp += world.subcfg[subnet][5][pointer:]
     elif reservation_type == "hostname":
         tmp = world.subcfg[subnet][5][:pointer] + ',"hostname":"{reserved_value}"'.format(**locals())
@@ -266,11 +265,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK START ==================
 
-
-def start_srv(start, process):
-    """
-    Start kea with generated config
-    """
+def build_and_send_config_files():
     world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases4.csv'
     add_defaults()
     set_kea_ctrl_config()
@@ -281,6 +276,20 @@ def start_srv(start, process):
     copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
     remove_local_file(world.cfg["cfg_file"])
     remove_local_file(world.cfg["cfg_file_2"])
+
+
+def reconfigure_srv():
+    build_and_send_config_files()
+    result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl reload '
+                                 + ' & ); sleep ' + str(SLEEP_TIME_1))
+    check_kea_process_result(True, result, 'reconfigure')
+
+
+def start_srv(start, process):
+    """
+    Start kea with generated config
+    """
+    build_and_send_config_files()
     v6, v4 = check_kea_status()
 
     if process is None:
