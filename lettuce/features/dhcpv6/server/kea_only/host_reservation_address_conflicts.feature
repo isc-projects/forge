@@ -3,6 +3,15 @@ Feature: Host Reservation DHCPv6
     For prefix, addresses and hostnames.
 
 @v6 @host_reservation @kea_only
+    Scenario: v6.host.reservation.duplicate-reservation
+	Test Setup:
+	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
+	Reserve address 3000::1 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve address 3000::2 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
+	DHCP server failed to start. During configuration process.
+
+
+@v6 @host_reservation @kea_only
     Scenario: v6.host.reservation.conflicts.two-address-entries-for-one-host-1
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
