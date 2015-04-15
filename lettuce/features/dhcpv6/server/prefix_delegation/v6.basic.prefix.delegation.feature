@@ -2,16 +2,6 @@ Feature: DHCPv6 Prefix Delegation
     Test for basic Prefix Delegation, based on RFC 3633
 
 @v6 @dhcp6 @PD @rfc3633
-    Scenario: prefix.delegation.server_configuration
-    
- 	Test Setup:
-	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
-	Server is configured with 3000:: prefix in subnet 0 with 5 prefix length and 33 delegated prefix length.
-	DHCP server failed to start. During configuration process.
-
-	References: RFC 3633
-
-@v6 @dhcp6 @PD @rfc3633
     Scenario: prefix.delegation.onlyPD_advertise
   
  	Test Setup:
