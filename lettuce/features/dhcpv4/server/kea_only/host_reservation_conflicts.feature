@@ -322,3 +322,423 @@ Feature: Host Reservation DHCPv4
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.5.
 
+@v4 @host_reservation @kea_only
+    Scenario: v4.host.reservation.conflicts.renew-address-that-has-been-reserved-during-reconfiguration
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
+    DHCP server is started.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Sleep for 5 seconds.
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reconfigure DHCP server.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST NOT contain yiaddr 192.168.50.5.
+
+    Test Procedure:
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+
+    Sleep for 6 seconds.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+@v4 @host_reservation @kea_only
+    Scenario: v4.host.reservation.conflicts.renew-address-using-different-mac-that-has-been-reserved-during-reconfiguration
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
+    DHCP server is started.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Sleep for 5 seconds.
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reconfigure DHCP server.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST NOT contain yiaddr 192.168.50.5.
+
+    Test Procedure:
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+
+    Sleep for 6 seconds.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+
+@v4 @host_reservation @kea_only
+    Scenario: v4.host.reservation.conflicts.renew-address-which-reservation-changed-during-reconfigure
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    DHCP server is started.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Sleep for 5 seconds.
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reconfigure DHCP server.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST NOT contain yiaddr 192.168.50.5.
+
+    Test Procedure:
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+
+    Sleep for 6 seconds.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+
+@v4 @host_reservation @kea_only
+    Scenario: v4.host.reservation.conflicts.renew-address-which-reservation-changed-during-reconfigure-2
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    DHCP server is started.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Sleep for 5 seconds.
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 50.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
+    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reconfigure DHCP server.
+
+    Test Procedure:
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+
+    Sleep for 6 seconds.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST contain yiaddr 192.168.50.50.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.50.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.50.
+
+
+@v4 @host_reservation @kea_only
+    Scenario: v4.host.reservation.conflicts.rebind-address-which-reservation-changed-during-reconfigure
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 4.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    DHCP server is started.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Sleep for 5 seconds.
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 4.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reconfigure DHCP server.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST NOT contain yiaddr 192.168.50.5.
+
+    Test Procedure:
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+
+    Sleep for 6 seconds.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+
+@v4 @host_reservation @kea_only
+    Scenario: v4.host.reservation.conflicts.rebind-address-which-reservation-changed-during-reconfigure-2
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 4.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    DHCP server is started.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.5.
+
+    Sleep for 5 seconds.
+
+    Test Setup:
+    Time renew-timer is configured with value 3.
+    Time rebind-timer is configured with value 4.
+    Time valid-lifetime is configured with value 500.
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
+    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reconfigure DHCP server.
+
+    Test Procedure:
+    Client adds to the message requested_addr with value 192.168.50.5.
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with NAK message.
+
+    Sleep for 6 seconds.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST contain yiaddr 192.168.50.50.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:01.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.50.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.50.
+
