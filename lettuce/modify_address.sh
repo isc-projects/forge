@@ -56,14 +56,17 @@ changeaddress() {
             tmp=$file_name
             tmp+="_BACKUP"
             cp -n $file_name $tmp
+
             # Changing address
             printf "\nChanging file: %s" $file_name
             mask=$(mask2cidr $3)
+
             sed -i "s/$4.0\/24/$2.0\/$mask/" $file_name
             sed -i "s/$5/$3/" $file_name
 
             default_revert=$(revert_addr $4)
             new_revert=$(revert_addr $2)
+
             sed -i "s/$default_revert/$new_revert/" $file_name
             sed -i "s/$4/$2/g" $file_name
         done
@@ -126,5 +129,6 @@ elif [ "$1" == --restore -o "$1" == -r ]; then
 else
     printf "Choose first argument from: --help -h; --default -d; --switch -s; --restore -r\n"
     exit 0
+
 fi
 
