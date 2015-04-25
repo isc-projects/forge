@@ -35,32 +35,6 @@ import subprocess
 import sys
 import time
 
-add_option_v6 = {'client_id': True,
-                 'preference': False,
-                 'time': False,
-                 'relay_msg': False,
-                 'server_uni': False,
-                 'status_code': False,
-                 'rapid_commit': False,
-                 'interface_id': False,
-                 'reconfig': False,
-                 'option_request': False,
-                 'reconfig_accept': False,
-                 'server_id': False,
-                 'wrong_client_id': False,
-                 'wrong_server_id': False,
-                 'IA_NA': True,
-                 'IA_TA': False,
-                 'IA_PD': False,
-                 'IA_Prefix': False,
-                 'IA_Address': False,
-                 'vendor_class': False,
-                 'vendor_specific_info': False,
-                 'fqdn': False,
-                 'client-link-layer-addr': False,
-                 'remote-id': False,
-                 'subscriber-id': False}
-
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
              "address": "::",
@@ -82,7 +56,13 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "remote_id": "",
              "subscriber_id": "",
              "ia_id": 0,
-             "ia_pd": 0}
+             "ia_pd": 0,
+             "prefval": 1,
+             "elapsedtime": 1,
+             "srvaddr": "::",
+             "statuscode": 0,
+             "statusmsg": "",
+             "reconfigure_msg_type": 5}
 
 srv_values_v6 = {"T1": 1000,
                  "T2": 2000,
@@ -127,8 +107,6 @@ values_v4 = {"ciaddr": "0.0.0.0",
              "FQDN_flags": "",
              "FQDN_domain_name": ""}
 
-add_option_v4 = {"vendor_class_id": False,
-                 "client_id": True}
 
 # we should consider transfer most of functions to separate v4 and v6 files
 # TODO: make separate files after branch merge
@@ -148,13 +126,6 @@ def set_values():
     else:
         world.cfg["values"] = values_v4.copy()
         world.cfg["server_times"] = server_times_v4.copy()
-
-
-def set_options():
-    if PROTO == "v6":
-        world.cfg["add_option"] = add_option_v6.copy()
-    else:
-        world.cfg["add_option"] = add_option_v4.copy()
 
 
 def add_result_to_report(info):
@@ -374,7 +345,6 @@ def initialize(scenario):
         dns_initialize()
 
     set_values()
-    set_options()
 
     # to create separate files for each test we need:
     # create new directory for that test:
@@ -433,7 +403,6 @@ def outline_result(scenario, number, step, failed):
 
 @after.each_step
 def cleanup_option(step):
-    #set_options ()
     pass
 
 
