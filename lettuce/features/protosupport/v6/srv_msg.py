@@ -21,39 +21,39 @@
 #
 from cookielib import debug
 from features.logging_facility import get_common_logger
-from features.terrain import set_options, set_values
+from features.terrain import set_values
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 
 # option codes for options and sub-options for dhcp v6
-options6 = {"client-id": 1,
-            "server-id": 2,
-            "IA_NA": 3,
-            "IN_TA": 4,
-            "IA_address": 5,
-            "preference": 7,
-            "relay-msg": 9,
-            "status-code": 13,
-            "rapid_commit": 14,
-            "vendor-class": 16,
-            "vendor-specific-info": 17,
-            "interface-id": 18,
-            "sip-server-dns": 21,
-            "sip-server-addr": 22,
-            "dns-servers": 23,
-            "domain-search": 24,
-            "IA_PD": 25,
-            "IA-Prefix": 26,
-            "nis-servers": 27,
-            "nisp-servers": 28,
-            "nis-domain-name": 29,
-            "nisp-domain-name": 30,
-            "sntp-servers": 31,
-            "information-refresh-time": 32,
-            "remote-id": 37,
-            "subscriber-id": 38,
-            "fqdn": 39,
-            "client-link-layer-addr": 79}
+options = {"client-id": 1,
+           "server-id": 2,
+           "IA_NA": 3,
+           "IN_TA": 4,
+           "IA_address": 5,
+           "preference": 7,
+           "relay-msg": 9,
+           "status-code": 13,
+           "rapid_commit": 14,
+           "vendor-class": 16,
+           "vendor-specific-info": 17,
+           "interface-id": 18,
+           "sip-server-dns": 21,
+           "sip-server-addr": 22,
+           "dns-servers": 23,
+           "domain-search": 24,
+           "IA_PD": 25,
+           "IA-Prefix": 26,
+           "nis-servers": 27,
+           "nisp-servers": 28,
+           "nis-domain-name": 29,
+           "nisp-domain-name": 30,
+           "sntp-servers": 31,
+           "information-refresh-time": 32,
+           "remote-id": 37,
+           "subscriber-id": 38,
+           "fqdn": 39,
+           "client-link-layer-addr": 79}
 
 ## ======================================================================
 ## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
@@ -67,7 +67,7 @@ def client_requests_option(step, opt_type):
         # There was no ORO at all, create new one
         world.oro = DHCP6OptOptReq()
         # Scapy creates ORO with 23, 24 options request. Let's get rid of them
-        world.oro.reqopts = [] # don't request anything by default
+        world.oro.reqopts = []  # don't request anything by default
 
     world.oro.reqopts.append(int(opt_type))
 
@@ -107,8 +107,6 @@ def client_send_msg(step, msgname, iface, addr):
         msg = build_msg(DHCP6_Release())
 
     elif msgname == "INFOREQUEST":
-        world.cfg["add_option"]["IA_NA"] = False
-        world.cfg["add_option"]["IA_TA"] = False
         msg = build_msg(DHCP6_InfoRequest())
 
     else:
@@ -134,13 +132,13 @@ def client_sets_value(step, value_name, new_value):
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
 
 
-def unicast_addres(step,addr_type):
+def unicast_addres(step, addr_type):
     """
     Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address.
     """
     if addr_type:
         from features.init_all import SRV_IPV6_ADDR_GLOBAL
-        world.cfg["address_v6"] = SRV_IPV6_ADDR_GLOBAL
+        world.cfg["address_v6"] = RV_IPV6_ADDR_GLOBAL
     else:
         from features.init_all import SRV_IPV6_ADDR_LINK_LOCAL
         world.cfg["address_v6"] = SRV_IPV6_ADDR_LINK_LOCAL
@@ -153,58 +151,127 @@ def client_does_include(step, opt_type, value):
     # value variable not used in v6
     # If you want to use options of received message to include it,
     # please use 'Client copies (\S+) option from received message.' step.
+    if world.cfg["values"]["DUID"] is not None:
+        world.cfg["values"]["cli_duid"] = convert_DUID()
+
     if opt_type == "client-id":
-        world.cfg["add_option"]["client_id"] = False
+        add_client_option(DHCP6OptClientId(duid=world.cfg["values"]["cli_duid"]))
+
     elif opt_type == "wrong-client-id":
-        world.cfg["add_option"]["wrong_client_id"] = True
+        add_client_option(add_client_option(DHCP6OptClientId()))
+
     elif opt_type == "wrong-server-id":
-        world.cfg["add_option"]["wrong_server_id"] = True
+        add_client_option(DHCP6OptServerId(duid=DUID_LLT(timeval=int(time.time()), lladdr=RandMAC())))
+
     elif opt_type == "preference":
-        world.cfg["add_option"]["preference"] = True
+        add_client_option(DHCP6OptPref(prefval=world.cfg["values"]["prefval"]))
+
     elif opt_type == "rapid-commit":
-        world.cfg["add_option"]["rapid_commit"] = True
+        add_client_option(DHCP6OptRapidCommit())
+
     elif opt_type == "time":
-        world.cfg["add_option"]["time"] = True
+        add_client_option(DHCP6OptElapsedTime(elapsedtime=world.cfg["values"]["elapsedtime"]))
+
     elif opt_type == "relay-msg":
-        world.cfg["add_option"]["relay_msg"] = True
+        add_client_option(DHCP6OptRelayMsg()/DHCP6_Solicit())
+
     elif opt_type == "server-unicast":
-        world.cfg["add_option"]["server_uni"] = True
+        add_client_option(DHCP6OptServerUnicast(srvaddr=world.cfg["values"]["srvaddr"]))
+
     elif opt_type == "status-code":
-        world.cfg["add_option"]["status_code"] = True
+        add_client_option(DHCP6OptStatusCode(statuscode=world.cfg["values"]["statuscode"],
+                                             statusmsg=world.cfg["values"]["statusmsg"]))
+
     elif opt_type == "interface-id":
-        world.cfg["add_option"]["interface_id"] = True
+        add_client_option(DHCP6OptIfaceId(ifaceid=world.cfg["values"]["ifaceid"]))
+
     elif opt_type == "reconfigure":
-        world.cfg["add_option"]["reconfig"] = True
+        add_client_option(DHCP6OptReconfMsg(msgtype=world.cfg["values"]["reconfigure_msg_type"]))
+
     elif opt_type == "reconfigure-accept":
-        world.cfg["add_option"]["reconfig_accept"] = True
+        add_client_option(DHCP6OptReconfAccept())
+
     elif opt_type == "option-request":
-        world.cfg["add_option"]["option_request"] = True
+        # later we can make it adjustable
+        add_client_option(DHCP6OptOptReq(reqopts=11))
+
     elif opt_type == "IA-PD":
-        world.cfg["add_option"]["IA_PD"] = True
+        add_client_option(DHCP6OptIA_PD(iaid=int(world.cfg["values"]["ia_pd"]),
+                                        T1=world.cfg["values"]["T1"],
+                                        T2=world.cfg["values"]["T2"]))
+
     elif opt_type == "IA-NA":
-        world.cfg["add_option"]["IA_NA"] = False
+        add_client_option(DHCP6OptIA_NA(iaid=int(world.cfg["values"]["ia_id"]),
+                                        T1=world.cfg["values"]["T1"],
+                                        T2=world.cfg["values"]["T2"]))
+
     elif opt_type == "IA_Prefix":
-        world.cfg["add_option"]["IA_Prefix"] = True
+        add_client_option(DHCP6OptIA_PD(iaid=int(world.cfg["values"]["ia_pd"]),
+                                        T1=world.cfg["values"]["T1"],
+                                        T2=world.cfg["values"]["T2"],
+                                        iapdopt=DHCP6OptIAPrefix(preflft=world.cfg["values"]["preflft"],
+                                                                 validlft=world.cfg["values"]["validlft"],
+                                                                 plen=world.cfg["values"]["plen"],
+                                                                 prefix=world.cfg["values"]["prefix"])))
+
     elif opt_type == "IA_Address":
-        world.cfg["add_option"]["IA_Address"] = True
+        add_client_option(DHCP6OptIA_NA(iaid=int(world.cfg["values"]["ia_id"]),
+                                        T1=world.cfg["values"]["T1"],
+                                        T2=world.cfg["values"]["T2"],
+                                        ianaopts=DHCP6OptIAAddress(address=world.cfg["values"]["IA_Address"],
+                                                                   preflft=world.cfg["values"]["preflft"],
+                                                                   validlft=world.cfg["values"]["validlft"])))
+
     elif opt_type == "vendor-class":
-        world.cfg["add_option"]["vendor_class"] = True
+        if world.cfg["values"]["vendor_class_data"] == "":
+            add_client_option(DHCP6OptVendorClass(enterprisenum=world.cfg["values"]["enterprisenum"]))
+        else:
+            add_client_option(DHCP6OptVendorClass(enterprisenum=world.cfg["values"]["enterprisenum"],
+                                                  vcdata=VENDOR_CLASS_DATA(
+                                                      data=world.cfg["values"]["vendor_class_data"])))
+
     elif opt_type == "vendor-specific-info":
-        world.cfg["add_option"]["vendor_specific_info"] = True
+        # convert data for world.vendor with code == 1 (option request)
+        # that is the only one option that needs converting.
+        vendor_option_request_convert()
+
+        # build VENDOR_CPECIDIC_OPTIONs depending on world.vendor:
+        vso_tmp = []
+        for each in world.vendor:
+            vso_tmp.append(VENDOR_SPECIFIC_OPTION(optcode=each[0],
+                                                  optdata=each[1]))
+        add_client_option(DHCP6OptVendorSpecificInfo(enterprisenum=world.cfg["values"]["enterprisenum"],
+                                                     vso=vso_tmp))
+        # clear vendor list
+        world.vendor = []
+
     elif opt_type == "fqdn":
-        world.cfg["add_option"]["fqdn"] = True
+        if world.cfg["values"]["FQDN_flags"] is None:
+            assert False, "Please define FQDN flags first."
+
+        converted_fqdn = world.cfg["values"]["FQDN_domain_name"]
+        add_client_option(DHCP6OptClientFQDN(flags=str(world.cfg["values"]["FQDN_flags"]),
+                                             fqdn=converted_fqdn))
+
     elif opt_type == "client-link-layer-addr":
-        world.cfg["add_option"]["client-link-layer-addr"] = True
+        pass
+        # add_client_option(DHCP6OptClientLinkLayerAddr(address_type=world.cfg["values"]["address_type"],
+        #                                               lladdr=world.cfg["values"]["link_local_mac_addr"]))
+
     elif opt_type == "remote-id":
-        world.cfg["add_option"]["remote-id"] = True
+        add_client_option(DHCP6OptRemoteID(enterprisenum=world.cfg["values"]["enterprisenum"],
+                                           remoteid=world.cfg["values"]["remote_id"].replace(':', '').decode('hex')))
+
     elif opt_type == "subscriber-id":
-        world.cfg["add_option"]["subscriber-id"] = True
+        add_client_option(DHCP6OptSubscriberID(subscriberid=world.cfg["values"]["subscriber_id"].
+                                               replace(':', '').decode('hex')))
+
     else:
         assert "unsupported option: " + opt_type
 
 
 def add_vendor_suboption(step, code, data):
-    # if code == 1 we need check if we added code = 1 before
+    # if code == 1 we need check if we added code=1 before
     # if we do, we need append only data not whole suboption
     if code == 1 and len(world.vendor) > 0:
         for each in world.vendor:
@@ -258,7 +325,7 @@ def add_option_to_msg(msg, option):
     return msg
 
 
-def client_add_saved_option(step, erase, count = "all"):
+def client_add_saved_option(step, erase, count="all"):
     """
     Add saved option to message, and erase.
     """
@@ -331,156 +398,18 @@ def convert_DUID():
     world.cfg["values"]["DUID"] = world.cfg["values"]["DUID"].replace(":", "")
 
     if world.cfg["values"]["DUID"][:8] == "00030001":
-        return DUID_LL(lladdr = convert_DUID_hwaddr(8))
+        return DUID_LL(lladdr=convert_DUID_hwaddr(8))
     elif world.cfg["values"]["DUID"][:8] == "00010001":
-        return DUID_LLT(timeval = int(world.cfg["values"]["DUID"][8:16], 16), lladdr = convert_DUID_hwaddr(16))
+        return DUID_LLT(timeval=int(world.cfg["values"]["DUID"][8:16], 16), lladdr=convert_DUID_hwaddr(16))
     else:
         assert False, "DUID value is not valid! DUID: " + world.cfg["values"]["DUID"]
 
 
-def client_option(msg):
-    """
-    Add options (like server-id, rapid commit) to message. This function refers to building message
-    """
-
-    if world.cfg["values"]["DUID"] is not None:
-        world.cfg["values"]["cli_duid"] = convert_DUID()
-
-    #server id with mistake, if you want to add correct server id, plz use 'client copies server id...'
-    if world.cfg["add_option"]["wrong_server_id"]:
-        msg /= DHCP6OptServerId(duid = DUID_LLT(timeval = int(time.time()), lladdr = RandMAC()))
-
-    #client id
-    if world.cfg["add_option"]["client_id"] and not world.cfg["add_option"]["wrong_client_id"]:
-        if not world.cfg["relay"]:
-            msg /= DHCP6OptClientId(duid = world.cfg["values"]["cli_duid"])
-    elif world.cfg["add_option"]["client_id"] and world.cfg["add_option"]["wrong_client_id"]:
-        msg /= DHCP6OptClientId()  # it needs to stay blank!
-
-    elif not world.cfg["add_option"]["client_id"]:
-        #world.cfg["add_option"]["client_id"] = True
-        pass
-
-    if world.cfg["add_option"]["IA_NA"] and not world.cfg["relay"] and world.cfg["values"]["IA_Address"] == "::":
-        if world.oro is not None and len(world.cliopts):
-            for opt in world.cliopts:
-                if opt.optcode == 3:
-                    break  # if there is no IA_NA/TA in world.cliopts, break..
-            else:
-                msg /= DHCP6OptIA_NA(iaid = int(world.cfg["values"]["ia_id"]),
-                                     T1 = world.cfg["values"]["T1"],
-                                     T2 = world.cfg["values"]["T2"])  # if not, add IA_NA
-        else:
-            msg /= DHCP6OptIA_NA(iaid = int(world.cfg["values"]["ia_id"]),
-                                 T1 = world.cfg["values"]["T1"],
-                                 T2 = world.cfg["values"]["T2"])  # if not, add IA_NA
-
-    if world.cfg["add_option"]["preference"]:
-        msg /= DHCP6OptPref()
-
-    if world.cfg["add_option"]["rapid_commit"]:
-        msg /= DHCP6OptRapidCommit()
-
-    if world.cfg["add_option"]["time"]:
-        msg /= DHCP6OptElapsedTime()
-
-    if world.cfg["add_option"]["server_uni"]:
-        msg /= DHCP6OptServerUnicast()
-
-    if world.cfg["add_option"]["status_code"]:
-        msg /= DHCP6OptStatusCode()
-
-    if world.cfg["add_option"]["interface_id"]:
-        msg /= DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
-
-    if world.cfg["add_option"]["reconfig"]:
-        msg /= DHCP6OptReconfMsg()
-
-    if world.cfg["add_option"]["reconfig_accept"]:
-        msg /= DHCP6OptReconfAccept()
-
-    if world.cfg["add_option"]["IA_PD"]:
-        msg /= DHCP6OptIA_PD(iaid = int(world.cfg["values"]["ia_pd"]),
-                             T1 = world.cfg["values"]["T1"],
-                             T2 = world.cfg["values"]["T2"])
-
-    if world.cfg["add_option"]["option_request"]:
-        msg /= DHCP6OptOptReq()  # this adds 23 and 24 opt by default, we can leave it that way in this point.
-
-    if world.cfg["add_option"]["relay_msg"]:
-        msg /= DHCP6OptRelayMsg()/DHCP6_Solicit()
-
-    if world.cfg["add_option"]["IA_Prefix"]:
-        msg /= DHCP6OptIA_PD(iaid = int(world.cfg["values"]["ia_pd"]),
-                             T1 = world.cfg["values"]["T1"],
-                             T2 = world.cfg["values"]["T2"],
-                             iapdopt = DHCP6OptIAPrefix(preflft = world.cfg["values"]["preflft"],
-                                 validlft = world.cfg["values"]["validlft"],
-                                 plen = world.cfg["values"]["plen"],
-                                 prefix = world.cfg["values"]["prefix"]))
-
-    if world.cfg["add_option"]["IA_Address"] and world.cfg["values"]["IA_Address"] != "::":
-        world.cfg["add_option"]["IA_NA"] = False
-        msg /= DHCP6OptIA_NA(iaid = int(world.cfg["values"]["ia_id"]),
-                              T1 = world.cfg["values"]["T1"],
-                              T2 = world.cfg["values"]["T2"],
-                              ianaopts = DHCP6OptIAAddress(address = world.cfg["values"]["IA_Address"],
-                                                          preflft = world.cfg["values"]["preflft"],
-                                                          validlft = world.cfg["values"]["validlft"]))
-
-    if world.cfg["add_option"]["vendor_class"]:
-        if world.cfg["values"]["vendor_class_data"] == "":
-            msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"])
-        else:
-            msg /= DHCP6OptVendorClass(enterprisenum = world.cfg["values"]["enterprisenum"],
-                                       vcdata = VENDOR_CLASS_DATA(data = world.cfg["values"]["vendor_class_data"]))
-
-    if world.cfg["add_option"]["vendor_specific_info"]:
-        # convert data for world.vendor with code == 1 (option request)
-        # that is the only one option that needs converting.
-        vendor_option_request_convert()
-
-        # build VENDOR_CPECIDIC_OPTIONs depending on world.vendor:
-        vso_tmp = []
-        for each in world.vendor:
-            vso_tmp.append(VENDOR_SPECIFIC_OPTION(optcode = each[0],
-                                                  optdata = each[1]))
-        msg /= DHCP6OptVendorSpecificInfo(enterprisenum = world.cfg["values"]["enterprisenum"],
-                                          vso = vso_tmp)
-        # clear vendor list
-        world.vendor = []
-    #
-    # set all "add_option" True/False values to default.
-
-    if world.cfg["add_option"]["fqdn"]:
-        if world.cfg["values"]["FQDN_flags"] is None:
-            assert False, "Please define FQDN flags first."
-
-        converted_fqdn = world.cfg["values"]["FQDN_domain_name"]
-        msg /= DHCP6OptClientFQDN(flags = str(world.cfg["values"]["FQDN_flags"]),
-                                  fqdn = converted_fqdn)
-
-    if world.cfg["add_option"]["client-link-layer-addr"]:
-        msg /= DHCP6OptClientLinkLayerAddr(address_type = world.cfg["values"]["address_type"],
-                                           lladdr = world.cfg["values"]["link_local_mac_addr"])
-
-    if world.cfg["add_option"]["remote-id"]:
-        msg /= DHCP6OptRemoteID(enterprisenum = world.cfg["values"]["enterprisenum"],
-                                remoteid = world.cfg["values"]["remote_id"].replace(':', '').decode('hex'))
-
-    if world.cfg["add_option"]["subscriber-id"]:
-        msg /= DHCP6OptSubscriberID(subscriberid = world.cfg["values"]["subscriber_id"].replace(':', '').decode('hex'))
-
-    set_options()
-    set_values()
-    return msg
-
-
 def build_msg(msg):
 
-    msg = IPv6(dst = world.cfg["address_v6"],
-               src = world.cfg["cli_link_local"])/UDP(sport = world.cfg["source_port"],
-                                                      dport = world.cfg["destination_port"])/msg
+    msg = IPv6(dst=world.cfg["address_v6"],
+               src=world.cfg["cli_link_local"])/UDP(sport=world.cfg["source_port"],
+                                                    dport=world.cfg["destination_port"])/msg
 
     # get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"
@@ -496,16 +425,9 @@ def build_msg(msg):
     except:
         pass
 
-    #add other options if any
-    try:
-        if world.oro is not None and len(world.cliopts):
-            for opt in world.cliopts:
-                msg = add_option_to_msg(msg, opt)
-    except:
-        pass
-
-    #add all rest options to message.
-    msg = client_option(msg)
+    # add all rest options to message.
+    for each_option in world.cliopts:
+        msg /= each_option
 
     return msg
 
@@ -527,36 +449,39 @@ def create_relay_forward(step, level):
 
     #all three values: linkaddr, peeraddr and hopcount must be filled
 
-    tmp = DHCP6_RelayForward(linkaddr = world.cfg["values"]["linkaddr"],
-                             peeraddr = world.cfg["values"]["peeraddr"],
-                             hopcount = level)/DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])
+    tmp = DHCP6_RelayForward(linkaddr=world.cfg["values"]["linkaddr"],
+                             peeraddr=world.cfg["values"]["peeraddr"],
+                             hopcount=level)
+    tmp /= DHCP6OptIfaceId(ifaceid=world.cfg["values"]["ifaceid"])
 
-    #tmp = DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount = level)
+    #tmp=DHCP6_RelayForward(linkaddr="3000::ffff", peeraddr="::", hopcount=level)
 
     #  add options (used only when checking "wrong option" test for
     #  relay-forward message. to add some options to relay-forward
     #  you need to put "Client does include opt_name." before "...using
     #  relay-agent encapsulated in 1 level." and after "Client sends SOLICIT message."
-    tmp = client_option(tmp)
+    for each_option in world.cliopts:
+        msg /= each_option
 
-    #add RelayMsg option
+    # add RelayMsg option
     tmp /= DHCP6OptRelayMsg()
-    #message encapsulation
+    # message encapsulation
     while True:
         level -= 1
-        if not level: break
-        tmp /= DHCP6_RelayForward(hopcount = level,
-                                  linkaddr =  world.cfg["values"]["linkaddr"],
-                                  peeraddr = world.cfg["values"]["peeraddr"])\
-               / DHCP6OptIfaceId(ifaceid = world.cfg["values"]["ifaceid"])\
-               / DHCP6OptRelayMsg()
+        if not level:
+            break
+        tmp /= DHCP6_RelayForward(hopcount=level,
+                                  linkaddr=world.cfg["values"]["linkaddr"],
+                                  peeraddr=world.cfg["values"]["peeraddr"])
+        tmp /= DHCP6OptIfaceId(ifaceid=world.cfg["values"]["ifaceid"])
+        tmp /= DHCP6OptRelayMsg()
 
-    #build full message
-    relay_msg = IPv6(dst = world.cfg["address_v6"],
-                     src = world.cfg["cli_link_local"])\
-                / UDP(sport = world.cfg["source_port"],
-                      dport = world.cfg["destination_port"])\
-                / tmp/msg
+    # build full message
+    relay_msg = IPv6(dst=world.cfg["address_v6"],
+                     src=world.cfg["cli_link_local"])
+    relay_msg /= UDP(sport=world.cfg["source_port"],
+                     dport=world.cfg["destination_port"])
+    relay_msg /= tmp/msg
 
     # in case if unicast used, get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"
@@ -572,7 +497,7 @@ def create_relay_forward(step, level):
 ## ================ SEND/RECEIVE MESSAGE BLOCK START =================
 
 
-def send_wait_for_message(step, type, presence, exp_message):
+def send_wait_for_message(step, condition_type, presence, exp_message):
     """
     Block until the given message is (not) received.
     Parameter:
@@ -581,26 +506,26 @@ def send_wait_for_message(step, type, presence, exp_message):
     process_name ('<name> stderr'): Name of the process to check the output of.
     message ('message <message>'): Output (part) to wait for.
     """
-    world.cliopts = [] #clear options, always build new message, also possible make it in client_send_msg
+    world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     may_flag = False
-    #debug.recv = []
+    #debug.recv=[]
     conf.use_pcap = True
-    if str(type) in "MUST":
+    if str(condition_type) in "MUST":
         pass
-    elif str(type) in "MAY":
+    elif str(condition_type) in "MAY":
         may_flag = True
     # we needs to get it operational
     # problem: break test with success. (for now we can break test only with fail)
     else:
-        assert False, "Invalid expected behavior: %s." % str(type)
+        assert False, "Invalid expected behavior: %s." % str(condition_type)
 
     # Uncomment this to get debug.recv filled with all received messages
     conf.debug_match = True
     ans, unans = sr(world.climsg,
-                    iface = world.cfg["iface"],
-                    timeout = world.cfg["wait_interval"],
-                    nofilter = 1,
-                    verbose = world.scapy_verbose)
+                    iface=world.cfg["iface"],
+                    timeout=world.cfg["wait_interval"],
+                    nofilter=1,
+                    verbose=world.scapy_verbose)
 
     from features.init_all import SHOW_PACKETS_FROM
     if SHOW_PACKETS_FROM in ['both', 'client']:
@@ -617,14 +542,14 @@ def send_wait_for_message(step, type, presence, exp_message):
             b.show()
 
         if not world.loops["active"]:
-            get_common_logger().info("Received packet type = %s" % get_msg_type(b))
+            get_common_logger().info("Received packet type=%s" % get_msg_type(b))
 
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:
             expected_type_found = True
 
     for x in unans:
-        get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
+        get_common_logger().error(("Unmatched packet type=%s" % get_msg_type(x)))
 
     if not world.loops["active"]:
         get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
@@ -652,16 +577,9 @@ def get_last_response():
 ## =======================================================================
 ## ================ PARSING RECEIVED MESSAGE BLOCK START =================
 
-def test_content(value_name):
-    # !! probably REMOVE!!
-    #this is only beta version of value testing
-    if value_name in "address":
-        opt = get_option(world.srvmsg[0], 3)
-        if str(opt.ianaopts[0].addr[-1]) in [":", "0"]:
-            assert False, "Invalid assigned address: %s" % opt.ianaopts[0].addr
-    else:
-        assert False, "testing %s not implemented" % value_name
-
+# TODO: 2 new steps.
+# One - check value in message
+# Two - check multiple values in message/option
 
 def get_msg_type(msg):
     msg_types = {"ADVERTISE": DHCP6_Advertise,
@@ -670,18 +588,14 @@ def get_msg_type(msg):
                  "RELAYREPLY": DHCP6_RelayReply}
 
     # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
-    dhcp = msg.getlayer(2)
-
     for msg_name in msg_types.keys():
-        if type(dhcp) == msg_types[msg_name]:
+        if type(msg.getlayer(2)) == msg_types[msg_name]:
             return msg_name
 
     return "UNKNOWN-TYPE"
 
-# Returns option of specified type
 
-
-def client_save_option(step, option_name, count = 0):
+def client_save_option(step, option_name, count=0):
     assert option_name in options6, "Unsupported option name " + option_name
     opt_code = options6.get(option_name)
     opt = get_option(get_last_response(), opt_code)
@@ -709,7 +623,7 @@ def client_copy_option(step, option_name):
 
     assert opt, "Received message does not contain option " + option_name
 
-    # payload need to be 'None'otherwise we copy all options from one we are
+    # payload need to be 'None' otherwise we copy all options from one we are
     # looking for till the end of the message
     # it would be nice to remove 'status code' sub-option
     # before sending it back to server
@@ -729,40 +643,30 @@ def get_option(msg, opt_code):
     world.opts = []
     world.subopts = []
     tmp = None
-    x = tmp_msg.getlayer(3) # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+    # TODO: get rid of x and tmp_msg
+    x = tmp_msg.getlayer(3)  # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
 
     # check all message, for expected option and all suboptions in IA_NA/IA_PD
-    check_suboptions = {3: 'ianaopts',
-                        25: 'iapdopt',
-                        17: 'vso'
-                        }
+    check_suboptions = ["ianaopts",
+                        "iapdopt",
+                        "vso"
+                        "userclassdata",
+                        "vcdata"
+                        ]
     while x:
         if x.optcode == int(opt_code):
             tmp = x
             world.opts.append(x)
 
-        # add IA Address and Status Code as separate option
+        for each in check_suboptions:
+            if x.fields.get(each):
+                world.subopts.append([x.optcode, each])
 
-#        MAKE IT WORK :)
-#         for combination in check_suboptions:
-#             if x.optcode == combination[0]:
-#                 for each in x.fields.get(data_type(combination[1])):
-#                     world.subopts.append([number,each])
-        if x.optcode == 3:
-            for each in x.ianaopts:
-                world.subopts.append([3, each])
-
-        # add IA PrefixDelegation and Status Code as separate option
-        if x.optcode == 25:
-            for each in x.iapdopt:
-                world.subopts.append([25, each])
-        # add suboptions for vendor specific information
-        if x.optcode == 17:
-            for each in x.vso:
-                world.subopts.append([17, each])
         # add Status Code to suboptions even if it is option in main message
+        # TODO check if it is still needed!
         if x.optcode == 13:
                 world.subopts.append([0, x])
+
         x = x.payload
     return tmp
 
@@ -795,14 +699,27 @@ def response_check_include_option(step, must_include, opt_code):
 def sub_option_help(expected, opt_code):
     x = []
     received = ''
-    for each in world.subopts:
+    check_suboptions = ["ianaopts",
+                        "iapdopt",
+                        "vso",
+                        "userclassdata",
+                        "vcdata"
+                        ]
+    # firstly we go through all options that can include sub-options
+    for each_options in world.subopts:
         # we need to be sure that option 13 is in 25 or 3
         # otherwise sub-option 13 from option 3 could be taken
         # as sub-option from option 25. And that's important!
-        if each[0] == opt_code:
-            if each[1].optcode == expected:
-                x.append(each[1])
-                received += str(each[1].optcode)
+        if each_options[0] == opt_code:
+            # now we need to find specific sub-option list:
+            for every_option_list in check_suboptions:
+                # if we found list - we need to check every option on that list
+                if each_options[1].fields.get(every_option_list):
+                    for each_options_in_the_list in each_options[1].fields.get(every_option_list):
+                        # if on selected list there is option we are looking for, return it!
+                        if each_options_in_the_list.optcode == expected:
+                            x.append(each_options_in_the_list)
+                            received += str(each_options_in_the_list.optcode)
     else:
         assert len(x) > 0, "Expected sub-option " + str(expected) + " not present in the option " + str(opt_code)
         return x, received
@@ -846,74 +763,31 @@ def response_check_option_content(step, subopt_code, opt_code, expect, data_type
 
     # test all collected options,:
     if subopt_code is 0:
-        for each in world.opts:
-            if opt_code == 1:
-                if data_type == "duid":
-                    received += extract_duid(each.duid)
-                    expected = expected.replace(":", "")
-            elif opt_code == 2:
-                if data_type == "duid":
-                    received += extract_duid(each.duid)
-                    expected = expected.replace(":", "")
-            # uncomment to print all pocket fields
-            #assert False, each.fields.keys()
-            elif opt_code == 3:
-                # looking for all kinds of variables, specified in test step (e.g. T1 )
-                received += str(each.fields.get(data_type))
-            elif opt_code == 4:
-                received += str(each.fields.get(data_type))
-            elif opt_code == 7:
-                received = str(each.prefval)
-            elif opt_code == 9:
-                # receive relay messages bug in scapy must be fixed!
-                #each.payload.show()
-                #hexdump(each.payload)
-                #assert False, 'break'
-                received += str(each.fields.get(data_type))
-            elif opt_code == 13:
-                received = str(each.statuscode)
-            elif opt_code == 17:
-                received += str(each.fields.get(data_type))
-                #received = str(each.enterprisenum)
-            elif opt_code == 21:
-                received = ",".join(each.sipdomains)
-            elif opt_code == 22:
-                received = ",".join(each.sipservers)
-            elif opt_code == 23:
-                received = ",".join(each.dnsservers)
-            elif opt_code == 24:
-                received = ",".join(each.dnsdomains)
-            elif opt_code == 25:
-                # looking for all kinds of variables, specified in test step (e.g. T1 )
-                # temporary fix until it wont be fixed in scapy
-                if data_type == "iapd":
-                    data_type = "iaid"
-                received += str(each.fields.get(data_type))
-            elif opt_code == 27:
-                received = ",".join(each.nisservers)
-            elif opt_code == 28:
-                received = ",".join(each.nispservers)
-            elif opt_code == 29:
-                received = each.nisdomain
-            elif opt_code == 30:
-                received = each.nispdomain
-            elif opt_code == 31:
-                received = ",".join(each.sntpservers)
-            elif opt_code == 32:
-                received = str(each.reftime)
-            elif opt_code == 39:
-                received = str(each.fields.get(data_type))
+        # couple tweaks to make checking smoother
+        if data_type == "iapd":
+            data_type = "iaid"
+        if data_type == "duid":
+            expected = expected.replace(":", "")
 
+        # gathering all info
+        for each in world.opts:
+            tmp_field = each.fields.get(data_type)
+
+            if tmp_field:
+                if type(tmp_field) is list:
+                    received = ",".join(tmp_field)
+                else:
+                    received += str(tmp_field)
             else:
                 # if you came to this place, need to do some implementation with new options
                 received = unknown_option_to_str(data_type, each)
     else:
-        # test all suboptions which we extracted from received message,
+        # test all sub-options which we extracted from received message,
         # and also test primary option for that sub-option.We don't want to have
-        # situation when 13 suboption from option 3 was taken as a subotion of option 25.
+        # situation when 13 sub-option from option 3 was taken as a sub-option of option 25.
         # yes that's freaky...
         # each[0] - it's parent optcode (for 26 it will be 25, for 13 it will be 3,
-        # some times statuscode option included not as sub-option will be marked as 0.
+        # some times status code option included not as sub-option will be marked as 0.
 
         for each in world.subopts:
             if each[0] == opt_code:
@@ -1014,7 +888,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         # long 4 message exchange with saving leases.
         for x in range(1, repeat):
             # if x % x_range == 0:
-            #     get_common_logger().info("Message exchane no. %d", x)
+            #     get_common_logger().info("Message exchange no. %d", x)
             generate_new(step, "client")
             client_send_msg(step, message_type_1, None, None)
             send_wait_for_message(step, "MAY", True, "ADVERTISE")

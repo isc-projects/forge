@@ -17,7 +17,7 @@
 
 
 from features.logging_facility import get_common_logger
-from features.terrain import set_options, set_values
+from features.terrain import set_values
 from lettuce.registry import world
 from features.init_all import IFACE, CLI_MAC, CLI_LINK_LOCAL, \
                               SRV_IPV6_ADDR_LINK_LOCAL, SOFTWARE_UNDER_TEST
@@ -194,7 +194,8 @@ def server_build_msg(step, response, msgType):
         world.clntCounter += 1
 
     set_values()
-    set_options()
+    #TODO after removing "set_options" from code v6 client testing should be rebuild
+    #set_options()
 
 
 def check_is_solicit_rt():
@@ -379,7 +380,8 @@ def srv_msg_clean(step):
     world.srvopts = []
     world.pref = None
     set_values()
-    set_options()
+    #TODO after removing "set_options" from code v6 client testing should be rebuild
+    #set_options()
 
 
 def get_msg_type(msg):
