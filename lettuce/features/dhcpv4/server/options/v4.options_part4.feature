@@ -60,11 +60,15 @@ Feature: DHCPv4 options part4
     Server is configured with time-offset option with value -2147483648.
 	DHCP server is started.
 
+    DHCP server is stopped.
+
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with time-offset option with value 2147483647.
 	DHCP server is started.
 	    
+    DHCP server is stopped.
+
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with time-offset option with value 2147483648.
@@ -74,6 +78,8 @@ Feature: DHCPv4 options part4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with time-offset option with value 50.
     DHCP server is started.
+
+    DHCP server is stopped.
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -145,6 +151,8 @@ Feature: DHCPv4 options part4
     Server is configured with max-dgram-reassembly option with value 576.
     DHCP server is started.
 
+    DHCP server is stopped.
+
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with max-dgram-reassembly option with value 65535.
@@ -163,10 +171,14 @@ Feature: DHCPv4 options part4
     Server is configured with default-ip-ttl option with value 1.
     DHCP server is started.
 
+    DHCP server is stopped.
+
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with default-ip-ttl option with value 255.
 	DHCP server is started.
+
+    DHCP server is stopped.
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -197,11 +209,12 @@ Feature: DHCPv4 options part4
     Server is configured with path-mtu-aging-timeout option with value 65535.
     DHCP server is started.
 
+    DHCP server is stopped.
+
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with path-mtu-aging-timeout option with value 68.
     DHCP server is started.
-
 
 @v4 @dhcp4 @options @subnet
     Scenario: v4.options.malformed.values.static-routes
@@ -245,6 +258,8 @@ Feature: DHCPv4 options part4
     Server is configured with arp-cache-timeout option with value 0.
 	DHCP server is started.
 
+    DHCP server is stopped.
+
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with arp-cache-timeout option with value 4294967295.
@@ -267,6 +282,8 @@ Feature: DHCPv4 options part4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with default-tcp-ttl option with value 255.
     DHCP server is started.
+
+    DHCP server is stopped.
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -291,10 +308,14 @@ Feature: DHCPv4 options part4
     Server is configured with dhcp-option-overload option with value 1.
     DHCP server is started.
 
+    DHCP server is stopped.
+
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with dhcp-option-overload option with value 2.
     DHCP server is started.
+
+    DHCP server is stopped.
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -318,6 +339,8 @@ Feature: DHCPv4 options part4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with dhcp-max-message-size option with value 576.
 	DHCP server is started.
+
+    DHCP server is stopped.
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.

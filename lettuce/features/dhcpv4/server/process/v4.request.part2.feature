@@ -83,7 +83,7 @@ Scenario: v4.request.initreboot.fail
 Scenario: v4.request.initreboot.no-leases
 
 	Test Setup:
-	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+	Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
 	DHCP server is started.
 	
 	Test Procedure:

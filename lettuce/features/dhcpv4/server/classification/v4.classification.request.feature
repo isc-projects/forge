@@ -270,13 +270,7 @@ Feature: DHCPv4 Client Classification - request process
 	Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
+    Server MUST NOT respond.
 
 @v4 @dhcp4 @classification
     Scenario: v4.client.classification.one.class.empty-pool-without-classification
@@ -329,13 +323,7 @@ Feature: DHCPv4 Client Classification - request process
 	Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
+    Server MUST NOT respond.
 
 @v4 @dhcp4 @classification
     Scenario: v4.client.classification.multiple.classes.two-subnets-different-chaddr

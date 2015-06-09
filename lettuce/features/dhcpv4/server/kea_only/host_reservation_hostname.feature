@@ -43,7 +43,9 @@ Feature: Host Reservation DHCPv4
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
-    Client adds to the message hostname with value some-name.
+    Client sets FQDN_domain_name value to sth6.six.example.com..
+    Client sets FQDN_flags value to S.
+    Client does include fqdn.
     Client sends DISCOVER message.
 
     Pass Criteria:
@@ -77,7 +79,8 @@ Feature: Host Reservation DHCPv4
     For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.5.
     DHCP server is started.
 
-    Sleep for 2 seconds.
+    Pause the Test.
+    #Sleep for 2 seconds.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.

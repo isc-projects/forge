@@ -85,23 +85,18 @@ Feature: DHCPv4 address release process
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
     Test Procedure:
+    Client saves server_id option from received message.
     Client sets chaddr value to 00:00:00:00:00:00.
     Client adds to the message client_id with value 00010203040506.
     Client requests option 1.
     Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
-    
+    Server MUST NOT respond.
+
     Test Procedure:
+    Client adds saved options. And Erase.
     Client sets chaddr value to default.
-    Client copies server_id option from received message.
     Client sets ciaddr value to 192.168.50.1.
     Client sends RELEASE message.
     
@@ -182,15 +177,7 @@ Feature: DHCPv4 address release process
     Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response MUST include option 61.
-    Response option 54 MUST contain value $(SRV4_ADDR).
-    Response option 61 MUST contain value 00010203040111.
+    Server MUST NOT respond.
 
 @v4 @dhcp4 @release
     Scenario: v4.release.fail-with-same-chaddr-different-client-id
@@ -252,15 +239,7 @@ Feature: DHCPv4 address release process
     Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    #Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response MUST include option 61.
-    Response option 54 MUST contain value $(SRV4_ADDR).
-    Response option 61 MUST contain value 00010203040111.
+    Server MUST NOT respond.
 
 @v4 @dhcp4 @release
     Scenario: v4.release.fail-with-different-chaddr-same-client-id
@@ -444,13 +423,7 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
 	Client sends DISCOVER message.
 	
 	Pass Criteria:
-	Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    #Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
+	Server MUST NOT respond.
 
 @v4 @dhcp4 @release
     Scenario: v4.release.leases-expired

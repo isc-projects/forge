@@ -121,10 +121,5 @@ Feature: DHCPv4 Client Classification release process
     Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response option 54 MUST contain value $(SRV4_ADDR).
-    #Response option 61 MUST contain value 00010203040506.
-    Response MUST contain yiaddr 0.0.0.0.
-    #Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
+    Server MUST NOT respond.
+    # we should check logs here..

@@ -29,7 +29,7 @@ Feature: Standard DHCPv6 information request message
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies server-id option from received message.
+	Client does include wrong-server-id.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:

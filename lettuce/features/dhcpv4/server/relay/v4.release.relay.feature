@@ -110,6 +110,7 @@ Feature: DHCPv4 address release process
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
     Test Procedure:
+    Client saves server_id option from received message.
     Client sets giaddr value to $(GIADDR4).
     Client sets hops value to 1.
     Client sets chaddr value to 00:00:00:00:00:00.
@@ -118,19 +119,13 @@ Feature: DHCPv4 address release process
     Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
+    Server MUST NOT respond.
     
     Test Procedure:
     Client sets giaddr value to $(GIADDR4).
     Client sets hops value to 1.
     Client sets chaddr value to default.
-    Client copies server_id option from received message.
+    Client adds saved options. And Erase.
     Client sets ciaddr value to 192.168.50.1.
     Client sends RELEASE message.
     

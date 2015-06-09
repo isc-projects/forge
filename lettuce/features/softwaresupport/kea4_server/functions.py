@@ -247,7 +247,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value, subnet
 def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
     pointer = locate_entry(world.subcfg[subnet][5], '}', reservation_number)
     if reservation_type == "address":
-        tmp = world.subcfg[subnet][5][:pointer] + ',"ip-addresses":"{reserved_value}"'.format(**locals())
+        tmp = world.subcfg[subnet][5][:pointer] + ',"ip-address":"{reserved_value}"'.format(**locals())
         tmp += world.subcfg[subnet][5][pointer:]
     elif reservation_type == "hostname":
         tmp = world.subcfg[subnet][5][:pointer] + ',"hostname":"{reserved_value}"'.format(**locals())

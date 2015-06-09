@@ -87,13 +87,7 @@ Feature: DHCPv4 address request process
     Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-    Response option 54 MUST contain value $(SRV4_ADDR).
+    Server MUST NOT respond.
 
 @v4 @dhcp4 @relay @request
     Scenario: v4.request.relay.selecting.success-client-id
@@ -197,13 +191,7 @@ Feature: DHCPv4 address request process
     Client sends DISCOVER message.
 
     Pass Criteria:
-    Server MUST respond with NAK message.
-    Response MUST contain yiaddr 0.0.0.0.
-    Response MUST contain ciaddr 0.0.0.0.
-    Response MUST contain siaddr 0.0.0.0.
-    Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
+    Server MUST NOT respond.
 	
 @v4 @dhcp4 @relay @request
 Scenario: v4.request.relay.selecting.success-client-id-chaddr-empty-pool
@@ -260,13 +248,7 @@ Scenario: v4.request.relay.selecting.success-client-id-chaddr-empty-pool
 	Client sends DISCOVER message.
 	
 	Pass Criteria:
-	Server MUST respond with NAK message.
-	Response MUST contain yiaddr 0.0.0.0.
-	Response MUST contain ciaddr 0.0.0.0.
-	Response MUST contain siaddr 0.0.0.0.
-	Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
+	Server MUST NOT respond.
 	
 	Test Procedure:
     Client sets giaddr value to $(GIADDR4).
@@ -277,13 +259,7 @@ Scenario: v4.request.relay.selecting.success-client-id-chaddr-empty-pool
 	Client sends DISCOVER message.
 	
 	Pass Criteria:
-	Server MUST respond with NAK message.
-	Response MUST contain yiaddr 0.0.0.0.
-	Response MUST contain ciaddr 0.0.0.0.
-	Response MUST contain siaddr 0.0.0.0.
-	Response MUST contain giaddr 0.0.0.0.
-	Response MUST include option 54.
-	Response option 54 MUST contain value $(SRV4_ADDR).
+	Server MUST NOT respond.
 
 @v4 @dhcp4 @relay @request
     Scenario: v4.request.relay.selecting.success-second-request-fail
