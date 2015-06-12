@@ -79,8 +79,7 @@ Feature: Host Reservation DHCPv4
     For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.5.
     DHCP server is started.
 
-    Pause the Test.
-    #Sleep for 2 seconds.
+    Sleep for 2 seconds.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
