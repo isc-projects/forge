@@ -36,7 +36,7 @@ class TestHistory ():
 
         from features.init_all import SOFTWARE_UNDER_TEST
         self.software_type = str(SOFTWARE_UNDER_TEST)
-        
+
         #TODO: implement this
         self.bind10_version = "N/A"
         self.dibbler_version = "N/A"
@@ -48,7 +48,7 @@ class TestHistory ():
         return datetime.datetime.now()
 
     def start(self):
-        self.start_time = self.present_time() 
+        self.start_time = self.present_time()
 
     def information(self, passed, ran, tags, path):
         self.stop_time = self.present_time()
@@ -61,17 +61,17 @@ class TestHistory ():
             self.percent = 0
         self.tags = tags
         self.path = path
-        
+
     def check_file(self):
         if not os.path.exists('history.html'):
             new_file = open('history.html', 'w')
             new_file.close()
-    
+
     def build_report(self):
-        scenarios = self.read_result() 
+        scenarios = self.read_result()
         scenarios.reverse()
         scenarios_html = '<tr><th colspan="2" align = left>TESTS:</th></tr><tr><td>NAME:</td><td>RESULT:</td></tr>'
-        
+
         for i in range(len(scenarios)/2):
             name = str(scenarios.pop())
             result = str(scenarios.pop())
@@ -83,9 +83,9 @@ class TestHistory ():
                 color = 'green'
             else:
                 result = 'N/A'
-                color = 'black'                
+                color = 'black'
             scenarios_html += '<tr><td>'+name+'</td><td bgcolor = \''+color+'\'>'+result+'</td></tr>'
-            
+
         report = open('history.html', 'a')
         self.time_elapsed = self.stop_time - self.start_time
         report.write('<table border = \'1\' style = \"font-family: monospace; font-size:12\"><tr><td>DATE:</td><td>'
@@ -105,7 +105,7 @@ class TestHistory ():
         for line in result:
             res.append(line)
         result.close()
-        
+
         os.remove('result')
         return res
 
@@ -127,7 +127,7 @@ class UserHelp ():
                     pass
                 else:
                     self.tags += tag + ', '
-        
+
     def test(self, ip_version, more):
         """
         Generate list of test sets, features, test names and all available tags
@@ -139,7 +139,7 @@ class UserHelp ():
         print "Test tree schema:\nroot directory\n\ttest set (available by option -s in forge.py)\n\t\ttest feature"
         if more:
             print "\t\t\ttest name (available by option -n in forge.py)"
-        for each_number in ip_version: 
+        for each_number in ip_version:
             self.tags = ''
             sets_number = 0
             features_number = 0
@@ -156,7 +156,7 @@ class UserHelp ():
                     print freespace + path[16:]
                 if len(path[23:]) > 1:
                     print freespace*2 + path[23:]
-                    sets_number += 1 
+                    sets_number += 1
                 for each_file in files:
                     print freespace*3, each_file[:-8], '\n', freespace*4, 'Test Names:'
                     features_number += 1
@@ -197,7 +197,7 @@ class UserHelp ():
         files = ['srv_control', 'srv_msg']  # if you add file that help will be generated, add also description below.
         message = ['All steps available in preparing DHCP server configuration:',
                    'All steps available in building tests procedure:']
-        
+
         for file_name, text in zip(files, message):
             steps = open('features/' + file_name + '.py', 'r')
             print '\n', text,
@@ -263,153 +263,289 @@ def find_scenario_in_path(name, path):
                 scenario = 0
                 file_name.close()
     return None, 0
-    
+
 if __name__ == '__main__':
     #orginal_stdout = sys.stdout
     help_file = file('UserHelp.txt', 'w')
     sys.stdout = help_file
     generate_help = UserHelp()
     print """
-    This is User Help to Forge project. If you looking for installation guide,
-    plz read documentation or visit Forge project web site.
-    
-    First part of help is guide how to use existing test and test steps.
-    
-    How to run specific tests:
-        - all tests for IPv6
-            forge.py -6
-        - all tests from specific set e.g. relay_agent (one test set is a whole directory e.g. test_v6/address_validation):
-            forge.py -6 -s relay_agent
-        - all tests from specific set with specific tag:
-            forge.py -6 -s relay_agent -t basic
-        - you can also use only tags:
-            forge.py -6 -t basic
-        - or multiple tags (then you start tests with both of tags):
-            forge.py -6 -t basic, relay
-        - you can start test with specific name, only one name at the time:
-            forge.py -6 -n v6.basic.message.unicast.solicit
-    
-    Lettuce verbosity (-v option):
-        1 - dots for each feature
-        2 - scenario names
-        3 - full feature print, but colorless
-        4 - full feature print, but colorful, DEFAULT level
+                 FORGE - An Automated DHCP Validation Framework
 
-    
-    Below there is automatically generated list of all tests. If you design new keeping the build procedure, 
-    just start help.py again and you will see updated list (build procedure is described at the end of that document).
-    
-    AVAILABLE TESTS:  
-    """
-    generate_help.test(["4", "6"], 1)
-    help_file.flush()
-    print """Tests are simple Scenarios, multi-test are Scenarios Outline.
+1. Introduction
+---------------
+This is the user guide for Forge, the automated DHCP validation framework. It
+covers setting up and running of the tests, and describes how to write new
+tests.
 
-    AVAILABLE STEPS:"""
+Forge tests a DHCP server by starting it on the same machine as the one on
+which Forge is running, sending it DHCP packets and checking the responses.
+It also monitors the server's logging output: as well as allowing the framework
+to check that the server has started and stopped correctly (Forge may restart
+the server several times during its operation), monitoring the logging output
+allows the reaction of the server to different events to be tested.
+
+Forge uses Lettuce, a Python-based utility that allows tests to be
+written in a semi-natural form of English.  As a result, the tests are
+easily understood, and it is easy to learn how to write new tests.
+
+Instructions for installation of Forge can be found in the file doc/info.txt
+in the Forge git repository at:
+
+    https://github.com/isc-projects/forge/blob/master/doc/info.txt
+
+Further Forge documentation can be found at the Forge project web site:
+
+    http://kea.isc.org/wiki/IscForge
+
+
+2. Setting Up the Tests
+-----------------------
+Assuming that Forge has been installed, the first step is to create the
+"lettuce/features/init_all.py" file.  This is a file that gives Forge
+information about software being tested as well as setting parameters
+for the tests.  The easiest way to do this is to copy the file
+"lettuce/features/init_all.py_example" and edit it.  The file contains
+comprehensive explanations of all the parameters.
+
+
+3. Running the Tests
+--------------------
+Running the tests involves running the file "forge.py" with appropriate options.
+
+Note: you must set your current directory to be the "lettuce" directory containing
+"forge.py" first.
+
+The options control what tests are run:
+
+* All tests for IPv6:
+    forge.py -6
+
+* All tests from specific set e.g. relay_agent (one test set is a whole
+  directory e.g. test_v6/address_validation):
+    forge.py -6 -s relay_agent
+
+* All tests from specific set with specific tag (e.g. "basic"):
+    forge.py -6 -s relay_agent -t basic
+
+* All tests with a specific tag (e.g. "basic"):
+    forge.py -6 -t basic
+
+  Multiple tags can be given, in which case Forge will run all tests with the
+  first tag, then all tests with the second tag, e.g. to run the basic tests
+  and the relay tests:
+
+    forge.py -6 -t basic, relay
+
+* To run a specific test, specify the test name, e.g.
+
+    forge.py -6 -n v6.basic.message.unicast.solicit
+
+The detail produced by the tests can be controlled with the Lettuce verbosity (-v option):
+
+    1 - Print dots as each feature is executed
+    2 - Print scenario names
+    3 - Full feature print, but colorless
+    4 - Full feature print, but colorful (this is the default level)
+
+
+4. Writing New Tests
+--------------------
+The following is an example of a test.  Lines started with the '#'
+character are comments are are ignored.
+
+    # In Lettuce, a "feature" is a group of tests that check a particular
+    # application feature.  It is introduced by a line starting with the word
+    # "Feature:" giving a one-line description of the feature.  The "Feature:"
+    # line is then followed by one or more lines containing a more detailed
+    # explanation.
+
+    Feature: Standard DHCPv6 address validation
+        This feature is for checking the response to messages sent on a UNICAST
+        address.  A Request message should be answered with a Reply message
+        containing the option StatusCode with code 5.  Solicit, Confirm,
+        Rebind, and Info-Request messages should be discarded.
+
+    # In Lettuce, a test is known as a "scenario".  Each scenario has a name
+    # and is identified by a line starting wiuth the "Scanario:" keyword.
+    # Optionally, the "Scenario:" line is preceded by one or more tags (each
+    # preceded by the "@" sign) that identifies the broad category in which
+    # the scenario is grouped. These tags allow groups of tests to be selected
+    # with the "-t" command-line option.
+
+        @basic @v6 @unicast test name
+        Scenario: v6.basic.message.unicast.solicit
+
+    # Each scenario consists of a setup procedure, followed by one of more
+    # sets of "Test Procedures" and "Pass Criteria".  In the "Test Procedure",
+    # Lettuce executes a set of steps that exercise the software being tested.
+    # The "Pass Criteria" block gets Lettuce to examine the results of the
+    # test procedure.  Note that the setup steps only get executed once, at
+    # the start of the scenario.  Thereafter the actions taken by the test
+    # procedures and pass criteria following one another in the order written:
+    # the software being tested is not reset between the blocks.
+    #
+    # The following setup procedure configures a DHCPv6 server with a subnet
+    # and a pool comprising 256 addresses.  It then starts the server.
+
+            Test Setup:
+            Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+            DHCP Server is started.
+
+    # The following steps now check the behavior of the server in response to a
+    # sequence of packets. The first test procedure sets up a packet and, with
+    # the "Client Sends" line, tells Lettuce to send the packet to the server
+
+            Test Procedure:
+            Client requests option 7.
+            Client chooses UNICAST address.
+            Client sends SOLICIT message.
+
+    # The next block tells Lettuce to execute the code that checks the reply
+    # sent by the server.
+
+            Pass Criteria:
+            Server MUST NOT respond with ADVERTISE message.
+
+    # Another test procedure and check:
+
+            Test Procedure:
+            Client requests option 7.
+            Client sends SOLICIT message.
+
+            Pass Criteria:
+            Server MUST respond with ADVERTISE message.
+
+    # Finally, there is an optional line (for documentation purposes only)
+    # that refers to the document describing the behavior being tested.
+
+            References: RFC3315 section 15
+
+Note: Each section in the test ("Test Procedure", "Pass Criteria" etc.)
+starts with the name of the section and ends with the colon character.
+The "Test Procedure" and "Pass Criteria" section comprise a set of statements,
+each ending with the period character ('.').  Although virtually all the
+section names and statements have been put into separate lines in the example
+above, there is no need to: they can be put on one line, as is the case with
+the "Feature", "Scanario" and "References" sections.
+
+Where a number of scenarios are similar, a "Scenario Outline" may be used
+instead of a Scenario.  Here, the scenario include placeholders, plus a list of
+substitution values.  Lettuce will run the scenario a number of times, each time
+using a different substitution value.  The following example illustrates this.
+
+# As expected, a scenario Outline" is introduced by the "Scenario Outline"
+# keywords.  As with "Scenario", the Scenario Outline line is preceded by the
+# list of tags.
+
+    @v6 @solicit_invalid @invalid_option @outline
+    Scenario Outline: v6.solicit.invalid.options.outline
+
+        Test Setup:
+        Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+        Server is started.
+
+# The following test procedure now uses a placeholder for one of its values.
+# In this case, the placeholder is named opt_name.  A placeholder is indicated
+# by enclosing the name between the '<' and '>' angle brackets, e.g. '<opt_name>'.
+
+        Test Procedure:
+        Client requests option 7.
+        Client does include <opt_name>.
+        Client sends SOLICIT message.
+
+        Pass Criteria:
+        Server MUST NOT respond with ADVERTISE message.
+
+        Test Procedure:
+        Client requests option 7.
+        Client sends SOLICIT message.
+
+        Pass Criteria:
+        Server MUST respond with ADVERTISE message.
+
+        References: RFC3315 section 15.2, 17.2.1
+
+# There now follows the "Examples:" section containing the list of substitution
+# values for the place holder.
+
+        Examples:
+            | opt_name       |
+            | relay-msg      |
+            | preference     |
+            | server-unicast |
+            | status-code    |
+            | interface-id   |
+            | reconfigure    |
+
+# The contents of the examples section is a table, using the vertical bar '|' as
+# separators between columns.  The first row of each column is the name of the
+# option and the subsequent rows are the substitution values.  Multiple options
+# can be used within a scenario outline: all substitution values are specified
+# in the examples section, in multiple column tables, e.g. if the outline uses
+# the place holders "node_name" and "address", they would be specified as:
+#
+#       Examples:
+#           | node_name | address  |
+#           | foo       | 3000::25 |
+#           | bar       | 3000::26 |
+#           |    :      |     :    |
+
+More information about Scenario Outlines can be found at:
+
+    http://pythonhosted.org/lettuce/intro/wtf.html#outlined.
+
+Unfortunately Lettuce is little complex with scenario outlines. They are not
+scenarios so Lettuce features like @after.each_scenario (not illustrated in
+the above examples) are not considered when they are executed.  Instead, you
+need to use command such as @before.outline and @after.outline (which are not
+mentioned in the current Lettuce documentation).
+
+The following steps are available:"""
     generate_help.steps()
     help_file.flush()
     print """
-    Step "Run configuration command: (.+)" is unique, it's for Kea servers only. All test with that step will
-    automatically fail when variable SOFTWARE_UNDER_TEST in init_all.py will be different then: kea, kea4 or kea6.
-    This step is designed to put one line commands to configuration file (e.g. config set Dhcp6/renew-timer 999)
-    but it can be used to more complicated things if you put command in right order.
-    Be aware of fact that command passed to config file it's all after "Run configuration command:"
-    to the end of the line!
-    
-    HOW TO DESIGN NEW SETPS?
-    
-    All the informations automatically generated and included in this file are result of parsing two files:
+(All the information above was automatically generated by parsing two files:
+
         srv_msg.py
-        srv_control.py 
-        in directory isc-forge/lettuce/features/
-    As you can see there are test steps marked with '@step' and steps family marked with '##'
-    (don't remove #, it's need to be double).
+        srv_control.py
 
-    When designing new step please put them in correct family.
-    
-    Test example:
-    
-feature name >>                Feature: Standard DHCPv6 address validation
-feature description >>         This feature is for checking respond on messages send on UNICAST address. Solicit, Confirm, Rebind, Info-Request should be discarded. Request should be answered with Reply message containing option StatusCode with code 5. 
-        
-tags >>                             @basic @v6 @unicast  
-test name (simple scenario)>>       Scenario: v6.basic.message.unicast.solicit
-    
-configure server >>                 Test Setup:
-                                    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-                                    Server is started.
-    
-Test steps >>                       Test Procedure:
-           >>                       Client requests option 7.
-           >>                       Client chooses UNICAST address.
-           >>                       Client sends SOLICIT message.
-                    
-                                    Pass Criteria:
-send/receive msg >>                 Server MUST NOT respond with ADVERTISE message.
-                                
-                                    Test Procedure:
-                                    Client requests option 7.
-                                    Client sends SOLICIT message.
-                                
-                                    Pass Criteria:
-                                    Server MUST respond with ADVERTISE message.
-    
-Information about references >>     References: RFC3315 section 15
+in the directory lettuce/features.  As you can see, the test steps marked with
+'@step' and the family of steps family is marked with '##' (don't remove #,
+it needs to be double)).
 
-That was example of a simple test scenario, there is another type of tests: Scenario Outline
+Writing new steps is outside the scope of this guide.  However, if you do,
+please ensure that they are added to the correct family.
 
-tags >>                                    @v6 @solicit_invalid @invalid_option @outline
-test name (multi scenario)>>                    Scenario Outline: v6.solicit.invalid.options.outline
-     
-configure server >>                             Test Setup:
-                                                Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-                                                Server is started.
+4.1 Tips for Writing Tests
+--------------------------
+* Do NOT use 'Scenario' in tests other than to set the test name. The "Scenario"
+  line must come right below the tags (e.g. @my_tag)
 
-Test steps >>                                   Test Procedure:
-                   >>                           Client requests option 7.
-<opt_name> will be replaced by text in example>>Client does include <opt_name>.
-Test steps >>                                   Client sends SOLICIT message.
+* When writing a tag, do not separate the "@" from the name of the tag with a space, i.e.
 
-                                                Pass Criteria:
-send/receive msg >>                             Server MUST NOT respond with ADVERTISE message.
-    
-                                                Test Procedure:
-                                                Client requests option 7.
-                                                Client sends SOLICIT message.
+        good tag: @basic
+        bad tag:  @ basic
 
-                                                Pass Criteria:
-                                                Server MUST respond with ADVERTISE message.
-    
-                                                References: RFC3315 section 15.2, 17.2.1
+* For efficiency, DO NOT put a lot of different tags in one feature. It takes
+  a lot of time for lettuce to to parse them tags. It's better to create two
+  separate features (as it is with options.feature in options_validation set).
 
-list of test cases >>                           Examples:
-field name >>                                   | opt_name       |
-test case, every line after 'opt_name'          | relay-msg      |
-will create separate scenario.                  | preference     |
-                                                | server-unicast |
-                                                | status-code    |
-                                                | interface-id   |
-                                                | reconfigure    |
+* "Test Procedure" and "Pass Criteria" can be used multiple times in a scenario.  If
+  "Test Setup" appears twice, the remote server will be stopped, the configuration
+  removed, a new configuration generated, and the server restarted.
 
-    More info about Scenario Outlines: http://pythonhosted.org/lettuce/intro/wtf.html#outlined
-    Unfortunately Lettuce is little messy with Scenario Outline. Scenario Outline is not Scenario so parts like @after.each_scenario are not considered when Lettuce execute
-    Scenario Outline, you need to use @before.outline and @after.outline which are not mentioned in Lettuce documentation.
-
-    Do NOT use 'Scenario' in tests in other places then test name, right below tags (e.g. @my_tag)
-    For tags always use '@' before without white spaces:
-        good tag: @basic 
-        bad tag: @ basic
-    For efficient work of Forge project DO NOT put lots of different tags in one feature. It takes a lot of time for lettuce to parsing tags. It's better to make two separate 
-    features (as it is with options.feature in options_validation set).
-    
-    You can use multiple parts like Test Procedure/ Pass Criteria but using Test Setup please be advised that remote server will be restarted,
-    configuration removed, generated new configuration and start server with it.
-    
-    That's all what you should keep while designing new tests ;)
-    
-    If someone would redesign directory tree for test or files listed above, plz make sure that automatically generated help still working properly.
-    """
-    
+5. Full List of Tests
+---------------------
+The complete set of tests availabole in Forge is listed here.  This list
+(in fact, this entire document) is generated programatically by the script
+"help.py".  If you add additional tests, run help.py and they will be included
+in the list:
+"""
+    generate_help.test(["4", "6"], 1)
+    help_file.flush()
+    print """Tests are simple Scenarios, multi-test are Scenario Outlines.
+"""
     help_file.close()
-    
+
     #sys.stdout = orginal_stdout
