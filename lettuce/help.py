@@ -278,7 +278,7 @@ This is the user guide for Forge, the automated DHCP validation framework. It
 covers setting up and running of the tests, and describes how to write new
 tests.
 
-Forge tests a DHCP server by starting it on the same machine as the one on
+Forge tests a DHCP server by starting it on the different machine then the one on
 which Forge is running, sending it DHCP packets and checking the responses.
 It also monitors the server's logging output: as well as allowing the framework
 to check that the server has started and stopped correctly (Forge may restart
