@@ -285,7 +285,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 def check_kea_status():
     v6 = 0
     v4 = 0
-    result = fabric_run_command(SOFTWARE_INSTALL_DIR + "sbin/keactrl status")
+    result = fabric_sudo_command(SOFTWARE_INSTALL_DIR + "sbin/keactrl status")
     # not very sophisticated but easiest fastest way ;)
     if "DHCPv4 server: inactive" in result:
         v4 = 0
@@ -318,7 +318,7 @@ def set_kea_ctrl_config():
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
-    kea_verbose=yes
+    kea_verbose=no
     '''.format(**locals())
 
 
@@ -370,6 +370,28 @@ def add_hooks(library_path):
         world.cfg["hooks"] += ','
 
     world.cfg["hooks"] += '"' + library_path + '"'
+
+
+def add_logger(log_type, severity, severity_level, logging_file):
+    if not "logger" in world.cfg:
+        world.cfg["logger"] = ''
+    else:
+        if len(world.cfg["logger"]) > 20:
+            world.cfg["logger"] += ','
+    logging_file_path = SOFTWARE_INSTALL_DIR + 'var/kea/' + logging_file
+    if severity_level != "None":
+        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '",' \
+                               '"destination": "file"}],"debuglevel": ' + severity_level + ',"severity": ' \
+                               '"' + severity + '"}'
+    else:
+        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '",' \
+                               '"destination": "file"}],"severity": ' \
+                               '"' + severity + '"}'
+
+
+def open_control_channel(socket_type, socket_name):
+    world.cfg["socket"] = '"control-socket": {"socket-type": "' +\
+                          socket_type + '","socket-name": "' + socket_name + '"}'
 
 
 def cfg_write():
@@ -432,6 +454,9 @@ def cfg_write():
         #cfg_file.write("]")
         del world.cfg["custom_lines"]
 
+    if "socket" in world.cfg:
+        cfg_file.write(',' + world.cfg["socket"])
+
     cfg_file.write('}')
 
     if world.ddns_enable:
@@ -448,15 +473,18 @@ def cfg_write():
         log_type = 'kea-dhcp4'
 
     cfg_file.write(',"Logging": {"loggers": [')
-    cfg_file.write('{"name": "' + log_type + '","output_options": [{"output": "' + logging_file + '",'
-                   '"destination": "file"}')
-    cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
-    if world.ddns_enable:
-        cfg_file.write(',{"name": "kea-dhcp-ddns.dhcpddns","output_options": [{"output": "' + logging_file + '_ddns",'
+    if not "logger" in world.cfg:
+        cfg_file.write('{"name": "' + log_type + '","output_options": [{"output": "' + logging_file + '",'
                        '"destination": "file"}')
         cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
-    cfg_file.write(']}''')
+        if world.ddns_enable:
+            cfg_file.write(',{"name": "kea-dhcp-ddns","output_options": [{"output": "' + logging_file + '_ddns",'
+                           '"destination": "file"}')
+            cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
+    else:
+        cfg_file.write(world.cfg["logger"])
 
+    cfg_file.write(']}')
     cfg_file.write('}')  # end of the config file
     cfg_file.close()
     # kea ctrl script config file
@@ -578,15 +606,11 @@ def save_leases():
 
 
 def save_logs():
-    fabric_download_file(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log', world.cfg["dir_name"] + '/log_file')
-    if world.ddns_enable:
-        fabric_download_file(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log_ddns', world.cfg["dir_name"] + '/log_file_ddns')
+    fabric_download_file(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log*', world.cfg["dir_name"] + '/.')
 
 
 def clear_all():
-    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log')
-    if world.ddns_enable:
-        fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log_ddns')
+    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log*')
 
     db_name = DB_NAME
     db_user = DB_USER
