@@ -319,6 +319,14 @@ def config_client_classification(step, subnet, option_value):
     dhcp.config_client_classification(step, subnet, option_value)
 
 
+@step('Server has control channel on (\S+) socket with name (\S+).')
+def open_control_channel(step, socket_type, socket_name):
+    """
+    """
+    socket_type, socket_name = test_define_value(socket_type, socket_name)
+    dhcp.open_control_channel(socket_type, socket_name)
+
+
 ##DNS server configuration
 @step('DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
 def dns_conf(step, ip_type, address, port, direct):
@@ -342,6 +350,13 @@ def dns_add_key(step, key_name, algorithm, key_value):
 def dns_rest(step, address, port, alg, value):
     address, port, alg, value = test_define_value(address, port, alg, value)
     dns.add_rndc(address, port, alg, value)
+
+
+@step('Server logging system is configured with logger type (\S+), severity (\S+), severity level (\S+) and log file (\S+).')
+def configure_loggers(step, log_type, severity, severity_level, logging_file):
+    log_type, severity, severity_level, logging_file = test_define_value(log_type, severity,
+                                                                         severity_level, logging_file)
+    dhcp.add_logger(log_type, severity, severity_level, logging_file)
 
 
 ##servers management

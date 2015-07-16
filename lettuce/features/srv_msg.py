@@ -476,6 +476,30 @@ def execute_shell(step, path):
     other.execute_shell_script(path, '')
 
 
+@step('Execute shell command: (.+)')
+def execute_shell_command(step, command):
+    other.execute_shell_command(command)
+
+
+@step('Check socket connectivity on address (\S+) and port (\S+).')
+def check_socket(step, socket_address, socket_port):
+    pass
+
+
+@step('Check socket connectivity on server in path (\S+).')
+def check_socket_server_site(step, socket_path):
+    pass
+
+
+@step('Using socket on address (\S+) and port (\S+) send: (.+)')
+def send_through_socket(step, socket_address, socket_port, socket_data):
+    pass
+
+
+@step('Using UNIX socket on server in path (\S+) send (.+)')
+def send_through_socket_server_site(step, socket_path, command):
+    other.send_through_socket_server_site(socket_path, command)
+
 ## loops
 ## testing in loops is new feature that gives possibility to send lot of messages without
 ## writing usual steps for each message. This feature is not fully tested.
