@@ -253,3 +253,24 @@ def execute_shell_script(path, arguments):
 
     myfile.write(unicode('\nScript stdout:\n' + result.stdout))
     myfile.close()
+
+
+def execute_shell_command(command):
+    fabric_sudo_command(command, False)
+
+
+def connect_socket(command):
+    fabric_sudo_command(command, False)
+
+
+def send_through_socket_server_site(socket_path, command):
+    command_file = open(world.cfg["dir_name"] + '/command_file', 'w')
+    command_file.write(command)
+    command_file.close()
+    fabric_send_file(world.cfg["dir_name"] + '/command_file', 'command_file')
+    world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', False)
+    fabric_remove_file_command('command_file')
+
+
+def parse_socket_received_data():
+    pass
