@@ -26,7 +26,7 @@ from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     run_command, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config, check_kea_status, \
     check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases, add_hooks, \
-    save_leases
+    save_leases, add_logger, open_control_channel
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)

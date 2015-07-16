@@ -456,6 +456,7 @@ def cfg_write():
 
     if "socket" in world.cfg:
         cfg_file.write(',' + world.cfg["socket"])
+        del world.cfg["socket"]
 
     cfg_file.write('}')
 
