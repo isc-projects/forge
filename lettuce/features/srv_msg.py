@@ -498,6 +498,7 @@ def send_through_socket(step, socket_address, socket_port, socket_data):
 
 @step('Using UNIX socket on server in path (\S+) send (.+)')
 def send_through_socket_server_site(step, socket_path, command):
+    socket_path = test_define_value(socket_path)[0]
     other.send_through_socket_server_site(socket_path, command)
 
 ## loops
