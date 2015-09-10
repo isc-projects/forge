@@ -154,6 +154,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to false.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.
@@ -226,6 +228,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.
@@ -302,6 +306,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::51 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.
@@ -496,6 +502,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.
@@ -657,6 +665,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.
@@ -816,6 +826,7 @@ Feature: DDNS without TSIG
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with override-client-update option set to true.
+    DDNS server is configured with generated-prefix option set to six.
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
@@ -891,6 +902,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.
@@ -965,6 +978,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to false.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.
@@ -1030,6 +1045,8 @@ Feature: DDNS without TSIG
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with override-no-update option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     DHCP server is started.

@@ -8,6 +8,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
@@ -76,6 +78,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key forge.sha224.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha224.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha224.key based on HMAC-SHA224 with secret value TxAiO5TRKkFyHSCa4erQZQ==.
@@ -144,6 +148,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key forge.sha256.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha256.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha256.key based on HMAC-SHA256 with secret value 5AYMijv0rhZJyQqK/caV7g==.
@@ -212,6 +218,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key forge.sha384.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha384.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha384.key based on HMAC-SHA384 with secret value 21upyvp7zcG0S2PB4+kuQQ==.
@@ -280,6 +288,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key forge.sha512.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha512.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha512.key based on HMAC-SHA512 with secret value jBng5D6QL4f8cfLUUwE7OQ==.
@@ -348,6 +358,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key forge.md5.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.md5.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.md5.key based on HMAC-MD5 with secret value bX3Hs+fG/tThidQPuhK1mA==.
@@ -416,6 +428,8 @@ Feature: DDNS without TSIG
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to six.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name six.example.com. and key forge.md5.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha512.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha512.key based on HMAC-SHA512 with secret value jBng5D6QL4f8cfLUUwE7OQ==.

@@ -9,6 +9,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
@@ -106,6 +108,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
@@ -179,6 +183,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to false.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
@@ -219,6 +225,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.

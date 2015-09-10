@@ -9,6 +9,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -80,6 +82,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -147,6 +151,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to false.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -213,6 +219,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -284,6 +292,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.11-192.168.50.11 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -363,6 +373,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.11 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -440,7 +452,7 @@ Feature: DDNS without TSIG
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:12.
     Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.12.
+    Client adds to the message requested_addr with value 192.168.50.11.
     Client requests option 1.
     Client sets FQDN_domain_name value to client2.four.example.com..
     Client sets FQDN_flags value to S.
@@ -474,6 +486,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.11 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -576,7 +590,7 @@ Feature: DDNS without TSIG
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:12.
     Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.12.
+    Client adds to the message requested_addr with value 192.168.50.11.
     Client requests option 1.
     Client sets FQDN_domain_name value to client2.four.example.com..
     Client sets FQDN_flags value to S.
@@ -626,7 +640,7 @@ Feature: DDNS without TSIG
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:12.
     Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.12.
+    Client adds to the message requested_addr with value 192.168.50.11.
     Client requests option 1.
     Client sets FQDN_domain_name value to client1.four.example.com..
     Client sets FQDN_flags value to S.
@@ -688,6 +702,8 @@ Feature: DDNS without TSIG
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with override-client-update option set to true.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -758,6 +774,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -834,6 +852,8 @@ Feature: DDNS without TSIG
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to false.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
@@ -908,6 +928,8 @@ Feature: DDNS without TSIG
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with override-no-update option set to true.
     DDNS server is configured with enable-updates option set to true.
+    DDNS server is configured with generated-prefix option set to four.
+    DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     DHCP server is started.
