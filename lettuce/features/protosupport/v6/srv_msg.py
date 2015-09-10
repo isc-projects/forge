@@ -1065,6 +1065,26 @@ def loops(step, message_type_1, message_type_2, repeat):
             send_wait_for_message(step, "MAY", True, message_type_2)
             #dhcpmsg.generate_new(step, "client")
 
+    elif message_type_1 == "RENEW" and message_type_2 == "REPLY":
+        # first save server-id option
+        client_send_msg(step, "SOLICIT", None, None)
+        send_wait_for_message(step, "MAY", True, "ADVERTISE")
+        client_save_option(step, "server-id")
+
+        # long 4 message exchange with saving leases.
+        for x in range(1, repeat):
+            if x % x_range == 0:
+                get_common_logger().info("Message exchane no. %d", x)
+
+            client_add_saved_option(step, False)
+            client_send_msg(step, "REQUEST", None, None)
+            send_wait_for_message(step, "MAY", True, message_type_2)
+
+            client_add_saved_option(step, False)
+            client_copy_option(step, "IA_NA")
+            client_send_msg(step, "RENEW", None, None)
+            send_wait_for_message(step, "MAY", True, message_type_2)
+
     else:
         pass
     for x in range(0, len(world.savedmsg)):

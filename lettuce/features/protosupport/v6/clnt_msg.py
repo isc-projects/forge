@@ -31,7 +31,7 @@ import random
 SRV_IP6 = CLI_LINK_LOCAL
 CLI_IP6 = SRV_IPV6_ADDR_LINK_LOCAL
 
-clntFunc = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
+#clntFunc = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
 
 def set_timer(step, timer_val):
