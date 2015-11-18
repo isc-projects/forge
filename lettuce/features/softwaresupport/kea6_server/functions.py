@@ -369,7 +369,7 @@ def add_hooks(library_path):
         # so we need just comma
         world.cfg["hooks"] += ','
 
-    world.cfg["hooks"] += '"' + library_path + '"'
+    world.cfg["hooks"] += '{"library": "' + library_path + '"}'
 
 
 def add_logger(log_type, severity, severity_level, logging_file):
