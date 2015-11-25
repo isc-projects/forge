@@ -233,6 +233,8 @@ def dns_initialize():
 
 def define_software():
     # unfortunately we have to do this every single time
+    world.cfg["dhcp_under_test"] = ""
+    world.cfg["dns_under_test"] = ""
     for each_name in SOFTWARE_UNDER_TEST:
         if each_name in DHCP:
             world.cfg["dhcp_under_test"] = each_name

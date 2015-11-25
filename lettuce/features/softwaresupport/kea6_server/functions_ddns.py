@@ -34,7 +34,7 @@ def add_ddns_server(address, port):
     if port == "default":
         port = "53001"
 
-    world.ddns_main += ',\n"DhcpDdns": {pointer_start} "ip_address": "{address}","dns_server_timeout": 100,' \
+    world.ddns_main += ',\n"DhcpDdns": {pointer_start} "ip-address": "{address}","dns-server-timeout": 100,' \
                        ' "port": {port},'.format(**locals())
 
     add_ddns_server_options("server-ip", address)
@@ -53,41 +53,41 @@ def add_ddns_server_options(option, value):
         world.ddns_add += '"{option}": "{value}"'.format(**locals())
 
 
-def add_forward_ddns(name, key_name, ipaddress, port):
+def add_forward_ddns(name, key_name, ip_address, port):
     pointer_start = "{"
     pointer_end = "}"
 
     if key_name == "EMPTY_KEY":
         world.ddns_forw.append('''{pointer_start} "name": "{name}",
-                                "dns_servers": [ {pointer_start}
-                                    "ip_address": "{ipaddress}",
+                                "dns-servers": [ {pointer_start}
+                                    "ip-address": "{ip_address}",
                                     "port": {port} {pointer_end}
                                     ]
                                 {pointer_end} '''.format(**locals()))
     else:
-        world.ddns_forw.append('''{pointer_start} "name": "{name}", "key_name": "{key_name}",
-                                "dns_servers": [ {pointer_start}
-                                    "ip_address": "{ipaddress}",
+        world.ddns_forw.append('''{pointer_start} "name": "{name}", "key-name": "{key_name}",
+                                "dns-servers": [ {pointer_start}
+                                    "ip-address": "{ip_address}",
                                     "port": {port} {pointer_end}
                                     ]
                                 {pointer_end} '''.format(**locals()))
 
 
-def add_reverse_ddns(name, key_name, ipaddress, port):
+def add_reverse_ddns(name, key_name, ip_address, port):
     pointer_start = "{"
     pointer_end = "}"
 
     if key_name == "EMPTY_KEY":
         world.ddns_rev.append('''{pointer_start} "name": "{name}",
-                                "dns_servers": [ {pointer_start}
-                                    "ip_address": "{ipaddress}",
+                                "dns-servers": [ {pointer_start}
+                                    "ip-address": "{ip_address}",
                                     "port": {port} {pointer_end}
                                     ]
                                 {pointer_end} '''.format(**locals()))
     else:
-        world.ddns_rev.append('''{pointer_start} "name": "{name}", "key_name": "{key_name}",
-                                "dns_servers": [ {pointer_start}
-                                    "ip_address": "{ipaddress}",
+        world.ddns_rev.append('''{pointer_start} "name": "{name}", "key-name": "{key_name}",
+                                "dns-servers": [ {pointer_start}
+                                    "ip-address": "{ip_address}",
                                     "port": {port} {pointer_end}
                                     ]
                                 {pointer_end} '''.format(**locals()))
@@ -108,15 +108,15 @@ def add_keys(secret, name, algorithm):
 def build_ddns_config():
     # TODO multiple domains - now that configuration allow to make one of each
     world.ddns = world.ddns_main
-    world.ddns += ' "reverse_ddns": {'
+    world.ddns += ' "reverse-ddns": {'
     for each in world.ddns_rev:
-        world.ddns += '"ddns_domains": [' + each + ']'
+        world.ddns += '"ddns-domains": [' + each + ']'
     world.ddns += '}'
-    world.ddns += ' ,"forward_ddns": {'
+    world.ddns += ' ,"forward-ddns": {'
     for each in world.ddns_forw:
-        world.ddns += '"ddns_domains": [' + each + ']'
+        world.ddns += '"ddns-domains": [' + each + ']'
     world.ddns += '}'
-    world.ddns += ',"tsig_keys": ['
+    world.ddns += ',"tsig-keys": ['
     if len(world.ddns_keys) > 0:
         world.ddns += world.ddns_keys[0]
         for each in world.ddns_keys[1:]:
