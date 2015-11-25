@@ -36,7 +36,6 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client does NOT include IA-NA.
 	Client adds saved options. And DONT Erase.
-	Client copies server-id option from received message.
 	Client sends REBIND message.
 	
 	Pass Criteria:
@@ -84,7 +83,6 @@ Feature: DHCPv6 Prefix Delegation
     Client does include IA_Prefix.
     Client sets plen value to 90.
     Client sets prefix value to 3001::.
-	Client copies server-id option from received message.
 	Client sends REBIND message.
 
 	Pass Criteria:
