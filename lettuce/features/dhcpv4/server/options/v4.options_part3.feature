@@ -151,6 +151,26 @@ Feature: DHCPv4 options part3
     Response option 39 MUST NOT contain value 0.
 
 
+@v4 @dhcp4 @options @subnet
+    Scenario: v4.options.user-custom-option
+
+    # This test it's kind of hack, to override scapy v4 restrictions.
+    Test Setup:
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
+    Server is configured with custom option foo/76 with type uint8 and value 123.
+    DHCP server is started.
+
+    Test Procedure:
+    Client requests option 76.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST include option 76.
+    Response option 76 MUST contain value 123.
+
+
+
 #future tests:
 #vendor-class-identifier	60	binary	false
 #nwip-suboptions	63	binary	false

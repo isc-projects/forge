@@ -324,8 +324,8 @@ def get_option(msg, opt_code):
     # if there's one we're looking for
     world.opts = []
     opt_name = DHCPOptions[int(opt_code)]
-    
-    # dhcpv4 implementation in Scapy is a mess. The options array contains mix of 
+
+    # dhcpv4 implementation in Scapy is a mess. The options array contains mix of
     # strings, IPField, ByteEnumField and who knows what else. In each case the
     # values are accessed differently
     if isinstance(opt_name, Field):
@@ -333,7 +333,7 @@ def get_option(msg, opt_code):
 
     x = msg.getlayer(4)  # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
     # BOOTP messages may be optionless, so check first
-    if (x != None):
+    if x is None:
         for opt in x.options:
             if opt[0] == opt_name:
                 world.opts.append(opt)
@@ -348,10 +348,14 @@ def ByteToHex (byteStr):
 
 def test_option(opt_code, received, expected):
     tmp = ""
-    decode_opts = [61]
+    decode_opts_byte_to_hex = [61, 76]
 
-    if opt_code in decode_opts:
+    if opt_code in decode_opts_byte_to_hex:
         received = received[0], ByteToHex(received[1])
+
+    decode_opts_hex_to_int = [76]
+    if opt_code in decode_opts_hex_to_int:
+        received = received[0], int(str(received[1]), 16)
 
     for each in received:
         tmp += str(each) + ' '
