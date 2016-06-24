@@ -1,6 +1,7 @@
 Feature: Kea Statistics
     Feature to test all Statistics and control channel in Kea4. Temporary disabled.
 
+@disabled
 Scenario: stats_4
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -215,6 +216,7 @@ Scenario: stats_4
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
+@disabled
 Scenario: X
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

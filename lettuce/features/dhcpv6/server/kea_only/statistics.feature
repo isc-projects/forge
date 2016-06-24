@@ -1,6 +1,7 @@
 Feature: Kea Statistics
     Feature to test all Statistics and control channel in Kea4. Temporary disabled.
 
+@disabled
 Scenario: stats_6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

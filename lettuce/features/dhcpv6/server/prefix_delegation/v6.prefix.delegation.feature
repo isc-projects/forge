@@ -742,3 +742,70 @@ Feature: DHCPv6 Prefix Delegation
 	Received prefix value in option 26 is the same as saved value.
 
     References: RFC 3633
+
+
+@v6
+Scenario: prefix.delegation.just-PD-configured-PD-requested
+
+    Test Setup:
+    Server is configured with 3000::/64 subnet with $(EMPTY) pool.
+    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
+    DHCP server is started.
+
+    Test Procedure:
+    Client does NOT include IA-NA.
+    Client does include IA-PD.
+    Client sends SOLICIT message.
+
+    Pass Criteria:
+    Server MUST respond with ADVERTISE message.
+    Response MUST include option 25.
+    Response option 25 MUST contain sub-option 26.
+    Response MUST NOT include option 3.
+
+    Test Procedure:
+    Client copies server-id option from received message.
+    Client copies IA_PD option from received message.
+    Client does NOT include IA-NA.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with REPLY message.
+    Response MUST include option 25.
+    Response option 25 MUST contain sub-option 26.
+    Response MUST NOT include option 3.
+
+
+@v6
+Scenario: prefix.delegation.just-PD-configured-PD-and-IA-requested
+
+    Test Setup:
+    Server is configured with 3000::/64 subnet with $(EMPTY) pool.
+    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 96 delegated prefix length.
+    DHCP server is started.
+
+    Test Procedure:
+    Client does include IA-PD.
+    Client sends SOLICIT message.
+
+    Pass Criteria:
+    Server MUST respond with ADVERTISE message.
+    Response MUST include option 25.
+    Response option 25 MUST contain sub-option 26.
+    Response MUST include option 3.
+    Response option 3 MUST contain sub-option 13.
+    Response sub-option 13 from option 3 MUST contain statuscode 2.
+
+    Test Procedure:
+    Client copies server-id option from received message.
+    Client copies IA_PD option from received message.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with REPLY message.
+    Response MUST include option 25.
+    Response option 25 MUST contain sub-option 26.
+    Response MUST include option 3.
+    Response option 3 MUST contain sub-option 13.
+    Response sub-option 13 from option 3 MUST contain statuscode 2.
+

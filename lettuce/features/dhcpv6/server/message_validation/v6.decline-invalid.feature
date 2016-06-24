@@ -23,6 +23,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -91,6 +92,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -158,6 +160,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 
@@ -218,6 +221,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -278,6 +282,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -337,6 +342,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -396,6 +402,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -455,6 +462,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -514,6 +522,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -573,6 +582,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -632,6 +642,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	
@@ -691,6 +702,7 @@ Feature: Standard DHCPv6 decline message
 	##					client-id
 	##					server-id
 	##					status-code
+	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 	

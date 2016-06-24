@@ -130,7 +130,8 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
          '''.format(**locals())
     world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
-    world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
+    if pool is not "":
+        world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
 
     if not eth in world.cfg["interfaces"]:
         add_interface(eth)

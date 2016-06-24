@@ -82,9 +82,10 @@ Feature: DHCPv6 Prefix Delegation
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST NOT include option 25.
-	Response MUST NOT include option 3.
-	Response MUST include option 13.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 13.
 	
 	References: RFC 3633 Section 12.1.
