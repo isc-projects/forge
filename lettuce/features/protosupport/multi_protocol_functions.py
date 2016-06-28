@@ -219,6 +219,7 @@ def change_network_variables(value_name, value):
         world.cfg["cli_link_local"] = value
     elif value_name == "source_address":
         world.cfg["source_IP"] = value
+        world.cfg["address_v6"] = value
     elif value_name == "destination_address":
         world.cfg["destination_IP"] = value
     elif value_name == "dns_iface":
