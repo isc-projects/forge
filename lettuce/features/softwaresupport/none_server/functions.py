@@ -17,7 +17,7 @@
 
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
-from protosupport.multi_protocol_functions import pasue_test
+from protosupport.multi_protocol_functions import test_pause
 from logging_facility import *
 
 
@@ -128,12 +128,12 @@ def build_and_send_config_files():
 
 def start_srv(start, process):
     print "Prepare server as stated in the test, press Enter to continue."
-    pasue_test()
+    test_pause()
 
 
 def reconfigure_srv():
     print "Prepare server as stated in the test, press Enter to continue."
-    pasue_test()
+    test_pause()
 
 
 def stop_srv(value = False):
@@ -142,7 +142,7 @@ def stop_srv(value = False):
 
 def restart_srv():
     print "I changes needed, prepare server as stated in the test, press Enter to continue."
-    pasue_test()
+    test_pause()
 
 
 def clear_leases():
