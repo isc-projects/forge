@@ -360,6 +360,10 @@ def config_db_backend():
         add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
                        "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
                        "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+        if world.reservation_backend in {"mysql", "postgresql"}:
+            add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
+                           "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+                           "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
 
 
 def add_hooks(library_path):
@@ -578,12 +582,14 @@ def clear_leases():
 
     if DB_TYPE == "mysql":
         # that is tmp solution - just clearing not saving.
-        command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        #command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
         fabric_run_command(command)
     elif DB_TYPE == "postgresql":
         pointer_start = '{'
         pointer_end = '}'
-        command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        #command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
         fabric_run_command(command)
     else:
         fabric_remove_file_command(world.cfg['leases'])
@@ -596,12 +602,14 @@ def save_leases():
 
     if DB_TYPE == "mysql":
         # that is tmp solution - just clearing not saving.
-        command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        #command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
         fabric_run_command(command)
     elif DB_TYPE == "postgresql":
         pointer_start = '{'
         pointer_end = '}'
-        command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        #command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
         fabric_run_command(command)
     else:
         fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
@@ -620,10 +628,11 @@ def clear_all():
     if DB_TYPE in ["memfile", ""]:
         fabric_remove_file_command(world.cfg['leases'])
     elif DB_TYPE == "mysql":
-        command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        #command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
         fabric_run_command(command)
     elif DB_TYPE == "postgresql":
         pointer_start = '{'
         pointer_end = '}'
-        command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
         fabric_run_command(command)
