@@ -27,10 +27,20 @@ for each_server_name in SOFTWARE_UNDER_TEST:
         dhcp = importlib.import_module("softwaresupport.%s.functions" % each_server_name)
         world.cfg["dhcp_under_test"] = each_server_name
         ddns_enable = True
+        mysql_reservation_enable = True
+        pgsql_reservation_enable = True
         try:
             ddns = importlib.import_module("softwaresupport.%s.functions_ddns" % each_server_name)
         except ImportError:
             ddns_enable = False
+        try:
+            mysql_reservation = importlib.import_module("softwaresupport.%s.mysql_reservation" % each_server_name)
+        except ImportError:
+            mysql_reservation_enable = False
+        try:
+            pgsql_reservation = importlib.import_module("softwaresupport.%s.pgsql_reservation" % each_server_name)
+        except ImportError:
+            pgsql_reservation_enable = False
     elif each_server_name in DNS:
         try:
             dns = importlib.import_module("softwaresupport.%s.functions" % each_server_name)
@@ -238,16 +248,6 @@ def add_line(step, command):
     run_command(step, command)
 
 
-@step('Reserve (\S+) (\S+) for host uniquely identified by (\S+).')
-def host_reservation(step, reservation_type, reserved_value, unique_host_value):
-    """
-    Ability to configure simple host reservations.
-    """
-    reservation_type, reserved_value, unique_host_value = test_define_value(reservation_type,
-                                                                            reserved_value, unique_host_value)
-    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value, None)
-
-
 @step('Add hooks library located (\S+).')
 def add_hooks(step, library_path):
     """
@@ -256,6 +256,101 @@ def add_hooks(step, library_path):
     library_path = test_define_value(library_path)[0]
     dhcp.add_hooks(library_path)
 
+##MySQL
+@step('Use (\S+) reservation system.')
+def enable_db_backend_reservation(step, db_type):
+    if db_type == 'MySQL':
+        mysql_reservation.enable_db_backend_reservation()
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.enable_db_backend_reservation()
+    else:
+        assert False, "Database type not recognised."
+
+
+@step('Create new (\S+) reservation identified by (\S+) (\S+).')
+def new_db_backend_reservation(step, db_type, reservation_identifier, reservation_identifier_value):
+    if db_type == 'MySQL':
+        mysql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
+    else:
+        assert False, "Database type not recognised."
+
+
+
+@step('Add (\S+) (\S+) to (\S+) reservation record id (\d+).')
+def update_db_backend_reservation(step, field_name, field_value, db_type, reservation_record_id):
+    if db_type == 'MySQL':
+        mysql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
+    else:
+        assert False, "Database type not recognised."
+
+
+@step('Add IPv6 prefix reservation (\S+) (\d+) with iaid (\S+) to (\S+) record id (\d+).')
+def ipv6_prefix_db_backend_reservation(step, reserved_prefix, reserved_prefix_len, reserved_iaid, db_type, reservation_record_id):
+
+    if db_type == 'MySQL':
+        mysql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
+                                                         int(reservation_record_id))
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
+                                                         int(reservation_record_id))
+    else:
+        assert False, "Database type not recognised."
+
+
+@step('Add IPv6 address reservation (\S+) with iaid (\S+) to (\S+) record id (\d+).')
+def ipv6_address_db_backend_reservation(step, reserved_address, reserved_iaid, db_type, reservation_record_id):
+    if db_type == 'MySQL':
+        mysql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, int(reservation_record_id))
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, int(reservation_record_id))
+    else:
+        assert False, "Database type not recognised."
+
+
+@step('Add option reservation code (\S+) value (\S+) space (\S+) persistent (\d+) client class (\S+) subnet id (\d+) and scope (\S+) to (\S+) record id (\d+).')
+def option_db_record_reservation(step, reserved_option_code, reserved_option_value, reserved_option_space,
+                                 reserved_option_persistent, reserved_option_client_class, reserved_subnet_id,
+                                 reserved_option_scope, db_type, reservation_record_id):
+    if db_type == 'MySQL':
+        mysql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
+                                                       reserved_option_space, reserved_option_persistent,
+                                                       reserved_option_client_class, reserved_subnet_id,
+                                                       reserved_option_scope, int(reservation_record_id))
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
+                                                                         reserved_option_space,
+                                                                         reserved_option_persistent,
+                                                                         reserved_option_client_class,
+                                                                         reserved_subnet_id,
+                                                                         reserved_option_scope,
+                                                                         int(reservation_record_id))
+    else:
+        assert False, "Database type not recognised."
+
+
+@step('Upload hosts reservation to (\S+) database.')
+def upload_db_reservation(step, db_type):
+    if db_type == 'MySQL':
+        mysql_reservation.upload_db_reservation()
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.upload_db_reservation()
+    else:
+        assert False, "Database type not recognised."
+##endMySQL
+
+
+@step('Reserve (\S+) (\S+) for host uniquely identified by (\S+).')
+def host_reservation(step, reservation_type, reserved_value, unique_host_value):
+    """
+    Ability to configure simple host reservations.
+    """
+    reservation_type, reserved_value, unique_host_value = test_define_value(reservation_type,
+                                                                            reserved_value, unique_host_value)
+    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value, None)
 
 ##subnet options
 @step('Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+).')
