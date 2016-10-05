@@ -232,7 +232,7 @@ def build_msg(opts):
                  hops = world.cfg["values"]["hops"])
 
     # BOOTP requests can be optionless
-    if (len(opts) > 0):
+    if len(opts) > 0:
         opts += ["end"]  # end option
         msg /= DHCP(options = opts)
 
