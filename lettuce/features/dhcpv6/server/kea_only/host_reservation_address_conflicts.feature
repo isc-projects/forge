@@ -12,32 +12,6 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.two-address-entries-for-one-host-1
-	Test Setup:
-	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
-	Reserve address 3000::1 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reserve address 3000::2 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
-
-	Test Procedure:
-	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST NOT respond with ADVERTISE message.
-    #We could check logs for: "more than one reservation found for the host belonging"
-
-	Test Procedure:
-	Client sets DUID value to 00:03:00:01:f6:f5:f4:33:22:11.
-	Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with ADVERTISE message.
-    Response MUST include option 3.
-	Response option 3 MUST contain sub-option 5.
-
-
-@v6 @host_reservation @kea_only
     Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-different-subnets
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
@@ -131,6 +105,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
 	Client sends REQUEST message.
@@ -146,6 +121,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
 	Client sends REQUEST message.
@@ -177,6 +153,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Client sends REQUEST message.
@@ -202,6 +179,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
 	Client sends REQUEST message.
@@ -217,6 +195,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
 	Client sends REQUEST message.
@@ -244,7 +223,7 @@ Feature: Host Reservation DHCPv6
 	Time valid-lifetime is configured with value 107.
 	Time preferred-lifetime is configured with value 108.
 	Server is configured with 3000::/30 subnet with 3000::1-3000::3 pool.
-	Reserve address 3000::1 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve address 3000::2 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Reconfigure DHCP server.
 
 	Test Procedure:
@@ -258,7 +237,7 @@ Feature: Host Reservation DHCPv6
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
 	Response sub-option 5 from option 3 MUST contain validlft 0.
-	Response sub-option 5 from option 3 MUST contain address 3000::1.
+	Response sub-option 5 from option 3 MUST contain address 3000::2.
 	Response sub-option 5 from option 3 MUST contain validlft 107.
 	Response sub-option 5 from option 3 MUST contain address 3000::3.
 
@@ -278,7 +257,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	Response sub-option 5 from option 3 MUST contain address 3000::1.
+	Response sub-option 5 from option 3 MUST contain address 3000::2.
 
 
 @v6 @host_reservation @kea_only
@@ -300,6 +279,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
 	Client sends REQUEST message.
@@ -315,6 +295,7 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
 	Client sends REQUEST message.
@@ -342,7 +323,7 @@ Feature: Host Reservation DHCPv6
 	Time preferred-lifetime is configured with value 7.
 	Time valid-lifetime is configured with value 8.
 	Server is configured with 3000::/30 subnet with 3000::1-3000::3 pool.
-	Reserve address 3000::1 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve address 3000::2 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Reconfigure DHCP server.
 
 	Test Procedure:
@@ -356,7 +337,7 @@ Feature: Host Reservation DHCPv6
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
 	Response sub-option 5 from option 3 MUST contain validlft 0.
-	Response sub-option 5 from option 3 MUST contain address 3000::1.
+	Response sub-option 5 from option 3 MUST contain address 3000::2.
 	Response sub-option 5 from option 3 MUST contain validlft 8.
 	Response sub-option 5 from option 3 MUST contain address 3000::3.
 
@@ -376,4 +357,4 @@ Feature: Host Reservation DHCPv6
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	Response sub-option 5 from option 3 MUST contain address 3000::1.
+	Response sub-option 5 from option 3 MUST contain address 3000::2.
