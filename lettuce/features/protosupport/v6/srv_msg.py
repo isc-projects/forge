@@ -157,8 +157,8 @@ def client_does_include(step, opt_type, value):
     if opt_type == "client-id":
         add_client_option(DHCP6OptClientId(duid=world.cfg["values"]["cli_duid"]))
 
-    elif opt_type == "wrong-client-id":
-        add_client_option(add_client_option(DHCP6OptClientId()))
+    # elif opt_type == "empty-client-id":
+    #     add_client_option(add_client_option(DHCP6OptClientId()))
 
     elif opt_type == "wrong-server-id":
         add_client_option(DHCP6OptServerId(duid=DUID_LLT(timeval=int(time.time()), lladdr=RandMAC())))
@@ -193,34 +193,42 @@ def client_does_include(step, opt_type, value):
 
     elif opt_type == "option-request":
         # later we can make it adjustable
-        add_client_option(DHCP6OptOptReq(reqopts=11))
+        add_client_option(DHCP6OptOptReq(reqopts=world.cfg["values"]["reqopts"]))
 
     elif opt_type == "IA-PD":
-        add_client_option(DHCP6OptIA_PD(iaid=int(world.cfg["values"]["ia_pd"]),
-                                        T1=world.cfg["values"]["T1"],
-                                        T2=world.cfg["values"]["T2"]))
+        if len(world.iapd) > 0:
+            add_client_option(DHCP6OptIA_PD(iaid=int(world.cfg["values"]["ia_pd"]),
+                                            T1=world.cfg["values"]["T1"],
+                                            T2=world.cfg["values"]["T2"],
+                                            iapdopt=world.iapd))
+            world.iapd = []
+        else:
+            add_client_option(DHCP6OptIA_PD(iaid=int(world.cfg["values"]["ia_pd"]),
+                                            T1=world.cfg["values"]["T1"],
+                                            T2=world.cfg["values"]["T2"]))
 
     elif opt_type == "IA-NA":
-        add_client_option(DHCP6OptIA_NA(iaid=int(world.cfg["values"]["ia_id"]),
-                                        T1=world.cfg["values"]["T1"],
-                                        T2=world.cfg["values"]["T2"]))
+        if len(world.iaad) > 0:
+            add_client_option(DHCP6OptIA_NA(iaid=int(world.cfg["values"]["ia_id"]),
+                                            T1=world.cfg["values"]["T1"],
+                                            T2=world.cfg["values"]["T2"],
+                                            ianaopts=world.iaad))
+            world.iaad = []
+        else:
+            add_client_option(DHCP6OptIA_NA(iaid=int(world.cfg["values"]["ia_id"]),
+                                            T1=world.cfg["values"]["T1"],
+                                            T2=world.cfg["values"]["T2"]))
 
     elif opt_type == "IA_Prefix":
-        add_client_option(DHCP6OptIA_PD(iaid=int(world.cfg["values"]["ia_pd"]),
-                                        T1=world.cfg["values"]["T1"],
-                                        T2=world.cfg["values"]["T2"],
-                                        iapdopt=DHCP6OptIAPrefix(preflft=world.cfg["values"]["preflft"],
-                                                                 validlft=world.cfg["values"]["validlft"],
-                                                                 plen=world.cfg["values"]["plen"],
-                                                                 prefix=world.cfg["values"]["prefix"])))
+        world.iapd.append(DHCP6OptIAPrefix(preflft=world.cfg["values"]["preflft"],
+                                           validlft=world.cfg["values"]["validlft"],
+                                           plen=world.cfg["values"]["plen"],
+                                           prefix=world.cfg["values"]["prefix"]))
 
     elif opt_type == "IA_Address":
-        add_client_option(DHCP6OptIA_NA(iaid=int(world.cfg["values"]["ia_id"]),
-                                        T1=world.cfg["values"]["T1"],
-                                        T2=world.cfg["values"]["T2"],
-                                        ianaopts=DHCP6OptIAAddress(address=world.cfg["values"]["IA_Address"],
-                                                                   preflft=world.cfg["values"]["preflft"],
-                                                                   validlft=world.cfg["values"]["validlft"])))
+        world.iaad.append(DHCP6OptIAAddress(address=world.cfg["values"]["IA_Address"],
+                                            preflft=world.cfg["values"]["preflft"],
+                                            validlft=world.cfg["values"]["validlft"]))
 
     elif opt_type == "vendor-class":
         if world.cfg["values"]["vendor_class_data"] == "":
@@ -254,9 +262,8 @@ def client_does_include(step, opt_type, value):
                                              fqdn=converted_fqdn))
 
     elif opt_type == "client-link-layer-addr":
-        pass
-        # add_client_option(DHCP6OptClientLinkLayerAddr(address_type=world.cfg["values"]["address_type"],
-        #                                               lladdr=world.cfg["values"]["link_local_mac_addr"]))
+        add_client_option(DHCP6OptClientLinkLayerAddr(address_type=world.cfg["values"]["address_type"],
+                                                      lladdr=world.cfg["values"]["link_local_mac_addr"]))
 
     elif opt_type == "remote-id":
         add_client_option(DHCP6OptRemoteID(enterprisenum=world.cfg["values"]["enterprisenum"],
@@ -288,7 +295,7 @@ def add_vendor_suboption(step, code, data):
         world.vendor.append([code, str(data)])
 
 
-def generate_new (step, opt):
+def generate_new(step, opt):
     """
     Generate new client id with random MAC address.
     """
@@ -596,8 +603,8 @@ def get_msg_type(msg):
 
 
 def client_save_option(step, option_name, count=0):
-    assert option_name in options6, "Unsupported option name " + option_name
-    opt_code = options6.get(option_name)
+    assert option_name in options, "Unsupported option name " + option_name
+    opt_code = options.get(option_name)
     opt = get_option(get_last_response(), opt_code)
 
     assert opt, "Received message does not contain option " + option_name
@@ -615,8 +622,8 @@ def client_copy_option(step, option_name):
     """
     assert world.srvmsg
 
-    assert option_name in options6, "Unsupported option name " + option_name
-    opt_code = options6.get(option_name)
+    assert option_name in options, "Unsupported option name " + option_name
+    opt_code = options.get(option_name)
 
     # find and copy option
     opt = get_option(world.srvmsg[0], opt_code)
@@ -655,12 +662,14 @@ def get_option(msg, opt_code):
                         ]
     while x:
         if x.optcode == int(opt_code):
-            tmp = x
+            tmp = x.copy()
             world.opts.append(x)
 
         for each in check_suboptions:
             if x.fields.get(each):
-                world.subopts.append([x.optcode, each])
+                tmp2 = x.copy()
+                del tmp2.payload
+                world.subopts.append([x.optcode, tmp2])
 
         # add Status Code to suboptions even if it is option in main message
         # TODO check if it is still needed!
@@ -718,10 +727,12 @@ def sub_option_help(expected, opt_code):
                     for each_options_in_the_list in each_options[1].fields.get(every_option_list):
                         # if on selected list there is option we are looking for, return it!
                         if each_options_in_the_list.optcode == expected:
+                            # assert False
+                            # tmp = each_options_in_the_list.copy()
+                            # tmp.payload = None
                             x.append(each_options_in_the_list)
-                            received += str(each_options_in_the_list.optcode)
+                            received = str(each_options_in_the_list.optcode)
     else:
-        assert len(x) > 0, "Expected sub-option " + str(expected) + " not present in the option " + str(opt_code)
         return x, received
 
 
@@ -737,75 +748,171 @@ def extract_duid(option):
         return "00030001" + str(option.lladdr).replace(":", "")
 
 
-def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
+def response_check_include_suboption(opt_code, expect, expected_value):
+    x, receive_tmp = sub_option_help(int(expected_value), int(opt_code))
+    if expect is None:
+        assert len(x) > 0, "Expected sub-option " + str(expected_value) + " not present in the option " + str(opt_code)
+    else:
+        assert len(x) == 0, "NOT expected sub-option " + str(expected_value) + " is present in the option " + str(opt_code)
+    return x, receive_tmp
 
+
+values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sipservers", 23: "dnsservers",
+                         24: "dnsdomains", 27: "nisservers", 28: "nispservers", 29: "nisdomain", 30: "nispdomain",
+                         31: "sntpservers"}
+
+
+def response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected_value):
+    #first check if subotion exists and get supoption
     opt_code = int(opt_code)
-    subopt_code = int(subopt_code)
     data_type = str(data_type)
-    expected = str(expected)
+    expected_value = str(expected_value)
+    received = ""
+    x, receive_tmp = response_check_include_suboption(opt_code, None, subopt_code)
+    #assert False, x
+    assert subopt_code == receive_tmp, "You should never see this error, if so, please report that bug a"
+
+    # that is duplicated code but lets leave it for now
+    for each in x:
+        tmp_field = each.payload.fields.get(data_type)
+
+        if not tmp_field:
+            data_type = values_equivalent.get(opt_code)
+            tmp_field = each.fields.get(data_type)
+        if tmp_field:
+            if type(tmp_field) is list:
+                received = ",".join(tmp_field)
+            else:
+                received += str(tmp_field)
+        else:
+            # if you came to this place, need to do some implementation with new options
+            received = unknown_option_to_str(data_type, each)
+
+    if expect is None or expect is True:
+        assert expected_value in received, "Invalid " + str(opt_code) + " option, received "\
+                                           + data_type + ": " + received + ", but expected " + str(expected_value)
+    else:
+        assert expected_value not in received, "Received value of " + data_type + ": " + received +\
+                                               " should not be equal to value from client - " + str(expected_value)
+
+
+def response_check_option_content(opt_code, expect, data_type, expected_value):
+    opt_code = int(opt_code)
+    data_type = str(data_type)
+    expected_value = str(expected_value)
     # without any msg received, fail test
     assert len(world.srvmsg) != 0, "No response received."
+
 
     # get that one option, also fill world.opts (for multiple options same type, e.g. IA_NA)
     # and world.subopts for suboptions for e.g. IA Address or StatusCodes
     x = get_option(world.srvmsg[0], opt_code)
-
     received = ""
 
-    # check sub-options if we are looking for some
-    if data_type in "sub-option":
-        x, receive_tmp = sub_option_help(int(expected), opt_code)
-        received += receive_tmp
-
-    # no option received? Fail test (there is one think to do: optional statuscode(13) in main
-    # message, not as a sub-option!
     assert x, "Expected option " + str(opt_code) + " not present in the message."
 
     # test all collected options,:
-    if subopt_code is 0:
-        # couple tweaks to make checking smoother
-        if data_type == "iapd":
-            data_type = "iaid"
-        if data_type == "duid":
-            expected = expected.replace(":", "")
+    # couple tweaks to make checking smoother
+    if data_type == "iapd":
+        data_type = "iaid"
+    if data_type == "duid":
+        expected_value = expected_value.replace(":", "")
 
-        # gathering all info
-        for each in world.opts:
+    for each in x:
+        tmp_field = each.fields.get(data_type)
+        if not tmp_field:
+            data_type = values_equivalent.get(opt_code)
             tmp_field = each.fields.get(data_type)
-
-            if tmp_field:
-                if type(tmp_field) is list:
-                    received = ",".join(tmp_field)
-                else:
-                    received += str(tmp_field)
+        if tmp_field:
+            if type(tmp_field) is list:
+                received = ",".join(tmp_field)
             else:
-                # if you came to this place, need to do some implementation with new options
-                received = unknown_option_to_str(data_type, each)
-    else:
-        # test all sub-options which we extracted from received message,
-        # and also test primary option for that sub-option.We don't want to have
-        # situation when 13 sub-option from option 3 was taken as a sub-option of option 25.
-        # yes that's freaky...
-        # each[0] - it's parent optcode (for 26 it will be 25, for 13 it will be 3,
-        # some times status code option included not as sub-option will be marked as 0.
-
-        for each in world.subopts:
-            if each[0] == opt_code:
-                if opt_code == 17:
-                    received += str(each[1].optdata) + ' '
-                    continue
-                try:
-                    received += str(each[1].payload.fields.get(data_type)) + ' '
-                except:
-                    pass
+                received += str(tmp_field)
+        else:
+            # if you came to this place, need to do some implementation with new options
+            received = unknown_option_to_str(data_type, each)
 
     # test if expected option/suboption/value is in all collected options/suboptions/values
     if expect is None or expect is True:
-        assert expected in received, "Invalid " + str(opt_code) + " option, received "\
-                                     + data_type + ": " + received + ", but expected " + str(expected)
-    elif expect is False:
-        assert expected not in received, "Received value of " + data_type + ": " + received + \
-                                         " should not be equal to value from client - " + str(expected)
+        assert expected_value in received, "Invalid " + str(opt_code) + " option, received "\
+                                           + data_type + ": " + received + ", but expected " + str(expected_value)
+    else:
+        assert expected_value not in received, "Received value of " + data_type + ": " + received +\
+                                               " should not be equal to value from client - " + str(expected_value)
+
+# def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
+#
+#     opt_code = int(opt_code)
+#     subopt_code = int(subopt_code)
+#     data_type = str(data_type)
+#     expected = str(expected)
+#     # without any msg received, fail test
+#     assert len(world.srvmsg) != 0, "No response received."
+#     values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sipservers", 23: "dnsservers",
+#                          24: "dnsdomains", 27: "nisservers", 28: "nispservers", 29: "nisdomain", 30: "nispdomain",
+#                          31: "sntpservers"}
+#     # get that one option, also fill world.opts (for multiple options same type, e.g. IA_NA)
+#     # and world.subopts for suboptions for e.g. IA Address or StatusCodes
+#     x = get_option(world.srvmsg[0], opt_code)
+#
+#     received = ""
+#     # check sub-options if we are looking for some
+#     if data_type in "sub-option":
+#         x, receive_tmp = sub_option_help(int(expected), opt_code)
+#         received += receive_tmp
+#
+#     # no option received? Fail test (there is one think to do: optional statuscode(13) in main
+#     # message, not as a sub-option!
+#     assert x, "Expected option " + str(opt_code) + " not present in the message."
+#
+#     # test all collected options,:
+#     if subopt_code is 0:
+#         # couple tweaks to make checking smoother
+#         if data_type == "iapd":
+#             data_type = "iaid"
+#         if data_type == "duid":
+#             expected = expected.replace(":", "")
+#
+#         # we can use scapy values names in various options or use "value" and update values_equivalent.
+#         # scapy values names are preferable
+#         if (data_type in ["value"]) or (data_type not in values_equivalent):
+#             data_type = values_equivalent.get(opt_code)
+#
+#         for each in world.opts:
+#             tmp_field = each.fields.get(data_type)
+#             if tmp_field:
+#                 if type(tmp_field) is list:
+#                     received = ",".join(tmp_field)
+#                 else:
+#                     received += str(tmp_field)
+#             else:
+#                 # if you came to this place, need to do some implementation with new options
+#                 received = unknown_option_to_str(data_type, each)
+#     else:
+#         # test all sub-options which we extracted from received message,
+#         # and also test primary option for that sub-option.We don't want to have
+#         # situation when 13 sub-option from option 3 was taken as a sub-option of option 25.
+#         # yes that's freaky...
+#         # each[0] - it's parent optcode (for 26 it will be 25, for 13 it will be 3,
+#         # some times status code option included not as sub-option will be marked as 0.
+#
+#         for each in world.subopts:
+#             if each[0] == opt_code:
+#                 if opt_code == 17:
+#                     received += str(each[1].optdata) + ' '
+#                     continue
+#                 try:
+#                     received += str(each[1].payload.fields.get(data_type)) + ' '
+#                 except:
+#                     pass
+#
+#     # test if expected option/suboption/value is in all collected options/suboptions/values
+#     if expect is None or expect is True:
+#         assert expected in received, "Invalid " + str(opt_code) + " option, received "\
+#                                      + data_type + ": " + received + ", but expected " + str(expected)
+#     elif expect is False:
+#         assert expected not in received, "Received value of " + data_type + ": " + received + \
+#                                          " should not be equal to value from client - " + str(expected)
 
 
 def save_value_from_option(step, value_name, option_name):

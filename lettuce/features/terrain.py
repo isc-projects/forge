@@ -62,7 +62,8 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "srvaddr": "::",
              "statuscode": 0,
              "statusmsg": "",
-             "reconfigure_msg_type": 5}
+             "reconfigure_msg_type": 5,
+             "reqopts": 7}
 
 srv_values_v6 = {"T1": 1000,
                  "T2": 2000,
@@ -174,7 +175,7 @@ def v6_initialize():
     world.dhcp_enable = True
     # RFC 3315 define two addresess:
     # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
-    # All DHCP_Servers ff05::1:3 that is deprecated.
+    # All DHCP_Servers ff05::1:3.
     world.cfg["address_v6"] = "ff02::1:2"
     world.cfg["cli_link_local"] = CLI_LINK_LOCAL
     world.cfg["unicast"] = False
@@ -225,6 +226,8 @@ def declare_all():
     world.proto = PROTO
     world.oro = None
     world.vendor = []
+    world.iaad = []
+    world.iapd = []
     world.opts = []
     world.subopts = []
     world.cfg = {}

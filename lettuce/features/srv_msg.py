@@ -180,22 +180,24 @@ def response_check_content(step, expect, data_type, expected):
 
 
 @step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_option_content(step, opt_code, expect, data_type, expected):
+def response_check_option_content(step, opt_code, expect, data_type, expected_value):
     """
     Detailed parsing of received option. For more details please read manual section "Parsing respond"
     """
-    data_type, expected = test_define_value(data_type, expected)
-    dhcpmsg.response_check_option_content(step, 0, opt_code, expect, data_type, expected)
+    data_type, expected_value = test_define_value(data_type, expected_value)
+    if data_type == "sub-option":
+        dhcpmsg.response_check_include_suboption(opt_code, expect, expected_value)
+    else:
+        dhcpmsg.response_check_option_content(opt_code, expect, data_type, expected_value)
 
 
 @step('Response sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_suboption_content(step, subopt_code, opt_code, yes_or_no, data_type, expected):
+def response_check_suboption_content(step, subopt_code, opt_code, expect, data_type, expected):
     """
     Some options can include suboptions, we can test them too.
     For more details please read manual section "Parsing respond"
     """
-    expect = not (yes_or_no == "NOT ")
-    dhcpmsg.response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected)
+    dhcpmsg.response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected)
 
 
 ##building DNS messages
