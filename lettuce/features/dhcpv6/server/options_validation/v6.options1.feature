@@ -24,14 +24,17 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 7.
+	Client does include client-id.
+    Client does include IA-NA.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 7.
-	Response option 7 MUST contain value 123.
+	Response option 7 MUST contain prefval 123.
 
 	Test Procedure:
+	Client does include client-id.
 	Client copies server-id option from received message.
 	Client requests option 7.
 	Client sends REQUEST message.
@@ -66,15 +69,19 @@ Feature: Standard DHCPv6 options part 1
 	DHCP server is started.
 
 	Test Procedure:
+	Client does include client-id.
+    Client does include IA-NA.
 	Client requests option 21.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 21.
-	Response option 21 MUST contain domains srv1.example.com,srv2.isc.org.
+	Response option 21 MUST contain sipdomains srv1.example.com,srv2.isc.org.
 
 	Test Procedure:
+	Client does include client-id.
+    Client does include IA-NA.
 	Client copies server-id option from received message.
 	Client requests option 21.
 	Client sends REQUEST message.

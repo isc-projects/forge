@@ -30,15 +30,17 @@ Feature: DHCPv6 Prefix Delegation
 	DHCP server is started.
 	
 	Test Procedure:
+	Client does include client-id.
 	Client requests option 7.
 	Client does include IA-PD.
+	Client does include IA-NA.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
-	Response MUST include option 25.
 	Response MUST include option 3.
-	Response sub-option 5 from option 3 MUST contain address 3000::2.
+    Response option 3 MUST contain sub-option 5.
+    Response sub-option 5 from option 3 MUST contain address 3000::2.
 
 	References: RFC 3633, Section: 9
 	

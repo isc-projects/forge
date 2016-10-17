@@ -744,7 +744,7 @@ Feature: DHCPv6 Prefix Delegation
     References: RFC 3633
 
 
-@v6
+@v6 @dhcp6 @PD
 Scenario: prefix.delegation.just-PD-configured-PD-requested
 
     Test Setup:
@@ -776,7 +776,7 @@ Scenario: prefix.delegation.just-PD-configured-PD-requested
     Response MUST NOT include option 3.
 
 
-@v6
+@v6 @dhcp6 @PD
 Scenario: prefix.delegation.just-PD-configured-PD-and-IA-requested
 
     Test Setup:

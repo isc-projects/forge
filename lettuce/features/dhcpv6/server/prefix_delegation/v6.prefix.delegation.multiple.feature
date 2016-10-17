@@ -10,7 +10,7 @@ Feature: DHCPv6 Prefix Delegation
 	DHCP server is started.
 	
 	Test Procedure:
-	Client does NOT include IA-NA.
+	Client does include client-id.
 	Client does include IA-PD.
 	Client sends SOLICIT message.
 
@@ -20,7 +20,7 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_PD option from received message.
 	Generate new IA_PD.
-	Client does NOT include IA-NA.
+	Client does include client-id.
 	Client does include IA-PD.
 	Client sends SOLICIT message.
 
@@ -30,7 +30,7 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_PD option from received message.
 	Generate new IA_PD.
-	Client does NOT include IA-NA.
+	Client does include client-id.
 	Client does include IA-PD.
 	Client sends SOLICIT message.
 
@@ -40,7 +40,7 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_PD option from received message.
 	Generate new IA_PD.
-	Client does NOT include IA-NA.
+	Client does include client-id.
 	Client does include IA-PD.
 	Client sends SOLICIT message.
 
@@ -50,17 +50,18 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client saves IA_PD option from received message.
-	Client does NOT include IA-NA.
+	Client does include client-id.
 	Client adds saved options. And Erase.
 	Client sends REQUEST message.
 	
 	Pass Criteria:
-	Server MUST respond with REPLY message.  
-	Response option 25 MUST contain sub-option 26. 
+	Server MUST respond with REPLY message.
+	Response MUST include option 25.
+	Response option 25 MUST contain sub-option 26.
 	Response sub-option 26 from option 25 MUST contain prefix 3000::.
 	Response sub-option 26 from option 25 MUST contain prefix 3000:0:4000.
 	Response sub-option 26 from option 25 MUST contain prefix 3000:0:8000.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:c000.	
+	Response sub-option 26 from option 25 MUST contain prefix 3000:0:c000.
 
 	References: RFC 3633, Section: 12.2
 

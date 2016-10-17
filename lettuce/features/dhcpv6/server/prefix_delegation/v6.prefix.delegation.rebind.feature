@@ -54,7 +54,7 @@ Feature: DHCPv6 Prefix Delegation
 	DHCP server is started.
 
 	Test Procedure:
-	Client does NOT include IA-NA.
+	Client does include client-id.
 	Client does include IA-PD.
 	Client sends SOLICIT message.
 
@@ -62,7 +62,7 @@ Feature: DHCPv6 Prefix Delegation
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client does NOT include IA-NA.
+	Client does include client-id.
 	Client copies server-id option from received message.
 	Client saves IA_PD option from received message.
 	Client adds saved options. And DONT Erase.
@@ -73,16 +73,17 @@ Feature: DHCPv6 Prefix Delegation
 
 
 	Test Procedure:
+	Client does include client-id.
 	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client does NOT include IA-NA.
-    Client does include IA_Prefix.
+    Client does include client-id.
     Client sets plen value to 90.
     Client sets prefix value to 3001::.
+    Client does include IA_Prefix.
 	Client sends REBIND message.
 
 	Pass Criteria:
