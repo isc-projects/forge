@@ -26,6 +26,8 @@ DHCP server is started.
 
 Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -34,6 +36,7 @@ Server MUST respond with ADVERTISE message.
 Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -42,6 +45,8 @@ Server MUST respond with REPLY message.
 
 Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -79,6 +84,8 @@ DHCP server is started.
 
 Test Procedure:
 Client does include IA-PD.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -91,6 +98,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -102,6 +110,7 @@ Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
 Client does include IA-PD.
+Client does include client-id.
 Client sends RENEW message.
 
 Pass Criteria:
@@ -143,6 +152,8 @@ DHCP server is started.
 
 Test Procedure:
 Client requests option 7.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -153,6 +164,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies IA_NA option from received message.
 Client copies server-id option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -161,7 +173,9 @@ Server MUST respond with REPLY message.
 Test Procedure:
 Client copies IA_NA option from received message.
 Client does include IA-PD.
+Client does include client-id.
 Client sends REBIND message.
+
 
 Pass Criteria:
 Server MUST respond with REPLY message.
@@ -202,6 +216,8 @@ DHCP server is started.
 
 Test Procedure:
 Client requests option 7.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -212,6 +228,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies IA_NA option from received message.
 Client copies server-id option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -220,7 +237,9 @@ Server MUST respond with REPLY message.
 Test Procedure:
 Client copies IA_NA option from received message.
 Client does include IA-PD.
+Client does include client-id.
 Client sends REBIND message.
+
 
 Pass Criteria:
 Server MUST respond with REPLY message.
@@ -257,6 +276,8 @@ DHCP server is started.
 
 Test Procedure:
 #Client does include IA-PD.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -269,6 +290,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -280,6 +302,7 @@ Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
 Client does include IA-PD.
+Client does include client-id.
 Client sends RENEW message.
 
 Pass Criteria:
@@ -318,6 +341,8 @@ DHCP server is started.
 
 Test Procedure:
 #Client does include IA-PD.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -330,6 +355,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -346,6 +372,7 @@ Client sets validlft value to 0.
 Client sets plen value to 96.
 Client sets prefix value to ::.
 Client does include IA_Prefix.
+Client does include client-id.
 Client sends RENEW message.
 
 Pass Criteria:
@@ -381,6 +408,8 @@ DHCP server is started.
 
 Test Procedure:
 #Client does include IA-PD.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -393,6 +422,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -410,6 +440,7 @@ Client sets plen value to 96.
 Client sets prefix value to 3001::1:0:0.
 Client does include IA_Prefix.
 # Client does include IA-PD.
+Client does include client-id.
 Client sends RENEW message.
 
 Pass Criteria:
@@ -424,7 +455,9 @@ Response MUST include option 25.
 Test Procedure:
 #Client does include IA-PD.
 # Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-#       Client sends SOLICIT message.
+#       Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 Pass Criteria:
 #      Server MUST respond with ADVERTISE message.
@@ -457,6 +490,8 @@ DHCP server is started.
 
 Test Procedure:
 #Client does include IA-PD.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -469,6 +504,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -486,7 +522,9 @@ Client sets plen value to 96.
 Client sets prefix value to ::.
 #Client sets prefix value to 3000::1:0:0.
 Client does include IA_Prefix.
+Client does include client-id.
 Client sends REBIND message.
+
 
 Pass Criteria:
 Server MUST respond with REPLY message.
@@ -521,6 +559,8 @@ DHCP server is started.
 
 Test Procedure:
 #Client does include IA-PD.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -533,6 +573,7 @@ Response option 3 MUST contain sub-option 5.
 Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_NA option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -550,7 +591,9 @@ Client sets plen value to 96.
 Client sets prefix value to 3001::1:0:0.
 Client does include IA_Prefix.
 # Client does include IA-PD.
+Client does include client-id.
 Client sends REBIND message.
+
 
 Pass Criteria:
 Server MUST respond with REPLY message.
@@ -584,6 +627,8 @@ DHCP server is started.
 Test Procedure:
 Client does include IA-PD.
 Client does NOT include IA-NA.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -593,6 +638,7 @@ Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
 Client does NOT include IA-NA.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -602,7 +648,9 @@ Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
 # Client does include IA-PD.
+Client does include client-id.
 Client sends REBIND message.
+
 
 Pass Criteria:
 Server MUST respond with REPLY message.
@@ -636,6 +684,8 @@ DHCP server is started.
 Test Procedure:
 Client does include IA-PD.
 Client does NOT include IA-NA.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -645,6 +695,7 @@ Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
 Client does NOT include IA-NA.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -654,6 +705,7 @@ Test Procedure:
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
 # Client does include IA-PD.
+Client does include client-id.
 Client sends RENEW message.
 
 Pass Criteria:
@@ -677,6 +729,8 @@ Test Procedure:
 Client does NOT include IA-NA.
 Client does include IA-PD.
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -689,6 +743,7 @@ Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
 Client does NOT include IA-NA.
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -701,6 +756,8 @@ Test Procedure:
 Client does NOT include IA-NA.
 Client does include IA-PD.
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -713,6 +770,7 @@ Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client does NOT include IA-NA.
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -739,6 +797,8 @@ DHCP server is started.
 
 Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -747,6 +807,7 @@ Server MUST respond with ADVERTISE message.
 Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
 Client copies server-id option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -758,6 +819,8 @@ Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client does include IA-PD.
 Client does NOT include IA-NA.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -767,6 +830,7 @@ Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -777,6 +841,7 @@ Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
 # Client does include IA-PD.
+Client does include client-id.
 Client sends RENEW message.
 
 Pass Criteria:
@@ -803,6 +868,8 @@ Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client does include IA-PD.
 Client does NOT include IA-NA.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -812,6 +879,7 @@ Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -829,6 +897,7 @@ Client sets IA_Address value to 3001::1.
 Client does include IA_Address.
 
 # Client does include IA-PD.
+Client does include client-id.
 Client sends RENEW message.
 
 Pass Criteria:
@@ -855,6 +924,8 @@ DHCP server is started.
 
 Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -863,6 +934,7 @@ Server MUST respond with ADVERTISE message.
 Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
 Client copies server-id option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -873,6 +945,8 @@ Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client does include IA-PD.
 Client does NOT include IA-NA.
+Client does include client-id.
+Client does include IA-NA.
 Client sends SOLICIT message.
 
 Pass Criteria:
@@ -882,6 +956,7 @@ Test Procedure:
 Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 Client copies server-id option from received message.
 Client copies IA_PD option from received message.
+Client does include client-id.
 Client sends REQUEST message.
 
 Pass Criteria:
@@ -899,7 +974,9 @@ Client sets IA_Address value to 3000::1.
 Client does include IA_Address.
 
 # Client does include IA-PD.
+Client does include client-id.
 Client sends REBIND message.
+
 
 Pass Criteria:
 Server MUST respond with REPLY message.

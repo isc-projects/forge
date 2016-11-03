@@ -13,7 +13,9 @@ Feature: Kea6 legal logging lib
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:04.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -26,7 +28,8 @@ Feature: Kea6 legal logging lib
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:04.
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -37,7 +40,8 @@ Feature: Kea6 legal logging lib
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:04.
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -50,7 +54,9 @@ Feature: Kea6 legal logging lib
 
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Test Procedure:
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -63,7 +69,8 @@ Feature: Kea6 legal logging lib
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -75,7 +82,9 @@ Feature: Kea6 legal logging lib
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:02.
 	Client does NOT include IA-NA.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -87,7 +96,8 @@ Feature: Kea6 legal logging lib
 	Client does NOT include IA-NA.
 	Client copies server-id option from received message.
 	Client copies IA_PD option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -97,7 +107,9 @@ Feature: Kea6 legal logging lib
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:03.
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -106,8 +118,9 @@ Feature: Kea6 legal logging lib
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:03.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
-	...using relay-agent encapsulated in 1 level.
+	Client does include client-id.
+Client sends REQUEST message.
+	RelayAgent forwards message encapsulated in 1 level.
 
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
@@ -128,7 +141,9 @@ Feature: Kea6 legal logging lib
 	Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
 
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -138,12 +153,13 @@ Feature: Kea6 legal logging lib
 	Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
     Client sets enterprisenum value to 666.
 	Client sets subscriber_id value to 50.
     Client does include remote-id.
     Client does include subscriber-id.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent forwards message encapsulated in 1 level.
 
 
 	Pass Criteria:

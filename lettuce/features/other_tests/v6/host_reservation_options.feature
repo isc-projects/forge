@@ -19,11 +19,12 @@ Scenario: v6.host.reservation.mysql.duid-ll-matching-option
 
     DHCP server is started.
 
-
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
     Client requests option 7.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -46,7 +47,9 @@ Scenario: v6.host.reservation.mysql.duid-ll-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -57,7 +60,9 @@ Scenario: v6.host.reservation.mysql.duid-ll-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:11.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -80,7 +85,9 @@ Scenario: v6.host.reservation.mysql.duid-llt-matching
 
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -104,7 +111,9 @@ Scenario: v6.host.reservation.mysql.duid-llt-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:11.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -115,7 +124,9 @@ Scenario: v6.host.reservation.mysql.duid-llt-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:11.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -138,7 +149,9 @@ Scenario: v6.host.reservation.mysql.hwaddrr-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:11.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -149,7 +162,9 @@ Scenario: v6.host.reservation.mysql.hwaddrr-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:11.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -173,7 +188,9 @@ Scenario: v6.host.reservation.mysql.hwaddrr-matching
 
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -184,7 +201,9 @@ Scenario: v6.host.reservation.mysql.hwaddrr-matching
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -232,7 +251,9 @@ Scenario: v6.host.reservation.pgsql.duid-ll-matching
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
     Pause the Test.
 
     Pass Criteria:
@@ -264,7 +285,9 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:11.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -275,7 +298,9 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-not-matching
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:11.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -298,7 +323,9 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching
 
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -309,7 +336,9 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -337,7 +366,9 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching-option
     Test Procedure:
     Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
     Client requests option 7.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
@@ -351,7 +382,9 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching-option
     Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
     Client requests option 7.
-    Client sends SOLICIT message.
+    Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.

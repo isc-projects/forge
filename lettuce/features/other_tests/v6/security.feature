@@ -29,7 +29,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -38,7 +40,8 @@ Feature: security
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -47,7 +50,8 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
@@ -55,7 +59,8 @@ Feature: security
 	Test Procedure:
 	Client adds saved options. And Erase.
 	Client requests option 7.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -92,7 +97,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -101,7 +108,8 @@ Feature: security
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -110,7 +118,8 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
@@ -118,7 +127,8 @@ Feature: security
 	Test Procedure:
 	Client adds saved options. And Erase.
 	Client requests option 7.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -155,7 +165,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -164,7 +176,8 @@ Feature: security
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -173,7 +186,8 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
@@ -181,7 +195,8 @@ Feature: security
 	Test Procedure:
 	Client adds saved options. And Erase.
 	Client requests option 7.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -217,7 +232,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -226,7 +243,8 @@ Feature: security
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -235,7 +253,8 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
@@ -243,7 +262,8 @@ Feature: security
 	Test Procedure:
 	Client adds saved options. And Erase.
 	Client requests option 7.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -279,7 +299,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -288,7 +310,8 @@ Feature: security
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -297,7 +320,8 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
@@ -305,7 +329,8 @@ Feature: security
 	Test Procedure:
 	Client adds saved options. And Erase.
 	Client requests option 7.
-	Client sends CONFIRM message.
+	Client does include client-id.
+Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -342,7 +367,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -350,7 +377,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -401,7 +429,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -409,7 +439,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -460,7 +491,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -468,7 +501,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -519,7 +553,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -527,7 +563,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -578,7 +615,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -586,7 +625,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -639,7 +679,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -647,7 +689,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -656,14 +699,18 @@ Feature: security
 	Client does include wrong-client-id.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -701,7 +748,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -709,7 +758,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -718,14 +768,18 @@ Feature: security
 	Client does include wrong-client-id.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -763,7 +817,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -771,7 +827,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -780,14 +837,18 @@ Feature: security
 	Client does include wrong-client-id.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -825,7 +886,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -833,7 +896,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -842,14 +906,18 @@ Feature: security
 	Client does include wrong-client-id.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -887,7 +955,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -895,7 +965,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -904,14 +975,18 @@ Feature: security
 	Client does include wrong-client-id.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -949,7 +1024,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -957,7 +1034,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -966,14 +1044,18 @@ Feature: security
 	Client does include wrong-client-id.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+Client sends REBIND message.
+
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1012,7 +1094,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1020,7 +1104,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1030,14 +1115,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1075,7 +1162,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1083,7 +1172,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1093,14 +1183,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1138,7 +1230,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1146,7 +1240,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1156,14 +1251,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1201,7 +1298,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1209,7 +1308,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1219,14 +1319,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1264,7 +1366,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1272,7 +1376,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1282,14 +1387,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1329,7 +1436,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1337,7 +1446,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1347,14 +1457,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1391,7 +1503,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1399,7 +1513,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1409,14 +1524,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1453,7 +1570,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1461,7 +1580,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1471,14 +1591,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1515,7 +1637,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1523,7 +1647,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1533,14 +1658,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1577,7 +1704,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1585,7 +1714,8 @@ Feature: security
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1595,14 +1725,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1637,7 +1769,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1647,14 +1781,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1688,7 +1824,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1698,14 +1836,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1739,7 +1879,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1749,14 +1891,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1790,7 +1934,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1800,14 +1946,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1841,7 +1989,9 @@ Feature: security
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1851,14 +2001,16 @@ Feature: security
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client does include wrong-client-id.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -1892,14 +2044,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1931,14 +2087,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -1970,14 +2130,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2009,14 +2173,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2048,14 +2216,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2087,14 +2259,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2126,14 +2302,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2165,14 +2345,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2204,14 +2388,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2243,14 +2431,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2282,14 +2474,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2321,14 +2517,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2360,14 +2560,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2399,14 +2603,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2438,14 +2646,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2477,14 +2689,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2516,14 +2732,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2555,14 +2775,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2594,14 +2818,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2633,14 +2861,18 @@ Feature: security
 	Test Procedure:
 	Client requests option 7.
 	Client does include wrong-client-id.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -2676,14 +2908,18 @@ Feature: security
 	Test Procedure:
     #Client sets address value to $(EMPTY).
     Client does include IA_Address.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 
 	Test Procedure:
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
