@@ -20,10 +20,13 @@ Feature: Kea6 User Check Hook Library
     DHCP server is started.
     
     Test Procedure:
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::5.
 
@@ -43,10 +46,13 @@ Feature: Kea6 User Check Hook Library
     Test Procedure:
     # Send a query from an unregistered user
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 1000::5.
     # Check the outcome file for correct content
@@ -69,10 +75,13 @@ Feature: Kea6 User Check Hook Library
     Test Procedure:
     # Send a query from a registered user
     Client sets DUID value to 00:03:00:01:11:02:03:04:05:06.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::5.
     # Check the outcome file for correct content

@@ -21,8 +21,9 @@ Feature: DHCPv6 Release
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -34,8 +35,9 @@ Feature: DHCPv6 Release
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -48,7 +50,8 @@ Feature: DHCPv6 Release
 
 	References: RFC3315 section 18.2.6.	
 
-@v6 @dhcp6 @status_code @release
+@v6 @dhcp6 @status_code @release @disable
+    # disabled after rfc 7550
     Scenario: v6.statuscode.nobinding-release
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Message details 		Client		Server
@@ -69,8 +72,9 @@ Feature: DHCPv6 Release
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -83,8 +87,9 @@ Feature: DHCPv6 Release
 	Client copies IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -95,8 +100,9 @@ Feature: DHCPv6 Release
 	Test Procedure:
 	Generate new IA.
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -107,7 +113,8 @@ Feature: DHCPv6 Release
 	
 	References: RFC3315 section 18.2.6.
 	
-@v6 @dhcp6 @status_code @release
+@v6 @dhcp6 @status_code @release @disable
+    # disabled after rfc 7550
     Scenario: v6.statuscode.nobinding-release-new-client-id
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Try to release existing leases but using different client ID.
@@ -129,8 +136,9 @@ Feature: DHCPv6 Release
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -143,8 +151,9 @@ Feature: DHCPv6 Release
 	Client copies IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -155,8 +164,9 @@ Feature: DHCPv6 Release
 	Test Procedure:
 	Generate new Client_ID.
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -198,8 +208,9 @@ Feature: DHCPv6 Release
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -212,8 +223,9 @@ Feature: DHCPv6 Release
 	Client copies IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -224,8 +236,9 @@ Feature: DHCPv6 Release
 	Test Procedure:
 	Generate new IA.
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -233,7 +246,9 @@ Feature: DHCPv6 Release
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -246,7 +261,7 @@ Feature: DHCPv6 Release
 	References: RFC3315 section 18.2.6.
 		
 @v6 @dhcp6 @status_code @release
-    Scenario: v6.statuscode.nobinding-release-restart
+    Scenario: v6.statuscode.nobinding-release-nobinding
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Message details 		Client		Server
 	## 						SOLICIT -->
@@ -262,12 +277,17 @@ Feature: DHCPv6 Release
 	##					server-id
 	##					IA_NA with suboption status-code with code NoBinding	
 	Test Setup:
+	Time renew-timer is configured with value 5.
+	Time rebind-timer is configured with value 6.
+	Time preferred-lifetime is configured with value 7.
+	Time valid-lifetime is configured with value 8.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -279,20 +299,20 @@ Feature: DHCPv6 Release
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+
+    Sleep for 10 seconds.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
-	Test Procedure:	
-	Restart DHCP server.
-	Client requests option 7.
-	Client sends RELEASE message.
-	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
@@ -323,8 +343,9 @@ Feature: DHCPv6 Release
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -336,8 +357,9 @@ Feature: DHCPv6 Release
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -347,12 +369,18 @@ Feature: DHCPv6 Release
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
 	Response MUST include option 2.
+	Response MUST include option 3.
+    Response option 3 MUST contain T1 0.
+    Response option 3 MUST contain T2 0.
+	Response option 3 MUST contain sub-option 13.
+	Response sub-option 13 from option 3 MUST contain statuscode 0.
 	Response MUST include option 13. 
 	Response option 13 MUST contain statuscode 0.
 		

@@ -26,7 +26,7 @@ Feature: Standard DHCPv6 options part 1
 	Client requests option 7.
 	Client does include client-id.
     Client does include IA-NA.
-	Client sends SOLICIT message.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -36,8 +36,9 @@ Feature: Standard DHCPv6 options part 1
 	Test Procedure:
 	Client does include client-id.
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -72,7 +73,7 @@ Feature: Standard DHCPv6 options part 1
 	Client does include client-id.
     Client does include IA-NA.
 	Client requests option 21.
-	Client sends SOLICIT message.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -82,6 +83,7 @@ Feature: Standard DHCPv6 options part 1
 	Test Procedure:
 	Client does include client-id.
     Client does include IA-NA.
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 21.
 	Client sends REQUEST message.
@@ -116,7 +118,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 22.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -124,9 +128,11 @@ Feature: Standard DHCPv6 options part 1
 	Response option 22 MUST contain addresses 2001:db8::1,2001:db8::2.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 22.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -159,7 +165,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 23.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -168,8 +176,10 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 23.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -201,7 +211,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 24.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -210,8 +222,10 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 24.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -243,7 +257,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 27.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -253,7 +269,9 @@ Feature: Standard DHCPv6 options part 1
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client requests option 27.
-	Client sends REQUEST message.
+	Client copies IA_NA option from received message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -282,7 +300,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 28.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -313,7 +333,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 29.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -322,8 +344,10 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 29.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -354,7 +378,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 30.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -363,8 +389,10 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 30.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -395,7 +423,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 31.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -404,8 +434,10 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 31.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -435,7 +467,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client requests option 32.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -444,8 +478,10 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 32.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -484,7 +520,9 @@ Feature: Standard DHCPv6 options part 1
 	Client requests option 21.
 	Client requests option 23.
 	Client requests option 24.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -499,11 +537,13 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 7.
 	Client requests option 21.
 	Client requests option 23.
 	Client requests option 24.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -545,7 +585,9 @@ Feature: Standard DHCPv6 options part 1
 	Test Procedure:
 	# dns-servers is option 23. 24 is domain.
 	Client requests option 24.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -554,8 +596,10 @@ Feature: Standard DHCPv6 options part 1
 	
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 24.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -564,8 +608,10 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 23.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.

@@ -1,5 +1,3 @@
-
-
 Feature: DHCPv6 Client Classification - default classes
     Tests for Client Classification for classes: docsis3.0 and eRouter1.0.
     Performed through option vendor class.
@@ -15,6 +13,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Procedure:
     Client sets vendor_class_data value to docsis3.0.
     Client does include vendor-class.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -32,6 +32,8 @@ Feature: DHCPv6 Client Classification - default classes
     DHCP server is started.
 
     Test Procedure:
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -51,6 +53,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Procedure:
     Client sets vendor_class_data value to docsis3.0.
     Client does include vendor-class.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -64,6 +68,7 @@ Feature: DHCPv6 Client Classification - default classes
     Client does include vendor-class.
     Client copies IA_NA option from received message.
     Client copies server-id option from received message.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:
@@ -84,6 +89,8 @@ Feature: DHCPv6 Client Classification - default classes
     Client requests option 7.
     Client sets vendor_class_data value to docsis3.0.
     Client does include vendor-class.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -95,6 +102,7 @@ Feature: DHCPv6 Client Classification - default classes
     Test Procedure:
     Client copies IA_NA option from received message.
     Client copies server-id option from received message.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:
@@ -114,6 +122,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Procedure:
     Client sets vendor_class_data value to eRouter1.0.
     Client does include vendor-class.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -131,6 +141,8 @@ Feature: DHCPv6 Client Classification - default classes
     DHCP server is started.
 
     Test Procedure:
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -150,6 +162,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Procedure:
     Client sets vendor_class_data value to eRouter1.0.
     Client does include vendor-class.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -163,6 +177,7 @@ Feature: DHCPv6 Client Classification - default classes
     Client does include vendor-class.
     Client copies IA_NA option from received message.
     Client copies server-id option from received message.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:
@@ -183,6 +198,8 @@ Feature: DHCPv6 Client Classification - default classes
     Client requests option 7.
     Client sets vendor_class_data value to eRouter1.0.
     Client does include vendor-class.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -194,6 +211,7 @@ Feature: DHCPv6 Client Classification - default classes
     Test Procedure:
     Client copies IA_NA option from received message.
     Client copies server-id option from received message.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:

@@ -17,14 +17,18 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client requests option 7.
 	Client chooses GLOBAL UNICAST address.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -57,7 +61,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -68,8 +74,9 @@ Feature: Standard DHCPv6 address validation
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -77,14 +84,16 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client chooses GLOBAL UNICAST address.
-	Client sends CONFIRM message.
+	Client does include client-id.
+    Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 	
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends CONFIRM message.
+	Client does include client-id.
+    Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -119,7 +128,9 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -129,8 +140,9 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -138,14 +150,16 @@ Feature: Standard DHCPv6 address validation
 	Client chooses GLOBAL UNICAST address.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+    Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+    Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -171,24 +185,28 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with preference option with value 123.
 	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
 	Client chooses GLOBAL UNICAST address.
+    #message wont contain client-id option
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
+    #message wont contain client-id option
 	Client requests option 7.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 1.
+	Response MUST NOT include option 1.
 	Response MUST include option 2.
+    Response MUST include option 7.
 	
 	References: RFC3315 section 15
 	
@@ -227,7 +245,9 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -239,7 +259,8 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client chooses GLOBAL UNICAST address.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -248,8 +269,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
@@ -289,7 +311,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+    Client does include IA-NA.
+	Client does include client-id.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -297,8 +321,9 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -307,7 +332,8 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -316,7 +342,8 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -358,7 +385,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -366,8 +395,9 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -376,16 +406,18 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
-	Pass Criteria:
+    Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 13.
 	Response option 13 MUST contain statuscode 5.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -411,14 +443,18 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client requests option 7.
 	Client chooses LINK_LOCAL UNICAST address.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond with ADVERTISE message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -451,7 +487,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -462,8 +500,9 @@ Feature: Standard DHCPv6 address validation
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -471,14 +510,16 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client chooses LINK_LOCAL UNICAST address.
-	Client sends CONFIRM message.
+	Client does include client-id.
+    Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 	
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends CONFIRM message.
+	Client does include client-id.
+    Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -514,7 +555,9 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -524,8 +567,9 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -533,14 +577,16 @@ Feature: Standard DHCPv6 address validation
 	Client chooses LINK_LOCAL UNICAST address.
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+    Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST NOT respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
+	Client does include client-id.
+    Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -567,11 +613,13 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with preference option with value 123.
 	DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
 	Client chooses LINK_LOCAL UNICAST address.
+    #message wont contain client-id option
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
@@ -579,12 +627,14 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client requests option 7.
+    #message wont contain client-id option
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 1.
+	Response MUST NOT include option 1.
 	Response MUST include option 2.
+    Response MUST include option 7.
 	
 	References: RFC3315 section 15
 	
@@ -624,7 +674,9 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -636,7 +688,8 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
 	Client chooses LINK_LOCAL UNICAST address.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -645,8 +698,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
@@ -687,7 +741,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -695,8 +751,9 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -705,7 +762,8 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -714,7 +772,8 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -757,7 +816,9 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -765,8 +826,9 @@ Feature: Standard DHCPv6 address validation
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -775,7 +837,8 @@ Feature: Standard DHCPv6 address validation
 	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -784,7 +847,8 @@ Feature: Standard DHCPv6 address validation
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -793,4 +857,3 @@ Feature: Standard DHCPv6 address validation
 	Response MUST include option 13.
 	
 	References: RFC3315 section 18.2.6.
-	

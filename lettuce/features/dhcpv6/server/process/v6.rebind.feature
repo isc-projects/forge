@@ -24,8 +24,9 @@ Feature: DHCPv6 Rebind
 	DHCP server is started.
 	
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -35,8 +36,9 @@ Feature: DHCPv6 Rebind
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -46,15 +48,27 @@ Feature: DHCPv6 Rebind
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
-	Client sends REBIND message.
+	Client does include client-id.
+    Client sends REBIND message.
+
+#   Changed after RFC 7550
+#	Pass Criteria:
+#	Server MUST respond with REPLY message.
+#	Response MUST include option 1.
+#	Response MUST include option 2.
+#	Response option 3 MUST contain T1 0.
+#	Response option 3 MUST contain T2 0.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
 	Response MUST include option 2.
-	Response option 3 MUST contain T1 0.
-	Response option 3 MUST contain T2 0.
-	
+	Response option 3 MUST contain sub-option 5.
+    Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+    Response sub-option 5 from option 3 MUST contain validlft 4000.
+    Response sub-option 5 from option 3 MUST contain address 3000::1.
+    Response sub-option 5 from option 3 MUST contain validlft 0.
+
 	References: RFC3315 sections 5.3, 18.2.4 
 	
 @v6 @dhcp6 @rebind
@@ -83,8 +97,9 @@ Feature: DHCPv6 Rebind
 	DHCP server is started.
 	
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -94,14 +109,16 @@ Feature: DHCPv6 Rebind
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
-	Client sends REBIND message.
+	Client does include client-id.
+    Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.

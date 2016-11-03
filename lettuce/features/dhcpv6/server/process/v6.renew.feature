@@ -22,7 +22,9 @@ Feature: DHCPv6 Renew
 	DHCP server is started.
 	
 	Test Procedure:
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -34,7 +36,8 @@ Feature: DHCPv6 Renew
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -44,7 +47,8 @@ Feature: DHCPv6 Renew
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -82,7 +86,9 @@ Feature: DHCPv6 Renew
 	DHCP server is started.
 	
 	Test Procedure:
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -92,7 +98,8 @@ Feature: DHCPv6 Renew
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -106,7 +113,9 @@ Feature: DHCPv6 Renew
 	DHCP server is started.
 
 	Test Procedure:
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -116,7 +125,8 @@ Feature: DHCPv6 Renew
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -126,7 +136,8 @@ Feature: DHCPv6 Renew
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.

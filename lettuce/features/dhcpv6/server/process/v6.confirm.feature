@@ -21,8 +21,9 @@ Feature: DHCPv6 Confirm
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -32,16 +33,17 @@ Feature: DHCPv6 Confirm
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client requests option 7.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
-	Client sends CONFIRM message.
-	
+	Client does include client-id.
+    Client sends CONFIRM message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 1.
@@ -77,8 +79,9 @@ Feature: DHCPv6 Confirm
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -88,9 +91,9 @@ Feature: DHCPv6 Confirm
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client requests option 7.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
@@ -98,12 +101,13 @@ Feature: DHCPv6 Confirm
 	Client saves IA_NA option from received message.
 
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::2000-3000::3000 pool.
+	Server is configured with 3001::/64 subnet with 3001::2000-3001::3000 pool.
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -113,21 +117,22 @@ Feature: DHCPv6 Confirm
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
 	#add IA NA from beginning of the test. makes it NotOnlink 
-	Client sends CONFIRM message.
-	
+	Client does include client-id.
+    Client sends CONFIRM message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 3.
-	Response option 3 MUST contain sub-option 13. 
-	Response sub-option 13 from option 3 MUST contain statuscode 4.
-	
+	Response MUST include option 13.
+    Response option 13 MUST contain statuscode 4.
+
 	References: RFC3315 sections 18.1.2, 18.2.2
 	

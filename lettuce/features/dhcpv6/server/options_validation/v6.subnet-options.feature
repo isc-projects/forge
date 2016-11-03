@@ -23,7 +23,9 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -32,8 +34,10 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -64,7 +68,9 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client requests option 23.
-	Client sends SOLICIT message and expect ADVERTISE response.
+	Client does include client-id.
+    Client does include IA-NA.
+	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -73,8 +79,10 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 23.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -105,7 +113,9 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client requests option 24.
-	Client sends SOLICIT message and expect ADVERTISE response.
+	Client does include client-id.
+    Client does include IA-NA.
+	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -114,8 +124,10 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 24.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -150,7 +162,9 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client requests option 24.
-	Client sends SOLICIT message and expect ADVERTISE response.
+	Client does include client-id.
+    Client does include IA-NA.
+	Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -159,8 +173,10 @@ Feature: DHCPv6 options defined in subnet
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 24.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.

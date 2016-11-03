@@ -11,23 +11,30 @@ Feature: DHCPv6 Relay Agent
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include wrong-client-id.
-	...using relay-agent encapsulated in 1 level.
-	
+	RelayAgent does include client-id.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
+
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8	
 	
@@ -40,24 +47,32 @@ Feature: DHCPv6 Relay Agent
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	
 	#add options to relay message
-	Client does include wrong-server-id.
-	...using relay-agent encapsulated in 1 level.
+    RelayAgent sets server_id value to 00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8.
+	RelayAgent does include server-id.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 
@@ -69,24 +84,30 @@ Feature: DHCPv6 Relay Agent
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include preference.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include preference.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
@@ -98,28 +119,34 @@ Feature: DHCPv6 Relay Agent
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
+    Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include time.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include time.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
     Scenario: v6.relay.invalid.options-option-request
 	
 	Test Setup:
@@ -128,22 +155,31 @@ Feature: DHCPv6 Relay Agent
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include option-request.
-	...using relay-agent encapsulated in 1 level.
+	Client requests option 7.
+	RelayAgent does include interface-id.
+RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-	...using relay-agent encapsulated in 1 level.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	RelayAgent does include interface-id.
+RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+Response MUST include option 18.
+Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
@@ -156,23 +192,31 @@ Feature: DHCPv6 Relay Agent
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include server-unicast.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include server-unicast.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
@@ -184,24 +228,31 @@ Feature: DHCPv6 Relay Agent
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include status-code.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include status-code.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
@@ -213,24 +264,31 @@ Feature: DHCPv6 Relay Agent
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include rapid-commit.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include rapid-commit.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
@@ -242,24 +300,30 @@ Feature: DHCPv6 Relay Agent
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include reconfigure.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include reconfigure.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
@@ -271,23 +335,29 @@ Feature: DHCPv6 Relay Agent
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	#add options to relay message
-	Client does include reconfigure-accept.
-	...using relay-agent encapsulated in 1 level.
+	RelayAgent does include reconfigure-accept.
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
 	
 	Pass Criteria:
 	Server MUST NOT respond with RELAYREPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+    Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
-	...using relay-agent encapsulated in 1 level.
-	
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 level.
+
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8

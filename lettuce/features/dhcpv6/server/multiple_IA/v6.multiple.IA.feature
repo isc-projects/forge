@@ -25,8 +25,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -37,7 +38,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Generate new IA.
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -48,7 +51,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Generate new IA.
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -59,8 +64,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.  
 	Response MUST include option 3.
@@ -68,7 +74,7 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Response sub-option 5 from option 3 MUST contain address 3000::1.
 	Response sub-option 5 from option 3 MUST contain address 3000::2.
 	Response sub-option 5 from option 3 MUST contain address 3000::3.
-	
+
 @v6 @dhcp6 @multipleIA
     Scenario: v6.multipleIA.addresses-release-success
 	## Testing server ability to parse multiple IA's included into message
@@ -96,8 +102,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -107,7 +114,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -115,7 +123,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -125,7 +135,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -133,7 +144,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -143,7 +156,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -152,8 +166,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 13.
@@ -194,8 +209,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -205,7 +221,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -213,7 +230,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -223,7 +242,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -231,7 +251,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -241,7 +263,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -250,8 +273,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 13.
@@ -260,8 +284,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 13.
@@ -303,8 +328,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -314,7 +340,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -322,7 +349,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -332,7 +361,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -340,7 +370,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -350,7 +382,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -359,8 +392,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends RELEASE message.
-	
+	Client does include client-id.
+    Client sends RELEASE message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 13.
@@ -368,13 +402,14 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 
 	Test Procedure:
 	Client adds saved options. And Erase.
-	Client sends REBIND message.
-	
+	Client does include client-id.
+    Client sends REBIND message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
-	Response option 3 MUST contain sub-option 13.
+	#Response option 3 MUST contain sub-option 13. changed due to RFC 7550
 	#Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
 @v6 @dhcp6 @multipleIA
@@ -402,8 +437,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -414,7 +450,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Generate new IA.
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -425,7 +463,9 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Generate new IA.
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -436,10 +476,12 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	Client saves IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
+    Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
 	Response sub-option 5 from option 3 MUST contain address 3000::1.
 	Response sub-option 5 from option 3 MUST contain address 3000::2.

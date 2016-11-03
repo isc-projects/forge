@@ -22,7 +22,9 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -38,30 +40,38 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends REQUEST message.
+	Client copies IA_NA option from received message.
+    Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -74,15 +84,19 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends REQUEST message.
+	Client copies IA_NA option from received message.
+    Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -99,7 +113,9 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -108,14 +124,17 @@ Feature: Host Reservation DHCPv6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -124,14 +143,17 @@ Feature: Host Reservation DHCPv6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -147,7 +169,9 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -156,7 +180,8 @@ Feature: Host Reservation DHCPv6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -173,7 +198,9 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -182,14 +209,17 @@ Feature: Host Reservation DHCPv6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -198,7 +228,8 @@ Feature: Host Reservation DHCPv6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -208,7 +239,9 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -230,7 +263,8 @@ Feature: Host Reservation DHCPv6
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
     Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -243,15 +277,19 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -273,7 +311,9 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -282,14 +322,17 @@ Feature: Host Reservation DHCPv6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -298,7 +341,8 @@ Feature: Host Reservation DHCPv6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -308,7 +352,9 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -330,7 +376,8 @@ Feature: Host Reservation DHCPv6
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
     Client adds saved options. And DONT Erase.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -343,15 +390,19 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.

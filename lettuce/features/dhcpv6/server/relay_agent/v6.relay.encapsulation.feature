@@ -10,12 +10,17 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	...using relay-agent encapsulated in 1 levels.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 1 levels.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 	#Response MUST include ADVERTISE message.
 	
 	References: RFC3315 section 18.2.8
@@ -29,11 +34,17 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
-	...using relay-agent encapsulated in 31 levels.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 31 levels.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 	#Response MUST include ADVERTISE message.
 	
 	References: RFC3315 section 18.2.8 20.
@@ -46,12 +57,17 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
-	...using relay-agent encapsulated in 15 levels.
+    Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	RelayAgent does include interface-id.
+    RelayAgent forwards message encapsulated in 15 levels.
 	
 	Pass Criteria:
 	Server MUST respond with RELAYREPLY message.
+    Response MUST include option 18.
+    Response MUST include option 9.
 	#Response MUST include ADVERTISE message.
 	
 	References: RFC3315 section 18.2.8 20.

@@ -32,13 +32,17 @@ Feature: Kea6 User Check Hook Library
     Client adds suboption for vendor specific information with code: 1 and data: 32.
     Client adds suboption for vendor specific information with code: 1 and data: 33.
     Client does include vendor-specific-info.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     # We don't really care about the address value
     # Options should come from default user in registry
+    Response MUST include option 17.
     Response option 17 MUST contain sub-option 32.
     #   Response sub-option 32 from option 17 MUST contain tftp-servers 9000::1.
     Response option 17 MUST contain sub-option 33.
@@ -54,13 +58,17 @@ Feature: Kea6 User Check Hook Library
     Client adds suboption for vendor specific information with code: 1 and data: 32.
     Client adds suboption for vendor specific information with code: 1 and data: 33.
     Client does include vendor-specific-info.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     # We don't really care about the address value
     # Options should come from server config
+    Response MUST include option 17.
     Response option 17 MUST contain sub-option 32.
     #    Response sub-option 32 from option 17 MUST contain tftp-servers 7000::1.
     Response option 17 MUST contain sub-option 33.
@@ -76,13 +84,17 @@ Feature: Kea6 User Check Hook Library
     Client adds suboption for vendor specific information with code: 1 and data: 32.
     Client adds suboption for vendor specific information with code: 1 and data: 33.
     Client does include vendor-specific-info.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     # We don't really care about the address value
     # bootfile should be from user, tftp server from server config
+    Response MUST include option 17.
     Response option 17 MUST contain sub-option 32.
     #   Response sub-option 32 from option 17 MUST contain tftp-servers 7000::1.
     Response option 17 MUST contain sub-option 33.
@@ -98,13 +110,17 @@ Feature: Kea6 User Check Hook Library
     Client adds suboption for vendor specific information with code: 1 and data: 32.
     Client adds suboption for vendor specific information with code: 1 and data: 33.
     Client does include vendor-specific-info.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     # We don't really care about the address value
     # bootfile should be from server config, tftp server from user
+    Response MUST include option 17.
     Response option 17 MUST contain sub-option 32.
    	#   Response sub-option 32 from option 17 MUST contain tftp-servers 8000::1.
     Response option 17 MUST contain sub-option 33.
@@ -118,13 +134,17 @@ Feature: Kea6 User Check Hook Library
     Client adds suboption for vendor specific information with code: 1 and data: 32.
     Client adds suboption for vendor specific information with code: 1 and data: 33.
     Client does include vendor-specific-info.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
     Server MUST respond with ADVERTISE message.
+    Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
     # We don't really care about the address value
     # tftp server and bootfile should be from user
+    Response MUST include option 17.
     Response option 17 MUST contain sub-option 32.
    	#   Response sub-option 32 from option 17 MUST contain tftp-servers 8002::1.
     Response option 17 MUST contain sub-option 33.

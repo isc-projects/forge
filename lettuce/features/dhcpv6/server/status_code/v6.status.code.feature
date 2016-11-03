@@ -9,8 +9,9 @@ Feature: DHCPv6 Status Codes
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -18,17 +19,18 @@ Feature: DHCPv6 Status Codes
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client requests option 7.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
 	Generate new client.
-	Client sends SOLICIT message.
-	
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 3.
@@ -45,28 +47,32 @@ Feature: DHCPv6 Status Codes
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client copies IA_NA option from received message.
+	Client saves IA_NA option from received message.
 	Client saves server-id option from received message.
 	Client requests option 7.
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client requests option 7.
 	Generate new IA.
+    Generate new client.
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
@@ -84,26 +90,33 @@ Feature: DHCPv6 Status Codes
 	DHCP server is started.
 	
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Client requests option 7.
-	Client sends RENEW message.
+	Client copies IA_NA option from received message.
+	Client does include client-id.
+    Client sends RENEW message.
+
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain sub-option 13. 
-	Response sub-option 13 from option 3 MUST contain statuscode 3.
+#   changed after rfc7550
+#	Response option 3 MUST contain sub-option 13.
+#	Response sub-option 13 from option 3 MUST contain statuscode 3.
+	Response option 3 MUST contain sub-option 5.
+	Response sub-option 5 from option 3 MUST contain address 3000::1.
 	
 	References: RFC3315 section 18.2.3
 	
-@v6 @dhcp6 @status_code @renew
+@v6 @dhcp6 @status_code @renew @disabled
+    # rfc 7550
     Scenario: v6.statuscode.nobinding-renew-newIA
 	#when client id not known
 	Test Setup:
@@ -111,21 +124,25 @@ Feature: DHCPv6 Status Codes
 	DHCP server is started.
 	
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
 	Client copies server-id option from received message.
-	Generate new IA.
-	Client sends RENEW message.
+	Client copies IA_NA option from received message.
+	Client does include client-id.
+    Before sending a message set filed named iaid to 66 as type int.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
-	Response option 3 MUST contain sub-option 13. 
-	Response sub-option 13 from option 3 MUST contain statuscode 3.
+#   changed after rfc7550
+#	Response option 3 MUST contain sub-option 13.
+#	Response sub-option 13 from option 3 MUST contain statuscode 3.
 	
 	References: RFC3315 section 18.2.3

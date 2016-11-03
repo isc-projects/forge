@@ -9,8 +9,10 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -22,7 +24,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -30,10 +33,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -43,13 +44,15 @@ Feature: Logging in Kea
 @v6 @kea_only @logging
     Scenario: v6.loggers.options-info
 	Test Setup:
+    #TODO negative testing
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server logging system is configured with logger type kea-dhcp6.options, severity INFO, severity level None and log file kea.log.
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -61,7 +64,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -69,10 +73,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -87,9 +89,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client does NOT include client-id.
-	Client sends SOLICIT message.
+	#message wont contain client-id option
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Server MUST NOT respond.
 	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.bad-packets
@@ -102,9 +104,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client does NOT include client-id.
-	Client sends SOLICIT message.
+	#message wont contain client-id option
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Server MUST NOT respond.
 	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.bad-packets
@@ -118,7 +120,9 @@ Feature: Logging in Kea
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -130,7 +134,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -138,10 +143,9 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
 	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -155,8 +159,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -168,7 +173,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -179,7 +185,8 @@ Feature: Logging in Kea
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -195,8 +202,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -208,7 +216,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -216,10 +225,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -233,8 +240,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -246,7 +254,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -254,10 +263,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -271,8 +278,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -284,7 +292,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -292,10 +301,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -311,8 +318,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -324,7 +332,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -332,10 +341,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -349,8 +356,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -362,7 +370,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -370,10 +379,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -387,8 +394,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -400,7 +408,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -408,10 +417,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+  	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -425,8 +432,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -438,7 +446,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -446,10 +455,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -463,8 +470,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -476,7 +484,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -484,10 +493,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -501,8 +508,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -514,7 +522,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -522,10 +531,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -539,8 +546,10 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -552,7 +561,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -560,10 +570,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -590,8 +598,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -603,7 +612,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -611,18 +621,17 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client requests option 7.
-	Client does NOT include client-id.
-	Client sends SOLICIT message.
+	#message wont contain client-id option
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Server MUST NOT respond.
 
@@ -651,8 +660,9 @@ Feature: Logging in Kea
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -664,7 +674,8 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -672,18 +683,16 @@ Feature: Logging in Kea
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-
-	Test Procedure:
-	Client requests option 7.
-	Client sends RELEASE message.
+	Client does include client-id.
+    Client sends RELEASE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
-	Client does NOT include client-id.
-	Client sends SOLICIT message.
+	#message wont contain client-id option
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Server MUST NOT respond.
 
@@ -711,6 +720,8 @@ Feature: Logging in Kea
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -726,6 +737,7 @@ Feature: Logging in Kea
     Client sets FQDN_domain_name value to sth6.six.example.com..
     Client sets FQDN_flags value to S.
     Client does include fqdn.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:
@@ -739,6 +751,7 @@ Feature: Logging in Kea
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
     Client adds saved options in set no. 1. And DONT Erase.
+    Client does include client-id.
     Client sends RELEASE message.
 
     Pass Criteria:

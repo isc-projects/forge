@@ -29,6 +29,8 @@ Feature: DDNS without TSIG
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -44,6 +46,7 @@ Feature: DDNS without TSIG
     Client sets FQDN_domain_name value to sth6.six.example.com..
     Client sets FQDN_flags value to S.
     Client does include fqdn.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:
@@ -76,6 +79,7 @@ Feature: DDNS without TSIG
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
     Client adds saved options in set no. 1. And DONT Erase.
+    Client does include client-id.
     Client sends RELEASE message.
 
     Pass Criteria:
@@ -126,6 +130,8 @@ Feature: DDNS without TSIG
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -141,6 +147,7 @@ Feature: DDNS without TSIG
     Client sets FQDN_domain_name value to sth6.six.example.com..
     Client sets FQDN_flags value to S.
     Client does include fqdn.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:
@@ -187,6 +194,7 @@ Feature: DDNS without TSIG
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
     Client adds saved options in set no. 1. And DONT Erase.
+    Client does include client-id.
     Client sends RELEASE message.
 
     Pass Criteria:
@@ -248,6 +256,8 @@ Feature: DDNS without TSIG
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
+    Client does include client-id.
+    Client does include IA-NA.
     Client sends SOLICIT message.
 
     Pass Criteria:
@@ -262,6 +272,7 @@ Feature: DDNS without TSIG
     Client adds saved options in set no. 1. And DONT Erase.
     Client sets FQDN_domain_name value to sth6.six.example.com..
     Client does include fqdn.
+    Client does include client-id.
     Client sends REQUEST message.
 
     Pass Criteria:
@@ -293,6 +304,7 @@ Feature: DDNS without TSIG
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
     Client adds saved options in set no. 1. And DONT Erase.
+    Client does include client-id.
     Client sends RELEASE message.
 
     Pass Criteria:

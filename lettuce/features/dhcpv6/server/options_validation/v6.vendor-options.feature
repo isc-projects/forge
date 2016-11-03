@@ -29,7 +29,10 @@ Feature: DHCPv6 vendor specific information
 	Client adds suboption for vendor specific information with code: 1 and data: 32.
 	Client does include vendor-specific-info.
 	
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -64,7 +67,10 @@ Feature: DHCPv6 vendor specific information
 	Client adds suboption for vendor specific information with code: 1 and data: 33.
 	Client does include vendor-specific-info.
 	
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -99,7 +105,10 @@ Feature: DHCPv6 vendor specific information
 	Client adds suboption for vendor specific information with code: 1 and data: 34.
 	Client does include vendor-specific-info.
 	
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -135,7 +144,10 @@ Feature: DHCPv6 vendor specific information
 	Client adds suboption for vendor specific information with code: 1 and data: 37.
 	Client does include vendor-specific-info.
 	
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -170,7 +182,10 @@ Feature: DHCPv6 vendor specific information
 	Client adds suboption for vendor specific information with code: 1 and data: 38.
 	Client does include vendor-specific-info.
 	
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -225,7 +240,10 @@ Feature: DHCPv6 vendor specific information
 	Client adds suboption for vendor specific information with code: 1 and data: 38.
 	Client does include vendor-specific-info.
 	
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.

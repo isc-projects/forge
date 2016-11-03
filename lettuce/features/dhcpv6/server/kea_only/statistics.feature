@@ -5,20 +5,21 @@ Feature: Kea Statistics
 Scenario: stats_6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
+    Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
 	DHCP server is started.
 
     Test Procedure:
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
     Test Procedure:
-	Client does NOT include IA-NA.
-	Client does NOT include client-id.
-	Client sends SOLICIT message.
+	#message wont contain client-id option
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST NOT respond.
@@ -36,7 +37,9 @@ Scenario: stats_6
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -45,14 +48,16 @@ Scenario: stats_6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
-	Client sends CONFIRM message.
+	Client does include client-id.
+    Client sends CONFIRM message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -67,7 +72,9 @@ Scenario: stats_6
     Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-reply-received"}}
 
 	Test Procedure:
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -79,7 +86,8 @@ Scenario: stats_6
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -89,7 +97,8 @@ Scenario: stats_6
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -98,7 +107,9 @@ Scenario: stats_6
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -108,14 +119,16 @@ Scenario: stats_6
 	Test Procedure:
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
-	Client sends REBIND message.
+	Client does include client-id.
+    Client sends REBIND message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -143,27 +156,27 @@ Scenario: stats_6
     Exchange messages REQUEST - REPLY 50 times.
 
     Test Procedure:
-	Client does NOT include IA-NA.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client does NOT include IA-NA.
 	Client copies server-id option from received message.
 	Client copies IA_PD option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client does NOT include IA-NA.
 	Client copies server-id option from received message.
 	Client copies IA_PD option from received message.
-	Client sends RENEW message.
+	Client does include client-id.
+    Client sends RENEW message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -204,7 +217,9 @@ Scenario: stats_6
 
 	Test Procedure:
 	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -213,7 +228,8 @@ Scenario: stats_6
 	Client copies IA_NA option from received message.
 	Client copies server-id option from received message.
 	Client requests option 7.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -221,7 +237,8 @@ Scenario: stats_6
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends DECLINE message.
+	Client does include client-id.
+    Client sends DECLINE message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
@@ -231,7 +248,7 @@ Scenario: stats_6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with another subnet: 3000:100::/64 with 3000:100::5-3000:100::ff pool.
-    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
+    Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
 	Reconfigure DHCP server.
 
@@ -239,14 +256,14 @@ Scenario: stats_6
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
+    Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Reconfigure DHCP server.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
+    Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
 	Reconfigure DHCP server.
 

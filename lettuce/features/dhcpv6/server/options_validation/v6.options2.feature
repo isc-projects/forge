@@ -203,7 +203,10 @@ Feature: Standard DHCPv6 options part 2
 
 	Test Procedure:
 	Client requests option 28.
-	Client sends SOLICIT message.
+	Client does include client-id.
+Client does include IA-NA.
+Client sends SOLICIT message.
+
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.

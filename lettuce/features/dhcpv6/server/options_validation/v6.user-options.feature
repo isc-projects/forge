@@ -4,7 +4,7 @@ Feature: DHCPv6 custom options
     requested custom options are assigned properly.
 
 @v6 @dhcp6 @options @user
-    Scenario: v6.options.user.preference
+    Scenario: v6.options.user-defined-option
 	## Testing server ability to configure it with user custom option
 	## in this case: option code 100, value unit8 123. 
 	## with client via Advertise and Reply message.
@@ -24,21 +24,25 @@ Feature: DHCPv6 custom options
 
 	Test Procedure:
 	Client requests option 100.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Response MUST include option 100.
-	Response option 100 MUST contain uint8 123.
+#	Response option 100 MUST contain data 123.
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client requests option 100.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 100.
-	Response option 100 MUST contain uint8 123.
+#	Response option 100 MUST contain uint8 123.
 
 	References: RFC3315 section 22.8

@@ -6,13 +6,14 @@ Feature: DHCPv6 Prefix Delegation
     
    	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::5-3000::5 pool.
-	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
+	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
 	DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -20,9 +21,10 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_PD option from received message.
 	Generate new IA_PD.
-	Client does include client-id.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -30,9 +32,10 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_PD option from received message.
 	Generate new IA_PD.
-	Client does include client-id.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -40,9 +43,10 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_PD option from received message.
 	Generate new IA_PD.
-	Client does include client-id.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -50,18 +54,19 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client copies server-id option from received message.
 	Client saves IA_PD option from received message.
-	Client does include client-id.
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:4000.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:8000.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:c000.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:1::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:4000::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:8000::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:c000::.
 
 	References: RFC 3633, Section: 12.2
 
@@ -69,14 +74,16 @@ Feature: DHCPv6 Prefix Delegation
     Scenario: prefix.delegation.multiple.PD_and_IA_request
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::4 pool.
-	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
+	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
 	#pool for 4 addresses and 4 prefix, all 8 with success
 	
 	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -87,7 +94,9 @@ Feature: DHCPv6 Prefix Delegation
 	Generate new IA.
 	Generate new IA_PD.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -98,7 +107,9 @@ Feature: DHCPv6 Prefix Delegation
 	Generate new IA.
 	Generate new IA_PD.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -109,7 +120,9 @@ Feature: DHCPv6 Prefix Delegation
 	Generate new IA.
 	Generate new IA_PD.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -119,21 +132,23 @@ Feature: DHCPv6 Prefix Delegation
 	Client saves IA_NA option from received message.
 	Client saves IA_PD option from received message.
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	Response MUST include option 3. 
-	Response sub-option 13 from option 3 MUST contain address 3000::1.
-	Response sub-option 13 from option 3 MUST contain address 3000::2.
-	Response sub-option 13 from option 3 MUST contain address 3000::3.
-	Response sub-option 13 from option 3 MUST contain address 3000::4.
+	Response MUST include option 3.
+    Response option 3 MUST contain sub-option 5.
+	Response sub-option 5 from option 3 MUST contain address 3000::1.
+	Response sub-option 5 from option 3 MUST contain address 3000::2.
+	Response sub-option 5 from option 3 MUST contain address 3000::3.
+	Response sub-option 5 from option 3 MUST contain address 3000::4.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:4000.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:8000.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:c000.	
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:1::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:4000::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:8000::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:c000::.
 	
 	References: RFC 3633, Section: 12.2
 	
@@ -141,13 +156,15 @@ Feature: DHCPv6 Prefix Delegation
     Scenario: prefix.delegation.multiple.PD_and_IA_request_partial_success
 	Test Setup:
 	Server is configured with 3000::/32 subnet with 3000::1-3000::2 pool.
-	Server is configured with 3000:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
+	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
 	#pool for 2 addresses and 2 prefix, half success
 	DHCP server is started.
 	
 	Test Procedure:
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -158,7 +175,9 @@ Feature: DHCPv6 Prefix Delegation
 	Generate new IA.
 	Generate new IA_PD.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -169,7 +188,9 @@ Feature: DHCPv6 Prefix Delegation
 	Generate new IA.
 	Generate new IA_PD.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -180,7 +201,9 @@ Feature: DHCPv6 Prefix Delegation
 	Generate new IA.
 	Generate new IA_PD.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -190,19 +213,22 @@ Feature: DHCPv6 Prefix Delegation
 	Client saves IA_NA option from received message.
 	Client saves IA_PD option from received message.
 	Client adds saved options. And Erase.
-	Client sends REQUEST message.
-	
+	Client does include client-id.
+    Client sends REQUEST message.
+
 	Pass Criteria:
 	Server MUST respond with REPLY message.  
 	Response MUST include option 3.
-	Response option 3 MUST contain sub-option 13.
-	Response sub-option 13 from option 3 MUST contain address 3000::1.
-	Response sub-option 13 from option 3 MUST contain address 3000::2.
+	Response option 3 MUST contain sub-option 5.
+	Response sub-option 5 from option 3 MUST contain address 3000::1.
+	Response sub-option 5 from option 3 MUST contain address 3000::2.
+    Response option 3 MUST contain sub-option 13.
 	Response sub-option 13 from option 3 MUST contain statuscode 2.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
-	Response sub-option 26 from option 25 MUST contain prefix 3000:0:8000::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:1::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:8000::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:8001::.
 	Response sub-option 13 from option 25 MUST contain statuscode 6.
 
 	References: RFC 3633, Section: 12.2
@@ -211,12 +237,13 @@ Feature: DHCPv6 Prefix Delegation
     Scenario: prefix.delegation.multiple.PD_and_IA_request_partial_fail
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
-	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
+	Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+    Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -224,7 +251,9 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -232,7 +261,9 @@ Feature: DHCPv6 Prefix Delegation
 	Test Procedure:
 	Client saves IA_NA option from received message.
 	Generate new IA.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
@@ -242,16 +273,20 @@ Feature: DHCPv6 Prefix Delegation
 	Client does include IA-PD.	
 	Client copies server-id option from received message.
 	Client adds saved options. And DONT Erase.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 5.
+	Response sub-option 5 from option 3 MUST contain address 3000::1.
+    Response sub-option 5 from option 3 MUST contain address 3000::2.
 	Response option 3 MUST contain sub-option 13.
 	Response sub-option 13 from option 3 MUST contain statuscode 2.	
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26. 
-	Response sub-option 26 from option 25 MUST contain prefix 3000::.
+	Response sub-option 26 from option 25 MUST contain prefix 2001:db8:1::.
 
 	References: RFC 3633, Section: 12.2
 
@@ -259,27 +294,33 @@ Feature: DHCPv6 Prefix Delegation
     Scenario: prefix.delegation.multiple.PD_and_IA_advertise_fail
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
+	Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	DHCP server is started.
 
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 	Client copies server-id option from received message.
 	Client copies IA_NA option from received message.
-	Client sends REQUEST message.
+	Client does include client-id.
+    Client sends REQUEST message.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
 	Test Procedure:
-	Client requests option 7.
 	Generate new IA.
 	Client does include IA-PD.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 13.
+	Response sub-option 13 from option 3 MUST contain statuscode 2.

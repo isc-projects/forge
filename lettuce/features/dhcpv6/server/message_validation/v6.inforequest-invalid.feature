@@ -22,14 +22,16 @@ Feature: Standard DHCPv6 information request message
 	DHCP server is started.
 	   
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
-	Client does include wrong-server-id.
+    Client sets server_id value to 00:01:00:01:52:7b:a8:f0:44:33:22:22:11:11.
+	Client does include server-id.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
@@ -37,6 +39,7 @@ Feature: Standard DHCPv6 information request message
 
 	Test Procedure:
 	Client requests option 7.
+    Client does include client-id.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
@@ -45,6 +48,56 @@ Feature: Standard DHCPv6 information request message
 	Response MUST include option 2.
 
 	References: RFC3315 section 15.12, 
+
+
+@v6 @dhcp6 @inforequest_invalid
+    Scenario: v6.inforequest.invalid.with_empty_server_id
+    ## Testing server ability to discard message that not meets
+    ## content requirements.
+    ## In this case: INFOREQUEST with SERVER_ID
+	## Message details 		Client		Server
+	## 						SOLICIT -->
+	## 		   						<--	ADVERTISE
+	## with SERVER_ID	INFOREQUEST -->
+	##					  		     X	REPLY
+	## correct message 	INFOREQUEST -->
+	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+ 	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	DHCP server is started.
+
+	Test Procedure:
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+
+	Test Procedure:
+    #Client sets server_id value to 00:01:00:01:52:7b:a8:f0:44:33:22:22:11:11.
+	Client does include empty-server-id.
+	Client sends INFOREQUEST message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client requests option 7.
+    Client does include client-id.
+	Client sends INFOREQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
+
+	References: RFC3315 section 15.12,
+
 
 @v6 @dhcp6 @inforequest_invalid
     Scenario: v6.inforequest.invalid.without_client_id
@@ -66,14 +119,15 @@ Feature: Standard DHCPv6 information request message
 	DHCP server is started.
 	   
 	Test Procedure:
-	Client does NOT include client-id.
+	#message wont contain client-id option
 	Client requests option 7.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
+	Server MUST respond with REPLY message.
 
 	Test Procedure:
+	Client does include client-id.
 	Client requests option 7.
 	Client sends INFOREQUEST message.
 
@@ -83,7 +137,48 @@ Feature: Standard DHCPv6 information request message
 	Response MUST include option 2.
 
 	References: RFC3315 section 15.12
-	
+
+
+@v6 @dhcp6 @inforequest_invalid
+    Scenario: v6.inforequest.invalid.double_client_id
+    ## Testing server ability to discard message that not meets
+    ## content requirements.
+    ## In this case: INFOREQUEST without CLIENT_ID
+	##
+	## Message details 		Client		Server
+	## without CLIENT_ID INFOREQUEST -->
+	##					  		     X	REPLY
+	## correct message 	INFOREQUEST -->
+	##					  		    <--	REPLY
+	## Pass Criteria:
+	## 				REPLY MUST include option:
+	##					client-id
+	##					server-id
+ 	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	DHCP server is started.
+
+	Test Procedure:
+	Client does include client-id.
+	Client does include client-id.
+    Client requests option 7.
+	Client sends INFOREQUEST message.
+
+	Pass Criteria:
+	Server MUST NOT respond with REPLY message.
+
+	Test Procedure:
+	Client does include client-id.
+	Client requests option 7.
+	Client sends INFOREQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
+
+	References: RFC3315 section 15.12
+
 @v6 @dhcp6 @inforequest_invalid
     Scenario: v6.inforequest.invalid.with_IA_NA
     ## Testing server ability to discard message that not meets 
@@ -106,13 +201,15 @@ Feature: Standard DHCPv6 information request message
 	DHCP server is started.
 	
 	Test Procedure:
-	Client requests option 7.
-	Client sends SOLICIT message.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
 
 	Pass Criteria:
 	Server MUST respond with ADVERTISE message.
 
 	Test Procedure:
+	Client does include client-id.
 	Client requests option 7.
 	Client copies IA_NA option from received message.
 	Client sends INFOREQUEST message.
@@ -122,6 +219,7 @@ Feature: Standard DHCPv6 information request message
 
 	Test Procedure:
 	Client requests option 7.
+	Client does include client-id.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
@@ -155,6 +253,7 @@ Feature: Standard DHCPv6 information request message
 
 	Test Procedure:
 	Client requests option 7.
+  	Client does include client-id.
 	Client does include relay-msg.
 	Client sends INFOREQUEST message.
 
@@ -163,6 +262,7 @@ Feature: Standard DHCPv6 information request message
 
 	Test Procedure:
 	Client requests option 7.
+	Client does include client-id.
 	Client sends INFOREQUEST message.
 
 	Pass Criteria:
