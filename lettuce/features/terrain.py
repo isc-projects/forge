@@ -122,6 +122,7 @@ def set_values():
         world.clntCfg["set_wrong"] = clnt_set_wrong.copy()
         # reset values to 'default for scenario'
         world.cfg["values"]["cli_duid"] = world.cfg["cli_duid"]
+        world.cfg["values"]["server_id"] = ""
         world.cfg["values"]["ia_id"] = world.cfg["ia_id"]
         world.cfg["values"]["ia_pd"] = world.cfg["ia_pd"]
     else:
@@ -219,6 +220,7 @@ def define_software():
 def declare_all():
     world.climsg = []  # Message(s) to be sent
     world.cliopts = []  # Option(s) to be included in the next message sent
+    world.relayopts = []  # option(s) to be included in Relay Forward message.
     world.srvmsg = []  # Server's response(s)
     world.savedmsg = {0: []}  # Saved option(s)
     world.define = []  # temporary define variables
@@ -230,6 +232,7 @@ def declare_all():
     world.iapd = []
     world.opts = []
     world.subopts = []
+    world.message_fields = []
     world.cfg = {}
 
     world.loops = {"active": False,
