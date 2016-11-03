@@ -310,6 +310,7 @@ def initialize(scenario):
     world.cfg["conf"] = ""  # Just empty config for now
     world.subcfg = [["", "", "", "", "", ""]]  # additional config structure
     world.reservation_backend = ""
+    world.cfg["server-id"] = ""
 
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name

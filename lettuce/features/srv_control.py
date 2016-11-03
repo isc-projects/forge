@@ -147,6 +147,15 @@ def config_srv_prefix(step, prefix, subnet, length, delegated_length):
     dhcp.prepare_cfg_prefix(step, prefix, length, delegated_length, subnet)
 
 
+@step('Server-id configured with type (\S+) value (\S+).')
+def config_srv_id(step, id_type, id_value):
+    """
+    Adds server configuration with specified prefix.
+    """
+    id_type, id_value = test_define_value(id_type, id_value)
+    dhcp.config_srv_id(str(id_type), str(id_value))
+
+
 @step('Next server value on subnet (\d+) is configured with address (\S+).')
 def subnet_add_siaddr(step, subnet_number, addr):
     addr, subnet_number = test_define_value(addr, subnet_number)

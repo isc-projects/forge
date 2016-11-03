@@ -270,11 +270,15 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
     world.subcfg[subnet][5] = tmp
 
 
+def config_srv_id(id_type, id_value):
+    assert False, "Not yet available for Kea4"
+
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK END  ==================
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK START ==================
+
 
 def build_and_send_config_files():
     world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases4.csv'

@@ -781,13 +781,15 @@ def sub_option_help(expected, opt_code):
 def extract_duid(option):
     if option.type == 1:
         # DUID_LLT
-        return "00010001" + str(option.timeval) + str(option.lladdr).replace(":", "")
+        return "0001000" + str(option.hwtype) + str(hex(option.timeval))[2:] + str(option.lladdr).replace(":", "")
     elif option.type == 2:
         # DUID_EN
-        return ("00020001" + str(option.enterprisenum) + str(option.id)).replace(":", "")
+        #TODO fix it, some how scapy does not allow this, used in test v6.server-id.en
+        assert False, "not done yet"
+        return "0002" + str(option.enterprisenum) + str(option.id.decode())
     elif option.type == 3:
         # DUID_LL
-        return "00030001" + str(option.lladdr).replace(":", "")
+        return "0003000" + str(option.hwtype) + str(option.lladdr).replace(":", "")
 
 
 def response_check_include_suboption(opt_code, expect, expected_value):
@@ -800,8 +802,8 @@ def response_check_include_suboption(opt_code, expect, expected_value):
 
 
 values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sipservers", 23: "dnsservers",
-                         24: "dnsdomains", 27: "nisservers", 28: "nispservers", 29: "nisdomain", 30: "nispdomain",
-                         31: "sntpservers", 32: "reftime"}
+                     24: "dnsdomains", 27: "nisservers", 28: "nispservers", 29: "nisdomain", 30: "nispdomain",
+                     31: "sntpservers", 32: "reftime"}
 
 
 def response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected_value):
@@ -848,20 +850,22 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     assert x, "Expected option " + str(opt_code) + " not present in the message."
     # test all collected options,:
     # couple tweaks to make checking smoother
+    x.show()
     if data_type == "iapd":
         data_type = "iaid"
     if data_type == "duid":
         expected_value = expected_value.replace(":", "")
-
-    for each in x:
-        tmp_field = each.fields.get(data_type)
-        if tmp_field is None:
-            data_type = values_equivalent.get(opt_code)
+        received.append(extract_duid(x.duid))
+    else:
+        for each in x:
             tmp_field = each.fields.get(data_type)
-        if type(tmp_field) is list:
-            received.append(",".join(tmp_field))
-        else:
-            received.append(str(tmp_field))
+            if tmp_field is None:
+                data_type = values_equivalent.get(opt_code)
+                tmp_field = each.fields.get(data_type)
+            if type(tmp_field) is list:
+                received.append(",".join(tmp_field))
+            else:
+                received.append(str(tmp_field))
 
     # test if expected option/suboption/value is in all collected options/suboptions/values
     if expect is None or expect is True:

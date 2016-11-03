@@ -63,6 +63,22 @@ kea_otheroptions = {
 }
 
 
+def config_srv_id(id_type, id_value):
+    id_value = id_value.replace(":", "")
+    if id_type == "EN":
+        world.cfg["server-id"] = '"server-id": {"type": "EN", "enterprise-id": ' + str(int(id_value[4:12], 16)) \
+                                 + ', "identifier":" ' + id_value[12:] + ' "},'
+    elif id_type == "LLT":
+        world.cfg["server-id"] = '"server-id": {"type": "LLT", "htype": ' + str(int(id_value[4:8], 16))\
+                                 + ', "identifier": "' + id_value[16:]\
+                                 + '", "time": ' + str(int(id_value[8:16], 16)) + ' },'
+    elif id_type == "LL":
+        world.cfg["server-id"] = '"server-id": {"type": "LL", "htype": ' + str(int(id_value[4:8], 16)) \
+                                 + ', "identifier": "' + id_value[8:] + ' "},'
+    else:
+        assert False, "DUID type unknown."
+
+
 def set_time(step, which_time, value, subnet = None):
     assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
@@ -411,6 +427,8 @@ def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     ## add timers
     cfg_file.write(world.cfg["main"])
+    if len(world.cfg["server-id"]) > 5:
+        cfg_file.write(world.cfg["server-id"])
     ## add interfaces
     cfg_file.write('"interfaces-config": { "interfaces": [ ' + world.cfg["interfaces"] + ' ] },')
     ## add header for subnets
