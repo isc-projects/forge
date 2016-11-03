@@ -1,5 +1,5 @@
 --- a/scapy/layers/dhcp.py	Tue Sep 30 14:51:53 2014 +0200
-+++ b/scapy/layers/dhcp.py	Mon Oct 20 13:32:02 2014 -0700
++++ b/scapy/layers/dhcp.py	Thu Nov 03 21:46:47 2016 +1000
 @@ -36,7 +36,7 @@
                      IPField("yiaddr","0.0.0.0"),
                      IPField("siaddr","0.0.0.0"),
@@ -18,7 +18,7 @@
      3: IPField("router","0.0.0.0"),
      4: IPField("time_server","0.0.0.0"),
      5: IPField("IEN_name_server","0.0.0.0"),
-@@ -93,37 +93,61 @@
+@@ -93,37 +93,62 @@
      7: IPField("log_server","0.0.0.0"),
      8: IPField("cookie_server","0.0.0.0"),
      9: IPField("lpr_server","0.0.0.0"),
@@ -82,20 +82,23 @@
      59: IntField("rebinding_time", 37800),
 -    60: "vendor_class_id",
 -    61: "client_id",
--    
+-
 +    60: StrField("vendor_class_id","id"),
 +    61: StrField("client_id",""),
 +    62: "nwip-domain-name",
      64: "NISplus_domain",
      65: IPField("NISplus_server","0.0.0.0"),
 +    67: StrField("boot-file-name",""),
++    68: IPField("mobile-ip-home-agent", "0.0.0.0"),
      69: IPField("SMTP_server","0.0.0.0"),
      70: IPField("POP3_server","0.0.0.0"),
      71: IPField("NNTP_server","0.0.0.0"),
-@@ -132,7 +156,11 @@
+@@ -131,8 +156,12 @@
+     73: IPField("Finger_server","0.0.0.0"),
      74: IPField("IRC_server","0.0.0.0"),
      75: IPField("StreetTalk_server","0.0.0.0"),
-     76: "StreetTalk_Dir_Assistance",
+-    76: "StreetTalk_Dir_Assistance",
++    76: IPField("StreetTalk_Dir_Assistance","0.0.0.0"),
 +    81: "client_FQDN",
      82: "relay_agent_Information",
 +    91: IntField("client-last-transaction-time", 1000),

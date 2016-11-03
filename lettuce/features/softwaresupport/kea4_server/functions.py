@@ -87,7 +87,18 @@ kea_options4 = {
     "client_id": 61,
     "nwip-domain-name": 62,  # string
     "nwip-suboptions": 63,  # binary
+    "nisplus-domain-name": 64,  # string
+    "nisplus-servers": 65,  # ipv4-address (array)
     "boot-file-name": 67,  # string
+    "mobile-ip-home-agent": 68,  # ipv4-address (array)
+    "smtp-server": 69,  # ipv4-address (array)
+    "pop-server": 70,  # ipv4-address (array)
+    "nntp-server": 71,  # ipv4-address (array)
+    "www-server": 72,  # ipv4-address (array)
+    "finger-server": 73,  # ipv4-address (array)
+    "irc-server": 74,  # ipv4-address (array)
+    "streettalk-server": 75,  # ipv4-address (array)
+    "streettalk-directory-assistance-server": 76,  # ipv4-address (array)
     "user-class": 77,  # binary
     "fqdn": 81,  # record
     "dhcp-agent-options": 82,  # empty

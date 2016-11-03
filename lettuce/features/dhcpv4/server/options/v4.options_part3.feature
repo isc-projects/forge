@@ -6,7 +6,7 @@ Feature: DHCPv4 options part3
 
 	# References in all tests are temporary empty, that's intentional.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.ip-forwarding
 
     Test Setup:
@@ -24,7 +24,7 @@ Feature: DHCPv4 options part3
     Response option 19 MUST contain value 1.
     Response option 19 MUST NOT contain value 0.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.non-local-source-routing
 
  	Test Setup:   
@@ -42,7 +42,7 @@ Feature: DHCPv4 options part3
     Response option 20 MUST contain value 1.
     Response option 20 MUST NOT contain value 0.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.perform-mask-discovery
 
 	Test Setup:
@@ -60,7 +60,7 @@ Feature: DHCPv4 options part3
     Response option 29 MUST contain value 0.
     Response option 29 MUST NOT contain value 1.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.mask-supplier
 
 	Test Setup:
@@ -78,7 +78,7 @@ Feature: DHCPv4 options part3
     Response option 30 MUST contain value 1.
     Response option 30 MUST NOT contain value 0.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.router-discovery
 
 	Test Setup:
@@ -96,7 +96,7 @@ Feature: DHCPv4 options part3
     Response option 31 MUST contain value 1.
     Response option 31 MUST NOT contain value 0.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.trailer-encapsulation
 
 	Test Setup:
@@ -114,7 +114,7 @@ Feature: DHCPv4 options part3
     Response option 34 MUST contain value 1.
     Response option 34 MUST NOT contain value 0.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.ieee802-3-encapsulation
 
 	Test Setup:
@@ -132,7 +132,7 @@ Feature: DHCPv4 options part3
     Response option 36 MUST contain value 1.
     Response option 36 MUST NOT contain value 0.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.tcp-keepalive-garbage
 
 	Test Setup:
@@ -151,7 +151,7 @@ Feature: DHCPv4 options part3
     Response option 39 MUST NOT contain value 0.
 
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options
     Scenario: v4.options.user-custom-option
 
     # This test it's kind of hack, to override scapy v4 restrictions.

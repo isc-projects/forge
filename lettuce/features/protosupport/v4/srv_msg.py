@@ -377,7 +377,7 @@ def response_check_include_option(step, expected, opt_code):
         assert opt is None, "Expected option " + opt_code + " present in the message. But not expected!"
 
 
-def response_check_option_content(step, subopt_code, opt_code, expect, data_type, expected):
+def response_check_option_content(opt_code, expect, data_type, expected):
     # expect == None when we want that content and NOT when we dont want! that's messy correct that!
     assert len(world.srvmsg) != 0, "No response received."
     
