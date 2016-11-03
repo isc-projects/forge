@@ -102,7 +102,7 @@ if [ "$1" == --help -o "$1" == -h ]; then
     ./modify_address -d <path_to_test_dir> <new_subnet_addr_3_octets> <new_netmask>
 to change addresses that are not default:
     ./modify_address -s <path_to_test_dir> <new_subnet_addr_3_octets> <new_netmask>\
- <old_subnet_addr_3_octets> <old_netmask>\nIf you want to restore backuped tests:
+ <old_subnet_addr_3_octets> <old_netmask>\nIf you want to restore tests form backup files:
     ./modify_address -r <path_to_directory>\n"
     exit 0
 
