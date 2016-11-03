@@ -35,13 +35,14 @@ def client_requests_option(step, opt_type):
     dhcpmsg.client_requests_option(step, opt_type)
 
 
-@step('Client sets (\w+) value to (\S+).')
-def client_sets_value(step, value_name, new_value):
+@step('(Client|RelayAgent) sets (\w+) value to (\S+).')
+def client_sets_value(step, sender_type, value_name, new_value):
     """
     User can set values like: address, T1 or DUID to make test scenario
     more accurate.
     """
-    # that is also used for DNS messages
+    # that is also used for DNS messages and RelayForward message but sender_type was
+    # introduced just to keep tests cleaner - it's unused in the code.
     value_name, new_value = test_define_value(value_name, new_value)
     dhcpmsg.client_sets_value(step, value_name, new_value)
 
@@ -85,14 +86,22 @@ def client_does_include_with_value(step, opt_type, value):
     dhcpmsg.client_does_include(step, opt_type, value)
 
 
-@step('Client does (NOT )?include (\S+).')
-def client_does_include(step, yes_or_not, opt_type):
+@step('(\S+) does (NOT )?include (\S+).')
+def client_does_include(step, sender_type, yes_or_not, opt_type):
     # add " option." to the end of the step - change all tests!
     """
     You can choose to include options to message (support for every option listed
     in RFC 3315 and more) or to not include options like IA_NA or client_id.
     """
-    dhcpmsg.client_does_include(step, opt_type, None)
+    dhcpmsg.client_does_include(str(sender_type), opt_type, None)
+
+
+@step('Relay-agent does include (\S+).')
+def client_does_include(step, opt_type):
+    # add " option." to the end of the step - change all tests!
+    """
+    """
+    #dhcpmsg.relay_agent_does_include(step, opt_type)
 
 
 @step('Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
@@ -121,7 +130,7 @@ def generate_new(step, opt):
     dhcpmsg.generate_new(step, opt)
 
 
-@step('...using relay-agent encapsulated in (\d+) level(s)?.')
+@step('RelayAgent forwards message encapsulated in (\d+) level(s)?.')
 def create_relay_forward(step, level, s):
     """
     This step is strictly related to step: Client sends message.
@@ -134,13 +143,19 @@ def create_relay_forward(step, level, s):
     dhcpmsg.create_relay_forward(step, level)
 
 
-@step('Client adds suboption for vendor specific information with code: (\d+) and data: (\S+).')
-def add_vendor_suboption(step, code, data):
+@step('(Client|RelayAgent) adds suboption for vendor specific information with code: (\d+) and data: (\S+).')
+def add_vendor_suboption(step, sender_type, code, data):
     """
     After adding Vendor Specific Option we can deside to add suboptions to it. Please make sure which are
     supported and if it's nececary add suboption by youself.
     """
     dhcpmsg.add_vendor_suboption(step, int(code), data)
+
+
+@step('Before sending a message set filed named (\S+) to (\S+) as type (\S+).')
+def change_message_filed(step, message_filed, value, value_type):
+    message_filed, value, value_type = test_define_value(message_filed, value, value_type)
+    dhcpmsg.change_message_field(message_filed, value, value_type)
 
 
 ##checking DHCP respond

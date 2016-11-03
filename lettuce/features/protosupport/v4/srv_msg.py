@@ -24,7 +24,7 @@ from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sendp, sniff
 from random import randint
-from protosupport.v6.srv_msg import client_add_saved_option
+from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
 
 
 def client_requests_option(step, opt_type):
@@ -270,12 +270,17 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
+def change_message_field(message_filed, value):
+    assert False, "TODO"
+
+
 def send_wait_for_message(step, msgtype, presence, exp_message):
     """
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
 
+    apply_message_fields_changes()
     ans, unans = srp(world.climsg,
                     iface = world.cfg["iface"],
                     timeout = world.cfg["wait_interval"],
