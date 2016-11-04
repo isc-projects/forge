@@ -33,6 +33,7 @@ options = {"client-id": 1,
            "IA_address": 5,
            "preference": 7,
            "relay-msg": 9,
+           "unicast": 12,
            "status-code": 13,
            "rapid_commit": 14,
            "vendor-class": 16,
@@ -50,6 +51,7 @@ options = {"client-id": 1,
            "nisp-domain-name": 30,
            "sntp-servers": 31,
            "information-refresh-time": 32,
+           "bcmcs-server-dns": 33,
            "remote-id": 37,
            "subscriber-id": 38,
            "fqdn": 39,
@@ -850,7 +852,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     assert x, "Expected option " + str(opt_code) + " not present in the message."
     # test all collected options,:
     # couple tweaks to make checking smoother
-    x.show()
+
     if data_type == "iapd":
         data_type = "iaid"
     if data_type == "duid":

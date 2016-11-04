@@ -619,3 +619,130 @@ Feature: Standard DHCPv6 options part 1
 	Response option 23 MUST contain addresses 2001:db8::1,2001:db8::2.
 	Response MUST NOT include option 24.
 	References: v6.options, v6.oro, RFC3646
+
+
+@v6 @dhcp6 @options
+    Scenario: v6.options.unicast
+	## Testing server ability to configure it with option
+	## unicast (code 12) with value 3000::66 and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## unicast              	<--	ADVERTISE
+	## request option	REQUEST -->
+	## unicast                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					unicast option with value 3000::66
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with unicast option with value 3000::66.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 12.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 12.
+	Response option 12 MUST contain srvaddr 3000::66.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 12.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 12.
+	Response option 12 MUST contain srvaddr 3000::66.
+
+@v6 @dhcp6 @options
+    Scenario: v6.options.bcmcs-server-dns
+	## Testing server ability to configure it with option
+	## bcmcs-server-dns (code 33) with value very.good.domain.name.com and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## bcmcs-server-dns              	<--	ADVERTISE
+	## request option	REQUEST -->
+	## bcmcs-server-dns                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					bcmcs-server-dns option with value very.good.domain.name.com
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with bcmcs-server-dns option with value very.good.domain.name.com.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 33.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 33.
+	Response option 33 MUST contain bcmcsdomains very.good.domain.name.com.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 33.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 33.
+	Response option 33 MUST contain bcmcsdomains very.good.domain.name.com.
+
+  @v6 @dhcp6 @options
+    Scenario: v6.options.bcmcs-server-addr
+	## Testing server ability to configure it with option
+	## bcmcs-server-addr (code 34) with value 3000::66 and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## bcmcs-server-addr              	<--	ADVERTISE
+	## request option	REQUEST -->
+	## bcmcs-server-addr                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					bcmcs-server-addr option with value 3000::66
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with bcmcs-server-addr option with value 3000::66,3000::77.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 34.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 34.
+	Response option 34 MUST contain bcmcsservers 3000::66,3000::77.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 34.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 34.
+	Response option 34 MUST contain bcmcsservers 3000::66,3000::77.
