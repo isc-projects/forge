@@ -64,7 +64,11 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "statusmsg": "",
              "reconfigure_msg_type": 5,
              "reqopts": 7,
-             "paaaddr": "::"}
+             "paaaddr": "::",
+             "iitype": 0,
+             "iimajor": 0,
+             "iiminor": 0,
+             "archtypes": 1}
 
 srv_values_v6 = {"T1": 1000,
                  "T2": 2000,

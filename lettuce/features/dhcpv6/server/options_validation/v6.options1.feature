@@ -918,7 +918,7 @@ Feature: Standard DHCPv6 options part 1
 	Response MUST include option 59.
 	Response option 59 MUST contain optdata http://www.kea.isc.org.
 
-@v6 @dhcp6 @options @disable
+@v6 @dhcp6 @options
     Scenario: v6.options.bootfile-param
 	## Testing server ability to configure it with option
 	## bootfile-param (code 60) with value 000B48656C6C6F20776F726C64 and ability to share that
@@ -1007,6 +1007,45 @@ Feature: Standard DHCPv6 options part 1
 
     References: RFC5007
 
-  #RFC5007
-#    lq-client-link	48	ipv6-address	true	lack of scapy support
- #   dhcp4o6-server-addr	88	ipv6-address	true	lack of scapy support
+
+@v6 @dhcp6 @options
+    Scenario: v6.options.erp-local-domain-name
+	## Testing server ability to configure it with option
+	## erp-local-domain-name (code 65) with value erp-domain.isc.org and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## erp-local-domain-name       	<--	ADVERTISE
+	## request option	REQUEST -->
+	## erp-local-domain-name        <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					erp-local-domain-name option with value erp-domain.isc.org
+
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with erp-local-domain-name option with value erp-domain.isc.org.
+    DHCP server is started.
+
+    Test Procedure:
+	Client requests option 65.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 65.
+	Response option 65 MUST contain erpdomain erp-domain.isc.org.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 65.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 65.
+	Response option 65 MUST contain erpdomain erp-domain.isc.org.

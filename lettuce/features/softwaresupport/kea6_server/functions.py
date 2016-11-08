@@ -58,7 +58,8 @@ kea_options6 = {
     "new-tzdb-timezone": 42,
     "lq-client-link": 48,
     "bootfile-url": 59,
-    "bootfile-param": 60
+    "bootfile-param": 60,
+    "erp-local-domain-name": 65
 }
 # kea_otheoptions was originally designed for vendor options
 # because codes sometime overlap with basic options

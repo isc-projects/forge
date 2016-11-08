@@ -296,6 +296,14 @@ def client_does_include(sender_type, opt_type, value):
     elif opt_type == "interface-id":
         add_client_option(DHCP6OptIfaceId(ifaceid=world.cfg["values"]["ifaceid"]))
 
+    elif opt_type == "nii":
+        add_client_option(DHCP6OptClientNetworkInterId(iitype=world.cfg["values"]["iitype"],
+                                                       iimajor=world.cfg["values"]["iimajor"],
+                                                       iiminor=world.cfg["values"]["iiminor"]))
+
+    elif opt_type == "client-arch-type":
+        add_client_option(DHCP6OptClientArchType(archtypes=str(world.cfg["values"]["archtypes"])))
+
     else:
         assert "unsupported option: " + opt_type
 
