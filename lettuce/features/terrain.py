@@ -63,7 +63,8 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "statuscode": 0,
              "statusmsg": "",
              "reconfigure_msg_type": 5,
-             "reqopts": 7}
+             "reqopts": 7,
+             "paaaddr": "::"}
 
 srv_values_v6 = {"T1": 1000,
                  "T2": 2000,
@@ -310,11 +311,12 @@ def initialize(scenario):
     world.cfg["conf"] = ""  # Just empty config for now
     world.subcfg = [["", "", "", "", "", ""]]  # additional config structure
     world.reservation_backend = ""
-    world.cfg["server-id"] = ""
 
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
     world.cfg["subnet"] = ""
+    world.cfg["server-id"] = ""
+    world.cfg["csv-format"] = "true"
 
     world.name = scenario.name
 

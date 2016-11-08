@@ -450,7 +450,7 @@ def remove_file_from_server(step, remote_path):
     other.remove_file_from_server(step, remote_path)
 
 
-@step('User define temporary variable: (\S+) with value (\S+).')
+@step('User define temporary variable: (\S+) with value (.+)')
 def add_variable_temporary(step, variable_name, variable_val):
     """
     User can define his own variable, that can be called from any place in test scenario,

@@ -52,7 +52,13 @@ kea_options6 = {
     "sntp-servers": 31,
     "information-refresh-time": 32,
     "bcmcs-server-dns": 33,
-    "bcmcs-server-addr": 34
+    "bcmcs-server-addr": 34,
+    "pana-agent": 40,
+    "new-posix-timezone": 41,
+    "new-tzdb-timezone": 42,
+    "lq-client-link": 48,
+    "bootfile-url": 59,
+    "bootfile-param": 60
 }
 # kea_otheoptions was originally designed for vendor options
 # because codes sometime overlap with basic options

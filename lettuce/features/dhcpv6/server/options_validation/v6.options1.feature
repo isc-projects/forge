@@ -746,3 +746,267 @@ Feature: Standard DHCPv6 options part 1
 	Server MUST respond with REPLY message.
 	Response MUST include option 34.
 	Response option 34 MUST contain bcmcsservers 3000::66,3000::77.
+
+  @v6 @dhcp6 @options
+    Scenario: v6.options.pana-agent
+	## Testing server ability to configure it with option
+	## pana-agent (code 40) with value 3000::66 and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## pana-agent             	<--	ADVERTISE
+	## request option	REQUEST -->
+	## pana-agent                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					pana-agent option with value 3000::66
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with pana-agent option with value 3000::66,3000::77.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 40.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 40.
+	Response option 40 MUST contain paaaddr 3000::66,3000::77.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 40.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 40.
+	Response option 40 MUST contain paaaddr 3000::66,3000::77.
+
+    References: RFC5192
+
+@v6 @dhcp6 @options
+    Scenario: v6.options.new-posix-timezone
+	## Testing server ability to configure it with option
+	## new-posix-timezone (code 41) with value EST5EDT4,M3.2.0/02:00,M11.1.0/02:00 and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## new-posix-timezone              	<--	ADVERTISE
+	## request option	REQUEST -->
+	## new-posix-timezone                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					new-posix-timezone option with value EST5EDT4,M3.2.0/02:00,M11.1.0/02:00
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with new-posix-timezone option with value EST5EDT4,M3.2.0/02:00,M11.1.0/02:00.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 41.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 41.
+	Response option 41 MUST contain optdata EST5EDT4,M3.2.0/02:00,M11.1.0/02:00.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 41.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 41.
+	Response option 41 MUST contain optdata EST5EDT4,M3.2.0/02:00,M11.1.0/02:00.
+
+@v6 @dhcp6 @options
+    Scenario: v6.options.new-tzdb-timezone
+	## Testing server ability to configure it with option
+	## new-tzdb-timezone (code 42) with value Europe/Zurich and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## new-tzdb-timezone              	<--	ADVERTISE
+	## request option	REQUEST -->
+	## new-tzdb-timezone                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					new-tzdb-timezone option with value Europe/Zurich
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with new-tzdb-timezone option with value Europe/Zurich.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 42.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 42.
+	Response option 42 MUST contain optdata Europe/Zurich.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 42.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 42.
+	Response option 42 MUST contain optdata Europe/Zurich.
+
+
+@v6 @dhcp6 @options
+    Scenario: v6.options.bootfile-url
+	## Testing server ability to configure it with option
+	## bootfile-url (code 59) with value http://www.kea.isc.org and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## bootfile-url              	<--	ADVERTISE
+	## request option	REQUEST -->
+	## bootfile-url                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					new-tzdb-timezone option with value http://www.kea.isc.org
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with bootfile-url option with value http://www.kea.isc.org.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 59.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 59.
+	Response option 59 MUST contain optdata http://www.kea.isc.org.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 59.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 59.
+	Response option 59 MUST contain optdata http://www.kea.isc.org.
+
+@v6 @dhcp6 @options @disable
+    Scenario: v6.options.bootfile-param
+	## Testing server ability to configure it with option
+	## bootfile-param (code 60) with value 000B48656C6C6F20776F726C64 and ability to share that
+    ## 000B48656C6C6F20776F726C64 = length 11 "Hello world length 3 "foo"
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## bootfile-param              	<--	ADVERTISE
+	## request option	REQUEST -->
+	## bootfile-param                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					bootfile-param option with value 000B48656C6C6F20776F726C64
+
+	Test Setup:
+    Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+    Server is configured with bootfile-param option with value 000B48656C6C6F20776F726C640003666F6F.
+    DHCP server is started.
+
+    Test Procedure:
+	Client requests option 60.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 60.
+	#Response option 60 MUST contain optdata ??.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 60.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 60.
+	#Response option 60 MUST contain optdata ??.
+
+
+@v6 @dhcp6 @options @disabled
+    # Kea works against the RFC spec.
+    Scenario: v6.options.lq-client-link
+	## Testing server ability to configure it with option
+	## lq-client-link (code 48) with value 3000::66 and ability to share that
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## lq-client-link             	<--	ADVERTISE
+	## request option	REQUEST -->
+	## lq-client-link                 <--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					lq-client-link option with value 3000::66
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with lq-client-link option with value 3000::66,3000::77.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 48.
+	Client does include client-id.
+    Client does include IA-NA.
+    Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 48.
+	Response option 48 MUST contain link-address 3000::66,3000::77.
+
+	Test Procedure:
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 48.
+	Client does include client-id.
+    Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 48.
+	Response option 48 MUST contain link-address 3000::66,3000::77.
+
+    References: RFC5007
+
+  #RFC5007
+#    lq-client-link	48	ipv6-address	true	lack of scapy support
+ #   dhcp4o6-server-addr	88	ipv6-address	true	lack of scapy support

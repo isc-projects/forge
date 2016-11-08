@@ -843,6 +843,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     opt_code = int(opt_code)
     data_type = str(data_type)
     expected_value = str(expected_value)
+    initial_data_type = data_type
     # without any msg received, fail test
     assert len(world.srvmsg) != 0, "No response received."
     # get that one option, also fill world.opts (for multiple options same type, e.g. IA_NA)
@@ -870,6 +871,10 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                 received.append(str(tmp_field))
 
     # test if expected option/suboption/value is in all collected options/suboptions/values
+    if received[0] == 'None':
+        assert False, "Within option " + str(opt_code) + " there is no " + initial_data_type\
+                      + " value. Probably that is test error"
+
     if expect is None or expect is True:
         assert expected_value in received, "Invalid " + str(opt_code) + " option, received "\
                                            + data_type + ": " + ",".join(received) + ", but expected " \
