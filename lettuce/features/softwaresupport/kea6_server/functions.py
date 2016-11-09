@@ -153,9 +153,11 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     pointer_start = "{"
     pointer_end = "}"
 
-    world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
-         '''.format(**locals())
-    world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
+    if subnet is not "":
+        world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"'''.format(**locals())
+        world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
+    else:
+        world.subnet_add = False
     if pool is not "":
         world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
 
@@ -442,27 +444,33 @@ def cfg_write():
     ## add interfaces
     cfg_file.write('"interfaces-config": { "interfaces": [ ' + world.cfg["interfaces"] + ' ] },')
     ## add header for subnets
-    if "kea6" in world.cfg["dhcp_under_test"]:
-        cfg_file.write('"subnet6":[')
-    elif "kea4" in world.cfg["dhcp_under_test"]:
-        cfg_file.write('"subnet4":[')
+    if world.subnet_add:
+        if "kea6" in world.cfg["dhcp_under_test"]:
+            cfg_file.write('"subnet6":[')
+        elif "kea4" in world.cfg["dhcp_under_test"]:
+            cfg_file.write('"subnet4":[')
 
-    ## add subnets
-    counter = 0
-    for each_subnet in world.subcfg:
-        tmp = each_subnet[0]
-        counter += 1
-        for each_subnet_config_part in each_subnet[1:]:
-            if len(each_subnet_config_part) > 0:
-                tmp += ',' + each_subnet_config_part
-            #tmp += str(each_subnet[-1])
-        cfg_file.write(tmp + '}')
-        if counter != len(world.subcfg) and len(world.subcfg) > 1:
-            cfg_file.write(",")
-    cfg_file.write(']')
+        ## add subnets
+        counter = 0
+        for each_subnet in world.subcfg:
+            tmp = each_subnet[0]
+            counter += 1
+            for each_subnet_config_part in each_subnet[1:]:
+                if len(each_subnet_config_part) > 0:
+                    tmp += ',' + each_subnet_config_part
+                #tmp += str(each_subnet[-1])
+            cfg_file.write(tmp + '}')
+            if counter != len(world.subcfg) and len(world.subcfg) > 1:
+                cfg_file.write(",")
+        cfg_file.write(']')
+        #that is ugly hack but kea confing generation is awaiting rebuild anyway
+        if "options" in world.cfg:
+            cfg_file.write(',' + world.cfg["options"])
+            cfg_file.write("]")
+            del world.cfg["options"]
 
     if "options" in world.cfg:
-        cfg_file.write(',' + world.cfg["options"])
+        cfg_file.write(world.cfg["options"])
         cfg_file.write("]")
         del world.cfg["options"]
 

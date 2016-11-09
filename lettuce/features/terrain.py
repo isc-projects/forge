@@ -238,6 +238,7 @@ def declare_all():
     world.opts = []
     world.subopts = []
     world.message_fields = []
+    world.subnet_add = True
     world.cfg = {}
 
     world.loops = {"active": False,
