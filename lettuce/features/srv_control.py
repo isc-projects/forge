@@ -227,6 +227,7 @@ def unset_time(step, which_time):
     which_time = test_define_value(which_time)[0]
     dhcp.unset_time(step, which_time)
 
+
 @step('Option (\S+) is configured with value (\S+).')
 def set_time_option(step, which_time, value):
     """
@@ -234,6 +235,32 @@ def set_time_option(step, which_time, value):
     """
     which_time, value = test_define_value(which_time, value)
     dhcp.set_time(step, which_time, value)
+
+
+@step('Add configuration parameter (\S+) with value (\S+) to global configuration.')
+def set_conf_parameter_global(step, parameter_name, value):
+    """
+    Can be used on the end of configuration process, just before starting server.
+    :param step:
+    :param parameter_name:
+    :param value:
+    :return:
+    """
+    parameter_name, value = test_define_value(parameter_name, value)
+    dhcp.set_conf_parameter_global(parameter_name, value)
+
+
+@step('Add configuration parameter (\S+) with value (\S+) to subnet (\d+) configuration.')
+def set_conf_parameter_subnet(step, parameter_name, value, subnet_id):
+    """
+    Can be used on the end of configuration process, just before starting server.
+    :param step:
+    :param parameter_name:
+    :param value:
+    :return:
+    """
+    parameter_name, value, subnet_id = test_define_value(parameter_name, value, subnet_id)
+    dhcp.set_conf_parameter_subnet(parameter_name, value, int(subnet_id))
 
 
 @step('Run configuration command: (.+)')

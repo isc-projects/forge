@@ -24,28 +24,7 @@ Feature: Standard DHCPv6 message types
 
 	References: RFC3315 section 5.3
 
-@basic @v6 @dhcp6 @rapid
-    Scenario: v6.basic.message.solicit-reply
-    ## Basic message test, testing only server ability to respond with 'REPLY' 
-    ## to received 'SOLICIT' with RAPID COMMIT option. Without testing content
-    ## of a message.
-    ## TODO fix it!
-	Test Setup:
-	Option rapid-commit is configured with value True.
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
 
-	Test Procedure:
-	Client does include rapid-commit.
-	Client does include client-id.
-    Client does include IA-NA.
-    Client sends SOLICIT message.
-
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-
-	References: RFC3315 section 17.2.1.
-	
 @basic @v6 @dhcp6
     Scenario: v6.basic.message.request-reply
 	## Basic message test, testing only server ability message exchange 

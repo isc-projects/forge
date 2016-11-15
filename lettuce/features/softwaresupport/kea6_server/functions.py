@@ -133,9 +133,28 @@ def add_defaults():
         "preferred-lifetime": {t3},
         "valid-lifetime": {t4},
         '''.format(**locals())
+    if "global_parameters" in world.cfg:
+        world.cfg["main"] += world.cfg["global_parameters"]
 
     if eth is not None and not eth in world.cfg["interfaces"]:
         add_interface(eth)
+
+
+def set_conf_parameter_global(parameter_name, value):
+    if not "global_parameters" in world.cfg:
+        world.cfg["global_parameters"] = ''
+
+    if value in ["False", "True"] or value.isdigit():
+        world.cfg["global_parameters"] += '"{parameter_name}": {value},'.format(**locals())
+    else:
+        world.cfg["global_parameters"] += '"{parameter_name}": "{value}",'.format(**locals())
+
+
+def set_conf_parameter_subnet(parameter_name, value, subnet_id):
+    if value in ["False", "True"] or value.isdigit():
+        world.subcfg[subnet_id][0] += ',"{parameter_name}": {value}'.format(**locals())
+    else:
+        world.subcfg[subnet_id][0] += ',"{parameter_name}": "{value}"'.format(**locals())
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
