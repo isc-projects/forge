@@ -224,9 +224,11 @@ def define_software():
 
 def declare_all():
     world.climsg = []  # Message(s) to be sent
+    world.srvmsg = []  # Server's response(s)
+    world.rlymsg = []  # Server's response(s) Relayed by Relay Agent
+    world.tmpmsg = []  # container for temporary stored messages
     world.cliopts = []  # Option(s) to be included in the next message sent
     world.relayopts = []  # option(s) to be included in Relay Forward message.
-    world.srvmsg = []  # Server's response(s)
     world.savedmsg = {0: []}  # Saved option(s)
     world.define = []  # temporary define variables
 

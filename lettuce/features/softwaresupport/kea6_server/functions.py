@@ -174,7 +174,6 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
 
     if subnet is not "":
         world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"'''.format(**locals())
-        world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
     else:
         world.subnet_add = False
     if pool is not "":
@@ -473,6 +472,10 @@ def cfg_write():
         counter = 0
         for each_subnet in world.subcfg:
             tmp = each_subnet[0]
+            # we need to be able to add interface-id to config but we want to keep backward compatibility.
+            if "interface" not in tmp or "interface-id" not in tmp:
+                eth = SERVER_IFACE
+                tmp += ', "interface": "{eth}" '.format(**locals())
             counter += 1
             for each_subnet_config_part in each_subnet[1:]:
                 if len(each_subnet_config_part) > 0:

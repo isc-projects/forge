@@ -177,8 +177,8 @@ def send_wait_for_message(step, type, yes_or_no, message):
     dhcpmsg.send_wait_for_message(step, type, presence, message)
 
 
-@step('Response MUST (NOT )?include option (\d+).')
-def response_check_include_option(step, yes_or_no, opt_code):
+@step('(Response|Relayed Message) MUST (NOT )?include option (\d+).')
+def response_check_include_option(step, resp_rel, yes_or_no, opt_code):
     """
     Use this step for parsing respond. For more details please read manual section "Parsing respond"
     """
@@ -186,16 +186,16 @@ def response_check_include_option(step, yes_or_no, opt_code):
     dhcpmsg.response_check_include_option(step, include, opt_code)
 
 
-@step('Response MUST (NOT )?contain (\S+) (\S+).')
-def response_check_content(step, expect, data_type, expected):
+@step('(Response|Relayed Message) MUST (NOT )?contain (\S+) (\S+).')
+def response_check_content(step, resp_rel, expect, data_type, expected):
     """
     """
     #expect, data_type, expected = test_define_value(expect, data_type, expected)
     dhcpmsg.response_check_content(step, expect, data_type, expected)
 
 
-@step('Response option (\d+) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_option_content(step, opt_code, expect, data_type, expected_value):
+@step('(Response|Relayed Message) option (\d+) MUST (NOT )?contain (\S+) (\S+).')
+def response_check_option_content(step, resp_rel, opt_code, expect, data_type, expected_value):
     """
     Detailed parsing of received option. For more details please read manual section "Parsing respond"
     """
@@ -206,8 +206,8 @@ def response_check_option_content(step, opt_code, expect, data_type, expected_va
         dhcpmsg.response_check_option_content(opt_code, expect, data_type, expected_value)
 
 
-@step('Response sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_suboption_content(step, subopt_code, opt_code, expect, data_type, expected):
+@step('(Response|Relayed Message) sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
+def response_check_suboption_content(step, resp_rel, subopt_code, opt_code, expect, data_type, expected):
     """
     Some options can include suboptions, we can test them too.
     For more details please read manual section "Parsing respond"

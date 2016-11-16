@@ -519,7 +519,6 @@ def create_relay_forward(step, level):
 
     for each_option in world.relayopts:
         tmp /= each_option
-
     # add RelayMsg option
     tmp /= DHCP6OptRelayMsg()
     # message encapsulation
@@ -545,7 +544,8 @@ def create_relay_forward(step, level):
     world.cfg["address_v6"] = "ff02::1:2"
 
     world.climsg.append(relay_msg)
-
+    world.relayopts = []
+    world.cfg["source_port"] = 546  # we should be able to change relay ports from test itself
     world.cfg["relay"] = False
 
 ## ================ BUILD MESSAGE BLOCK END ===================
@@ -637,9 +637,6 @@ def get_last_response():
 ## =======================================================================
 ## ================ PARSING RECEIVED MESSAGE BLOCK START =================
 
-# TODO: 2 new steps.
-# One - check value in message
-# Two - check multiple values in message/option
 
 def get_msg_type(msg):
     msg_types = {"ADVERTISE": DHCP6_Advertise,
@@ -704,7 +701,10 @@ def get_option(msg, opt_code):
     world.subopts = []
     tmp = None
     # TODO: get rid of x and tmp_msg
-    x = tmp_msg.getlayer(3)  # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+    if len(world.rlymsg) == 0:  # relay message is already cropped to exact layer
+        x = tmp_msg.getlayer(3)  # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+    else:
+        x = tmp_msg
 
     # check all message, for expected option and all suboptions in IA_NA/IA_PD
     check_suboptions = ["ianaopts",
@@ -847,6 +847,15 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
                                                " should not be equal to value from client - " + str(expected_value)
 
 
+def convert_relayed_message(relayed_option):
+    # if len(relayed_option.payload.data) < 5:
+    #     assert False, "There is no relayed message in RELAY REPLY"
+    world.rlymsg.append(DHCP6('\00' + '\00' + '\00' + '\00' + relayed_option.payload.data))
+    world.tmpmsg.append(world.srvmsg[0])
+    world.srvmsg.pop()
+    world.srvmsg.append(DHCP6('\00' + '\00' + '\00' + '\00' + relayed_option.payload.data))
+
+
 def response_check_option_content(opt_code, expect, data_type, expected_value):
     opt_code = int(opt_code)
     data_type = str(data_type)
@@ -862,34 +871,37 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     # test all collected options,:
     # couple tweaks to make checking smoother
 
-    if data_type == "iapd":
-        data_type = "iaid"
-    if data_type == "duid":
-        expected_value = expected_value.replace(":", "")
-        received.append(extract_duid(x.duid))
+    if opt_code == 9:
+        convert_relayed_message(x)
     else:
-        for each in x:
-            tmp_field = each.fields.get(data_type)
-            if tmp_field is None:
-                data_type = values_equivalent.get(opt_code)
+        if data_type == "iapd":
+            data_type = "iaid"
+        if data_type == "duid":
+            expected_value = expected_value.replace(":", "")
+            received.append(extract_duid(x.duid))
+        else:
+            for each in x:
                 tmp_field = each.fields.get(data_type)
-            if type(tmp_field) is list:
-                received.append(",".join(tmp_field))
-            else:
-                received.append(str(tmp_field))
+                if tmp_field is None:
+                    data_type = values_equivalent.get(opt_code)
+                    tmp_field = each.fields.get(data_type)
+                if type(tmp_field) is list:
+                    received.append(",".join(tmp_field))
+                else:
+                    received.append(str(tmp_field))
 
-    # test if expected option/suboption/value is in all collected options/suboptions/values
-    if received[0] == 'None':
-        assert False, "Within option " + str(opt_code) + " there is no " + initial_data_type\
-                      + " value. Probably that is test error"
+        # test if expected option/suboption/value is in all collected options/suboptions/values
+        if received[0] == 'None':
+            assert False, "Within option " + str(opt_code) + " there is no " + initial_data_type\
+                          + " value. Probably that is test error"
 
-    if expect is None or expect is True:
-        assert expected_value in received, "Invalid " + str(opt_code) + " option, received "\
-                                           + data_type + ": " + ",".join(received) + ", but expected " \
-                                           + str(expected_value)
-    else:
-        assert expected_value not in received, "Received value of " + data_type + ": " + ",".join(received) +\
-                                               " should not be equal to value from client - " + str(expected_value)
+        if expect is None or expect is True:
+            assert expected_value in received, "Invalid " + str(opt_code) + " option, received "\
+                                               + data_type + ": " + ",".join(received) + ", but expected " \
+                                               + str(expected_value)
+        else:
+            assert expected_value not in received, "Received value of " + data_type + ": " + ",".join(received) +\
+                                                   " should not be equal to value from client - " + str(expected_value)
 
 
 def save_value_from_option(step, value_name, option_name):
