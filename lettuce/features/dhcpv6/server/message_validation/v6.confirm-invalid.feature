@@ -379,7 +379,9 @@ Feature: Standard DHCPv6 confirm message
 
 	References: RFC3315 18.2.2
 
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -443,7 +445,9 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5. 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -508,7 +512,9 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5. 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -572,7 +578,9 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5. 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-reconfigure-accept
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -636,7 +644,9 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5. 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -700,7 +710,9 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5. 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -764,7 +776,9 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5. 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -828,7 +842,9 @@ Feature: Standard DHCPv6 confirm message
 	
 	References: RFC3315 section 15.5. 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @confirm_invalid @invalid_option @outline
+@v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.confirm.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 

@@ -181,7 +181,9 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 
-@v6 @dhcp6 @solicit_invalid @invalid_option
+@v6 @dhcp6 @solicit_invalid @invalid_option @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.solicit.invalid.options-relaymsg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -224,7 +226,9 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @solicit_invalid @invalid_option
+@v6 @dhcp6 @solicit_invalid @invalid_option @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.solicit.invalid.options-interfaceid
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -266,7 +270,9 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @solicit_invalid @invalid_option
+@v6 @dhcp6 @solicit_invalid @invalid_option @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.solicit.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -308,7 +314,9 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @solicit_invalid @invalid_option
+@v6 @dhcp6 @solicit_invalid @invalid_option @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.solicit.invalid.options-serverunicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -350,7 +358,9 @@ Feature: Standard DHCPv6 solicit message
 		
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @solicit_invalid @invalid_option
+@v6 @dhcp6 @solicit_invalid @invalid_option @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.solicit.invalid.options-statuscode
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -392,7 +402,9 @@ Feature: Standard DHCPv6 solicit message
 
 	References: RFC3315 section 15.2, 17.2.1, table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @solicit_invalid @invalid_option
+@v6 @dhcp6 @solicit_invalid @invalid_option @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.solicit.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 

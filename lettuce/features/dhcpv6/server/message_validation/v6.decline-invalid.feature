@@ -402,7 +402,10 @@ Feature: Standard DHCPv6 decline message
     Client sends DECLINE message.
 
 	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
+	Server MUST respond with REPLY message.
+	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 13.
+	Response sub-option 13 from option 3 MUST contain statuscode 3.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
@@ -481,7 +484,9 @@ Feature: Standard DHCPv6 decline message
 
 	References: RFC3315 section 15.8
 
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -545,7 +550,9 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -609,7 +616,9 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -673,7 +682,9 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-reconfigure-accept
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -738,7 +749,9 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -803,7 +816,9 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -867,7 +882,9 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -932,7 +949,9 @@ Feature: Standard DHCPv6 decline message
 	
 	References: RFC3315 section 15.8 22.8. table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @decline_invalid @invalid_option @outline
+@v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.decline.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 

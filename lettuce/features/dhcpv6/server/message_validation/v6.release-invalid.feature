@@ -478,7 +478,12 @@ Feature: Standard DHCPv6 release message
     Client sends RELEASE message.
 
 	Pass Criteria:
-	Server MUST NOT respond with REPLY message.
+	Server MUST respond with REPLY message.
+	Response MUST include option 1.
+	Response MUST include option 2.
+  	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 13.
+	Response sub-option 13 from option 3 MUST contain statuscode 3.
 
 	Test Procedure:
 	Client adds saved options. And Erase.
@@ -490,11 +495,16 @@ Feature: Standard DHCPv6 release message
 	Response MUST include option 1.
 	Response MUST include option 2.
 	Response MUST include option 13.
+  	Response MUST include option 3.
+	Response option 3 MUST contain sub-option 13.
+	Response sub-option 13 from option 3 MUST contain statuscode 0.
 
 	References: RFC3315 section 15.9
 
 
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -559,7 +569,9 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9 table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -624,7 +636,9 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9 table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -689,7 +703,9 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9 table A: Appearance of Options in Message Types
 		
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-reconfigure-accept
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -754,7 +770,9 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9 table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -819,7 +837,9 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9 table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -884,7 +904,9 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9 table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
@@ -950,7 +972,9 @@ Feature: Standard DHCPv6 release message
 
 	References: RFC3315 section 15.9 table A: Appearance of Options in Message Types
 	
-@v6 @dhcp6 @release_invalid @invalid_option @outline
+@v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.release.invalid.options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 

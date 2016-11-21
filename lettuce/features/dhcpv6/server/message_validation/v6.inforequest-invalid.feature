@@ -229,7 +229,9 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15.12, 
 
-@v6 @dhcp6 @inforequest_invalid @invalid_option @outline
+@v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.inforequest.invalid.options-relay-msg 
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
@@ -272,7 +274,9 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @inforequest_invalid @invalid_option @outline
+@v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.inforequest.invalid.options-rapid-commit 
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
@@ -312,7 +316,9 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @inforequest_invalid @invalid_option @outline
+@v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.inforequest.invalid.options-interface-id 
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
@@ -352,7 +358,9 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @inforequest_invalid @invalid_option @outline
+@v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.inforequest.invalid.options-preference 
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
@@ -392,7 +400,9 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @inforequest_invalid @invalid_option @outline
+@v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.inforequest.invalid.options-server-unicast 
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
@@ -432,7 +442,9 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @inforequest_invalid @invalid_option @outline
+@v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.inforequest.invalid.options-status-code
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
@@ -472,7 +484,9 @@ Feature: Standard DHCPv6 information request message
 
 	References: RFC3315 section 15.12 table A: Appearance of Options in Message Types
 
-@v6 @dhcp6 @inforequest_invalid @invalid_option @outline
+@v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
+
     Scenario: v6.inforequest.invalid.options-reconfigure
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 

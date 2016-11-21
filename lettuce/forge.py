@@ -180,6 +180,13 @@ def check_config_file():
 
 def start_all(base_path, verbosity, scenario, tag, enable_xunit):
 
+    # Simple way to disable tests
+    # TODO: a the end forge should create list of disabled tests
+    if type(tag) is str:
+        tag = tag.split().append("-disabled")
+    else:
+        tag.append("-disabled")
+
     from features.init_all import HISTORY
     if HISTORY:
         from help import TestHistory

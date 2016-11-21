@@ -76,7 +76,8 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline, @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-preference
 	
 	Test Setup:
@@ -111,7 +112,8 @@ Feature: DHCPv6 Relay Agent
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-time
 	
 	Test Setup:
@@ -147,6 +149,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-option-request
 	
 	Test Setup:
@@ -183,7 +186,8 @@ Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-server-unicast
 	
 	Test Setup:
@@ -220,7 +224,8 @@ Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-status-code
 	
 	Test Setup:
@@ -256,7 +261,8 @@ Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-rapid-commit
 	
 	Test Setup:
@@ -292,7 +298,8 @@ Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-reconfigure
 	
 	Test Setup:
@@ -327,7 +334,8 @@ Response MUST include option 9.
 
 	References: RFC3315 section 18.2.8
 	
-@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline
+@v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
+#TODO enable MAY condition in Forge then enable test
     Scenario: v6.relay.invalid.options-reconfigure-accept
 	
 	Test Setup:
