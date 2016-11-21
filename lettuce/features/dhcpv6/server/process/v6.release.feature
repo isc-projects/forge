@@ -50,7 +50,7 @@ Feature: DHCPv6 Release
 
 	References: RFC3315 section 18.2.6.	
 
-@v6 @dhcp6 @status_code @release @disable
+@v6 @dhcp6 @status_code @release @disabled
     # disabled after rfc 7550
     Scenario: v6.statuscode.nobinding-release
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
@@ -113,7 +113,7 @@ Feature: DHCPv6 Release
 	
 	References: RFC3315 section 18.2.6.
 	
-@v6 @dhcp6 @status_code @release @disable
+@v6 @dhcp6 @status_code @release @disabled
     # disabled after rfc 7550
     Scenario: v6.statuscode.nobinding-release-new-client-id
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
@@ -260,7 +260,8 @@ Feature: DHCPv6 Release
 	
 	References: RFC3315 section 18.2.6.
 		
-@v6 @dhcp6 @status_code @release
+@v6 @dhcp6 @status_code @release @disabled
+    #TODO check this test
     Scenario: v6.statuscode.nobinding-release-nobinding
 	## Testing server ability server ability perform RELEASE - REPLY message exchange.
 	## Message details 		Client		Server

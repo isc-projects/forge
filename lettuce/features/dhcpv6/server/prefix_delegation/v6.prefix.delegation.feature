@@ -711,7 +711,7 @@ Feature: DHCPv6 Prefix Delegation
 
     References: RFC 3633, Section: 11.2
 
-@v6 @dhcp6 @PD @rfc3633 @disable
+@v6 @dhcp6 @PD @rfc3633 @disabled
     Scenario: prefix.delegation.compare_prefixes_after_client_reboot
 
     Test Setup:

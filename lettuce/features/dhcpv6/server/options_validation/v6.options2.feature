@@ -333,47 +333,47 @@ Client sends SOLICIT message.
 	References: RFC4242
 
 @v6 @dhcp6 @options
-    Scenario: v6.options.inforequest.multiple
-	## Testing server ability to configure it with option multiple options:
-	## preference (code 7), SIP domain (code 21), DNS servers (code 23), domains (code 24)
-	## with client via Reply message as a respond to INFOREQUEST.
-	## 						Client		Server
-	## request option	INFOREQUEST -->
-	## all requested opts			<--	REPLY
-	## Pass Criteria:
-	## 				REPLY MUST include option:
-	##					preference option value 123
-	##					SIP domain with domains srv1.example.com and srv2.isc.org.
-	##					DNS servers with addresses 2001:db8::1 and 2001:db8::2
-	##					domain-search with addresses domain1.example.com and domain2.isc.org
+  Scenario: v6.options.inforequest.multiple
+  ## Testing server ability to configure it with option multiple options:
+  ## preference (code 7), SIP domain (code 21), DNS servers (code 23), domains (code 24)
+  ## with client via Reply message as a respond to INFOREQUEST.
+  ## 						Client		Server
+  ## request option	INFOREQUEST -->
+  ## all requested opts			<--	REPLY
+  ## Pass Criteria:
+  ## 				REPLY MUST include option:
+  ##					preference option value 123
+  ##					SIP domain with domains srv1.example.com and srv2.isc.org.
+  ##					DNS servers with addresses 2001:db8::1 and 2001:db8::2
+  ##					domain-search with addresses domain1.example.com and domain2.isc.org
 
-	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is configured with preference option with value 123.
-	Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
-	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-	Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-	DHCP server is started.
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Server is configured with preference option with value 123.
+  Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
+  Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
+  Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
+  DHCP server is started.
 
-	Test Procedure:
-	Client requests option 7.
-	Client requests option 21.
-	Client requests option 23.
-	Client requests option 24.
-	Client sends INFOREQUEST message.
+  Test Procedure:
+  Client requests option 7.
+  Client requests option 21.
+  Client requests option 23.
+  Client requests option 24.
+  Client sends INFOREQUEST message.
 
-	Pass Criteria:
-	Server MUST respond with REPLY message.
-	Response MUST include option 7.
-	Response MUST include option 21.
-	Response MUST include option 23.
-	Response MUST include option 24.
-	Response option 7 MUST contain value 123.
-	Response option 21 MUST contain addresses srv1.example.com,srv2.isc.org.
-	Response option 23 MUST contain addresses 2001:db8::1,2001:db8::2.
-	Response option 24 MUST contain domains domain1.example.com,domain2.isc.org.
+  Pass Criteria:
+  Server MUST respond with REPLY message.
+  Response MUST include option 7.
+  Response MUST include option 21.
+  Response MUST include option 23.
+  Response MUST include option 24.
+  Response option 7 MUST contain value 123.
+  Response option 21 MUST contain addresses srv1.example.com,srv2.isc.org.
+  Response option 23 MUST contain addresses 2001:db8::1,2001:db8::2.
+  Response option 24 MUST contain domains domain1.example.com,domain2.isc.org.
 
-	References: RFC3315 section 22.8
+  References: RFC3315 section 22.8
 
 @v6 @dhcp6 @options @dns @rfc3646
     Scenario: v6.options.inforequest.negative

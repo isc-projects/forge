@@ -278,11 +278,19 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
             "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
-def run_command(step, command):
+def add_line_in_global(command):
     if not "custom_lines" in world.cfg:
         world.cfg["custom_lines"] = ''
 
     world.cfg["custom_lines"] += ('\n'+command+'\n')
+
+
+def add_line_in_subnet(subnetid, command):
+    if len(world.subcfg[subnetid][0][-1:]) == ",":
+        world.subcfg[subnetid][0] += ","
+        world.subcfg[subnetid][0] += command
+    else:
+        world.subcfg[subnetid][0] += command
 
 
 def set_logger():
@@ -608,7 +616,6 @@ def start_srv(start, process):
     else:
         result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl stop '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
-        check_kea_process_result(start, result, process)
         result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(SLEEP_TIME_1))
         check_kea_process_result(start, result, process)

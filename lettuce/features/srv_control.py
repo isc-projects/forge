@@ -273,7 +273,7 @@ def run_command(step, command):
     Includes everything after "command: " to the end of the line.
     """
     command = test_define_value(command)[0]
-    dhcp.run_command(step, command)
+    dhcp.add_line_in_global(command)
 
 
 @step('Add to config file line: (.+)')
@@ -282,6 +282,22 @@ def add_line(step, command):
     The same step as 'Run configuration command: (.+)'
     """
     run_command(step, command)
+
+
+@step('To global section of the config add file line: (.+)')
+def add_line2(step, command):
+    """
+    The same step as 'Run configuration command: (.+)'
+    """
+    run_command(step, command)
+
+
+@step('To subnet (\d+) configuration section in the config file add line: (.+)')
+def add_line_to_subnet(step, subnetid, command):
+    """
+    The same step as 'Run configuration command: (.+)'
+    """
+    dhcp.add_line_in_subnet(int(subnetid), command)
 
 
 @step('Add hooks library located (\S+).')

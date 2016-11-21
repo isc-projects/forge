@@ -158,7 +158,7 @@ Feature: DHCPv6 Prefix Delegation
 
 	References: RFC 3633, Section: 12.2
 
-@v6 @dhcp6 @PD @rfc3633 @disable
+@v6 @dhcp6 @PD @rfc3633 @disabled
   # disabled after RFC 7550
 	Scenario: prefix.delegation.IA_and_PD_renew_nobindig
 	
