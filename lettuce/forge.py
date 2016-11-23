@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-216 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -24,77 +24,69 @@ import sys
 
 
 def option_parser():
-    desc='''
+    desc = '''
     Forge - Testing environment. For more information please run help.py to generate UserHelp.txt
     '''
-    parser = optparse.OptionParser(description = desc, usage = "%prog or type %prog -h (--help) for help")
+    parser = optparse.OptionParser(description=desc, usage="%prog or type %prog -h (--help) for help")
     parser.add_option("-4", "--version4",
-                      dest = "version4",
-                      action = "store_true",
-                      default = False,
-                      help = 'Declare IP version 4 tests')
+                      dest="version4",
+                      action="store_true",
+                      default=False,
+                      help='Declare IP version 4 tests')
 
     parser.add_option("-6", "--version6",
-                      dest = "version6",
-                      action = "store_true",
-                      default = False,
-                      help = "Declare IP version 6 tests")
+                      dest="version6",
+                      action="store_true",
+                      default=False,
+                      help="Declare IP version 6 tests")
 
     parser.add_option("-v", "--verbosity",
-                      dest = "verbosity",
-                      type = "int",
-                      action = "store",
-                      default = 4,
-                      help = "Level of the lettuce verbosity")
+                      dest="verbosity",
+                      type="int",
+                      action="store",
+                      default=4,
+                      help="Level of the lettuce verbosity")
 
     parser.add_option("-l", "--list",
-                      dest = "list",
-                      action = "store_true",
-                      default = False,
-                      help = 'List all features (test sets) please choose also IP version')
+                      dest="list",
+                      action="store_true",
+                      default=False,
+                      help='List all features (test sets) please choose also IP version')
 
     parser.add_option("-s", "--test_set",
-                      dest = "test_set",
-                      action = "store",
-                      default = None,
-                      help = "Specific tests sets")
+                      dest="test_set",
+                      action="store",
+                      default=None,
+                      help="Specific tests sets")
 
     parser.add_option("-n", "--name",
-                      dest = "name",
-                      default = None,
-                      help = "Single scenario name, don't use that option with -s or -t")
+                      dest="name",
+                      default=None,
+                      help="Single scenario name, don't use that option with -s or -t")
+
     parser.add_option("-t", "--tags",
-                      dest = "tag",
-                      action = "append",
-                      default = None,
-                      help = "Specific tests tags, multiple tags after ',' e.g. -t v6,basic." +
+                      dest="tag",
+                      action="append",
+                      default=None,
+                      help="Specific tests tags, multiple tags after ',' e.g. -t v6,basic." +
                       "If you wont specify any tags, Forge will perform all test for chosen IP version." +
                       "Also if you want to skip some tests use minus sing before that test tag (e.g. -kea).")
 
     parser.add_option("-x", "--with-xunit",
-                      dest = "enable_xunit",
-                      action = "store_true",
-                      default = False,
-                      help = "Generate results file in xUnit format")
+                      dest="enable_xunit",
+                      action="store_true",
+                      default=False,
+                      help="Generate results file in xUnit format")
 
     parser.add_option("-p", "--explicit-path",
-                      dest = "explicit_path",
-                      default = None,
-                      help = "Search path, relative to <forge>/lettuce/features for tests regardless of SUT or protocol")
-
-    # parser.add_option("-S", "--server",
-    #                   dest = "server",
-    #                   action = "store_true",
-    #                   default = False,
-    #                   help = 'Run server tests')
-    #
-    # parser.add_option("-C", "--client",
-    #                   dest = "client",
-    #                   action = "store_true",
-    #                   default = False,
-    #                   help = 'Run client tests')
+                      dest="explicit_path",
+                      default=None,
+                      help="Search path, relative to <forge>/lettuce/features for tests regardless of SUT or protocol")
 
     (opts, args) = parser.parse_args()
+
+    if opts.tag is not None:
+        tag = opts.tag[0].split(',')
 
     if not opts.version6 and not opts.version4:
         parser.print_help()
@@ -111,12 +103,6 @@ def option_parser():
         hlp = UserHelp()
         hlp.test(number, 0)
         sys.exit(-1)
-
-    # adding tags for lettuce
-    if opts.tag is not None:
-        tag = opts.tag[0].split(',')
-    else:
-        tag = 'v6' if opts.version6 else 'v4'
 
     return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit, opts.explicit_path
 
@@ -180,13 +166,6 @@ def check_config_file():
 
 def start_all(base_path, verbosity, scenario, tag, enable_xunit):
 
-    # Simple way to disable tests
-    # TODO: a the end forge should create list of disabled tests
-    if type(tag) is str:
-        tag = tag.split().append("-disabled")
-    else:
-        tag.append("-disabled")
-
     from features.init_all import HISTORY
     if HISTORY:
         from help import TestHistory
@@ -213,7 +192,7 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
         history.information(result.scenarios_passed, result.scenarios_ran, tag, base_path)
         history.build_report()
 
-    return (result.scenarios_ran - result.scenarios_passed)
+    return result.scenarios_ran - result.scenarios_passed
 
 if __name__ == '__main__':
     number, test_set, name, verbosity, tag, enable_xunit, explicit_path = option_parser()
@@ -224,5 +203,4 @@ if __name__ == '__main__':
     if failed > 0:
         print "SCENARIOS FAILED: %d" % failed
         sys.exit(1)
-
     sys.exit(0)
