@@ -6,7 +6,7 @@ Feature: Kea6 legal logging lib
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
-    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
+    Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
     Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
     DHCP server is started.
 
@@ -132,7 +132,7 @@ Client sends REQUEST message.
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
-    Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
+    Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
     Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
     DHCP server is started.
 

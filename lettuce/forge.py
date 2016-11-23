@@ -85,6 +85,7 @@ def option_parser():
 
     (opts, args) = parser.parse_args()
 
+    tag = ""
     if opts.tag is not None:
         tag = opts.tag[0].split(',')
 
