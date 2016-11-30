@@ -105,7 +105,6 @@ Scenario: v6.host.reservation.pgsql.duid-ll-matching
   Client does include client-id.
   Client does include IA-NA.
   Client sends SOLICIT message.
-  Pause the Test.
 
   Pass Criteria:
   Server MUST respond with ADVERTISE message.

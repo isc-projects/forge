@@ -1,7 +1,7 @@
 Feature: Configure Kea's server-id.
 
 
-@v6 @dhcp6 @kea_only @server-id @teraz
+@v6 @dhcp6 @kea_only @server-id
     Scenario: v6.server-id.llt
 
 	Test Setup:
@@ -21,7 +21,7 @@ Feature: Configure Kea's server-id.
     Response MUST include option 2.
     Response option 2 MUST contain duid 00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8.
 
-@v6 @dhcp6 @kea_only @server-id  @teraz
+@v6 @dhcp6 @kea_only @server-id 
     Scenario: v6.server-id.en
 
 	Test Setup:
@@ -41,7 +41,7 @@ Feature: Configure Kea's server-id.
     Response MUST include option 1.
     #Response option 1 MUST NOT contain duid 00:02:00:00:09:BF:87:AB:EF:7A:5B:B5:45.
 
-@v6 @dhcp6 @kea_only @server-id @teraz
+@v6 @dhcp6 @kea_only @server-id
     Scenario: v6.server-id.ll
 
 	Test Setup:
