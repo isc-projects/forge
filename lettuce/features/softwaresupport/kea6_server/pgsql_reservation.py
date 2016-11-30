@@ -193,7 +193,8 @@ def upload_db_reservation():
     db_name = DB_NAME
     db_user = DB_USER
     db_passwd = DB_PASSWD
-    for each_record in list_of_all_reservations:
+    while list_of_all_reservations:
+        each_record = list_of_all_reservations.pop()
         each_record.build_script()
         db_reservation = open("db_reservation", 'w')
         db_reservation.write(each_record.configuration_script)
