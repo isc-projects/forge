@@ -394,10 +394,25 @@ def add_option_to_main(option, value):
     #     world.cfg["main"] += ',"{option}":"{value}"'.format(**locals())
 
 
+def config_add_reservation_database():
+    db_type = world.reservation_backend
+    db_name = DB_NAME
+    db_user = DB_USER
+    db_passwd = DB_PASSWD
+    pointer_start = '{'
+    pointer_end = '}'
+    if DB_HOST == "" or DB_HOST == "localhost":
+            db_host = ""
+
+    if world.reservation_backend in {"mysql", "postgresql"}:
+        add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
+                       "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+                       "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+
+
 def config_db_backend():
     if DB_TYPE == "" or DB_TYPE == "memfile":
         add_simple_opt('"lease-database":{"type": "memfile"}')
-
     else:
         pointer_start = '{'
         pointer_end = '}'
@@ -405,7 +420,6 @@ def config_db_backend():
         db_name = DB_NAME
         db_user = DB_USER
         db_passwd = DB_PASSWD
-
         if DB_HOST == "" or DB_HOST == "localhost":
             db_host = ""
         else:
@@ -414,10 +428,8 @@ def config_db_backend():
         add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
                        "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
                        "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
-        if world.reservation_backend in {"mysql", "postgresql"}:
-            add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
-                           "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
-                           "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+
+    config_add_reservation_database()
 
 
 def add_hooks(library_path):
@@ -660,7 +672,7 @@ def clear_leases():
         fabric_remove_file_command(world.cfg['leases'])
 
 
-def save_leases():
+def save_leases(tmp_db_type=None):
     db_name = DB_NAME
     db_user = DB_USER
     db_passwd = DB_PASSWD
@@ -684,7 +696,7 @@ def save_logs():
     fabric_download_file(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log*', world.cfg["dir_name"] + '/.')
 
 
-def clear_all():
+def clear_all(tmp_db_type=None):
     fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'var/kea/kea.log*')
 
     db_name = DB_NAME

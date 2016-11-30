@@ -20,6 +20,7 @@ from init_all import SOFTWARE_INSTALL_DIR
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
     fabric_download_file, fabric_remove_file_command, locate_entry
+from init_all import DB_TYPE, DB_NAME, DB_USER, DB_PASSWD, DB_HOST
 
 list_of_all_reservations = []
 
@@ -218,6 +219,9 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
 
 
 def upload_db_reservation():
+    db_name = DB_NAME
+    db_user = DB_USER
+    db_passwd = DB_PASSWD
     for each_record in list_of_all_reservations:
         each_record.build_script()
         db_reservation = open("db_reservation", 'w')
@@ -226,8 +230,16 @@ def upload_db_reservation():
         fabric_send_file("db_reservation", SOFTWARE_INSTALL_DIR + "etc/kea/db_reservation")
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
-        result = fabric_sudo_command('cat ' + SOFTWARE_INSTALL_DIR + 'etc/kea/db_reservation | mysql -u kea-user -pkeapass kea')
+        result = fabric_sudo_command('cat ' + SOFTWARE_INSTALL_DIR + 'etc/kea/db_reservation | mysql -u {db_user} -p{db_passwd} {db_name}'.format(**locals()))
+        # TODO check result of uploading, fail the test if necessary
 
+
+def clear_all_reservations():
+    db_name = DB_NAME
+    db_user = DB_USER
+    db_passwd = DB_PASSWD
+    command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
+    fabric_run_command(command)
 
 
 def remove_db_reservation():

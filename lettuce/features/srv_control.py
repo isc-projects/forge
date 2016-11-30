@@ -313,8 +313,10 @@ def add_hooks(step, library_path):
 def enable_db_backend_reservation(step, db_type):
     if db_type == 'MySQL':
         mysql_reservation.enable_db_backend_reservation()
+        mysql_reservation.clear_all_reservations()
     elif db_type == 'PostgreSQL':
         pgsql_reservation.enable_db_backend_reservation()
+        pgsql_reservation.clear_all_reservations()
     else:
         assert False, "Database type not recognised."
 
@@ -380,6 +382,15 @@ def option_db_record_reservation(step, reserved_option_code, reserved_option_val
                                                                          reserved_subnet_id,
                                                                          reserved_option_scope,
                                                                          int(reservation_record_id))
+    else:
+        assert False, "Database type not recognised."
+
+@step('Dump all the reservation entries from (\S+) database.')
+def upload_db_reservation(step, db_type):
+    if db_type == 'MySQL':
+        mysql_reservation.clear_all_reservations()
+    elif db_type == 'PostgreSQL':
+        pgsql_reservation.clear_all_reservations()
     else:
         assert False, "Database type not recognised."
 
