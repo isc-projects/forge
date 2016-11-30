@@ -275,8 +275,7 @@ Scenario: v6.host.reservation.mysql.duid-llt-matching
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::100.
 
-
-@v6 @host_reservation @kea_only @marcin
+@v6 @host_reservation @kea_only
 Scenario: v6.host.reservation.mysql.duid-llt-not-matching
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
