@@ -50,7 +50,7 @@ SELECT LASTVAL() INTO lastval;"""
         self.dhcp6_client_classes = ""
         self.server_hostname = ""
         self.boot_file_name = ""
-        self.next_server = ""
+        self.next_server = "0.0.0.0"  # this is being set because script fail without that value.
         # to ipv6_reservations list please add just dicts:
         #     {"ipv6_address_reservation": "2001::1"}
         #  or {"ipv6_prefix_reservation": "2220::", "ipv6_prefix_len_reservation": 3}
@@ -124,8 +124,8 @@ SELECT LASTVAL() INTO lastval;"""
 
     def set_ipv6_options(self):
         for each in self.options:
-            #each.persistent = (True if each.persistent == 1 else False)
             if len(each) > 0:
+                each['persistent'] = (True if each['persistent'] == 1 else False)
                 self.configuration_script += "\nINSERT INTO dhcp6_options (code, formatted_value," \
                                              " space, host_id, scope_id)"
                 self.configuration_script += "\nVALUES ({code}, '{option_value}', '{space}', " \
@@ -135,6 +135,7 @@ SELECT LASTVAL() INTO lastval;"""
     def set_ipv4_options(self):
         for each in self.options:
             if len(each) > 0:
+                each['persistent'] = (True if each['persistent'] == 1 else False)
                 self.configuration_script += "\nINSERT INTO dhcp4_options (code, formatted_value," \
                                              " space, persistent, host_id, scope_id)"
                 self.configuration_script += "\nVALUES ({code}, '{option_value}', '{space}', {persistent}," \
