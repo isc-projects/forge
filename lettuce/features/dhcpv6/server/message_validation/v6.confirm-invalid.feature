@@ -128,7 +128,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5
 
 
-@v6 @dhcp6 @confirm_invalid
+@v6 @dhcp6 @confirm_invalid @disabled
     Scenario: v6.confirm.invalid.wrong_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.

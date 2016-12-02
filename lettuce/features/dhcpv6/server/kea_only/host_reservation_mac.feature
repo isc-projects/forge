@@ -199,6 +199,7 @@ Feature: Host Reservation DHCPv6
 
 	Test Procedure:
 	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Client does include client-id.
     Client sends REQUEST message.

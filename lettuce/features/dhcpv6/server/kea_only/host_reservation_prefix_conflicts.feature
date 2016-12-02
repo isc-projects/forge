@@ -2,7 +2,7 @@ Feature: Host Reservation DHCPv6
     Tests for conflicts resolving in Host Reservation feature based both on MAC and DUID.
     For prefix, addresses and hostnames.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @disabled
     Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-1
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
@@ -36,7 +36,7 @@ Feature: Host Reservation DHCPv6
     Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @disabled
     Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-2
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
@@ -70,7 +70,7 @@ Feature: Host Reservation DHCPv6
     Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @disabled
     Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-3
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
