@@ -119,6 +119,101 @@ Feature: DHCPv6 Relay Agent
   References: Kea User's Guide Section: DHCPv6 Relays
 
 @v6 @dhcp6 @relay @kea_only
+  Scenario: v6.relay.relayaddress.interface-id-just-one-matching
+
+  Test Setup:
+  Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
+  Add configuration parameter interface-id with value xyz to subnet 0 configuration.
+  To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
+  DHCP server is started.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets linkaddr value to 3000::3005.
+  RelayAgent sets ifaceid value to xyz.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST NOT contain sub-option 5.
+  Relayed Message option 3 MUST contain sub-option 13.
+  Relayed Message sub-option 13 from option 3 MUST contain statuscode 2.
+
+@v6 @dhcp6 @relay @kea_only
+  Scenario: v6.relay.relayaddress.interface-id-just-one-matching-2
+
+  Test Setup:
+  Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
+  Add configuration parameter interface-id with value xyz to subnet 0 configuration.
+  To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
+  DHCP server is started.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets linkaddr value to 3000::1005.
+  RelayAgent sets ifaceid value to abc.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST NOT contain sub-option 5.
+  Relayed Message option 3 MUST contain sub-option 13.
+  Relayed Message sub-option 13 from option 3 MUST contain statuscode 2.
+
+
+@v6 @dhcp6 @relay @kea_only
+  Scenario: v6.relay.relayaddress.interface-id-just-one-matching-3
+
+  Test Setup:
+  Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
+  Add configuration parameter interface-id with value xyz to subnet 0 configuration.
+  To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
+  DHCP server is started.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets linkaddr value to 2001:db8:1::1000.
+  RelayAgent sets ifaceid value to abc.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST NOT contain sub-option 5.
+  Relayed Message option 3 MUST contain sub-option 13.
+  Relayed Message sub-option 13 from option 3 MUST contain statuscode 2.
+
+
+@v6 @dhcp6 @relay @kea_only
   Scenario: v6.relay.relayaddress.interface-id-two-subnets
 
   Test Setup:
