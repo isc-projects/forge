@@ -706,7 +706,7 @@ Feature: Logging in Kea
 	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log3 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.options
 
 @v6 @kea_only @logging
-    Scenario: ddns6.logging-all-types-debug
+    Scenario: ddns6.logging.all-types-debug
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.

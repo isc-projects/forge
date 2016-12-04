@@ -4,7 +4,7 @@ Feature: Standard DHCPv6 options part 2
     requested options are assigned properly. Also testing information-request message.
 
 @v6 @dhcp6 @options @preference
-    Scenario: v6.options.inforequest.preference
+    Scenario: v6.options.inforequest-preference
 	## Testing server ability to configure it with option
 	## preference (code 7)with value 123, and ability to share that value 
 	## with client via Reply message as a respond to INFOREQUEST.
@@ -31,7 +31,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3315 section 22.8
 
 @v6 @dhcp6 @options @sip
-    Scenario: v6.options.inforequest.sip-domains
+    Scenario: v6.options.inforequest-sip-domains
 	## Testing server ability to configure it with option
 	## SIP domains (code 21) with domains srv1.example.com 
 	## and srv2.isc.org, and ability to share that 
@@ -61,7 +61,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3319
 
 @v6 @dhcp6 @options @sip @rfc3319
-    Scenario: v6.options.inforequest.sip-servers
+    Scenario: v6.options.inforequest-sip-servers
 	## Testing server ability to configure it with option
 	## SIP servers (code 22) with addresses 2001:db8::1 
 	## and 2001:db8::2, and ability to share that 
@@ -91,7 +91,7 @@ Feature: Standard DHCPv6 options part 2
 
 
 @v6 @dhcp6 @options @dns @rfc3646
-    Scenario: v6.options.inforequest.dns-servers
+    Scenario: v6.options.inforequest-dns-servers
 	## Testing server ability to configure it with option
 	## DNS servers (code 23) with addresses 2001:db8::1 
 	## and 2001:db8::2, and ability to share that 
@@ -123,7 +123,7 @@ Feature: Standard DHCPv6 options part 2
 	References: v6.options, v6.oro, RFC3646
 
 @v6 @dhcp6 @options @rfc3646
-    Scenario: v6.options.inforequest.domains
+    Scenario: v6.options.inforequest-domains
 	## Testing server ability to configure it with option
 	## domains (code 24) with domains domain1.example.com 
 	## and domain2.isc.org, and ability to share that 
@@ -153,7 +153,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3646 
 
 @v6 @dhcp6 @options @nis @rfc3898
-    Scenario: v6.options.inforequest.nis-servers
+    Scenario: v6.options.inforequest-nis-servers
 	## Testing server ability to configure it with option
 	## NIS servers (code 27) with addresses 2001:db8::abc, 3000::1
 	## and 2000::1234, and ability to share that 
@@ -183,7 +183,7 @@ Feature: Standard DHCPv6 options part 2
 	References: RFC3898
 
 @v6 @dhcp6 @options @nis @nisp @rfc3898
-    Scenario: v6.options.inforequest.nisp-servers
+    Scenario: v6.options.inforequest-nisp-servers
 	## Testing server ability to configure it with option
 	## NIS+ servers (code 28) with addresses 2001:db8::abc, 3000::1
 	## and 2000::1234, and ability to share that 
@@ -217,7 +217,7 @@ Client sends SOLICIT message.
 
 	
 @v6 @dhcp6 @options @nis @rfc3898
-    Scenario: v6.options.inforequest.nisdomain
+    Scenario: v6.options.inforequest-nisdomain
 	## Testing server ability to configure it with option
 	## NIS domain (code 29) with domains ntp.example.com and ability to share that 
 	## with client via Reply message as a respond to INFOREQUEST.
@@ -247,7 +247,7 @@ Client sends SOLICIT message.
 
 
 @v6 @dhcp6 @options @rfc3898
-    Scenario: v6.options.inforequest.nispdomain
+    Scenario: v6.options.inforequest-nispdomain
 	## Testing server ability to configure it with option
 	## NIS+ domain (code 30) with domain ntp.example.com, and ability to share that 
 	## with client via Reply message as a respond to INFOREQUEST.
@@ -275,7 +275,7 @@ Client sends SOLICIT message.
 	References: RFC3898 
 
 @v6 @dhcp6 @options @sntp @rfc4075
-    Scenario: v6.options.inforequest.sntp-servers
+    Scenario: v6.options.inforequest-sntp-servers
 	## Testing server ability to configure it with option
 	## SNTP servers (code 31) with addresses 2001:db8::abc, 3000::1
 	## and 2000::1234, and ability to share that 
@@ -305,7 +305,7 @@ Client sends SOLICIT message.
 	References: RFC4075
 	
 @v6 @dhcp6 @options @rfc4242
-    Scenario: v6.options.inforequest.info-refresh
+    Scenario: v6.options.inforequest-info-refresh
 	## Testing server ability to configure it with option
 	## information refresh time (code 32) with value 12345678 and ability to share that 
 	## with client via Reply message as a respond to INFOREQUEST.
@@ -333,7 +333,7 @@ Client sends SOLICIT message.
 	References: RFC4242
 
 @v6 @dhcp6 @options
-  Scenario: v6.options.inforequest.multiple
+  Scenario: v6.options.inforequest-multiple
   ## Testing server ability to configure it with option multiple options:
   ## preference (code 7), SIP domain (code 21), DNS servers (code 23), domains (code 24)
   ## with client via Reply message as a respond to INFOREQUEST.
@@ -376,7 +376,7 @@ Client sends SOLICIT message.
   References: RFC3315 section 22.8
 
 @v6 @dhcp6 @options @dns @rfc3646
-    Scenario: v6.options.inforequest.negative
+    Scenario: v6.options.inforequest-negative
 	## Testing if server does not return option that it was not configured with.
 	## Server configured with option 23, requesting option 24.
 	## Testing Reply message as a respond to INFOREQUEST.

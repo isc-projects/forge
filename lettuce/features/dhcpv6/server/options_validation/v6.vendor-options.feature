@@ -4,7 +4,7 @@ Feature: DHCPv6 vendor specific information
   Testing suboption - option request and others.
 
 @v6 @dhcp6 @options @vendor
-  Scenario: v6.vendor.options.tftp-servers
+  Scenario: v6.options.vendor-tftp-servers
   ## Testing server ability to configure it with vendor-specific options
   ## and share it with user.
   ## In this case: for vendor id vendor-4491 set option tftp-servers with value: 2001:558::76
@@ -41,7 +41,7 @@ Feature: DHCPv6 vendor specific information
   References: RFC3315 section 22.17
 
 @v6 @dhcp6 @options @vendor
-  Scenario: v6.vendor.options.config-file
+  Scenario: v6.options.vendor-config-file
   ## Testing server ability to configure it with vendor-specific options
   ## and share it with user.
   ## In this case: for vendor id vendor-4491 set option config-file with value normal_erouter_v6.cm.
@@ -78,7 +78,7 @@ Feature: DHCPv6 vendor specific information
   References: RFC3315 section 22.17
 
 @v6 @dhcp6 @options @vendor
-  Scenario: v6.vendor.options.syslog-servers
+  Scenario: v6.options.vendor-syslog-servers
   ## Testing server ability to configure it with vendor-specific options
   ## and share it with user.
   ## In this case: for vendor id vendor-4491 set option syslog-servers with address 2001::101.
@@ -115,7 +115,7 @@ Feature: DHCPv6 vendor specific information
   References: RFC3315 section 22.17
 
 @v6 @dhcp6 @options @vendor
-  Scenario: v6.vendor.options.time-servers
+  Scenario: v6.options.vendor-time-servers
   ## Testing server ability to configure it with vendor-specific options
   ## and share it with user.
   ## In this case: for vendor id vendor-4491 set option time-servers option with value 2001::76.
@@ -153,7 +153,7 @@ Feature: DHCPv6 vendor specific information
   References: RFC3315 section 22.17
 
 @v6 @dhcp6 @options @vendor
-  Scenario: v6.vendor.options.time-offset
+  Scenario: v6.options.vendor-time-offset
   ## Testing server ability to configure it with vendor-specific options
   ## and share it with user.
   ## In this case: for vendor id vendor-4491 set option time-offset with value -18000
@@ -191,7 +191,7 @@ Feature: DHCPv6 vendor specific information
   References: RFC3315 section 22.17
 
 @v6 @dhcp6 @options @vendor
-  Scenario: v6.vendor.options.multiple
+  Scenario: v6.options.vendor-multiple
   ## Testing server ability to configure it with vendor-specific options
   ## and share it with user.
   ## In this case: for vendor id vendor-4491 set option time-offset with value -18000

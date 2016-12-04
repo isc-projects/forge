@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS forward and reverse update.
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns6.notsig.forw_and_rev.add-success-Sflag
+    Scenario: ddns6.notsig.forw_and_rev-add-success-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -76,7 +76,7 @@ Feature: DDNS without TSIG
 
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns6.notsig.forw_and_rev.add-fail-Sflag
+    Scenario: ddns6.notsig.forw_and_rev-add-fail-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -154,7 +154,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns6.notsig.forw_and_rev.notenabled-Sflag
+    Scenario: ddns6.notsig.forw_and_rev-notenabled-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -231,7 +231,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @forward_update
-    Scenario: ddns6.notsig.forw_and_rev.update-success-Sflag
+    Scenario: ddns6.notsig.forw_and_rev-update-success-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -403,7 +403,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 1.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns6.notsig.forw_and_rev.two-dhci-Sflag
+    Scenario: ddns6.notsig.forw_and_rev-two-dhci-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
@@ -518,7 +518,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value client2.six.example.com..
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns6.notsig.forw_and_rev.dhci-conflicts-Sflag
+    Scenario: ddns6.notsig.forw_and_rev-dhci-conflicts-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
@@ -688,7 +688,7 @@ Feature: DDNS without TSIG
 
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns6.notsig.forw_and_rev.dhci-conflicts-remove-Sflag
+    Scenario: ddns6.notsig.forw_and_rev-dhci-conflicts-remove-Sflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::51-2001:db8:1::52 pool.
@@ -855,7 +855,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @forward_reverse_add
-    Scenario: ddns6.notsig.forw_and_rev.add-success-withoutflag-override-client
+    Scenario: ddns6.notsig.forw_and_rev-add-success-withoutflag-override-client
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -935,7 +935,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @reverse_add
-    Scenario: ddns6.notsig.rev.success-withoutflag
+    Scenario: ddns6.notsig.rev-success-withoutflag
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -1014,7 +1014,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @notsig @reverse_add
-    Scenario: ddns6.notsig.rev.withoutflag-notenabled
+    Scenario: ddns6.notsig.rev-withoutflag-notenabled
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -1083,7 +1083,7 @@ Feature: DDNS without TSIG
     Received DNS query MUST include empty ANSWER part.
 
 @v6 @ddns @notsig @reverse_add
-    Scenario: ddns6.notsig.rev.Nflag-override-no-update
+    Scenario: ddns6.notsig.rev-Nflag-override-no-update
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.

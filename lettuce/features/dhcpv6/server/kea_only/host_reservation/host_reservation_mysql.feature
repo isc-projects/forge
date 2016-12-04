@@ -3,7 +3,7 @@ Feature: Host Reservation DHCPv6 stored in MySQL database.
     Host reservation records are stored in the MySQL database.
 
 @v6 @host_reservation @kea_only
-Scenario: v6.host.reservation.mysql.all.values.mac
+Scenario: v6.host.reservation.mysql.all-values-mac
 
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -89,7 +89,7 @@ Scenario: v6.host.reservation.mysql.all.values.mac
   Response sub-option 5 from option 3 MUST NOT contain address 3000::100.
 
 @v6 @host_reservation @kea_only
-Scenario: v6.host.reservation.mysql.all.values.duid
+Scenario: v6.host.reservation.mysql.all-values-duid
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 
@@ -139,7 +139,7 @@ Scenario: v6.host.reservation.mysql.all.values.duid
   Response option 39 MUST contain fqdn reserved-hostname.my.domain.com.
 
 @v6 @host_reservation @kea_only
-Scenario: v6.host.reservation.mysql.all.values.duid-2
+Scenario: v6.host.reservation.mysql.all-values-duid-2
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
   Server is configured with 3001:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.

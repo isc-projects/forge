@@ -2,7 +2,7 @@ Feature: DHCPv6 Client Classification request process
     Tests request process for Client Classification performed through option vendor class.
 
 @v6 @dhcp6 @classification
-    Scenario: v6.client.classification.onesubnet.advertise.success
+    Scenario: v6.client.classification-onesubnet-advertise-success
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -23,7 +23,7 @@ Feature: DHCPv6 Client Classification request process
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification.onesubnet.advertise.fail
+    Scenario: v6.client.classification-onesubnet-advertise-fail
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -42,7 +42,7 @@ Feature: DHCPv6 Client Classification request process
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
 @v6 @dhcp6 @classification
-    Scenario: v6.client.classification.onesubnet.request.success
+    Scenario: v6.client.classification-onesubnet-request-success
     
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -78,7 +78,7 @@ Feature: DHCPv6 Client Classification request process
 
 
 @v6 @dhcp6 @classification
-    Scenario: v6.client.classification.twosubnets.request.success
+    Scenario: v6.client.classification-twosubnets-request-success
     
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -137,7 +137,7 @@ Feature: DHCPv6 Client Classification request process
     Response sub-option 5 from option 3 MUST contain address 3000::100.
 
 @v6 @dhcp6 @classification
-    Scenario: v6.client.classification.twosubnets.request.fail
+    Scenario: v6.client.classification-twosubnets-request-fail
     
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -226,7 +226,7 @@ Feature: DHCPv6 Client Classification request process
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
 @v6 @dhcp6 @classification
-    Scenario: v6.client.classification.twoclasses.request.success
+    Scenario: v6.client.classification-twoclasses-request-success
     
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.

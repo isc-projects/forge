@@ -2053,7 +2053,7 @@ Response MUST include option 2.
 Response MUST include option 3.
 
 @v6 @dhcp6 @solicit @CVE2015 @detailed
-Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUG.dhcp6
+Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGdhcp6
 
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
