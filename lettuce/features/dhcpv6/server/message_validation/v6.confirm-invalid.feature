@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 confirm message
     This feature is designed for checking server response for invalid confirm messages. RFC 3315 section 15.5 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @dhcp6 @confirm_invalid
-    Scenario: v6.confirm.invalid.without_client_id
+    Scenario: v6.message.negative.tests.confirm-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
 	## Message details 		Client		Server
@@ -65,7 +65,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5 
 
 @v6 @dhcp6 @confirm_invalid
-    Scenario: v6.confirm.invalid.double_client_id
+    Scenario: v6.message.negative.tests.confirm-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
 	## Message details 		Client		Server
@@ -129,7 +129,7 @@ Feature: Standard DHCPv6 confirm message
 
 
 @v6 @dhcp6 @confirm_invalid @disabled
-    Scenario: v6.confirm.invalid.wrong_client_id
+    Scenario: v6.message.negative.tests.confirm-wrong_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
 	## Message details 		Client		Server
@@ -192,7 +192,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5
 
 @v6 @dhcp6 @confirm_invalid
-    Scenario: v6.confirm.invalid.blank_client_id
+    Scenario: v6.message.negative.tests.confirm-blank_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
 	## Message details 		Client		Server
@@ -255,7 +255,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5 
 	
 @v6 @dhcp6 @confirm_invalid
-    Scenario: v6.confirm.invalid.with_server_id
+    Scenario: v6.message.negative.tests.confirm-with_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
 	## Message details 		Client		Server
@@ -318,7 +318,7 @@ Feature: Standard DHCPv6 confirm message
 	References: RFC3315 section 15.5 
 
 @v6 @dhcp6 @confirm_invalid
-    Scenario: v6.confirm.invalid.without_IA_NA_address
+    Scenario: v6.message.negative.tests.confirm-without_IA_NA_address
     ## Testing server ability to discard message that not meets 
     ## content requirements.
 	## Message details 		Client		Server
@@ -382,7 +382,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-relay-msg
+    Scenario: v6.message.negative.tests.confirm-options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements. 
@@ -448,7 +448,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-rapid-commit
+    Scenario: v6.message.negative.tests.confirm-options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -515,7 +515,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-interface-id
+    Scenario: v6.message.negative.tests.confirm-options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -581,7 +581,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-reconfigure-accept
+    Scenario: v6.message.negative.tests.confirm-options-reconfigure-accept
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -647,7 +647,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-preference
+    Scenario: v6.message.negative.tests.confirm-options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -713,7 +713,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-server-unicast
+    Scenario: v6.message.negative.tests.confirm-options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -779,7 +779,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-status-code
+    Scenario: v6.message.negative.tests.confirm-options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -845,7 +845,7 @@ Feature: Standard DHCPv6 confirm message
 @v6 @dhcp6 @confirm_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.confirm.invalid.options-reconfigure
+    Scenario: v6.message.negative.tests.confirm-options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.

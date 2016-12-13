@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 request message
     This feature is designed for checking server response for invalid request messages. RFC 3315 section 15.4 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @dhcp6 @request_invalid
-    Scenario: v6.request.invalid.without_server_id
+    Scenario: v6.message.negative.tests.request-without_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: REQUEST without SERVER_ID option.
@@ -68,7 +68,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4
 	
 @v6 @dhcp6 @request_invalid
-    Scenario: v6.request.invalid.without_client_id
+    Scenario: v6.message.negative.tests.request-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: REQUEST without CLIENT_ID option.
@@ -122,7 +122,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 
 @v6 @dhcp6 @request_invalid
-    Scenario: v6.request.invalid.double_client_id
+    Scenario: v6.message.negative.tests.request-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: REQUEST without CLIENT_ID option.
@@ -177,7 +177,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4
 
 @v6 @dhcp6 @request_invalid
-    Scenario: v6.request.invalid.wrong_server_id
+    Scenario: v6.message.negative.tests.request-wrong_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: REQUEST with incorrect SERVER_ID option.
@@ -243,7 +243,7 @@ Feature: Standard DHCPv6 request message
 	References: RFC3315 section 15.4 
 	
 @v6 @dhcp6 @request_invalid
-    Scenario: v6.request.invalid.empty_server_id
+    Scenario: v6.message.negative.tests.request-empty_server_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: REQUEST with incorrect SERVER_ID option.
@@ -311,7 +311,7 @@ Feature: Standard DHCPv6 request message
 
 @v6 @dhcp6 @request_invalid @disabled
   #no longer valid tue to RFC7550
-    Scenario: v6.request.invalid.wrong_client_id
+    Scenario: v6.message.negative.tests.request-wrong_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: REQUEST with incorrect CLIENT_ID option.
@@ -366,7 +366,7 @@ Feature: Standard DHCPv6 request message
 
 
 @v6 @dhcp6 @request_invalid
-    Scenario: v6.request.invalid.empty_client_id
+    Scenario: v6.message.negative.tests.request-empty_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: REQUEST with incorrect CLIENT_ID option.
@@ -423,7 +423,7 @@ Feature: Standard DHCPv6 request message
 @v6 @dhcp6 @request_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.request.invalid.options-relay-msg
+    Scenario: v6.message.negative.tests.request-options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -481,7 +481,7 @@ Feature: Standard DHCPv6 request message
 @v6 @dhcp6 @request_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.request.invalid.options-rapid-commit
+    Scenario: v6.message.negative.tests.request-options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -539,7 +539,7 @@ Feature: Standard DHCPv6 request message
 @v6 @dhcp6 @request_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.request.invalid.options-interface-id
+    Scenario: v6.message.negative.tests.request-options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -597,7 +597,7 @@ Feature: Standard DHCPv6 request message
 @v6 @dhcp6 @request_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.request.invalid.options-preference
+    Scenario: v6.message.negative.tests.request-options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -655,7 +655,7 @@ Feature: Standard DHCPv6 request message
 @v6 @dhcp6 @request_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.request.invalid.options-server-unicast
+    Scenario: v6.message.negative.tests.request-options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -713,7 +713,7 @@ Feature: Standard DHCPv6 request message
 @v6 @dhcp6 @request_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.request.invalid.options-status-code
+    Scenario: v6.message.negative.tests.request-options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -771,7 +771,7 @@ Feature: Standard DHCPv6 request message
 @v6 @dhcp6 @request_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.request.invalid.options-reconfigure
+    Scenario: v6.message.negative.tests.request-options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.

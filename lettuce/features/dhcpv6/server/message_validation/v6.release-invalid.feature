@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 release message
     This feature is designed for checking server response for invalid release messages. RFC 3315 section 15.9 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @dhcp6 @release_invalid
-    Scenario: v6.release.invalid.without_server_id
+    Scenario: v6.message.negative.tests.release-without_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RELEASE without SERVER_ID option.
@@ -78,7 +78,7 @@ Feature: Standard DHCPv6 release message
 	References: RFC3315 section 15.9
 	
 @v6 @dhcp6 @release_invalid
-    Scenario: v6.release.invalid.wrong_server_id
+    Scenario: v6.message.negative.tests.release-wrong_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RELEASE with incorrect SERVER_ID option.
@@ -157,7 +157,7 @@ Feature: Standard DHCPv6 release message
 
 
 @v6 @dhcp6 @release_invalid
-    Scenario: v6.release.invalid.empty_server_id
+    Scenario: v6.message.negative.tests.release-empty_server_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: RELEASE with incorrect SERVER_ID option.
@@ -234,7 +234,7 @@ Feature: Standard DHCPv6 release message
 	References: RFC3315 section 15.9
 
 @v6 @dhcp6 @release_invalid
-    Scenario: v6.release.invalid.without_client_id
+    Scenario: v6.message.negative.tests.release-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RELEASE without CLIENT_ID option.
@@ -299,7 +299,7 @@ Feature: Standard DHCPv6 release message
 
 
 @v6 @dhcp6 @release_invalid
-    Scenario: v6.release.invalid.double_client_id
+    Scenario: v6.message.negative.tests.release-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: RELEASE without CLIENT_ID option.
@@ -365,7 +365,7 @@ Feature: Standard DHCPv6 release message
 
 
 @v6 @dhcp6 @release_invalid
-    Scenario: v6.release.invalid.empty_client_id
+    Scenario: v6.message.negative.tests.release-empty_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RELEASE without CLIENT_ID option.
@@ -430,7 +430,7 @@ Feature: Standard DHCPv6 release message
 
 
 @v6 @dhcp6 @release_invalid
-    Scenario: v6.release.invalid.wrong_client_id
+    Scenario: v6.message.negative.tests.release-wrong_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: RELEASE without CLIENT_ID option.
@@ -505,7 +505,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-relay-msg
+    Scenario: v6.message.negative.tests.release-options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -572,7 +572,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-rapid-commit
+    Scenario: v6.message.negative.tests.release-options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -639,7 +639,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-interface-id
+    Scenario: v6.message.negative.tests.release-options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -706,7 +706,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-reconfigure-accept
+    Scenario: v6.message.negative.tests.release-options-reconfigure-accept
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -773,7 +773,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-preference
+    Scenario: v6.message.negative.tests.release-options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -840,7 +840,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-server-unicast
+    Scenario: v6.message.negative.tests.release-options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -907,7 +907,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-status-code
+    Scenario: v6.message.negative.tests.release-options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -975,7 +975,7 @@ Feature: Standard DHCPv6 release message
 @v6 @dhcp6 @release_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.release.invalid.options-reconfigure
+    Scenario: v6.message.negative.tests.release-options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.

@@ -118,7 +118,7 @@ Feature: DHCPv6 Relay Agent
 
   References: Kea User's Guide Section: DHCPv6 Relays
 
-@v6 @dhcp6 @relay @kea_only @disable
+@v6 @dhcp6 @relay @kea_only @disabled
   # that is against the spec
   Scenario: v6.relay.relayaddress-interface-id-just-one-matching
 
@@ -150,7 +150,7 @@ Feature: DHCPv6 Relay Agent
   Relayed Message option 3 MUST contain sub-option 13.
   Relayed Message sub-option 13 from option 3 MUST contain statuscode 2.
 
-@v6 @dhcp6 @relay @kea_only @disable
+@v6 @dhcp6 @relay @kea_only @disabled
   # that is against the spec
   Scenario: v6.relay.relayaddress-interface-id-just-one-matching-2
 
@@ -183,7 +183,7 @@ Feature: DHCPv6 Relay Agent
   Relayed Message sub-option 13 from option 3 MUST contain statuscode 2.
 
 
-@v6 @dhcp6 @relay @kea_only @disable
+@v6 @dhcp6 @relay @kea_only @disabled
   # that is against the spec
   Scenario: v6.relay.relayaddress-interface-id-just-one-matching-3
 

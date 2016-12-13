@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 rebind message
     This feature is designed for checking server response for invalid rebind messages. RFC 3315 section 15.7 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @dhcp6 @rebind_invalid
-    Scenario: v6.rebind.invalid.without_client_id
+    Scenario: v6.message.negative.tests.rebind-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: REBIND without CLIENT_ID option.
@@ -69,7 +69,7 @@ Feature: Standard DHCPv6 rebind message
 
 
 @v6 @dhcp6 @rebind_invalid
-    Scenario: v6.rebind.invalid.double_client_id
+    Scenario: v6.message.negative.tests.rebind-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: REBIND without CLIENT_ID option.
@@ -136,7 +136,7 @@ Feature: Standard DHCPv6 rebind message
 
 
 @v6 @dhcp6 @rebind_invalid
-    Scenario: v6.rebind.invalid.wrong_client_id
+    Scenario: v6.message.negative.tests.rebind-wrong_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: REBIND with invalid CLIENT_ID option.
@@ -211,7 +211,7 @@ Feature: Standard DHCPv6 rebind message
 
 
 @v6 @dhcp6 @rebind_invalid
-    Scenario: v6.rebind.invalid.empty_client_id
+    Scenario: v6.message.negative.tests.rebind-empty_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: REBIND with invalid CLIENT_ID option.
@@ -276,7 +276,7 @@ Feature: Standard DHCPv6 rebind message
 
 
 @v6 @dhcp6 @rebind_invalid
-    Scenario: v6.rebind.invalid.with_server_id
+    Scenario: v6.message.negative.tests.rebind-with_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: REBIND with SERVER_ID option.
@@ -343,7 +343,7 @@ Feature: Standard DHCPv6 rebind message
 @v6 @dhcp6 @rebind_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.rebind.invalid.options-relay-msg
+    Scenario: v6.message.negative.tests.rebind-options-relay-msg
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -411,7 +411,7 @@ Feature: Standard DHCPv6 rebind message
 @v6 @dhcp6 @rebind_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.rebind.invalid.options-rapid-commit
+    Scenario: v6.message.negative.tests.rebind-options-rapid-commit
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -479,7 +479,7 @@ Feature: Standard DHCPv6 rebind message
 @v6 @dhcp6 @rebind_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.rebind.invalid.options-interface-id
+    Scenario: v6.message.negative.tests.rebind-options-interface-id
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -547,7 +547,7 @@ Feature: Standard DHCPv6 rebind message
 @v6 @dhcp6 @rebind_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.rebind.invalid.options-preference
+    Scenario: v6.message.negative.tests.rebind-options-preference
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -615,7 +615,7 @@ Feature: Standard DHCPv6 rebind message
 @v6 @dhcp6 @rebind_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.rebind.invalid.options-server-unicast
+    Scenario: v6.message.negative.tests.rebind-options-server-unicast
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -683,7 +683,7 @@ Feature: Standard DHCPv6 rebind message
 @v6 @dhcp6 @rebind_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.rebind.invalid.options-status-code 
+    Scenario: v6.message.negative.tests.rebind-options-status-code
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -752,7 +752,7 @@ Feature: Standard DHCPv6 rebind message
 @v6 @dhcp6 @rebind_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.rebind.invalid.options-reconfigure 
+    Scenario: v6.message.negative.tests.rebind-options-reconfigure
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.

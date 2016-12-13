@@ -2,7 +2,7 @@ Feature: Standard DHCPv6 information request message
     This feature is designed for checking server response for invalid information request messages. RFC 3315 section 15.12 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @dhcp6 @inforequest_invalid
-    Scenario: v6.inforequest.invalid.with_server_id
+    Scenario: v6.message.negative.tests.inforequest-with_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: INFOREQUEST with SERVER_ID
@@ -51,7 +51,7 @@ Feature: Standard DHCPv6 information request message
 
 
 @v6 @dhcp6 @inforequest_invalid
-    Scenario: v6.inforequest.invalid.with_empty_server_id
+    Scenario: v6.message.negative.tests.inforequest-with_empty_server_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: INFOREQUEST with SERVER_ID
@@ -100,7 +100,7 @@ Feature: Standard DHCPv6 information request message
 
 
 @v6 @dhcp6 @inforequest_invalid
-    Scenario: v6.inforequest.invalid.without_client_id
+    Scenario: v6.message.negative.tests.inforequest-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: INFOREQUEST without CLIENT_ID
@@ -140,7 +140,7 @@ Feature: Standard DHCPv6 information request message
 
 
 @v6 @dhcp6 @inforequest_invalid
-    Scenario: v6.inforequest.invalid.double_client_id
+    Scenario: v6.message.negative.tests.inforequest-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: INFOREQUEST without CLIENT_ID
@@ -180,7 +180,7 @@ Feature: Standard DHCPv6 information request message
 	References: RFC3315 section 15.12
 
 @v6 @dhcp6 @inforequest_invalid
-    Scenario: v6.inforequest.invalid.with_IA_NA
+    Scenario: v6.message.negative.tests.inforequest-with_IA_NA
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: INFOREQUEST with IA_NA option
@@ -232,7 +232,7 @@ Feature: Standard DHCPv6 information request message
 @v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.inforequest.invalid.options-relay-msg 
+    Scenario: v6.message.negative.tests.inforequest-options-relay-msg
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -277,7 +277,7 @@ Feature: Standard DHCPv6 information request message
 @v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.inforequest.invalid.options-rapid-commit 
+    Scenario: v6.message.negative.tests.inforequest-options-rapid-commit
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -319,7 +319,7 @@ Feature: Standard DHCPv6 information request message
 @v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.inforequest.invalid.options-interface-id 
+    Scenario: v6.message.negative.tests.inforequest-options-interface-id
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -361,7 +361,7 @@ Feature: Standard DHCPv6 information request message
 @v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.inforequest.invalid.options-preference 
+    Scenario: v6.message.negative.tests.inforequest-options-preference
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -403,7 +403,7 @@ Feature: Standard DHCPv6 information request message
 @v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.inforequest.invalid.options-server-unicast 
+    Scenario: v6.message.negative.tests.inforequest-options-server-unicast
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -445,7 +445,7 @@ Feature: Standard DHCPv6 information request message
 @v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.inforequest.invalid.options-status-code
+    Scenario: v6.message.negative.tests.inforequest-options-status-code
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.
@@ -487,7 +487,7 @@ Feature: Standard DHCPv6 information request message
 @v6 @dhcp6 @inforequest_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.inforequest.invalid.options-reconfigure
+    Scenario: v6.message.negative.tests.inforequest-options-reconfigure
     ## Temporary test replacing disabled outline scenario
     ## Testing server ability to discard message that not meets 
     ## content requirements.

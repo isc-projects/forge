@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 decline message
     This feature is designed for checking server response for invalid decline messages. RFC 3315 section 15.8 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @dhcp6 @decline_invalid
-    Scenario: v6.decline.invalid.without_server_id
+    Scenario: v6.message.negative.tests.decline-without_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: DECLINE without SERVER_ID
@@ -76,7 +76,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8
 	
 @v6 @dhcp6 @decline_invalid
-    Scenario: v6.decline.invalid.wrong_server_id
+    Scenario: v6.message.negative.tests.decline-wrong_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: DECLINE with incorrect SERVER_ID
@@ -152,7 +152,7 @@ Feature: Standard DHCPv6 decline message
 
 
 @v6 @dhcp6 @decline_invalid
-    Scenario: v6.decline.invalid.empty_server_id
+    Scenario: v6.message.negative.tests.decline-empty_server_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: DECLINE with incorrect SERVER_ID
@@ -228,7 +228,7 @@ Feature: Standard DHCPv6 decline message
 
 
 @v6 @dhcp6 @decline_invalid
-    Scenario: v6.decline.invalid.without_client_id
+    Scenario: v6.message.negative.tests.decline-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: DECLINE without CLIENT_ID
@@ -291,7 +291,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8
 
 @v6 @dhcp6 @decline_invalid
-    Scenario: v6.decline.invalid.double_client_id
+    Scenario: v6.message.negative.tests.decline-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: DECLINE without CLIENT_ID
@@ -355,7 +355,7 @@ Feature: Standard DHCPv6 decline message
 	References: RFC3315 section 15.8
 
 @v6 @dhcp6 @decline_invalid
-    Scenario: v6.decline.invalid.wrong_client_id
+    Scenario: v6.message.negative.tests.decline-wrong_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: DECLINE with blank CLIENT_ID
@@ -422,7 +422,7 @@ Feature: Standard DHCPv6 decline message
 
 
 @v6 @dhcp6 @decline_invalid
-    Scenario: v6.decline.invalid.empty_client_id
+    Scenario: v6.message.negative.tests.decline-empty_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: DECLINE with blank CLIENT_ID
@@ -487,7 +487,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-relay-msg
+    Scenario: v6.message.negative.tests.decline-options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -553,7 +553,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-rapid-commit
+    Scenario: v6.message.negative.tests.decline-options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -619,7 +619,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-interface-id
+    Scenario: v6.message.negative.tests.decline-options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -685,7 +685,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-reconfigure-accept
+    Scenario: v6.message.negative.tests.decline-options-reconfigure-accept
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -752,7 +752,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-preference
+    Scenario: v6.message.negative.tests.decline-options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -819,7 +819,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-server-unicast
+    Scenario: v6.message.negative.tests.decline-options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -885,7 +885,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-status-code
+    Scenario: v6.message.negative.tests.decline-options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -952,7 +952,7 @@ Feature: Standard DHCPv6 decline message
 @v6 @dhcp6 @decline_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.decline.invalid.options-reconfigure
+    Scenario: v6.message.negative.tests.decline-options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.

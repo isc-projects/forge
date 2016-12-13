@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 solicit message
     This feature is designed for checking server response for invalid solicit messages. RFC 3315 section 15.2 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running. Also parts of tests with valid message refers to RFC 17.2.1  
     
 @v6 @dhcp6 @solicit_invalid
-    Scenario: v6.solicit.invalid.without_client_id
+    Scenario: v6.message.negative.tests.solicit-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: SOLICIT without CLIENT_ID option.
@@ -44,7 +44,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @dhcp6 @solicit_invalid
-    Scenario: v6.solicit.invalid.double_client_id
+    Scenario: v6.message.negative.tests.solicit-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: SOLICIT without CLIENT_ID option.
@@ -87,7 +87,7 @@ Feature: Standard DHCPv6 solicit message
 
 
 @v6 @dhcp6 @solicit_invalid
-    Scenario: v6.solicit.invalid.with_server_id
+    Scenario: v6.message.negative.tests.solicit-with_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: SOLICIT with SERVER_ID option.
@@ -139,7 +139,7 @@ Feature: Standard DHCPv6 solicit message
 	References: RFC3315 section 15.2, 17.2.1
 
 @v6 @dhcp6 @solicit_invalid
-    Scenario: v6.solicit.invalid.with_blank_client_id
+    Scenario: v6.message.negative.tests.solicit-with_blank_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: SOLICIT with incorrect CLIENT_ID option.
@@ -184,7 +184,7 @@ Feature: Standard DHCPv6 solicit message
 @v6 @dhcp6 @solicit_invalid @invalid_option @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.solicit.invalid.options-relaymsg
+    Scenario: v6.message.negative.tests.solicit-options-relaymsg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -229,7 +229,7 @@ Feature: Standard DHCPv6 solicit message
 @v6 @dhcp6 @solicit_invalid @invalid_option @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.solicit.invalid.options-interfaceid
+    Scenario: v6.message.negative.tests.solicit-options-interfaceid
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -273,7 +273,7 @@ Feature: Standard DHCPv6 solicit message
 @v6 @dhcp6 @solicit_invalid @invalid_option @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.solicit.invalid.options-preference
+    Scenario: v6.message.negative.tests.solicit-options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -317,7 +317,7 @@ Feature: Standard DHCPv6 solicit message
 @v6 @dhcp6 @solicit_invalid @invalid_option @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.solicit.invalid.options-serverunicast
+    Scenario: v6.message.negative.tests.solicit-options-serverunicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -361,7 +361,7 @@ Feature: Standard DHCPv6 solicit message
 @v6 @dhcp6 @solicit_invalid @invalid_option @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.solicit.invalid.options-statuscode
+    Scenario: v6.message.negative.tests.solicit-options-statuscode
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -405,7 +405,7 @@ Feature: Standard DHCPv6 solicit message
 @v6 @dhcp6 @solicit_invalid @invalid_option @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.solicit.invalid.options-reconfigure
+    Scenario: v6.message.negative.tests.solicit-options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.

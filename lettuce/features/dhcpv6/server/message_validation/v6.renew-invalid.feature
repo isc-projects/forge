@@ -3,7 +3,7 @@ Feature: Standard DHCPv6 renew message
     This feature is designed for checking server response for invalid renew messages. RFC 3315 section 15.6 Tests expecting lack of response, so each test also send valid massage to make sure that server is still running.
     
 @v6 @dhcp6 @renew_invalid
-    Scenario: v6.renew.invalid.without_server_id
+    Scenario: v6.message.negative.tests.renew-without_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RENEW without SERVER_ID option.
@@ -78,7 +78,7 @@ Feature: Standard DHCPv6 renew message
 	References: RFC3315 section 15.6
 	
 @v6 @dhcp6 @renew_invalid
-    Scenario: v6.renew.invalid.wrong_server_id
+    Scenario: v6.message.negative.tests.renew-wrong_server_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RENEW with incorrect SERVER_ID option.
@@ -156,7 +156,7 @@ Feature: Standard DHCPv6 renew message
 	References: RFC3315 section 15.6 
 	
 @v6 @dhcp6 @renew_invalid
-    Scenario: v6.renew.invalid.empty_server_id
+    Scenario: v6.message.negative.tests.renew-empty_server_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: RENEW with incorrect SERVER_ID option.
@@ -233,7 +233,7 @@ Feature: Standard DHCPv6 renew message
 	References: RFC3315 section 15.6
 
 @v6 @dhcp6 @renew_invalid
-    Scenario: v6.renew.invalid.without_client_id
+    Scenario: v6.message.negative.tests.renew-without_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RENEW without CLIENT_ID option.
@@ -299,7 +299,7 @@ Feature: Standard DHCPv6 renew message
 	References: RFC3315 section 15.6
 
 @v6 @dhcp6 @renew_invalid
-    Scenario: v6.renew.invalid.double_client_id
+    Scenario: v6.message.negative.tests.renew-double_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: RENEW without CLIENT_ID option.
@@ -366,7 +366,7 @@ Feature: Standard DHCPv6 renew message
 	References: RFC3315 section 15.6
 
 @v6 @dhcp6 @renew_invalid
-    Scenario: v6.renew.invalid.wrong_client_id
+    Scenario: v6.message.negative.tests.renew-wrong_client_id
     ## Testing server ability to discard message that not meets 
     ## content requirements.
     ## In this case: RENEW without CLIENT_ID option.
@@ -440,7 +440,7 @@ Feature: Standard DHCPv6 renew message
 
 
 @v6 @dhcp6 @renew_invalid
-    Scenario: v6.renew.invalid.empty_client_id
+    Scenario: v6.message.negative.tests.renew-empty_client_id
     ## Testing server ability to discard message that not meets
     ## content requirements.
     ## In this case: RENEW without CLIENT_ID option.
@@ -509,7 +509,7 @@ Feature: Standard DHCPv6 renew message
 @v6 @dhcp6 @renew_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.renew.invalid.options-relay-msg
+    Scenario: v6.message.negative.tests.renew-options-relay-msg
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -578,7 +578,7 @@ Feature: Standard DHCPv6 renew message
 @v6 @dhcp6 @renew_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.renew.invalid.options-rapid-commit
+    Scenario: v6.message.negative.tests.renew-options-rapid-commit
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -647,7 +647,7 @@ Feature: Standard DHCPv6 renew message
 @v6 @dhcp6 @renew_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.renew.invalid.options-interface-id
+    Scenario: v6.message.negative.tests.renew-options-interface-id
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -716,7 +716,7 @@ Feature: Standard DHCPv6 renew message
 @v6 @dhcp6 @renew_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.renew.invalid.options-preference
+    Scenario: v6.message.negative.tests.renew-options-preference
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -785,7 +785,7 @@ Feature: Standard DHCPv6 renew message
 @v6 @dhcp6 @renew_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.renew.invalid.options-server-unicast
+    Scenario: v6.message.negative.tests.renew-options-server-unicast
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -854,7 +854,7 @@ Feature: Standard DHCPv6 renew message
 @v6 @dhcp6 @renew_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.renew.invalid.options-status-code
+    Scenario: v6.message.negative.tests.renew-options-status-code
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.
@@ -923,7 +923,7 @@ Feature: Standard DHCPv6 renew message
 @v6 @dhcp6 @renew_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
 
-    Scenario: v6.renew.invalid.options-reconfigure
+    Scenario: v6.message.negative.tests.renew-options-reconfigure
 	## Temporary test replacing disabled outline scenario 
 	## Testing server ability to discard message that not meets 
 	## content requirements.

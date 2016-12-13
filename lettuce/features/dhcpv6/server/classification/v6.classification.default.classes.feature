@@ -3,7 +3,7 @@ Feature: DHCPv6 Client Classification - default classes
     Performed through option vendor class.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-docsis3-advertise-success
+    Scenario: v6.client.classification.onesubnet-docsis3-advertise-success
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -24,7 +24,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-docsis3-advertise-fail
+    Scenario: v6.client.classification.onesubnet-docsis3-advertise-fail
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -43,7 +43,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-docsis3-request-success
+    Scenario: v6.client.classification.onesubnet-docsis3-request-success
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -78,7 +78,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-docsis3-request-fail
+    Scenario: v6.client.classification.onesubnet-docsis3-request-fail
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -112,7 +112,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-eRouter1_0-advertise-success
+    Scenario: v6.client.classification.onesubnet-eRouter1_0-advertise-success
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -133,7 +133,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-eRouter1_0-advertise-fail
+    Scenario: v6.client.classification.onesubnet-eRouter1_0-advertise-fail
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -152,7 +152,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-eRouter1_0-request-success
+    Scenario: v6.client.classification.onesubnet-eRouter1_0-request-success
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -187,7 +187,7 @@ Feature: DHCPv6 Client Classification - default classes
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
 @v6 @dhcp6 @classification @default_classes
-    Scenario: v6.client.classification-onesubnet-eRouter1_0-request-fail
+    Scenario: v6.client.classification.onesubnet-eRouter1_0-request-fail
 
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
