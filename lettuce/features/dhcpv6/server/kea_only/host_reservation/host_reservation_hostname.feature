@@ -2,7 +2,7 @@ Feature: Host Reservation DHCPv6
      Tests for Host Reservation feature for hostname based on DUID and MAC address.
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.hostname-with-ddns
+    Scenario: v6.host.reservation.mac-hostname-with-ddns
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
@@ -38,7 +38,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.hostname-without-ddns
+    Scenario: v6.host.reservation.mac-hostname-without-ddns
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -72,7 +72,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.duid.hostname-with-ddns
+    Scenario: v6.host.reservation.duid-hostname-with-ddns
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -107,7 +107,7 @@ Feature: Host Reservation DHCPv6
     Response option 39 MUST contain fqdn reserved-hostname.my.domain.com.
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.duid.hostname-without-ddns
+    Scenario: v6.host.reservation.duid-hostname-without-ddns
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

@@ -3,7 +3,7 @@ Feature: Host Reservation DHCPv6
     For prefix, addresses and hostnames.
 
 @v6 @host_reservation @kea_only @disabled
-    Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-1
+    Scenario: v6.host.reservation.conflicts-two-entries-for-one-host-1
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
@@ -37,7 +37,7 @@ Feature: Host Reservation DHCPv6
 	Response option 25 MUST contain sub-option 26.
 
 @v6 @host_reservation @kea_only @disabled
-    Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-2
+    Scenario: v6.host.reservation.conflicts-two-entries-for-one-host-2
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
@@ -71,7 +71,7 @@ Feature: Host Reservation DHCPv6
 	Response option 25 MUST contain sub-option 26.
 
 @v6 @host_reservation @kea_only @disabled
-    Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-3
+    Scenario: v6.host.reservation.conflicts-two-entries-for-one-host-3
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
@@ -105,7 +105,7 @@ Feature: Host Reservation DHCPv6
 	Response option 25 MUST contain sub-option 26.
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-different-subnets
+    Scenario: v6.host.reservation.conflicts-two-entries-for-one-host-different-subnets
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
@@ -130,7 +130,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-prefix
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-prefix
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
@@ -233,7 +233,7 @@ Feature: Host Reservation DHCPv6
 	Response option 3 MUST contain sub-option 5.
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-prefix-2
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-prefix-2
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
@@ -334,7 +334,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-prefix-renew-before-expire
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-prefix-renew-before-expire
 
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
@@ -456,7 +456,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-prefix-renew-after-expire
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-prefix-renew-after-expire
 
 	Test Setup:
 	Time renew-timer is configured with value 5.

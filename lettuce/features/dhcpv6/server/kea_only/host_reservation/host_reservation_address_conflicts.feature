@@ -12,7 +12,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.two-entries-for-one-host-different-subnets
+    Scenario: v6.host.reservation.conflicts-two-entries-for-one-host-different-subnets
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with another subnet: 3001::/30 with 3001::1-3001::10 pool.
@@ -33,7 +33,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-address
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-address
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 	DHCP server is started.
@@ -106,7 +106,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-address-2
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-address-2
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 	DHCP server is started.
@@ -191,7 +191,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-address-renew-before-expire
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-address-renew-before-expire
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 	DHCP server is started.
@@ -299,7 +299,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-address-renew-after-expire
+    Scenario: v6.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-address-renew-after-expire
 
     Test Setup:
 	Time renew-timer is configured with value 5.

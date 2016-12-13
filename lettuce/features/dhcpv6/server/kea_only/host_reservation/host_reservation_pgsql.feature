@@ -3,7 +3,7 @@ Feature: Host Reservation DHCPv6 stored in PostgreSQL database.
     Host reservation records are stored in the PostgreSQL database.
 
 @v6 @host_reservation @kea_only
-Scenario: v6.host.reservation.pgsql.all.values.mac
+Scenario: v6.host.reservation.pgsql.all-values-mac
 
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

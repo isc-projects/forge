@@ -2,7 +2,7 @@ Feature: Host Reservation DHCPv6
     Tests for Host Reservation feature based on MAC address.
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.requesting-reserved-address-inside-the-pool
+    Scenario: v6.host.reservation.mac-requesting-reserved-address-inside-the-pool
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Reserve address 3000::10 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
@@ -54,7 +54,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.requesting-reserved-address-outside-the-pool
+    Scenario: v6.host.reservation.mac-requesting-reserved-address-outside-the-pool
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
 	Reserve address 3000::ff in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
@@ -105,7 +105,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.requesting-reserved-prefix
+    Scenario: v6.host.reservation.mac-requesting-reserved-prefix
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
 	Reserve prefix 3000::/90 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
@@ -159,7 +159,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.requesting-reserved-prefix-PD-not-requested
+    Scenario: v6.host.reservation.mac-requesting-reserved-prefix-PD-not-requested
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
 	Reserve prefix 3000::/90 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
@@ -211,7 +211,7 @@ Feature: Host Reservation DHCPv6
 	Response option 3 MUST contain sub-option 5.
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.requesting-reserved-prefix-outside
+    Scenario: v6.host.reservation.mac-requesting-reserved-prefix-outside
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
 	Reserve prefix 3011::/90 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
@@ -266,7 +266,7 @@ Feature: Host Reservation DHCPv6
 
 
 @v6 @host_reservation @kea_only
-    Scenario: v6.host.reservation.mac.requesting-reserved-prefix-inside-empty-pool
+    Scenario: v6.host.reservation.mac-requesting-reserved-prefix-inside-empty-pool
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
