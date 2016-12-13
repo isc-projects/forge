@@ -3,7 +3,7 @@ Feature: DHCPv6 Relay Agent
     This is test for DHCPv6 message exchange between server and relay-agent with not permitted options in Relay-Forward message.  
 
 @v6 @dhcp6 @relay @relay_invalid
-    Scenario: v6.relay.invalid.with_client_id
+    Scenario: v6.relay.invalid-with_client_id
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -39,7 +39,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8	
 	
 @v6 @dhcp6 @relay @relay_invalid
-    Scenario: v6.relay.invalid.with_server_id
+    Scenario: v6.relay.invalid-with_server_id
 	#add just serverid
 	
 	Test Setup:
@@ -78,7 +78,7 @@ Feature: DHCPv6 Relay Agent
 
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline, @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-preference
+    Scenario: v6.relay.invalid-options-preference
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -114,7 +114,7 @@ Feature: DHCPv6 Relay Agent
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-time
+    Scenario: v6.relay.invalid-options-time
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -150,7 +150,7 @@ Feature: DHCPv6 Relay Agent
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-option-request
+    Scenario: v6.relay.invalid-options-option-request
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -188,7 +188,7 @@ Response MUST include option 9.
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-server-unicast
+    Scenario: v6.relay.invalid-options-server-unicast
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -226,7 +226,7 @@ Response MUST include option 9.
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-status-code
+    Scenario: v6.relay.invalid-options-status-code
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -263,7 +263,7 @@ Response MUST include option 9.
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-rapid-commit
+    Scenario: v6.relay.invalid-options-rapid-commit
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -300,7 +300,7 @@ Response MUST include option 9.
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-reconfigure
+    Scenario: v6.relay.invalid-options-reconfigure
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -336,7 +336,7 @@ Response MUST include option 9.
 	
 @v6 @dhcp6 @relay @relay_invalid @invalid_option @outline @disabled
 #TODO enable MAY condition in Forge then enable test
-    Scenario: v6.relay.invalid.options-reconfigure-accept
+    Scenario: v6.relay.invalid-options-reconfigure-accept
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

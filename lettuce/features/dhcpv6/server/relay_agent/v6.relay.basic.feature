@@ -3,7 +3,7 @@ Feature: DHCPv6 Relay Agent
     This is a simple DHCPv6 message exchange between server and relay-agent.  
 
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.solicit-advertise
+    Scenario: v6.relay.message-solicit-advertise
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -27,7 +27,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 
 @v6 @dhcp6 @relay @unicast
-    Scenario: v6.relay.message.unicast.global
+    Scenario: v6.relay.message-unicast-global
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -51,7 +51,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 
 @v6 @dhcp6 @relay @unicast
-    Scenario: v6.relay.message.unicast.local
+    Scenario: v6.relay.message-unicast-local
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -86,7 +86,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.solicit-reply
+    Scenario: v6.relay.message-solicit-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -110,7 +110,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.request-reply
+    Scenario: v6.relay.message-request-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -144,7 +144,7 @@ Feature: DHCPv6 Relay Agent
 	
 	
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.confirm-reply
+    Scenario: v6.relay.message-confirm-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -186,7 +186,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.renew-reply
+    Scenario: v6.relay.message-renew-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -229,7 +229,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8 
 	
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.rebind-reply
+    Scenario: v6.relay.message-rebind-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -269,7 +269,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	 
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.release-reply
+    Scenario: v6.relay.message-release-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -310,7 +310,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8 
 	
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.decline-reply
+    Scenario: v6.relay.message-decline-reply
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -343,7 +343,7 @@ Feature: DHCPv6 Relay Agent
 	References: RFC3315 section 18.2.8
 	
 @v6 @dhcp6 @relay
-    Scenario: v6.relay.message.information_request-reply
+    Scenario: v6.relay.message-information_request-reply
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	DHCP server is started.

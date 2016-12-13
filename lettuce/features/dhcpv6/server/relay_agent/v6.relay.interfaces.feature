@@ -2,7 +2,7 @@ Feature: DHCPv6 Relay Agent
   This feature will test ability to assign subnets to specific relay agents based on interface id values.
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.interface.local-and-relay-interface-in-the-same-subnet
+  Scenario: v6.relay.interface-local-and-relay-interface-in-the-same-subnet
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -14,7 +14,7 @@ Feature: DHCPv6 Relay Agent
   References: Kea User's Guide Section: DHCPv6 Relays
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.interface.two-subnets
+  Scenario: v6.relay.interface-two-subnets
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -66,7 +66,7 @@ Feature: DHCPv6 Relay Agent
   References: Kea User's Guide Section: DHCPv6 Relays
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.relayaddress.two-subnets
+  Scenario: v6.relay.relayaddress-two-subnets
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -118,8 +118,9 @@ Feature: DHCPv6 Relay Agent
 
   References: Kea User's Guide Section: DHCPv6 Relays
 
-@v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.relayaddress.interface-id-just-one-matching
+@v6 @dhcp6 @relay @kea_only @disable
+  # that is against the spec
+  Scenario: v6.relay.relayaddress-interface-id-just-one-matching
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -149,8 +150,9 @@ Feature: DHCPv6 Relay Agent
   Relayed Message option 3 MUST contain sub-option 13.
   Relayed Message sub-option 13 from option 3 MUST contain statuscode 2.
 
-@v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.relayaddress.interface-id-just-one-matching-2
+@v6 @dhcp6 @relay @kea_only @disable
+  # that is against the spec
+  Scenario: v6.relay.relayaddress-interface-id-just-one-matching-2
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -181,8 +183,9 @@ Feature: DHCPv6 Relay Agent
   Relayed Message sub-option 13 from option 3 MUST contain statuscode 2.
 
 
-@v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.relayaddress.interface-id-just-one-matching-3
+@v6 @dhcp6 @relay @kea_only @disable
+  # that is against the spec
+  Scenario: v6.relay.relayaddress-interface-id-just-one-matching-3
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -214,7 +217,7 @@ Feature: DHCPv6 Relay Agent
 
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.relayaddress.interface-id-two-subnets
+  Scenario: v6.relay.relayaddress-interface-id-two-subnets
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -270,7 +273,7 @@ Feature: DHCPv6 Relay Agent
   References: Kea User's Guide Section: DHCPv6 Relays
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.relayaddress.interface-id-two-subnets-2
+  Scenario: v6.relay.relayaddress-interface-id-two-subnets-2
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -384,7 +387,7 @@ Feature: DHCPv6 Relay Agent
 
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.interface.one-subnet-not-matching-id
+  Scenario: v6.relay.interface-one-subnet-not-matching-id
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
@@ -414,7 +417,7 @@ Feature: DHCPv6 Relay Agent
   References: Kea User's Guide Section: DHCPv6 Relays
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.interface.two-subnets-direct-client
+  Scenario: v6.relay.interface-two-subnets-direct-client
 
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::1 pool.
@@ -458,7 +461,7 @@ Feature: DHCPv6 Relay Agent
   References: Kea User's Guide Section: DHCPv6 Relays
 
 @v6 @dhcp6 @relay @kea_only
-  Scenario: v6.relay.interface.two-subnets-same-interface-id
+  Scenario: v6.relay.interface-two-subnets-same-interface-id
 
   Test Setup:
   #that is basically misconfiguration!
