@@ -7,7 +7,7 @@ Feature: Kea6 User Check Hook Library - Logging
 # to the server configuration.
 
 @v6 @dhcp6 @kea_only @user_check  @IA_NA @logging
-    Scenario: user_check.hook-IA_NA.no_registry-logging
+    Scenario: user_check.hook-IA_NA-no_registry-logging
     # Without a user registry and multiple subnets 
     # Subnet selection will use subnet interface for subnet selection hint
 
@@ -36,7 +36,7 @@ Feature: Kea6 User Check Hook Library - Logging
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.callouts
 
 @v6 @dhcp6 @kea_only @user_check  @IA_NA @logging
-    Scenario: user_check.hook-IA_NA.with_registry_unknown_user-logging
+    Scenario: user_check.hook-IA_NA-with_registry_unknown_user-logging
     # With a user registry and multiple subnets
     # an unknown user should get last subnet
 
@@ -69,7 +69,7 @@ Feature: Kea6 User Check Hook Library - Logging
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.callouts
 
 @v6 @dhcp6 @kea_only @user_check  @IA_NA @logging
-    Scenario: user_check.hook-IA_NA.with_registry_unknown_user-logging-2
+    Scenario: user_check.hook-IA_NA-with_registry_unknown_user-logging-2
     # With a user registry and multiple subnets
     # an unknown user should get last subnet
 

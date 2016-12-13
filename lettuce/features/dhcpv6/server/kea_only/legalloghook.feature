@@ -2,7 +2,7 @@ Feature: Kea6 Legal logging hook
 Testing hook that is creating additional file with detailed logs about clients
 
 @v6 @dhcp6 @kea_only @legal_logging
-Scenario: v6.loggers-legal-log-hook-address-assigned-duid
+Scenario: v6.loggers.legal-log-hook-address-assigned-duid
 
 Test Procedure:
 Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
@@ -46,7 +46,7 @@ Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-l
 File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
 @v6 @dhcp6 @kea_only @legal_logging
-Scenario: v6.loggers-legal-log-hook-address-renewed-duid
+Scenario: v6.loggers.legal-log-hook-address-renewed-duid
 
 Test Procedure:
 Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
@@ -105,7 +105,7 @@ File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line o
 File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
 @v6 @dhcp6 @kea_only @legal_logging
-Scenario: v6.loggers-legal-log-hook-address-rebind-duid
+Scenario: v6.loggers.legal-log-hook-address-rebind-duid
 
 Test Procedure:
 Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
@@ -163,7 +163,7 @@ File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line o
 File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been rebound for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
 @v6 @dhcp6 @kea_only @legal_logging
-Scenario: v6.loggers-legal-log-hook-address-assigned-docsis-modem
+Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-modem
 
 Test Procedure:
 Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
@@ -212,7 +212,7 @@ Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-l
 File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)
 
 @v6 @dhcp6 @kea_only @legal_logging
-Scenario: v6.loggers-legal-log-hook-address-assigned-docsis-cmts
+Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-cmts
 
 Test Procedure:
 Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
@@ -258,7 +258,7 @@ Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-l
 File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)
 
 @v6 @dhcp6 @kea_only @legal_logging
-Scenario: v6.loggers-legal-log-hook-address-assigned-relay
+Scenario: v6.loggers.legal-log-hook-address-assigned-relay
 
 Test Procedure:
 Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.

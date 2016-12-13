@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS forward and reverse update.
 
 @v6 @ddns @tsig @forward_reverse_add
-    Scenario: ddns6.tsig.sha1-forw_and_rev
+    Scenario: ddns6.tsig-sha1-forw_and_rev
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
@@ -75,7 +75,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @tsig @forward_reverse_add
-    Scenario: ddns6.tsig.sha224-forw_and_rev
+    Scenario: ddns6.tsig-sha224-forw_and_rev
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -148,7 +148,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @tsig @forward_reverse_add
-    Scenario: ddns6.tsig.sha256-forw_and_rev
+    Scenario: ddns6.tsig-sha256-forw_and_rev
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -221,7 +221,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @tsig @forward_reverse_add
-    Scenario: ddns6.tsig.sha384-forw_and_rev
+    Scenario: ddns6.tsig-sha384-forw_and_rev
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -294,7 +294,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @tsig @forward_reverse_add
-    Scenario: ddns6.tsig.sha512-forw_and_rev
+    Scenario: ddns6.tsig-sha512-forw_and_rev
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -367,7 +367,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @tsig @forward_reverse_add
-    Scenario: ddns6.tsig.md5-forw_and_rev
+    Scenario: ddns6.tsig-md5-forw_and_rev
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -440,7 +440,7 @@ Feature: DDNS without TSIG
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 @v6 @ddns @tsig @forward_reverse_add
-    Scenario: ddns6.tsig.multi-key-forw_and_rev
+    Scenario: ddns6.tsig-multi-key-forw_and_rev
 
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.

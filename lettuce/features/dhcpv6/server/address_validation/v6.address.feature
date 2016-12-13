@@ -2,7 +2,7 @@ Feature: Standard DHCPv6 address validation
     This feature is for checking respond on messages send on GLOBAL UNICAST address. Solicit, Confirm, Rebind, Info-Request should be discarded. Request should be answered with Reply message containing option StatusCode with code 5. 
     
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.global.solicit
+    Scenario: v6.basic.message.unicast.global-solicit
 	## Server MUST discard any Solicit it receives with   
 	## a unicast address destination
 	## Message details 		Client		Server
@@ -38,7 +38,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15
 	
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.global.confirm	
+    Scenario: v6.basic.message.unicast.global-confirm
 	## Server MUST discard any Confirm it receives with   
 	## a unicast address destination
 	## Message details 		Client		Server
@@ -104,7 +104,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15	
 	
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.global.rebind	
+    Scenario: v6.basic.message.unicast.global-rebind
 	## Server MUST discard any Rebind it receives with   
 	## a unicast address destination.
 	## Message details		Client		Server
@@ -170,7 +170,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15
 	
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.global.inforequest	
+    Scenario: v6.basic.message.unicast.global-inforequest
 	## Server MUST discard any Information-Request it receives with   
 	## a unicast address destination.
 	## Message details 		Client		Server
@@ -211,7 +211,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15
 	
 @basic @v6 @dhcp6 @unicast @status_code
-    Scenario: v6.basic.message.unicast.global.request	
+    Scenario: v6.basic.message.unicast.global-request
 	## Server MUST discard any Request message it receives with   
 	## a unicast address destination, and send back REPLY with
 	## UseMulticast status code.
@@ -281,7 +281,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 18.2.1
 	
 @basic @v6 @dhcp6 @unicast @status_code
-    Scenario: v6.basic.message.unicast.global.renew	
+    Scenario: v6.basic.message.unicast.global-renew
 	## Server MUST discard any RENEW message it receives with   
 	## a unicast address destination, and send back REPLY with
 	## UseMulticast status code.
@@ -355,7 +355,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 18.2.3
 	
 @basic @v6 @dhcp6 @unicast @status_code
-    Scenario: v6.basic.message.unicast.global.release	
+    Scenario: v6.basic.message.unicast.global-release
 	## Server MUST discard any RELEASE message it receives with   
 	## a unicast address destination, and send back REPLY with
 	## UseMulticast status code.
@@ -428,7 +428,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 18.2.6.
 
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.local.solicit
+    Scenario: v6.basic.message.unicast.local-solicit
 	## Server MUST discard any Solicit it receives with   
 	## a unicast address destination
 	## Message details 		Client		Server
@@ -464,7 +464,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15
 
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.local.confirm	
+    Scenario: v6.basic.message.unicast.local-confirm
 	## Server MUST discard any Confirm it receives with   
 	## a unicast address destination
 	## Message details 		Client		Server
@@ -530,7 +530,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15	
 
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.local.rebind	
+    Scenario: v6.basic.message.unicast.local-rebind
 	## Server MUST discard any Rebind it receives with   
 	## a unicast address destination.
 	## Message details		Client		Server
@@ -597,7 +597,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15
 	
 @basic @v6 @dhcp6 @unicast
-    Scenario: v6.basic.message.unicast.local.inforequest	
+    Scenario: v6.basic.message.unicast.local-inforequest
 	## Server MUST discard any Information-Request it receives with   
 	## a unicast address destination.
 	## Message details 		Client		Server
@@ -639,7 +639,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 15
 	
 @basic @v6 @dhcp6 @unicast @status_code
-    Scenario: v6.basic.message.unicast.local.request	
+    Scenario: v6.basic.message.unicast.local-request
 	## Server MUST discard any Request message it receives with   
 	## a unicast address destination, and send back REPLY with
 	## UseMulticast status code.
@@ -710,7 +710,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 18.2.1
 	
 @basic @v6 @dhcp6 @unicast @status_code
-    Scenario: v6.basic.message.unicast.local.renew	
+    Scenario: v6.basic.message.unicast.local-renew
 	## Server MUST discard any RENEW message it receives with   
 	## a unicast address destination, and send back REPLY with
 	## UseMulticast status code.
@@ -785,7 +785,7 @@ Feature: Standard DHCPv6 address validation
 	References: RFC3315 section 18.2.3
 	
 @basic @v6 @dhcp6 @unicast @status_code
-    Scenario: v6.basic.message.unicast.local.release	
+    Scenario: v6.basic.message.unicast.local-release
 	## Server MUST discard any RELEASE message it receives with   
 	## a unicast address destination, and send back REPLY with
 	## UseMulticast status code.

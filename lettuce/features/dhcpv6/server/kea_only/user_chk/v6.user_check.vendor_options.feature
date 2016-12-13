@@ -7,7 +7,7 @@ Feature: Kea6 User Check Hook Library
 # to the server configuration.
 
 @v6 @dhcp6 @kea_only @user_check @vendor_options
-    Scenario: user_check.hook-vendor_options.all
+    Scenario: user_check.hook-vendor_options-all
 
     # Install the requisite user registry file onto the server and then 
     # Configure the server with two subnets.  The first subnet will be used 
