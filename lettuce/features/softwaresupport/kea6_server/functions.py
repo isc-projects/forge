@@ -451,12 +451,12 @@ def add_logger(log_type, severity, severity_level, logging_file):
             world.cfg["logger"] += ','
     logging_file_path = SOFTWARE_INSTALL_DIR + 'var/kea/' + logging_file
     if severity_level != "None":
-        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '",' \
-                               '"destination": "file"}],"debuglevel": ' + severity_level + ',"severity": ' \
+        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '"' \
+                               '}],"debuglevel": ' + severity_level + ',"severity": ' \
                                '"' + severity + '"}'
     else:
-        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '",' \
-                               '"destination": "file"}],"severity": ' \
+        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '"' \
+                               '}],"severity": ' \
                                '"' + severity + '"}'
 
 
@@ -558,12 +558,10 @@ def cfg_write():
 
     cfg_file.write(',"Logging": {"loggers": [')
     if not "logger" in world.cfg:
-        cfg_file.write('{"name": "' + log_type + '","output_options": [{"output": "' + logging_file + '",'
-                       '"destination": "file"}')
+        cfg_file.write('{"name": "' + log_type + '","output_options": [{"output": "' + logging_file + '"}')
         cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
         if world.ddns_enable:
-            cfg_file.write(',{"name": "kea-dhcp-ddns","output_options": [{"output": "' + logging_file + '_ddns",'
-                           '"destination": "file"}')
+            cfg_file.write(',{"name": "kea-dhcp-ddns","output_options": [{"output": "' + logging_file + '_ddns"}')
             cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
     else:
         cfg_file.write(world.cfg["logger"])
