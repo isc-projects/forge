@@ -2,11 +2,11 @@ Feature: Host Reservation DHCPv4
     Tests for Host Reservation feature for address based on MAC address.
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.one-address-inside-pool
+    Scenario: v4.host.reservation.one-address-inside-pool-hw-address
     Test Setup:
     # outside of the pool
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     DHCP server is started.
 
     Test Procedure:
@@ -15,10 +15,41 @@ Feature: Host Reservation DHCPv4
 
     Pass Criteria:
     Server MUST respond with OFFER message.
+    Response MUST contain yiaddr 192.168.50.10.
 
     Test Procedure:
     Client copies server_id option from received message.
     Client adds to the message requested_addr with value 192.168.50.10.
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.10.
+	Response MUST include option 1.
+    Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @host_reservation @kea_only
+    Scenario: v4.host.reservation.one-address-inside-pool-client-id
+    Test Setup:
+    # outside of the pool
+    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by client-id ff:01:02:03:ff:04:11:22.
+    DHCP server is started.
+
+    Test Procedure:
+    Client sets chaddr value to ff:01:02:03:ff:04.
+    Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST contain yiaddr 192.168.50.10.
+
+    Test Procedure:
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.10.
+    Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
     Client sets chaddr value to ff:01:02:03:ff:04.
     Client sends REQUEST message.
 

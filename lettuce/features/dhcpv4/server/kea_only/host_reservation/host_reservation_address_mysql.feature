@@ -21,6 +21,7 @@ Feature: Host Reservation DHCPv4 stored in MySQL database.
   
   Pass Criteria:
   Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.10.
   
   Test Procedure:
   Client copies server_id option from received message.
@@ -33,11 +34,12 @@ Feature: Host Reservation DHCPv4 stored in MySQL database.
   Response MUST contain yiaddr 192.168.50.10.
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
-  
+
 @v4 @host_reservation @kea_only
   Scenario: v4.host.reservation.mysql.one-address-inside-pool-option
   Test Setup:
   # outside of the pool
+  # TODO update names
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Use MySQL reservation system.
   Create new MySQL reservation identified by hw-address ff:01:02:03:ff:04.
@@ -49,25 +51,25 @@ Feature: Host Reservation DHCPv4 stored in MySQL database.
   Add option reservation code 11 value 10.0.0.1 space dhcp4 persistent 1 client class $(EMPTY) subnet id 1 and scope subnet to MySQL record id 1.
   Server is configured with resource-location-servers option with value 199.199.199.1,150.150.150.1.
   Upload hosts reservation to MySQL database.
-  
+
   DHCP server is started.
-  
+
   Test Procedure:
   Client requests option 11.
   Client sets chaddr value to ff:01:02:03:ff:04.
   Client sends DISCOVER message.
-  
+
   Pass Criteria:
   Server MUST respond with OFFER message.
   Response MUST include option 11.
   Response option 11 MUST contain value 10.0.0.1.
-  
+
   Test Procedure:
   Client copies server_id option from received message.
   Client adds to the message requested_addr with value 192.168.50.10.
   Client sets chaddr value to ff:01:02:03:ff:04.
   Client sends REQUEST message.
-  
+
   Pass Criteria:
   Server MUST respond with ACK message.
   Response MUST contain yiaddr 192.168.50.10.
