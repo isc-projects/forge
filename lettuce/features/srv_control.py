@@ -210,7 +210,7 @@ def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_v
     dhcp.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space)
 
 
-@step('Time (\S+) is configured with value (\d+).')
+@step('Time (\S+) is configured with value (\S+).')
 def set_time(step, which_time, value):
     """
     Change values of T1, T2, preffered lifetime and valid lifetime.
@@ -406,25 +406,28 @@ def upload_db_reservation(step, db_type):
 ##endMySQL
 
 
-@step('Reserve (\S+) (\S+) for host uniquely identified by (\S+).')
-def host_reservation(step, reservation_type, reserved_value, unique_host_value):
+@step('Reserve (\S+) (\S+) for host uniquely identified by  (\S+) (\S+).')
+def host_reservation(step, reservation_type, reserved_value, unique_host_value_type, unique_host_value):
     """
     Ability to configure simple host reservations.
     """
-    reservation_type, reserved_value, unique_host_value = test_define_value(reservation_type,
-                                                                            reserved_value, unique_host_value)
-    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value, None)
+    reservation_type, reserved_value, unique_host_value_type, unique_host_value = test_define_value(reservation_type,
+                                                                                                    reserved_value,
+                                                                                                    unique_host_value_type,
+                                                                                                    unique_host_value)
+    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, None)
 
 ##subnet options
-@step('Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+).')
-def host_reservation(step, reservation_type, reserved_value, subnet, unique_host_value):
+@step('Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
+def host_reservation(step, reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
     """
     Ability to configure simple host reservations in subnet.
     """
-
-    reservation_type, reserved_value, unique_host_value = test_define_value(reservation_type,
-                                                                            reserved_value, unique_host_value)
-    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value, int(subnet))
+    reservation_type, reserved_value, unique_host_value_type, unique_host_value = test_define_value(reservation_type,
+                                                                                                    reserved_value,
+                                                                                                    unique_host_value_type,
+                                                                                                    unique_host_value)
+    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, int(subnet))
 
 
 @step('For host reservation entry no. (\d+) in subnet (\d+) add (\S+) with value (\S+).')

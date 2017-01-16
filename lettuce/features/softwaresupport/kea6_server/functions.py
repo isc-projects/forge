@@ -292,14 +292,10 @@ def set_logger():
     assert False, "For now option unavailable!"
 
 
-def host_reservation(reservation_type, reserved_value, unique_host_value, subnet):
+def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
     if len(world.subcfg[subnet][5]) > 20:
         world.subcfg[subnet][5] += ','
 
-    if len(unique_host_value.replace(':', '')) == 12:
-        unique_host_value_type = "hw-address"
-    elif len(unique_host_value.replace(':', '')) > 12:
-        unique_host_value_type = "duid"
     world.subcfg[subnet][5] += "{"
     if reservation_type == "address":
         world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}",' \
