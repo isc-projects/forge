@@ -399,7 +399,7 @@ def outline_before(scenario, number, step, failed):
         failed - reason of failure
     For more info please read UserHelp - Outline Scenarios
     """
-    initialize(None)  # we need to initialize all
+    initialize(scenario)  # we need to initialize all
 
 
 @after.outline
