@@ -234,6 +234,9 @@ def find_scenario(name, IPversion):
                     if name == tmp_line[10:]:
                         file_name.close()
                         return path + '/' + each_file, str(scenario)
+                    elif name == tmp_line[18:]:
+                        file_name.close()
+                        return path + '/' + each_file, str(scenario)
             else:
                 scenario = 0
                 file_name.close()
@@ -257,6 +260,9 @@ def find_scenario_in_path(name, path):
                     scenario += 1
                     tmp_line = each_line.strip()
                     if name == tmp_line[10:]:
+                        file_name.close()
+                        return path + '/' + each_file, str(scenario)
+                    elif name == tmp_line[18:]:
                         file_name.close()
                         return path + '/' + each_file, str(scenario)
             else:
