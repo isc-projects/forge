@@ -972,11 +972,16 @@ def loops(step, message_type_1, message_type_2, repeat):
     if message_type_1 == "SOLICIT" and message_type_2 == "ADVERTISE":
         # short two message exchange without saving leases.
         for x in range(0, repeat):
+            generate_new(step, "client")
+            client_does_include("Client", "client-id", None)
+            client_does_include("Client", "IA-NA", None)
             client_send_msg(step, message_type_1, None, None)
             send_wait_for_message(step, "MAY", True, message_type_2)
 
     elif message_type_1 == "SOLICIT" and message_type_2 == "REPLY":
         # first save server-id option
+        client_does_include("Client", "client-id", None)
+        client_does_include("Client", "IA-NA", None)
         client_send_msg(step, message_type_1, None, None)
         send_wait_for_message(step, "MAY", True, "ADVERTISE")
         client_save_option(step, "server-id")
@@ -986,6 +991,8 @@ def loops(step, message_type_1, message_type_2, repeat):
             # if x % x_range == 0:
             #     get_common_logger().info("Message exchange no. %d", x)
             generate_new(step, "client")
+            client_does_include("Client", "client-id", None)
+            client_does_include("Client", "IA-NA", None)
             client_send_msg(step, message_type_1, None, None)
             send_wait_for_message(step, "MAY", True, "ADVERTISE")
 
@@ -994,7 +1001,7 @@ def loops(step, message_type_1, message_type_2, repeat):
                 client_copy_option(step, "IA_NA")
             except AssertionError:
                 pass
-
+            client_does_include("Client", "client-id", None)
             client_send_msg(step, "REQUEST", None, None)
             send_wait_for_message(step, "MAY", True, message_type_2)
 
