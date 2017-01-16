@@ -126,14 +126,14 @@ def add_defaults():
     pointer_start = "{"
     pointer_end = "}"
 
-    world.cfg["main"] = '''
-        {pointer_start} "Dhcp4" :
+    world.cfg["main"] = '{"Dhcp4" :{'
+    if t1 != "":
+        world.cfg["main"] += '"renew-timer": {t1},'.format(**locals())
+    if t2 != "":
+        world.cfg["main"] += '"rebind-timer": {t2},'.format(**locals())
+    if t3 != "":
+        world.cfg["main"] += '"valid-lifetime": {t3},'.format(**locals())
 
-        {pointer_start}
-        "renew-timer": {t1},
-        "rebind-timer": {t2},
-        "valid-lifetime": {t3},
-        '''.format(**locals())
     if "global_parameters" in world.cfg:
         world.cfg["main"] += world.cfg["global_parameters"]
 
@@ -244,15 +244,15 @@ def disanable_client_echo(step):
     world.cfg["simple_options"] += '"echo-client-id": "False"'.format(**locals())
 
 
-def host_reservation(reservation_type, reserved_value, unique_host_value, subnet):
+def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
     if len(world.subcfg[subnet][5]) > 20:
         world.subcfg[subnet][5] += ','
 
     world.subcfg[subnet][5] += "{"
     if reservation_type == "address":
-        world.subcfg[subnet][5] += '"hw-address":"{unique_host_value}","ip-address":"{reserved_value}"'.format(**locals())
+        world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}","ip-address":"{reserved_value}"'.format(**locals())
     elif reservation_type == "hostname":
-        world.subcfg[subnet][5] += '"hw-address":"{unique_host_value}","hostname":"{reserved_value}"'.format(**locals())
+        world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}","hostname":"{reserved_value}"'.format(**locals())
     else:
         assert False, "Not supported yet."
         # if reservation will allow on another value - add it here
