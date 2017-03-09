@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -521,6 +521,23 @@ def configure_loggers(step, log_type, severity, severity_level, logging_file):
 
 
 ##servers management
+@step('Send server configuration using (\S+) and (\S+).')
+def build_and_send_config_files(step, connection_type, configuration_type):
+    """
+    Step used to choosing configuration type and channel to send it.
+    :param step:
+    :param connection_type:
+    :param configuration_type:
+    """
+    connection_type, configuration_type = test_define_value(connection_type, configuration_type)
+    dhcp.build_and_send_config_files(connection_type, configuration_type)
+
+
+@step('Generate server configuration file.')
+def generate_config_files(step):
+    dhcp.build_and_send_config_files(connection_type=None, configuration_type="config-file")
+
+
 @step('(\S+) server is started.')
 def start_srv(step, name):
     """

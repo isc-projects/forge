@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -19,6 +19,7 @@
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
     fabric_download_file, fabric_remove_file_command, locate_entry
+from protosupport.multi_protocol_functions import add_variable
 
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
@@ -563,8 +564,12 @@ def cfg_write():
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
     cfg_file.write(world.cfg["keactrl"])
     cfg_file.close()
-    json_file_layout()
     world.subcfg = [["", "", "", "", "", ""]]
+    config = open(world.cfg["cfg_file"], 'r')
+    world.configString = config.read().replace('\n', '').replace(' ', '')
+    config.close()
+    add_variable("SERVER_CONFIG", world.configString, False)
+    json_file_layout()
 
 
 def check_kea_process_result(succeed, result, process):
@@ -585,25 +590,33 @@ def check_kea_process_result(succeed, result, process):
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK START ==================
 
+def build_and_send_config_files(connection_type, configuration_type="config-file"):
+    if configuration_type == "config-file" and connection_type == "SSH":
+        world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases6.csv'
+        add_defaults()
+        set_kea_ctrl_config()
+        cfg_write()
+        fabric_send_file(world.cfg["cfg_file"], SOFTWARE_INSTALL_DIR + "etc/kea/kea.conf")
+        fabric_send_file(world.cfg["cfg_file_2"], SOFTWARE_INSTALL_DIR + "etc/kea/keactrl.conf")
+        copy_configuration_file(world.cfg["cfg_file"])
+        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
+        remove_local_file(world.cfg["cfg_file"])
+        remove_local_file(world.cfg["cfg_file_2"])
+    elif configuration_type == "config-file" and connection_type is None:
+        world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases6.csv'
+        add_defaults()
+        set_kea_ctrl_config()
+        cfg_write()
+        copy_configuration_file(world.cfg["cfg_file"])
+        remove_local_file(world.cfg["cfg_file"])
 
-def build_and_send_config_files():
-    world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases6.csv'
-    add_defaults()
-    set_kea_ctrl_config()
-    cfg_write()
-    fabric_send_file(world.cfg["cfg_file"], SOFTWARE_INSTALL_DIR + "etc/kea/kea.conf")
-    fabric_send_file(world.cfg["cfg_file_2"], SOFTWARE_INSTALL_DIR + "etc/kea/keactrl.conf")
-    copy_configuration_file(world.cfg["cfg_file"])
-    copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
-    remove_local_file(world.cfg["cfg_file"])
-    remove_local_file(world.cfg["cfg_file_2"])
 
 
 def start_srv(start, process):
     """
     Start kea with generated config
     """
-    build_and_send_config_files()
+    #build_and_send_config_files() it's now separate step
     v6, v4 = check_kea_status()
 
     if process is None:
@@ -622,7 +635,7 @@ def start_srv(start, process):
 
 
 def reconfigure_srv():
-    build_and_send_config_files()
+    #build_and_send_config_files()
     result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl reload '
                                  + ' & ); sleep ' + str(SLEEP_TIME_1))
     check_kea_process_result(True, result, 'reconfigure')

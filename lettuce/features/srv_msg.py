@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -458,7 +458,7 @@ def add_variable_temporary(step, variable_name, variable_val):
 
     Temporary variable will be stored in world.define and cleared at the end of scenario.
     """
-    other.add_variable(step, variable_name, variable_val, 0)
+    other.add_variable(variable_name, variable_val, 0)
 
 
 @step('User define permanent variable: (\S+) with value (\S+).')
@@ -515,7 +515,7 @@ def send_through_socket(step, socket_address, socket_port, socket_data):
 
 @step('Using UNIX socket on server in path (\S+) send (.+)')
 def send_through_socket_server_site(step, socket_path, command):
-    socket_path = test_define_value(socket_path)[0]
+    socket_path, command = test_define_value(socket_path, command)
     other.send_through_socket_server_site(socket_path, command)
 
 ## loops

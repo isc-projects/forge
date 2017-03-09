@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -134,7 +134,7 @@ def file_includes_line(step, condition, line):
             assert False, 'Downloaded file does NOT contain line: "%s"' % line
 
 
-def add_variable(step, variable_name, variable_val, type):
+def add_variable(variable_name, variable_val, val_type):
     """
     Define variable and add it to temporary list or to init_all.py file. 
     """
@@ -142,12 +142,14 @@ def add_variable(step, variable_name, variable_val, type):
     assert not bool(re.compile('[^A-Z^0-9^_] + ').search(variable_name)),\
         "Variable name contain invalid characters (Allowed are only capital letters, numbers and sign '_')."
     
-    if not type:
+    if not val_type:
         #temporary
         if variable_name not in world.define:
             tmp = variable_val if variable_val.isdigit() else variable_val  
             world.define.append([variable_name, tmp])
-    elif type:
+        else:
+            world.define[variable_name] = variable_val
+    elif val_type:
         #permanent
         # TO: for same name change value
         imported = None
@@ -266,7 +268,12 @@ def connect_socket(command):
 
 def send_through_socket_server_site(socket_path, command):
     command_file = open(world.cfg["dir_name"] + '/command_file', 'w')
-    command_file.write(command)
+    try:
+        command_file.write(command)
+    except:
+        command_file.close()
+        command_file = open(world.cfg["dir_name"] + '/command_file', 'wb')
+        command_file.write(command)
     command_file.close()
     fabric_send_file(world.cfg["dir_name"] + '/command_file', 'command_file')
     world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', False)

@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -242,6 +242,7 @@ def declare_all():
     world.message_fields = []
     world.subnet_add = True
     world.cfg = {}
+    world.configString = ""
 
     world.loops = {"active": False,
                    "save_leases_details": False}
