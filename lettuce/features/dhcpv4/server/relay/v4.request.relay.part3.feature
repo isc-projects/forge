@@ -11,7 +11,8 @@ Scenario: v4.request.relay.renewing.success
 	Time rebind-timer is configured with value 50.
 	Time valid-lifetime is configured with value 500.
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
     Set network variable source_port with value 67.
@@ -69,7 +70,8 @@ Scenario: v4.request.relay.rebinding.success
 	Time rebind-timer is configured with value 3.
 	Time valid-lifetime is configured with value 500.
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
     Set network variable source_port with value 67.
@@ -127,7 +129,8 @@ Scenario: v4.request.relay.rebinding.fail
 	Time rebind-timer is configured with value 3.
 	Time valid-lifetime is configured with value 4.
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
     Set network variable source_port with value 67.

@@ -7,7 +7,8 @@ Feature: DHCPv6 Client Classification request process
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets vendor_class_data value to firstclass.
@@ -28,7 +29,8 @@ Feature: DHCPv6 Client Classification request process
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client does include client-id.
@@ -47,7 +49,8 @@ Feature: DHCPv6 Client Classification request process
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     #Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
     
     Test Procedure:
     #Client sets vendor_class_data value to firstclass.
@@ -84,7 +87,8 @@ Feature: DHCPv6 Client Classification request process
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
     Server is configured with another subnet: 3000::/64 with 3000::100-3000::100 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
     
     Test Procedure:
     Client sets vendor_class_data value to firstclass.
@@ -143,7 +147,8 @@ Feature: DHCPv6 Client Classification request process
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
     Server is configured with another subnet: 3000::/64 with 3000::100-3000::100 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
     
     Test Procedure:
     Client sets DUID value to 000300010a0027ffff02.
@@ -233,7 +238,8 @@ Feature: DHCPv6 Client Classification request process
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
     Server is configured with another subnet: 3000::/64 with 3000::100-3000::100 pool.
     Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_secondclass.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
     
     Test Procedure:
     Client sets DUID value to 000300010a0027ffff03.

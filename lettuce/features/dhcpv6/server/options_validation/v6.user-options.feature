@@ -19,7 +19,8 @@ Feature: DHCPv6 custom options
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
   Server is configured with custom option foo/100 with type uint8 and value 123.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client requests option 100.
@@ -75,7 +76,8 @@ Feature: DHCPv6 custom options
   On space vendor-4491 server is configured with syslog-servers option with value 2001:558:ff18:10:10:253:124:101.
   On space vendor-4491 server is configured with time-servers option with value 2001:558:ff18:16:10:253:175:76.
   On space vendor-4491 server is configured with time-offset option with value -10000.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client requests option 7.

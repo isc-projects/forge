@@ -8,7 +8,8 @@ Scenario: v4.decline.success
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sends DISCOVER message.
@@ -49,7 +50,8 @@ Scenario: v4.decline.fail-without-serverid
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sends DISCOVER message.
@@ -88,7 +90,8 @@ Scenario: v4.decline.fail-without-serverid
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sends DISCOVER message.
@@ -127,7 +130,8 @@ Scenario: v4.decline.fail-without-requested-ip-address
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sends DISCOVER message.
@@ -166,7 +170,8 @@ Scenario: v4.decline.fail-without-client-id
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client adds to the message client_id with value 00010203040111.
@@ -211,7 +216,8 @@ Scenario: v4.decline.fail-different-client-id
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client adds to the message client_id with value 00010203040111.
@@ -258,7 +264,8 @@ Scenario: v4.decline.fail-different-chaddr
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sends DISCOVER message.

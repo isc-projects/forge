@@ -11,7 +11,8 @@ Scenario: v4.legal.log.assigned-address
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets chaddr value to ff:01:02:03:ff:04.
@@ -60,7 +61,8 @@ Scenario: v4.legal.log.assigned-address-without-client-id
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets chaddr value to ff:01:02:03:ff:04.
@@ -104,7 +106,8 @@ Scenario: v4.legal.log.assigned-address-without-client-id
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.2-192.168.50.2 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client adds to the message client_id with value 00010203040577.
@@ -155,7 +158,8 @@ Scenario: v4.legal.log.assigned-address-without-client-id
   Time valid-lifetime is configured with value 600.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets chaddr value to ff:01:02:03:ff:04.
@@ -223,7 +227,8 @@ Scenario: v4.legal.log.assigned-address-without-client-id
   Time valid-lifetime is configured with value 600.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets chaddr value to ff:01:02:03:ff:04.
@@ -277,5 +282,5 @@ Scenario: v4.legal.log.assigned-address-without-client-id
   Response option 54 MUST contain value $(SRV4_ADDR).
 
   Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been rebound for 0 hrs 10 mins 0 secs
+  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs
   File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)

@@ -19,7 +19,8 @@ Feature: Host Reservation DHCPv6
     Upload hosts reservation to PostgreSQL database.
 
     # upload should failed!#TODO add step to failed upload
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 @v6 @host_reservation @kea_only
     Scenario: v6.host.reservation.duplicate-reservation-address
@@ -38,7 +39,8 @@ Feature: Host Reservation DHCPv6
     Upload hosts reservation to PostgreSQL database.
 
     # upload should failed! #TODO add step to failed upload
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 
 @v6 @host_reservation @kea_only 
@@ -57,6 +59,7 @@ Feature: Host Reservation DHCPv6
 
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -114,6 +117,7 @@ Feature: Host Reservation DHCPv6
   Scenario: v6.host.reservation.pgsql.conflicts-reconfigure-server-with-reservation-of-used-address
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -162,6 +166,7 @@ Feature: Host Reservation DHCPv6
 
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   Reconfigure DHCP server.
 
   Test Procedure:
@@ -191,6 +196,7 @@ Feature: Host Reservation DHCPv6
   Scenario: v6.host.reservation.pgsql.conflicts-reconfigure-server-with-reservation-of-used-address-2
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -253,6 +259,7 @@ Feature: Host Reservation DHCPv6
 
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   Reconfigure DHCP server.
 
   Test Procedure:
@@ -284,6 +291,7 @@ Feature: Host Reservation DHCPv6
 
   #Use PostgreSQL reservation system.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -353,6 +361,7 @@ Feature: Host Reservation DHCPv6
   Add IPv6 address reservation 3000::2 with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   Reconfigure DHCP server.
 
   Test Procedure:
@@ -401,6 +410,7 @@ Feature: Host Reservation DHCPv6
   Time preferred-lifetime is configured with value 7.
   Time valid-lifetime is configured with value 8.
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -471,6 +481,7 @@ Feature: Host Reservation DHCPv6
   Add IPv6 address reservation 3000::2 with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   Reconfigure DHCP server.
 
   Test Procedure:

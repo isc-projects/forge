@@ -22,7 +22,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					IA-Address with 3000::3 address	
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -99,7 +100,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					Status code 'success'
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -206,7 +208,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					IA_Address with status code: NoBinding
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -325,7 +328,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 	##					abut what should happen in such case. 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -434,7 +438,8 @@ Feature: Multiple Identity Association Option in single DHCPv6 message
 
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::2 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.

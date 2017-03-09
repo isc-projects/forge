@@ -19,7 +19,8 @@ Scenario: v6.host.reservation.pgsql.all-values-mac
   DDNS server is configured on 127.0.0.1 address and 53001 port.
   DDNS server is configured with enable-updates option set to true.
   DDNS server is configured with qualifying-suffix option set to my.domain.com.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets ia_id value to 666.
@@ -98,7 +99,8 @@ Scenario: v6.host.reservation.pgsql.duid-ll-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -122,7 +124,8 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-not-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:11.
@@ -159,7 +162,8 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
@@ -195,8 +199,9 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching-dual-backend
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
-  Reserve address 3000::fff in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:22.
-  DHCP server is started.
+  Reserve address 3000::fff in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:22.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:11.

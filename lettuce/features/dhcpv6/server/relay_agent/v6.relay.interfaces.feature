@@ -9,7 +9,8 @@ Feature: DHCPv6 Relay Agent
   To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
   To subnet 0 configuration section in the config file add line: ,"interface":"eth2"
   Add configuration parameter interface-id with value "abc" to subnet 0 configuration.
-  DHCP server failed to start. During configuration process.
+  Send server configuration using SSH and config-file.
+DHCP server failed to start. During configuration process.
 
   References: Kea User's Guide Section: DHCPv6 Relays
 
@@ -21,7 +22,8 @@ Feature: DHCPv6 Relay Agent
   Add configuration parameter interface-id with value "abc" to subnet 0 configuration.
   Server is configured with another subnet: 2001:db8:2::/64 with 2001:db8:2::1-2001:db8:2::10 pool.
   Add configuration parameter interface-id with value "xyz" to subnet 1 configuration.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -74,7 +76,8 @@ Feature: DHCPv6 Relay Agent
   Server is configured with another subnet: 2001:db8:2::/64 with 2001:db8:2::1-2001:db8:2::10 pool.
   To subnet 1 configuration section in the config file add line: ,"relay": {"ip-address": "3000::2005"}
   Add configuration parameter interface-id with value "xyz" to subnet 1 configuration.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -126,7 +129,8 @@ Feature: DHCPv6 Relay Agent
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
   Add configuration parameter interface-id with value "xyz" to subnet 0 configuration.
   To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -158,7 +162,8 @@ Feature: DHCPv6 Relay Agent
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
   Add configuration parameter interface-id with value "xyz" to subnet 0 configuration.
   To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -191,7 +196,8 @@ Feature: DHCPv6 Relay Agent
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
   Add configuration parameter interface-id with value "xyz" to subnet 0 configuration.
   To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -226,7 +232,8 @@ Feature: DHCPv6 Relay Agent
   Server is configured with another subnet: 2001:db8:2::/64 with 2001:db8:2::1-2001:db8:2::10 pool.
   Add configuration parameter interface-id with value "abc" to subnet 1 configuration.
   To subnet 1 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -282,7 +289,8 @@ Feature: DHCPv6 Relay Agent
   Server is configured with another subnet: 2001:db8:2::/64 with 2001:db8:2::1-2001:db8:2::10 pool.
   Add configuration parameter interface-id with value "abc" to subnet 1 configuration.
   To subnet 1 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -334,7 +342,8 @@ Feature: DHCPv6 Relay Agent
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
   To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::2005"}
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -363,7 +372,8 @@ Feature: DHCPv6 Relay Agent
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
   To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::2005"}
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -392,7 +402,8 @@ Feature: DHCPv6 Relay Agent
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
   Add configuration parameter interface-id with value "xyz" to subnet 0 configuration.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -423,7 +434,8 @@ Feature: DHCPv6 Relay Agent
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::1 pool.
   Add configuration parameter interface-id with value "abc" to subnet 0 configuration.
   Server is configured with another subnet: 2001:db8:2::/64 with 2001:db8:2::1-2001:db8:2::10 pool.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
@@ -469,7 +481,8 @@ Feature: DHCPv6 Relay Agent
   Add configuration parameter interface-id with value "abc" to subnet 0 configuration.
   Server is configured with another subnet: 2001:db8:2::/64 with 2001:db8:2::11-2001:db8:2::20 pool.
   Add configuration parameter interface-id with value "abc" to subnet 1 configuration.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   ## just saving server-id - start
   Test Procedure:

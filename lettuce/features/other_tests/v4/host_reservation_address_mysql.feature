@@ -84,7 +84,7 @@ Feature: Host Reservation DHCPv4 stored in MySQL database.
 	Add ipv4_address 192.168.50.10 to MySQL reservation record id 1.
 	Add dhcp4_subnet_id 1 to MySQL reservation record id 1.
 	Upload hosts reservation to MySQL database.
-	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by ff:01:02:03:ff:03.
+	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:03.
 	DHCP server is started.
 
 
@@ -142,7 +142,7 @@ Feature: Host Reservation DHCPv4 stored in MySQL database.
 	Add ipv4_address 192.168.50.10 to PostgreSQL reservation record id 1.
 	Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 1.
 	Upload hosts reservation to PostgreSQL database.
-	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by ff:01:02:03:ff:03.
+	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:03.
 	DHCP server is started.
 
 
@@ -226,7 +226,7 @@ Feature: Host Reservation DHCPv4 stored in MySQL database.
     Test Setup:
     # request address from different mac that has been reserved
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     DHCP server is started.
 
     Test Procedure:

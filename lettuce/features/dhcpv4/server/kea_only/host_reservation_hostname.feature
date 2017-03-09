@@ -8,8 +8,9 @@ Feature: Host Reservation DHCPv4
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with qualifying-suffix option set to my.domain.com.
-    Reserve hostname reserved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    DHCP server is started.
+    Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -38,8 +39,9 @@ Feature: Host Reservation DHCPv4
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with qualifying-suffix option set to my.domain.com.
-    Reserve hostname reserved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    DHCP server is started.
+    Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -75,9 +77,10 @@ Feature: Host Reservation DHCPv4
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with qualifying-suffix option set to my.domain.com.
-    Reserve hostname reserved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.5.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Sleep for 2 seconds.
 
@@ -110,9 +113,10 @@ Feature: Host Reservation DHCPv4
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with qualifying-suffix option set to my.domain.com.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     For host reservation entry no. 0 in subnet 0 add hostname with value reserved-name.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Sleep for 2 seconds.
 
@@ -144,9 +148,10 @@ Feature: Host Reservation DHCPv4
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with qualifying-suffix option set to my.domain.com.
-    Reserve hostname reserved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.5.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Sleep for 2 seconds.
 
@@ -180,9 +185,10 @@ Feature: Host Reservation DHCPv4
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with qualifying-suffix option set to my.domain.com.
-    Reserve hostname reserved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    Reserve hostname resderved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:44.
-    DHCP server is started.
+    Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Reserve hostname resderved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:44.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
 
 @v4 @host_reservation @kea_only
@@ -193,8 +199,9 @@ Feature: Host Reservation DHCPv4
     DDNS server is configured on 127.0.0.1 address and 53001 port.
     DDNS server is configured with enable-updates option set to true.
     DDNS server is configured with qualifying-suffix option set to my.domain.com.
-    Reserve hostname reserved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    Reserve hostname resderved-name in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    DHCP server failed to start. During configuration process.
+    Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Reserve hostname resderved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Send server configuration using SSH and config-file.
+DHCP server failed to start. During configuration process.
 
 

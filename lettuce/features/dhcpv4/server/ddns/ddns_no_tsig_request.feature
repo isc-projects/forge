@@ -13,7 +13,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -86,7 +87,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -155,7 +157,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -223,7 +226,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -296,7 +300,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client for DNS Question Record uses address: aa.four.example.com type A class IN.
@@ -377,7 +382,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -490,7 +496,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -706,7 +713,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -778,7 +786,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -856,7 +865,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.
@@ -932,7 +942,8 @@ Feature: DDNS without TSIG
     DDNS server is configured with qualifying-suffix option set to example.com.
     Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 20.
     DNS server is started.

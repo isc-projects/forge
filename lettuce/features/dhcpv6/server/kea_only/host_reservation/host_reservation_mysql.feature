@@ -19,6 +19,7 @@ Scenario: v6.host.reservation.mysql.all-values-mac
   DDNS server is configured on 127.0.0.1 address and 53001 port.
   DDNS server is configured with enable-updates option set to true.
   DDNS server is configured with qualifying-suffix option set to my.domain.com.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -104,7 +105,8 @@ Scenario: v6.host.reservation.mysql.all-values-duid
   DDNS server is configured on 127.0.0.1 address and 53001 port.
   DDNS server is configured with enable-updates option set to true.
   DDNS server is configured with qualifying-suffix option set to my.domain.com.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -153,7 +155,8 @@ Scenario: v6.host.reservation.mysql.all-values-duid-2
   DDNS server is configured on 127.0.0.1 address and 53001 port.
   DDNS server is configured with enable-updates option set to true.
   DDNS server is configured with qualifying-suffix option set to my.domain.com.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
@@ -198,7 +201,8 @@ Scenario: v6.host.reservation.mysql.duid-ll-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -223,7 +227,8 @@ Scenario: v6.host.reservation.mysql.duid-ll-not-matching
   Add dhcp6_subnet_id 1 to MySQL reservation record id 1.
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
@@ -261,7 +266,8 @@ Scenario: v6.host.reservation.mysql.duid-llt-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
@@ -286,7 +292,8 @@ Scenario: v6.host.reservation.mysql.duid-llt-not-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:11.
@@ -323,7 +330,8 @@ Scenario: v6.host.reservation.mysql.hwaddrr-not-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:11.
@@ -372,6 +380,7 @@ Scenario: v6.host.reservation.mysql.hwaddrr-matching
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -408,7 +417,8 @@ Scenario: v6.host.reservation.mysql.hwaddrr-matching-dualbackend
   Add dhcp6_subnet_id 1 to MySQL reservation record id 1.
   Add IPv6 address reservation 3000::100 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
-  Reserve address 3000::fff in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
+  Reserve address 3000::fff in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:

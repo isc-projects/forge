@@ -8,7 +8,8 @@ Feature: DHCPv4 Stateless clients
   Server is configured with subnet-mask option with value 255.255.255.0.
   Server is configured with time-offset option with value 50.
   Server is configured with routers option with value 100.100.100.10,50.50.50.5.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client requests option 1.

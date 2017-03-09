@@ -7,7 +7,8 @@ Feature: Configure Kea's server-id.
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server-id configured with type LLT value 00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -27,7 +28,8 @@ Feature: Configure Kea's server-id.
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server-id configured with type EN value 00:02:00:00:09:BF:87:AB:EF:7A:5B:B5:45.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -47,7 +49,8 @@ Feature: Configure Kea's server-id.
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server-id configured with type LL value 00:03:00:01:ff:ff:ff:ff:ff:01.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.

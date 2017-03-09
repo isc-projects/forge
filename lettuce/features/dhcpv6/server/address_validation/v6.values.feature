@@ -7,7 +7,8 @@ Feature: DHCPv6 values
 
 	Test Setup:
 	Server is configured with ff02::/64 subnet with ff02::1-ff02::ff pool.
-	DHCP server failed to start. During configuration process.
+	Send server configuration using SSH and config-file.
+DHCP server failed to start. During configuration process.
 
 	References: RFC3315 section 11	
 	
@@ -16,6 +17,7 @@ Feature: DHCPv6 values
 
 	Test Setup:
 	Server is configured with ::/64 subnet with ::1-::1 pool.
-	DHCP server failed to start. During configuration process.
+	Send server configuration using SSH and config-file.
+DHCP server failed to start. During configuration process.
 	
 	References: RFC3315 section 11	

@@ -9,7 +9,8 @@ Feature: DHCPv6 Stateless clients
   Server is configured with preference option with value 123.
   Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client requests option 27.
@@ -39,7 +40,8 @@ Feature: DHCPv6 Stateless clients
   Server is configured with preference option with value 123.
   Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client requests option 27.
@@ -66,7 +68,8 @@ Feature: DHCPv6 Stateless clients
   Server is configured with preference option with value 123.
   Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client requests option 27.
@@ -96,7 +99,8 @@ Feature: DHCPv6 Stateless clients
   Server is configured with preference option with value 123.
   Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client requests option 27.

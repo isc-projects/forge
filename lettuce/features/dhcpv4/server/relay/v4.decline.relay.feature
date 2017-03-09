@@ -8,7 +8,8 @@ Scenario: v4.relay.decline.success
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     # this is setting for every message in this test
@@ -62,7 +63,8 @@ Scenario: v4.relay.decline.fail-without-serverid
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     # this is setting for every message in this test

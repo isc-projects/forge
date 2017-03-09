@@ -13,7 +13,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 21.
     DNS server is started.
@@ -85,7 +86,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha224.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha224.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha224.key based on HMAC-SHA224 with secret value TxAiO5TRKkFyHSCa4erQZQ==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 22.
     DNS server is started.
@@ -157,7 +159,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha256.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha256.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha256.key based on HMAC-SHA256 with secret value 5AYMijv0rhZJyQqK/caV7g==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 23.
     DNS server is started.
@@ -229,7 +232,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha384.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha384.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha384.key based on HMAC-SHA384 with secret value 21upyvp7zcG0S2PB4+kuQQ==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 24.
     DNS server is started.
@@ -302,7 +306,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha512.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha512.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha512.key based on HMAC-SHA512 with secret value jBng5D6QL4f8cfLUUwE7OQ==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 25.
     DNS server is started.
@@ -375,7 +380,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.md5.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.md5.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.md5.key based on HMAC-MD5 with secret value bX3Hs+fG/tThidQPuhK1mA==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 26.
     DNS server is started.
@@ -449,7 +455,8 @@ Feature: DDNS without TSIG
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha512.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha512.key based on HMAC-SHA512 with secret value jBng5D6QL4f8cfLUUwE7OQ==.
     Add DDNS key named forge.md5.key based on HMAC-MD5 with secret value bX3Hs+fG/tThidQPuhK1mA==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 27.
     DNS server is started.

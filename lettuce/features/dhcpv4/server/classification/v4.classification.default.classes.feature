@@ -4,7 +4,7 @@ Feature: DHCPv4 Client Classification - default classes
     Tests for Client Classification for classes: docsis3.0 and eRouter1.0. 
     Performed through option vendor class identification.
 
-@v4 @dhcp4 @classification @default_classes
+@v4 @dhcp4 @classification @default_classes @disabled
 	Scenario: v4.client.classification.one.class.docsis3-boot-file-name
 	
 	Test Setup:
@@ -13,7 +13,8 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Server is configured with boot-file-name option with value someotherfilename.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -34,7 +35,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @dhcp4 @classification @default_classes
+@v4 @dhcp4 @classification @default_classes @disabled
 	Scenario: v4.client.classification.one.class.docsis3-next-server
 	
 	Test Setup:
@@ -43,7 +44,8 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -64,7 +66,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @dhcp4 @classification @default_classes
+@v4 @dhcp4 @classification @default_classes @disabled
 	Scenario: v4.client.classification.one.class.eRouter1-global-next-server
 	
 	Test Setup:
@@ -73,7 +75,8 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server global value is configured with address 192.0.2.2.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -96,7 +99,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @dhcp4 @classification @default_classes
+@v4 @dhcp4 @classification @default_classes @disabled
 	Scenario: v4.client.classification.one.class.eRouter1-subnet-next-server
 	
 	Test Setup:
@@ -105,7 +108,8 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -128,7 +132,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @dhcp4 @classification @default_classes
+@v4 @dhcp4 @classification @default_classes @disabled
 	Scenario: v4.client.classification.one.class.eRouter1-two-next-servers
 	
 	Test Setup:
@@ -138,7 +142,8 @@ Feature: DHCPv4 Client Classification - default classes
 	Server is configured with boot-file-name option in subnet 0 with value somefilename.
 	Next server global value is configured with address 192.0.2.2.
 	Next server value on subnet 0 is configured with address 192.0.2.234.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.
@@ -161,7 +166,7 @@ Feature: DHCPv4 Client Classification - default classes
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	Response option 61 MUST contain value 00010203040506.
 
-@v4 @dhcp4 @classification @default_classes
+@v4 @dhcp4 @classification @default_classes @disabled
 	Scenario: v4.client.classification.multiple.classes.three-subnets-docsis-erouter
 	
 	Test Setup:
@@ -177,7 +182,8 @@ Feature: DHCPv4 Client Classification - default classes
 	
 	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
 	Next server global value is configured with address 192.0.50.100.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:00:00:00:00:00.

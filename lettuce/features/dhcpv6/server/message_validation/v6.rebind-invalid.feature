@@ -24,7 +24,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -90,7 +91,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -157,7 +159,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
     Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -232,7 +235,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -297,7 +301,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -365,7 +370,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -433,7 +439,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -501,7 +508,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -569,7 +577,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -637,7 +646,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -705,7 +715,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -774,7 +785,8 @@ Feature: Standard DHCPv6 rebind message
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.

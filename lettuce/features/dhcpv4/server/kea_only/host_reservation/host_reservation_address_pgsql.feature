@@ -14,7 +14,8 @@ Feature: Host Reservation DHCPv4 stored in PostgreSQL database.
     Upload hosts reservation to PostgreSQL database.
 
 
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -50,7 +51,8 @@ Feature: Host Reservation DHCPv4 stored in PostgreSQL database.
   Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 1.
   Upload hosts reservation to PostgreSQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets chaddr value to ff:01:02:03:ff:04.
@@ -91,7 +93,8 @@ Feature: Host Reservation DHCPv4 stored in PostgreSQL database.
     Upload hosts reservation to PostgreSQL database.
 
 
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 11.
@@ -126,8 +129,9 @@ Feature: Host Reservation DHCPv4 stored in PostgreSQL database.
 	Add ipv4_address 192.168.50.10 to PostgreSQL reservation record id 1.
 	Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 1.
 	Upload hosts reservation to PostgreSQL database.
-	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by ff:01:02:03:ff:03.
-	DHCP server is started.
+	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:03.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 
 
@@ -186,8 +190,9 @@ Feature: Host Reservation DHCPv4 stored in PostgreSQL database.
 	Add ipv4_address 192.168.50.10 to PostgreSQL reservation record id 1.
 	Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 1.
 	Upload hosts reservation to PostgreSQL database.
-	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by ff:01:02:03:ff:03.
-	DHCP server is started.
+	Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:03.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 
 
@@ -245,7 +250,8 @@ Feature: Host Reservation DHCPv4 stored in PostgreSQL database.
 	Add ipv4_address 192.168.50.10 to PostgreSQL reservation record id 1.
 	Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 1.
 	Upload hosts reservation to PostgreSQL database.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -272,8 +278,9 @@ Feature: Host Reservation DHCPv4 stored in PostgreSQL database.
     Test Setup:
     # request address from different mac that has been reserved
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    DHCP server is started.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -300,7 +307,8 @@ Use PostgreSQL reservation system.
 	Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 2.
 	Upload hosts reservation to PostgreSQL database.
 
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -332,7 +340,8 @@ Use PostgreSQL reservation system.
 
 	Upload hosts reservation to PostgreSQL database.
 
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.

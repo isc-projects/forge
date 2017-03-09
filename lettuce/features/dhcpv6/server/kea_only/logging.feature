@@ -6,7 +6,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server logging system is configured with logger type kea-dhcp6.options, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -47,7 +48,8 @@ Feature: Logging in Kea
     #TODO negative testing
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server logging system is configured with logger type kea-dhcp6.options, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -86,7 +88,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server logging system is configured with logger type kea-dhcp6.bad-packets, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	#message wont contain client-id option
@@ -101,7 +104,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server logging system is configured with logger type kea-dhcp6.bad-packets, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	#message wont contain client-id option
@@ -116,7 +120,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.dhcp6, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -156,7 +161,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.dhcp6, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -199,7 +205,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.alloc-engine, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -237,7 +244,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -275,7 +283,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -315,7 +324,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.leases, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -353,7 +363,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.leases, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -391,7 +402,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.packets, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -429,7 +441,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.packets, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -467,7 +480,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.hosts, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -505,7 +519,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6.hosts, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -543,7 +558,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -595,7 +611,8 @@ Feature: Logging in Kea
     Server logging system is configured with logger type kea-dhcp6.alloc-engine, severity DEBUG, severity level 50 and log file kea.log.
 	Server logging system is configured with logger type kea-dhcp6.bad-packets, severity DEBUG, severity level 25 and log file kea.log.
 	Server logging system is configured with logger type kea-dhcp6.options, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -657,7 +674,8 @@ Feature: Logging in Kea
     Server logging system is configured with logger type kea-dhcp6.alloc-engine, severity DEBUG, severity level 50 and log file kea.log6.
 	Server logging system is configured with logger type kea-dhcp6.bad-packets, severity DEBUG, severity level 25 and log file kea.log7.
 	Server logging system is configured with logger type kea-dhcp6.options, severity INFO, severity level None and log file kea.log8.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -716,7 +734,8 @@ Feature: Logging in Kea
     Add forward DDNS with name six.example.com. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key EMPTY_KEY on address 2001:db8:1::1000 and port 53.
     Server logging system is configured with logger type kea-dhcp-ddns, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.

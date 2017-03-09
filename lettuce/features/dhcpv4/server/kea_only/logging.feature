@@ -8,7 +8,8 @@ Feature: Logging in Kea
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.options, severity DEBUG, severity level 99 and log file kea.log.
     Server is configured with time-offset option with value 50.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -58,7 +59,8 @@ Feature: Logging in Kea
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.options, severity INFO, severity level None and log file kea.log.
     Server is configured with time-offset option with value 50.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -106,7 +108,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server logging system is configured with logger type kea-dhcp4.bad-packets, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -135,7 +138,8 @@ Feature: Logging in Kea
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server logging system is configured with logger type kea-dhcp4.bad-packets, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -164,7 +168,8 @@ Feature: Logging in Kea
     Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.dhcp4, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -213,7 +218,8 @@ Feature: Logging in Kea
     Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.dhcp4, severity INFO, severity level None and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -263,7 +269,8 @@ Feature: Logging in Kea
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.alloc-engine, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -312,7 +319,8 @@ Feature: Logging in Kea
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -362,7 +370,8 @@ Feature: Logging in Kea
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.dhcpsrv, severity INFO, severity level None and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -413,7 +422,8 @@ Feature: Logging in Kea
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.leases, severity DEBUG, severity level 99 and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -461,7 +471,8 @@ Feature: Logging in Kea
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.leases, severity INFO, severity level None and log file kea.log.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -509,7 +520,8 @@ Scenario: v4.loggers.packets-debug
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.packets, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -557,7 +569,8 @@ Scenario: v4.loggers.packets-info
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.packets, severity INFO, severity level None and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -605,7 +618,8 @@ Scenario: v4.loggers.hosts-debug
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.hosts, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -653,7 +667,8 @@ Scenario: v4.loggers.hosts-info
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4.hosts, severity INFO, severity level None and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -701,7 +716,8 @@ Scenario: v4.loggers.all
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server logging system is configured with logger type kea-dhcp4, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -744,12 +760,11 @@ Scenario: v4.loggers.all
     Server MUST respond with OFFER message.
 
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.packets
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.leases
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.dhcpsrv
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.alloc-engine
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.dhcp4
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.options
-
+    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.leases
 
 @v4 @kea_only @logging
     Scenario: v4.loggers.all-different-levels-same-file
@@ -763,7 +778,8 @@ Scenario: v4.loggers.all
     Server logging system is configured with logger type kea-dhcp4.alloc-engine, severity DEBUG, severity level 50 and log file kea.log.
     Server logging system is configured with logger type kea-dhcp4.bad-packets, severity DEBUG, severity level 25 and log file kea.log.
     Server logging system is configured with logger type kea-dhcp4.options, severity INFO, severity level None and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -848,7 +864,8 @@ Scenario: v4.loggers.all
     Server logging system is configured with logger type kea-dhcp4.alloc-engine, severity DEBUG, severity level 50 and log file kea.log6.
     Server logging system is configured with logger type kea-dhcp4.bad-packets, severity DEBUG, severity level 25 and log file kea.log6.
     Server logging system is configured with logger type kea-dhcp4.options, severity INFO, severity level None and log file kea.log6.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -932,7 +949,8 @@ Scenario: v4.loggers.all
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
     Server logging system is configured with logger type kea-dhcp-ddns, severity DEBUG, severity level 99 and log file kea.log.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.

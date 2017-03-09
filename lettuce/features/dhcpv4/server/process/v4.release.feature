@@ -8,7 +8,8 @@ Feature: DHCPv4 address release process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -56,7 +57,8 @@ Feature: DHCPv4 address release process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
@@ -123,7 +125,8 @@ Feature: DHCPv4 address release process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:1F:D0:00:00:11.
@@ -184,7 +187,8 @@ Feature: DHCPv4 address release process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:1F:D0:00:00:11.
@@ -246,7 +250,8 @@ Feature: DHCPv4 address release process
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:1F:D0:00:00:11.
@@ -312,7 +317,8 @@ Scenario: v4.release.only.chaddr.same-chaddr
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:1F:D0:00:00:11.
@@ -372,7 +378,8 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client sets chaddr value to 00:1F:D0:00:00:11.
@@ -429,7 +436,8 @@ Scenario: v4.release.fail.only.chaddr.different-chaddr
 	Time rebind-timer is configured with value 2.
 	Time valid-lifetime is configured with value 3.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 1.

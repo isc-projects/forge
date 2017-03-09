@@ -8,7 +8,8 @@ Scenario: v4.request.relay.initreboot.success
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
     Set network variable source_port with value 67.
@@ -56,7 +57,8 @@ Scenario: v4.request.relay.initreboot.fail
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
     Set network variable source_port with value 67.
@@ -102,7 +104,8 @@ Scenario: v4.request.relay.initreboot.no-leases
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
     Set network variable source_port with value 67.

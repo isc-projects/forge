@@ -18,7 +18,8 @@ Feature: DHCPv6 Confirm
 	##					status-code with code 0
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -76,7 +77,8 @@ Feature: DHCPv6 Confirm
 	##					status-code with code 4
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1000 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -102,7 +104,8 @@ Feature: DHCPv6 Confirm
 
 	Test Setup:
 	Server is configured with 3001::/64 subnet with 3001::2000-3001::3000 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.

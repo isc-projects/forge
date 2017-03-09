@@ -7,9 +7,10 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
-	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reserve prefix 2001:db8:1:0:8000::/34 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve prefix 2001:db8:1:0:8000::/34 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -41,9 +42,10 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
-	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reserve hostname xyz in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve hostname xyz in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -75,9 +77,10 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
-	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reserve address 3000::3 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve address 3000::3 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -110,9 +113,10 @@ Feature: Host Reservation DHCPv6
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
 	Server is configured with another subnet: 3001::/30 with 3001::1-3001::10 pool.
-	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reserve address 3000::3 in subnet 1 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve address 3000::3 in subnet 1 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -134,7 +138,8 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -203,8 +208,10 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 34 delegated prefix length.
-	Reserve prefix 2001:db8:8001::/34 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reconfigure DHCP server.
+	Reserve prefix 2001:db8:8001::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+Send server configuration using SSH and config-file.
+
+Reconfigure DHCP server.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -237,7 +244,8 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -300,8 +308,10 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 36 delegated prefix length.
-	Reserve prefix 2001:db8:8001::/34 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reconfigure DHCP server.
+	Reserve prefix 2001:db8:8001::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+Send server configuration using SSH and config-file.
+
+Reconfigure DHCP server.
 
 	Test Procedure:
 	Client does include IA-PD.
@@ -339,7 +349,8 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -414,9 +425,11 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 35 delegated prefix length.
-	Reserve prefix 2001:db8:1:0:8000::/33 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reserve prefix 2001:db8:1::/33 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:02.
-	Reconfigure DHCP server.
+	Reserve prefix 2001:db8:1:0:8000::/33 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve prefix 2001:db8:1::/33 in subnet 0 for host uniquely identified by hw-address 00:03:00:01:f6:f5:f4:f3:f2:02.
+Send server configuration using SSH and config-file.
+
+Reconfigure DHCP server.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -465,7 +478,8 @@ Feature: Host Reservation DHCPv6
 	Time preferred-lifetime is configured with value 8.
 	Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -545,9 +559,11 @@ Feature: Host Reservation DHCPv6
 	Time preferred-lifetime is configured with value 8.
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	Reserve prefix 2001:db8:1:0:8000::/33 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:01.
-	Reserve prefix 2001:db8:1::/33 in subnet 0 for host uniquely identified by 00:03:00:01:f6:f5:f4:f3:f2:02.
-	Reconfigure DHCP server.
+	Reserve prefix 2001:db8:1:0:8000::/33 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+	Reserve prefix 2001:db8:1::/33 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:02.
+Send server configuration using SSH and config-file.
+
+Reconfigure DHCP server.
 
     Sleep for 15 seconds.
 

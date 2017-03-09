@@ -12,7 +12,8 @@ Feature: Standard DHCPv6 address validation
 	## 		   						<--	ADVERTISE	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+  DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -57,6 +58,7 @@ Feature: Standard DHCPv6 address validation
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Send server configuration using SSH and config-file.
 	DHCP server is started.
 
 	Test Procedure:
@@ -124,7 +126,8 @@ Feature: Standard DHCPv6 address validation
 
     Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -186,7 +189,8 @@ Feature: Standard DHCPv6 address validation
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with preference option with value 123.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -241,7 +245,8 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -307,7 +312,8 @@ Feature: Standard DHCPv6 address validation
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -381,7 +387,8 @@ Feature: Standard DHCPv6 address validation
 	##					status-code with Success
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -438,7 +445,8 @@ Feature: Standard DHCPv6 address validation
 	## 		   						<--	ADVERTISE	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -483,7 +491,8 @@ Feature: Standard DHCPv6 address validation
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -551,7 +560,8 @@ Feature: Standard DHCPv6 address validation
 
     Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -614,7 +624,8 @@ Feature: Standard DHCPv6 address validation
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with preference option with value 123.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -670,7 +681,8 @@ Feature: Standard DHCPv6 address validation
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 7.
@@ -737,7 +749,8 @@ Feature: Standard DHCPv6 address validation
 	##					IA-Address
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -812,7 +825,8 @@ Feature: Standard DHCPv6 address validation
 	##					status-code with Success
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.

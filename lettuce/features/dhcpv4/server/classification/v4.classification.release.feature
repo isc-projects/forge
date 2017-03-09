@@ -9,7 +9,8 @@ Feature: DHCPv4 Client Classification release process
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.
@@ -71,7 +72,8 @@ Feature: DHCPv4 Client Classification release process
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to 00:00:00:00:00:00.

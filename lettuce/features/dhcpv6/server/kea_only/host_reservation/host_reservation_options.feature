@@ -15,7 +15,8 @@ Scenario: v6.host.reservation.mysql.duid-ll-matching-option
 
   Server is configured with preference option in subnet 0 with value 123.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -58,7 +59,8 @@ Scenario: v6.host.reservation.mysql.duid-ll-matching-option-no-address
 
   Server is configured with preference option in subnet 0 with value 123.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -101,7 +103,8 @@ Scenario: v6.host.reservation.mysql.duid-ll-matching-option-no-address
 
   Server is configured with preference option in subnet 0 with value 123.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -156,7 +159,8 @@ Scenario: v6.host.reservation.mysql.duid-ll-matching-option-inforequest
 
   Server is configured with preference option in subnet 0 with value 123.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -221,7 +225,8 @@ Scenario: v6.host.reservation.mysql.option-multiple
   Server is configured with bootfile-param option with value 000B48656C6C6F20776F726C640003666F6F.
   #60
   Server is configured with new-tzdb-timezone option with value Europe/Zurich.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -288,7 +293,8 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching-option
   Upload hosts reservation to PostgreSQL database.
 
   Server is configured with preference option with value 12.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
@@ -331,7 +337,8 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching-option-no-address
   Upload hosts reservation to PostgreSQL database.
 
   Server is configured with preference option with value 12.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
@@ -368,7 +375,8 @@ Scenario: v6.host.reservation.pgsql.hwaddrr-matching-option-inforequest
   Upload hosts reservation to PostgreSQL database.
 
   Server is configured with preference option with value 12.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01.
@@ -418,7 +426,8 @@ Scenario: v6.host.reservation.pgsql.option-multiple
   #59
   Server is configured with new-tzdb-timezone option with value Europe/Zurich.
   #60 and not reserved
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.

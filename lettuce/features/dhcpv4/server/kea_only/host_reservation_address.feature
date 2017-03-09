@@ -7,7 +7,8 @@ Feature: Host Reservation DHCPv4
     # outside of the pool
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
     Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -35,7 +36,8 @@ Feature: Host Reservation DHCPv4
     # outside of the pool
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
     Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by client-id ff:01:02:03:ff:04:11:22.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -64,8 +66,9 @@ Feature: Host Reservation DHCPv4
     Test Setup:
     # outside of the pool
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.30-192.168.50.50 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    DHCP server is started.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -93,8 +96,9 @@ Feature: Host Reservation DHCPv4
     Test Setup:
     # request address from different mac that has been reserved
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    DHCP server is started.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -121,8 +125,9 @@ Feature: Host Reservation DHCPv4
     Test Setup:
     # request address from different mac that has been reserved
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    DHCP server is started.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -137,9 +142,10 @@ Feature: Host Reservation DHCPv4
     Test Setup:
     # request address from different mac that has been reserved
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by ff:01:02:03:ff:03.
-    DHCP server is started.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:03.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -153,10 +159,11 @@ Feature: Host Reservation DHCPv4
     Test Setup:
     # request address from different mac that has been reserved
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.12 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by ff:01:02:03:ff:03.
-    Reserve address 192.168.50.12 in subnet 0 for host uniquely identified by ff:01:02:03:ff:02.
-    DHCP server is started.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Reserve address 192.168.50.11 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:03.
+    Reserve address 192.168.50.12 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:02.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
 
     Test Procedure:

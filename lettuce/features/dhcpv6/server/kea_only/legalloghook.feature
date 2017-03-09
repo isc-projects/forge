@@ -15,6 +15,7 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -59,6 +60,7 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -118,6 +120,7 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -160,7 +163,8 @@ Response option 3 MUST contain sub-option 5.
 
 Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
 File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been rebound for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+# Spec sais that when we are rebinding address it will be logged 'renewed', misleadding :/
+File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
 @v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-modem
@@ -177,6 +181,7 @@ Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
 Run configuration command: "mac-sources": [ "docsis-modem" ]
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -226,6 +231,7 @@ Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
 Run configuration command: "mac-sources": [ "docsis-cmts" ]
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -271,6 +277,7 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:

@@ -9,6 +9,7 @@ Scenario: v6.CVE.2015.8373.confirm-with-empty-client-id-INFO
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity INFO, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -65,6 +66,7 @@ Scenario: v6.CVE.2015.8373.confirm-with-empty-client-id-FATAL
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity FATAL, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -121,6 +123,7 @@ Scenario: v6.CVE.2015.8373.confirm-with-empty-client-id-ERROR
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity ERROR, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -177,6 +180,7 @@ Scenario: v6.CVE.2015.8373.confirm-with-empty-client-id-WARN
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity WARN, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -233,6 +237,7 @@ Scenario: v6.CVE.2015.8373.confirm-with-empty-client-id-DEBUG
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -289,6 +294,7 @@ Scenario: v6.CVE.2015.8373.decline-with-empty-client-id-DEBUG
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -343,6 +349,7 @@ Scenario: v6.CVE.2015.8373.decline-with-empty-client-id-INFO
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity INFO, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -397,6 +404,7 @@ Scenario: v6.CVE.2015.8373.decline-with-empty-client-id-FATAL
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity FATAL, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -451,6 +459,7 @@ Scenario: v6.CVE.2015.8373.decline-with-empty-client-id-ERROR
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity ERROR, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -505,6 +514,7 @@ Scenario: v6.CVE.2015.8373.decline-with-empty-client-id-WARN
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity WARN, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -558,6 +568,7 @@ Scenario: v6.CVE.2015.8373.rebind-with-empty-client-id-
 
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -613,6 +624,7 @@ Scenario: v6.CVE.2015.8373.rebind-with-empty-client-id-FATAL
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity FATAL, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -668,6 +680,7 @@ Scenario: v6.CVE.2015.8373.rebind-with-empty-client-id-ERROR
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity ERROR, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -724,6 +737,7 @@ Scenario: v6.CVE.2015.8373.rebind-with-empty-client-id-WARN
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity WARN, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -780,6 +794,7 @@ Scenario: v6.CVE.2015.8373.rebind-with-empty-client-id-INFO
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity INFO, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -835,6 +850,7 @@ Scenario: v6.CVE.2015.8373.rebind-with-empty-client-id-DEBUG
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -891,6 +907,7 @@ Scenario: v6.CVE.2015.8373.release-with-empty-client-id-FATAL
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity FATAL, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -946,6 +963,7 @@ Scenario: v6.CVE.2015.8373.release-with-empty-client-id-ERROR
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity ERROR, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1001,6 +1019,7 @@ Scenario: v6.CVE.2015.8373.release-with-empty-client-id-WARN
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity WARN, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1056,6 +1075,7 @@ Scenario: v6.CVE.2015.8373.release-with-empty-client-id-INFO
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity INFO, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1111,6 +1131,7 @@ Scenario: v6.CVE.2015.8373.release-with-empty-client-id-DEBUG
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1166,6 +1187,7 @@ Scenario: v6.CVE.2015.8373.renew-with-empty-client-id-FATAL
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity FATAL, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1221,6 +1243,7 @@ Scenario: v6.CVE.2015.8373.renew-with-empty-client-id-ERROR
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity ERROR, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1277,6 +1300,7 @@ Scenario: v6.CVE.2015.8373.renew-with-empty-client-id-WARN
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity WARN, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1333,6 +1357,7 @@ Scenario: v6.CVE.2015.8373.renew-with-empty-client-id-INFO
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity INFO, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1389,6 +1414,7 @@ Scenario: v6.CVE.2015.8373.renew-with-empty-client-id-DEBUG
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1445,6 +1471,7 @@ Scenario: v6.CVE.2015.8373.request-with-empty-client-id-FATAL
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity FATAL, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1492,6 +1519,7 @@ Scenario: v6.CVE.2015.8373.request-with-empty-client-id-ERROR
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity ERROR, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1539,6 +1567,7 @@ Scenario: v6.CVE.2015.8373.request-with-empty-client-id-WARN
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity WARN, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1586,6 +1615,7 @@ Scenario: v6.CVE.2015.8373.request-with-empty-client-id-INFO
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity INFO, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1633,6 +1663,7 @@ Scenario: v6.CVE.2015.8373.request-with-empty-client-id-DEBUG
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1680,6 +1711,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-FATAL
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity FATAL, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1717,6 +1749,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-ERROR
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity ERROR, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1754,6 +1787,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-WARN
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity WARN, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1791,6 +1825,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-INFO
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity INFO, severity level None and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1828,6 +1863,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUG
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 Test Procedure:
 Client requests option 7.
@@ -1857,6 +1893,7 @@ Test Setup:
 
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 44 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 Test Procedure:
 Client requests option 7.
@@ -1885,6 +1922,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUG45
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 45 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 Test Procedure:
 Client requests option 7.
@@ -1913,6 +1951,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGalloc-engine
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.alloc-engine, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1942,6 +1981,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGbad-packets
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.bad-packets, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -1971,6 +2011,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGcallouts
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.callouts, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2000,6 +2041,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGcommands
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.commands, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2029,6 +2071,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGddns
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.ddns, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2058,6 +2101,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGdhcp6
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2087,6 +2131,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGdhcpsrv
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2116,6 +2161,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGeval
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.eval, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2145,6 +2191,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGhooks
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.hooks, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2174,6 +2221,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGhosts
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.hosts, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2203,6 +2251,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGleases
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.leases, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2232,6 +2281,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUGoptions
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.options, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:
@@ -2261,6 +2311,7 @@ Scenario: v6.CVE.2015.8373.solicit-with-empty-client-id-DEBUpackets
 Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server logging system is configured with logger type kea-dhcp6.packets, severity DEBUG, severity level 99 and log file kea.log.
+Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Test Procedure:

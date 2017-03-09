@@ -19,7 +19,8 @@ Feature: DHCPv6 Renew
 	##					
  	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::5-3000::55 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -83,7 +84,8 @@ Feature: DHCPv6 Renew
 	##					IA-NA with suboption IA-Address with validlft set to 0.
   	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::66-3000::66 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -110,7 +112,8 @@ Feature: DHCPv6 Renew
 
     Server reconfigure:
 	Server is configured with 3000::/64 subnet with 3000::100-3000::155 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.

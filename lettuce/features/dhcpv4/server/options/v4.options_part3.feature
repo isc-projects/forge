@@ -12,7 +12,8 @@ Feature: DHCPv4 options part3
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with ip-forwarding option with value True.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 19.
@@ -30,7 +31,8 @@ Feature: DHCPv4 options part3
  	Test Setup:   
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with non-local-source-routing option with value True.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 20.
@@ -48,7 +50,8 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with perform-mask-discovery option with value False.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 29.
@@ -66,7 +69,8 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with mask-supplier option with value True.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 30.
@@ -84,7 +88,8 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with router-discovery option with value True.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 31.
@@ -102,7 +107,8 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with trailer-encapsulation option with value True.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 34.
@@ -120,7 +126,8 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with ieee802-3-encapsulation option with value True.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 36.
@@ -138,7 +145,8 @@ Feature: DHCPv4 options part3
 	Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with tcp-keepalive-garbage option with value True.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 39.
@@ -157,14 +165,15 @@ Feature: DHCPv4 options part3
     # This test it's kind of hack, to override scapy v4 restrictions.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
-    Server is configured with custom option foo/76 with type uint8 and value 123.
-    DHCP server is started.
+    Server is configured with custom option foo/176 with type uint8 and value 123.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
-    Client requests option 76.
+    Client requests option 176.
     Client sends DISCOVER message.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST include option 76.
-    Response option 76 MUST contain value 123.
+    #Response MUST include option 176.
+    #Response option 176 MUST contain value 123.

@@ -9,7 +9,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with nisplus-domain-name option with value nisplus-domain.com.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 64.
@@ -26,7 +27,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with nisplus-servers option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 65.
@@ -44,7 +46,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with mobile-ip-home-agent option with value 166.1.1.1,177.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 68.
@@ -62,7 +65,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with smtp-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 69.
@@ -80,7 +84,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with pop-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 70.
@@ -98,7 +103,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with nntp-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 71.
@@ -116,7 +122,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with www-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 72.
@@ -134,7 +141,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with finger-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 73.
@@ -152,7 +160,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with irc-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 74.
@@ -170,7 +179,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with streettalk-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 75.
@@ -188,7 +198,8 @@ Feature: DHCPv4 options part5
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
     Server is configured with streettalk-directory-assistance-server option with value 199.1.1.1,200.1.1.2.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 76.
@@ -208,7 +219,8 @@ Feature: DHCPv4 options part5
     Server is configured with routers option with value 100.100.100.10,50.50.50.5.
     Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
     #this should include fqdn option, 15
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sends DISCOVER message.

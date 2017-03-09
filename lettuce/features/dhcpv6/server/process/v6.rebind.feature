@@ -21,7 +21,8 @@ Feature: DHCPv6 Rebind
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.
@@ -44,7 +45,8 @@ Feature: DHCPv6 Rebind
 
 	Test Setup:
 	Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client copies IA_NA option from received message.
@@ -94,7 +96,8 @@ Feature: DHCPv6 Rebind
 	Time renew-timer is configured with value 111.
 	Time rebind-timer is configured with value 222.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 	
 	Test Procedure:
 	Client does include client-id.

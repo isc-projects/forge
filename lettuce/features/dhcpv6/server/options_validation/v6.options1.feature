@@ -20,7 +20,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with preference option with value 123.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -67,7 +68,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -114,7 +116,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with sip-server-addr option with value 2001:db8::1,2001:db8::2.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 22.
@@ -161,7 +164,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 23.
@@ -207,7 +211,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 24.
@@ -253,7 +258,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nis-servers option with value 2001:db8::abc,3000::1,2000::1234.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 27.
@@ -296,7 +302,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nisp-servers option with value 2001:db8::abc,3000::1,2000::1234.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 28.
@@ -329,7 +336,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nis-domain-name option with value ntp.example.com.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 29.
@@ -374,7 +382,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with nisp-domain-name option with value ntp.example.com.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 30.
@@ -419,7 +428,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with sntp-servers option with value 2001:db8::abc,3000::1,2000::1234.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 31.
@@ -463,7 +473,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with information-refresh-time option with value 12345678.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 32.
@@ -513,7 +524,8 @@ Feature: Standard DHCPv6 options part 1
 	Server is configured with sip-server-dns option with value srv1.example.com,srv2.isc.org.
 	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
 	Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -580,7 +592,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with dns-servers option with value 2001:db8::1,2001:db8::2.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	# dns-servers is option 23. 24 is domain.
@@ -638,7 +651,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with unicast option with value 3000::66.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 12.
@@ -680,7 +694,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with bcmcs-server-dns option with value very.good.domain.name.com.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 33.
@@ -722,7 +737,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with bcmcs-server-addr option with value 3000::66,3000::77.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 34.
@@ -764,7 +780,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with pana-agent option with value 3000::66,3000::77.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 40.
@@ -807,8 +824,9 @@ Feature: Standard DHCPv6 options part 1
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Server is configured with new-posix-timezone option with value EST5EDT4,M3.2.0/02:00,M11.1.0/02:00.
-	DHCP server is started.
+	Server is configured with new-posix-timezone option with value EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 41.
@@ -850,7 +868,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with new-tzdb-timezone option with value Europe/Zurich.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 42.
@@ -893,7 +912,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with bootfile-url option with value http://www.kea.isc.org.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 59.
@@ -936,7 +956,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with bootfile-param option with value 000B48656C6C6F20776F726C640003666F6F.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
 	Client requests option 60.
@@ -980,7 +1001,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with lq-client-link option with value 3000::66,3000::77.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 48.
@@ -1025,7 +1047,8 @@ Feature: Standard DHCPv6 options part 1
 	Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with erp-local-domain-name option with value erp-domain.isc.org.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
 	Client requests option 65.

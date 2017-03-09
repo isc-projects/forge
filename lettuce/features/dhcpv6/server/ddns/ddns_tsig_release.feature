@@ -14,7 +14,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name six.example.com. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 3.
     DNS server is started.
@@ -115,7 +116,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name six.example.com. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 3.
     DNS server is started.
@@ -189,7 +191,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name six.example.com. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets DUID value to 00:03:00:01:ff:ff:ff:ff:ff:01.
@@ -233,7 +236,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name six.example.com. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add reverse DDNS with name 1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa. and key forge.sha1.key on address 2001:db8:1::1000 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 3.
     DNS server is started.

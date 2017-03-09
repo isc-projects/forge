@@ -5,8 +5,8 @@ Feature: Host Reservation DHCPv4
     Scenario: v4.host.reservation.conflicts.duplicate-reservations
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    Reserve address 192.168.50.12 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Reserve address 192.168.50.12 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     DHCP server failed to start. During configuration process.
 
 
@@ -15,8 +15,8 @@ Feature: Host Reservation DHCPv4
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
     Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.1-192.168.51.50 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
-    Reserve address 192.168.50.12 in subnet 1 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+    Reserve address 192.168.50.12 in subnet 1 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     DHCP server is started.
 
 
@@ -66,7 +66,7 @@ Feature: Host Reservation DHCPv4
 	Add dhcp4_subnet_id 1 to MySQL reservation record id 1.
 	Upload hosts reservation to MySQL database.
 
-    #Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by ff:01:02:03:ff:77.
+    #Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:77.
     Reconfigure DHCP server.
 
 
@@ -125,7 +125,7 @@ Feature: Host Reservation DHCPv4
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.3 pool.
-    Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by ff:01:02:03:ff:77.
+    Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:77.
 
     Reconfigure DHCP server.
 
@@ -144,7 +144,7 @@ Feature: Host Reservation DHCPv4
     Test Setup:
     # reconfigure different address for same MAC from outside of the pool
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.9 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     DHCP server is started.
 
     Test Procedure:
@@ -166,7 +166,7 @@ Feature: Host Reservation DHCPv4
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.9 pool.
-    Reserve address 192.168.50.30 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.30 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
 
     Reconfigure DHCP server.
 
@@ -193,7 +193,7 @@ Feature: Host Reservation DHCPv4
     Scenario: v4.host.reservation.conflicts.reconfigure-server-switched-mac-in-reservations-in-pool
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     DHCP server is started.
 
     Test Procedure:
@@ -215,7 +215,7 @@ Feature: Host Reservation DHCPv4
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
-    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
 
     Reconfigure DHCP server.
 
@@ -231,7 +231,7 @@ Feature: Host Reservation DHCPv4
     Scenario: v4.host.reservation.conflicts.reconfigure-server-switched-mac-in-reservations-out-of-pool
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
-    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     DHCP server is started.
 
     Test Procedure:
@@ -253,7 +253,7 @@ Feature: Host Reservation DHCPv4
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
-    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
 
     Reconfigure DHCP server.
 
@@ -291,7 +291,7 @@ Feature: Host Reservation DHCPv4
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
 
     Reconfigure DHCP server.
 
@@ -369,7 +369,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 50.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Reconfigure DHCP server.
 
     Test Procedure:
@@ -442,7 +442,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 50.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Reconfigure DHCP server.
 
     Test Procedure:
@@ -480,7 +480,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 50.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     DHCP server is started.
 
     Test Procedure:
@@ -507,7 +507,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 50.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Reconfigure DHCP server.
 
     Test Procedure:
@@ -555,7 +555,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 50.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     DHCP server is started.
 
     Test Procedure:
@@ -582,7 +582,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 50.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
-    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     Reconfigure DHCP server.
 
     Test Procedure:
@@ -622,7 +622,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 4.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     DHCP server is started.
 
     Test Procedure:
@@ -649,7 +649,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 4.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:04.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Reconfigure DHCP server.
 
     Test Procedure:
@@ -697,7 +697,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 4.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     DHCP server is started.
 
     Test Procedure:
@@ -724,7 +724,7 @@ Feature: Host Reservation DHCPv4
     Time rebind-timer is configured with value 4.
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
-    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by ff:01:02:03:ff:01.
+    Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     Reconfigure DHCP server.
 
     Test Procedure:

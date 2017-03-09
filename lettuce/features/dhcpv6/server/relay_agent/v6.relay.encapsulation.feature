@@ -7,7 +7,8 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with interface-id option in subnet 0 with value 15.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -30,7 +31,8 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client requests option 7.
@@ -54,7 +56,8 @@ Feature: DHCPv6 Relay Agent encapsulation and Interface ID
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
     Client does include client-id.

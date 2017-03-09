@@ -18,7 +18,8 @@ Feature: DHCPv6 Release
 	##					Status code with code NoBinding.
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -69,7 +70,8 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -133,7 +135,8 @@ Feature: DHCPv6 Release
 	##					IA_NA with suboption status-code with code NoBinding
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -205,7 +208,8 @@ Feature: DHCPv6 Release
 	
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -283,7 +287,8 @@ Feature: DHCPv6 Release
 	Time preferred-lifetime is configured with value 7.
 	Time valid-lifetime is configured with value 8.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.
@@ -341,7 +346,8 @@ Feature: DHCPv6 Release
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client does include client-id.

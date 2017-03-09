@@ -19,7 +19,8 @@ Feature: Host Reservation DHCPv6
     Upload hosts reservation to MySQL database.
 
     # upload should failed!#TODO add step to failed upload
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 @v6 @host_reservation @kea_only
     Scenario: v6.host.reservation.mysql.duplicate-reservation-address
@@ -38,7 +39,8 @@ Feature: Host Reservation DHCPv6
     Upload hosts reservation to MySQL database.
 
     # upload should failed! #TODO add step to failed upload
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 
 @v6 @host_reservation @kea_only 
@@ -57,7 +59,8 @@ Feature: Host Reservation DHCPv6
 
   Upload hosts reservation to MySQL database.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets ia_id value to 666.
@@ -114,7 +117,8 @@ Feature: Host Reservation DHCPv6
   Scenario: v6.host.reservation.mysql.conflicts-reconfigure-server-with-reservation-of-used-address
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -162,7 +166,8 @@ Feature: Host Reservation DHCPv6
 
   Upload hosts reservation to MySQL database.
 
-  Reconfigure DHCP server.
+  Send server configuration using SSH and config-file.
+Reconfigure DHCP server.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -191,7 +196,8 @@ Feature: Host Reservation DHCPv6
   Scenario: v6.host.reservation.mysql.conflicts-reconfigure-server-with-reservation-of-used-address-2
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -253,7 +259,8 @@ Feature: Host Reservation DHCPv6
 
   Upload hosts reservation to MySQL database.
 
-  Reconfigure DHCP server.
+  Send server configuration using SSH and config-file.
+Reconfigure DHCP server.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -277,14 +284,15 @@ Feature: Host Reservation DHCPv6
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST NOT contain address 3000::1.
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only
   Scenario: v6.host.reservation.mysql.conflicts-reconfigure-server-with-reservation-of-used-address-renew-before-expire
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 
   #Use MySQL reservation system.
 
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -353,7 +361,8 @@ Feature: Host Reservation DHCPv6
   Add IPv6 address reservation 3000::2 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
-  Reconfigure DHCP server.
+  Send server configuration using SSH and config-file.
+Reconfigure DHCP server.
 
   Test Procedure:
   Client copies server-id option from received message.
@@ -393,7 +402,7 @@ Feature: Host Reservation DHCPv6
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::2.
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only
   Scenario: v6.host.reservation.mysql.conflicts-reconfigure-server-with-reservation-of-used-address-renew-after-expire
   Test Setup:
   Time renew-timer is configured with value 5.
@@ -401,7 +410,8 @@ Feature: Host Reservation DHCPv6
   Time preferred-lifetime is configured with value 7.
   Time valid-lifetime is configured with value 8.
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
-  DHCP server is started.
+  Send server configuration using SSH and config-file.
+DHCP server is started.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -465,12 +475,14 @@ Feature: Host Reservation DHCPv6
   Time preferred-lifetime is configured with value 7.
   Time valid-lifetime is configured with value 8.
   Server is configured with 3000::/30 subnet with 3000::1-3000::3 pool.
+
   Use MySQL reservation system.
   Create new MySQL reservation identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
   Add dhcp6_subnet_id 1 to MySQL reservation record id 1.
   Add IPv6 address reservation 3000::2 with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
+  Send server configuration using SSH and config-file.
   Reconfigure DHCP server.
 
   Test Procedure:

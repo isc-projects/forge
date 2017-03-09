@@ -6,7 +6,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "duid" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -34,7 +35,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "duid" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:01:00:01:55:2b:fa:0c:08:00:27:58:f1:e8.
@@ -63,7 +65,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "any" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -92,7 +95,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "ipv6-link-local" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -121,7 +125,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "client-link-addr-option" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -157,7 +162,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "rfc6939" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -192,7 +198,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "rfc4649" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -228,7 +235,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "remote-id" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -264,7 +272,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "subscriber-id" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -300,7 +309,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "rfc4580" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -336,7 +346,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "docsis-modem" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -368,7 +379,8 @@ Feature: MAC in DHCPv6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Run configuration command: "mac-sources": [ "docsis-cmts" ]
-	DHCP server is started.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.

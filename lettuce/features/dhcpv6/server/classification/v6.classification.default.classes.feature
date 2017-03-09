@@ -8,7 +8,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_docsis3.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets vendor_class_data value to docsis3.0.
@@ -29,7 +30,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_docsis3.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client does include client-id.
@@ -48,7 +50,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_docsis3.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets vendor_class_data value to docsis3.0.
@@ -83,7 +86,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_docsis3.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 7.
@@ -117,7 +121,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets vendor_class_data value to eRouter1.0.
@@ -138,7 +143,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client does include client-id.
@@ -157,7 +163,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client sets vendor_class_data value to eRouter1.0.
@@ -192,7 +199,8 @@ Feature: DHCPv6 Client Classification - default classes
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_eRouter1.0.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client requests option 7.

@@ -5,8 +5,9 @@ Feature: Host Reservation DHCPv6
     Scenario: v6.host.reservation.mac-requesting-reserved-address-inside-the-pool
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-	Reserve address 3000::10 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve address 3000::10 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -57,8 +58,9 @@ Feature: Host Reservation DHCPv6
     Scenario: v6.host.reservation.mac-requesting-reserved-address-outside-the-pool
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
-	Reserve address 3000::ff in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve address 3000::ff in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -108,8 +110,9 @@ Feature: Host Reservation DHCPv6
     Scenario: v6.host.reservation.mac-requesting-reserved-prefix
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
-	Reserve prefix 3000::/90 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 3000::/90 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -162,8 +165,9 @@ Feature: Host Reservation DHCPv6
     Scenario: v6.host.reservation.mac-requesting-reserved-prefix-PD-not-requested
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
-	Reserve prefix 3000::/90 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 3000::/90 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -214,8 +218,9 @@ Feature: Host Reservation DHCPv6
     Scenario: v6.host.reservation.mac-requesting-reserved-prefix-outside
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::10 pool.
-	Reserve prefix 3011::/90 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 3011::/90 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -270,8 +275,9 @@ Feature: Host Reservation DHCPv6
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Server is configured with 2001:db8:1:: prefix in subnet 0 with 32 prefix length and 33 delegated prefix length.
-	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by f6:f5:f4:f3:f2:01.
-	DHCP server is started.
+	Reserve prefix 2001:db8:1:0:4000::/34 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+	Send server configuration using SSH and config-file.
+DHCP server is started.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.

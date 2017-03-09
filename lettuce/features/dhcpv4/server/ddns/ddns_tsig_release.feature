@@ -14,7 +14,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 21.
     DNS server is started.
@@ -113,7 +114,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 21.
     DNS server is started.
@@ -188,7 +190,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Test Procedure:
     Client adds saved options in set no. 1. And DONT Erase.
@@ -230,7 +233,8 @@ Feature: DDNS without TSIG
     Add forward DDNS with name four.example.com. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add reverse DDNS with name 50.168.192.in-addr.arpa. and key forge.sha1.key on address 192.168.50.252 and port 53.
     Add DDNS key named forge.sha1.key based on HMAC-SHA1 with secret value PN4xKZ/jDobCMlo4rpr70w==.
-    DHCP server is started.
+    Send server configuration using SSH and config-file.
+DHCP server is started.
 
     Use DNS set no. 21.
     DNS server is started.
