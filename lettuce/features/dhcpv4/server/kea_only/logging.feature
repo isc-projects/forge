@@ -429,6 +429,7 @@ DHCP server is started.
     Client requests option 1.
     Client requests option 2.
     Client requests option 7.
+    Client sets chaddr value to 00:00:00:00:00:22.
     Client sends DISCOVER message.
 
     Pass Criteria:
@@ -438,6 +439,7 @@ DHCP server is started.
     Response option 1 MUST contain value 255.255.255.0.
 
     Test Procedure:
+    Client sets chaddr value to 00:00:00:00:00:22.
     Client copies server_id option from received message.
     Client adds to the message requested_addr with value 192.168.50.1.
     Client requests option 1.
@@ -449,6 +451,7 @@ DHCP server is started.
     Response option 1 MUST contain value 255.255.255.0.
 
     Test Procedure:
+    Client sets chaddr value to 00:00:00:00:00:21.
     Client copies server_id option from received message.
     Client sets ciaddr value to 192.168.50.1.
     Client sends RELEASE message.
@@ -456,14 +459,7 @@ DHCP server is started.
     Pass Criteria:
     Server MUST NOT respond.
 
-    Test Procedure:
-    Client sets chaddr value to 00:00:00:00:00:11.
-    Client adds to the message client_id with value 00010203040111.
-    Client requests option 1.
-    Client sends DISCOVER message.
-
-    Pass Criteria:
-    Server MUST respond with OFFER message.
+	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.leases
 	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.leases
 
 @v4 @kea_only @logging
@@ -723,6 +719,50 @@ DHCP server is started.
     Client requests option 1.
     Client requests option 2.
     Client requests option 7.
+    Client sets chaddr value to 00:00:00:00:00:33.
+    Client sends DISCOVER message.
+
+    Pass Criteria:
+    Server MUST respond with OFFER message.
+    Response MUST include option 1.
+    Response MUST contain yiaddr 192.168.50.1.
+    Response option 1 MUST contain value 255.255.255.0.
+
+    Test Procedure:
+    Client sets chaddr value to 00:00:00:00:00:33.
+    Client copies server_id option from received message.
+    Client adds to the message requested_addr with value 192.168.50.1.
+    Client requests option 1.
+    Client sends REQUEST message.
+
+    Pass Criteria:
+    Server MUST respond with ACK message.
+    Response MUST contain yiaddr 192.168.50.1.
+    Response option 1 MUST contain value 255.255.255.0.
+
+    Test Procedure:
+    Client sets chaddr value to 00:00:00:00:00:31.
+    Client saves into set no. 1 server_id option from received message.
+    Client adds saved options in set no. 1. And DONT Erase.
+    Client sets ciaddr value to 192.168.50.1.
+    Client sends RELEASE message.
+
+    Pass Criteria:
+    Server MUST NOT respond.
+
+    Test Procedure:
+    Client sets chaddr value to 00:00:00:00:00:33.
+    Client adds saved options in set no. 1. And DONT Erase.
+    Client sets ciaddr value to 192.168.50.1.
+    Client sends RELEASE message.
+
+    Pass Criteria:
+    Server MUST NOT respond.
+
+    Test Procedure:
+    Client requests option 1.
+    Client requests option 2.
+    Client requests option 7.
     Client sends DISCOVER message.
 
     Pass Criteria:
@@ -765,6 +805,7 @@ DHCP server is started.
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.dhcp4
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.options
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.leases
+    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.leases
 
 @v4 @kea_only @logging
     Scenario: v4.loggers.all-different-levels-same-file
