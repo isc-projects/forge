@@ -481,8 +481,8 @@ def test_victory(step):
     other.user_victory(step)
 
 
-@step('Execute shell script in path: (\S+) with arguments: (.+)')
-def execute_shell(step, path, arg):
+@step('Execute (\S+) script in path: (\S+) with arguments: (.+)')
+def execute_shell(step, script_type, path, arg):
     path, arg = test_define_value(path, arg)
     other.execute_shell_script(path, arg)
 
@@ -517,6 +517,13 @@ def send_through_socket(step, socket_address, socket_port, socket_data):
 def send_through_socket_server_site(step, socket_path, command):
     socket_path, command = test_define_value(socket_path, command)
     other.send_through_socket_server_site(socket_path, command)
+
+
+@step('Using existing HTTP (\S+):(\S+) connection send: (.+)')
+def send_through_http(step, http_address, http_port, command):
+    http_address, http_port, command = test_define_value(http_address, http_port, command)
+    other.send_through_http(http_address, int(http_port), command)
+
 
 ## loops
 ## testing in loops is new feature that gives possibility to send lot of messages without

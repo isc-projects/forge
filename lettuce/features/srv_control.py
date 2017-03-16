@@ -485,7 +485,14 @@ def open_control_channel(step, socket_type, socket_name):
     """
     """
     socket_type, socket_name = test_define_value(socket_type, socket_name)
-    dhcp.open_control_channel(socket_type, socket_name)
+    dhcp.open_control_channel_socket(socket_type, socket_name)
+
+@step('Server has control agent configred on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
+def agent_control_channel(step, host_address, host_port, socket_type, socket_name):
+    """
+    """
+    host_address, host_port, socket_type, socket_name = test_define_value(host_address, host_port, socket_type, socket_name)
+    dhcp.agent_control_channel(host_address, host_port, socket_type, socket_name)
 
 
 ##DNS server configuration
