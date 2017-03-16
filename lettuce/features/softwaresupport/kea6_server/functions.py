@@ -451,9 +451,17 @@ def add_logger(log_type, severity, severity_level, logging_file):
                                '"' + severity + '"}'
 
 
-def open_control_channel(socket_type, socket_name):
+def open_control_channel_socket(socket_type, socket_name):
     world.cfg["socket"] = '"control-socket": {"socket-type": "' +\
                           socket_type + '","socket-name": "' + socket_name + '"}'
+
+def agent_control_channel(host_address, host_port, socket_type, socket_name):
+    world.cfg["agent"] = '"Control-agent":{"http-host": "' + host_address
+    world.cfg["agent"] += '","http-port":' + host_port
+    world.cfg["agent"] += ',"control-sockets":{"dhcp6-server":{"socket-type": "' + socket_type
+    world.cfg["agent"] += '","socket-name": "' + socket_name
+    world.cfg["agent"] += '"}}}'
+    #add_hooks(SOFTWARE_INSTALL_DIR + 'lib/control-agent-commands.so')
 
 
 def cfg_write():
@@ -538,6 +546,10 @@ def cfg_write():
         build_ddns_config()
         cfg_file.write(world.ddns)
         #cfg_file.write("}")
+
+    if "agent" in world.cfg:
+        cfg_file.write(',' + world.cfg["agent"])
+        del world.cfg["agent"]
 
     logging_file = SOFTWARE_INSTALL_DIR + 'var/kea/kea.log'
 
