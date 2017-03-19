@@ -261,3 +261,64 @@ Scenario: control.channel.http.write-config
   Response MUST include option 3.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+
+@v6 @controlchannel
+Scenario: control.channel.socket.reload-config
+
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
+  Server has control agent configred on HTTP connection with address $(SRV4_ADDR):8000 and socket UNIX path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+
+  Test Setup:
+  Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::1 pool.
+  Server has control agent configred on HTTP connection with address $(SRV4_ADDR):8000 and socket UNIX path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Generate server configuration file.
+  Send server configuration using SSH and config-file.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "reload-config","arguments": {} }
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+
+  Restart DHCP server.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
