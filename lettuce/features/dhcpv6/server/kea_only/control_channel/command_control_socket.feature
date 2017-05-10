@@ -2,7 +2,7 @@ Feature: Kea Control Channel - socket
   Tests for Kea Command Control Channel using unix socket to pass commands.
 
 @v6 @controlchannel
-  Scenario: control.channel.socket.set-config-basic
+  Scenario: control.channel.socket.config-set-basic
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
@@ -29,7 +29,7 @@ Feature: Kea Control Channel - socket
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "set-config","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -72,7 +72,7 @@ Feature: Kea Control Channel - socket
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "set-config","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -118,7 +118,7 @@ Scenario: control.channel.socket.after-restart-load-config-file
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "set-config","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -856,7 +856,7 @@ Scenario: control.channel.socket.big-config-file
   Server logging system is configured with logger type kea-dhcp6.options, severity INFO, severity level None and log file kea.log.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "set-config","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
