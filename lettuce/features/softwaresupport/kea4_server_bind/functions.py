@@ -19,7 +19,6 @@ from lettuce import world
 from logging_facility import *
 from textwrap import dedent
 from logging_facility import get_common_logger
-from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS
 
 from softwaresupport.kea6_server_bind.functions import search_for_errors, parsing_bind_stdout, prepare_config_file,\
     set_logger, cfg_write, set_time, save_leases, save_logs, clear_all
@@ -104,7 +103,7 @@ def prepare_cfg_subnet(step, subnet, pool):
     if not "conf" in world.cfg:
         world.cfg["conf"] = ""
 
-    eth = SERVER_IFACE
+    eth = world.f_cfg.server_iface
     # subnet defintion Kea4
     t1 = world.cfg["server_times"]["renew-timer"]
     t2 = world.cfg["server_times"]["rebind-timer"]
@@ -295,7 +294,7 @@ def run_bindctl(succeed, opt):
     """
     Run bindctl with prepered config file
     """    
-    world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/bind10/kea-leases4.csv'
+    world.cfg['leases'] = world.f_cfg.software_install_path + 'var/bind10/kea-leases4.csv'
     
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
@@ -306,7 +305,7 @@ def run_bindctl(succeed, opt):
         remove_local_file(cfg_file + '_processed')
         
     if opt == "start":
-        if SAVE_LOGS:
+        if world.f_cfg.save_logs:
             set_logger()
         
         get_common_logger().debug('starting fresh kea')
@@ -335,7 +334,7 @@ def run_bindctl(succeed, opt):
         restart_srv()
     
     result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | '
-                                + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep 1')
+                                + world.f_cfg.software_install_path + 'bin/bindctl ); sleep 1')
     
     search_for_errors(succeed, opt, result, ["ImportError:", '"config revert".', "Error"])
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
@@ -373,7 +372,7 @@ def stop_srv(value = False):
 
 def restart_srv():
     # can't be less then 7, server needs time to restart.
-    fabric_run_command('(echo "Dhcp4 shutdown" | ' + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep 10')
+    fabric_run_command('(echo "Dhcp4 shutdown" | ' + world.f_cfg.software_install_path + 'bin/bindctl ); sleep 10')
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):

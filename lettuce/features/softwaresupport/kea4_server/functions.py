@@ -21,12 +21,12 @@ from lettuce import world
 from logging_facility import *
 
 from logging_facility import get_common_logger
-from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, SAVE_LOGS, SLEEP_TIME_1
 
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config,\
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
-    add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, set_conf_parameter_subnet
+    add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
+    set_conf_parameter_subnet, add_line_in_subnet
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -118,7 +118,7 @@ def check_empty_value(val):
 
 
 def add_defaults():
-    eth = SERVER_IFACE
+    eth = world.f_cfg.server_iface
     t1 = world.cfg["server_times"]["renew-timer"]
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["valid-lifetime"]
@@ -151,7 +151,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if pool == "default":
         pool = "192.168.0.1 - 192.168.0.254"
     if eth is None:
-        eth = SERVER_IFACE
+        eth = world.f_cfg.server_iface
 
     if not "interfaces" in world.cfg:
         world.cfg["interfaces"] = ''
@@ -287,18 +287,18 @@ def config_srv_id(id_type, id_value):
 
 def build_and_send_config_files(connection_type, configuration_type="config-file"):
     if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases4.csv'
+        world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        fabric_send_file(world.cfg["cfg_file"], SOFTWARE_INSTALL_DIR + "etc/kea/kea.conf")
-        fabric_send_file(world.cfg["cfg_file_2"], SOFTWARE_INSTALL_DIR + "etc/kea/keactrl.conf")
+        fabric_send_file(world.cfg["cfg_file"], world.f_cfg.software_install_path + "etc/kea/kea.conf")
+        fabric_send_file(world.cfg["cfg_file_2"], world.f_cfg.software_install_path + "etc/kea/keactrl.conf")
         copy_configuration_file(world.cfg["cfg_file"])
         copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/kea/kea-leases4.csv'
+        world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -308,8 +308,8 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
 
 def reconfigure_srv():
     #build_and_send_config_files()
-    result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl reload '
-                                 + ' & ); sleep ' + str(SLEEP_TIME_1))
+    result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl reload '
+                                 + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
     check_kea_process_result(True, result, 'reconfigure')
 
 
@@ -318,21 +318,22 @@ def start_srv(start, process):
     Start kea with generated config
     """
     #build_and_send_config_files() it's now separate step
+    world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
     v6, v4 = check_kea_status()
 
     if process is None:
         process = "starting"
     # check process - if None add some.
     if not v4:
-        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start '
-                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
+        result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
     else:
-        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl stop '
-                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
+        result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop '
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
-        result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR + 'sbin/keactrl start '
-                                     + ' & ); sleep ' + str(SLEEP_TIME_1))
+        result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
 
 

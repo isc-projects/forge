@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -19,16 +19,15 @@
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE
 
 
 def restart_srv():
-    fabric_run_command("("+SOFTWARE_INSTALL_DIR+"sbin/dibbler-server restart); sleep 1;")
+    fabric_run_command("("+world.f_cfg.software_install_path+"sbin/dibbler-server restart); sleep 1;")
 
 
 def stop_srv(value = False):
     #pass
-    fabric_run_command("("+SOFTWARE_INSTALL_DIR+"sbin/dibbler-server stop); sleep 1;", value)
+    fabric_run_command("("+world.f_cfg.software_install_path+"sbin/dibbler-server stop); sleep 1;", value)
 
 
 def prepare_cfg_default(step):
@@ -37,7 +36,7 @@ def prepare_cfg_default(step):
 
 def add_defaults(rebinding_time = '1400', renewal_time = '10', preferred_lifetime = '1000',
                  lease_time = '2000', max_lease_time = '2000'):
-    eth = SERVER_IFACE
+    eth = world.f_cfg.server_iface
     pointer_open = '{'
     pointer_close = '}'
 
@@ -55,7 +54,7 @@ def prepare_cfg_subnet(step, subnet, pool):
     if pool == "default":
         pool = "2001:db8:1::0-2001:db8:1::ffff"
 
-    eth = SERVER_IFACE
+    eth = world.f_cfg.server_iface
     world.cfg["subnet"] = subnet
     add_defaults()  # add in future configuration of those functions
     pointer_open = '{'
@@ -134,7 +133,7 @@ def start_srv(a, b):
     get_common_logger().debug("Starting Dibbler with generated config:")
     fabric_send_file(world.cfg["cfg_file"], '/etc/dibbler/server.conf')
     remove_local_file(world.cfg["cfg_file"])
-    fabric_run_command ('('+SOFTWARE_INSTALL_DIR+'sbin/dibbler-server start & ); sleep 4;')
+    fabric_run_command ('('+world.f_cfg.software_install_path+'sbin/dibbler-server start & ); sleep 4;')
 
 
 def save_leases():

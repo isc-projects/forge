@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,6 @@ from lettuce import world
 from logging_facility import *
 
 from logging_facility import get_common_logger
-from init_all import DNS_SERVER_INSTALL_DIR, DNS_DATA_DIR, SLEEP_TIME_1
 
 from softwaresupport.bind9_server.bind_configs import config_file_set, keys
 
@@ -104,29 +103,29 @@ def use_config_set(number):
     world.cfg["dns_log_file"] = '/tmp/dns.log'
     make_file('bind.keys', keys)
 
-    fabric_send_file('named.conf', DNS_DATA_DIR + 'named.conf')
+    fabric_send_file('named.conf', world.f_cfg.dns_data_path + 'named.conf')
     copy_configuration_file('named.conf', 'dns/DNS_named.conf')
     remove_local_file('named.conf')
 
-    fabric_send_file('rndc.conf', DNS_DATA_DIR + 'rndc.conf')
+    fabric_send_file('rndc.conf', world.f_cfg.dns_data_path + 'rndc.conf')
     copy_configuration_file('rndc.conf', 'dns/DNS_rndc.conf')
     remove_local_file('rndc.conf')
 
-    fabric_send_file('fwd.db', DNS_DATA_DIR + 'namedb/fwd.db')
+    fabric_send_file('fwd.db', world.f_cfg.dns_data_path + 'namedb/fwd.db')
     copy_configuration_file('fwd.db', 'dns/DNS_fwd.db')
     remove_local_file('fwd.db')
 
-    fabric_send_file('rev.db', DNS_DATA_DIR + 'namedb/rev.db')
+    fabric_send_file('rev.db', world.f_cfg.dns_data_path + 'namedb/rev.db')
     copy_configuration_file('rev.db', 'dns/DNS_rev.db')
     remove_local_file('rev.db')
 
-    fabric_send_file('bind.keys', DNS_DATA_DIR + 'managed-keys.bind')
+    fabric_send_file('bind.keys', world.f_cfg.dns_data_path + 'managed-keys.bind')
     copy_configuration_file('bind.keys', 'dns/DNS_managed-keys.bind')
     remove_local_file('bind.keys')
 
 
 def stop_srv(value = False):
-    fabric_sudo_command('(killall named & ); sleep ' + str(SLEEP_TIME_1), value)
+    fabric_sudo_command('(killall named & ); sleep ' + str(world.f_cfg.sleep_time_1), value)
 
 
 def restart_srv():
@@ -135,8 +134,8 @@ def restart_srv():
 
 
 def start_srv(success, process):
-    fabric_sudo_command('(' + DNS_SERVER_INSTALL_DIR + 'named -c ' +
-                        DNS_DATA_DIR + 'named.conf & ); sleep ' + str(SLEEP_TIME_1))
+    fabric_sudo_command('(' + world.f_cfg.dns_server_install_path + 'named -c ' +
+                        world.f_cfg.dns_data_path + 'named.conf & ); sleep ' + str(world.f_cfg.sleep_time_1))
 
 
 def save_leases():
@@ -155,4 +154,4 @@ def save_logs():
 
 def clear_all():
     fabric_remove_file_command('/tmp/dns.log')
-    fabric_remove_file_command(DNS_DATA_DIR + 'namedb/*')
+    fabric_remove_file_command(world.f_cfg.dns_data_path + 'namedb/*')

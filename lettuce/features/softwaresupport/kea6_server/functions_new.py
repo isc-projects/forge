@@ -23,6 +23,7 @@ from protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 from logging_facility import *
 from lettuce.registry import world
+
 kea_options6 = {
     "client-id": 1,
     "server-id": 2,
@@ -68,34 +69,189 @@ kea_otheroptions = {
     "time-offset": 38
 }
 
+all_subnet_list = []
+
+
+
+class KeaSubnet:
+    def __init__(self):
+        self.subnet_id = len(all_subnet_list) + 1
+        all_subnet_list.append(self)
+        self.basic_subnet = ""
+        self.basic_pool = ""
+        self.all_reservations_list = []
+        self.all_pools_lst = []
+        self.parameters_lst = []
+
+    def add_pool(self):
+        self.all_pools_lst.append()
+
+    def add_option(self):
+        pass
+    def add_option_to_pool(self):
+        pass
+    def add_prefix_pool(self):
+        pass
+    def add_interface(self):
+        pass
+
+    def add_subnet_parameter(self, parameter_name, parameter_value):
+        self.parameters_lst.append([parameter_name, parameter_value])
+
+    def add_custom_line(self):
+        pass
+    def build_reservation(self):
+        pass
+    def extend_reservation(self):
+        pass
+    def build_subnet_config(self):
+        pass
+
+class KeaConfiguration:
+    def __init__(self, ver):
+        # default values:
+        self.version = ver
+        self.config_path = ""
+        self.delay1 = world.f_cfg.sleep_time_1
+        self.delay2 = world.f_cfg.sleep_time_2
+        self.subnet_count = 0
+        self.config_path = world.f_cfg.software_install_path + "etc/kea/kea.conf"
+        self.log_file_path = world.f_cfg.software_install_path + 'var/kea/kea.log*'
+        self.keactrl_config_path = world.f_cfg.software_install_path + "etc/kea/keactrl.conf"
+        if ver == 6:
+            self.csv_path = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
+        elif ver == 4:
+            self.csv_path = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
+        # configurations lists,
+        self.global_parameter_lst = []
+        self.interfaces_lst = []
+        self.custom_lines = []
+        self.reservation_db = ""
+        self.leases_db = ""
+        self.hooks_lst = []
+
+    def set_server_id(self, id_type, id_value):
+        id_value = id_value.replace(":", "")
+        if id_type == "EN":
+            self.server_id = '"server-id": {"type": "EN", "enterprise-id": ' + str(int(id_value[4:12], 16)) \
+                                     + ', "identifier":" ' + id_value[12:] + ' "},'
+        elif id_type == "LLT":
+            self.server_id = '"server-id": {"type": "LLT", "htype": ' + str(int(id_value[4:8], 16))\
+                                     + ', "identifier": "' + id_value[16:]\
+                                     + '", "time": ' + str(int(id_value[8:16], 16)) + ' },'
+        elif id_type == "LL":
+            self.server_id = '"server-id": {"type": "LL", "htype": ' + str(int(id_value[4:8], 16)) \
+                                     + ', "identifier": "' + id_value[8:] + ' "},'
+        else:
+            assert False, "DUID type unknown."
+
+    def add_option(self):
+        pass
+    def build_config(self):
+        pass
+    def build_ctrl_config(self):
+        pass
+
+    def set_global_parameter(self, parameter_name, value):
+        self.global_parameter_lst.append([parameter_name, value])
+
+    def add_interfaces(self, interface):
+        self.interfaces_lst.append(interface)
+
+    def set_global_timers(self, timer_name, time_value): # should be done by global parameters
+        self.global_parameter_lst.append([timer_name, time_value])
+
+    def add_custom_line(self, custom_line):
+        self.custom_lines.append(custom_line)
+
+    def add_logger(self):
+        pass
+
+    def set_leases_db(self):
+        if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
+            self.leases_db = '"lease-database":{"type": "memfile"}'
+        else:
+            pointer_start = '{'
+            pointer_end = '}'
+            db_type = world.f_cfg.db_type
+            db_name = world.f_cfg.db_name
+            db_user = world.f_cfg.db_user
+            db_passwd = world.f_cfg.db_passwd
+            if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
+                db_host = ""
+            else:
+                db_host = world.f_cfg.db_host
+
+            self.leases_db = '''"lease-database":{pointer_start}"type": "{db_type}",
+                           "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+                           "password":"{db_passwd}"{pointer_end}'''.format(**locals())
+
+    def set_reservation_db(self):
+        db_type = world.reservation_backend
+        db_name = world.f_cfg.db_name
+        db_user = world.f_cfg.db_user
+        db_passwd = world.f_cfg.db_passwd
+        pointer_start = '{'
+        pointer_end = '}'
+        if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
+            db_host = ""
+
+        if world.reservation_backend in {"mysql", "postgresql"}:
+            self.reservation_db = '''"hosts-database":{pointer_start}"type": "{db_type}",
+                           "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+                           "password":"{db_passwd}"{pointer_end}'''.format(**locals())
+
+    def add_socket(self):
+        pass
+    def add_cc(self):
+        pass
+
+    def add_hooks(self, lib_path):
+        self.hooks_lst.append(lib_path)
+
+    def build_hooks_cfg(self):
+        for each in self.hooks_lst:
+            print '{"library": "' + each + '"}' #final config
+
+    def built_config(self):
+        pass
+
+
+    # probably in __init___
+    def set_defaults(self):
+        pass
+    def set_interface(self):
+        pass
 
 def config_srv_id(id_type, id_value):
-    id_value = id_value.replace(":", "")
-    if id_type == "EN":
-        world.cfg["server-id"] = '"server-id": {"type": "EN", "enterprise-id": ' + str(int(id_value[4:12], 16)) \
-                                 + ', "identifier":" ' + id_value[12:] + ' "},'
-    elif id_type == "LLT":
-        world.cfg["server-id"] = '"server-id": {"type": "LLT", "htype": ' + str(int(id_value[4:8], 16))\
-                                 + ', "identifier": "' + id_value[16:]\
-                                 + '", "time": ' + str(int(id_value[8:16], 16)) + ' },'
-    elif id_type == "LL":
-        world.cfg["server-id"] = '"server-id": {"type": "LL", "htype": ' + str(int(id_value[4:8], 16)) \
-                                 + ', "identifier": "' + id_value[8:] + ' "},'
-    else:
-        assert False, "DUID type unknown."
+    pass
+    # id_value = id_value.replace(":", "")
+    # if id_type == "EN":
+    #     world.cfg["server-id"] = '"server-id": {"type": "EN", "enterprise-id": ' + str(int(id_value[4:12], 16)) \
+    #                              + ', "identifier":" ' + id_value[12:] + ' "},'
+    # elif id_type == "LLT":
+    #     world.cfg["server-id"] = '"server-id": {"type": "LLT", "htype": ' + str(int(id_value[4:8], 16))\
+    #                              + ', "identifier": "' + id_value[16:]\
+    #                              + '", "time": ' + str(int(id_value[8:16], 16)) + ' },'
+    # elif id_type == "LL":
+    #     world.cfg["server-id"] = '"server-id": {"type": "LL", "htype": ' + str(int(id_value[4:8], 16)) \
+    #                              + ', "identifier": "' + id_value[8:] + ' "},'
+    # else:
+    #     assert False, "DUID type unknown."
 
 
 def set_time(step, which_time, value, subnet = None):
-    assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
-
-    if subnet is None:
-            world.cfg["server_times"][which_time] = value
-
-    else:
-        subnet = int(subnet)
-        if len(world.subcfg[subnet][3]) > 2:
-            world.subcfg[subnet][3] += ', '
-        world.subcfg[subnet][3] += '"{which_time}": {value}'.format(**locals())
+    pass
+    # assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+    #
+    # if subnet is None:
+    #         world.cfg["server_times"][which_time] = value
+    #
+    # else:
+    #     subnet = int(subnet)
+    #     if len(world.subcfg[subnet][3]) > 2:
+    #         world.subcfg[subnet][3] += ', '
+    #     world.subcfg[subnet][3] += '"{which_time}": {value}'.format(**locals())
 
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK START =================
@@ -106,9 +262,10 @@ def set_time(step, which_time, value, subnet = None):
 
 
 def add_interface(eth):
-    if len(world.cfg["interfaces"]) > 3:
-        world.cfg["interfaces"] += ','
-    world.cfg["interfaces"] += '"{eth}"'.format(**locals())
+    pass
+    # if len(world.cfg["interfaces"]) > 3:
+    #     world.cfg["interfaces"] += ','
+    # world.cfg["interfaces"] += '"{eth}"'.format(**locals())
 
 
 def add_defaults():
@@ -137,14 +294,16 @@ def add_defaults():
 
 
 def set_conf_parameter_global(parameter_name, value):
-    if not "global_parameters" in world.cfg:
-        world.cfg["global_parameters"] = ''
-
-    world.cfg["global_parameters"] += '"{parameter_name}": {value},'.format(**locals())
+    pass
+    # if not "global_parameters" in world.cfg:
+    #     world.cfg["global_parameters"] = ''
+    #
+    # world.cfg["global_parameters"] += '"{parameter_name}": {value},'.format(**locals())
 
 
 def set_conf_parameter_subnet(parameter_name, value, subnet_id):
-    world.subcfg[subnet_id][0] += ',"{parameter_name}": {value}'.format(**locals())
+    pass
+    #world.subcfg[subnet_id][0] += ',"{parameter_name}": {value}'.format(**locals())
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
@@ -269,23 +428,20 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
 
 
 def add_line_in_global(command):
-    if not "custom_lines" in world.cfg:
-        world.cfg["custom_lines"] = ''
-
-    world.cfg["custom_lines"] += ('\n'+command+'\n')
+    pass
+    # if not "custom_lines" in world.cfg:
+    #     world.cfg["custom_lines"] = ''
+    #
+    # world.cfg["custom_lines"] += ('\n'+command+'\n')
 
 
 def add_line_in_subnet(subnetid, command):
-    if len(world.subcfg[subnetid][0][-1:]) == ",":
-        world.subcfg[subnetid][0] += ","
-        world.subcfg[subnetid][0] += command
-    else:
-        world.subcfg[subnetid][0] += command
-
-
-def set_logger():
     pass
-    assert False, "For now option unavailable!"
+    # if len(world.subcfg[subnetid][0][-1:]) == ",":
+    #     world.subcfg[subnetid][0] += ","
+    #     world.subcfg[subnetid][0] += command
+    # else:
+    #     world.subcfg[subnetid][0] += command
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
@@ -381,52 +537,55 @@ def add_option_to_main(option, value):
 
 
 def config_add_reservation_database():
-    db_type = world.reservation_backend
-    db_name = world.f_cfg.db_name
-    db_user = world.f_cfg.db_user
-    db_passwd = world.f_cfg.db_passwd
-    pointer_start = '{'
-    pointer_end = '}'
-    if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
-            db_host = ""
-
-    if world.reservation_backend in {"mysql", "postgresql"}:
-        add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
-                       "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
-                       "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+    pass
+    # db_type = world.reservation_backend
+    # db_name = world.f_cfg.db_name
+    # db_user = world.f_cfg.db_user
+    # db_passwd = world.f_cfg.db_passwd
+    # pointer_start = '{'
+    # pointer_end = '}'
+    # if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
+    #         db_host = ""
+    #
+    # if world.reservation_backend in {"mysql", "postgresql"}:
+    #     add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
+    #                    "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+    #                    "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
 
 
 def config_db_backend():
-    if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
-        add_simple_opt('"lease-database":{"type": "memfile"}')
-    else:
-        pointer_start = '{'
-        pointer_end = '}'
-        db_type = world.f_cfg.db_type
-        db_name = world.f_cfg.db_name
-        db_user = world.f_cfg.db_user
-        db_passwd = world.f_cfg.db_passwd
-        if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
-            db_host = ""
-        else:
-            db_host = world.f_cfg.db_host
-
-        add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
-                       "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
-                       "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+    pass
+    # if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
+    #     add_simple_opt('"lease-database":{"type": "memfile"}')
+    # else:
+    #     pointer_start = '{'
+    #     pointer_end = '}'
+    #     db_type = world.f_cfg.db_type
+    #     db_name = world.f_cfg.db_name
+    #     db_user = world.f_cfg.db_user
+    #     db_passwd = world.f_cfg.db_passwd
+    #     if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
+    #         db_host = ""
+    #     else:
+    #         db_host = world.f_cfg.db_host
+    #
+    #     add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
+    #                    "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+    #                    "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
 
     config_add_reservation_database()
 
 
 def add_hooks(library_path):
-    if not "hooks" in world.cfg:
-        world.cfg["hooks"] = ''
-    else:
-        # if hooks are already created it means we have at least one library there
-        # so we need just comma
-        world.cfg["hooks"] += ','
-
-    world.cfg["hooks"] += '{"library": "' + library_path + '"}'
+    pass
+    # if not "hooks" in world.cfg:
+    #     world.cfg["hooks"] = ''
+    # else:
+    #     # if hooks are already created it means we have at least one library there
+    #     # so we need just comma
+    #     world.cfg["hooks"] += ','
+    #
+    # world.cfg["hooks"] += '{"library": "' + library_path + '"}'
 
 
 def add_logger(log_type, severity, severity_level, logging_file):
@@ -618,13 +777,13 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         remove_local_file(world.cfg["cfg_file"])
 
 
+
 def start_srv(start, process):
     """
     Start kea with generated config
     """
     #build_and_send_config_files() it's now separate step
     v6, v4 = check_kea_status()
-    world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
 
     if process is None:
         process = "starting"

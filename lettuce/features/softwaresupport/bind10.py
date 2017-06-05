@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -20,7 +20,6 @@
 # 
 #
 
-from features.init_all import SOFTWARE_INSTALL_DIR, SLEEP_TIME_1
 from features.logging_facility import get_common_logger
 
 from multi_server_functions import fabric_sudo_command 
@@ -31,7 +30,7 @@ def kill_bind10():
     Kill any running bind10 instance
     """
     get_common_logger().debug("Killing all running Bind instances")
-    return fabric_sudo_command('pkill b10-*; sleep ' + str(SLEEP_TIME_1))
+    return fabric_sudo_command('pkill b10-*; sleep ' + str(world.f_cfg.sleep_time_1))
 
 
 def start_bind10():
@@ -40,5 +39,5 @@ def start_bind10():
     """
     get_common_logger().debug("Starting Bind instances")
 
-    return fabric_sudo_command('(rm nohup.out; nohup ' + SOFTWARE_INSTALL_DIR +
-                               'sbin/bind10 &); sleep ' + str(SLEEP_TIME_1))
+    return fabric_sudo_command('(rm nohup.out; nohup ' + world.f_cfg.software_install_path +
+                               'sbin/bind10 &); sleep ' + str(world.f_cfg.sleep_time_1))

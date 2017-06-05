@@ -1,4 +1,4 @@
-# Copyright (C) 2014 Internet Systems Consortium.
+# Copyright (C) 2014-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,11 +18,11 @@
 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SOFTWARE_INSTALL_DIR, SERVER_IFACE, ISC_DHCP_LOG_FILE, ISC_DHCP_LOG_FACILITY, SLEEP_TIME_1
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file,\
     fabric_remove_file_command, simple_file_layout
+from functions_ddns import build_ddns_config
 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
@@ -141,9 +141,9 @@ def restart_srv():
     stop_srv()
     fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
-    fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR
+    fabric_sudo_command('(' + world.f_cfg.software_install_path
                         + 'sbin/dhcpd -6 -cf server.cfg_processed -lf '
-                        + world.cfg['leases'] + '); sleep ' + str(SLEEP_TIME_1) + ';')
+                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.world.f_cfg.sleep_time_1) + ';')
 
 
 def stop_srv(value = False):
@@ -407,6 +407,13 @@ def cfg_write():
     if "conf_vendor" in world.cfg:
         cfg_file.write(world.cfg["conf_vendor"])
 
+    if world.ddns_enable:
+        build_ddns_config()
+        cfg_file.write(world.ddns)
+        # ddns we can add just to one subnet, for now
+        world.subcfg[0][0] += 'ddns-rev-domainname "' + world.ddns_rev_domainname + '";'
+        world.subcfg[0][0] += 'ddns-domainname "' + world.ddns_domainname + '";'
+
     for each_subnet in world.subcfg:
         cfg_file.write(each_subnet[0])
         cfg_file.write('}')  # add } for subnet block
@@ -447,7 +454,7 @@ def set_ethernet_interface():
     """
     tmp = world.cfg["subnet"].split('/')
     address = tmp[0] + "1/" + tmp[1]
-    eth = SERVER_IFACE
+    eth = world.f_cfg.world.f_cfg.server_iface
     cmd = 'ip addr flush {eth}'.format(**locals())
     cmd1 = 'ip -6 addr add {address} dev {eth}'.format(**locals())
 
@@ -459,8 +466,8 @@ def set_ethernet_interface():
 #     fabric_cmd(cmd1,0)
 def build_leases_path():
     leases_file = '/var/db/dhcpd6.leases'
-    if SOFTWARE_INSTALL_DIR != "/usr/local/":
-        leases_file = SOFTWARE_INSTALL_DIR + 'dhcpd6.leases'
+    if world.f_cfg.software_install_path != "/usr/local/":
+        leases_file = world.f_cfg.software_install_path + 'dhcpd6.leases'
     return leases_file
 
 
@@ -468,26 +475,23 @@ def build_log_path():
     # syslog/rsyslog typically will not write to log files unless
     # they are in /var/log without manual intervention.
     log_file = '/var/log/forge_dhcpd.log'
-    if ISC_DHCP_LOG_FILE != "":
-        log_file = ISC_DHCP_LOG_FILE
+    if world.f_cfg.isc_dhcp_log_facility != "":
+        log_file = world.f_cfg.isc_dhcp_log_file
 
     return log_file
 
 
-def start_srv(start, process):
-    """
-    Start ISC-DHCPv6 with generated config.
-    """
+def build_and_send_config_files(connection_type, configuration_type):
     if not "conf_option" in world.cfg:
         world.cfg["conf_option"] = ""
 
     world.cfg['log_file'] = build_log_path()
-    fabric_run_command('cat /dev/null >' + world.cfg['log_file'])
+    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
     world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     log = "local7"
-    if ISC_DHCP_LOG_FACILITY != "":
-        log = ISC_DHCP_LOG_FACILITY
+    if world.f_cfg.isc_dhcp_log_facility != "":
+        log = world.f_cfg.isc_dhcp_log_facility
 
     world.cfg['log_facility'] = '''\nlog-facility {log};\n'''.format(**locals())
 
@@ -505,20 +509,24 @@ def start_srv(start, process):
 
     fabric_run_command('echo y |rm ' + world.cfg['leases'])
     fabric_run_command('touch ' + world.cfg['leases'])
-
-    result = fabric_sudo_command('(' + SOFTWARE_INSTALL_DIR
-                                 + 'sbin/dhcpd -6 -cf server.cfg_processed'
-                                 + ' -lf ' + world.cfg['leases']
-                                 + '&); sleep ' + str(SLEEP_TIME_1) + ';')
-
-    check_process_result(start, result, process)
-
     # clear configs in case we would like make couple configs in one test
     world.cfg["conf_time"] = ""
     world.cfg["log_facility"] = ""
     world.cfg["custom_lines"] = ""
     world.cfg["conf_option"] = ""
     world.cfg["conf_vendor"] = ""
+
+
+def start_srv(start, process):
+    """
+    Start ISC-DHCPv6 with generated config.
+    """
+    result = fabric_sudo_command('(' + world.f_cfg.software_install_path
+                                 + 'sbin/dhcpd -6 -cf server.cfg_processed'
+                                 + ' -lf ' + world.cfg['leases']
+                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
+
+    check_process_result(start, result, process)
 
 
 def check_process_result(succeed, result, process):

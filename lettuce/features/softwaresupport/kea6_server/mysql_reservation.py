@@ -15,29 +15,40 @@
 # Author: Wlodzimierz Wencel
 
 from lettuce.registry import world
-from init_all import SOFTWARE_INSTALL_DIR
-#from lettuce.features.init_all import SOFTWARE_INSTALL_DIR
+
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
     fabric_download_file, fabric_remove_file_command, locate_entry
-from init_all import DB_TYPE, DB_NAME, DB_USER, DB_PASSWD, DB_HOST
 
 list_of_all_reservations = []
 
 
 class MySQLReservation:
-    hosts_v6 = """
+    hosts_v6_hex = """
 INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname)
 VALUES (UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
 @dhcp6_subnet_id,@hostname);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
+    hosts_v6_flex = """
+INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname)
+VALUES (@identifier_value,(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
+@dhcp6_subnet_id,@hostname);
+SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
+    hosts_v6 = ""
 
-    hosts_v4 = """
+    hosts_v4_hex = """
 INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp4_subnet_id,ipv4_address,hostname,dhcp4_next_server,
 dhcp4_server_hostname,dhcp4_boot_file_name)
 VALUES (UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
 @dhcp4_subnet_id,INET_ATON(@ipv4_address),@hostname,INET_ATON(@next_server),@server_hostname,@boot_file_name);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
+    hosts_v4_flex = """
+INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp4_subnet_id,ipv4_address,hostname,dhcp4_next_server,
+dhcp4_server_hostname,dhcp4_boot_file_name)
+VALUES (@identifier_value,(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
+@dhcp4_subnet_id,INET_ATON(@ipv4_address),@hostname,INET_ATON(@next_server),@server_hostname,@boot_file_name);
+SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
+    hosts_v4 = ""
 
     def __init__(self):
         self.reservation_id = len(list_of_all_reservations) + 1
@@ -142,6 +153,11 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
                                              "WHERE scope_name = '{scope}'));".format(**each)
 
     def build_v6_script(self):
+        if self.identifier_type == "flex-id":
+            MySQLReservation.hosts_v6 = MySQLReservation.hosts_v6_flex
+        else:
+            MySQLReservation.hosts_v6 = MySQLReservation.hosts_v6_hex
+
         self.set_hostname()
         self.set_identifier_type()
         self.set_identifier_value()
@@ -154,6 +170,11 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         self.configuration_script += "\n\nCOMMIT;"
 
     def build_v4_script(self):
+        if self.identifier_type == "flex-id":
+            MySQLReservation.hosts_v4 = MySQLReservation.hosts_v4_flex
+        else:
+            MySQLReservation.hosts_v4 = MySQLReservation.hosts_v4_hex
+
         self.set_hostname()
         self.set_identifier_type()
         self.set_identifier_value()
@@ -219,26 +240,26 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
 
 
 def upload_db_reservation():
-    db_name = DB_NAME
-    db_user = DB_USER
-    db_passwd = DB_PASSWD
+    db_name = world.f_cfg.db_name
+    db_user = world.f_cfg.db_user
+    db_passwd = world.f_cfg.db_passwd
     while list_of_all_reservations:
         each_record = list_of_all_reservations.pop()
         each_record.build_script()
         db_reservation = open("db_reservation", 'w')
         db_reservation.write(each_record.configuration_script)
         db_reservation.close()
-        fabric_send_file("db_reservation", SOFTWARE_INSTALL_DIR + "etc/kea/db_reservation")
+        fabric_send_file("db_reservation", world.f_cfg.software_install_path + "etc/kea/db_reservation")
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
-        result = fabric_sudo_command('cat ' + SOFTWARE_INSTALL_DIR + 'etc/kea/db_reservation | mysql -u {db_user} -p{db_passwd} {db_name}'.format(**locals()))
+        result = fabric_sudo_command('cat ' + world.f_cfg.software_install_path + 'etc/kea/db_reservation | mysql -u {db_user} -p{db_passwd} {db_name}'.format(**locals()))
         # TODO check result of uploading, fail the test if necessary
 
 
 def clear_all_reservations():
-    db_name = DB_NAME
-    db_user = DB_USER
-    db_passwd = DB_PASSWD
+    db_name = world.f_cfg.db_name
+    db_user = world.f_cfg.db_user
+    db_passwd = world.f_cfg.db_passwd
     command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
     fabric_run_command(command)
 

@@ -1,0 +1,17 @@
+
+
+ "subnet4": [
+     {
+         "subnet": "192.0.2.0/24",
+         "pools": [ { "pool": "192.0.2.10 - 192.0.2.20" } ],
+         "client-class": "ipxe_efi_x64"
+     }
+ ],
+ "client-classes": [
+   {
+       "name": "ipxe_efi_x64",
+       "test": "option[93].hex == 0x0009",
+       "next-server": "192.0.2.254",
+       "server-hostname": "hal9000",
+       "boot-file-name": "/dev/null"
+   },

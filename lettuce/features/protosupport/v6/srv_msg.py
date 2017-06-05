@@ -139,11 +139,9 @@ def unicast_addres(step, addr_type):
     Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address.
     """
     if addr_type:
-        from features.init_all import SRV_IPV6_ADDR_GLOBAL
-        world.cfg["address_v6"] = SRV_IPV6_ADDR_GLOBAL
+        world.cfg["address_v6"] = world.f_cfg.srv_ipv6_addr_global
     else:
-        from features.init_all import SRV_IPV6_ADDR_LINK_LOCAL
-        world.cfg["address_v6"] = SRV_IPV6_ADDR_LINK_LOCAL
+        world.cfg["address_v6"] = world.f_cfg.srv_ipv6_addr_link_local
 
 
 def client_does_include(sender_type, opt_type, value):
@@ -587,8 +585,7 @@ def send_wait_for_message(step, condition_type, presence, exp_message):
                     nofilter=1,
                     verbose=world.scapy_verbose)
 
-    from features.init_all import SHOW_PACKETS_FROM
-    if SHOW_PACKETS_FROM in ['both', 'client']:
+    if world.f_cfg.show_packets_from in ['both', 'client']:
             world.climsg[0].show()
 
     expected_type_found = False
@@ -598,7 +595,7 @@ def send_wait_for_message(step, condition_type, presence, exp_message):
         a, b = x
         world.srvmsg.append(b)
 
-        if SHOW_PACKETS_FROM in ['both', 'server']:
+        if world.f_cfg.show_packets_from in ['both', 'server']:
             b.show()
 
         if not world.loops["active"]:

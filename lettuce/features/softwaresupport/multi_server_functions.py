@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -17,14 +17,16 @@
 
 from fabric.api import get, settings, put, sudo, run, hide
 from fabric.exceptions import NetworkError
-from features.init_all import MGMT_ADDRESS, MGMT_USERNAME, MGMT_PASSWORD, SAVE_CONFIG_FILE
 from features.logging_facility import get_common_logger
 from lettuce.registry import world
 import os
 
 
 def fabric_run_command(cmd, hide_all = False):
-    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+    with settings(host_string = world.f_cfg.mgmt_address,
+                  user = world.f_cfg.mgmt_username,
+                  password = world.f_cfg.mgmt_password,
+                  warn_only = True):
         if hide_all:
             with hide('running', 'stdout', 'stderr'):
                 result = run(cmd, pty = True)
@@ -34,7 +36,10 @@ def fabric_run_command(cmd, hide_all = False):
 
 
 def fabric_sudo_command(cmd, hide_all = False):
-    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+    with settings(host_string = world.f_cfg.mgmt_address,
+                  user = world.f_cfg.mgmt_username,
+                  password = world.f_cfg.mgmt_password,
+                  warn_only = True):
             if hide_all:
                 with hide('running', 'stdout', 'stderr'):
                     try:
@@ -50,14 +55,20 @@ def fabric_sudo_command(cmd, hide_all = False):
 
 
 def fabric_send_file(file_local, file_remote):
-    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+    with settings(host_string = world.f_cfg.mgmt_address,
+                  user = world.f_cfg.mgmt_username,
+                  password = world.f_cfg.mgmt_password,
+                  warn_only = True):
         with hide('running', 'stdout', 'stderr'):
             result = put(file_local, file_remote)
     return result
 
 
 def fabric_download_file(remote_path, local_path):
-    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+    with settings(host_string = world.f_cfg.mgmt_address,
+                  user = world.f_cfg.mgmt_username,
+                  password = world.f_cfg.mgmt_password,
+                  warn_only = True):
         result = get(remote_path, local_path)
     return result
 
@@ -69,7 +80,10 @@ def make_tarfile(output_filename, source_dir):
 
 
 def fabric_remove_file_command(remote_path):
-    with settings(host_string = MGMT_ADDRESS, user = MGMT_USERNAME, password = MGMT_PASSWORD, warn_only = True):
+    with settings(host_string = world.f_cfg.mgmt_address,
+                  user = world.f_cfg.mgmt_username,
+                  password = world.f_cfg.mgmt_password,
+                  warn_only = True):
         result = sudo("rm -f " + remote_path)
     return result
 
@@ -79,6 +93,21 @@ def remove_local_file(file_local):
         os.remove(file_local)
     except OSError:
         get_common_logger().error('File %s cannot be removed' % file_local)
+
+
+def save_local_file(value, value_type="string", local_flie_name=None, local_location=None):
+    local_location = world.cfg["dir_name"]
+    if local_flie_name == None:
+        local_flie_name = "saved_file"
+        # TODO: make check here for existing files with the same name
+
+    if value_type == "string":
+        tmp = open(local_location + '/' + local_flie_name, 'w')
+        tmp.write(str(value))
+        tmp.close()
+    elif value_type == "file":
+        from shutil import copy
+        copy(local_flie_name, local_location + '/' + local_flie_name)
 
 
 def configuration_file_name(counter, file_name):
@@ -102,7 +131,7 @@ def archive_file_name(counter, file_name):
 
 
 def copy_configuration_file(local_file, file_name = 'configuration_file'):
-    if SAVE_CONFIG_FILE:
+    if world.f_cfg.save_config_file:
         file_name = configuration_file_name(1, file_name)
         from shutil import copy
         if not os.path.exists(world.cfg["dir_name"]):
@@ -161,7 +190,7 @@ def locate_entry(where_we_looking, what_we_looking, n):
     return start
 
 
-def json_file_layout():
+def json_file_layout(input=None):
     # make json file more readable!
     config = open(world.cfg["cfg_file"], 'r')
     new_config = ""

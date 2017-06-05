@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -21,8 +21,6 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
 
 from logging_facility import *
 from lettuce.registry import world
-from init_all import SOFTWARE_INSTALL_DIR, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL,\
-    BIND_MODULE, SERVER_IFACE, SLEEP_TIME_2
 
 
 kea_options6 = { "client-id": 1,
@@ -84,7 +82,7 @@ def prepare_cfg_subnet(step, subnet, pool):
     t2 = world.cfg["server_times"]["rebind-timer"]
     t3 = world.cfg["server_times"]["preferred-lifetime"]
     t4 = world.cfg["server_times"]["valid-lifetime"]
-    eth = SERVER_IFACE
+    eth = world.f_cfg.server_iface
     world.cfg["conf"] = '''
         # subnet defintion Kea 6
         config set Dhcp6/renew-timer {t1} 
@@ -271,7 +269,7 @@ def set_logger():
 
     fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
     fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | '
-                       + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
+                       + world.f_cfg.software_install_path + 'bin/bindctl ); sleep ' + str(world.f_cfg.sleep_time_2))
     remove_local_file(cfg_file + '_processed')
 
 
@@ -345,7 +343,7 @@ def stop_srv(value = False):
 
 def restart_srv():
     # can't be less then 7, server needs time to restart.
-    fabric_run_command('(echo "Dhcp6 shutdown" | ' + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep 10')
+    fabric_run_command('(echo "Dhcp6 shutdown" | ' + world.f_cfg.software_install_path + 'bin/bindctl ); sleep 10')
 
 
 def parsing_bind_stdout(stdout, opt, search = []):
@@ -387,7 +385,7 @@ def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
     """    
-    world.cfg['leases'] = SOFTWARE_INSTALL_DIR + 'var/bind10/kea-leases6.csv'
+    world.cfg['leases'] = world.f_cfg.software_install_path + 'var/bind10/kea-leases6.csv'
 
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
@@ -415,7 +413,7 @@ def run_bindctl (succeed, opt):
 
     elif opt == "configuration":
         # start logging on different file:
-        if SAVE_LOGS:
+        if world.f_cfg.save_logs:
             set_logger()
         # build configuration file with for:  
         #  - configure all needed to test features
@@ -437,7 +435,7 @@ def run_bindctl (succeed, opt):
         restart_srv()
 
     result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | '
-                                + SOFTWARE_INSTALL_DIR + 'bin/bindctl ); sleep ' + str(SLEEP_TIME_2))
+                                + world.f_cfg.software_install_path + 'bin/bindctl ); sleep ' + str(world.f_cfg.sleep_time_2))
 
     # now let's test output, looking for errors,
     # some times clean can fail, so we wanna test only start and conf

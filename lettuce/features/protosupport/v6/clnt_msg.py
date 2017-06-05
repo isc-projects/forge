@@ -19,14 +19,23 @@
 from features.logging_facility import get_common_logger
 from features.terrain import set_values
 from lettuce.registry import world
-from features.init_all import IFACE, CLI_MAC, CLI_LINK_LOCAL, \
-                              SRV_IPV6_ADDR_LINK_LOCAL, SOFTWARE_UNDER_TEST
 from scapy.layers.dhcp6 import *
 from scapy.sendrecv import debug
 import time
 import importlib
 import random
 
+############################################################################
+#TODO That import have to be switched to ForgeConfiguration class, world.f_cfg
+# from features.init_all import IFACE, CLI_MAC, CLI_LINK_LOCAL, \
+#                               SRV_IPV6_ADDR_LINK_LOCAL, SOFTWARE_UNDER_TEST
+
+IFACE=""
+CLI_MAC =""
+CLI_LINK_LOCAL = ""
+SRV_IPV6_ADDR_LINK_LOCAL = ""
+SOFTWARE_UNDER_TEST = ""
+############################################################################
 
 SRV_IP6 = CLI_LINK_LOCAL
 CLI_IP6 = SRV_IPV6_ADDR_LINK_LOCAL

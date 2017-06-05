@@ -1,4 +1,4 @@
-# Copyright (C) 2014 Internet Systems Consortium.
+# Copyright (C) 2014-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -16,12 +16,6 @@
 # Author: Maciek Fijalkowski
 
 
-from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
-    fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file, \
-    remove_local_file
-from logging_facility import *
-from lettuce.registry import world
-from init_all import SOFTWARE_INSTALL_DIR, IFACE
 from features.softwaresupport.core import *
 
 
@@ -32,9 +26,9 @@ def prepare_default_command():
     """
     build_leases_path()
     build_config_path()
-    world.clntCfg["log_file"] = SOFTWARE_INSTALL_DIR + "dhclient.log"
-    world.clntCfg["command"] = SOFTWARE_INSTALL_DIR + 'sbin/dhclient -6 -v ' \
-                               + IFACE + " -lf " +  world.clntCfg["leases"] + \
+    world.clntCfg["log_file"] = world.f_cfg.software_install_path + "dhclient.log"
+    world.clntCfg["command"] = world.f_cfg.software_install_path + 'sbin/dhclient -6 -v ' \
+                               + world.f_cfg.iface + " -lf " +  world.clntCfg["leases"] + \
                                " -cf " + world.clntCfg["confpath"] + " &> " + \
                                world.clntCfg["log_file"] 
 
@@ -43,14 +37,14 @@ def build_leases_path():
     """
     This small function stores in variable a path for leases file.
     """
-    world.clntCfg["leases"] = SOFTWARE_INSTALL_DIR + "dhclient.leases"
+    world.clntCfg["leases"] = world.f_cfg.software_install_path + "dhclient.leases"
 
 
 def build_config_path():
     """
     This small function stores in variable a path for config file.
     """
-    world.clntCfg["confpath"] = SOFTWARE_INSTALL_DIR + "dhclient.conf"
+    world.clntCfg["confpath"] = world.f_cfg.software_install_path + "dhclient.conf"
 
 
 def clean_leases():
@@ -70,7 +64,7 @@ def create_clnt_cfg():
     world.clntCfg["config"] = "# Config file for ISC-DHCPv6 client\n"
     openBracket = "{"
     closeBracket = "}"
-    eth = IFACE
+    eth = world.f_cfg.iface
     world.clntCfg["config"] += """interface "{eth}" {openBracket} \n\trequest;""".format(**locals())
 
 
@@ -248,12 +242,12 @@ def start_clnt(step):
     get_common_logger().debug("Start dhclient6 with generated config:")
     clean_leases()
     world.clntCfg["keep_lease"] = False
-    fabric_send_file(world.clntCfg["Filename"], SOFTWARE_INSTALL_DIR + "dhclient.conf")
-    fabric_send_file(world.clntCfg["script"], SOFTWARE_INSTALL_DIR + "comm.sh")
+    fabric_send_file(world.clntCfg["Filename"], world.f_cfg.software_install_path + "dhclient.conf")
+    fabric_send_file(world.clntCfg["script"], world.f_cfg.software_install_path + "comm.sh")
     fabric_remove_file_command(world.clntCfg["Filename"])
     fabric_remove_file_command(world.clntCfg["log_file"])
     fabric_sudo_command('(rm nohup.out; nohup bash ' + \
-                        SOFTWARE_INSTALL_DIR + 'comm.sh &); sleep 1;')
+                        world.f_cfg.software_install_path + 'comm.sh &); sleep 1;')
 
 
 def save_leases():
@@ -266,9 +260,9 @@ def save_logs():
 
 
 def clear_all():
-    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'comm.sh')
-    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'dhclient.conf')
-    fabric_remove_file_command(SOFTWARE_INSTALL_DIR + 'dhclient.leases')
+    fabric_remove_file_command(world.f_cfg.software_install_path + 'comm.sh')
+    fabric_remove_file_command(world.f_cfg.software_install_path + 'dhclient.conf')
+    fabric_remove_file_command(world.f_cfg.software_install_path + 'dhclient.leases')
     remove_local_file(world.clntCfg["Filename"])
     remove_local_file(world.clntCfg["script"])
     if not world.clntCfg["keep_lease"] and world.clntCfg['lease_file'] is not "":

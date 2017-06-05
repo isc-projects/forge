@@ -21,7 +21,8 @@ from locale import str
 import sys
 import os
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
-        fabric_remove_file_command, remove_local_file, fabric_sudo_command, configuration_file_name
+        fabric_remove_file_command, remove_local_file, fabric_sudo_command, configuration_file_name,\
+        save_local_file
 from time import sleep
 
 
@@ -267,6 +268,8 @@ def connect_socket(command):
 
 
 def send_through_socket_server_site(socket_path, command):
+    if type(command) is unicode:
+        command = command.encode('ascii','ignore')
     command_file = open(world.cfg["dir_name"] + '/command_file', 'w')
     try:
         command_file.write(command)
@@ -276,9 +279,46 @@ def send_through_socket_server_site(socket_path, command):
         command_file.write(command)
     command_file.close()
     fabric_send_file(world.cfg["dir_name"] + '/command_file', 'command_file')
-    world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', False)
+    world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', True)
     fabric_remove_file_command('command_file')
+    parse_json_file(world.control_channel)
+
+def send_through_http(host_address, host_port, command):
+    import requests
+    result = requests.post("http://" + host_address + ":" + str(host_port),headers={"Content-Type":"application/json"},data=command)
+    parse_json_file(result.text)
+    return result.text
+
+def parse_json_file(input_value, return_value=None):
+    current_json = ""
+    import json
+    try:
+        current_json = json.loads(input_value)
+    except:
+        input_value = ""
+    save_local_file(json.dumps(current_json, sort_keys=True, indent = 2, separators = (',', ': ')), local_flie_name="JSON_RESULT")
+    if return_value is None:
+        print json.dumps(current_json, sort_keys=True, indent = 2, separators = (',', ': '))
+    else:
+        print json.dumps(current_json[return_value], sort_keys=True, indent=2, separators=(',', ': '))
+
+    # if json.dumps(current_json["result"]) == "1":
+    #     assert False, "command failed"
+    try:
+        print current_json['arguments']
+    except:
+        pass
+    #print json.dumps(current_json['arguments'], sort_keys=True, indent = 1, separators = (',', ': '))#['arguments']
+    #print json.dumps( json.loads(world.define[0][1])['Dhcp6']['control-socket'], sort_keys=True, indent=2, separators=(',', ': '))  # ['arguments']
 
 
 def parse_socket_received_data():
     pass
+
+
+def set_value(env_name, env_value):
+    world.f_cfg.set_env_val(env_name, env_value)
+
+
+def temp_set_value(env_name, env_value):
+    world.f_cfg.set_temporaty_value(env_name, env_value)
