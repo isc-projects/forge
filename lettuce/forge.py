@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (C) 2013-216 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -83,7 +83,23 @@ def option_parser():
                       default=None,
                       help="Search path, relative to <forge>/lettuce/features for tests regardless of SUT or protocol")
 
+    parser.add_option("-T", "--test-configuration",
+                      dest="test_config",
+                      action="store_true",
+                      default=False,
+                      help="Run basic tests on current configuration and exit.")
+
     (opts, args) = parser.parse_args()
+
+    if opts.test_config:
+        from features.init_all import ForgeConfiguration
+        f_config = ForgeConfiguration()
+        print f_config.__dict__
+        f_config.test_addresses()
+        f_config.test_remote_location()
+        f_config.test_priviledges()
+        f_config.test_database()
+        sys.exit(-1)
 
     tag = ""
     if opts.tag is not None:
@@ -152,18 +168,11 @@ def test_path_select(number, test_set, name, explicit_path):
 
 def check_config_file():
     try:
-        config = importlib.import_module("features.init_all")
+        importlib.import_module("features.init_all")
     except ImportError:
         print "\n Error: You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)\n"
         #option_parser().print_help()
         sys.exit(-1)
-    if not isinstance(config.SOFTWARE_UNDER_TEST, tuple):
-        print 'If you are listing only one software in SOFTWARE_UNDER_TEST please make sure that it ends with coma ","'
-        sys.exit(-1)
-    elif len(config.SOFTWARE_UNDER_TEST) == 0 or config.PROTO == "" or config.MGMT_ADDRESS == "":
-        print "Please make sure your configuration is valid\nProject Forge shutting down."
-        sys.exit(-1)
-
 
 def start_all(base_path, verbosity, scenario, tag, enable_xunit):
 
