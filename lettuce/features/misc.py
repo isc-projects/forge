@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -20,7 +20,6 @@
 #
 from lettuce import step, world
 from scapy.layers.dhcp6 import DHCP6OptOptReq
-from features.init_all import SOFTWARE_UNDER_TEST
 
 
 def set_world():
@@ -57,7 +56,7 @@ def reconfigure(step):
 
 @step('Test Procedure:')
 def test_procedure(step):
-    for each in SOFTWARE_UNDER_TEST:
+    for each in world.f_cfg.software_under_test:
         if "server" in each:
             if world.proto == "v4":
                 # Start with fresh, empty PRL (v4)

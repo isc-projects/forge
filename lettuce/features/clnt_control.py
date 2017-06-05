@@ -17,10 +17,17 @@
 
 
 from lettuce import world, step
-from init_all import SOFTWARE_UNDER_TEST, DHCP
 from terrain import declare_all
 import importlib
 from terrain import declare_all
+
+
+############################################################################
+#from init_all import SOFTWARE_UNDER_TEST, DHCP
+#TODO That import have to be switched to ForgeConfiguration class, world.f_cfg
+SOFTWARE_UNDER_TEST = ""
+DHCP = ""
+############################################################################
 
 declare_all()
 DNS = ""

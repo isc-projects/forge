@@ -15,11 +15,10 @@
 
 # Author: Wlodzimierz Wencel
 
-from init_all import PROTO
 from lettuce import world, step
 import importlib
 
-dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % PROTO)
+dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % world.f_cfg.proto)
 dns = importlib.import_module("protosupport.dns")
 other = importlib.import_module("protosupport.multi_protocol_functions")
 
@@ -450,6 +449,16 @@ def remove_file_from_server(step, remote_path):
     other.remove_file_from_server(step, remote_path)
 
 
+@step('Temporary change environment variable named (\S+) to value (.+)')
+def temporary_setenv(step, env_name, env_value):
+    other.temp_set_value(env_name, env_value)
+
+
+@step('Add environment variable named (\S+) to value (.+)')
+def set_env(step, env_name, env_value):
+    other.set_value(env_name, env_value)
+
+
 @step('User define temporary variable: (\S+) with value (.+)')
 def add_variable_temporary(step, variable_name, variable_val):
     """
@@ -515,6 +524,7 @@ def send_through_socket(step, socket_address, socket_port, socket_data):
 
 @step('Using UNIX socket on server in path (\S+) send (.+)')
 def send_through_socket_server_site(step, socket_path, command):
+    #assert False, command
     socket_path, command = test_define_value(socket_path, command)
     other.send_through_socket_server_site(socket_path, command)
 
@@ -528,6 +538,16 @@ def send_through_http(step, http_address, http_port, command):
 ## loops
 ## testing in loops is new feature that gives possibility to send lot of messages without
 ## writing usual steps for each message. This feature is not fully tested.
+
+# @step('Start fuzzing. Time: (\d+) (hours|minutes).')
+# def start_fuzzing(step, time_period, time_units):
+#     dhcpmsg.start_fuzzing(time_period, time_units)
+
+@step('Start fuzzing.')
+def start_fuzzing(step):
+    dhcpmsg.start_fuzzing()
+
+
 @step('Loops config: Save leases details.')
 def loops_config_sld(step):
     dhcpmsg.loops_config_sld()

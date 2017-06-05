@@ -16,7 +16,9 @@
 # Author: Wlodzimierz Wencel
 
 from lettuce import world, step
-from init_all import SOFTWARE_UNDER_TEST, DHCP, DNS
+from init_all import SOFTWARE_UNDER_TEST
+DHCP = world.f_cfg.dhcp_used
+DNS = world.f_cfg.dns_used
 from terrain import declare_all
 import importlib
 
@@ -73,7 +75,6 @@ def test_define_value(*args):
 
     """
     tested_args = []
-
     for i in range(len(args)):
         imported = None
         front = None
@@ -94,7 +95,8 @@ def test_define_value(*args):
                 try:
                     imported = getattr(__import__('init_all', fromlist = [tmp[2: index]]), tmp[2: index])
                 except ImportError:
-                    assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
+                    imported = getattr(world.f_cfg, tmp[2: index].lower())
+                    #assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
             if front is None:
                 tested_args.append(imported + tmp[index + 1:])
             else:
@@ -273,7 +275,7 @@ def run_command(step, command):
     Includes everything after "command: " to the end of the line.
     """
     command = test_define_value(command)[0]
-    dhcp.add_line_in_global(command)
+    dhcp.run_command(command)
 
 
 @step('Add to config file line: (.+)')
@@ -281,7 +283,7 @@ def add_line(step, command):
     """
     The same step as 'Run configuration command: (.+)'
     """
-    run_command(step, command)
+    dhcp.run_command(step, command)
 
 
 @step('To global section of the config add file line: (.+)')
@@ -289,7 +291,7 @@ def add_line2(step, command):
     """
     The same step as 'Run configuration command: (.+)'
     """
-    run_command(step, command)
+    dhcp.run_command(step, command)
 
 
 @step('To subnet (\d+) configuration section in the config file add line: (.+)')

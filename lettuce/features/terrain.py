@@ -16,11 +16,8 @@
 # Author: Wlodzimierz Wencel
 
 from Crypto.Random.random import randint
-from init_all import LOGLEVEL, MGMT_ADDRESS, SOFTWARE_UNDER_TEST, CLI_MAC, IFACE, \
-    REL4_ADDR, SRV4_ADDR, PROTO, HISTORY, GIADDR4, TCPDUMP, TCPDUMP_INSTALL_DIR, \
-    AUTO_ARCHIVE, SAVE_LEASES, PACKET_WAIT_INTERVAL, CLI_LINK_LOCAL, DNS, DHCP, \
-    SOFTWARE_INSTALL_DIR, DNS_IFACE, DNS_ADDR, SAVE_LOGS, DNS_PORT, SRV_IPV6_ADDR_GLOBAL
 
+from init_all import ForgeConfiguration
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.config import conf
@@ -35,6 +32,9 @@ import subprocess
 import sys
 import time
 
+# Create Forge configuration class
+world.f_cfg = ForgeConfiguration()
+
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
              "address": "::",
@@ -45,14 +45,14 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "validlft": 0,  # IA_Address IA_Prefix
              "enterprisenum": 0,  # vendor
              "vendor_class_data": "",
-             "linkaddr": SRV_IPV6_ADDR_GLOBAL,  # relay
-             "peeraddr": CLI_LINK_LOCAL,  # relay
+             "linkaddr": world.f_cfg.srv_ipv6_addr_global,  # relay
+             "peeraddr": world.f_cfg.cli_link_local,  # relay
              "ifaceid": "15",  # relay
              "DUID": None,
              "FQDN_flags": "",
              "FQDN_domain_name": "",
              "address_type": 1,
-             "link_local_mac_addr": CLI_MAC,
+             "link_local_mac_addr": world.f_cfg.cli_mac,
              "remote_id": "",
              "subscriber_id": "",
              "ia_id": 0,
@@ -120,7 +120,7 @@ values_v4 = {"ciaddr": "0.0.0.0",
 
 def set_values():
     # this function is called after each message send.
-    if PROTO == "v6":
+    if world.f_cfg.proto == "v6":
         world.cfg["values"] = values_v6.copy()
         world.cfg["server_times"] = server_times_v6.copy()
         world.clntCfg["values"] = srv_values_v6.copy()
@@ -165,9 +165,9 @@ def v4_initialize():
     # Setup scapy for v4
     #conf.iface = IFACE
     conf.checkIPaddr = False  # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
-    world.cfg["srv4_addr"] = SRV4_ADDR
-    world.cfg["rel4_addr"] = REL4_ADDR
-    world.cfg["giaddr4"] = GIADDR4
+    world.cfg["srv4_addr"] = world.f_cfg.srv4_addr
+    world.cfg["rel4_addr"] = world.f_cfg.rel4_addr
+    world.cfg["giaddr4"] = world.f_cfg.giaddr4
     world.cfg["space"] = "dhcp4"
 
     world.cfg["source_port"] = 68
@@ -183,7 +183,7 @@ def v6_initialize():
     # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
     # All DHCP_Servers ff05::1:3.
     world.cfg["address_v6"] = "ff02::1:2"
-    world.cfg["cli_link_local"] = CLI_LINK_LOCAL
+    world.cfg["cli_link_local"] = world.f_cfg.cli_link_local
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.cfg["space"] = "dhcp6"
@@ -192,20 +192,20 @@ def v6_initialize():
     world.cfg["destination_port"] = 547
 
     # Setup scapy for v6
-    conf.iface6 = IFACE
+    conf.iface6 = world.f_cfg.iface
     conf.use_pcap = True
 
     # those values should be initialized once each test
     # if you are willing to change it use 'client set value' steps
-    client_id(CLI_MAC)
+    client_id(world.f_cfg.cli_mac)
     ia_id()
     ia_pd()
 
 
 def dns_initialize():
-    world.cfg["dns_iface"] = DNS_IFACE
-    world.cfg["dns_addr"] = DNS_ADDR
-    world.cfg["dns_port"] = DNS_PORT
+    world.cfg["dns_iface"] = world.f_cfg.dns_iface
+    world.cfg["dns_addr"] = world.f_cfg.dns_addr
+    world.cfg["dns_port"] = world.f_cfg.dns_port
     world.dns_enable = True
 
 
@@ -213,11 +213,11 @@ def define_software():
     # unfortunately we have to do this every single time
     world.cfg["dhcp_under_test"] = ""
     world.cfg["dns_under_test"] = ""
-    for each_name in SOFTWARE_UNDER_TEST:
-        if each_name in DHCP:
+    for each_name in world.f_cfg.software_under_test:
+        if each_name in world.f_cfg.dhcp_used:
             world.cfg["dhcp_under_test"] = each_name
             #world.cfg["dns_under_test"] = ""
-        elif each_name in DNS:
+        elif each_name in world.f_cfg.dns_used:
             world.cfg["dns_under_test"] = each_name
             #world.cfg["dhcp_under_test"] = ""
 
@@ -232,7 +232,7 @@ def declare_all():
     world.savedmsg = {0: []}  # Saved option(s)
     world.define = []  # temporary define variables
 
-    world.proto = PROTO
+    world.proto = world.f_cfg.proto
     world.oro = None
     world.vendor = []
     world.iaad = []
@@ -251,6 +251,7 @@ def declare_all():
     world.dns_enable = False
     world.dhcp_enable = False
     world.ddns_enable = False
+    world.fuzzing = False
 
 
 @before.all
@@ -264,16 +265,16 @@ def test_start():
     if os.path.exists('tests_results'):
         rmtree('tests_results')
     os.makedirs('tests_results')
-    if not os.path.exists('tests_results_archive') and AUTO_ARCHIVE:
+    if not os.path.exists('tests_results_archive') and world.f_cfg.auto_archive:
         os.makedirs('tests_results_archive')
 
     world.result = []
 
     # Initialize the common logger. The instance of this logger can
     # be instantiated by get_common_logger()
-    logger_initialize(LOGLEVEL)
+    logger_initialize(world.f_cfg.loglevel)
 
-    for each in SOFTWARE_UNDER_TEST:
+    for each in world.f_cfg.software_under_test:
         if "server" in each:
             if each in ['kea4_server_bind', 'kea6_server_bind']:
                 get_common_logger().debug("Starting Bind:")
@@ -285,7 +286,7 @@ def test_start():
                     get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\n\
                                                 Please make sure it's configured properly\nIP destination \
                                                 address: %s\nLocal Mac address: %s\nNetwork interface: %s"
-                                              % (MGMT_ADDRESS, CLI_MAC, IFACE))
+                                              % (world.f_cfg.mgmt_address, world.f_cfg.cli_mac, world.f_cfg.iface))
                     sys.exit(-1)
                 get_common_logger().debug("Bind10 successfully started")
 
@@ -304,38 +305,31 @@ def test_start():
 @before.each_scenario
 def initialize(scenario):
 
+    # Devlare all default values
     declare_all()
-
     define_software()
 
-    world.cfg["iface"] = IFACE
+    world.cfg["iface"] = world.f_cfg.iface
     # world.cfg["server_type"] = SOFTWARE_UNDER_TEST for now I'll leave it here,
     # now we use world.cfg["dhcp_under_test"] and world.cfg["dns_under_test"] (in function define_software)
     # it is being filled with values in srv_control and clnt_control
-    world.cfg["wait_interval"] = PACKET_WAIT_INTERVAL
-
+    world.cfg["wait_interval"] = world.f_cfg.packet_wait_interval
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["cfg_file_2"] = "second_server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
     world.subcfg = [["", "", "", "", "", "", ""]]  # additional config structure
     world.reservation_backend = ""
-
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
     world.cfg["subnet"] = ""
     world.cfg["server-id"] = ""
     world.cfg["csv-format"] = "true"
-
     world.name = scenario.name
-
     world.clntCounter = 0
     world.srvCounter = 0
-
     world.clntCfg = {}
-
     world.srvopts = []
     world.pref = None
-
     world.time = None
     # append single timestamp to list
     world.timestamps = []
@@ -373,8 +367,8 @@ def initialize(scenario):
     if not os.path.exists(world.cfg["dir_name"] + '/dns') and world.dns_enable:
         os.makedirs(world.cfg["dir_name"] + '/dns')
 
-    if TCPDUMP:
-        cmd = TCPDUMP_INSTALL_DIR + 'tcpdump'
+    if world.f_cfg.tcpdump:
+        cmd = world.f_cfg.tcpdump_path + 'tcpdump'
         args = [cmd, "-U", "-w", world.cfg["dir_name"] + "/capture.pcap",
                 "-s", str(65535), "-i", world.cfg["iface"]]
 
@@ -383,7 +377,7 @@ def initialize(scenario):
         # TODO make sure it works properly!
         if world.dhcp_enable and world.dns_enable:
             if world.cfg["dns_iface"] != world.cfg["iface"]:
-                cmd2 = TCPDUMP_INSTALL_DIR + 'tcpdump'
+                cmd2 = world.f_cfg.tcpdump_path + 'tcpdump'
                 args2 = [cmd2, "-U", "-w", world.cfg["dir_name"] + "/capture_dns.pcap",
                          "-s", str(65535), "-i", world.cfg["dns_iface"]]
 
@@ -435,19 +429,19 @@ def cleanup(scenario):
     if 'outline' not in info:
         add_result_to_report(info)
 
-    if TCPDUMP:
+    if world.f_cfg.tcpdump:
         time.sleep(1)
         args = ["killall tcpdump"]
         subprocess.call(args, shell = True)
         # TODO: log output in debug mode
 
-    for each in SOFTWARE_UNDER_TEST:
+    for each in world.f_cfg.software_under_test:
         functions = importlib.import_module("softwaresupport.%s.functions" % each)
-        if SAVE_LEASES:
+        if world.f_cfg.save_leases:
             # save leases, if there is none leases in your software, just put "pass" in this function.
             functions.save_leases()
 
-        if SAVE_LOGS:
+        if world.f_cfg.save_logs:
             functions.save_logs()
 
         # every software have something else to clear. Put in clear_all() whatever you need
@@ -468,13 +462,13 @@ def say_goodbye(total):
         total.scenarios_passed,
         total.scenarios_ran
     ))
-    if HISTORY:
+    if world.f_cfg.history:
         result = open('result', 'w')
         for item in world.result:
             result.write(str(item) + '\n')
         result.close()
 
-    for each in SOFTWARE_UNDER_TEST:
+    for each in world.f_cfg.software_under_test:
         if each in ['kea4_server_bind', 'kea6_server_bind']:
             clean_config = importlib.import_module("softwaresupport.%s.functions" % each)
             clean_config.run_bindctl(True, 'clean')
@@ -491,7 +485,7 @@ def say_goodbye(total):
             # True passed to stop_srv is to hide output in console.
             stop.stop_srv(True)
 
-    if AUTO_ARCHIVE:
+    if world.f_cfg.auto_archive:
         name = ""
         if world.cfg["dhcp_under_test"] != "":
             name += world.cfg["dhcp_under_test"]
@@ -500,7 +494,7 @@ def say_goodbye(total):
                 name += "_"
             name += world.cfg["dhcp_under_test"]
 
-        archive_name = PROTO + '_' + name + '_' + time.strftime("%Y-%m-%d-%H:%M")
+        archive_name = world.f_cfg.proto + '_' + name + '_' + time.strftime("%Y-%m-%d-%H:%M")
         archive_name = archive_file_name(1, 'tests_results_archive/' + archive_name)
         make_tarfile(archive_name + '.tar.gz', 'tests_results')
 
