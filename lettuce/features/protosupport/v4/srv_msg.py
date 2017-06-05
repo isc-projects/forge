@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -20,8 +20,9 @@ from logging_facility import *
 from scapy.all import get_if_raw_hwaddr, Ether, srp 
 from scapy.config import conf
 from scapy.fields import Field
-from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
+from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions, Raw
 from scapy.layers.inet import IP, UDP
+from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
 from random import randint
 from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
@@ -130,10 +131,21 @@ def client_does_include(step, opt_type, value):
             fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
         else:
             ## code domain name:
-
             domain = "".join(map(lambda z: chr(len(z))+z, world.cfg["values"]["FQDN_domain_name"].split('.')))
             fqdn = (flags + '\x00\x00' + domain)
         world.cliopts += [('client_FQDN', fqdn)]
+    elif opt_type == 'pxe_client_architecture':
+        world.cliopts += [(opt_type, '\00' + chr(int(value)))]
+    elif opt_type == 'pxe_client_network_interface':
+        world.cliopts += [(opt_type, chr(int(value[0])) + chr(int(value[1])) + chr(int(value[2])) )]
+    elif opt_type == 'pxe_client_machine_identifier':
+        import binascii
+        #tmp = binascii.hexlify(value)
+        # value = str(value)
+        # tmp = ""
+        # for each in value:
+        #     tmp += chr(int(each))
+        world.cliopts += [(opt_type, value.encode())]
     else:
         world.cliopts += [(opt_type, str(value))]
 
@@ -200,6 +212,9 @@ def client_copy_option(step, opt_name):
 def convert_MAC(mac):
     # convert MAC address to hex representation
     return mac.replace(':', '').decode('hex')
+
+def start_fuzzing():#time_period, time_units):
+    world.fuzzing = True
 
 
 def build_msg(opts):
@@ -292,7 +307,7 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
         world.climsg[0].show()
 
     expected_type_found = False
-    
+
     received_names = ""
     world.cliopts = []
     world.srvmsg = []
@@ -305,13 +320,13 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:
             expected_type_found = True
-            
+
     get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
                               % (len(ans), len(unans)))
     if exp_message != "None":
         for x in unans:
             get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
-            
+
         if presence:
             assert len(world.srvmsg) != 0, "No response received."
             assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
