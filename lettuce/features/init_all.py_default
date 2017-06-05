@@ -127,7 +127,7 @@ TCPDUMP = False
 
 # If your tcpdump is installed in different location place that in TCPDUMP_INSTALL_DIR
 # otherwise leave it blank
-TCPDUMP_INSTALL_DIR = ""
+TCPDUMP_PATH = ""
 
 # Also we can decide to keep main configuration file in tests_results.
 SAVE_CONFIG_FILE = False
@@ -218,15 +218,13 @@ DNS_ADDR = ""
 DNS_PORT = 53
 
 # Absolute path to server installation:
-DNS_SERVER_INSTALL_DIR = ""
+DNS_SERVER_INSTALL_PATH = ""
 
 # Additional path for server management:
-DNS_DATA_DIR = ""
+DNS_DATA_PATH = ""
 
-
-### DO NOT CHANGE THIS ###
-EMPTY=""
-NONE=None
+EMPTY = ""
+NONE = None
 SOFTWARE_INSTALL_DIR = SOFTWARE_INSTALL_PATH
 
 import os
@@ -275,6 +273,7 @@ DB_USER = os.getenv('DB_USER', DB_USER)
 DB_PASSWD = os.getenv('DB_PASSWD', DB_PASSWD)
 DB_HOST = os.getenv('DB_HOST', DB_HOST)
 
+
 class ForgeConfiguration:
     def __init__(self):
         # default
@@ -317,7 +316,7 @@ class ForgeConfiguration:
         self.giaddr4 = GIADDR4
         self.iface = IFACE
         self.server_iface = SERVER_IFACE
-        self.cli_mac = self.getHwAddr(self.iface)
+        self.cli_mac = self.gethwaddr(self.iface)
 
         # DNS
         self.dns_iface = DNS_IFACE
@@ -337,10 +336,11 @@ class ForgeConfiguration:
         # used defined variables
         self.user_variables_temp = []
 
-        #basic validation of configuration
+        # basic validation of configuration
         self.basic_validation()
 
-    def getHwAddr(self, ifname):
+    def gethwaddr(self, ifname):
+        import fcntl, socket, struct
         s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
         return ':'.join(['%02x' % ord(char) for char in info[18:24]])
@@ -348,10 +348,12 @@ class ForgeConfiguration:
     def basic_validation(self):
         from sys import exit
         if self.proto not in ["v4", "v6"]:
-            print "Configuration failure, protocol version not set properly. Please use ./forge.py -T to validate configuration."
+            print "Configuration failure, protocol version not set properly." \
+                  " Please use ./forge.py -T to validate configuration."
             exit(-1)
         if self.software_install_path == "":
-            print "Configuration failure, software_install_path empty. Please use ./forge.py -T to validate configuration."
+            print "Configuration failure, software_install_path empty." \
+                  " Please use ./forge.py -T to validate configuration."
             exit(-1)
         if self.mgmt_address == "":
             print "Configuration failure, mgmt_address empty. Please use ./forge.py -T to validate configuration."
@@ -368,7 +370,8 @@ class ForgeConfiguration:
 
     def set_temporaty_value(self, env_name, env_val):
         """
-        Will set temporary value of existing variable for the purpose of one test, should be removed in section @after_each
+        Will set temporary value of existing variable for the purpose of one test,
+        should be removed in section @after_each
         :return:
         """
         # TODO develop this one
@@ -391,7 +394,6 @@ class ForgeConfiguration:
         from softwaresupport.multi_server_functions import fabric_run_command
         result = fabric_run_command("ls -la")
 
-
     def test_addresses(self):
         """
         Ping to all configured addresses
@@ -412,7 +414,6 @@ class ForgeConfiguration:
             result = fabric_run_command('ls -la ' + self.software_install_path + 'sbin/dhcpd')
         else:
             result = True
-
 
     def test_priviledges(self):
         """
@@ -437,6 +438,11 @@ class ForgeConfiguration:
         else:
             print "!TODO"
             return 0
+
+
+from lettuce import world, before, after
+world.f_cfg = ForgeConfiguration()
+
 
 if __name__ == '__main__':
     f_config = ForgeConfiguration()

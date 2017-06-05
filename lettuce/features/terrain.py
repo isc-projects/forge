@@ -17,7 +17,7 @@
 
 from Crypto.Random.random import randint
 
-from init_all import ForgeConfiguration
+#from init_all import ForgeConfiguration
 from lettuce import world, before, after
 from logging_facility import *
 from scapy.config import conf
@@ -33,7 +33,7 @@ import sys
 import time
 
 # Create Forge configuration class
-world.f_cfg = ForgeConfiguration()
+#world.f_cfg = ForgeConfiguration()
 
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
