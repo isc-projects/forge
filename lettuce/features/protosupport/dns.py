@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,7 @@ from scapy.all import sr
 from scapy.layers.dns import *
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
-from init_all import SHOW_PACKETS_FROM, PROTO
+#from init_all import SHOW_PACKETS_FROM, PROTO
 
 dnstypes = {"ANY": 0,
             "ALL": 255,
@@ -77,7 +77,7 @@ def send_query():
 
 
 def send_wait_for_query(choose_must, presence):
-    if SHOW_PACKETS_FROM in ['both', 'client']:
+    if world.f_cfg.show_packets_from in ['both', 'client']:
             world.climsg[0].show()
 
     ans, unans = sr(world.climsg,
@@ -98,7 +98,7 @@ def send_wait_for_query(choose_must, presence):
         a, b = x
         world.srvmsg.append(b.getlayer(2))
 
-        if SHOW_PACKETS_FROM in ['both', 'server']:
+        if world.f_cfg.show_packets_from in ['both', 'server']:
             try:  # that is temp solution until we have good respond system checking!
                 world.srvmsg[0].show()
             except:
@@ -161,7 +161,7 @@ def dns_question_record(addr, my_qtype, my_qclass):
 
 
 def build_msg():
-    if PROTO == "v6":
+    if world.f_cfg.proto == "v6":
         msg = IPv6(dst = world.cfg["dns_addr"])/UDP(sport = world.cfg["dns_port"], dport = world.cfg["dns_port"])
     else:
         msg = IP(dst = world.cfg["dns_addr"])/UDP(sport = world.cfg["dns_port"], dport = world.cfg["dns_port"])
