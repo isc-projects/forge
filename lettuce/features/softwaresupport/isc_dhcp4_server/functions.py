@@ -441,6 +441,16 @@ def build_log_path():
 
 
 def build_and_send_config_files(connection_type, configuration_type):
+    """
+    This one is needed in kea only
+    """
+    pass
+
+
+def start_srv(start, process):
+    """
+    Start ISC-DHCP with generated config.
+    """
     if not "conf_option" in world.cfg:
         world.cfg["conf_option"] = ""
 
@@ -476,12 +486,6 @@ def build_and_send_config_files(connection_type, configuration_type):
     world.cfg["conf_option"] = ""
     world.cfg["conf_vendor"] = ""
 
-
-def start_srv(start, process):
-    """
-    Start ISC-DHCP with generated config.
-    """
-    world.cfg['leases'] = build_leases_path()
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path
                                  + 'sbin/dhcpd -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
