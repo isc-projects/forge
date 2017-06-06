@@ -87,7 +87,7 @@ SERVER_IFACE = ""
 
 # Specifies path to the server installation directory on DUT. This must
 # point to root directory of server installation and must end with /.
-SOFTWARE_INSTALL_DIR = "/usr/local/"
+SOFTWARE_INSTALL_PATH = "/usr/local/"
 
 # When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
 # as the interval in which to check again if it has not been found yet.

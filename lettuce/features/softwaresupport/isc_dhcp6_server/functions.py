@@ -521,6 +521,7 @@ def start_srv(start, process):
     """
     Start ISC-DHCPv6 with generated config.
     """
+    world.cfg['leases'] = build_leases_path()
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path
                                  + 'sbin/dhcpd -6 -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']

@@ -275,7 +275,7 @@ def run_command(step, command):
     Includes everything after "command: " to the end of the line.
     """
     command = test_define_value(command)[0]
-    dhcp.run_command(command)
+    dhcp.run_command(step, command)
 
 
 @step('Add to config file line: (.+)')
