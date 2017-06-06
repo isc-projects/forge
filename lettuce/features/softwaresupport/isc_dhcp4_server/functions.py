@@ -166,7 +166,7 @@ def restart_srv():
     fabric_sudo_command('touch ' + world.cfg['leases'])
     fabric_sudo_command('(' + world.f_cfg.software_install_path
                         + 'sbin/dhcpd -cf server.cfg_processed -lf '
-                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.world.f_cfg.sleep_time_1) + ';')
+                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 
 
 def add_siaddr(step, addr, subnet_number):
@@ -479,19 +479,19 @@ def start_srv(start, process):
     fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
 
-    # clear configs in case we would like make couple configs in one test
-    world.cfg["conf_time"] = ""
-    world.cfg["log_facility"] = ""
-    world.cfg["custom_lines"] = ""
-    world.cfg["conf_option"] = ""
-    world.cfg["conf_vendor"] = ""
-
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path
                                  + 'sbin/dhcpd -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
                                  + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 
     check_process_result(start, result, process)
+
+    # clear configs in case we would like make couple configs in one test
+    world.cfg["conf_time"] = ""
+    world.cfg["log_facility"] = ""
+    world.cfg["custom_lines"] = ""
+    world.cfg["conf_option"] = ""
+    world.cfg["conf_vendor"] = ""
 
 
 def save_leases():

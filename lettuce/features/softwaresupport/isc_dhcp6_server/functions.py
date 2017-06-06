@@ -143,7 +143,7 @@ def restart_srv():
     fabric_sudo_command('touch ' + world.cfg['leases'])
     fabric_sudo_command('(' + world.f_cfg.software_install_path
                         + 'sbin/dhcpd -6 -cf server.cfg_processed -lf '
-                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.world.f_cfg.sleep_time_1) + ';')
+                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 
 
 def stop_srv(value = False):
@@ -454,7 +454,7 @@ def set_ethernet_interface():
     """
     tmp = world.cfg["subnet"].split('/')
     address = tmp[0] + "1/" + tmp[1]
-    eth = world.f_cfg.world.f_cfg.server_iface
+    eth = world.f_cfg.server_iface
     cmd = 'ip addr flush {eth}'.format(**locals())
     cmd1 = 'ip -6 addr add {address} dev {eth}'.format(**locals())
 
@@ -519,12 +519,6 @@ def start_srv(start, process):
 
     fabric_run_command('echo y |rm ' + world.cfg['leases'])
     fabric_run_command('touch ' + world.cfg['leases'])
-    # clear configs in case we would like make couple configs in one test
-    world.cfg["conf_time"] = ""
-    world.cfg["log_facility"] = ""
-    world.cfg["custom_lines"] = ""
-    world.cfg["conf_option"] = ""
-    world.cfg["conf_vendor"] = ""
 
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path
                                  + 'sbin/dhcpd -6 -cf server.cfg_processed'
@@ -533,14 +527,21 @@ def start_srv(start, process):
 
     check_process_result(start, result, process)
 
+    # clear configs in case we would like make couple configs in one test
+    world.cfg["conf_time"] = ""
+    world.cfg["log_facility"] = ""
+    world.cfg["custom_lines"] = ""
+    world.cfg["conf_option"] = ""
+    world.cfg["conf_vendor"] = ""
+
 
 def check_process_result(succeed, result, process):
-    errors = ["Configuration file errors encountered -- exiting", "exiting."]
+    errors = ["exiting."]
     for each in errors:
-        if succeed:
+        if succeed is True:
             if each in result:
                 assert False, 'Server configuration/starting process failed!'
-        if not succeed:
+        else:
             if each not in result:
                 assert False, 'Server configuration/starting process NOT failed!'
 
