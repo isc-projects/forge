@@ -18,10 +18,9 @@
 from lettuce import world, step
 import importlib
 
-dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % world.f_cfg.proto)
+dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % world.proto)
 dns = importlib.import_module("protosupport.dns")
 other = importlib.import_module("protosupport.multi_protocol_functions")
-
 from srv_control import test_define_value
 
 

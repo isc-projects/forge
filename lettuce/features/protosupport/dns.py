@@ -21,7 +21,6 @@ from scapy.all import sr
 from scapy.layers.dns import *
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
-#from init_all import SHOW_PACKETS_FROM, PROTO
 
 dnstypes = {"ANY": 0,
             "ALL": 255,
@@ -161,7 +160,7 @@ def dns_question_record(addr, my_qtype, my_qclass):
 
 
 def build_msg():
-    if world.f_cfg.proto == "v6":
+    if world.proto == "v6":
         msg = IPv6(dst = world.cfg["dns_addr"])/UDP(sport = world.cfg["dns_port"], dport = world.cfg["dns_port"])
     else:
         msg = IP(dst = world.cfg["dns_addr"])/UDP(sport = world.cfg["dns_port"], dport = world.cfg["dns_port"])

@@ -32,8 +32,6 @@ import subprocess
 import sys
 import time
 
-# Create Forge configuration class
-#world.f_cfg = ForgeConfiguration()
 
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
@@ -117,7 +115,7 @@ values_v4 = {"ciaddr": "0.0.0.0",
 # we should consider transfer most of functions to separate v4 and v6 files
 # TODO: make separate files after branch merge
 
-
+@world.absorb
 def set_values():
     # this function is called after each message send.
     if world.f_cfg.proto == "v6":
@@ -358,7 +356,7 @@ def initialize(scenario):
     if "dns_under_test" in world.cfg:
         dns_initialize()
 
-    set_values()
+    world.set_values()
 
     # to create separate files for each test we need:
     # create new directory for that test:
