@@ -791,8 +791,6 @@ def extract_duid(option):
         return "0001000" + str(option.hwtype) + str(hex(option.timeval))[2:] + str(option.lladdr).replace(":", "")
     elif option.type == 2:
         # DUID_EN
-        #TODO fix it, some how scapy does not allow this, used in test v6.server-id.en
-        assert False, "not done yet"
         return "0002" + str(option.enterprisenum) + str(option.id.decode())
     elif option.type == 3:
         # DUID_LL
