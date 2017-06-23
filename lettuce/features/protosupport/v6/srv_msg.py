@@ -21,7 +21,6 @@
 #
 from cookielib import debug
 from features.logging_facility import get_common_logger
-from features.terrain import set_values
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 

@@ -17,7 +17,6 @@
 
 
 from features.logging_facility import get_common_logger
-from features.terrain import set_values
 from lettuce.registry import world
 from scapy.layers.dhcp6 import *
 from scapy.sendrecv import debug
@@ -202,7 +201,7 @@ def server_build_msg(step, response, msgType):
         # amount of time (collects advertises) and then sends request.
         world.clntCounter += 1
 
-    set_values()
+    world.set_values()
     #TODO after removing "set_options" from code v6 client testing should be rebuild
     #set_options()
 
@@ -388,7 +387,7 @@ def srv_msg_clean(step):
 
     world.srvopts = []
     world.pref = None
-    set_values()
+    world.set_values()
     #TODO after removing "set_options" from code v6 client testing should be rebuild
     #set_options()
 
