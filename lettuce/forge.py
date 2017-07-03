@@ -135,6 +135,7 @@ class ForgeConfiguration:
 
         # NETWORK
         self.srv_ipv6_addr_global = SRV_IPV6_ADDR_GLOBAL
+        self.srv_ipv6_addr_link_local = SRV_IPV6_ADDR_LINK_LOCAL
         self.cli_link_local = CLI_LINK_LOCAL
 
         # used defined variables
