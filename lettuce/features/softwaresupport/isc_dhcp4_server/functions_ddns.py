@@ -66,7 +66,7 @@ def add_forward_ddns(name, key_name, ip_address, port):
         world.ddns_forw.append('''zone {name} 
                                 {pointer_start}
                                 key {key_name};
-                                primary {ip_address}
+                                primary {ip_address};
                                 {pointer_end}'''.format(**locals()))
 
 
@@ -90,7 +90,7 @@ def add_reverse_ddns(name, key_name, ip_address, port):
         world.ddns_rev.append('''zone {name} 
                                 {pointer_start}
                                 key {key_name};
-                                primary {ip_address}
+                                primary {ip_address};
                                 {pointer_end}'''.format(**locals()))
 
 
@@ -99,18 +99,18 @@ def add_keys(secret, name, algorithm):
     pointer_end = "}"
 
     world.ddns_keys.append(''' key {name}
-    {pointer_start}
-        secret {secret}
-        algorithm {algorithm}
-      {pointer_end}'''.format(**locals()))
+                        {pointer_start}
+                        secret {secret};
+                        algorithm {algorithm};
+                        {pointer_end}'''.format(**locals()))
 
 
 def build_ddns_config():
     world.ddns = world.ddns_main
+    for each in world.ddns_keys:
+        world.ddns_keys += each
     for each in world.ddns_rev:
         world.ddns += each
     for each in world.ddns_forw:
         world.ddns += each
-    for each in world.ddns_keys:
-        world.ddns_keys += each
 
