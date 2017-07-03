@@ -4,7 +4,7 @@ Feature: DHCPv4 Client Classification - request process
     Tests for Client Classification performed through option vendor class identification.
     
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.one.class.one-subnet
+    Scenario: v4.client.classification.one-class-one-subnet
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -49,7 +49,7 @@ DHCP server is started.
     Response option 61 MUST contain value 00010203040506.
 	
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.one.class.two-subnets-same-values
+    Scenario: v4.client.classification.one-class-two-subnets-same-values
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -126,7 +126,7 @@ DHCP server is started.
     Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.one.class.two-subnets-different-class-id-included
+    Scenario: v4.client.classification.one-class-two-subnets-different-class-id-included
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -153,7 +153,7 @@ DHCP server is started.
     Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.one.class.two-subnets-different-chaddr
+    Scenario: v4.client.classification.one-class-two-subnets-different-chaddr
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -221,7 +221,7 @@ DHCP server is started.
     Response option 54 MUST contain value $(SRV4_ADDR).
 
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.one.class.empty-pool-with-classification
+    Scenario: v4.client.classification.one-class-empty-pool-with-classification
 
 	# test if server is assigning addresses from pool without classification after 
 	# all addresses form pool with classification has been assigned
@@ -278,7 +278,7 @@ DHCP server is started.
     Server MUST NOT respond.
 
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.one.class.empty-pool-without-classification
+    Scenario: v4.client.classification.one-class-empty-pool-without-classification
 
 	# test if server is assigning addresses from pool with classification after 
 	# all addresses form pool without classification has been assigned
@@ -332,7 +332,7 @@ DHCP server is started.
     Server MUST NOT respond.
 
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.multiple.classes.two-subnets-different-chaddr
+    Scenario: v4.client.classification.multiple-classes-two-subnets-different-chaddr
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -403,7 +403,7 @@ DHCP server is started.
     Response option 54 MUST contain value $(SRV4_ADDR).
     
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.multiple.classes.three-subnets-different-chaddr
+    Scenario: v4.client.classification.multiple-classes-three-subnets-different-chaddr
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -475,7 +475,7 @@ DHCP server is started.
     Response option 54 MUST contain value $(SRV4_ADDR).
 
 @v4 @dhcp4 @classification
-    Scenario: v4.client.classification.multiple.classes.three-subnets-different-values
+    Scenario: v4.client.classification.multiple-classes-three-subnets-different-values
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.

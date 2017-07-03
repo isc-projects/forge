@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS forward and reverse update.
 
 @v4 @ddns @tsig @forward_reverse_add
-    Scenario: ddns4.tsig.sha1-forw_and_rev
+    Scenario: ddns4.tsig-sha1-forw_and_rev
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
     DDNS server is configured on 127.0.0.1 address and 53001 port.
@@ -75,7 +75,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 @v4 @ddns @tsig @forward_reverse_add
-    Scenario: ddns4.tsig.sha224-forw_and_rev
+    Scenario: ddns4.tsig-sha224-forw_and_rev
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -148,7 +148,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 @v4 @ddns @tsig @forward_reverse_add
-    Scenario: ddns4.tsig.sha256-forw_and_rev
+    Scenario: ddns4.tsig-sha256-forw_and_rev
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -221,7 +221,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 @v4 @ddns @tsig @forward_reverse_add
-    Scenario: ddns4.tsig.sha384-forw_and_rev
+    Scenario: ddns4.tsig-sha384-forw_and_rev
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -295,7 +295,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 @v4 @ddns @tsig @forward_reverse_add
-    Scenario: ddns4.tsig.sha512-forw_and_rev
+    Scenario: ddns4.tsig-sha512-forw_and_rev
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -369,7 +369,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 @v4 @ddns @tsig @forward_reverse_add
-    Scenario: ddns4.tsig.md5-forw_and_rev
+    Scenario: ddns4.tsig-md5-forw_and_rev
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -443,7 +443,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 @v4 @ddns @tsig @forward_reverse_add
-    Scenario: ddns4.tsig.multi-key-forw_and_rev
+    Scenario: ddns4.tsig-multi-key-forw_and_rev
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.

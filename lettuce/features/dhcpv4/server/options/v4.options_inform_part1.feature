@@ -7,7 +7,7 @@ Feature: DHCPv4 options requested via DHCP_INFORM message part1
 	# References in all tests are temporary empty, that's intentional.
 
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.subnet-mask
+    Scenario: v4.options.inform-subnet-mask
     # Checks that server is able to serve subnet-mask option to clients.
 
     Test Setup:
@@ -29,7 +29,7 @@ DHCP server is started.
     #References: v4.options, v4.prl, RFC2131
 
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.time-offset
+    Scenario: v4.options.inform-time-offset
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -48,7 +48,7 @@ DHCP server is started.
     Response option 2 MUST contain value 50.
 
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.routers
+    Scenario: v4.options.inform-routers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -68,7 +68,7 @@ DHCP server is started.
     Response option 3 MUST contain value 50.50.50.5.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.time-servers
+    Scenario: v4.options.inform-time-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -88,7 +88,7 @@ DHCP server is started.
     Response option 4 MUST contain value 199.199.199.2.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.name-servers
+    Scenario: v4.options.inform-name-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -108,7 +108,7 @@ DHCP server is started.
     Response option 5 MUST contain value 100.100.100.1.
 
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.domain-name-servers
+    Scenario: v4.options.inform-domain-name-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -128,7 +128,7 @@ DHCP server is started.
     Response option 6 MUST contain value 100.100.100.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.log-servers
+    Scenario: v4.options.inform-log-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -148,7 +148,7 @@ DHCP server is started.
     Response option 7 MUST contain value 100.100.100.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.cookie-servers
+    Scenario: v4.options.inform-cookie-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -168,7 +168,7 @@ DHCP server is started.
     Response option 8 MUST contain value 100.100.100.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.lpr-servers
+    Scenario: v4.options.inform-lpr-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -188,7 +188,7 @@ DHCP server is started.
     Response option 9 MUST contain value 150.150.150.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.impress-servers
+    Scenario: v4.options.inform-impress-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -208,7 +208,7 @@ DHCP server is started.
     Response option 10 MUST contain value 150.150.150.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.resource-location-servers
+    Scenario: v4.options.inform-resource-location-servers
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -228,7 +228,7 @@ DHCP server is started.
     Response option 11 MUST contain value 150.150.150.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.host-name
+    Scenario: v4.options.inform-host-name
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -247,7 +247,7 @@ DHCP server is started.
     Response option 12 MUST contain value isc.example.com.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.boot-size
+    Scenario: v4.options.inform-boot-size
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -266,7 +266,7 @@ DHCP server is started.
     Response option 13 MUST contain value 55.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.merit-dump
+    Scenario: v4.options.inform-merit-dump
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -285,7 +285,7 @@ DHCP server is started.
     Response option 14 MUST contain value some-string.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.swap-server
+    Scenario: v4.options.inform-swap-server
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -304,7 +304,7 @@ DHCP server is started.
     Response option 16 MUST contain value 199.199.199.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.root-path
+    Scenario: v4.options.inform-root-path
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -323,7 +323,7 @@ DHCP server is started.
     Response option 17 MUST contain value /some/location/example/.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.extensions-path
+    Scenario: v4.options.inform-extensions-path
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -342,7 +342,7 @@ DHCP server is started.
     Response option 18 MUST contain value /some/location/example/.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.policy-filter
+    Scenario: v4.options.inform-policy-filter
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -362,7 +362,7 @@ DHCP server is started.
     Response option 21 MUST contain value 50.50.50.1.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.max-dgram-reassembly
+    Scenario: v4.options.inform-max-dgram-reassembly
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -381,7 +381,7 @@ DHCP server is started.
     Response option 22 MUST contain value 600.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.default-ip-ttl
+    Scenario: v4.options.inform-default-ip-ttl
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -400,7 +400,7 @@ DHCP server is started.
     Response option 23 MUST contain value 86.
     
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.path-mtu-aging-timeout
+    Scenario: v4.options.inform-path-mtu-aging-timeout
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -419,7 +419,7 @@ DHCP server is started.
     Response option 24 MUST contain value 85.
 
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.invalid
+    Scenario: v4.options.inform-invalid
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -435,7 +435,7 @@ DHCP server is started.
     Server MUST NOT respond.
 
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.relay
+    Scenario: v4.options.inform-relay
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -460,7 +460,7 @@ DHCP server is started.
     Response option 24 MUST contain value 85.
 
 @v4 @dhcp4 @options @subnet @dhcp_inform
-    Scenario: v4.options.inform.invalid-with-serverid
+    Scenario: v4.options.inform-invalid-with-serverid
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.

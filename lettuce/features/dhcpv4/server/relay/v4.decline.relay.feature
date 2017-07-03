@@ -4,7 +4,7 @@ Feature: DHCPv4 address decline process
     Those are simple DHCPv4 tests for declining assigned address in relay traffic.
     
 @v4 @dhcp4 @relay @decline
-Scenario: v4.relay.decline.success
+Scenario: v4.relay.decline-success
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -59,7 +59,7 @@ DHCP server is started.
     Response MUST contain yiaddr 192.168.50.1.
 
 @v4 @dhcp4 @relay @decline
-Scenario: v4.relay.decline.fail-without-serverid
+Scenario: v4.relay.decline-fail-without-serverid
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.

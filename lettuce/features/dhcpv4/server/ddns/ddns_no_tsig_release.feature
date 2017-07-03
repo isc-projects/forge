@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS removing forward and reverse entries in time of releasing leases.
 
 @v4 @ddns @notsig @forward_reverse_remove
-    Scenario: ddns4.notsig.forw_and_rev.release
+    Scenario: ddns4.notsig-forw-and-rev-release
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -102,7 +102,7 @@ DHCP server is started.
     Received DNS query MUST include empty ANSWER part.
 
 @v4 @ddns @notsig @forward_reverse_remove
-    Scenario: ddns4.notsig.forw_and_rev.release-notenabled
+    Scenario: ddns4.notsig-forw-and-rev-release-notenabled
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -219,7 +219,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 @v4 @ddns @notsig @reverse_remove
-    Scenario: ddns4.notsig.rev.release
+    Scenario: ddns4.notsig-rev-release
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -314,7 +314,7 @@ DHCP server is started.
     Received DNS query MUST include empty ANSWER part.
 
 @v4 @ddns @notsig @expire
-    Scenario: ddns4.notsig.expire
+    Scenario: ddns4.notsig-expire
 
     Test Setup:
 	Time renew-timer is configured with value 3.

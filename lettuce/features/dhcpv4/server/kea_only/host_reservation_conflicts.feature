@@ -2,7 +2,7 @@ Feature: Host Reservation DHCPv4
     Tests for Host Reservation feature conflict resolution with address reservation based on MAC address.
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.duplicate-reservations
+    Scenario: v4.host.reservation.conflicts-duplicate-reservations
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
     Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
@@ -12,7 +12,7 @@ DHCP server failed to start. During configuration process.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.duplicate-reservations-different-subnets
+    Scenario: v4.host.reservation.conflicts-duplicate-reservations-different-subnets
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
     Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.1-192.168.51.50 pool.
@@ -23,7 +23,7 @@ DHCP server is started.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-address
+    Scenario: v4.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-address
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.2 pool.
@@ -76,7 +76,7 @@ Reconfigure DHCP server.
     Response MUST NOT contain yiaddr 192.168.50.2.
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-address-2
+    Scenario: v4.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-address-2
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.2 pool.
@@ -133,7 +133,7 @@ Reconfigure DHCP server.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.reconfigure-server-with-reservation-of-used-address-3
+    Scenario: v4.host.reservation.conflicts-reconfigure-server-with-reservation-of-used-address-3
     Test Setup:
     # reconfigure different address for same MAC from outside of the pool
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.9 pool.
@@ -185,7 +185,7 @@ Reconfigure DHCP server.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.reconfigure-server-switched-mac-in-reservations-in-pool
+    Scenario: v4.host.reservation.conflicts-reconfigure-server-switched-mac-in-reservations-in-pool
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
     Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
@@ -225,7 +225,7 @@ Reconfigure DHCP server.
     Response MUST NOT contain yiaddr 192.168.50.10.
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.reconfigure-server-switched-mac-in-reservations-out-of-pool
+    Scenario: v4.host.reservation.conflicts-reconfigure-server-switched-mac-in-reservations-out-of-pool
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
@@ -266,7 +266,7 @@ Reconfigure DHCP server.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.reconfigure-server-add-reservation-for-host-that-has-leases
+    Scenario: v4.host.reservation.conflicts-reconfigure-server-add-reservation-for-host-that-has-leases
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
     Send server configuration using SSH and config-file.
@@ -337,7 +337,7 @@ Reconfigure DHCP server.
     Response MUST contain yiaddr 192.168.50.5.
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.renew-address-that-has-been-reserved-during-reconfiguration
+    Scenario: v4.host.reservation.conflicts-renew-address-that-has-been-reserved-during-reconfiguration
 
     Test Setup:
     Time renew-timer is configured with value 3.
@@ -412,7 +412,7 @@ Reconfigure DHCP server.
     Response MUST contain yiaddr 192.168.50.5.
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.renew-address-using-different-mac-that-has-been-reserved-during-reconfiguration
+    Scenario: v4.host.reservation.conflicts-renew-address-using-different-mac-that-has-been-reserved-during-reconfiguration
 
     Test Setup:
     Time renew-timer is configured with value 3.
@@ -478,7 +478,7 @@ Reconfigure DHCP server.
     Server MUST respond with NAK message.
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.renew-address-which-reservation-changed-during-reconfigure
+    Scenario: v4.host.reservation.conflicts-renew-address-which-reservation-changed-during-reconfigure
 
     Test Setup:
     Time renew-timer is configured with value 3.
@@ -555,7 +555,7 @@ Reconfigure DHCP server.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.renew-address-which-reservation-changed-during-reconfigure-2
+    Scenario: v4.host.reservation.conflicts-renew-address-which-reservation-changed-during-reconfigure-2
 
     Test Setup:
     Time renew-timer is configured with value 3.
@@ -624,7 +624,7 @@ Reconfigure DHCP server.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.rebind-address-which-reservation-changed-during-reconfigure
+    Scenario: v4.host.reservation.conflicts-rebind-address-which-reservation-changed-during-reconfigure
 
     Test Setup:
     Time renew-timer is configured with value 3.
@@ -701,7 +701,7 @@ Reconfigure DHCP server.
 
 
 @v4 @host_reservation @kea_only
-    Scenario: v4.host.reservation.conflicts.rebind-address-which-reservation-changed-during-reconfigure-2
+    Scenario: v4.host.reservation.conflicts-rebind-address-which-reservation-changed-during-reconfigure-2
 
     Test Setup:
     Time renew-timer is configured with value 3.

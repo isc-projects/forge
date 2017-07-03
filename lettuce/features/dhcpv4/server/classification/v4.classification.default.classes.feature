@@ -5,7 +5,7 @@ Feature: DHCPv4 Client Classification - default classes
     Performed through option vendor class identification.
 
 @v4 @dhcp4 @classification @default_classes @disabled
-	Scenario: v4.client.classification.one.class.docsis3-boot-file-name
+	Scenario: v4.client.classification.one-class-docsis3-boot-file-name
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -36,7 +36,7 @@ DHCP server is started.
 	Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification @default_classes @disabled
-	Scenario: v4.client.classification.one.class.docsis3-next-server
+	Scenario: v4.client.classification.one-class-docsis3-next-server
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -67,7 +67,7 @@ DHCP server is started.
 	Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification @default_classes @disabled
-	Scenario: v4.client.classification.one.class.eRouter1-global-next-server
+	Scenario: v4.client.classification.one-class-eRouter1-global-next-server
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -100,7 +100,7 @@ DHCP server is started.
 	Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification @default_classes @disabled
-	Scenario: v4.client.classification.one.class.eRouter1-subnet-next-server
+	Scenario: v4.client.classification.one-class-eRouter1-subnet-next-server
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -133,7 +133,7 @@ DHCP server is started.
 	Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification @default_classes @disabled
-	Scenario: v4.client.classification.one.class.eRouter1-two-next-servers
+	Scenario: v4.client.classification.one-class-eRouter1-two-next-servers
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -167,7 +167,7 @@ DHCP server is started.
 	Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification @default_classes @disabled
-	Scenario: v4.client.classification.multiple.classes.three-subnets-docsis-erouter
+	Scenario: v4.client.classification.multiple-classes-three-subnets-docsis-erouter
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.

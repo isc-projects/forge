@@ -3,7 +3,7 @@ Feature: DDNS without TSIG
     target is DDNS forward and reverse update. Testing ASCII format in domain names.
 
 @v4 @ddns @notsig @forward_reverse_add
-    Scenario: ddns4.notsig.forw_and_rev.add-success-Sflag
+    Scenario: ddns4.notsig-forw-and-rev-add-success-Sflag
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -77,7 +77,7 @@ DHCP server is started.
 
 
 @v4 @ddns @notsig @forward_reverse_add
-    Scenario: ddns4.notsig.forw_and_rev.add-fail-Sflag
+    Scenario: ddns4.notsig-forw-and-rev-add-fail-Sflag
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -147,7 +147,7 @@ DHCP server is started.
 
 
 @v4 @ddns @notsig @forward_reverse_add
-    Scenario: ddns4.notsig.forw_and_rev.notenabled-Sflag
+    Scenario: ddns4.notsig-forw-and-rev-notenabled-Sflag
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -216,7 +216,7 @@ DHCP server is started.
     Received DNS query MUST include empty ANSWER part.
 
 @v4 @ddns @notsig @forward_update
-    Scenario: ddns4.notsig.forw_and_rev.update-success-Sflag
+    Scenario: ddns4.notsig-forw-and-rev-update-success-Sflag
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -372,7 +372,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 11.50.168.192.in-addr.arpa..
 
 @v4 @ddns @notsig @forward_reverse_add
-    Scenario: ddns4.notsig.forw_and_rev.two-dhci-Sflag
+    Scenario: ddns4.notsig-forw-and-rev-two-dhci-Sflag
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.11 pool.
@@ -486,7 +486,7 @@ DHCP server is started.
 
 
 @v4 @ddns @notsig @forward_reverse_add
-    Scenario: ddns4.notsig.forw_and_rev.dhci-conflicts-Sflag
+    Scenario: ddns4.notsig-forw-and-rev-dhci-conflicts-Sflag
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.11 pool.
@@ -702,7 +702,7 @@ DHCP server is started.
 
 
 @v4 @ddns @notsig @forward_reverse_add
-    Scenario: ddns4.notsig.forw_and_rev.add-success-withoutflag-override-client
+    Scenario: ddns4.notsig-forw-and-rev-add-success-withoutflag-override-client
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -776,7 +776,7 @@ DHCP server is started.
 
 
 @v4 @ddns @notsig @reverse_add
-    Scenario: ddns4.notsig.rev.success-withoutflag
+    Scenario: ddns4.notsig-rev-success-withoutflag
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -855,7 +855,7 @@ DHCP server is started.
 
 
 @v4 @ddns @notsig @reverse_add
-    Scenario: ddns4.notsig.rev.withoutflag-notenabled
+    Scenario: ddns4.notsig-rev-withoutflag-notenabled
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -931,7 +931,7 @@ DHCP server is started.
     Received DNS query MUST include empty ANSWER part.
 
 @v4 @ddns @notsig @reverse_add
-    Scenario: ddns4.notsig.rev.Nflag-override-no-update
+    Scenario: ddns4.notsig-rev-Nflag-override-no-update
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.

@@ -4,7 +4,7 @@ Feature: DHCPv4 address release process
     Those are simple DHCPv4 tests for address releasing in relay traffic.
     
 @v4 @dhcp4 @relay @release
-    Scenario: v4.relay.release.success
+    Scenario: v4.relay.release-success
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -70,7 +70,7 @@ DHCP server is started.
     Response option 1 MUST contain value 255.255.255.0.
     
 @v4 @dhcp4 @relay @release
-    Scenario: v4.relay.release.success-with-additional-offer
+    Scenario: v4.relay.release-success-with-additional-offer
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -152,7 +152,7 @@ DHCP server is started.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
 @v4 @dhcp4 @relay @release
-Scenario: v4.relay.release.only.chaddr.same-chaddr
+Scenario: v4.relay.release-only-chaddr-same-chaddr
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.

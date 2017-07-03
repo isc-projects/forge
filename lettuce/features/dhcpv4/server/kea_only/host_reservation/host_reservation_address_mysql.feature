@@ -2,7 +2,7 @@ Feature: Host Reservation DHCPv4 stored in MySQL database.
     Tests for Host Reservation feature for address based on MAC address.
 
 @v4 @host_reservation @kea_only
-  Scenario: v4.host.reservation.mysql.one-address-inside-pool
+  Scenario: v4.host.reservation.mysql-one-address-inside-pool
   Test Setup:
   # outside of the pool
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
@@ -37,7 +37,7 @@ DHCP server is started.
   Response option 1 MUST contain value 255.255.255.0.
 
 @v4 @host_reservation @kea_only
-  Scenario: v4.host.reservation.mysql.one-address-inside-pool-option
+  Scenario: v4.host.reservation.mysql-one-address-inside-pool-option
   Test Setup:
   # outside of the pool
   # TODO update names
@@ -79,7 +79,7 @@ DHCP server is started.
   Response option 1 MUST contain value 255.255.255.0.
   
 @v4 @host_reservation @kea_only
-  Scenario: v4.host.reservation.mysql.one-address-outside-pool-dual-backend
+  Scenario: v4.host.reservation.mysql-one-address-outside-pool-dual-backend
   Test Setup:
   # outside of the pool
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.30-192.168.50.50 pool.
@@ -136,7 +136,7 @@ DHCP server is started.
   Response option 1 MUST contain value 255.255.255.0.
   
 @v4 @host_reservation @kea_only
-  Scenario: v4.host.reservation.mysql.one-address-inside-pool-different-mac
+  Scenario: v4.host.reservation.mysql-one-address-inside-pool-different-mac
   Test Setup:
   # request address from different mac that has been reserved
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
@@ -185,7 +185,7 @@ DHCP server is started.
   Server MUST NOT respond with OFFER message.
   
 @v4 @host_reservation @kea_only
-  Scenario: v4.host.reservation.mysql.multiple-address-reservation-empty-pool
+  Scenario: v4.host.reservation.mysql-multiple-address-reservation-empty-pool
   Test Setup:
   # request address from different mac that has been reserved
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
@@ -212,7 +212,7 @@ DHCP server is started.
   Server MUST NOT respond with OFFER message.
   
 @v4 @host_reservation @kea_only
-  Scenario: v4.host.reservation.multiple.mysql-address-reservation-empty-pool-2
+  Scenario: v4.host.reservation.multiple-mysql-address-reservation-empty-pool-2
   Test Setup:
   # request address from different mac that has been reserved
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.12 pool.

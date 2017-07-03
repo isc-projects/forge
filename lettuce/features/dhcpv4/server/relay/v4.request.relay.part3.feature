@@ -4,7 +4,7 @@ Feature: DHCPv4 address request process
     Those are simple DHCPv4 tests for address assignment. During RENEWING/REBINDING state in relay traffic.
  
 @v4 @dhcp4 @relay @request
-Scenario: v4.request.relay.renewing.success
+Scenario: v4.request.relay-renewing-success
 
 	Test Setup:
 	Time renew-timer is configured with value 2.
@@ -63,7 +63,7 @@ DHCP server is started.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 	
 @v4 @dhcp4 @relay @request
-Scenario: v4.request.relay.rebinding.success
+Scenario: v4.request.relay-rebinding-success
 
 	Test Setup:
 	Time renew-timer is configured with value 2.
@@ -122,7 +122,7 @@ DHCP server is started.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
 @v4 @dhcp4 @relay @request
-Scenario: v4.request.relay.rebinding.fail
+Scenario: v4.request.relay-rebinding-fail
 
 	Test Setup:
 	Time renew-timer is configured with value 2.

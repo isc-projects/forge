@@ -4,7 +4,7 @@ Feature: DHCPv4 Client Classification release process
     Tests for Client Classification performed through option vendor class identification.
     
 @v4 @dhcp4 @classification @release
-    Scenario: v4.client.classification.release.same-chaddr-client-id
+    Scenario: v4.client.classification.release-same-chaddr-client-id
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -67,7 +67,7 @@ DHCP server is started.
     Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @classification @release
-    Scenario: v4.client.classification.release.different-chaddr-client-id
+    Scenario: v4.client.classification.release-different-chaddr-client-id
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.

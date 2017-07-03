@@ -4,7 +4,7 @@ Feature: DHCPv4 address request process
     Those are simple DHCPv4 tests for address assignment. During SELECTING state in relay traffic.
 
 @v4 @dhcp4 @relay @request
-    Scenario: v4.request.relay.selecting.success-chaddr
+    Scenario: v4.request.relay-selecting-success-chaddr
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -41,7 +41,7 @@ DHCP server is started.
     Response option 1 MUST contain value 255.255.255.0.
 
 @v4 @dhcp4 @relay @request
-    Scenario: v4.request.relay.selecting.success-chaddr-empty-pool
+    Scenario: v4.request.relay-selecting-success-chaddr-empty-pool
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -92,7 +92,7 @@ DHCP server is started.
     Server MUST NOT respond.
 
 @v4 @dhcp4 @relay @request
-    Scenario: v4.request.relay.selecting.success-client-id
+    Scenario: v4.request.relay-selecting-success-client-id
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -140,7 +140,7 @@ DHCP server is started.
     Response option 61 MUST contain value 00010203040506.
 
 @v4 @dhcp4 @relay @request
-    Scenario: v4.request.relay.selecting.success-client-id-empty-pool
+    Scenario: v4.request.relay-selecting-success-client-id-empty-pool
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -198,7 +198,7 @@ DHCP server is started.
     Server MUST NOT respond.
 	
 @v4 @dhcp4 @relay @request
-Scenario: v4.request.relay.selecting.success-client-id-chaddr-empty-pool
+Scenario: v4.request.relay-selecting-success-client-id-chaddr-empty-pool
 	
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -267,7 +267,7 @@ DHCP server is started.
 	Server MUST NOT respond.
 
 @v4 @dhcp4 @relay @request
-    Scenario: v4.request.relay.selecting.success-second-request-fail
+    Scenario: v4.request.relay-selecting-success-second-request-fail
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.

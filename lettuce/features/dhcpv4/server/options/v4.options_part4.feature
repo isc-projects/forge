@@ -7,7 +7,7 @@ Feature: DHCPv4 options part4
 	# References in all tests are temporary empty, that's intentional.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.pool
+    Scenario: v4.options.malformed-values-pool
 
     Test Setup:
     Server is configured with 256.0.2.0/24 subnet with 256.0.2.1-256.0.2.10 pool.
@@ -25,7 +25,7 @@ DHCP server failed to start. During configuration process.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.ip-forwarding
+    Scenario: v4.options.malformed-values-ip-forwarding
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -40,7 +40,7 @@ DHCP server failed to start. During configuration process.
 DHCP server is started.
     
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.subnet-mask
+    Scenario: v4.options.malformed-values-subnet-mask
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -55,7 +55,7 @@ DHCP server failed to start. During configuration process.
 DHCP server is started.
     
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.time-offset
+    Scenario: v4.options.malformed-values-time-offset
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -100,7 +100,7 @@ DHCP server is started.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.boot-size
+    Scenario: v4.options.malformed-values-boot-size
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -121,7 +121,7 @@ DHCP server failed to start. During configuration process.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.policy-filter
+    Scenario: v4.options.malformed-values-policy-filter
 	# Allowed only pairs of addresses
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -142,7 +142,7 @@ DHCP server failed to start. During configuration process.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.max-dgram-reassembly
+    Scenario: v4.options.malformed-values-max-dgram-reassembly
 	#Unsigned integer (0 to 65535) minimum value: 576
 	
     Test Setup:
@@ -184,7 +184,7 @@ DHCP server is started.
 DHCP server is started.
     
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.default-ip-ttl
+    Scenario: v4.options.malformed-values-default-ip-ttl
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -215,7 +215,7 @@ DHCP server is started.
 DHCP server failed to start. During configuration process.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.path-mtu-aging-timeout
+    Scenario: v4.options.malformed-values-path-mtu-aging-timeout
 	#Unsigned integer (0 to 65535) minimum: 68
 
     Test Setup:
@@ -251,7 +251,7 @@ DHCP server is started.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.static-routes
+    Scenario: v4.options.malformed-values-static-routes
 	# pair of addresses 0.0.0.0 forbidden
 
     Test Setup:
@@ -279,7 +279,7 @@ DHCP server failed to start. During configuration process.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.arp-cache-timeout
+    Scenario: v4.options.malformed-values-arp-cache-timeout
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -308,7 +308,7 @@ DHCP server is started.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.default-tcp-ttl
+    Scenario: v4.options.malformed-values-default-tcp-ttl
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -337,7 +337,7 @@ DHCP server is started.
 DHCP server is started.
     
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.dhcp-option-overload
+    Scenario: v4.options.malformed-values-dhcp-option-overload
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.
@@ -374,7 +374,7 @@ DHCP server is started.
 DHCP server is started.
 
 @v4 @dhcp4 @options @subnet
-    Scenario: v4.options.malformed.values.dhcp-max-message-size
+    Scenario: v4.options.malformed-values-dhcp-max-message-size
 
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10 pool.

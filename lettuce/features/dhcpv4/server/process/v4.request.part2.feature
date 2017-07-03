@@ -4,7 +4,7 @@ Feature: DHCPv4 address request process
     Those are simple DHCPv4 tests for address assignment. During INIT-REBOOT state.
  
 @v4 @dhcp4 @request
-Scenario: v4.request.initreboot.success
+Scenario: v4.request.initreboot-success
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -44,7 +44,7 @@ DHCP server is started.
 	Response option 1 MUST contain value 255.255.255.0.
 
 @v4 @dhcp4 @request
-Scenario: v4.request.initreboot.fail
+Scenario: v4.request.initreboot-fail
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -82,7 +82,7 @@ DHCP server is started.
 	Response option 54 MUST contain value $(SRV4_ADDR).
 
 @v4 @dhcp4 @request
-Scenario: v4.request.initreboot.no-leases
+Scenario: v4.request.initreboot-no-leases
 
 	Test Setup:
 	Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
