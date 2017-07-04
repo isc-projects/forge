@@ -39,7 +39,9 @@ isc_dhcp_options6 = {
     "nis-domain-name": "nis-domain-name",
     "nisp-domain-name": "nisp-domain-name",
     "sntp-servers": "sntp-servers",
-    "information-refresh-time": "info-refresh-time"
+    "information-refresh-time": "info-refresh-time",
+    "bcmcs-server-dns": "bcms-server-d",
+    "bcmcs-server-addr": "bcms-server-a"
 }
 
 needs_changing = {
@@ -48,6 +50,10 @@ needs_changing = {
     "domain-search": True,
     "nis-domain-name": True,
     "nisp-domain-name": True,
+    "new-posix-timezone": True,
+    "new-tzdb-timezone": True,
+    "bootfile-url": True,
+    "bootfile-param": True,
     33: True  # for 'config file', that will need more work:)
 }
 
@@ -269,17 +275,20 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
     if option_proper_name is None:
         option_proper_name = isc_dhcp_otheroptions.get(option_name)
 
-    # if it's still None... assert error!
-    elif option_proper_name is None:
-        assert False, "Unsupported option name " + option_name
+    # if it's still None... pass option name from test without changing
+    if option_proper_name is None:
+        option_proper_name = option_name
 
     # some functions needs " " in it, so lets add them
     # that's for all those functions which are configured
     # indifferent way then kea6 configuration, if you add
     # new such option, add it to needs_changing dict.
     if needs_changing.get(option_proper_name):
-        tmp = option_value.split(",")
-        option_value = ','.join('"' + item + '"' for item in tmp)
+        if option_proper_name in ["new-posix-timezone", "new-tzdb-timezone"]:
+            option_value = '"' + option_value + '"'
+        else:
+            tmp = option_value.split(",")
+            option_value = ','.join('"' + item + '"' for item in tmp)
 
     # for all common options
     if space == 'dhcp6':
