@@ -84,7 +84,7 @@ class ForgeConfiguration:
         self.dhcp_used = "dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server", \
                          "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server", \
                          "none_server"
-        self.empty = "EMPTY"
+        self.empty = ""
         self.none = None
         # FORGE
         self.mgmt_address = MGMT_ADDRESS

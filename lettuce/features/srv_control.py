@@ -92,11 +92,12 @@ def test_define_value(*args):
                 if str(each[0]) == tmp[2: index]:
                     imported = int(each[1]) if each[1].isdigit() else str(each[1])
             if imported is None:
+                imported = getattr(world.f_cfg, tmp[2: index].lower())
+            if imported is None:
                 try:
                     imported = getattr(__import__('init_all', fromlist = [tmp[2: index]]), tmp[2: index])
                 except ImportError:
-                    imported = getattr(world.f_cfg, tmp[2: index].lower())
-                    #assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
+                    assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
             if front is None:
                 tested_args.append(imported + tmp[index + 1:])
             else:

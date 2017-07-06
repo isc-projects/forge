@@ -54,6 +54,7 @@ needs_changing = {
     "new-tzdb-timezone": True,
     "bootfile-url": True,
     "bootfile-param": True,
+    "bcmcs-server-d": True,
     33: True  # for 'config file', that will need more work:)
 }
 
