@@ -99,7 +99,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:

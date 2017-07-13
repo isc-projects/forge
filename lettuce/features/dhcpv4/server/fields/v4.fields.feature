@@ -33,13 +33,13 @@ DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
 	Client sends DISCOVER message.
 	
 	Pass Criteria:
 	Server MUST respond with OFFER message.
 	Response MUST contain ciaddr 0.0.0.0.
-	Response MUST NOT contain ciaddr 192.168.50.9.
+	Response MUST NOT contain ciaddr $(CIADDR).
 	
 @v4 @dhcp4 @fields @ciaddr
 Scenario: v4.message.fields.ciaddr-incorrect-offer
@@ -143,13 +143,13 @@ DHCP server is started.
 	
 	Test Procedure:
 	Client requests option 1.
-	Client sets siaddr value to 192.168.50.9.
+	Client sets siaddr value to $(CIADDR).
 	Client sends DISCOVER message.
 	
 	Pass Criteria:
 	Server MUST respond with OFFER message.
 	Response MUST contain siaddr 0.0.0.0.
-	Response MUST NOT contain siaddr 192.168.50.9.
+	Response MUST NOT contain siaddr $(CIADDR).
 	
 @v4 @dhcp4 @fields @siaddr
 Scenario: v4.message.fields.siaddr-incorrect-offer

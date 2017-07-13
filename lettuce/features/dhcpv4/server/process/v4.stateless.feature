@@ -15,7 +15,7 @@ DHCP server is started.
   Client requests option 1.
   Client requests option 2.
   Client requests option 3.
-  Client sets ciaddr value to 192.168.50.9.
+  Client sets ciaddr value to $(CIADDR).
   Client sends INFORM message.
 
   Pass Criteria:

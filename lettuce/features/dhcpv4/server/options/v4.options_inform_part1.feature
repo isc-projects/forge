@@ -18,7 +18,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 1.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -39,7 +39,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 2.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -58,7 +58,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 3.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -78,7 +78,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 4.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -98,7 +98,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 5.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -118,7 +118,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 6.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -138,7 +138,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 7.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -158,7 +158,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 8.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -178,7 +178,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 9.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -198,7 +198,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 10.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -218,7 +218,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 11.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -238,7 +238,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 12.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -257,7 +257,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 13.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -276,7 +276,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 14.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -295,7 +295,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 16.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -314,7 +314,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 17.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -333,7 +333,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 18.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -352,7 +352,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 21.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -372,7 +372,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 22.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -391,7 +391,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 23.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -410,7 +410,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 24.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -451,7 +451,7 @@ DHCP server is started.
     Client sets broadcastBit value to 1.
     Client sets hops value to 1.
     Client requests option 24.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client sends INFORM message.
 
     Pass Criteria:
@@ -477,7 +477,7 @@ DHCP server is started.
 
     Test Procedure:
     Client requests option 24.
-	Client sets ciaddr value to 192.168.50.9.
+	Client sets ciaddr value to $(CIADDR).
     Client copies server_id option from received message.
     Client sends INFORM message.
 

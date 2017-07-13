@@ -28,7 +28,7 @@ from features.init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, PROTO, SOFTWARE_U
     TCPDUMP, TCPDUMP_PATH, SAVE_CONFIG_FILE, AUTO_ARCHIVE, SLEEP_TIME_1, SLEEP_TIME_2, MGMT_ADDRESS, MGMT_USERNAME,\
     MGMT_PASSWORD, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SAVE_LEASES, DNS_IFACE, DNS_ADDR, DNS_PORT, \
     DNS_SERVER_INSTALL_PATH, DNS_DATA_PATH, ISC_DHCP_LOG_FACILITY, ISC_DHCP_LOG_FILE, DB_NAME, DB_USER, DB_PASSWD,\
-    DB_HOST
+    DB_HOST, CIADDR
 
 # Create Forge configuration class
 SOFTWARE_INSTALL_DIR = SOFTWARE_INSTALL_PATH  # for backward compatibility of tests
@@ -41,6 +41,7 @@ SHOW_PACKETS_FROM = os.getenv('SHOW_PACKETS_FROM', SHOW_PACKETS_FROM)
 SRV4_ADDR = os.getenv('SRV4_ADDR', SRV4_ADDR)
 REL4_ADDR = os.getenv('REL4_ADDR', REL4_ADDR)
 GIADDR4 = os.getenv('GIADDR4', GIADDR4)
+CIADDR = os.getenv('CIADDR', CIADDR)
 IFACE = os.getenv('IFACE', IFACE)
 CLI_LINK_LOCAL = os.getenv('CLI_LINK_LOCAL', CLI_LINK_LOCAL)
 SERVER_IFACE = os.getenv('SERVER_IFACE', SERVER_IFACE)
@@ -117,7 +118,8 @@ class ForgeConfiguration:
         self.srv4_addr = SRV4_ADDR
         self.rel4_addr = REL4_ADDR
         self.gia4_addr = GIADDR4
-        self.giaddr4 = GIADDR4
+        self.giaddr4 = GIADDR4  # it's for backwards compatibility
+        self.ciaddr = CIADDR
         self.iface = IFACE
         self.server_iface = SERVER_IFACE
         self.cli_mac = self.gethwaddr(self.iface)

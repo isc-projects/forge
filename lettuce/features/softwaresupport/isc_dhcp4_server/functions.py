@@ -394,6 +394,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 def cfg_write():
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])
+    cfg_file.write("authoritative;\n")
 
     if "log_facility" in world.cfg:
         cfg_file.write(world.cfg["log_facility"])

@@ -34,7 +34,7 @@ def add_ddns_server(address, port):
     if port == "default":
         port = "53001"
 
-    world.ddns_main += '\nddns-update-style interim;\nauthoritative;'
+    world.ddns_main += '\nddns-update-style interim;\n'
 
     # add_ddns_server_options("server-ip", address) # don't need it in isc-dhcp
 
