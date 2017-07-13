@@ -23,7 +23,7 @@ from logging_facility import *
 from logging_facility import get_common_logger
 
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
-    fabric_remove_file_command, clear_all, run_command, check_process_result
+    fabric_remove_file_command, clear_all, add_line_in_global, check_process_result
 from functions_ddns import build_ddns_config
 # option names in isc-dhcp v4, list is that you can check which one is different then Kea names - Kea names are used
 # in test scenarios.
