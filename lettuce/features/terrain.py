@@ -241,6 +241,7 @@ def declare_all():
     world.subnet_add = True
     world.cfg = {}
     world.configString = ""
+    world.cfg['leases'] = ""
 
     world.loops = {"active": False,
                    "save_leases_details": False}

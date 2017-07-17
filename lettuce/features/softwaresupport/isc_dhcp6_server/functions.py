@@ -556,7 +556,7 @@ def check_process_result(succeed, result, process):
                 assert False, 'Server configuration/starting process NOT failed!'
 
 
-def add_line_in_global(step, command):
+def add_line_in_global(command):
     if not "custom_lines" in world.cfg:
         world.cfg["custom_lines"] = ''
 

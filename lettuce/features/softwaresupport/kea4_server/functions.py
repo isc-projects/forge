@@ -162,15 +162,21 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if subnet is not "":
         world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
              '''.format(**locals())
-        if pool is not "":
-            world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
-
-        if eth is not None:
-            world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
     else:
         world.subnet_add = False
+    if pool is not "":
+        world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
+
+        # if eth is not None:
+        #     # world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
+        #
+        #     print "\n"
+        #     print "\n\n\n\nabc\n1\n"
+        #     print "\n"
+
     if not eth in world.cfg["interfaces"]:
         add_interface(eth)
+
 
 
 def config_client_classification(step, subnet, option_value):
@@ -325,7 +331,7 @@ def start_srv(start, process):
         process = "starting"
     # check process - if None add some.
     if not v4:
-        result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
+        result = fabric_sudo_command('( nohup ' + world.f_cfg.software_install_path + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
     else:
