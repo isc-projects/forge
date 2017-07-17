@@ -356,10 +356,12 @@ def set_kea_ctrl_config():
     dhcp4_srv={path}/sbin/kea-dhcp4
     dhcp6_srv={path}/sbin/kea-dhcp6
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
+    ctrl_agent_srv={path}/kea-ctrl-agent
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
     kea_verbose=no
+    ctrl_agent=no
     '''.format(**locals())
 
 
