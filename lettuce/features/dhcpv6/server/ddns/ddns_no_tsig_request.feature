@@ -2,7 +2,7 @@ Feature: DDNS without TSIG
     This feature is testing DHCPv6 + DDNS in cooperation with DNS server BIND9 without TSIG authorisation. It's primary
     target is DDNS forward and reverse update.
 
-@v6 @ddns @notsig @forward_reverse_add
+@v6 @ddns @kea_only @notsig @forward_reverse_add
     Scenario: ddns6.notsig-forw_and_rev-add-success-Sflag
 
     Test Setup:
@@ -76,7 +76,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 
-@v6 @ddns @notsig @forward_reverse_add
+@v6 @ddns @kea_only @notsig @forward_reverse_add
     Scenario: ddns6.notsig-forw_and_rev-add-fail-Sflag
 
     Test Setup:
@@ -155,7 +155,7 @@ DHCP server is started.
     DNS server MUST respond with DNS query.
     Received DNS query MUST include empty ANSWER part.
 
-@v6 @ddns @notsig @forward_reverse_add
+@v6 @ddns @kea_only @notsig @forward_reverse_add
     Scenario: ddns6.notsig-forw_and_rev-notenabled-Sflag
 
     Test Setup:
@@ -233,7 +233,7 @@ DHCP server is started.
     DNS server MUST respond with DNS query.
     Received DNS query MUST include empty ANSWER part.
 
-@v6 @ddns @notsig @forward_update
+@v6 @ddns @kea_only @notsig @forward_update
     Scenario: ddns6.notsig-forw_and_rev-update-success-Sflag
 
     Test Setup:
@@ -407,7 +407,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 1.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @notsig @forward_reverse_add
+@v6 @ddns @kea_only @notsig @forward_reverse_add
     Scenario: ddns6.notsig-forw_and_rev-two-dhci-Sflag
 
     Test Setup:
@@ -523,7 +523,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value 2001:db8:1::52.
     Received DNS part ANSWER MUST contain rrname with value client2.six.example.com..
 
-@v6 @ddns @notsig @forward_reverse_add
+@v6 @ddns @kea_only @notsig @forward_reverse_add
     Scenario: ddns6.notsig-forw_and_rev-dhci-conflicts-Sflag
 
     Test Setup:
@@ -694,7 +694,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 2.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
 
-@v6 @ddns @notsig @forward_reverse_add
+@v6 @ddns @kea_only @notsig @forward_reverse_add
     Scenario: ddns6.notsig-forw_and_rev-dhci-conflicts-remove-Sflag
 
     Test Setup:
@@ -862,7 +862,7 @@ DHCP server is started.
     DNS server MUST respond with DNS query.
     Received DNS query MUST include empty ANSWER part.
 
-@v6 @ddns @notsig @forward_reverse_add
+@v6 @ddns @kea_only @notsig @forward_reverse_add
     Scenario: ddns6.notsig-forw_and_rev-add-success-withoutflag-override-client
 
     Test Setup:
@@ -943,7 +943,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @notsig @reverse_add
+@v6 @ddns @kea_only @notsig @reverse_add
     Scenario: ddns6.notsig-rev-success-withoutflag
 
     Test Setup:
@@ -1023,7 +1023,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @notsig @reverse_add
+@v6 @ddns @kea_only @notsig @reverse_add
     Scenario: ddns6.notsig-rev-withoutflag-notenabled
 
     Test Setup:
@@ -1093,7 +1093,7 @@ DHCP server is started.
     DNS server MUST respond with DNS query.
     Received DNS query MUST include empty ANSWER part.
 
-@v6 @ddns @notsig @reverse_add
+@v6 @ddns @kea_only @notsig @reverse_add
     Scenario: ddns6.notsig-rev-Nflag-override-no-update
 
     Test Setup:

@@ -2,7 +2,7 @@ Feature: DDNS without TSIG
     This feature is testing DHCPv6 + DDNS in cooperation with DNS server BIND9 with TSIG authorisation. It's primary
     target is DDNS removing forward and reverse entries in time of releasing leases.
 
-@v6 @ddns @tsig @forward_reverse_remove
+@v6 @ddns @kea_only @tsig @forward_reverse_remove
     Scenario: ddns6.tsig-sha1-forw_and_rev-release
 
     Test Setup:
@@ -104,7 +104,7 @@ DHCP server is started.
     DNS server MUST respond with DNS query.
     Received DNS query MUST include empty ANSWER part.
 
-@v6 @ddns @tsig @forward_reverse_remove
+@v6 @ddns @kea_only @tsig @forward_reverse_remove
     Scenario: ddns6.tsig-forw_and_rev-release-notenabled
 
     Test Setup:
@@ -224,7 +224,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @tsig @reverse_remove
+@v6 @ddns @kea_only @tsig @reverse_remove
     Scenario: ddns6.tsig-sha1-rev-release
 
     Test Setup:

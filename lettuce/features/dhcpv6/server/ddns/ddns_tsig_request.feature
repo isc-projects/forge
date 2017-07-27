@@ -2,7 +2,7 @@ Feature: DDNS without TSIG
     This feature is testing DHCPv6 + DDNS in cooperation with DNS server BIND9 without TSIG authorisation. It's primary
     target is DDNS forward and reverse update.
 
-@v6 @ddns @tsig @forward_reverse_add
+@v6 @ddns @kea_only @tsig @forward_reverse_add
     Scenario: ddns6.tsig-sha1-forw_and_rev
     Test Setup:
     Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
@@ -75,7 +75,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @tsig @forward_reverse_add
+@v6 @ddns @kea_only @tsig @forward_reverse_add
     Scenario: ddns6.tsig-sha224-forw_and_rev
 
     Test Setup:
@@ -149,7 +149,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @tsig @forward_reverse_add
+@v6 @ddns @kea_only @tsig @forward_reverse_add
     Scenario: ddns6.tsig-sha256-forw_and_rev
 
     Test Setup:
@@ -223,7 +223,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @tsig @forward_reverse_add
+@v6 @ddns @kea_only @tsig @forward_reverse_add
     Scenario: ddns6.tsig-sha384-forw_and_rev
 
     Test Setup:
@@ -297,7 +297,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @tsig @forward_reverse_add
+@v6 @ddns @kea_only @tsig @forward_reverse_add
     Scenario: ddns6.tsig-sha512-forw_and_rev
 
     Test Setup:
@@ -371,7 +371,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @tsig @forward_reverse_add
+@v6 @ddns @kea_only @tsig @forward_reverse_add
     Scenario: ddns6.tsig-md5-forw_and_rev
 
     Test Setup:
@@ -445,7 +445,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-@v6 @ddns @tsig @forward_reverse_add
+@v6 @ddns @kea_only @tsig @forward_reverse_add
     Scenario: ddns6.tsig-multi-key-forw_and_rev
 
     Test Setup:
