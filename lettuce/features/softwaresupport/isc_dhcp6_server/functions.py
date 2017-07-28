@@ -153,13 +153,6 @@ def restart_srv():
                         + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 
 
-def stop_srv(value = False):
-    try:
-        fabric_sudo_command("killall dhcpd &>/dev/null", value)
-    except:
-        pass
-
-
 def set_time(step, which_time, value, subnet = None):
     assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
     if subnet is None:
@@ -498,6 +491,24 @@ def build_and_send_config_files(connection_type, configuration_type):
     pass
 
 
+def check_process_result(succeed, result, process):
+    errors = ["exiting."]
+    for each in errors:
+        if succeed is True:
+            if each in result:
+                assert False, 'Server configuration/starting process failed!'
+        else:
+            if each not in result:
+                assert False, 'Server configuration/starting process NOT failed!'
+
+
+def add_line_in_global(command):
+    if not "custom_lines" in world.cfg:
+        world.cfg["custom_lines"] = ''
+
+    world.cfg["custom_lines"] += ('\n' + command + '\n')
+
+
 def start_srv(start, process):
     """
     Start ISC-DHCPv6 with generated config.
@@ -526,9 +537,8 @@ def start_srv(start, process):
     stop_srv()
 
     world.cfg['leases'] = build_leases_path()
-
-    fabric_run_command('echo y |rm ' + world.cfg['leases'])
-    fabric_run_command('touch ' + world.cfg['leases'])
+    #fabric_run_command('echo y |rm ' + world.cfg['leases'])
+    fabric_sudo_command('touch ' + world.cfg['leases'])
 
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path
                                  + 'sbin/dhcpd -6 -cf server.cfg_processed'
@@ -545,30 +555,25 @@ def start_srv(start, process):
     world.cfg["conf_vendor"] = ""
 
 
-def check_process_result(succeed, result, process):
-    errors = ["exiting."]
-    for each in errors:
-        if succeed is True:
-            if each in result:
-                assert False, 'Server configuration/starting process failed!'
-        else:
-            if each not in result:
-                assert False, 'Server configuration/starting process NOT failed!'
-
-
-def add_line_in_global(command):
-    if not "custom_lines" in world.cfg:
-        world.cfg["custom_lines"] = ''
-
-    world.cfg["custom_lines"] += ('\n' + command + '\n')
-
-
 def save_leases():
     fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
 
 
 def save_logs():
     fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+
+
+def clear_leases():
+    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+    fabric_remove_file_command(world.cfg["leases"])
+    fabric_run_command('echo y |rm ' + world.cfg['leases'])
+
+
+def stop_srv(value=False):
+    try:
+        fabric_sudo_command("killall dhcpd &>/dev/null", value)
+    except:
+        pass
 
 
 def clear_all():
@@ -579,5 +584,6 @@ def clear_all():
         # not all implementations will re-create it.
         # fabric_remove_file_command(world.cfg["dhcp_log_file"])
         fabric_remove_file_command(world.cfg["leases"])
+        fabric_remove_file_command(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
     except:
         pass

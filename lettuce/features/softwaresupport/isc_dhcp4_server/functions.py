@@ -23,7 +23,7 @@ from logging_facility import *
 from logging_facility import get_common_logger
 
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
-    fabric_remove_file_command, clear_all, add_line_in_global, check_process_result
+    fabric_remove_file_command, clear_all, add_line_in_global, check_process_result, clear_leases
 from functions_ddns import build_ddns_config
 # option names in isc-dhcp v4, list is that you can check which one is different then Kea names - Kea names are used
 # in test scenarios.
@@ -477,7 +477,7 @@ def start_srv(start, process):
 
     world.cfg['leases'] = build_leases_path()
 
-    fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
+    #fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
 
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path

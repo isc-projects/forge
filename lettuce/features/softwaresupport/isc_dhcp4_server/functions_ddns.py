@@ -34,23 +34,13 @@ def add_ddns_server(address, port):
     if port == "default":
         port = "53001"
 
-    world.ddns_main += '\nddns-update-style interim;\n'
+    world.ddns_main += '\nddns-updates on;\n'
 
     # add_ddns_server_options("server-ip", address) # don't need it in isc-dhcp
 
 
 def add_ddns_server_options(option, value):
-    pass  # also don't need that in isc-dhcp, ignore step
-    # pointer_start = "{"
-    # pointer_end = "}"
-    # if world.ddns_add == "":
-    #     world.ddns_add += '"dhcp-ddns":{'
-    # else:
-    #     world.ddns_add += ","
-    # if value in ["true", "false", "True", "False", "TRUE", "FALSE"]:
-    #     world.ddns_add += '"{option}": {value}'.format(**locals())
-    # else:
-    #     world.ddns_add += '"{option}": "{value}"'.format(**locals())
+    world.ddns_add += option + " " + value + ";\n"
 
 
 def add_forward_ddns(name, key_name, ip_address, port):
@@ -107,6 +97,7 @@ def add_keys(secret, name, algorithm):
 
 def build_ddns_config():
     world.ddns = world.ddns_main
+    world.ddns += world.ddns_add
     for each in world.ddns_keys:
         world.ddns += each
     for each in world.ddns_rev:
