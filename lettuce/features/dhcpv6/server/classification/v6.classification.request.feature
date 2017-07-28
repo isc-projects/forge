@@ -1,7 +1,7 @@
 Feature: DHCPv6 Client Classification request process
     Tests request process for Client Classification performed through option vendor class.
 
-@v6 @dhcp6 @classification
+@v6 @dhcp6 @kea_only @classification
     Scenario: v6.client.classification.onesubnet-advertise-success
 
     Test Setup:
@@ -23,7 +23,7 @@ DHCP server is started.
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @dhcp6 @classification @default_classes
+@v6 @dhcp6 @kea_only @classification @default_classes
     Scenario: v6.client.classification.onesubnet-advertise-fail
 
     Test Setup:
@@ -43,7 +43,7 @@ DHCP server is started.
     Response option 3 MUST contain sub-option 13.
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
-@v6 @dhcp6 @classification
+@v6 @dhcp6 @kea_only @classification
     Scenario: v6.client.classification.onesubnet-request-success
     
     Test Setup:
@@ -80,7 +80,7 @@ DHCP server is started.
     Response sub-option 5 from option 3 MUST contain address 3000::1.
 
 
-@v6 @dhcp6 @classification
+@v6 @dhcp6 @kea_only @classification
     Scenario: v6.client.classification.twosubnets-request-success
     
     Test Setup:
@@ -140,7 +140,7 @@ DHCP server is started.
     Response option 3 MUST contain sub-option 5.
     Response sub-option 5 from option 3 MUST contain address 3000::100.
 
-@v6 @dhcp6 @classification
+@v6 @dhcp6 @kea_only @classification
     Scenario: v6.client.classification.twosubnets-request-fail
     
     Test Setup:
@@ -230,7 +230,7 @@ DHCP server is started.
     Response option 3 MUST contain sub-option 13.
     Response sub-option 13 from option 3 MUST contain statuscode 2.
 
-@v6 @dhcp6 @classification
+@v6 @dhcp6 @kea_only @classification
     Scenario: v6.client.classification.twoclasses-request-success
     
     Test Setup:
