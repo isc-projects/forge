@@ -509,6 +509,17 @@ def add_line_in_global(command):
     world.cfg["custom_lines"] += ('\n' + command + '\n')
 
 
+def set_conf_parameter_global(parameter_name, value):
+    if not "custom_lines" in world.cfg:
+        world.cfg["custom_lines"] = ''
+
+    world.cfg["custom_lines"] += ('\n' + parameter_name + ' ' + value + ';\n')
+
+
+def set_conf_parameter_subnet(parameter_name, value):
+    pass
+
+
 def start_srv(start, process):
     """
     Start ISC-DHCPv6 with generated config.

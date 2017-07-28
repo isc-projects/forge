@@ -241,7 +241,8 @@ def declare_all():
     world.subnet_add = True
     world.cfg = {}
     world.configString = ""
-    world.cfg['leases'] = ""
+    world.cfg['leases'] = "~/none_file"
+    world.cfg["dhcp_log_file"] = "~/none_file"
 
     world.loops = {"active": False,
                    "save_leases_details": False}
