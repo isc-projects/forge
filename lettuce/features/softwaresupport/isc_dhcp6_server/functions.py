@@ -512,12 +512,19 @@ def add_line_in_global(command):
 def set_conf_parameter_global(parameter_name, value):
     if not "custom_lines" in world.cfg:
         world.cfg["custom_lines"] = ''
+    if parameter_name == "rapid-commit":
+        world.cfg["custom_lines"] += '\noption dhcp6.rapid-commit;\n'
+    else:
+        world.cfg["custom_lines"] += ('\n' + parameter_name + ' ' + value + ';\n')
 
-    world.cfg["custom_lines"] += ('\n' + parameter_name + ' ' + value + ';\n')
 
-
-def set_conf_parameter_subnet(parameter_name, value):
-    pass
+def set_conf_parameter_subnet(parameter_name, value, subnet_id):
+    if parameter_name == "rapid-commit":
+            if value == 'true':
+                world.subcfg[subnet_id][0] += 'option dhcp6.rapid-commit;'
+    else:
+        pass
+        #world.subcfg[subnet_id][0] += '{parameter_name} {value};'.format(**locals())
 
 
 def start_srv(start, process):

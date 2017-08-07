@@ -7,9 +7,9 @@ Feature: DHCPv6 Rapid commit
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
   Add configuration parameter rapid-commit with value true to global configuration.
   Send server configuration using SSH and config-file.
-DHCP server failed to start. During configuration process.
+  DHCP server failed to start. During configuration process.
 
-@v6 @dhcp6 @rapid
+@v6 @dhcp6 @rapid @kea_only
   Scenario: v6.rapid.commit.basic-one-subnet
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -32,7 +32,7 @@ DHCP server is started.
   Response MUST include option 14.
   References: RFC3315 section 17.2.1.
 
-@v6 @dhcp6 @rapid
+@v6 @dhcp6 @rapid @kea_only
   Scenario: v6.rapid.commit.basic-one-subnet-rapid-not-included
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -67,7 +67,7 @@ DHCP server is started.
   Response option 3 MUST contain sub-option 5.
   Response MUST NOT include option 14.
 
-@v6 @dhcp6 @rapid
+@v6 @dhcp6 @rapid @kea_only
   Scenario: v6.rapid.commit.basic-two-subnets
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ff pool.
