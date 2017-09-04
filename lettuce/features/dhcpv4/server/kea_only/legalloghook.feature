@@ -10,7 +10,7 @@ Scenario: v4.legal.log.assigned-address
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
   Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -60,7 +60,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
   Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -105,7 +105,7 @@ DHCP server is started.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.2-192.168.50.2 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
   Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -156,7 +156,7 @@ DHCP server is started.
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -225,7 +225,7 @@ DHCP server is started.
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 4.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
 DHCP server is started.

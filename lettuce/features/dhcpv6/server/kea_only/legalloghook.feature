@@ -14,7 +14,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -59,7 +59,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -119,7 +119,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -179,7 +179,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
 Run configuration command: "mac-sources": [ "docsis-modem" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -229,7 +229,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
 Run configuration command: "mac-sources": [ "docsis-cmts" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -276,7 +276,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
