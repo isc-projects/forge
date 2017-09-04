@@ -86,7 +86,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
-    Server is configured with another subnet: 3000::/64 with 3000::100-3000::100 pool.
+    Server is configured with another subnet: 3001::/64 with 3001::100-3001::100 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
     
@@ -126,7 +126,7 @@ DHCP server is started.
     Server MUST respond with ADVERTISE message.
     Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
-    Response sub-option 5 from option 3 MUST contain address 3000::100.
+    Response sub-option 5 from option 3 MUST contain address 3001::100.
     
     Test Procedure:
     Client copies IA_NA option from received message.
@@ -138,7 +138,7 @@ DHCP server is started.
     Server MUST respond with REPLY message.
     Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
-    Response sub-option 5 from option 3 MUST contain address 3000::100.
+    Response sub-option 5 from option 3 MUST contain address 3001::100.
 
 @v6 @dhcp6 @kea_only @classification
     Scenario: v6.client.classification.twosubnets-request-fail
@@ -146,7 +146,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
-    Server is configured with another subnet: 3000::/64 with 3000::100-3000::100 pool.
+    Server is configured with another subnet: 3001::/64 with 3001::100-3001::100 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
     
@@ -189,7 +189,7 @@ DHCP server is started.
     Server MUST respond with ADVERTISE message.
     Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
-    Response sub-option 5 from option 3 MUST contain address 3000::100.
+    Response sub-option 5 from option 3 MUST contain address 3001::100.
     
     Test Procedure:
     Client sets DUID value to 000300010a0027ffff02.
@@ -202,7 +202,7 @@ DHCP server is started.
     Server MUST respond with REPLY message.
     Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
-    Response sub-option 5 from option 3 MUST contain address 3000::100.
+    Response sub-option 5 from option 3 MUST contain address 3001::100.
     
     Test Procedure:
     Client sets DUID value to 000300010a0027ffff03.
@@ -236,7 +236,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
     Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_firstclass.
-    Server is configured with another subnet: 3000::/64 with 3000::100-3000::100 pool.
+    Server is configured with another subnet: 3001::/64 with 3001::100-3001::100 pool.
     Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_secondclass.
     Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -291,7 +291,7 @@ DHCP server is started.
     Server MUST respond with ADVERTISE message.
     Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
-    Response sub-option 5 from option 3 MUST contain address 3000::100.
+    Response sub-option 5 from option 3 MUST contain address 3001::100.
     
     Test Procedure:
     Client sets vendor_class_data value to secondclass.
@@ -305,4 +305,4 @@ DHCP server is started.
     Server MUST respond with REPLY message.
     Response MUST include option 3.
     Response option 3 MUST contain sub-option 5.
-    Response sub-option 5 from option 3 MUST contain address 3000::100.
+    Response sub-option 5 from option 3 MUST contain address 3001::100.
