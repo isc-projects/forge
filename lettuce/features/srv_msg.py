@@ -397,8 +397,13 @@ def test_pause(step):
 
 
 @step('End test.')
-def test_pause(step):
+def test_stop(step):
     assert False, "Test ended."
+
+
+@step('Fail test.')
+def test_stop(step):
+    assert False, "Test failed on purpose."
 
 
 @step('Client download file from server stored in: (\S+).')
