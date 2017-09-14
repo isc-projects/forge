@@ -345,23 +345,26 @@ def set_kea_ctrl_config():
     kea6 = 'no'
     kea4 = 'no'
     ddns = 'no'
+    ctrl_agent = 'no'
     if "kea6" in world.cfg["dhcp_under_test"]:
         kea6 = 'yes'
     elif "kea4" in world.cfg["dhcp_under_test"]:
         kea4 = 'yes'
     if world.ddns_enable:
         ddns = 'yes'
+    if world.ctrl_enable:
+        ctrl_agent = 'yes'
 
     world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
     dhcp4_srv={path}/sbin/kea-dhcp4
     dhcp6_srv={path}/sbin/kea-dhcp6
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
-    ctrl_agent_srv={path}/kea-ctrl-agent
+    ctrl_agent_srv={path}/sbin/kea-ctrl-agent
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
     kea_verbose=no
-    ctrl_agent=no
+    ctrl_agent={ctrl_agent}
     '''.format(**locals())
 
 
@@ -452,7 +455,9 @@ def open_control_channel_socket(socket_type, socket_name):
     world.cfg["socket"] = '"control-socket": {"socket-type": "' +\
                           socket_type + '","socket-name": "' + socket_name + '"}'
 
+
 def agent_control_channel(host_address, host_port, socket_type, socket_name):
+    world.ctrl_enable = True
     world.cfg["agent"] = '"Control-agent":{"http-host": "' + host_address
     world.cfg["agent"] += '","http-port":' + host_port
     world.cfg["agent"] += ',"control-sockets":{"dhcp6-server":{"socket-type": "' + socket_type

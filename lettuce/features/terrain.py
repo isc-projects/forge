@@ -251,6 +251,7 @@ def declare_all():
     world.dns_enable = False
     world.dhcp_enable = False
     world.ddns_enable = False
+    world.ctrl_enable = False
     world.fuzzing = False
 
 
