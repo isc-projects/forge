@@ -306,7 +306,7 @@ def test_start():
 @before.each_scenario
 def initialize(scenario):
 
-    # Devlare all default values
+    # Declare all default values
     declare_all()
     define_software()
 
@@ -319,6 +319,9 @@ def initialize(scenario):
     world.cfg["cfg_file_2"] = "second_server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
     world.subcfg = [["", "", "", "", "", "", ""]]  # additional config structure
+    world.shared_subcfg = []
+    world.shared_subnets = []
+    world.shared_subnets_tmp = []
     world.reservation_backend = ""
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name

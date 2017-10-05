@@ -173,6 +173,46 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         add_interface(eth)
 
 
+def add_to_shared_subnet(subnet_id, shared_subnet_id):
+    if len(world.shared_subnets) <= shared_subnet_id:
+        world.shared_subnets.append([])
+        world.shared_subcfg.append([""])
+    world.shared_subnets[shared_subnet_id].append(subnet_id)
+    world.shared_subnets_tmp.append(subnet_id)
+
+
+def add_line_to_shared_subnet(subnet_id, cfg_line):
+    if len(world.shared_subcfg[subnet_id][0]) > 1:
+        world.shared_subcfg[subnet_id][0] += ","
+    world.shared_subcfg[subnet_id][0] += cfg_line
+
+
+def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, option_value):
+    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+    space = world.cfg["space"]
+    shared_subnet = int(shared_subnet)
+    option_code = kea_options6.get(option_name)
+    if option_code is None:
+        option_code = kea_otheroptions.get(option_name)
+
+    pointer_start = "{"
+    pointer_end = "}"
+
+    assert option_code is not None, "Unsupported option name for other Kea6 options: " + option_name
+    if len(world.shared_subcfg[shared_subnet][0]) > 10:
+        world.shared_subcfg[shared_subnet][0] += ','
+
+    world.shared_subcfg[shared_subnet][0] += '''
+            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
+            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
+
+
+def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
+    if len(world.shared_subcfg[subnet_id][0]) > 1:
+        world.shared_subcfg[subnet_id][0] += ','
+    world.shared_subcfg[subnet_id][0] += '"{parameter_name}": {value}'.format(**locals())
+
+
 def add_pool_to_subnet(step, pool, subnet):
     pointer_start = "{"
     pointer_end = "}"
@@ -354,12 +394,15 @@ def set_kea_ctrl_config():
         ddns = 'yes'
     if world.ctrl_enable:
         ctrl_agent = 'yes'
-
     world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
     dhcp4_srv={path}/sbin/kea-dhcp4
     dhcp6_srv={path}/sbin/kea-dhcp6
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
     ctrl_agent_srv={path}/sbin/kea-ctrl-agent
+    kea_dhcp4_config_file={path}/etc/kea/kea.conf
+    kea_dhcp6_config_file={path}/etc/kea/kea.conf
+    kea_dhcp_ddns_config_file={path}/etc/kea/kea.conf
+    kea_ctrl_agent_config_file={path}/etc/kea/kea.conf
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
@@ -488,25 +531,29 @@ def cfg_write():
             cfg_file.write('"subnet6":[')
         elif "kea4" in world.cfg["dhcp_under_test"]:
             cfg_file.write('"subnet4":[')
-
         ## add subnets
         counter = 0
+        comma = 0
         for each_subnet in world.subcfg:
+            if counter in world.shared_subnets_tmp:
+                # subnets that suppose to go to shared-networks should be omitted here
+                counter += 1
+                continue
+            if counter > 0 and comma == 1:
+                cfg_file.write(",")
             tmp = each_subnet[0]
             # we need to be able to add interface-id to config but we want to keep backward compatibility.
             if "interface" not in tmp or "interface-id" not in tmp:
                 eth = world.f_cfg.server_iface
                 tmp += ', "interface": "{eth}" '.format(**locals())
             counter += 1
+            comma = 1
             for each_subnet_config_part in each_subnet[1:]:
                 if len(each_subnet_config_part) > 0:
                     tmp += ',' + each_subnet_config_part
-                #tmp += str(each_subnet[-1])
             cfg_file.write(tmp + '}')
-            if counter != len(world.subcfg) and len(world.subcfg) > 1:
-                cfg_file.write(",")
         cfg_file.write(']')
-        #that is ugly hack but kea confing generation is awaiting rebuild anyway
+        # that is ugly hack but kea confing generation is awaiting rebuild anyway
         if "options" in world.cfg:
             cfg_file.write(',' + world.cfg["options"])
             cfg_file.write("]")
@@ -542,12 +589,60 @@ def cfg_write():
         cfg_file.write(',' + world.cfg["socket"])
         del world.cfg["socket"]
 
-    cfg_file.write('}')
+    if len(world.shared_subnets) > 0:
+        shared_counter = 0
+        last_option = ""
+        cfg_file.write(' ,"shared-networks":[')
+        for each_shared_subnet in world.shared_subnets:
+            counter = 0
+            comma = 0
+            if shared_counter > 0:
+                cfg_file.write(',')
+            cfg_file.write('{')
+
+            for each_option in world.shared_subcfg[shared_counter]:
+                cfg_file.write(each_option)
+                last_option = each_option
+
+            if last_option[:-1] != ",":
+                cfg_file.write(",")
+
+            if "kea6" in world.cfg["dhcp_under_test"]:
+                cfg_file.write('"subnet6":[')
+
+            elif "kea4" in world.cfg["dhcp_under_test"]:
+                cfg_file.write('"subnet4":[')
+
+            for each_subnet in world.subcfg:
+                if counter in each_shared_subnet:
+                    if counter > 0 and comma == 1:
+                        cfg_file.write(",")
+                    tmp = each_subnet[0]
+                    # we need to be able to add interface-id to config but we want to keep backward compatibility.
+                    # if "interface" not in tmp or "interface-id" not in tmp:
+                    #     eth = world.f_cfg.server_iface
+                    #     tmp += ', "interface": "{eth}" '.format(**locals())
+                    counter += 1
+                    comma = 1
+
+                    for each_subnet_config_part in each_subnet[1:]:
+                        if len(each_subnet_config_part) > 0:
+                            tmp += ',' + each_subnet_config_part
+                        # tmp += str(each_subnet[-1])
+                    cfg_file.write(tmp + '}')
+                else:
+                    counter += 1
+            # shared_counter += 1
+            cfg_file.write(']')
+            shared_counter += 1
+            cfg_file.write('}')  # end of map of each shared network
+        cfg_file.write(']')  # end of shared networks list
+
+    cfg_file.write('}')  # end of DHCP part (should be moved if something else will be added after shared-networks
 
     if world.ddns_enable:
         build_ddns_config()
         cfg_file.write(world.ddns)
-        #cfg_file.write("}")
 
     if "agent" in world.cfg:
         cfg_file.write(',' + world.cfg["agent"])

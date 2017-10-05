@@ -26,7 +26,8 @@ from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_log
     add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config,\
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
     add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
-    set_conf_parameter_subnet, add_line_in_subnet
+    set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
+    set_conf_parameter_shared_subnet
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -178,7 +179,6 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         add_interface(eth)
 
 
-
 def config_client_classification(step, subnet, option_value):
     subnet = int(subnet)
     if len(world.subcfg[subnet][1]) > 2:
@@ -224,6 +224,24 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     world.subcfg[subnet][2] += '''
             \t{pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
             \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
+
+
+def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, option_value):
+    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+    space = world.cfg["space"]
+    shared_subnet = int(shared_subnet)
+    option_code = kea_options4.get(option_name)
+
+    pointer_start = "{"
+    pointer_end = "}"
+
+    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
+    if len(world.shared_subcfg[shared_subnet][0]) > 10:
+        world.shared_subcfg[shared_subnet][0] += ','
+
+    world.shared_subcfg[shared_subnet][0] += '''
+            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
+            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
 def add_siaddr(step, addr, subnet_number):
@@ -331,7 +349,7 @@ def start_srv(start, process):
         process = "starting"
     # check process - if None add some.
     if not v4:
-        result = fabric_sudo_command('( nohup ' + world.f_cfg.software_install_path + 'sbin/keactrl start '
+        result = fabric_sudo_command('( ' + world.f_cfg.software_install_path + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
     else:

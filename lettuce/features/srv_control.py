@@ -17,11 +17,11 @@
 
 from lettuce import world, step
 from init_all import SOFTWARE_UNDER_TEST
-DHCP = world.f_cfg.dhcp_used
-DNS = world.f_cfg.dns_used
 from terrain import declare_all
 import importlib
 
+DHCP = world.f_cfg.dhcp_used
+DNS = world.f_cfg.dns_used
 declare_all()
 
 for each_server_name in SOFTWARE_UNDER_TEST:
@@ -311,7 +311,8 @@ def add_hooks(step, library_path):
     library_path = test_define_value(library_path)[0]
     dhcp.add_hooks(library_path)
 
-##MySQL
+
+# MySQL
 @step('Use (\S+) reservation system.')
 def enable_db_backend_reservation(step, db_type):
     if db_type == 'MySQL':
@@ -409,7 +410,7 @@ def upload_db_reservation(step, db_type):
 ##endMySQL
 
 
-@step('Reserve (\S+) (\S+) for host uniquely identified by  (\S+) (\S+).')
+@step('Reserve (\S+) (\S+) for host uniquely identified by (\S+) (\S+).')
 def host_reservation(step, reservation_type, reserved_value, unique_host_value_type, unique_host_value):
     """
     Ability to configure simple host reservations.
@@ -419,6 +420,35 @@ def host_reservation(step, reservation_type, reserved_value, unique_host_value_t
                                                                                                     unique_host_value_type,
                                                                                                     unique_host_value)
     dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, None)
+
+##shared-subnet cfg
+@step('Add subnet (\d+) to shared-subnet set (\d+).')
+def shared_subnet(step, subnet_id, shared_subnet_id):
+    """
+    Configure shared subnets.
+    """
+    subnet_id, shared_subnet_id = test_define_value(subnet_id, shared_subnet_id)
+    dhcp.add_to_shared_subnet(int(subnet_id), int(shared_subnet_id))
+
+
+@step('Shared subnet (\d+) is configured with option line: (.+)')
+def add_option_shared_subnet(step, shared_subnet_id, conf_line):
+    shared_subnet_id, conf_line = test_define_value(shared_subnet_id, conf_line)
+    dhcp.add_line_to_shared_subnet(shared_subnet_id, conf_line)
+
+
+@step('Add configuration parameter (\S+) with value (\S+) to shared-subnet (\d+) configuration.')
+def set_conf_parameter_shared_subnet(step, parameter_name, value, subnet_id):
+    """
+    Can be used on the end of configuration process, just before starting server.
+    :param step:
+    :param parameter_name:
+    :param value:
+    :return:
+    """
+    parameter_name, value, subnet_id = test_define_value(parameter_name, value, subnet_id)
+    dhcp.set_conf_parameter_shared_subnet(parameter_name, value, int(subnet_id))
+
 
 ##subnet options
 @step('Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
@@ -490,7 +520,7 @@ def open_control_channel(step, socket_type, socket_name):
     socket_type, socket_name = test_define_value(socket_type, socket_name)
     dhcp.open_control_channel_socket(socket_type, socket_name)
 
-@step('Server has control agent configred on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
+@step('Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
 def agent_control_channel(step, host_address, host_port, socket_type, socket_name):
     """
     """
