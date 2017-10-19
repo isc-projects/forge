@@ -11,7 +11,8 @@ Feature: Standard DHCPv6 address validation
 	## correct message		SOLICIT -->
 	## 		   						<--	ADVERTISE	
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
+	#Server is configured with
 	Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -57,7 +58,8 @@ Feature: Standard DHCPv6 address validation
 	##					server-id
 
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	#Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Send server configuration using SSH and config-file.
 	DHCP server is started.
 
@@ -125,7 +127,7 @@ Feature: Standard DHCPv6 address validation
 	##					IA-NA
 
     Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Send server configuration using SSH and config-file.
 DHCP server is started.
 	
@@ -187,7 +189,7 @@ DHCP server is started.
 	##					server-id
 	
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with preference option with value 123.
 	Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -244,7 +246,7 @@ DHCP server is started.
 	##					IA_Address with address 3000::1.
 	
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
+	Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Send server configuration using SSH and config-file.
 DHCP server is started.
 	
@@ -311,7 +313,7 @@ DHCP server is started.
 	##					IA-NA
 	##					IA-Address
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -386,7 +388,8 @@ DHCP server is started.
 	##					server-id
 	##					status-code with Success
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	#Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Send server configuration using SSH and config-file.
 DHCP server is started.
 

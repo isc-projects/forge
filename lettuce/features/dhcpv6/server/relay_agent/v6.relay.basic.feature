@@ -31,7 +31,7 @@ DHCP server is started.
     Scenario: v6.relay.message-unicast-global
 	
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_GLOBAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -56,7 +56,8 @@ DHCP server is started.
     Scenario: v6.relay.message-unicast-local
 	
 	Test Setup:
-	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	#Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured on interface $(SERVER_IFACE) and address $(SRV_IPV6_ADDR_LINK_LOCAL) with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Send server configuration using SSH and config-file.
 DHCP server is started.
 

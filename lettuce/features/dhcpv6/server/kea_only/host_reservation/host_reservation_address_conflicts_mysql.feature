@@ -411,9 +411,10 @@ Reconfigure DHCP server.
   Time valid-lifetime is configured with value 8.
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
   Send server configuration using SSH and config-file.
-DHCP server is started.
+  DHCP server is started.
 
   Test Procedure:
+  Client sets ia_id value to 6661.
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
   Client does include client-id.
   Client does include IA-NA.
@@ -433,6 +434,7 @@ DHCP server is started.
   Server MUST respond with REPLY message.
 
   Test Procedure:
+  Client sets ia_id value to 6662.
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
   Client does include client-id.
   Client does include IA-NA.
@@ -455,6 +457,7 @@ DHCP server is started.
   Client saves IA_NA option from received message.
 
   Test Procedure:
+  Client sets ia_id value to 6663.
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
   Client does include client-id.
   Client does include IA-NA.
@@ -467,14 +470,14 @@ DHCP server is started.
   Response sub-option 13 from option 3 MUST contain statuscode 2.
 
   # bigger prefix pool + reservation
-  Sleep for 5 seconds.
+  Sleep for 10 seconds.
 
   Test Setup:
   Time renew-timer is configured with value 5.
   Time rebind-timer is configured with value 6.
   Time preferred-lifetime is configured with value 7.
   Time valid-lifetime is configured with value 8.
-  Server is configured with 3000::/30 subnet with 3000::1-3000::3 pool.
+  Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
 
   Use MySQL reservation system.
   Create new MySQL reservation identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -486,6 +489,7 @@ DHCP server is started.
   Reconfigure DHCP server.
 
   Test Procedure:
+  Client sets ia_id value to 666.
   Client copies server-id option from received message.
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:22.
   Client adds saved options. And DONT Erase.
