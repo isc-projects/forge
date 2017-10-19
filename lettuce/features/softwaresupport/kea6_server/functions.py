@@ -173,6 +173,32 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         add_interface(eth)
 
 
+def prepare_cfg_subnet_soecific_interface(step, interface, address, subnet, pool):
+    if subnet == "default":
+        subnet = "2001:db8:1::/64"
+    if pool == "default":
+        pool = "2001:db8:1::1 - 2001:db8:1::ffff"
+
+    eth = world.f_cfg.server_iface
+
+    if not "interfaces" in world.cfg:
+        world.cfg["interfaces"] = ''
+
+    pointer_start = "{"
+    pointer_end = "}"
+
+    if subnet is not "":
+        world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"'''.format(**locals())
+    else:
+        world.subnet_add = False
+    if pool is not "":
+        world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
+
+    if len(world.cfg["interfaces"]) > 3:
+        world.cfg["interfaces"] += ','
+    world.cfg["interfaces"] += '"{interface}/{address}"'.format(**locals())
+
+
 def add_to_shared_subnet(subnet_id, shared_subnet_id):
     if len(world.shared_subnets) <= shared_subnet_id:
         world.shared_subnets.append([])

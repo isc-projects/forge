@@ -29,9 +29,10 @@ INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname
 VALUES (UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
 @dhcp6_subnet_id,@hostname);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
-    hosts_v6_flex = """
+    hosts_v6_flex = hosts_v6_hex
+    """
 INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname)
-VALUES (@identifier_value,(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
+VALUES ((UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
 @dhcp6_subnet_id,@hostname);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
     hosts_v6 = ""
@@ -42,10 +43,11 @@ dhcp4_server_hostname,dhcp4_boot_file_name)
 VALUES (UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
 @dhcp4_subnet_id,INET_ATON(@ipv4_address),@hostname,INET_ATON(@next_server),@server_hostname,@boot_file_name);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
-    hosts_v4_flex = """
+    hosts_v4_flex = hosts_v4_hex
+    """
 INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp4_subnet_id,ipv4_address,hostname,dhcp4_next_server,
 dhcp4_server_hostname,dhcp4_boot_file_name)
-VALUES (@identifier_value,(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
+VALUES ((UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
 @dhcp4_subnet_id,INET_ATON(@ipv4_address),@hostname,INET_ATON(@next_server),@server_hostname,@boot_file_name);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
     hosts_v4 = ""

@@ -54,6 +54,7 @@ options = {"client-id": 1,
            "remote-id": 37,
            "subscriber-id": 38,
            "fqdn": 39,
+           "client-arch-type": 61,
            "client-link-layer-addr": 79}
 
 ## ======================================================================
@@ -247,6 +248,12 @@ def client_does_include(sender_type, opt_type, value):
                                             preflft=world.cfg["values"]["preflft"],
                                             validlft=world.cfg["values"]["validlft"]))
 
+    elif opt_type == "user-class":
+        if world.cfg["values"]["user_class_data"] == "":
+            add_client_option(DHCP6OptUserClass())
+        else:
+            add_client_option(DHCP6OptUserClass(userclassdata=USER_CLASS_DATA(data=str(world.cfg["values"]["user_class_data"]))))
+
     elif opt_type == "vendor-class":
         if world.cfg["values"]["vendor_class_data"] == "":
             add_client_option(DHCP6OptVendorClass(enterprisenum=world.cfg["values"]["enterprisenum"]))
@@ -299,7 +306,7 @@ def client_does_include(sender_type, opt_type, value):
                                                        iiminor=world.cfg["values"]["iiminor"]))
 
     elif opt_type == "client-arch-type":
-        add_client_option(DHCP6OptClientArchType(archtypes=str(world.cfg["values"]["archtypes"])))
+        add_client_option(DHCP6OptClientArchType(archtypes=int(world.cfg["values"]["archtypes"])))
 
     else:
         assert "unsupported option: " + opt_type

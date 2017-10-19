@@ -28,7 +28,8 @@ class PSQLReservation:
 INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname)
 VALUES (DECODE(REPLACE(:'identifier_value', ':', ''), 'hex'),(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'),:dhcp6_subnet_id,:'hostname');
 SELECT LASTVAL() INTO lastval;"""
-    hosts_v6_flex = """
+    hosts_v6_flex = hosts_v6_hex
+    """
 INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname)
 VALUES (:'identifier_value',(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'),:dhcp6_subnet_id,:'hostname');
 SELECT LASTVAL() INTO lastval;"""
@@ -38,7 +39,8 @@ SELECT LASTVAL() INTO lastval;"""
 INSERT INTO hosts (dhcp_identifier, dhcp_identifier_type, dhcp4_subnet_id, ipv4_address, hostname, dhcp4_next_server, dhcp4_server_hostname, dhcp4_boot_file_name)
 VALUES (DECODE(REPLACE(:'identifier_value', ':', ''), 'hex'),(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'), :dhcp4_subnet_id, (SELECT (:'ipv4_address'::inet - '0.0.0.0'::inet)),:'hostname',(SELECT (:'next_server'::inet - '0.0.0.0'::inet)),:'server_hostname',:'boot_file_name');
 SELECT LASTVAL() INTO lastval;"""
-    hosts_v4_flex = """
+    hosts_v4_flex = hosts_v4_hex
+    """
 INSERT INTO hosts (dhcp_identifier, dhcp_identifier_type, dhcp4_subnet_id, ipv4_address, hostname, dhcp4_next_server, dhcp4_server_hostname, dhcp4_boot_file_name)
 VALUES (:'identifier_value',(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'), :dhcp4_subnet_id, (SELECT (:'ipv4_address'::inet - '0.0.0.0'::inet)),:'hostname',(SELECT (:'next_server'::inet - '0.0.0.0'::inet)),:'server_hostname',:'boot_file_name');
 SELECT LASTVAL() INTO lastval;"""
@@ -118,7 +120,7 @@ SELECT LASTVAL() INTO lastval;"""
                 self.configuration_script += "\nVALUES ('{ipv6_address_reservation}'," \
                                              " 0, (SELECT lastval FROM lastval));".format(**each)
             if len(each) == 2:
-                self.configuration_script += "\n\\set ipv6_prefix_reservation = " \
+                self.configuration_script += "\n\\set ipv6_prefix_reservation " \
                                              "'{ipv6_prefix_reservation}'".format(**each)
                 if each["ipv6_prefix_len_reservation"] != "":
                     self.configuration_script += "\n\\set ipv6_prefix_len_reservation '" \
