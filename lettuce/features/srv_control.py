@@ -123,6 +123,21 @@ def config_srv_subnet(step, subnet, pool):
     dhcp.prepare_cfg_subnet(step, subnet, pool)
 
 
+@step('Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
+def config_srv_subnet(step, interface, address, subnet, pool):
+    """
+    Adds server configuration with specified subnet and pool.
+    subnet may define specific subnet or use the word "default"
+    pool may define specific pool range or use the word "default"
+
+    Setting subnet in that way, will cause to set in on interface you set in
+    init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set
+    interface.
+    """
+    interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
+    dhcp.prepare_cfg_subnet_soecific_interface(step, interface, address, subnet, pool)
+
+
 @step('Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
 def config_srv_another_subnet(step, interface, subnet, pool):
     """

@@ -66,7 +66,8 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "iitype": 0,
              "iimajor": 0,
              "iiminor": 0,
-             "archtypes": 1}
+             "archtypes": 1,
+             "user_class_data": ""}
 
 srv_values_v6 = {"T1": 1000,
                  "T2": 2000,
