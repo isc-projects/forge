@@ -306,7 +306,7 @@ def client_does_include(sender_type, opt_type, value):
                                                        iiminor=world.cfg["values"]["iiminor"]))
 
     elif opt_type == "client-arch-type":
-        add_client_option(DHCP6OptClientArchType(archtypes=int(world.cfg["values"]["archtypes"])))
+        add_client_option(DHCP6OptClientArchType(archtypes=world.cfg["values"]["archtypes"]))
 
     else:
         assert "unsupported option: " + opt_type

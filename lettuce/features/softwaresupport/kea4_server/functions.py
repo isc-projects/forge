@@ -19,7 +19,7 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
     copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
 from lettuce import world
 from logging_facility import *
-
+from time import sleep
 from logging_facility import get_common_logger
 
 from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
@@ -355,10 +355,11 @@ def start_srv(start, process):
     else:
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
-        check_kea_process_result(start, result, process)
+        #check_kea_process_result(start, result, process)
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
+        sleep(2)
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):

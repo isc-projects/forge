@@ -23,6 +23,9 @@ from protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 from logging_facility import *
 from lettuce.registry import world
+from time import sleep
+
+
 kea_options6 = {
     "client-id": 1,
     "server-id": 2,
@@ -764,10 +767,11 @@ def start_srv(start, process):
     else:
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+        #check_kea_process_result(start, result, process)
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
-
+        sleep(2)
 
 def reconfigure_srv():
     #build_and_send_config_files()
