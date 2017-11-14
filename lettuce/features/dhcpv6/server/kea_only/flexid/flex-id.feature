@@ -3,11 +3,15 @@ Feature: Kea Hook flex-id testing
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-1
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
-  #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-reload","arguments":  {} }
   Test Procedure:
   Client does include client-id.
   Client does include IA-NA.
@@ -32,10 +36,14 @@ Feature: Kea Hook flex-id testing
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-2
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_2.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: relay6[0].option[18].hex
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-reload","arguments":  {} }
   Test Procedure:
@@ -63,10 +71,14 @@ Feature: Kea Hook flex-id testing
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-3
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_3.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   Test Procedure:
   Client sets enterprisenum value to 4491.
@@ -87,8 +99,10 @@ Feature: Kea Hook flex-id testing
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-mysql-1
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_mysql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: relay6[0].option[18].hex
 
   Use MySQL reservation system.
   Create new MySQL reservation identified by flex-id 706f727431323334.
@@ -97,6 +111,7 @@ Feature: Kea Hook flex-id testing
   Add IPv6 address reservation 3000::f with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
   #Pause the Test.
 
@@ -123,8 +138,10 @@ Feature: Kea Hook flex-id testing
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-mysql-2
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_mysql_2.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 
   Use MySQL reservation system.
   Create new MySQL reservation identified by flex-id 01:02:03:04:05:06.
@@ -133,6 +150,7 @@ Feature: Kea Hook flex-id testing
   Add IPv6 address reservation 3000::f with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -154,8 +172,10 @@ Feature: Kea Hook flex-id testing
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-pgsql-1
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_pgsql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: relay6[0].option[18].hex
 
   Use PostgreSQL reservation system.
   Create new PostgreSQL reservation identified by flex-id 706f727431323334.
@@ -164,6 +184,7 @@ Feature: Kea Hook flex-id testing
   Add IPv6 address reservation 3000::f with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
   #Pause the Test.
 
@@ -191,8 +212,10 @@ Feature: Kea Hook flex-id testing
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-pgsql-2
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_pgsql_2.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 
   Use PostgreSQL reservation system.
   Create new PostgreSQL reservation identified by flex-id 01:02:03:04:05:06.
@@ -201,6 +224,7 @@ Feature: Kea Hook flex-id testing
   Add IPv6 address reservation 3000::f with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -221,11 +245,16 @@ Feature: Kea Hook flex-id testing
 
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-replace-duid
-
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_replace_client_id_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -267,9 +296,15 @@ Feature: Kea Hook flex-id testing
   Scenario: v6.hooks.flexid-replace-duid-renew
 
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_replace_client_id_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -330,11 +365,15 @@ Feature: Kea Hook flex-id testing
 
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-replace-duid-renew-failed
-
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_replace_client_id_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -395,11 +434,16 @@ Feature: Kea Hook flex-id testing
 
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-replace-duid-release
-
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_replace_client_id_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -459,11 +503,15 @@ Feature: Kea Hook flex-id testing
 
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-replace-duid-release-failed
-
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_replace_client_id_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -528,8 +576,13 @@ Feature: Kea Hook flex-id testing
   Scenario: v6.hooks.flexid-replace-duid-release-mysql
 
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_replace_client_id_mysql.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
 
   Use MySQL reservation system.
   Create new MySQL reservation identified by flex-id 01:02:03:04:05:06.
@@ -538,6 +591,7 @@ Feature: Kea Hook flex-id testing
   Add IPv6 address reservation 3000::f with iaid $(EMPTY) to MySQL record id 1.
   Upload hosts reservation to MySQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
@@ -613,10 +667,14 @@ Feature: Kea Hook flex-id testing
 
 @v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-replace-duid-release-pgsql
-
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/hook_replace_client_id_pgsql.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
 
   Use PostgreSQL reservation system.
   Create new PostgreSQL reservation identified by flex-id 01:02:03:04:05:06.
@@ -625,6 +683,7 @@ Feature: Kea Hook flex-id testing
   Add IPv6 address reservation 3000::f with iaid $(EMPTY) to PostgreSQL record id 1.
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   Test Procedure:
