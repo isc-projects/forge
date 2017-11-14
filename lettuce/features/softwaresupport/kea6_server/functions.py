@@ -599,12 +599,12 @@ def cfg_write():
         del world.cfg["option_def"]
 
     if len(world.hooks) > 0:
-        cfg_file.write(',"hooks-libraries": [{')
+        cfg_file.write(',"hooks-libraries": [')
         test_length_1 = len(world.hooks)
         counter_1 = 1
         for each_hook in world.hooks:
-            cfg_file.write('"library": "' + each_hook[0] + '"')
-            if len(each_hook[1])>0:
+            cfg_file.write('{"library": "' + each_hook[0] + '"')
+            if len(each_hook[1]) > 0:
                 cfg_file.write(',"parameters": {')
                 test_length_2 = len(each_hook[1])
                 counter_2 = 1

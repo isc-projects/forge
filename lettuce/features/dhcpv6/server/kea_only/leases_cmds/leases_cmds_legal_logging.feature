@@ -197,7 +197,7 @@ Feature: Kea leases manipulation commands with legal logging hook
   Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
   File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Administrator deleted a lease for a device identified by: duid of 00:03:00:01:66:55:44:33:22:11
 
-@v6 @kea_only @controlchannel @hook @lease_cmds @legal_logging
+@v6 @kea_only @controlchannel @hook @lease_cmds @legal_logging @disabled
   Scenario: hook.v6.lease.cmds.legal.logging.wipe
   Test Procedure:
   Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.

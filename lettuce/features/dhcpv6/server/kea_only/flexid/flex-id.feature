@@ -100,7 +100,7 @@ Feature: Kea Hook flex-id testing
   Scenario: v6.hooks.flexid-mysql-1
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add to config file line: "host-reservation-identifiers": ["flex-id" ]
   Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: relay6[0].option[18].hex
 
