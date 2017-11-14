@@ -54,7 +54,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -99,7 +99,7 @@ DHCP server is started.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
 	Response MUST include option 61.
@@ -111,13 +111,13 @@ DHCP server is started.
     Client sets chaddr value to 00:00:00:00:00:00.
     Client adds to the message client_id with value 00010203040506.
     Client copies server_id option from received message.
-	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.51.100.
 	Client requests option 1.
 	Client sends REQUEST message.
 
     Pass Criteria:
     Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
 	Response MUST include option 61.
@@ -131,7 +131,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -144,7 +144,7 @@ DHCP server is started.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
 	Response MUST include option 61.
@@ -158,7 +158,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -199,7 +199,7 @@ DHCP server is started.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
@@ -208,13 +208,13 @@ DHCP server is started.
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.51.100.
 	Client requests option 1.
 	Client sends REQUEST message.
 
     Pass Criteria:
     Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
@@ -228,7 +228,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -285,7 +285,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -297,7 +297,7 @@ DHCP server is started.
 	
 	Pass Criteria:
 	Server MUST respond with OFFER message.
-	Response MUST contain yiaddr 192.168.50.100.
+	Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
 	Response MUST include option 61.
@@ -309,13 +309,13 @@ DHCP server is started.
 	Client sets chaddr value to 00:00:00:00:00:00.
 	Client adds to the message client_id with value 00010203040506.
 	Client copies server_id option from received message.
-	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.51.100.
 	Client requests option 1.
 	Client sends REQUEST message.
 	
 	Pass Criteria:
 	Server MUST respond with ACK message.
-	Response MUST contain yiaddr 192.168.50.100.
+	Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
 	Response MUST include option 61.
@@ -337,7 +337,7 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
 	Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_my-other-class.
     Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -380,7 +380,7 @@ DHCP server is started.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
@@ -389,14 +389,14 @@ DHCP server is started.
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.51.100.
 	Client adds to the message vendor_class_id with value my-other-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
     Pass Criteria:
     Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
@@ -408,9 +408,9 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
 	Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_my-other-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.150-192.168.50.150 pool.
+	Server is configured with another subnet: 192.168.52.0/24 with 192.168.52.150-192.168.52.150 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -452,7 +452,7 @@ DHCP server is started.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
@@ -461,14 +461,14 @@ DHCP server is started.
     Test Procedure:
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.51.100.
 	Client adds to the message vendor_class_id with value my-other-class.
 	Client requests option 1.
 	Client sends REQUEST message.
 
     Pass Criteria:
     Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
@@ -480,9 +480,9 @@ DHCP server is started.
     Test Setup:
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
 	Server is configured with client-classification option in subnet 0 with name VENDOR_CLASS_my-own-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.100-192.168.50.100 pool.
+	Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.100-192.168.51.100 pool.
 	Server is configured with client-classification option in subnet 1 with name VENDOR_CLASS_my-other-class.
-	Server is configured with another subnet: 192.168.50.0/24 with 192.168.50.150-192.168.50.150 pool.
+	Server is configured with another subnet: 192.168.52.0/24 with 192.168.52.150-192.168.52.150 pool.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -531,7 +531,7 @@ DHCP server is started.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
 	Response MUST include option 1.
 	Response MUST include option 54.
 	Response MUST include option 61.
@@ -543,7 +543,7 @@ DHCP server is started.
     Client adds to the message client_id with value 00030405060708.
     Client sets chaddr value to 00:1f:06:06:06:06.
     Client copies server_id option from received message.
-	Client adds to the message requested_addr with value 192.168.50.100.
+	Client adds to the message requested_addr with value 192.168.51.100.
 	Client adds to the message vendor_class_id with value my-other-class.
 	Client requests option 1.
 	Client sends REQUEST message.
@@ -553,7 +553,7 @@ DHCP server is started.
 	Response MUST include option 1.
 	Response MUST include option 54.
 	Response MUST include option 61.
-    Response MUST contain yiaddr 192.168.50.100.
+    Response MUST contain yiaddr 192.168.51.100.
     Response option 1 MUST contain value 255.255.255.0.
     Response option 54 MUST contain value $(SRV4_ADDR).
 
@@ -564,7 +564,7 @@ DHCP server is started.
 
     Pass Criteria:
     Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.150.
+    Response MUST contain yiaddr 192.168.52.150.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.
@@ -573,13 +573,13 @@ DHCP server is started.
     Test Procedure:
     Client sets chaddr value to 00:1f:11:22:33:44.
     Client copies server_id option from received message.
-	Client adds to the message requested_addr with value 192.168.50.150.
+	Client adds to the message requested_addr with value 192.168.52.150.
 	Client requests option 1.
 	Client sends REQUEST message.
 
     Pass Criteria:
     Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.150.
+    Response MUST contain yiaddr 192.168.52.150.
 	Response MUST include option 1.
 	Response MUST include option 54.
     Response option 1 MUST contain value 255.255.255.0.

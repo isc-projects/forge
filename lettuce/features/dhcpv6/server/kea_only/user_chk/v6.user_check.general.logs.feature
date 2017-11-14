@@ -110,14 +110,16 @@ Feature: Kea6 User Check Hook Library - Logging
 
   Sleep for 10 seconds.
   Client removes file from server located in: /tmp/user_chk_outcome.txt.
+  DHCP server is stopped.
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::5-3000::5 pool.
   Server is configured with another subnet: 1000::/64 with 1000::5-1000::5 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_user_chk.so.
   Server logging system is configured with logger type kea-dhcp6.callouts, severity DEBUG, severity level 99 and log file kea.log.
+  Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
   Server logging system is configured with logger type kea-dhcp6.hooks, severity INFO, severity level None and log file kea.log.
   Send server configuration using SSH and config-file.
-  Reconfigure DHCP server.
+  DHCP server is started.s
 
   Test Procedure:
   # Send a query from an unregistered user
