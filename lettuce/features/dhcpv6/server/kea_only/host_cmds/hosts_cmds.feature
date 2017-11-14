@@ -268,14 +268,20 @@ Feature: Kea Hook hosts_cmds testing
   Scenario: v6.hosts.cmds.add-reservation-mysql-flex-id
 
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/host_cmds/hook_mysql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/host_cmds/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_host_cmds.so.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 2 add parameter named identifier-expression with value: relay6[0].option[18].hex
+  Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Use MySQL reservation system.
+  Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
   Test Procedure:
   Client does include client-id.
+  Client does include IA-NA.
   Client sends SOLICIT message.
 
   RelayAgent sets linkaddr value to 2001:db8:1::1000.
@@ -317,16 +323,19 @@ Feature: Kea Hook hosts_cmds testing
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
   Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::100.
-  Client does include IA_Address.
-  Client does include IA-NA.
+
 
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.add-reservation-pgsql-flex-id
-
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/host_cmds/hook_pgsql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/host_cmds/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_host_cmds.so.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 2 add parameter named identifier-expression with value: relay6[0].option[18].hex
+  Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Use PostgreSQL reservation system.
+  Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
