@@ -16,7 +16,7 @@ Feature: Kea6 User Check Hook Library
   Client removes file from server located in: /tmp/user_chk_outcome.txt.
   Server is configured with 3000::/64 subnet with 3000::5-3000::5 pool.
   Server is configured with another subnet: 1000::/64 with 1000::5-1000::5 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_user_chk.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_user_chk.so.
   Send server configuration using SSH and config-file.
   DHCP server failed to start. During configuration process.
 
@@ -30,7 +30,7 @@ Feature: Kea6 User Check Hook Library
   Client removes file from server located in: /tmp/user_chk_outcome.txt.
   Server is configured with 3000::/64 subnet with 3000::5-3000::5 pool.
   Server is configured with another subnet: 1000::/64 with 1000::5-1000::5 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_user_chk.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_user_chk.so.
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -60,7 +60,7 @@ Feature: Kea6 User Check Hook Library
   Client removes file from server located in: /tmp/user_chk_outcome.txt.
   Server is configured with 3000::/64 subnet with 3000::5-3000::5 pool.
   Server is configured with another subnet: 1000::/64 with 1000::5-1000::5 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/libdhcp_user_chk.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_user_chk.so.
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
