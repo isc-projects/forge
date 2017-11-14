@@ -327,6 +327,11 @@ def add_hooks(step, library_path):
     dhcp.add_hooks(library_path)
 
 
+@step('To hook no. (\d+) add parameter named (\S+) with value: (.+)')
+def add_parameter_to_hook(step, hook_no, parameter_name, parameter_value):
+    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
+    dhcp.add_parameter_to_hook(int(hook_no), parameter_name, parameter_value)
+
 # MySQL
 @step('Use (\S+) reservation system.')
 def enable_db_backend_reservation(step, db_type):

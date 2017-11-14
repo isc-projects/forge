@@ -605,3 +605,7 @@ def clear_all():
         fabric_remove_file_command(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
     except:
         pass
+
+
+def add_parameter_to_hook(a, b, c):
+    assert False, "Unused in ISC-DHCP"

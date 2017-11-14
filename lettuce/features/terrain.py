@@ -323,6 +323,8 @@ def initialize(scenario):
     world.shared_subcfg = []
     world.shared_subnets = []
     world.shared_subnets_tmp = []
+    world.hooks = []
+    world.classification = []
     world.reservation_backend = ""
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name

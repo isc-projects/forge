@@ -496,14 +496,14 @@ def config_db_backend():
 
 
 def add_hooks(library_path):
-    if not "hooks" in world.cfg:
-        world.cfg["hooks"] = ''
-    else:
-        # if hooks are already created it means we have at least one library there
-        # so we need just comma
-        world.cfg["hooks"] += ','
+    world.hooks.append([library_path, []])
 
-    world.cfg["hooks"] += '{"library": "' + library_path + '"}'
+
+def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
+    try:
+        world.hooks[hook_no-1][1].append([parameter_name, parameter_value])
+    except():
+        assert False, "There is no hook with such number, add hook first."
 
 
 def add_logger(log_type, severity, severity_level, logging_file):
@@ -598,9 +598,31 @@ def cfg_write():
         cfg_file.write("]")
         del world.cfg["option_def"]
 
-    if "hooks" in world.cfg:
-        cfg_file.write(',"hooks-libraries": [' + world.cfg["hooks"] + ']')
-        del world.cfg["hooks"]
+    if len(world.hooks) > 0:
+        cfg_file.write(',"hooks-libraries": [{')
+        test_length_1 = len(world.hooks)
+        counter_1 = 1
+        for each_hook in world.hooks:
+            cfg_file.write('"library": "' + each_hook[0] + '"')
+            if len(each_hook[1])>0:
+                cfg_file.write(',"parameters": {')
+                test_length_2 = len(each_hook[1])
+                counter_2 = 1
+                for every_parameter in each_hook[1]:
+                    cfg_file.write('"' + every_parameter[0] + '":')
+                    if every_parameter[1] in ["true", "false"]:  # TODO add if value is numeric
+                        cfg_file.write(every_parameter[1])
+                    else:
+                        cfg_file.write('"' + every_parameter[1] + '"')
+                    if counter_2 < test_length_2:
+                        cfg_file.write(',')
+                    counter_2 += 1
+                cfg_file.write('}')  # closing parameters
+            if counter_1 < test_length_1:
+                cfg_file.write('},')
+            counter_1 += 1
+        cfg_file.write('}')  # closing libs
+        cfg_file.write(']')  # closing hooks
 
     if "simple_options" in world.cfg:
         cfg_file.write(',' + world.cfg["simple_options"])
