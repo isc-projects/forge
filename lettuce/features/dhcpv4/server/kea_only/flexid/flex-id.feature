@@ -3,11 +3,14 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-inside-pool
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   Test Procedure:
   Client adds to the message vendor_class_id with value docsis3.0.
@@ -35,11 +38,14 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-inside-pool-negative
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   Test Procedure:
   Client adds to the message vendor_class_id with value docsis3.0.
@@ -64,11 +70,14 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-outside-pool
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_2.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.9 pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   Test Procedure:
   Client adds to the message vendor_class_id with value docsis3.0.
@@ -95,11 +104,15 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-replace-mac-addr-inside-pool
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_1_replace.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-  # matching client id is disabled
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+  Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  Add configuration parameter match-client-id with value false to global configuration.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   # server should act normally, mac address should not be replaced
   Test Procedure:
@@ -140,11 +153,16 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-replace-client-id-release-fail
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_2_replace.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   # server should act normally, mac address should not be replaced
   Test Procedure:
@@ -171,9 +189,15 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-replace-client-id-release-1
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_2_replace.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   # server should act normally, mac address should not be replaced
@@ -231,9 +255,15 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-replace-client-id-release-2
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_2_replace.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   # server should act normally, mac address should not be replaced
@@ -289,9 +319,15 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-replace-client-id-renew-1
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_2_replace.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   # server should act normally, mac address should not be replaced
@@ -337,9 +373,15 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-replace-client-id-renew-2
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_2_replace.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
-
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
+  Send server configuration using SSH and config-file.
   DHCP server is started.
 
   # server should act normally, mac address should not be replaced
@@ -385,8 +427,13 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-mysql-1
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_mysql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
 
   Use MySQL reservation system.
   # 646f63736973332e30 = docsis3.0
@@ -396,6 +443,7 @@ Feature: Kea Hook flex-id testing
   Add dhcp4_subnet_id 1 to MySQL reservation record id 1.
   Upload hosts reservation to MySQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
   #Pause the Test.
 
@@ -424,8 +472,13 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-mysql-negative
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_mysql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
 
   Use MySQL reservation system.
   # 646f63736973332e30 = docsis3.0
@@ -435,8 +488,8 @@ Feature: Kea Hook flex-id testing
   Add dhcp4_subnet_id 1 to MySQL reservation record id 1.
   Upload hosts reservation to MySQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
-  #Pause the Test.
 
   Test Procedure:
   Client adds to the message vendor_class_id with value docsis3.0.
@@ -459,8 +512,13 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-pgsql-1
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_pgsql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
 
   Use PostgreSQL reservation system.
   Create new PostgreSQL reservation identified by flex-id 646f63736973332e30.
@@ -469,6 +527,7 @@ Feature: Kea Hook flex-id testing
   Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 1.
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
   #Pause the Test.
 
@@ -497,8 +556,13 @@ Feature: Kea Hook flex-id testing
 @v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-pgsql-negative
   Test Setup:
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/hook_pgsql_1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv4/server/kea_only/flexid/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
+  Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  To hook no. 1 add parameter named replace-client-id with value: true
+  # enable matching client id
+  Add configuration parameter match-client-id with value true to global configuration.
 
   Use PostgreSQL reservation system.
   Create new PostgreSQL reservation identified by flex-id 646f63736973332e30.
@@ -507,6 +571,7 @@ Feature: Kea Hook flex-id testing
   Add dhcp4_subnet_id 1 to PostgreSQL reservation record id 1.
   Upload hosts reservation to PostgreSQL database.
 
+  Send server configuration using SSH and config-file.
   DHCP server is started.
   #Pause the Test.
 
