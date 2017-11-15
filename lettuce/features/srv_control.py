@@ -400,14 +400,12 @@ def option_db_record_reservation(step, reserved_option_code, reserved_option_val
                                                        reserved_option_scope, int(reservation_record_id))
     elif db_type == 'PostgreSQL':
         pgsql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
-                                                                         reserved_option_space,
-                                                                         reserved_option_persistent,
-                                                                         reserved_option_client_class,
-                                                                         reserved_subnet_id,
-                                                                         reserved_option_scope,
-                                                                         int(reservation_record_id))
+                                                       reserved_option_persistent, reserved_option_client_class,
+                                                       reserved_subnet_id, reserved_option_scope,
+                                                       int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
+
 
 @step('Dump all the reservation entries from (\S+) database.')
 def upload_db_reservation(step, db_type):
@@ -440,6 +438,7 @@ def host_reservation(step, reservation_type, reserved_value, unique_host_value_t
                                                                                                     unique_host_value_type,
                                                                                                     unique_host_value)
     dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, None)
+
 
 ##shared-subnet cfg
 @step('Add subnet (\d+) to shared-subnet set (\d+).')
@@ -533,12 +532,28 @@ def config_client_classification(step, subnet, option_value):
     dhcp.config_client_classification(step, subnet, option_value)
 
 
+@step('Add class called (\S+).')
+def create_new_class(step, class_name):
+    dhcp.create_new_class(class_name)
+
+
+@step('To class no (\d+) add parameter named: (\S+) with value: (.+)')
+def add_test_to_class(step, class_number, parameter_name, parameter_value):
+    dhcp.add_test_to_class(int(class_number), parameter_name, parameter_value)
+
+
+@step('To class no (\d+) add option (\S+) with value (\S+).')
+def add_option_to_defined_class(step, class_no, option, option_value):
+    dhcp.add_option_to_defined_class(int(class_no), option, option_value)
+# @step('To class no (\d+) add custom option (\S+) with value (\S+).')
+
 @step('Server has control channel on (\S+) socket with name (\S+).')
 def open_control_channel(step, socket_type, socket_name):
     """
     """
     socket_type, socket_name = test_define_value(socket_type, socket_name)
     dhcp.open_control_channel_socket(socket_type, socket_name)
+
 
 @step('Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
 def agent_control_channel(step, host_address, host_port, socket_type, socket_name):

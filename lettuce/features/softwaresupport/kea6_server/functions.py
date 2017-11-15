@@ -251,7 +251,7 @@ def add_pool_to_subnet(step, pool, subnet):
 
 
 def config_srv_another_subnet(step, subnet, pool, eth):
-    world.subcfg.append(["", "", "", "", "", ""])
+    world.subcfg.append(["", "", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
     prepare_cfg_subnet(step, subnet, pool, eth)
@@ -390,6 +390,36 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
         assert False, "Not supported"
         #TODO implement this if we needs it.
     world.subcfg[subnet][5] = tmp
+
+
+def create_new_class(class_name):
+    world.classification.append([class_name, "", ""])  # class name, class test (now empty), list of class options
+
+
+def add_test_to_class(class_number, parameter_name, parameter_value):
+    #world.classification[class_number-1][1].append()
+    if len(world.classification[class_number-1][1]) > 5:
+        world.classification[class_number-1][1] += ','
+    # TODO extend it if parameter value wont need ""
+    world.classification[class_number-1][1] += '"{parameter_name}" : "{parameter_value}"'.format(**locals())
+
+
+def add_option_to_defined_class(class_no, option_name, option_value):
+    space = world.cfg["space"]
+    option_code = kea_options6.get(option_name)
+    if option_code is None:
+        option_code = kea_otheroptions.get(option_name)
+
+    pointer_start = "{"
+    pointer_end = "}"
+
+    assert option_code is not None, "Unsupported option name for other Kea6 options: " + option_name
+    if len(world.classification[class_no-1][2]) > 10:
+        world.classification[class_no-1][2] += ','
+
+    world.classification[class_no-1][2] += '''
+            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
+            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
 def check_kea_status():
@@ -552,6 +582,22 @@ def cfg_write():
     cfg_file.write(world.cfg["main"])
     if len(world.cfg["server-id"]) > 5:
         cfg_file.write(world.cfg["server-id"])
+    ## add class definitions
+    if len(world.classification[0][0]) > 0:
+        cfg_file.write('"client-classes": [')
+        counter = 0
+        for each_class in world.classification:
+            if counter > 0:
+                cfg_file.write(',')
+            cfg_file.write('{')  # open class
+            cfg_file.write('"name":"' + each_class[0] + '",')
+            if len(each_class[1]) > 0:
+                cfg_file.write(each_class[1])
+            if len(each_class[2]) > 0:
+                cfg_file.write(',"option-data": [' + each_class[2] + "]")
+            cfg_file.write('}')  # close each class
+            counter += 1
+        cfg_file.write("],")  # close classes
     ## add interfaces
     cfg_file.write('"interfaces-config": { "interfaces": [ ' + world.cfg["interfaces"] + ' ] },')
     ## add header for subnets
@@ -724,7 +770,7 @@ def cfg_write():
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
     cfg_file.write(world.cfg["keactrl"])
     cfg_file.close()
-    world.subcfg = [["", "", "", "", "", ""]]
+    world.subcfg = [["", "", "", "", "", "", ""]]
     config = open(world.cfg["cfg_file"], 'r')
     world.configString = config.read().replace('\n', '').replace(' ', '')
     config.close()

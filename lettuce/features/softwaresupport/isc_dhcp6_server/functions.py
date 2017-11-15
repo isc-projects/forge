@@ -251,7 +251,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
 
 def config_srv_another_subnet(step, subnet, pool, eth):
     ## it will pass ethernet interface but it will have no impact on config files
-    world.subcfg.append(["", "", "", "", "", ""])
+    world.subcfg.append(["", "", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
     prepare_cfg_subnet(step, subnet, pool, eth)
