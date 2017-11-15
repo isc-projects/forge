@@ -583,21 +583,22 @@ def cfg_write():
     if len(world.cfg["server-id"]) > 5:
         cfg_file.write(world.cfg["server-id"])
     ## add class definitions
-    if len(world.classification[0][0]) > 0:
-        cfg_file.write('"client-classes": [')
-        counter = 0
-        for each_class in world.classification:
-            if counter > 0:
-                cfg_file.write(',')
-            cfg_file.write('{')  # open class
-            cfg_file.write('"name":"' + each_class[0] + '",')
-            if len(each_class[1]) > 0:
-                cfg_file.write(each_class[1])
-            if len(each_class[2]) > 0:
-                cfg_file.write(',"option-data": [' + each_class[2] + "]")
-            cfg_file.write('}')  # close each class
-            counter += 1
-        cfg_file.write("],")  # close classes
+    if len(world.classification) > 0:
+        if len(world.classification[0][0]) > 0:
+            cfg_file.write('"client-classes": [')
+            counter = 0
+            for each_class in world.classification:
+                if counter > 0:
+                    cfg_file.write(',')
+                cfg_file.write('{')  # open class
+                cfg_file.write('"name":"' + each_class[0] + '",')
+                if len(each_class[1]) > 0:
+                    cfg_file.write(each_class[1])
+                if len(each_class[2]) > 0:
+                    cfg_file.write(',"option-data": [' + each_class[2] + "]")
+                cfg_file.write('}')  # close each class
+                counter += 1
+            cfg_file.write("],")  # close classes
     ## add interfaces
     cfg_file.write('"interfaces-config": { "interfaces": [ ' + world.cfg["interfaces"] + ' ] },')
     ## add header for subnets
