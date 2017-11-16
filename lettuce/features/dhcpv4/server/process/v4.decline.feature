@@ -4,212 +4,322 @@ Feature: DHCPv4 address decline process
     Those are simple DHCPv4 tests for declining assigned address.
     
 @v4 @dhcp4 @decline
-Scenario: v4.decline.success
+Scenario: v4.decline.success-long-decline-period
+  # address in decline period
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Add configuration parameter decline-probation-period with value 3600 to global configuration.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
 
-    Test Setup:
-    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Send server configuration using SSH and config-file.
-DHCP server is started.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client sends DISCOVER message.
 
-    Test Procedure:
-    Client sends DISCOVER message.
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
 
-    Pass Criteria:
-    Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.1.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends REQUEST message.
 
-    Test Procedure:
-    Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client sends REQUEST message.
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.1.
 
-    Pass Criteria:
-    Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.1.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client copies server_id option from received message.
+  Client sets ciaddr value to 0.0.0.0.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends DECLINE message.
 
-    Test Procedure:
-    Client copies server_id option from received message.
-    Client sets ciaddr value to 0.0.0.0.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client sends DECLINE message.
+  Pass Criteria:
+  Server MUST NOT respond.
 
-    Pass Criteria:
-    Server MUST NOT respond.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sends DISCOVER message.
 
-    Test Procedure:
-    Client sets chaddr value to 00:00:00:00:00:11.
-    Client adds to the message client_id with value 00010203040111.
-    Client sends DISCOVER message.
+  Pass Criteria:
+  Server MUST NOT respond.
 
-    Pass Criteria:
-    Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.1.
+@v4 @dhcp4 @decline
+Scenario: v4.decline.success-short-decline-period
+  # address in decline period
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Add configuration parameter decline-probation-period with value 2 to global configuration.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.1.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client copies server_id option from received message.
+  Client sets ciaddr value to 0.0.0.0.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends DECLINE message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Sleep for 3 seconds.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:44.
+  Client adds to the message client_id with value 00010203040144.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
 
 @v4 @dhcp4 @decline
 Scenario: v4.decline.fail-without-serverid
 
-    Test Setup:
-    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Send server configuration using SSH and config-file.
-DHCP server is started.
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
 
-    Test Procedure:
-    Client sends DISCOVER message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sends DISCOVER message.
 
-    Pass Criteria:
-    Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.1.
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
 
-    Test Procedure:
-    Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client sends REQUEST message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends REQUEST message.
 
-    Pass Criteria:
-    Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.1.
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.1.
 
-    Test Procedure:
-    Client sets ciaddr value to 0.0.0.0.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client sends DECLINE message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sets ciaddr value to 0.0.0.0.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends DECLINE message.
 
-    Pass Criteria:
-    Server MUST NOT respond.
+  Pass Criteria:
+  Server MUST NOT respond.
 
-    Test Procedure:
-    Client sets chaddr value to 00:00:00:00:00:11.
-    Client adds to the message client_id with value 00010203040111.
-    Client sends DISCOVER message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client sends DISCOVER message.
 
-    Pass Criteria:
-    Server MUST respond with NAK message.
+  Pass Criteria:
+  Server MUST NOT respond.
 
-@v4 @dhcp4 @decline
-Scenario: v4.decline.fail-without-serverid
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sends DISCOVER message.
 
-    Test Setup:
-    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Send server configuration using SSH and config-file.
-DHCP server is started.
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
 
-    Test Procedure:
-    Client sends DISCOVER message.
-
-    Pass Criteria:
-    Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.1.
-
-    Test Procedure:
-    Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client sends REQUEST message.
-
-    Pass Criteria:
-    Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.1.
-
-    Test Procedure:
-    Client sets ciaddr value to 0.0.0.0.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client sends DECLINE message.
-
-    Pass Criteria:
-    Server MUST NOT respond.
-
-    Test Procedure:
-    Client sets chaddr value to 00:00:00:00:00:11.
-    Client adds to the message client_id with value 00010203040111.
-    Client sends DISCOVER message.
-
-    Pass Criteria:
-    Server MUST respond with NAK message.
+#@v4 @dhcp4 @decline
+#Scenario: v4.decline.fail-without-serverid
+#
+#    Test Setup:
+#    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+#    Send server configuration using SSH and config-file.
+#DHCP server is started.
+#
+#    Test Procedure:
+#    Client sends DISCOVER message.
+#
+#    Pass Criteria:
+#    Server MUST respond with OFFER message.
+#    Response MUST contain yiaddr 192.168.50.1.
+#
+#    Test Procedure:
+#    Client copies server_id option from received message.
+#    Client adds to the message requested_addr with value 192.168.50.1.
+#    Client sends REQUEST message.
+#
+#    Pass Criteria:
+#    Server MUST respond with ACK message.
+#    Response MUST contain yiaddr 192.168.50.1.
+#
+#    Test Procedure:
+#    Client sets ciaddr value to 0.0.0.0.
+#    Client adds to the message requested_addr with value 192.168.50.1.
+#    Client sends DECLINE message.
+#
+#    Pass Criteria:
+#    Server MUST NOT respond.
+#
+#    Test Procedure:
+#    Client sets chaddr value to 00:00:00:00:00:11.
+#    Client adds to the message client_id with value 00010203040111.
+#    Client sends DISCOVER message.
+#
+#    Pass Criteria:
+#    Server MUST respond with NAK message.
 
 @v4 @dhcp4 @decline
 Scenario: v4.decline.fail-without-requested-ip-address
 
-    Test Setup:
-    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Send server configuration using SSH and config-file.
-DHCP server is started.
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
 
-    Test Procedure:
-    Client sends DISCOVER message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sends DISCOVER message.
 
-    Pass Criteria:
-    Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.1.
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
 
-    Test Procedure:
-    Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client sends REQUEST message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends REQUEST message.
 
-    Pass Criteria:
-    Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.1.
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.1.
 
-    Test Procedure:
-    Client sets ciaddr value to 0.0.0.0.
-    Client copies server_id option from received message.
-    Client sends DECLINE message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sets ciaddr value to 0.0.0.0.
+  Client copies server_id option from received message.
+  Client sends DECLINE message.
 
-    Pass Criteria:
-    Server MUST NOT respond.
+  Pass Criteria:
+  Server MUST NOT respond.
 
-    Test Procedure:
-    Client sets chaddr value to 00:00:00:00:00:11.
-    Client adds to the message client_id with value 00010203040111.
-    Client sends DISCOVER message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client sends DISCOVER message.
 
-    Pass Criteria:
-    Server MUST respond with NAK message.
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040111.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
+  # client should get back this address because it's not in declined period
 
 @v4 @dhcp4 @decline
-Scenario: v4.decline.fail-without-client-id
+Scenario: v4.decline.fail-client-id-not-included
 
-    Test Setup:
-    Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
-    Send server configuration using SSH and config-file.
-DHCP server is started.
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
 
-    Test Procedure:
-    Client adds to the message client_id with value 00010203040111.
-    Client sends DISCOVER message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client sends DISCOVER message.
 
-    Pass Criteria:
-    Server MUST respond with OFFER message.
-    Response MUST contain yiaddr 192.168.50.1.
-    Response MUST include option 61.
-    Response option 61 MUST contain value 00010203040111.
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response MUST include option 61.
+  Response option 61 MUST contain value 00010203040122.
 
-    Test Procedure:
-    Client copies server_id option from received message.
-    Client adds to the message requested_addr with value 192.168.50.1.
-    Client adds to the message client_id with value 00010203040111.
-    Client sends REQUEST message.
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client sends REQUEST message.
 
-    Pass Criteria:
-    Server MUST respond with ACK message.
-    Response MUST contain yiaddr 192.168.50.1.
-    Response MUST include option 61.
-    Response option 61 MUST contain value 00010203040111.
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response MUST include option 61.
+  Response option 61 MUST contain value 00010203040122.
 
-    Test Procedure:
-    Client sets ciaddr value to 0.0.0.0.
-    Client copies server_id option from received message.
-    Client sends DECLINE message.
+  Test Procedure:
+  Client sets ciaddr value to 0.0.0.0.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client sends DECLINE message.
 
-    Pass Criteria:
-    Server MUST NOT respond.
+  Pass Criteria:
+  Server MUST NOT respond.
 
-    Test Procedure:
-    Client sets chaddr value to 00:00:00:00:00:11.
-    Client adds to the message client_id with value 00010203040999.
-    Client sends DISCOVER message.
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:11.
+  Client adds to the message client_id with value 00010203040999.
+  Client sends DISCOVER message.
 
-    Pass Criteria:
-    Server MUST respond with NAK message.
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:22.
+  Client adds to the message client_id with value 00010203040122.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response MUST include option 61.
+  Response option 61 MUST contain value 00010203040122.
 
 @v4 @dhcp4 @decline
 Scenario: v4.decline.fail-different-client-id
