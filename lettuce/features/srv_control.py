@@ -400,9 +400,9 @@ def option_db_record_reservation(step, reserved_option_code, reserved_option_val
                                                        reserved_option_scope, int(reservation_record_id))
     elif db_type == 'PostgreSQL':
         pgsql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
-                                                       reserved_option_persistent, reserved_option_client_class,
-                                                       reserved_subnet_id, reserved_option_scope,
-                                                       int(reservation_record_id))
+                                                       reserved_option_space, reserved_option_persistent,
+                                                       reserved_option_client_class, reserved_subnet_id,
+                                                       reserved_option_scope, int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
