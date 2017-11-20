@@ -418,7 +418,7 @@ Scenario: v6.client.classification.shared-subnet-options-override
   Add subnet 0 to shared-subnet set 0.
   Add configuration parameter name with value "name-abc" to shared-subnet 0 configuration.
   Add configuration parameter interface with value "$(SERVER_IFACE)" to shared-subnet 0 configuration.
-  Add configuration parameter option-data with value [{"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}] to shared-subnet 0 configuration.
+  Add configuration parameter option-data with value [{"csv-format":true,"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}] to shared-subnet 0 configuration.
 
   Send server configuration using SSH and config-file.
 

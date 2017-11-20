@@ -503,7 +503,7 @@ Reconfigure DHCP server.
   Response sub-option 5 from option 3 MUST contain validlft 0.
   Response sub-option 5 from option 3 MUST contain address 3000::2.
   Response sub-option 5 from option 3 MUST contain validlft 8.
-  Response sub-option 5 from option 3 MUST contain address 3000::3.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.

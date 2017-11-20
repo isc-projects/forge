@@ -2246,3 +2246,111 @@ Scenario: v6.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response sub-option 26 from option 25 MUST contain prefix 3001::.
   Response MUST include option 39.
   Response option 39 MUST contain fqdn reserved-hostname.my.domain.com.
+
+@v6 @sharednetworks @sharedsubnets
+Scenario: v6.sharednetworks.host.reservation.options-override-1
+  Test Setup:
+  Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.
+
+  Use MySQL reservation system.
+  Create new MySQL reservation identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Add IPv6 address reservation 2001:db8:a::100 with iaid $(EMPTY) to MySQL record id 1.
+  Add dhcp6_subnet_id 1 to MySQL reservation record id 1.
+  Add option reservation code 7 value 10 space dhcp6 persistent 1 client class $(EMPTY) subnet id 1 and scope subnet to MySQL record id 1.
+  Upload hosts reservation to MySQL database.
+
+  Add subnet 0 to shared-subnet set 0.
+  Add configuration parameter name with value "name-abc" to shared-subnet 0 configuration.
+  Add configuration parameter interface with value "$(SERVER_IFACE)" to shared-subnet 0 configuration.
+  Add configuration parameter option-data with value [{"code":7,"data":"5","name":"preference","space":"dhcp6"}] to shared-subnet 0 configuration.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 7.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::1.
+  Response MUST include option 7.
+  Response option 7 MUST contain value 5.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 7.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 7.
+  Response option 7 MUST contain value 10.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::100.
+
+@v6 @sharednetworks @sharedsubnets
+Scenario: v6.sharednetworks.host.reservation.options-override-2
+  Test Setup:
+  Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.
+
+  Use PostgreSQL reservation system.
+  Create new PostgreSQL reservation identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Add IPv6 address reservation 2001:db8:a::100 with iaid $(EMPTY) to PostgreSQL record id 1.
+  Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 1.
+  Add option reservation code 7 value 10 space dhcp6 persistent 1 client class $(EMPTY) subnet id 1 and scope subnet to PostgreSQL record id 1.
+  Upload hosts reservation to PostgreSQL database.
+
+  Add subnet 0 to shared-subnet set 0.
+  Add configuration parameter name with value "name-abc" to shared-subnet 0 configuration.
+  Add configuration parameter interface with value "$(SERVER_IFACE)" to shared-subnet 0 configuration.
+  Add configuration parameter option-data with value [{"code":7,"data":"5","name":"preference","space":"dhcp6"}] to shared-subnet 0 configuration.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 7.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::1.
+  Response MUST include option 7.
+  Response option 7 MUST contain value 5.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 7.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 7.
+  Response option 7 MUST contain value 10.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::100.
