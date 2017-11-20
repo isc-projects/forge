@@ -2080,27 +2080,33 @@ Scenario: v6.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
 
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sharednetworks.single-shared-subnet-with-three-subnets-classification
-#  Test Setup:
-#  Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.
-#  Server is configured with another subnet: 2001:db8:b::/64 with 2001:db8:b::1-2001:db8:b::1 pool.
-#  Server is configured with another subnet: 2001:db8:c::/64 with 2001:db8:c::1-2001:db8:c::1 pool.
-#  Server is configured with dns-servers option in subnet 0 with value 2001:db8::1.
-#  Server is configured with dns-servers option in subnet 1 with value 2001:db8::2.
-#  Server is configured with dns-servers option in subnet 2 with value 2001:db8::3.
-#
-#  Add subnet 0 to shared-subnet set 0.
-#  Add subnet 1 to shared-subnet set 0.
-#  Add subnet 2 to shared-subnet set 0.
-#  Add configuration parameter name with value "name-abc" to shared-subnet 0 configuration.
-#  Add configuration parameter interface-id with value "interface-abc" to shared-subnet 0 configuration.
-#
-#  Send server configuration using SSH and config-file.
-#
-#  DHCP server is started.
-
   Test Setup:
-  Client sends local file stored in: features/dhcpv6/server/kea_only/shared-configs/shared-networks-class-1.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/kea.conf.
-  Client sends local file stored in: features/dhcpv6/server/kea_only/shared-configs/ctrl.conf to server, to location: $(SOFTWARE_INSTALL_DIR)etc/kea/keactrl.conf.
+  Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::10 pool.
+  Server is configured with another subnet: 2001:db8:b::/64 with 2001:db8:b::1-2001:db8:b::10 pool.
+  Server is configured with another subnet: 2001:db8:c::/64 with 2001:db8:c::1-2001:db8:c::10 pool.
+
+  Add class called Client_f2f1.
+  To class no 1 add parameter named: test with value: substring(option[1].hex,8,2) == 0xf2f1
+  To class no 1 add option dns-servers with value 2001:db8::666.
+  Server is configured with client-classification option in subnet 1 with name Client_f2f1.
+
+  Add class called Client_f2f2.
+  To class no 2 add parameter named: test with value: substring(option[1].hex,8,2) == 0xf2f2
+  Server is configured with client-classification option in subnet 2 with name Client_f2f2.
+
+  Add class called Client_f2f0.
+  To class no 3 add parameter named: test with value: substring(option[1].hex,8,2) == 0xf299
+  Server is configured with client-classification option in subnet 0 with name Client_f2f0.
+
+  Add subnet 0 to shared-subnet set 0.
+  Add subnet 1 to shared-subnet set 0.
+  Add subnet 2 to shared-subnet set 0.
+  Add configuration parameter name with value "name-abc" to shared-subnet 0 configuration.
+  Add configuration parameter interface with value "$(SERVER_IFACE)" to shared-subnet 0 configuration.
+  Add configuration parameter option-data with value [{"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}] to shared-subnet 0 configuration.
+
+  Send server configuration using SSH and config-file.
+
   DHCP server is started.
 
   Test Procedure:

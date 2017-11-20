@@ -405,7 +405,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value sth6.six.example.com..
     Received DNS part ANSWER MUST contain rrname with value 0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa..
 
-    Sleep for 10 seconds.
+    Sleep for 15 seconds.
 
     Test Procedure:
     Client for DNS Question Record uses address: sth6.six.example.com type AAAA class IN.
