@@ -479,8 +479,11 @@ def build_msg(msg):
     world.cfg["address_v6"] = "ff02::1:2"
 
     #transaction id
-    msg.trid = random.randint(0, 256*256*256)
-    world.cfg["tr_id"] = msg.trid
+    if world.cfg["values"]["tr_id"] is None:
+        msg.trid = random.randint(0, 256*256*256)
+    else:
+        msg.trid = int(world.cfg["values"]["tr_id"])
+    world.cfg["values"]["tr_id"] = msg.trid
 
     #add option request if any
     try:

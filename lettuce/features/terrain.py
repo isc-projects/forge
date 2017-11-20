@@ -331,6 +331,7 @@ def initialize(scenario):
     world.cfg["subnet"] = ""
     world.cfg["server-id"] = ""
     world.cfg["csv-format"] = "true"
+    world.cfg["tr_id"] = None
     world.name = scenario.name
     world.clntCounter = 0
     world.srvCounter = 0
@@ -353,7 +354,6 @@ def initialize(scenario):
     world.clntCfg['toSave'] = None
     world.clntCfg['insist'] = False
     world.clntCfg['lease_file'] = ""
-
     if "dhcp_under_test" in world.cfg:
         # IPv6:
         if world.proto == "v6":
@@ -366,7 +366,7 @@ def initialize(scenario):
         dns_initialize()
 
     world.set_values()
-
+    world.cfg["values"]["tr_id"] = world.cfg["tr_id"]
     # to create separate files for each test we need:
     # create new directory for that test:
     if not os.path.exists(world.cfg["dir_name"]):
