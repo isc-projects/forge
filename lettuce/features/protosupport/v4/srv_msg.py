@@ -61,6 +61,7 @@ def client_send_msg(step, msgname, iface, addr):
 
     if msgname == "DISCOVER":
         # msg code: 1
+        #world.cfg["values"]["broadcastBit"] = True
         msg = build_msg([("message-type", "discover")] + options)
         
     elif msgname == "REQUEST":
@@ -164,8 +165,8 @@ def response_check_content(step, expect, data_type, expected):
         received = world.srvmsg[0].src
     elif data_type == 'chaddr':
         pass
-        #TODO: implement this!
-        received = world.srvmsg[0].chaddr #decode!!
+        # TODO: implement this!
+        received = world.srvmsg[0].chaddr  # decode!!
     elif data_type == 'sname':
         received = world.srvmsg[0].sname.replace('\x00', '')
     elif data_type == 'file':
@@ -213,6 +214,7 @@ def convert_MAC(mac):
     # convert MAC address to hex representation
     return mac.replace(':', '').decode('hex')
 
+
 def start_fuzzing():#time_period, time_units):
     world.fuzzing = True
 
@@ -235,6 +237,8 @@ def build_msg(opts):
     if world.cfg["values"]["broadcastBit"]:
         # value for setting 1000 0000 0000 0000 in bootp message in field 'flags' for broadcast msg.
         msg_flag = 32768
+    else:
+        msg_flag = 0
 
     msg = Ether(dst = "ff:ff:ff:ff:ff:ff",
                 src = hw)
@@ -251,11 +255,17 @@ def build_msg(opts):
         opts += ["end"]  # end option
         msg /= DHCP(options = opts)
 
-    msg.xid = randint(0, 256*256*256)
+    #transaction id
+    if world.cfg["values"]["tr_id"] is None:
+        msg.xid = randint(0, 256*256*256)
+    else:
+        msg.xid = int(world.cfg["values"]["tr_id"])
+    world.cfg["values"]["tr_id"] = msg.xid
+
     msg.siaddr = world.cfg["values"]["siaddr"]
     msg.ciaddr = world.cfg["values"]["ciaddr"]
     msg.yiaddr = world.cfg["values"]["yiaddr"]
-
+    msg.htype = world.cfg["values"]["htype"]
     return msg
 
 
@@ -285,10 +295,6 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
-def change_message_field(message_filed, value):
-    assert False, "TODO"
-
-
 def send_wait_for_message(step, msgtype, presence, exp_message):
     """
     Block until the given message is (not) received.
@@ -305,6 +311,7 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
     from features.init_all import SHOW_PACKETS_FROM
     if SHOW_PACKETS_FROM in ['both', 'client']:
         world.climsg[0].show()
+        print('\n')
 
     expected_type_found = False
 
@@ -316,6 +323,7 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
         world.srvmsg.append(b)
         if SHOW_PACKETS_FROM in ['both', 'server']:
             b.show()
+            print('\n')
 
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:

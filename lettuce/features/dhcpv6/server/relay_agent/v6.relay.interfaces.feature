@@ -7,7 +7,7 @@ Feature: DHCPv6 Relay Agent
   Test Setup:
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::10 pool.
   To subnet 0 configuration section in the config file add line: ,"relay": {"ip-address": "3000::1005"}
-  To subnet 0 configuration section in the config file add line: ,"interface":"eth2"
+  To subnet 0 configuration section in the config file add line: ,"interface":"$(SERVER_IFACE)"
   Add configuration parameter interface-id with value "abc" to subnet 0 configuration.
   Send server configuration using SSH and config-file.
 DHCP server failed to start. During configuration process.

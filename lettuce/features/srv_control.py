@@ -76,34 +76,45 @@ def test_define_value(*args):
     """
     tested_args = []
     for i in range(len(args)):
-        imported = None
-        front = None
         tmp = str(args[i])
-        if "$" in args[i]:
-            index = tmp.find('$')
-            front = tmp[:index]
-            tmp = tmp[index:]
+        tmp_loop = ""
+        while True:
+            imported = None
+            front = None
+            # if "$" in args[i]:
+            if "$" in tmp:
+                index = tmp.find('$')
+                front = tmp[:index]
+                tmp = tmp[index:]
 
-        if tmp[:2] == "$(":
-            index = tmp.find(')')
-            assert index > 2, "Defined variable not complete. Missing ')'. "
+            if tmp[:2] == "$(":
+                index = tmp.find(')')
+                assert index > 2, "Defined variable not complete. Missing ')'. "
 
-            for each in world.define:
-                if str(each[0]) == tmp[2: index]:
-                    imported = int(each[1]) if each[1].isdigit() else str(each[1])
-            if imported is None:
-                imported = getattr(world.f_cfg, tmp[2: index].lower())
-            if imported is None:
-                try:
-                    imported = getattr(__import__('init_all', fromlist = [tmp[2: index]]), tmp[2: index])
-                except ImportError:
-                    assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
-            if front is None:
-                tested_args.append(imported + tmp[index + 1:])
+                for each in world.define:
+                    if str(each[0]) == tmp[2: index]:
+                        imported = int(each[1]) if each[1].isdigit() else str(each[1])
+                if imported is None:
+                    imported = getattr(world.f_cfg, tmp[2: index].lower())
+                if imported is None:
+                    try:
+                        imported = getattr(__import__('init_all', fromlist = [tmp[2: index]]), tmp[2: index])
+                    except ImportError:
+                        assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
+                if front is None:
+                    # tested_args.append(imported + tmp[index + 1:])
+                    tmp_loop = imported + tmp[index + 1:]
+                else:
+                    # tested_args.append(front + imported + tmp[index + 1:])
+                    tmp_loop = front + imported + tmp[index + 1:]
             else:
-                tested_args.append(front + imported + tmp[index + 1:])
-        else:
-            tested_args.append(args[i])
+                # tested_args.append(args[i])
+                tmp_loop = tmp
+            if "$(" not in tmp_loop:
+                tested_args.append(tmp_loop)
+                break
+            else:
+                tmp = tmp_loop
     return tested_args
 
 
@@ -539,6 +550,7 @@ def create_new_class(step, class_name):
 
 @step('To class no (\d+) add parameter named: (\S+) with value: (.+)')
 def add_test_to_class(step, class_number, parameter_name, parameter_value):
+    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.add_test_to_class(int(class_number), parameter_name, parameter_value)
 
 
