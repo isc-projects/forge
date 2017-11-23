@@ -30,6 +30,18 @@ Feature: Kea Hook hosts_cmds testing
   Server MUST respond with OFFER message.
   Response MUST contain yiaddr 192.168.50.100.
 
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.100.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.100.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
 @v4 @hosts_cmds @kea_only 
   Scenario: v4.hosts.cmds.del-reservation-mysql
   Test Setup:
@@ -181,6 +193,18 @@ Feature: Kea Hook hosts_cmds testing
   Server MUST respond with OFFER message.
   Response MUST contain yiaddr 192.168.50.50.
 
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.100.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.100.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
 @v4 @hosts_cmds @kea_only 
   Scenario: v4.hosts.cmds.add-reservation-pgsql
   Test Setup:
@@ -210,6 +234,18 @@ Feature: Kea Hook hosts_cmds testing
   Pass Criteria:
   Server MUST respond with OFFER message.
   Response MUST contain yiaddr 192.168.50.100.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.100.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.100.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
 
 @v4 @hosts_cmds @kea_only 
   Scenario: v4.hosts.cmds.get-reservation-mysql
@@ -557,6 +593,21 @@ Feature: Kea Hook hosts_cmds testing
   Response MUST contain sname hal9000.
   Response MUST contain file /dev/null.
 
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.10.2.205.
+  Client sets chaddr value to 01:0a:0b:0c:0d:0e:0f.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.0.2.205.
+  Response MUST include option 6.
+  Response option 6 MUST contain value 10.1.1.203.
+  Response option 6 MUST contain value 10.1.1.202.
+  Response MUST contain sname hal9000.
+  Response MUST contain file /dev/null.
+
 @v4 @hosts_cmds @kea_only 
   Scenario: v4.hosts.cmds.add-reservation-complex-mysql
   Test Setup:
@@ -583,6 +634,21 @@ Feature: Kea Hook hosts_cmds testing
 
   Pass Criteria:
   Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.0.2.205.
+  Response MUST include option 6.
+  Response option 6 MUST contain value 10.1.1.203.
+  Response option 6 MUST contain value 10.1.1.202.
+  Response MUST contain sname hal9000.
+  Response MUST contain file /dev/null.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.10.2.205.
+  Client sets chaddr value to 01:0a:0b:0c:0d:0e:0f.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
   Response MUST contain yiaddr 192.0.2.205.
   Response MUST include option 6.
   Response option 6 MUST contain value 10.1.1.203.

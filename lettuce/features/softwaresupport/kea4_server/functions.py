@@ -27,7 +27,8 @@ from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_log
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
     add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
     set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
-    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class, add_option_to_defined_class
+    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class, \
+    add_option_to_defined_class
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -82,6 +83,7 @@ kea_options4 = {
     "dhcp-requested-address": 50,  # ipv4-address
     "dhcp-option-overload": 52,  # uint8
     "server_id": 54,
+    "dhcp-server-identifier": 54,
     "dhcp-message": 56,  # string
     "dhcp-max-message-size": 57,  # uint16
     "vendor-class-identifier": 60,  # binary

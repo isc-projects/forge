@@ -320,7 +320,8 @@ def initialize(scenario):
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["cfg_file_2"] = "second_server.cfg"
     world.cfg["conf"] = ""  # Just empty config for now
-    world.subcfg = [["", "", "", "", "", "", ""]]  # additional config structure
+    # additional config structure [subnet, client class/simple options, options, pools, host reservation]:
+    world.subcfg = [["", "", "", "", "", "", ""]]
     world.shared_subcfg = []
     world.shared_subnets = []
     world.shared_subnets_tmp = []

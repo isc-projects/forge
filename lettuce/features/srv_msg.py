@@ -81,6 +81,7 @@ def client_does_include_with_value(step, opt_type, value):
     "Client does (NOT )?include" as other step is that lettuce step parser is really... weak.
     What ever I'll do with that always takes wrong step.
     """
+    opt_type, value = test_define_value(opt_type, value)
     dhcpmsg.client_does_include(step, opt_type, value)
 
 
