@@ -48,6 +48,50 @@ DHCP server is started.
 
 	References: v6.options, v6.oro, RFC3315 section 22.8
 
+@v6 @dhcp6 @options @preference
+Scenario: v6.options.unicast
+	## Testing server ability to configure it with option
+	## unicast (code 12)with address 3000::1, and ability to share that value
+	## with client via Advertise and Reply message.
+	## 					Client		Server
+	## request option	SOLICIT -->
+	## unicast value 3000::1		<--	ADVERTISE
+	## request option	REQUEST -->
+	## unicast value 3000::1		<--	REPLY
+	## Pass Criteria:
+	## 				REPLY/ADVERTISE MUST include option:
+	##					Unicast option with value 3000::1
+
+	Test Setup:
+	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+	Server is configured with unicast option with value 3000::1.
+	Send server configuration using SSH and config-file.
+	DHCP server is started.
+
+	Test Procedure:
+	Client requests option 12.
+	Client does include client-id.
+	Client does include IA-NA.
+	Client sends SOLICIT message.
+
+	Pass Criteria:
+	Server MUST respond with ADVERTISE message.
+	Response MUST include option 12.
+	Response option 12 MUST contain srvaddr 3000::1.
+
+	Test Procedure:
+	Client does include client-id.
+	Client copies server-id option from received message.
+	Client copies IA_NA option from received message.
+	Client requests option 12.
+	Client sends REQUEST message.
+
+	Pass Criteria:
+	Server MUST respond with REPLY message.
+	Response MUST include option 12.
+	Response option 12 MUST contain srvaddr 3000::1.
+
+	References: v6.options, v6.oro, RFC3315 section 22.12
 
 @v6 @dhcp6 @options @sip
     Scenario: v6.options.sip-domains
