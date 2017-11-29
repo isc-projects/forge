@@ -84,19 +84,18 @@ Scenario: v4.client.classification.option-exists
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 
-@v4 @dhcp4 @classification @disabled
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.relay-option-exists
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
-  To class no 1 add parameter named: test with value: relay4[*].exists
+  To class no 1 add parameter named: test with value: relay4[3].exists
   Server is configured with client-classification option in subnet 0 with name Client_Class_1.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
-  #TODO needs support for option 82
   Test Procedure:
   Client sets chaddr value to ff:01:02:03:ff:04.
   Client sends DISCOVER message.
@@ -107,6 +106,8 @@ Scenario: v4.client.classification.relay-option-exists
   Test Procedure:
   Client sets chaddr value to ff:01:02:03:ff:04.
   Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 82 with calculated length and suboption code 3, length 1, value 1.
+  Client adds to the message relay_agent_information with value 311.
   Client sends DISCOVER message.
 
   Pass Criteria:
@@ -118,6 +119,7 @@ Scenario: v4.client.classification.relay-option-exists
   Client adds to the message requested_addr with value 192.168.50.50.
   Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
   Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message relay_agent_information with value 311.
   Client sends REQUEST message.
 
   Pass Criteria:
@@ -406,10 +408,10 @@ Scenario: v4.client.classification.mac
   Response option 1 MUST contain value 255.255.255.0.
   
 
-@v4 @dhcp4 @classification @disabled
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.vendor
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: vendor[*].exists
@@ -418,10 +420,42 @@ Scenario: v4.client.classification.vendor
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444
+  Client adds to the message vendor_specific_information with value 4444.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message relay_agent_information with value 311.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.specific-vendor
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: vendor[4444].exists
@@ -430,10 +464,45 @@ Scenario: v4.client.classification.specific-vendor
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4442 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115a03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.specific-vendor-2
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: vendor.enterprise == 4444
@@ -442,10 +511,45 @@ Scenario: v4.client.classification.specific-vendor-2
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4442 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115a03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.vendor-suboption-exists
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: vendor[4444].option[1].exists
@@ -454,23 +558,92 @@ Scenario: v4.client.classification.vendor-suboption-exists
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4442 with suboption length 3 code 2 data 1
+  Client adds to the message vendor_specific_information with value 0000115a03020101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.vendor-suboption-value
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
-  To class no 1 add parameter named: test with value: vendor[4444].option[1].hex == 0x0021
-  # 0021 == 33
+  To class no 1 add parameter named: test with value: vendor[4444].option[1].hex == 0x01
   Server is configured with client-classification option in subnet 0 with name Client_Class_1.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4442 with suboption length 3 code 1 data 2
+  Client adds to the message vendor_specific_information with value 0000115a03010102.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.vendor-class-exists
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: vendor-class[*].exists
@@ -479,10 +652,43 @@ Scenario: v4.client.classification.vendor-class-exists
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 124 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 124 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.specific-vendor-class
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: vendor-class[4444].exists
@@ -491,10 +697,45 @@ Scenario: v4.client.classification.specific-vendor-class
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 124 with calculated length enterprise number 4442 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115a03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 124 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 124 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.specific-vendor-class-2
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: vendor-class.enterprise == 4444
@@ -503,10 +744,45 @@ Scenario: v4.client.classification.specific-vendor-class-2
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 124 with calculated length enterprise number 4442 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115a03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 124 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 124 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.expressions-not-equal
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
   To class no 1 add parameter named: test with value: not(vendor-class.enterprise == 5555)
@@ -515,63 +791,280 @@ Scenario: v4.client.classification.expressions-not-equal
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:01.
+  # command below will add option 124 with calculated length enterprise number 5555 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 000015b303010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:02.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 124 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:03.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 124 with calculated length enterprise number 4442 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_class with value 0000115a03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.expressions-and
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
-  To class no 1 add parameter named: test with value: (vendor.enterprise == 4444) and (vendor[4444].option[1].hex == 0x0021)
+  To class no 1 add parameter named: test with value: (vendor.enterprise == 4444) and (vendor[4444].option[1].hex == 0x01)
   Server is configured with client-classification option in subnet 0 with name Client_Class_1.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 2
+  Client adds to the message vendor_specific_information with value 0000115c03010102.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.expressions-or
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
-  To class no 1 add parameter named: test with value: (vendor.enterprise == 4444) or (vendor[*].option[1].hex == 0x0021)
+  To class no 1 add parameter named: test with value: (vendor.enterprise == 4444) or (vendor[*].option[1].hex == 0x01)
   Server is configured with client-classification option in subnet 0 with name Client_Class_1.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4442 with suboption length 3 code 1 data 2
+  Client adds to the message vendor_specific_information with value 0000115a03010102.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4442 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115a03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 2
+  Client adds to the message vendor_specific_information with value 0000115c03010102.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 2
+  Client adds to the message vendor_specific_information with value 0000115c03010102.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.expressions-substring
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
-  To class no 1 add parameter named: test with value: substring(option[1].hex,6,all) == 0x44332211
+  To class no 1 add parameter named: test with value: substring(option[61].hex,4,2) == 0x0405
   Server is configured with client-classification option in subnet 0 with name Client_Class_1.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:04:05:06:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:44:33:55:05:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:44:33:04:05:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.expressions-concat
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
-  To class no 1 add parameter named: test with value: concat(substring(option[1].hex,0,3),substring(option[1].hex,8,all)) == 0x0003002211
+  To class no 1 add parameter named: test with value: concat(substring(option[61].hex,0,1),substring(option[61].hex,7,all)) == 0xff22
   Server is configured with client-classification option in subnet 0 with name Client_Class_1.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
 
-@v4 @dhcp4 @classification @disabled
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:04:05:06:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:44:33:55:05:11:11.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:44:33:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:04:05:06:22:00.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:44:33:66:66:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.expressions-ifelse
   Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool. # TODO needs option support
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
 
   Add class called Client_Class_1.
-  To class no 1 add parameter named: test with value: ifelse(vendor[4444].option[1].exists, vendor[4444].option[1].hex, 'none') == 0x0021
+  To class no 1 add parameter named: test with value: ifelse(vendor[4444].option[1].exists, vendor[4444].option[1].hex, 'none') == 0x01
   # 0021 == 33
   Server is configured with client-classification option in subnet 0 with name Client_Class_1.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 2
+  Client adds to the message vendor_specific_information with value 0000115c03010102.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  # command below will add option 125 with calculated length enterprise number 4444 with suboption length 3 code 1 data 1
+  Client adds to the message vendor_specific_information with value 0000115c03010101.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
