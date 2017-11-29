@@ -34,6 +34,88 @@ DHCP server is started.
     Response option 1 MUST contain value 255.255.255.0.
 
 @v4 @dhcp4 @request
+  Scenario: v4.request.selecting-success-chaddr-multiple-pools
+
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Server is configured with another pool 192.168.50.2-192.168.50.2 in subnet 0.
+  Server is configured with another pool 192.168.50.3-192.168.50.3 in subnet 0.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sets chaddr value to 00:00:00:00:00:01.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:01.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.1.
+  Client requests option 1.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sets chaddr value to 00:00:00:00:00:02.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.2.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:02.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.2.
+  Client requests option 1.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.2.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sets chaddr value to 00:00:00:00:00:03.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.3.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Test Procedure:
+  Client sets chaddr value to 00:00:00:00:00:03.
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.3.
+  Client requests option 1.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.3.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @dhcp4 @request
     Scenario: v4.request.selecting-success-chaddr-empty-pool
 
     Test Setup:

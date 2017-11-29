@@ -77,6 +77,84 @@ DHCP server is started.
 	Response sub-option 5 from option 3 MUST contain address 3000::3.
 
 @v6 @dhcp6 @multipleIA
+Scenario: v6.multipleIA.addresses-multiple-pools
+  ## Testing server ability to parse and allocate addresses
+  ## when multiple IA option are included in one message.
+  ## Server is configured with multiple pools within single subnet
+  ## 					Client		Server
+  ## 					SOLICIT -->
+  ## save IA_NA				<--	ADVERTISE
+  ## 					SOLICIT -->
+  ## save IA_NA				<--	ADVERTISE
+  ## 					SOLICIT -->
+  ## save IA_NA				<--	ADVERTISE
+  ## include all IA's REQUEST -->
+  ## 				 		    <--	REPLY
+  ## Pass Criteria:
+  ## 				REPLY MUST include option:
+  ##					IA-NA
+  ##					IA-Address with 3000::1 address
+  ##					IA-Address with 3000::2 address
+  ##					IA-Address with 3000::3 address
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
+  Server is configured with another pool 3000::2-3000::2 in subnet 0.
+  Server is configured with another pool 3000::3-3000::3 in subnet 0.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
+  Test Procedure:
+  Client saves IA_NA option from received message.
+  Generate new IA.
+  Client requests option 7.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
+  Test Procedure:
+  Client saves IA_NA option from received message.
+  Generate new IA.
+  Client requests option 7.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
+  Test Procedure:
+  Client saves IA_NA option from received message.
+  Client copies server-id option from received message.
+  Client adds saved options. And Erase.
+  Client does include client-id.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with REPLY message.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+  Response sub-option 5 from option 3 MUST contain address 3000::2.
+  Response sub-option 5 from option 3 MUST contain address 3000::3.
+
+@v6 @dhcp6 @multipleIA
     Scenario: v6.multipleIA.addresses-release-success
 	## Testing server ability to parse multiple IA's included into message
 	## and release included addresses.
