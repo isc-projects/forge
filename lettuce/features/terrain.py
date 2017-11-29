@@ -49,7 +49,7 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "DUID": None,
              "FQDN_flags": "",
              "FQDN_domain_name": "",
-             "address_type": 1,
+             "address_type": 1,  # dhcpv6 mac addr type, option 79
              "link_local_mac_addr": world.f_cfg.cli_mac,
              "remote_id": "",
              "subscriber_id": "",
@@ -67,6 +67,7 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "iimajor": 0,
              "iiminor": 0,
              "archtypes": 1,
+             "erpdomain": "",
              "user_class_data": ""}
 
 srv_values_v6 = {"T1": 1000,
@@ -163,7 +164,7 @@ def multiprotocol_initialize():
 
 def v4_initialize():
     # Setup scapy for v4
-    #conf.iface = IFACE
+    # conf.iface = IFACE
     conf.checkIPaddr = False  # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
     world.cfg["srv4_addr"] = world.f_cfg.srv4_addr
     world.cfg["rel4_addr"] = world.f_cfg.rel4_addr
@@ -216,10 +217,10 @@ def define_software():
     for each_name in world.f_cfg.software_under_test:
         if each_name in world.f_cfg.dhcp_used:
             world.cfg["dhcp_under_test"] = each_name
-            #world.cfg["dns_under_test"] = ""
+            # world.cfg["dns_under_test"] = ""
         elif each_name in world.f_cfg.dns_used:
             world.cfg["dns_under_test"] = each_name
-            #world.cfg["dhcp_under_test"] = ""
+            # world.cfg["dhcp_under_test"] = ""
 
 
 def declare_all():
@@ -229,6 +230,7 @@ def declare_all():
     world.tmpmsg = []  # container for temporary stored messages
     world.cliopts = []  # Option(s) to be included in the next message sent
     world.relayopts = []  # option(s) to be included in Relay Forward message.
+    world.rsoo = []  # List of relay-supplied-options
     world.savedmsg = {0: []}  # Saved option(s)
     world.define = []  # temporary define variables
 
@@ -285,7 +287,7 @@ def test_start():
                 try:
                     # Make sure there is noo garbage instance of bind10 running.
                     start_bind10()
-                except:
+                except ():
                     get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\n\
                                                 Please make sure it's configured properly\nIP destination \
                                                 address: %s\nLocal Mac address: %s\nNetwork interface: %s"
