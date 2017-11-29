@@ -61,7 +61,7 @@ def client_send_msg(step, msgname, iface, addr):
 
     if msgname == "DISCOVER":
         # msg code: 1
-        #world.cfg["values"]["broadcastBit"] = True
+        # world.cfg["values"]["broadcastBit"] = True
         msg = build_msg([("message-type", "discover")] + options)
         
     elif msgname == "REQUEST":
@@ -119,34 +119,39 @@ def convert_flags_fqdn():
     return flag_filed
 
 
+options_formatted_by_forge = ["vendor_specific",  # code 43
+                              "pxe_client_machine_identifier",  # code 82
+                              "relay_agent_information"  # code 97
+                              ]
+
+
 def client_does_include(step, opt_type, value):
     if opt_type == 'client_id':
+        # code - 61
         world.cliopts += [(opt_type, convert_MAC(value))]
 #     elif opt_type =='vendor_class_id':
 #         world.cliopts += [(opt_type, str(value), "my-other-class")]
     elif opt_type == 'fqdn':
+        # code - 81
         flags = chr(int(convert_flags_fqdn()))
-        ## flags, RCODE1, RCODE2, domain name
-        ## RCODE1 and RCODE2 are deprecated but we need to add them.
+        # flags, RCODE1, RCODE2, domain name
+        # RCODE1 and RCODE2 are deprecated but we need to add them.
         if 'E' not in world.cfg["values"]["FQDN_flags"]:
             fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
         else:
-            ## code domain name:
             domain = "".join(map(lambda z: chr(len(z))+z, world.cfg["values"]["FQDN_domain_name"].split('.')))
             fqdn = (flags + '\x00\x00' + domain)
         world.cliopts += [('client_FQDN', fqdn)]
     elif opt_type == 'pxe_client_architecture':
+        # code - 93
         world.cliopts += [(opt_type, '\00' + chr(int(value)))]
     elif opt_type == 'pxe_client_network_interface':
-        world.cliopts += [(opt_type, chr(int(value[0])) + chr(int(value[1])) + chr(int(value[2])) )]
-    elif opt_type == 'pxe_client_machine_identifier':
-        import binascii
-        #tmp = binascii.hexlify(value)
-        # value = str(value)
-        # tmp = ""
-        # for each in value:
-        #     tmp += chr(int(each))
-        world.cliopts += [(opt_type, value.encode())]
+        # code - 94
+        world.cliopts += [(opt_type, chr(int(value[0])) + chr(int(value[1])) + chr(int(value[2])))]
+    elif opt_type in options_formatted_by_forge:
+        world.cliopts += [(opt_type, "".join(map(lambda z: chr(int(z, 16)), list(value))))]
+    elif opt_type in ["vendor_specific_information", "vendor_class"]:
+        world.cliopts += [(opt_type, value.decode("hex"))]
     else:
         world.cliopts += [(opt_type, str(value))]
 
@@ -188,7 +193,7 @@ def response_check_content(step, expect, data_type, expected):
     return received
 
 
-def client_save_option(step, opt_name, count = 0):
+def client_save_option(step, opt_name, count=0):
     from softwaresupport.kea4_server.functions import kea_options4
     opt_code = kea_options4.get(opt_name)
 
@@ -215,7 +220,7 @@ def convert_MAC(mac):
     return mac.replace(':', '').decode('hex')
 
 
-def start_fuzzing():#time_period, time_units):
+def start_fuzzing():  # time_period, time_units):
     world.fuzzing = True
 
 
@@ -240,20 +245,20 @@ def build_msg(opts):
     else:
         msg_flag = 0
 
-    msg = Ether(dst = "ff:ff:ff:ff:ff:ff",
-                src = hw)
-    msg /= IP(src = world.cfg["source_IP"],
-              dst = world.cfg["destination_IP"],)
-    msg /= UDP(sport = world.cfg["source_port"], dport = world.cfg["destination_port"])
-    msg /= BOOTP(chaddr = tmp_hw,
-                 giaddr = world.cfg["values"]["giaddr"],
-                 flags = msg_flag,
-                 hops = world.cfg["values"]["hops"])
+    msg = Ether(dst="ff:ff:ff:ff:ff:ff",
+                src=hw)
+    msg /= IP(src=world.cfg["source_IP"],
+              dst=world.cfg["destination_IP"],)
+    msg /= UDP(sport=world.cfg["source_port"], dport=world.cfg["destination_port"])
+    msg /= BOOTP(chaddr=tmp_hw,
+                 giaddr=world.cfg["values"]["giaddr"],
+                 flags=msg_flag,
+                 hops=world.cfg["values"]["hops"])
 
     # BOOTP requests can be optionless
     if len(opts) > 0:
         opts += ["end"]  # end option
-        msg /= DHCP(options = opts)
+        msg /= DHCP(options=opts)
 
     #transaction id
     if world.cfg["values"]["tr_id"] is None:
@@ -284,7 +289,7 @@ def get_msg_type(msg):
     opt = get_option(msg, 53)
 
     # BOOTP_REPLYs have no message type   
-    if (opt == None): 
+    if opt is None:
         return "BOOTP_REPLY"
     
     # opt[1] it's value of message-type option
@@ -303,10 +308,10 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
 
     apply_message_fields_changes()
     ans, unans = srp(world.climsg,
-                    iface = world.cfg["iface"],
-                    timeout = world.cfg["wait_interval"],
-                    multi = True,
-                    verbose = 99)
+                     iface=world.cfg["iface"],
+                     timeout=world.cfg["wait_interval"],
+                     multi=True,
+                     verbose=99)
 
     from features.init_all import SHOW_PACKETS_FROM
     if SHOW_PACKETS_FROM in ['both', 'client']:
@@ -355,12 +360,12 @@ def get_option(msg, opt_code):
     # dhcpv4 implementation in Scapy is a mess. The options array contains mix of 
     # strings, IPField, ByteEnumField and who knows what else. In each case the
     # values are accessed differently
-    if  isinstance(opt_name, Field):
+    if isinstance(opt_name, Field):
         opt_name = opt_name.name
 
     x = msg.getlayer(4)  # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
     # BOOTP messages may be optionless, so check first
-    if x != None:
+    if x is not None:
         for opt in x.options:
             if opt[0] is opt_name:
                 world.opts.append(opt)
@@ -368,7 +373,7 @@ def get_option(msg, opt_code):
     return None
 
 
-def ByteToHex (byteStr):
+def ByteToHex(byteStr):
     return ''.join(["%02X " % ord(x) for x in byteStr]).replace(" ", "")
 
 
@@ -417,7 +422,7 @@ def response_check_option_content(opt_code, expect, data_type, expected):
         else:
             assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
 
-        #assert False, bytes(received[1][0])
+        # assert False, bytes(received[1][0])
 
     outcome, received = test_option(opt_code, received, expected)
 

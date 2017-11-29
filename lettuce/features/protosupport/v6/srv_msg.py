@@ -55,6 +55,7 @@ options = {"client-id": 1,
            "subscriber-id": 38,
            "fqdn": 39,
            "client-arch-type": 61,
+           "erp-local-domain-name": 65,
            "client-link-layer-addr": 79}
 
 ## ======================================================================
@@ -148,13 +149,11 @@ def client_does_include(sender_type, opt_type, value):
     """
     Include options to message. This function refers to @step in lettuce
     """
-    if sender_type == "Client":
-        world.sender_type = 1
-    elif sender_type == "RelayAgent":
-        world.sender_type = 0
-    else:
-        assert False, "Two sender type accepted: Client or RelayAgent, your choice is: " + sender_type
 
+    assert sender_type in ["Client", "RelayAgent", "Relay-Supplied-Option"], "Two sender type accepted: Client or" \
+                                                                             " RelayAgent, your choice is: " \
+                                                                             + sender_type
+    world.sender_type = sender_type
     # value variable not used in v6
     # If you want to use options of received message to include it,
     # please use 'Client copies (\S+) option from received message.' step.
@@ -308,6 +307,12 @@ def client_does_include(sender_type, opt_type, value):
     elif opt_type == "client-arch-type":
         add_client_option(DHCP6OptClientArchType(archtypes=world.cfg["values"]["archtypes"]))
 
+    elif opt_type == "erp-local-domain-name":
+        add_client_option(DHCP6OptERPDomain(erpdomain=[world.cfg["values"]["erpdomain"]]))
+
+    elif opt_type == "rsoo":
+        add_client_option(DHCP6OptRelaySuppliedOpt(relaysupplied=world.rsoo))
+
     else:
         assert "unsupported option: " + opt_type
 
@@ -377,10 +382,14 @@ def generate_new(step, opt):
 
 
 def add_client_option(option):
-    if world.sender_type:
+    if world.sender_type == "Client":
         world.cliopts.append(option)
-    else:
+    elif world.sender_type == "RelayAgent":
         world.relayopts.append(option)
+    elif world.sender_type == "Relay-Supplied-Option":
+        world.rsoo.append(option)
+    else:
+        assert False, "Something went wrong with sender_type in add_client_option- you should never seen this error"
 
 
 def add_option_to_msg(msg, option):
