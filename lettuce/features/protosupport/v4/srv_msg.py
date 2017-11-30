@@ -382,12 +382,15 @@ def test_option(opt_code, received, expected):
 
     decode_opts_byte_to_hex = [61, 76]
 
-    if opt_code in decode_opts_byte_to_hex:
+    if opt_code in decode_opts_byte_to_hex or expected[:4] == "HEX:":
         received = received[0], ByteToHex(received[1])
 
     decode_opts_hex_to_int = [76]
     if opt_code in decode_opts_hex_to_int:
         received = received[0], int(str(received[1]), 16)
+
+    if expected[:4] == "HEX:":
+        expected = expected[4:]
 
     for each in received:
         tmp += str(each) + ' '
