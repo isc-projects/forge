@@ -431,7 +431,7 @@ Scenario: v4.client.classification.vendor
   Client sets chaddr value to ff:01:02:03:ff:04.
   Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
   # command below will add option 125 with calculated length enterprise number 4444
-  Client adds to the message vendor_specific_information with value 4444.
+  Client adds to the message vendor_specific_information with value 0000115a03010101.
   Client sends DISCOVER message.
 
   Pass Criteria:
@@ -443,7 +443,7 @@ Scenario: v4.client.classification.vendor
   Client adds to the message requested_addr with value 192.168.50.50.
   Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
   Client sets chaddr value to ff:01:02:03:ff:04.
-  Client adds to the message relay_agent_information with value 311.
+  Client adds to the message vendor_specific_information with value 0000115a03010101.
   Client sends REQUEST message.
 
   Pass Criteria:

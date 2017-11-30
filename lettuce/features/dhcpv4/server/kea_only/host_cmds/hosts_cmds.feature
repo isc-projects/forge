@@ -195,13 +195,13 @@ Feature: Kea Hook hosts_cmds testing
 
   Test Procedure:
   Client copies server_id option from received message.
-  Client adds to the message requested_addr with value 192.168.50.100.
+  Client adds to the message requested_addr with value 192.168.50.50.
   Client sets chaddr value to ff:01:02:03:ff:04.
   Client sends REQUEST message.
 
   Pass Criteria:
   Server MUST respond with ACK message.
-  Response MUST contain yiaddr 192.168.50.100.
+  Response MUST contain yiaddr 192.168.50.50.
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 
@@ -595,7 +595,8 @@ Feature: Kea Hook hosts_cmds testing
 
   Test Procedure:
   Client copies server_id option from received message.
-  Client adds to the message requested_addr with value 192.10.2.205.
+  Client adds to the message requested_addr with value 192.0.2.205.
+  Client adds to the message client_id with value 01:0a:0b:0c:0d:0e:0f.
   Client sets chaddr value to 01:0a:0b:0c:0d:0e:0f.
   Client sends REQUEST message.
 
@@ -643,7 +644,8 @@ Feature: Kea Hook hosts_cmds testing
 
   Test Procedure:
   Client copies server_id option from received message.
-  Client adds to the message requested_addr with value 192.10.2.205.
+  Client adds to the message requested_addr with value 192.0.2.205.
+  Client adds to the message client_id with value 01:0a:0b:0c:0d:0e:0f.
   Client sets chaddr value to 01:0a:0b:0c:0d:0e:0f.
   Client sends REQUEST message.
 
