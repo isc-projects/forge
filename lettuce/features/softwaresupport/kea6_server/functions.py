@@ -397,11 +397,12 @@ def create_new_class(class_name):
 
 
 def add_test_to_class(class_number, parameter_name, parameter_value):
-    #world.classification[class_number-1][1].append()
     if len(world.classification[class_number-1][1]) > 5:
         world.classification[class_number-1][1] += ','
-    # TODO extend it if parameter value wont need ""
-    world.classification[class_number-1][1] += '"{parameter_name}" : "{parameter_value}"'.format(**locals())
+    if parameter_value[0] in ["[","{"] or parameter_value in [True, False]:
+        world.classification[class_number-1][1] += '"{parameter_name}" : {parameter_value}'.format(**locals())
+    else:
+        world.classification[class_number-1][1] += '"{parameter_name}" : "{parameter_value}"'.format(**locals())
 
 
 def add_option_to_defined_class(class_no, option_name, option_value):
