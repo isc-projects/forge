@@ -241,12 +241,12 @@ def execute_shell_script(path, arguments):
     file_name = path.split("/")[-1] + '_output'
     file_name = configuration_file_name(1, file_name)
 
-    #assert False, type(result.stdout)
+    # assert False, type(result.stdout)
     if not os.path.exists(world.cfg["dir_name"]):
         os.makedirs(world.cfg["dir_name"])
 
     myfile = open(world.cfg["dir_name"] + '/' + file_name, 'w')
-    myfile.write('Script: ' + path)
+    myfile.write(unicode('Script: ' + path))
     if arguments == '':
         arguments = "no arguments used!"
     myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))

@@ -563,7 +563,7 @@ def agent_control_channel(host_address, host_port, socket_type, socket_name):
     world.ctrl_enable = True
     world.cfg["agent"] = '"Control-agent":{"http-host": "' + host_address
     world.cfg["agent"] += '","http-port":' + host_port
-    world.cfg["agent"] += ',"control-sockets":{"dhcp6-server":{"socket-type": "' + socket_type
+    world.cfg["agent"] += ',"control-sockets":{"dhcp6":{"socket-type": "' + socket_type
     world.cfg["agent"] += '","socket-name": "' + socket_name
     world.cfg["agent"] += '"}}}'
     #add_hooks(world.f_cfg.software_install_path + 'lib/control-agent-commands.so')

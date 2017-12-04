@@ -301,6 +301,15 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
     world.subcfg[subnet][5] = tmp
 
 
+def agent_control_channel(host_address, host_port, socket_type, socket_name):
+    world.ctrl_enable = True
+    world.cfg["agent"] = '"Control-agent":{"http-host": "' + host_address
+    world.cfg["agent"] += '","http-port":' + host_port
+    world.cfg["agent"] += ',"control-sockets":{"dhcp4":{"socket-type": "' + socket_type
+    world.cfg["agent"] += '","socket-name": "' + socket_name
+    world.cfg["agent"] += '"}}}'
+
+
 def config_srv_id(id_type, id_value):
     assert False, "Not yet available for Kea4"
 
