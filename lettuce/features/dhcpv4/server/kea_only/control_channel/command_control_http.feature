@@ -23,7 +23,8 @@ Feature: Kea Control Channel Agent - HTTP
 
   Test Setup:
   Server is configured with 192.168.51.0/24 subnet with 192.168.51.1-192.168.51.1 pool.
-  #Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Generate server configuration file.
 
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "config-set", "service": ["dhcp4"], "arguments":  $(SERVER_CONFIG) }

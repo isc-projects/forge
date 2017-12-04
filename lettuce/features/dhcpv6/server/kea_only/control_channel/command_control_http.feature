@@ -34,6 +34,7 @@ Feature: Kea Control Channel Agent - HTTP
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "config-set", "service": ["dhcp6"], "arguments":  $(SERVER_CONFIG) }
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "list-commands", "service": ["dhcp6"],"arguments":  $(SERVER_CONFIG) }
 
+  Sleep for 2 seconds.
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
   Client does include client-id.
@@ -82,6 +83,7 @@ Feature: Kea Control Channel Agent - HTTP
   Generate server configuration file.
 
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "config-set", "service": ["dhcp6"],"arguments":  $(SERVER_CONFIG) }
+  Sleep for 2 seconds.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -130,6 +132,8 @@ Scenario: control.channel.http.after-restart-load-config-file
   Generate server configuration file.
 
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "config-set", "service": ["dhcp6"],"arguments":  $(SERVER_CONFIG) }
+
+  Sleep for 2 seconds.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -290,6 +294,8 @@ Scenario: control.channel.http.config-write
   Generate server configuration file.
 
   Using unix socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set", "service": ["dhcp6"],"arguments":  $(SERVER_CONFIG) }
+
+  Sleep for 2 seconds.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
