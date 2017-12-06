@@ -27,8 +27,7 @@ from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_log
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
     add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
     set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
-    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class, \
-    add_option_to_defined_class
+    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -312,6 +311,24 @@ def agent_control_channel(host_address, host_port, socket_type, socket_name):
 
 def config_srv_id(id_type, id_value):
     assert False, "Not yet available for Kea4"
+
+
+def add_option_to_defined_class(class_no, option_name, option_value):
+    space = world.cfg["space"]
+    option_code = kea_options4.get(option_name)
+    # if option_code is None:
+    #     option_code = kea_otheroptions.get(option_name)
+
+    pointer_start = "{"
+    pointer_end = "}"
+
+    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
+    if len(world.classification[class_no-1][2]) > 10:
+        world.classification[class_no-1][2] += ','
+
+    world.classification[class_no-1][2] += '''
+            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
+            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 ## =============================================================
 ## ================ PREPARE CONFIG BLOCK END  ==================

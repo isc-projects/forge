@@ -399,7 +399,7 @@ def create_new_class(class_name):
 def add_test_to_class(class_number, parameter_name, parameter_value):
     if len(world.classification[class_number-1][1]) > 5:
         world.classification[class_number-1][1] += ','
-    if parameter_value[0] in ["[","{"] or parameter_value in [True, False]:
+    if parameter_value[0] in ["[", "{"] or parameter_value in [True, False]:
         world.classification[class_number-1][1] += '"{parameter_name}" : {parameter_value}'.format(**locals())
     else:
         world.classification[class_number-1][1] += '"{parameter_name}" : "{parameter_value}"'.format(**locals())
@@ -592,9 +592,9 @@ def cfg_write():
                 if counter > 0:
                     cfg_file.write(',')
                 cfg_file.write('{')  # open class
-                cfg_file.write('"name":"' + each_class[0] + '",')
+                cfg_file.write('"name":"' + each_class[0] + '"')
                 if len(each_class[1]) > 0:
-                    cfg_file.write(each_class[1])
+                    cfg_file.write("," + each_class[1])
                 if len(each_class[2]) > 0:
                     cfg_file.write(',"option-data": [' + each_class[2] + "]")
                 cfg_file.write('}')  # close each class
