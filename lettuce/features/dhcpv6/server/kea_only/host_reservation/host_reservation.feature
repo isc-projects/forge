@@ -137,3 +137,90 @@ DHCP server is started.
 	Response sub-option 26 from option 25 MUST NOT contain prefix 2001:db8:1::.
     Response MUST include option 39.
     Response option 39 MUST NOT contain fqdn reserved-hostname.my.domain.com.
+
+@v6 @host_reservation @kea_only
+Scenario: v6.host.reservation.classes-1
+
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
+  To subnet 0 configuration section in the config file add line: ,"reservations": [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:22","client-classes": [ "reserved-class1"]}]
+
+  Add class called reserved-class1.
+  To class no 1 add option sip-server-addr with value 2001:db8::1,2001:db8::2.
+  To class no 1 add option preference with value 123.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 7.
+  Client requests option 22.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST NOT include option 22.
+  Response MUST NOT include option 7.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:22.
+  Client requests option 7.
+  Client requests option 22.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 22.
+  Response option 22 MUST contain addresses 2001:db8::1,2001:db8::2.
+  Response MUST include option 7.
+  Response option 7 MUST contain prefval 123.
+
+
+@v6 @host_reservation @kea_only
+Scenario: v6.host.reservation.classes-2
+
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
+  To subnet 0 configuration section in the config file add line: ,"reservations": ["duid": "00:03:00:01:f6:f5:f4:f3:f2:22","client-classes": [ "reserved-class1", "reserved-class2" ]}]
+
+  Add class called reserved-class1.
+  To class no 1 add option sip-server-addr with value 2001:db8::1,2001:db8::2.
+
+  Add class called reserved-class2.
+  To class no 2 add option preference with value 123.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 7.
+  Client requests option 22.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST NOT include option 22.
+  Response MUST NOT include option 7.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:22.
+  Client requests option 7.
+  Client requests option 22.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 22.
+  Response option 22 MUST contain addresses 2001:db8::1,2001:db8::2.
+  Response MUST include option 7.
+  Response option 7 MUST contain prefval 123.
