@@ -380,11 +380,12 @@ def log_includes_count(step, server_type, count, line):
 
 
 @step('Sleep for (\d+) (seconds|second|milliseconds|millisecond).')
-def forge_sleep(step, time, time_units):
+def forge_sleep(step, time_val, time_units):
     """
     Pause the test for selected amount of time counted in seconds or milliseconds.
     """
-    other.forge_sleep(int(time), str(time_units))
+    time_val, time_units = test_define_value(time_val, time_units)
+    other.forge_sleep(int(time_val), str(time_units))
 
 
 @step('Pause the Test.')
