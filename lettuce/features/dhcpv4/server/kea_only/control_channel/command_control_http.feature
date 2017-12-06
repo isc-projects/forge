@@ -30,7 +30,7 @@ Feature: Kea Control Channel Agent - HTTP
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "config-set", "service": ["dhcp4"], "arguments":  $(SERVER_CONFIG) }
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "list-commands", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }
 
-  Sleep for 2 seconds.
+  Sleep for $(SLEEP_TIME_2) seconds.
   
   Test Procedure:
   Client requests option 1.

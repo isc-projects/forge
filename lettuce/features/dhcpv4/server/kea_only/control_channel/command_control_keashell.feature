@@ -24,7 +24,7 @@ Feature: Kea Control Channel Script
   #this command is with new configuration
   Execute python script in path: $(SOFTWARE_INSTALL_DIR)sbin/kea-shell with arguments: --host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<' "Dhcp4": { "control-socket": { "socket-name": "/home/test/installed/git/var/kea/control_socket", "socket-type": "unix" }, "decline-probation-period": 86400, "dhcp-ddns": { "always-include-fqdn": false, "enable-updates": false, "generated-prefix": "myhost", "max-queue-size": 1024, "ncr-format": "JSON", "ncr-protocol": "UDP", "override-client-update": false, "override-no-update": false, "qualifying-suffix": "", "replace-client-name": "never", "sender-ip": "0.0.0.0", "sender-port": 0, "server-ip": "127.0.0.1", "server-port": 53001 }, "dhcp4o6-port": 0, "echo-client-id": true, "expired-leases-processing": { "flush-reclaimed-timer-wait-time": 25, "hold-reclaimed-time": 3600, "max-reclaim-leases": 100, "max-reclaim-time": 250, "reclaim-timer-wait-time": 10, "unwarned-reclaim-cycles": 5 }, "hooks-libraries": [  ], "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ], "interfaces-config": { "interfaces": [ "eth2" ], "re-detect": true }, "lease-database": { "type": "memfile" }, "option-data": [  ], "option-def": [  ], "shared-networks": [  ], "subnet4": [ { "4o6-interface": "", "4o6-interface-id": "", "4o6-subnet": "", "boot-file-name": "", "id": 1, "interface": "eth2", "match-client-id": true, "next-server": "0.0.0.0", "option-data": [  ], "pools": [ { "option-data": [  ], "pool": "192.168.51.1/32" } ], "rebind-timer": 2000, "relay": { "ip-address": "0.0.0.0" }, "renew-timer": 1000, "reservation-mode": "all", "reservations": [  ], "server-hostname": "", "subnet": "192.168.51.0/24", "valid-lifetime": 4000 } ] }'
 
-  Sleep for 2 seconds.
+  Sleep for $(SLEEP_TIME_2) seconds.
 
   Test Procedure:
   Client requests option 1.
@@ -58,7 +58,7 @@ Scenario: control.channel.keashell.after-restart-load-config-file
   Response option 1 MUST contain value 255.255.255.0.
 
   Execute python script in path: $(SOFTWARE_INSTALL_DIR)sbin/kea-shell with arguments: --host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<' "Dhcp4": { "control-socket": { "socket-name": "/home/test/installed/git/var/kea/control_socket", "socket-type": "unix" }, "decline-probation-period": 86400, "dhcp-ddns": { "always-include-fqdn": false, "enable-updates": false, "generated-prefix": "myhost", "max-queue-size": 1024, "ncr-format": "JSON", "ncr-protocol": "UDP", "override-client-update": false, "override-no-update": false, "qualifying-suffix": "", "replace-client-name": "never", "sender-ip": "0.0.0.0", "sender-port": 0, "server-ip": "127.0.0.1", "server-port": 53001 }, "dhcp4o6-port": 0, "echo-client-id": true, "expired-leases-processing": { "flush-reclaimed-timer-wait-time": 25, "hold-reclaimed-time": 3600, "max-reclaim-leases": 100, "max-reclaim-time": 250, "reclaim-timer-wait-time": 10, "unwarned-reclaim-cycles": 5 }, "hooks-libraries": [  ], "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ], "interfaces-config": { "interfaces": [ "eth2" ], "re-detect": true }, "lease-database": { "type": "memfile" }, "option-data": [  ], "option-def": [  ], "shared-networks": [  ], "subnet4": [ { "4o6-interface": "", "4o6-interface-id": "", "4o6-subnet": "", "boot-file-name": "", "id": 1, "interface": "eth2", "match-client-id": true, "next-server": "0.0.0.0", "option-data": [  ], "pools": [ { "option-data": [  ], "pool": "192.168.51.1/32" } ], "rebind-timer": 2000, "relay": { "ip-address": "0.0.0.0" }, "renew-timer": 1000, "reservation-mode": "all", "reservations": [  ], "server-hostname": "", "subnet": "192.168.51.0/24", "valid-lifetime": 4000 } ] }'
-  Sleep for 2 seconds.
+  Sleep for $(SLEEP_TIME_2) seconds.
 
   Test Procedure:
   Client requests option 1.
@@ -149,7 +149,7 @@ Scenario: control.channel.keashell.after-restart-load-config-file
   Generate server configuration file.
 
   Execute python script in path: $(SOFTWARE_INSTALL_DIR)sbin/kea-shell with arguments: --host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<'$(SERVER_CONFIG)'
-  Sleep for 2 seconds.
+  Sleep for $(SLEEP_TIME_2) seconds.
 
   Test Procedure:
   Client requests option 1.
@@ -188,8 +188,8 @@ Scenario: control.channel.keashell.write-config
   Generate server configuration file.
 
   Execute python script in path: $(SOFTWARE_INSTALL_DIR)sbin/kea-shell with arguments: --host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<' "Dhcp4": { "control-socket": { "socket-name": "/home/test/installed/git/var/kea/control_socket", "socket-type": "unix" }, "decline-probation-period": 86400, "dhcp-ddns": { "always-include-fqdn": false, "enable-updates": false, "generated-prefix": "myhost", "max-queue-size": 1024, "ncr-format": "JSON", "ncr-protocol": "UDP", "override-client-update": false, "override-no-update": false, "qualifying-suffix": "", "replace-client-name": "never", "sender-ip": "0.0.0.0", "sender-port": 0, "server-ip": "127.0.0.1", "server-port": 53001 }, "dhcp4o6-port": 0, "echo-client-id": true, "expired-leases-processing": { "flush-reclaimed-timer-wait-time": 25, "hold-reclaimed-time": 3600, "max-reclaim-leases": 100, "max-reclaim-time": 250, "reclaim-timer-wait-time": 10, "unwarned-reclaim-cycles": 5 }, "hooks-libraries": [  ], "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ], "interfaces-config": { "interfaces": [ "eth2" ], "re-detect": true }, "lease-database": { "type": "memfile" }, "option-data": [  ], "option-def": [  ], "shared-networks": [  ], "subnet4": [ { "4o6-interface": "", "4o6-interface-id": "", "4o6-subnet": "", "boot-file-name": "", "id": 1, "interface": "eth2", "match-client-id": true, "next-server": "0.0.0.0", "option-data": [  ], "pools": [ { "option-data": [  ], "pool": "192.168.51.1/32" } ], "rebind-timer": 2000, "relay": { "ip-address": "0.0.0.0" }, "renew-timer": 1000, "reservation-mode": "all", "reservations": [  ], "server-hostname": "", "subnet": "192.168.51.0/24", "valid-lifetime": 4000 } ] }'
-  Sleep for 2 seconds.
-  
+  Sleep for $(SLEEP_TIME_2) seconds.
+
   Test Procedure:
   Client requests option 1.
   Client sends DISCOVER message.
