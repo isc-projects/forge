@@ -2,7 +2,7 @@
 Feature: DHCPv6 Relay Agent 
     This is test for DHCPv6 message exchange between server and relay-agent with not permitted options in Relay-Forward message.  
 
-@v6 @dhcp6 @relay @relay_invalid
+@v6 @dhcp6 @relay @relay_invalid @disabled
     Scenario: v6.relay.invalid-with_client_id
 
 	Test Setup:
@@ -39,7 +39,7 @@ DHCP server is started.
 
 	References: RFC3315 section 18.2.8	
 	
-@v6 @dhcp6 @relay @relay_invalid
+@v6 @dhcp6 @relay @relay_invalid @disabled
     Scenario: v6.relay.invalid-with_server_id
 	#add just serverid
 	

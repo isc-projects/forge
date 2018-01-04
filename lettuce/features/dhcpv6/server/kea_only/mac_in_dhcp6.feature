@@ -267,7 +267,7 @@ DHCP server is started.
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:01
 
 
-@v6 @MACinDHCP6 @kea_only
+@v6 @MACinDHCP6 @kea_only @disabled #REASON: missing feature that allows extracting MAC address from subscribers-id
     Scenario: v6.mac.in.dhcp6.subscriber-id-1
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -304,7 +304,7 @@ DHCP server is started.
     File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:02
 
 
-@v6 @MACinDHCP6 @kea_only
+@v6 @MACinDHCP6 @kea_only @disabled #REASON: missing feature that allows extracting MAC address from subscribers-id
     Scenario: v6.mac.in.dhcp6.subscriber-id-2
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

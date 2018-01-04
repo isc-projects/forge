@@ -186,7 +186,7 @@ Scenario: v6.host.reservation.classes-2
 
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
-  To subnet 0 configuration section in the config file add line: ,"reservations": ["duid": "00:03:00:01:f6:f5:f4:f3:f2:22","client-classes": [ "reserved-class1", "reserved-class2" ]}]
+  To subnet 0 configuration section in the config file add line: ,"reservations": [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:22","client-classes": [ "reserved-class1", "reserved-class2" ]}]
 
   Add class called reserved-class1.
   To class no 1 add option sip-server-addr with value 2001:db8::1,2001:db8::2.

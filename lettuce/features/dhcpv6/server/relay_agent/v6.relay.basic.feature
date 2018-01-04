@@ -52,7 +52,7 @@ DHCP server is started.
 
 	References: RFC3315 section 18.2.8
 
-@v6 @dhcp6 @relay @unicast
+@v6 @dhcp6 @relay @unicast @disabled
     Scenario: v6.relay.message-unicast-local
 	
 	Test Setup:

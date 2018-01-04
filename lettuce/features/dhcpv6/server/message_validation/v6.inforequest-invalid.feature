@@ -183,7 +183,7 @@ DHCP server is started.
 
 	References: RFC3315 section 15.12
 
-@v6 @dhcp6 @inforequest_invalid
+@v6 @dhcp6 @inforequest_invalid @disabled
     Scenario: v6.message.negative.tests.inforequest-with_IA_NA
     ## Testing server ability to discard message that not meets 
     ## content requirements.
