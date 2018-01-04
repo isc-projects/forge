@@ -216,7 +216,8 @@ DHCP server is started.
 	
 	References: RFC3315 section 15
 	
-@basic @v6 @dhcp6 @unicast @status_code @disabled #REASON: lacking support of status code 'Use Multicast'
+@basic @v6 @dhcp6 @unicast @status_code @disabled
+ #REASON: lacking support of status code 'Use Multicast'
     Scenario: v6.basic.message.unicast.global-request
 	## Server MUST discard any Request message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -287,7 +288,8 @@ DHCP server is started.
 	
 	References: RFC3315 section 18.2.1
 	
-@basic @v6 @dhcp6 @unicast @status_code @disabled #REASON: lacking support of status code 'Use Multicast'
+@basic @v6 @dhcp6 @unicast @status_code @disabled
+ #REASON: lacking support of status code 'Use Multicast'
     Scenario: v6.basic.message.unicast.global-renew
 	## Server MUST discard any RENEW message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -362,7 +364,8 @@ DHCP server is started.
 	
 	References: RFC3315 section 18.2.3
 	
-@basic @v6 @dhcp6 @unicast @status_code  @disabled #REASON: lacking support of status code 'Use Multicast'
+@basic @v6 @dhcp6 @unicast @status_code  @disabled
+ #REASON: lacking support of status code 'Use Multicast'
     Scenario: v6.basic.message.unicast.global-release
 	## Server MUST discard any RELEASE message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -652,7 +655,8 @@ DHCP server is started.
 	
 	References: RFC3315 section 15
 	
-@basic @v6 @dhcp6 @unicast @status_code @disabled #REASON: lacking support of status code 'Use Multicast'
+@basic @v6 @dhcp6 @unicast @status_code @disabled
+ #REASON: lacking support of status code 'Use Multicast'
     Scenario: v6.basic.message.unicast.local-request
 	## Server MUST discard any Request message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -724,7 +728,8 @@ DHCP server is started.
 	
 	References: RFC3315 section 18.2.1
 	
-@basic @v6 @dhcp6 @unicast @status_code @disabled #REASON: lacking support of status code 'Use Multicast'
+@basic @v6 @dhcp6 @unicast @status_code @disabled
+#REASON: lacking support of status code 'Use Multicast'
     Scenario: v6.basic.message.unicast.local-renew
 	## Server MUST discard any RENEW message it receives with   
 	## a unicast address destination, and send back REPLY with
@@ -800,7 +805,8 @@ DHCP server is started.
 		
 	References: RFC3315 section 18.2.3
 	
-@basic @v6 @dhcp6 @unicast @status_code @disabled #REASON: lacking support of status code 'Use Multicast'
+@basic @v6 @dhcp6 @unicast @status_code @disabled
+#REASON: lacking support of status code 'Use Multicast'
     Scenario: v6.basic.message.unicast.local-release
 	## Server MUST discard any RELEASE message it receives with   
 	## a unicast address destination, and send back REPLY with
