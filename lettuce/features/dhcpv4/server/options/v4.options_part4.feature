@@ -120,7 +120,7 @@ DHCP server failed to start. During configuration process.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-policy-filter
 	# Allowed only pairs of addresses
     Test Setup:
@@ -141,7 +141,7 @@ DHCP server failed to start. During configuration process.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-max-dgram-reassembly
 	#Unsigned integer (0 to 65535) minimum value: 576
 	
@@ -183,7 +183,7 @@ DHCP server is started.
     Send server configuration using SSH and config-file.
 DHCP server is started.
     
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-default-ip-ttl
 
     Test Setup:
@@ -214,7 +214,7 @@ DHCP server is started.
     Send server configuration using SSH and config-file.
 DHCP server failed to start. During configuration process.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-path-mtu-aging-timeout
 	#Unsigned integer (0 to 65535) minimum: 68
 
@@ -250,7 +250,7 @@ DHCP server is started.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-static-routes
 	# pair of addresses 0.0.0.0 forbidden
 
@@ -307,7 +307,7 @@ DHCP server is started.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-default-tcp-ttl
 
     Test Setup:
@@ -336,7 +336,7 @@ DHCP server is started.
     Send server configuration using SSH and config-file.
 DHCP server is started.
     
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-dhcp-option-overload
 
     Test Setup:
@@ -373,7 +373,7 @@ DHCP server is started.
     Send server configuration using SSH and config-file.
 DHCP server is started.
 
-@v4 @dhcp4 @options @subnet
+@v4 @dhcp4 @options @subnet @disabled #REASON
     Scenario: v4.options.malformed-values-dhcp-max-message-size
 
     Test Setup:
