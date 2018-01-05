@@ -92,7 +92,7 @@ Feature: Kea shared networks manipulation commands
 
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-list","arguments":{}}
 #  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-add","arguments":{"shared-networks":[{"name": "name-abc","option-data": [],"preferred-lifetime": 10,"rapid-commit": false,"rebind-timer": 10,"relay": {"ip-address": "::"},"renew-timer": 10,"reservation-mode": "all","interface": "$(SERVER_IFACE)","subnet6":[{"id":1,"interface": "$(SERVER_IFACE)","option-data": [],"pd-pools": [],"pools": [{"option-data": [],"pool": "2001:db8:a::1/128"}],"preferred-lifetime": 3000,"rapid-commit": false,"rebind-timer": 2000,"relay":{"ip-address": "::"},"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:a::/64","valid-lifetime": 4000}],"valid-lifetime": 0}]}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-add","arguments":{"shared-networks":[{"name": "name-abc","interface": "$(SERVER_IFACE)","subnet6":[{"id":1,"interface": "$(SERVER_IFACE)","pools": ["pool": "2001:db8:a::1/128"}],"preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:a::/64","valid-lifetime": 4000}]}]}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-add","arguments":{"shared-networks":[{"name": "name-abc","interface": "$(SERVER_IFACE)","subnet6":[{"id":1,"interface": "$(SERVER_IFACE)","pools": [{"pool": "2001:db8:a::1/128"}],"preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:a::/64","valid-lifetime": 4000}]}]}}
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-get","arguments":{"name": "name-abc"}}
 
   Test Procedure:
@@ -263,6 +263,7 @@ Feature: Kea shared networks manipulation commands
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-del","arguments":{"name":"name-abc"}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-list","arguments":{}}
 
+  Sleep for 5 seconds.
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
   Client does include client-id.
@@ -342,7 +343,7 @@ Feature: Kea shared networks manipulation commands
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-list","arguments":{}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-add","arguments":{"shared-networks":[{"name": "name-abc","option-data": [],"preferred-lifetime": 0,"rapid-commit": false,"rebind-timer": 0,"relay": {"ip-address": "::"},"renew-timer": 0,"reservation-mode": "all","subnet6":[{"id":1,"interface-id": "interface-abc","option-data": [],"pd-pools": [],"pools": [{"option-data": [],"pool": "2001:db8:a::1/128"}],"preferred-lifetime": 3000,"rapid-commit": false,"rebind-timer": 2000,"relay":{"ip-address": "::"},"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:a::/64","valid-lifetime": 4000}],"valid-lifetime": 0}]}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network6-get","arguments":{"name": "name-abc"}}
-
+  Sleep for 5 seconds.
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
   Client does include client-id.
