@@ -257,6 +257,7 @@ def execute_shell_script(path, arguments):
 
     myfile.write(unicode('\nScript stdout:\n' + result.stdout))
     myfile.close()
+    forge_sleep(3, "seconds")
 
 
 def execute_shell_command(command):
