@@ -10,6 +10,7 @@ Feature: Kea Control Channel Script
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
+  Sleep for 2 seconds.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -53,6 +54,7 @@ Scenario: control.channel.keashell.after-restart-load-config-file
   Server has control agent configured on HTTP connection with address 127.0.0.1:8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Send server configuration using SSH and config-file.
   DHCP server is started.
+  Sleep for 2 seconds.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -208,6 +210,7 @@ Scenario: control.channel.keashell.write-config
   Server has control agent configured on HTTP connection with address 127.0.0.1:8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Send server configuration using SSH and config-file.
   DHCP server is started.
+  Sleep for 2 seconds.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
