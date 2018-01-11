@@ -1,7 +1,150 @@
 Feature: Kea Control Channel Agent - HTTP
   Tests for Kea Command Control Channel Agent using unix socket to pass commands and HTTP based connection.
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
+  Scenario: control.channel.http.dhcp-disable-timer
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-disable","service": ["dhcp6"], "arguments": {"max-period": 5}}
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Sleep for 7 seconds.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
+@v6 @controlchannel @kea_only
+  Scenario: control.channel.http.dhcp-disable
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-disable","service": ["dhcp6"]}
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+@v6 @controlchannel @kea_only
+  Scenario: control.channel.http.dhcp-disable-and-enable
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-disable","service": ["dhcp6"]}
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-enable","service": ["dhcp6"]}
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
+@v6 @controlchannel @kea_only
   Scenario: control.channel.http.config-set-basic
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
@@ -50,7 +193,7 @@ Feature: Kea Control Channel Agent - HTTP
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
   Scenario: control.channel.http.change-socket-during-reconfigure
   #change address test needed also
   Test Setup:
@@ -101,7 +244,7 @@ Feature: Kea Control Channel Agent - HTTP
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command":"list-commands","arguments": {} }
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
 Scenario: control.channel.http.after-restart-load-config-file
 
   Test Setup:
@@ -168,7 +311,7 @@ Scenario: control.channel.http.after-restart-load-config-file
   Response sub-option 5 from option 3 MUST contain address 3000::1.
 
   
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
   Scenario: control.channel.http.get-config
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
@@ -181,7 +324,7 @@ Scenario: control.channel.http.after-restart-load-config-file
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "config-get","service":["dhcp6"],"arguments": {} }
 
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
   Scenario: control.channel.http.test-config
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::1 pool.
@@ -261,7 +404,7 @@ Scenario: control.channel.http.after-restart-load-config-file
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
 Scenario: control.channel.http.config-write
 
   Test Setup:
@@ -329,7 +472,7 @@ Scenario: control.channel.http.config-write
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
 Scenario: control.channel.http.reload-config
 
   Test Setup:

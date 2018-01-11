@@ -1,7 +1,7 @@
 Feature: Kea Control Channel - socket
   Tests for Kea Command Control Channel using unix socket to pass commands.
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
   Scenario: control.channel.socket.config-get
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
@@ -15,7 +15,7 @@ Feature: Kea Control Channel - socket
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "list-commands","arguments": {}}
   #compare json result with config file
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
   Scenario: control.channel.socket.config-test
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
@@ -56,7 +56,7 @@ Feature: Kea Control Channel - socket
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-test","arguments": $(SERVER_CONFIG) }
 #  #should NOT be ok
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
 Scenario: control.channel.socket.config-write
 
   Test Setup:
@@ -122,7 +122,7 @@ Scenario: control.channel.socket.config-write
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
 Scenario: control.channel.socket.config-reload
 
   Test Setup:

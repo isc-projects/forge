@@ -1,7 +1,146 @@
 Feature: Kea Control Channel - socket
   Tests for Kea Command Control Channel using unix socket to pass commands.
 
-@v6 @controlchannel
+  @v6 @controlchannel @kea_onlyn
+  Scenario: control.channel.socket.dhcp-disable-timer
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-disable", "arguments": {"max-period": 5}}
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Sleep for 7 seconds.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
+@v6 @controlchannel @kea_only
+  Scenario: control.channel.socket.dhcp-disable
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-disable" }
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+@v6 @controlchannel @kea_only
+  Scenario: control.channel.socket.dhcp-disable-and-enable
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 3000::1.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-disable" }
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-enable" }
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA_Address.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  
+@v6 @controlchannel @kea_only
   Scenario: control.channel.socket.config-set-basic
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
@@ -45,7 +184,7 @@ Feature: Kea Control Channel - socket
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
   Scenario: control.channel.socket.change-socket-during-reconfigure
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
@@ -90,7 +229,7 @@ Feature: Kea Control Channel - socket
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "list-commands","arguments": {}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command": "list-commands","arguments": {}}
 
-@v6 @controlchannel
+@v6 @controlchannel @kea_only
 Scenario: control.channel.socket.after-restart-load-config-file
 
   Test Setup:
@@ -150,7 +289,7 @@ Scenario: control.channel.socket.after-restart-load-config-file
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::1.
 
-@v6 @controlchannel @disabled
+@v6 @controlchannel @kea_only @disabled
 Scenario: control.channel.socket.big-config-file
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.

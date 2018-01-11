@@ -1,7 +1,118 @@
 Feature: Kea Control Channel Agent - HTTP
   Tests for Kea Command Control Channel Agent using unix socket to pass commands and HTTP based connection.
+  
+@v4 @controlchannel @kea_only
+  Scenario: control.channel.http.dhcp-disable-timer
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
 
-@v4 @controlchannel
+  DHCP server is started.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-disable","service": ["dhcp4"], "arguments": {"max-period": 5}}
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Sleep for 7 seconds.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @controlchannel @kea_only
+  Scenario: control.channel.http.dhcp-disable
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-disable","service": ["dhcp4"]}
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+@v4 @controlchannel @kea_only
+  Scenario: control.channel.http.dhcp-disable-and-enable
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-disable","service": ["dhcp4"]}
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "dhcp-enable","service": ["dhcp4"]}
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+@v4 @controlchannel @kea_only
   Scenario: control.channel.http.config-set-basic
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -42,7 +153,7 @@ Feature: Kea Control Channel Agent - HTTP
   Response MUST contain yiaddr 192.168.51.1.
   Response option 1 MUST contain value 255.255.255.0.
 
-@v4 @controlchannel
+@v4 @controlchannel @kea_only
   Scenario: control.channel.http.change-socket-during-reconfigure
   #change address test needed also
   Test Setup:
@@ -83,7 +194,7 @@ Feature: Kea Control Channel Agent - HTTP
 
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command":"list-commands","arguments": {} }
 
-@v4 @controlchannel
+@v4 @controlchannel @kea_only
 Scenario: control.channel.http.after-restart-load-config-file
 
   Test Setup:
@@ -133,7 +244,7 @@ Scenario: control.channel.http.after-restart-load-config-file
   Response option 1 MUST contain value 255.255.255.0.
 
   
-@v4 @controlchannel
+@v4 @controlchannel @kea_only
   Scenario: control.channel.http.get-config
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -146,7 +257,7 @@ Scenario: control.channel.http.after-restart-load-config-file
   Using existing HTTP $(SRV4_ADDR):8000 connection send: {"command": "config-get","service":["dhcp4"],"arguments": {} }
 
 
-@v4 @controlchannel @disabled
+@v4 @controlchannel @kea_only @disabled
   Scenario: control.channel.http.test-config
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
@@ -210,7 +321,7 @@ Scenario: control.channel.http.after-restart-load-config-file
   Response MUST contain yiaddr 192.168.50.1.
   Response option 1 MUST contain value 255.255.255.0.
 
-@v4 @controlchannel
+@v4 @controlchannel @kea_only
 Scenario: control.channel.http.config-write
 
   Test Setup:
@@ -262,7 +373,7 @@ Scenario: control.channel.http.config-write
   Response MUST contain yiaddr 192.168.50.1.
   Response option 1 MUST contain value 255.255.255.0.
 
-@v4 @controlchannel
+@v4 @controlchannel @kea_only
 Scenario: control.channel.http.reload-config
 
   Test Setup:
