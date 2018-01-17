@@ -341,7 +341,7 @@ def add_pool_to_subnet(step, pool, subnet):
 
 
 def config_srv_another_subnet(step, subnet, pool, eth):
-    world.subcfg.append(["", "", "", "", "", ""])
+    world.subcfg.append(["", "", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
     prepare_cfg_subnet(step, subnet, pool, eth)
@@ -730,7 +730,7 @@ def cfg_write():
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
     cfg_file.write(world.cfg["keactrl"])
     cfg_file.close()
-    world.subcfg = [["", "", "", "", "", ""]]
+    world.subcfg = [["", "", "", "", "", "", ""]]
     config = open(world.cfg["cfg_file"], 'r')
     world.configString = config.read().replace('\n', '').replace(' ', '')
     config.close()

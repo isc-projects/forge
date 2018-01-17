@@ -82,6 +82,8 @@ Feature: Kea Subnet manipulation commands
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network4-add","arguments":{"shared-networks": [{"match-client-id": true,"name": "name-xyz","option-data": [],"rebind-timer": 0,"relay": {"ip-address": "0.0.0.0"},"renew-timer": 0,"reservation-mode": "all","subnet4": [{"4o6-interface": "","4o6-interface-id": "","4o6-subnet": "","boot-file-name": "","id": 3,"match-client-id": true,"next-server": "0.0.0.0","option-data": [{"always-send": false,"code": 4,"csv-format": false,"data": "C7C7C764","name": "time-servers","space": "dhcp4"}],"pools": [{"option-data": [],"pool": "192.168.52.1/32"}],"rebind-timer": 2000,"relay": {"ip-address": "192.168.50.249"},"renew-timer": 1000,"reservation-mode": "all","server-hostname": "","subnet": "192.168.52.0/24","valid-lifetime": 4000},{"4o6-interface": "","4o6-interface-id": "","4o6-subnet": "","boot-file-name": "","id": 4,"match-client-id": true,"next-server": "0.0.0.0","option-data": [{"always-send": false,"code": 4,"csv-format": false,"data": "C7C7C7C8","name": "time-servers","space": "dhcp4"}],"pools": [{"option-data": [],"pool": "192.168.53.1/32"}],"rebind-timer": 2000,"relay": {"ip-address": "192.168.50.249"},"renew-timer": 1000,"reservation-mode": "all","server-hostname": "","subnet": "192.168.53.0/24","valid-lifetime": 4000}],"valid-lifetime": 0}]}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"network4-get","arguments":{"name": "name-xyz"}}
 
+  Sleep for 3 seconds.
+
   Test Procedure:
   Client requests option 1.
   Client requests option 6.
