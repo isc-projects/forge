@@ -33,7 +33,7 @@ def forge_sleep(time, time_units):
     sleep(time * 1.0 / divide)
 
 
-def test_pause(step):
+def test_pause():
     """
     Pause the test for any reason. Press any key to continue. 
     """

@@ -379,7 +379,7 @@ def log_includes_count(step, server_type, count, line):
     other.log_contains_count(step, server_type, count, line)
 
 
-@step('Sleep for (\d+) (seconds|second|milliseconds|millisecond).')
+@step('Sleep for (\S+) (seconds|second|milliseconds|millisecond).')
 def forge_sleep(step, time_val, time_units):
     """
     Pause the test for selected amount of time counted in seconds or milliseconds.
@@ -395,7 +395,7 @@ def test_pause(step):
     and so on.... Do NOT put it in automatic tests, it blocks test until user will:
         Press any key to continue.
     """
-    other.test_pause(step)
+    other.test_pause()
 
 
 @step('End test.')
