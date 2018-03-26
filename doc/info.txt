@@ -85,6 +85,9 @@ Scapy uses crypto libraries that may be needed:
 $ sudo apt-get install python-crypto
 $ sudo pip install ecdsa
 
+For http requests Forge needs requests module:
+
+$ sudo pip install requests
 
  DUT dependencies requirements and configuration
 -------------------------------------------------
