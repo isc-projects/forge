@@ -176,7 +176,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         add_interface(eth)
 
 
-def prepare_cfg_subnet_soecific_interface(step, interface, address, subnet, pool):
+def prepare_cfg_subnet_specific_interface(step, interface, address, subnet, pool):
     if subnet == "default":
         subnet = "2001:db8:1::/64"
     if pool == "default":
