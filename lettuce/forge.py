@@ -85,6 +85,9 @@ class ForgeConfiguration:
         self.dhcp_used = "dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server", \
                          "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server", \
                          "none_server"
+
+        # no_server_management value can be set by -N option on startup to turn off remote server management
+        self.no_server_management = False
         self.empty = ""
         self.none = None
         # FORGE
@@ -147,10 +150,11 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def gethwaddr(self, ifname):
-        import fcntl, socket, struct
-        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
-        return ':'.join(['%02x' % ord(char) for char in info[18:24]])
+        # import fcntl, socket, struct
+        # s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        # info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
+        # return ':'.join(['%02x' % ord(char) for char in info[18:24]])
+        return "00:50:56:c0:00:02"
 
     def basic_validation(self):
         from sys import exit
@@ -321,6 +325,12 @@ def option_parser():
                       default=False,
                       help="Run basic tests on current configuration and exit.")
 
+    parser.add_option("-N", "--no-server-actions",
+                      dest="noserver",
+                      action="store_true",
+                      default=False,
+                      help="Run test without remote server management.")
+
     (opts, args) = parser.parse_args()
 
     if opts.test_config:
@@ -353,7 +363,7 @@ def option_parser():
         hlp.test(number, 0)
         sys.exit(-1)
 
-    return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit, opts.explicit_path
+    return number, opts.test_set, opts.name, opts.verbosity, tag, opts.enable_xunit, opts.explicit_path, opts.noserver
 
 
 def test_path_select(number, test_set, name, explicit_path):
@@ -438,12 +448,14 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
 
 
 if __name__ == '__main__':
-    number, test_set, name, verbosity, tag, enable_xunit, explicit_path = option_parser()
+    number, test_set, name, verbosity, tag, enable_xunit, explicit_path, server_management = option_parser()
     check_config_file()
     base_path, scenario = test_path_select(number, test_set, name, explicit_path)
     from lettuce import world
 
     world.f_cfg = ForgeConfiguration()
+    if server_management:
+        world.f_cfg.no_server_management = True
     failed = start_all(base_path, verbosity, scenario, tag, enable_xunit)
     if failed > 0:
         print "SCENARIOS FAILED: %d" % failed

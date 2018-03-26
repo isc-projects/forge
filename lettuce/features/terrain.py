@@ -279,32 +279,33 @@ def test_start():
     # be instantiated by get_common_logger()
     logger_initialize(world.f_cfg.loglevel)
 
-    for each in world.f_cfg.software_under_test:
-        if "server" in each:
-            if each in ['kea4_server_bind', 'kea6_server_bind']:
-                get_common_logger().debug("Starting Bind:")
-                kill_bind10()
-                try:
-                    # Make sure there is noo garbage instance of bind10 running.
-                    start_bind10()
-                except ():
-                    get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\n\
-                                                Please make sure it's configured properly\nIP destination \
-                                                address: %s\nLocal Mac address: %s\nNetwork interface: %s"
-                                              % (world.f_cfg.mgmt_address, world.f_cfg.cli_mac, world.f_cfg.iface))
-                    sys.exit(-1)
-                get_common_logger().debug("Bind10 successfully started")
+    if not world.f_cfg.no_server_management:
+        for each in world.f_cfg.software_under_test:
+            if "server" in each:
+                if each in ['kea4_server_bind', 'kea6_server_bind']:
+                    get_common_logger().debug("Starting Bind:")
+                    kill_bind10()
+                    try:
+                        # Make sure there is noo garbage instance of bind10 running.
+                        start_bind10()
+                    except ():
+                        get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\n\
+                                                    Please make sure it's configured properly\nIP destination \
+                                                    address: %s\nLocal Mac address: %s\nNetwork interface: %s"
+                                                  % (world.f_cfg.mgmt_address, world.f_cfg.cli_mac, world.f_cfg.iface))
+                        sys.exit(-1)
+                    get_common_logger().debug("Bind10 successfully started")
 
-        elif "client" in each:
-            clnt = importlib.import_module("softwaresupport.%s.functions" % each)
-            clnt.stop_clnt()
+            elif "client" in each:
+                clnt = importlib.import_module("softwaresupport.%s.functions" % each)
+                clnt.stop_clnt()
 
-        else:
-            stop = importlib.import_module("softwaresupport.%s.functions" % each)
-            # True passed to stop_srv is to hide output in console.
-            stop.stop_srv(True)
-            #  that is pointless, we should use same name for stop_srv and stop_clnt functions,
-            #  and erase that last elif.
+            else:
+                stop = importlib.import_module("softwaresupport.%s.functions" % each)
+                # True passed to stop_srv is to hide output in console.
+                stop.stop_srv(True)
+                #  that is pointless, we should use same name for stop_srv and stop_clnt functions,
+                #  and erase that last elif.
 
 
 @before.each_scenario
@@ -443,23 +444,24 @@ def cleanup(scenario):
     if world.f_cfg.tcpdump:
         time.sleep(1)
         args = ["killall tcpdump"]
-        subprocess.call(args, shell = True)
+        subprocess.call(args, shell=True)
         # TODO: log output in debug mode
 
-    for each in world.f_cfg.software_under_test:
-        functions = importlib.import_module("softwaresupport.%s.functions" % each)
-        if world.f_cfg.save_leases:
-            # save leases, if there is none leases in your software, just put "pass" in this function.
-            functions.save_leases()
+    if not world.f_cfg.no_server_management:
+        for each in world.f_cfg.software_under_test:
+            functions = importlib.import_module("softwaresupport.%s.functions" % each)
+            if world.f_cfg.save_leases:
+                # save leases, if there is none leases in your software, just put "pass" in this function.
+                functions.save_leases()
 
-        if world.f_cfg.save_logs:
-            functions.save_logs()
+            if world.f_cfg.save_logs:
+                functions.save_logs()
 
-        # every software have something else to clear. Put in clear_all() whatever you need
-        functions.clear_all()
+            # every software have something else to clear. Put in clear_all() whatever you need
+            functions.clear_all()
 
-        if '_client' in each:
-            functions.kill_clnt()
+            if '_client' in each:
+                functions.kill_clnt()
 
 
 @after.all
@@ -479,22 +481,23 @@ def say_goodbye(total):
             result.write(str(item) + '\n')
         result.close()
 
-    for each in world.f_cfg.software_under_test:
-        if each in ['kea4_server_bind', 'kea6_server_bind']:
-            clean_config = importlib.import_module("softwaresupport.%s.functions" % each)
-            clean_config.run_bindctl(True, 'clean')
-            kill_bind10()
+    if not world.f_cfg.no_server_management:
+        for each in world.f_cfg.software_under_test:
+            if each in ['kea4_server_bind', 'kea6_server_bind']:
+                clean_config = importlib.import_module("softwaresupport.%s.functions" % each)
+                clean_config.run_bindctl(True, 'clean')
+                kill_bind10()
 
-        elif "client" in each:
-            kill_msg = "kill the " + each[:each.find("_client")]
-            get_common_logger().debug(kill_msg)
-            clnt = importlib.import_module("softwaresupport.%s.functions" % each)
-            clnt.stop_clnt()
+            elif "client" in each:
+                kill_msg = "kill the " + each[:each.find("_client")]
+                get_common_logger().debug(kill_msg)
+                clnt = importlib.import_module("softwaresupport.%s.functions" % each)
+                clnt.stop_clnt()
 
-        else:
-            stop = importlib.import_module("softwaresupport.%s.functions" % each)
-            # True passed to stop_srv is to hide output in console.
-            stop.stop_srv(True)
+            else:
+                stop = importlib.import_module("softwaresupport.%s.functions" % each)
+                # True passed to stop_srv is to hide output in console.
+                stop.stop_srv(True)
 
     if world.f_cfg.auto_archive:
         name = ""

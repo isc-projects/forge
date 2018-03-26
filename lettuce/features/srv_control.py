@@ -25,7 +25,7 @@ DNS = world.f_cfg.dns_used
 declare_all()
 
 for each_server_name in SOFTWARE_UNDER_TEST:
-    if each_server_name in DHCP:
+    if each_server_name in DHCP and not world.f_cfg.no_server_management:
         dhcp = importlib.import_module("softwaresupport.%s.functions" % each_server_name)
         world.cfg["dhcp_under_test"] = each_server_name
         ddns_enable = True
@@ -43,12 +43,17 @@ for each_server_name in SOFTWARE_UNDER_TEST:
             pgsql_reservation = importlib.import_module("softwaresupport.%s.pgsql_reservation" % each_server_name)
         except ImportError:
             pgsql_reservation_enable = False
-    elif each_server_name in DNS:
+    elif each_server_name in DNS and not world.f_cfg.no_server_management:
         try:
             dns = importlib.import_module("softwaresupport.%s.functions" % each_server_name)
             world.cfg["dns_under_test"] = each_server_name
         except ImportError:
             dns_enable = False
+    elif world.f_cfg.no_server_management:
+        dhcp = importlib.import_module("softwaresupport.none_server.functions")
+        mysql_reservation_enable = False
+        pgsql_reservation_enable = False
+        dns = importlib.import_module("softwaresupport.none_server.functions")
 
 
 def ddns_block():
@@ -103,10 +108,10 @@ def test_define_value(*args):
                         assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
                 if front is None:
                     # tested_args.append(imported + tmp[index + 1:])
-                    tmp_loop = imported + tmp[index + 1:]
+                    tmp_loop = str(imported) + tmp[index + 1:]
                 else:
                     # tested_args.append(front + imported + tmp[index + 1:])
-                    tmp_loop = front + imported + tmp[index + 1:]
+                    tmp_loop = front + str(imported) + tmp[index + 1:]
             else:
                 # tested_args.append(args[i])
                 tmp_loop = tmp
@@ -146,7 +151,7 @@ def config_srv_subnet(step, interface, address, subnet, pool):
     interface.
     """
     interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
-    dhcp.prepare_cfg_subnet_soecific_interface(step, interface, address, subnet, pool)
+    dhcp.prepare_cfg_subnet_specific_interface(step, interface, address, subnet, pool)
 
 
 @step('Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
@@ -364,7 +369,6 @@ def new_db_backend_reservation(step, db_type, reservation_identifier, reservatio
         pgsql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
     else:
         assert False, "Database type not recognised."
-
 
 
 @step('Add (\S+) (\S+) to (\S+) reservation record id (\d+).')
