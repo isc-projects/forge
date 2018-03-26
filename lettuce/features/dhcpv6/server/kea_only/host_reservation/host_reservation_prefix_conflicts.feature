@@ -612,7 +612,8 @@ Reconfigure DHCP server.
 	Server MUST respond with REPLY message.
 	Response MUST include option 25.
 	Response option 25 MUST contain sub-option 26.
-	Response sub-option 26 from option 25 MUST NOT contain prefix 2001:db8:1::.
+	#Response sub-option 26 from option 25 MUST NOT contain prefix 2001:db8:1::. # this can be in message but with validlifetime 0
+	# todo: associate validlifetimes with address from single suboption.
 	Response sub-option 26 from option 25 MUST NOT contain prefix 2001:db8:1:0:8000::.
 	Response MUST include option 3.
 	Response option 3 MUST contain sub-option 5.
