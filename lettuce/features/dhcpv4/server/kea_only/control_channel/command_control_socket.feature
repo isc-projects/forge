@@ -1,7 +1,7 @@
 Feature: Kea Control Channel - socket
   Tests for Kea Command Control Channel using unix socket to pass commands.
 
-@v4 @controlchannel @kea_only @terazz
+@v4 @controlchannel @kea_only
   Scenario: control.channel.socket.dhcp-disable-timer
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
@@ -41,7 +41,7 @@ Feature: Kea Control Channel - socket
   Response MUST contain yiaddr 192.168.50.5.
   Response option 1 MUST contain value 255.255.255.0.
 
-@v4 @controlchannel @kea_only @terazz
+@v4 @controlchannel @kea_only
   Scenario: control.channel.socket.dhcp-disable
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
@@ -69,7 +69,7 @@ Feature: Kea Control Channel - socket
   Pass Criteria:
   Server MUST NOT respond.
 
-@v4 @controlchannel @kea_only @terazz
+@v4 @controlchannel @kea_only
   Scenario: control.channel.socket.dhcp-disable-and-enable
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.

@@ -320,7 +320,7 @@ Feature: Kea Subnet manipulation commands
   Response MUST contain yiaddr 192.168.50.1.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "network4-del","arguments":{"name":"name-abc","subnets-action": "delete"}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "network4-del","arguments":{"name":"name-xyz","subnets-action": "delete"}}
 
   Test Procedure:
   Client requests option 1.
