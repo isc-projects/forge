@@ -150,11 +150,11 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def gethwaddr(self, ifname):
-        # import fcntl, socket, struct
-        # s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        # info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
-        # return ':'.join(['%02x' % ord(char) for char in info[18:24]])
-        return "00:50:56:c0:00:02"
+        import fcntl, socket, struct
+        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
+        return ':'.join(['%02x' % ord(char) for char in info[18:24]])
+        # return "00:50:56:c0:00:02"
 
     def basic_validation(self):
         from sys import exit
