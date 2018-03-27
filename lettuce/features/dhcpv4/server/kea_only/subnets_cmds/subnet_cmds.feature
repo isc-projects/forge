@@ -62,7 +62,7 @@ Feature: Kea Subnet manipulation commands
   Server MUST NOT respond.
 
 #  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-list","arguments":{}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-add","arguments":{"subnet4":[{"subnet":"192.168.50.0/24","interface":"eth2","id":234,"pools":[{"pool":"192.168.50.1-192.168.50.1"}]}]}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-add","arguments":{"subnet4":[{"subnet":"192.168.50.0/24","interface":"$(SERVER_IFACE)","id":234,"pools":[{"pool":"192.168.50.1-192.168.50.1"}]}]}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-get","arguments":{"id": 234}}
 
   Test Procedure:
@@ -106,7 +106,7 @@ Feature: Kea Subnet manipulation commands
   Server MUST NOT respond.
 
 #  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-list","arguments":{}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "subnet4-add","arguments": {"subnet4": [{"subnet": "192.168.51.0/24","interface": "eth2","id": 234,"pools": [{"pool": "192.168.51.1-192.168.51.1"}],"option-data": [{"csv-format": true,"code": 6,"data": "19.19.19.1,10.10.10.1","name": "domain-name-servers","space": "dhcp4"}]}]}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "subnet4-add","arguments": {"subnet4": [{"subnet": "192.168.51.0/24","interface": "$(SERVER_IFACE)","id": 234,"pools": [{"pool": "192.168.51.1-192.168.51.1"}],"option-data": [{"csv-format": true,"code": 6,"data": "19.19.19.1,10.10.10.1","name": "domain-name-servers","space": "dhcp4"}]}]}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-get","arguments":{"id": 234}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "subnet4-del","arguments":{"id":1}}
 
@@ -149,7 +149,7 @@ Feature: Kea Subnet manipulation commands
   Response option 1 MUST contain value 255.255.255.0.
 
 #  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-list","arguments":{}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "subnet4-add","arguments": {"subnet4": [{"subnet": "192.168.55.0/24","interface": "eth2","id": 1,"pools": [{"pool": "192.168.55.1-192.168.55.1"}],"option-data": [{"csv-format": true,"code": 6,"data": "19.19.19.1,10.10.10.1","name": "domain-name-servers","space": "dhcp4"}]}]}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "subnet4-add","arguments": {"subnet4": [{"subnet": "192.168.55.0/24","interface": "$(SERVER_IFACE)","id": 1,"pools": [{"pool": "192.168.55.1-192.168.55.1"}],"option-data": [{"csv-format": true,"code": 6,"data": "19.19.19.1,10.10.10.1","name": "domain-name-servers","space": "dhcp4"}]}]}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-get","arguments":{"id": 1}}
 
   Test Procedure:
@@ -298,7 +298,7 @@ Feature: Kea Subnet manipulation commands
   Pass Criteria:
   Server MUST NOT respond.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-add","arguments":{"subnet4":[{"subnet":"192.168.50.0/24","interface":"eth2","id":66,"pools":[{"pool":"192.168.50.1-192.168.50.1"}]}]}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"subnet4-add","arguments":{"subnet4":[{"subnet":"192.168.50.0/24","interface":"$(SERVER_IFACE)","id":66,"pools":[{"pool":"192.168.50.1-192.168.50.1"}]}]}}
 
   Test Procedure:
   Client requests option 1.
