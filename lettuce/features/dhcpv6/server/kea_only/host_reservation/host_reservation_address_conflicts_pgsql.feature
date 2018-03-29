@@ -2,7 +2,7 @@ Feature: Host Reservation DHCPv6
     Tests for conflicts resolving in Host Reservation feature based both on MAC and DUID.
     For prefix, addresses and hostnames in PostgreSQL
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only @pgsql
     Scenario: v6.host.reservation.duplicate-reservation-duid
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
@@ -22,7 +22,7 @@ Feature: Host Reservation DHCPv6
 	Send server configuration using SSH and config-file.
 DHCP server is started.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @pgsql
     Scenario: v6.host.reservation.duplicate-reservation-address
 	Test Setup:
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
@@ -43,7 +43,7 @@ DHCP server is started.
 DHCP server is started.
 
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only @pgsql
   Scenario: v6.host.reservation.pgsql.conflicts-two-entries-for-one-host-different-subnets
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
@@ -113,7 +113,7 @@ DHCP server is started.
   Response sub-option 5 from option 3 MUST NOT contain address 3000::3.
 
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only @pgsql
   Scenario: v6.host.reservation.pgsql.conflicts-reconfigure-server-with-reservation-of-used-address
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
@@ -192,7 +192,7 @@ DHCP server is started.
   Response sub-option 5 from option 3 MUST NOT contain address 3000::1.
 
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only @pgsql
   Scenario: v6.host.reservation.pgsql.conflicts-reconfigure-server-with-reservation-of-used-address-2
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
@@ -284,7 +284,7 @@ DHCP server is started.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST NOT contain address 3000::1.
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only @pgsql
   Scenario: v6.host.reservation.pgsql.conflicts-reconfigure-server-with-reservation-of-used-address-renew-before-expire
   Test Setup:
   Server is configured with 3000::/30 subnet with 3000::1-3000::2 pool.
@@ -402,7 +402,7 @@ DHCP server is started.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::2.
 
-@v6 @host_reservation @kea_only 
+@v6 @host_reservation @kea_only @pgsql
   Scenario: v6.host.reservation.pgsql.conflicts-reconfigure-server-with-reservation-of-used-address-renew-after-expire
   Test Setup:
   Time renew-timer is configured with value 5.

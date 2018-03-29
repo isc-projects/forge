@@ -336,7 +336,7 @@ Reconfigure DHCP server.
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.5.
 
-@v4 @host_reservation @kea_only @disable
+@v4 @host_reservation @kea_only @disabled
     Scenario: v4.host.reservation.conflicts-renew-address-that-has-been-reserved-during-reconfiguration
 
     Test Setup:
@@ -477,7 +477,7 @@ Reconfigure DHCP server.
     Pass Criteria:
     Server MUST respond with NAK message.
 
-@v4 @host_reservation @kea_only @disable
+@v4 @host_reservation @kea_only @disabled
     Scenario: v4.host.reservation.conflicts-renew-address-which-reservation-changed-during-reconfigure
 
     Test Setup:
@@ -622,7 +622,7 @@ Reconfigure DHCP server.
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.50.
 
-@v4 @host_reservation @kea_only @disable
+@v4 @host_reservation @kea_only @disabled
     Scenario: v4.host.reservation.conflicts-rebind-address-which-reservation-changed-during-reconfigure
 
     Test Setup:

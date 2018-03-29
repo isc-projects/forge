@@ -2,7 +2,7 @@ Feature: Host Reservation DHCPv6 stored in PostgreSQL database.
     Tests for Host Reservation feature for: prefixes, addresses and hostnames based on MAC and DUID.
     Host reservation records are stored in the PostgreSQL database.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @pgsql
 Scenario: v6.host.reservation.pgsql.all-values-mac
 
   Test Setup:
@@ -89,7 +89,7 @@ DHCP server is started.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST NOT contain address 3000::100.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @pgsql
 Scenario: v6.host.reservation.pgsql.duid-ll-matching
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -114,7 +114,7 @@ DHCP server is started.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::100.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @pgsql
 Scenario: v6.host.reservation.pgsql.hwaddrr-not-matching
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -152,7 +152,7 @@ DHCP server is started.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST NOT contain address 3000::100.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @pgsql
 Scenario: v6.host.reservation.pgsql.hwaddrr-matching
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
@@ -189,7 +189,7 @@ DHCP server is started.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 3000::100.
 
-@v6 @host_reservation @kea_only
+@v6 @host_reservation @kea_only @pgsql
 Scenario: v6.host.reservation.pgsql.hwaddrr-matching-dual-backend
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
