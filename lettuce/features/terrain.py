@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2018 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -257,6 +257,13 @@ def declare_all():
     world.ddns_enable = False
     world.ctrl_enable = False
     world.fuzzing = False
+
+    # clear tmp DB values to use default from configuration
+    world.f_cfg.db_type = world.f_cfg.db_type_bk
+    world.f_cfg.db_host = world.f_cfg.db_host_bk
+    world.f_cfg.db_name = world.f_cfg.db_name_bk
+    world.f_cfg.db_passwd = world.f_cfg.db_passwd_bk
+    world.f_cfg.db_user = world.f_cfg.db_user_bk
 
 
 @before.all

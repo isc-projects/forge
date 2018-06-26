@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2018 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -31,6 +31,7 @@ for each_server_name in SOFTWARE_UNDER_TEST:
         ddns_enable = True
         mysql_reservation_enable = True
         pgsql_reservation_enable = True
+        cql_reservation_enable = True
         try:
             ddns = importlib.import_module("softwaresupport.%s.functions_ddns" % each_server_name)
         except ImportError:
@@ -43,6 +44,10 @@ for each_server_name in SOFTWARE_UNDER_TEST:
             pgsql_reservation = importlib.import_module("softwaresupport.%s.pgsql_reservation" % each_server_name)
         except ImportError:
             pgsql_reservation_enable = False
+        try:
+            cql_reservation = importlib.import_module("softwaresupport.%s.cql_reservation" % each_server_name)
+        except ImportError:
+            cql_reservation_enable = False
     elif each_server_name in DNS and not world.f_cfg.no_server_management:
         try:
             dns = importlib.import_module("softwaresupport.%s.functions" % each_server_name)
@@ -53,6 +58,7 @@ for each_server_name in SOFTWARE_UNDER_TEST:
         dhcp = importlib.import_module("softwaresupport.none_server.functions")
         mysql_reservation_enable = False
         pgsql_reservation_enable = False
+        cql_reservation_enable = False
         dns = importlib.import_module("softwaresupport.none_server.functions")
 
 
@@ -103,7 +109,7 @@ def test_define_value(*args):
                     imported = getattr(world.f_cfg, tmp[2: index].lower())
                 if imported is None:
                     try:
-                        imported = getattr(__import__('init_all', fromlist = [tmp[2: index]]), tmp[2: index])
+                        imported = getattr(__import__('init_all', fromlist=[tmp[2: index]]), tmp[2: index])
                     except ImportError:
                         assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
                 if front is None:
@@ -348,7 +354,27 @@ def add_parameter_to_hook(step, hook_no, parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.add_parameter_to_hook(int(hook_no), parameter_name, parameter_value)
 
-# MySQL
+
+@step('Use (\S+) as lease database backend.')
+def define_temporary_lease_db_backend(step, lease_db_type):
+    lease_db_type = test_define_value(lease_db_type)[0]
+    world.f_cfg.db_type = lease_db_type
+
+
+@step('Credentials for (\S+) database. User: (\S+); Passwd: (\S+); DB-name: (\S+); Host: (\S+);')
+def define_temporary_lease_db_backend_credentials(step, db_type, tmp_db_user, tmp_db_passwd, tmp_db_name, tmp_db_host):
+    # for now it's just support for leases.
+    if world.f_cfg.tmp_db_type is None:
+        assert False, "You should put 'Use (\S+) as lease database backend.' step first!"
+    if db_type not in ["leases"]:  # , "reservation"]:
+        assert False, "For this time we can use just 'leases'. 'reservation' is not available here."
+    world.f_cfg.db_host = tmp_db_host
+    world.f_cfg.db_name = tmp_db_name
+    world.f_cfg.db_passwd = tmp_db_passwd
+    world.f_cfg.db_user = tmp_db_user
+
+
+# START Reservation backend section
 @step('Use (\S+) reservation system.')
 def enable_db_backend_reservation(step, db_type):
     if db_type == 'MySQL':
@@ -357,6 +383,9 @@ def enable_db_backend_reservation(step, db_type):
     elif db_type == 'PostgreSQL':
         pgsql_reservation.enable_db_backend_reservation()
         pgsql_reservation.clear_all_reservations()
+    elif db_type == 'Cassandra':
+        cql_reservation.enable_db_backend_reservation()
+        cql_reservation.clear_all_reservations()
     else:
         assert False, "Database type not recognised."
 
@@ -367,6 +396,8 @@ def new_db_backend_reservation(step, db_type, reservation_identifier, reservatio
         mysql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
     elif db_type == 'PostgreSQL':
         pgsql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
+    elif db_type == 'Cassandra':
+        cql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
     else:
         assert False, "Database type not recognised."
 
@@ -377,19 +408,25 @@ def update_db_backend_reservation(step, field_name, field_value, db_type, reserv
         mysql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
     elif db_type == 'PostgreSQL':
         pgsql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
+    elif db_type == 'Cassandra':
+        cql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
 
 @step('Add IPv6 prefix reservation (\S+) (\d+) with iaid (\S+) to (\S+) record id (\d+).')
-def ipv6_prefix_db_backend_reservation(step, reserved_prefix, reserved_prefix_len, reserved_iaid, db_type, reservation_record_id):
+def ipv6_prefix_db_backend_reservation(step, reserved_prefix, reserved_prefix_len,
+                                       reserved_iaid, db_type, reservation_record_id):
 
     if db_type == 'MySQL':
         mysql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
-                                                         int(reservation_record_id))
+                                                             int(reservation_record_id))
     elif db_type == 'PostgreSQL':
         pgsql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
-                                                         int(reservation_record_id))
+                                                             int(reservation_record_id))
+    elif db_type == 'Cassandra':
+        cql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
+                                                           int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
@@ -397,9 +434,14 @@ def ipv6_prefix_db_backend_reservation(step, reserved_prefix, reserved_prefix_le
 @step('Add IPv6 address reservation (\S+) with iaid (\S+) to (\S+) record id (\d+).')
 def ipv6_address_db_backend_reservation(step, reserved_address, reserved_iaid, db_type, reservation_record_id):
     if db_type == 'MySQL':
-        mysql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, int(reservation_record_id))
+        mysql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
+                                                              int(reservation_record_id))
     elif db_type == 'PostgreSQL':
-        pgsql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, int(reservation_record_id))
+        pgsql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
+                                                              int(reservation_record_id))
+    elif db_type == 'Cassandra':
+        cql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
+                                                            int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
@@ -418,6 +460,11 @@ def option_db_record_reservation(step, reserved_option_code, reserved_option_val
                                                        reserved_option_space, reserved_option_persistent,
                                                        reserved_option_client_class, reserved_subnet_id,
                                                        reserved_option_scope, int(reservation_record_id))
+    elif db_type == 'Cassandra':
+        cql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
+                                                     reserved_option_space, reserved_option_persistent,
+                                                     reserved_option_client_class, reserved_subnet_id,
+                                                     reserved_option_scope, int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
@@ -428,6 +475,8 @@ def upload_db_reservation(step, db_type):
         mysql_reservation.clear_all_reservations()
     elif db_type == 'PostgreSQL':
         pgsql_reservation.clear_all_reservations()
+    elif db_type == 'Cassandra':
+        cql_reservation.clear_all_reservations()
     else:
         assert False, "Database type not recognised."
 
@@ -438,9 +487,11 @@ def upload_db_reservation(step, db_type):
         mysql_reservation.upload_db_reservation()
     elif db_type == 'PostgreSQL':
         pgsql_reservation.upload_db_reservation()
+    elif db_type == 'Cassandra':
+        cql_reservation.upload_db_reservation()
     else:
         assert False, "Database type not recognised."
-##endMySQL
+# END Reservation backend section
 
 
 @step('Reserve (\S+) (\S+) for host uniquely identified by (\S+) (\S+).')
@@ -545,6 +596,13 @@ def config_client_classification(step, subnet, option_value):
     """
     """
     dhcp.config_client_classification(step, subnet, option_value)
+
+
+@step('Server is configured with require-client-classification option in subnet (\d+) with name (\S+).')
+def config_client_classification(step, subnet, option_value):
+    """
+    """
+    dhcp.config_require_client_classification(step, subnet, option_value)
 
 
 @step('Add class called (\S+).')

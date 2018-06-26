@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2018 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -118,6 +118,11 @@ class ForgeConfiguration:
         self.db_name = DB_NAME
         self.db_passwd = DB_PASSWD
         self.db_user = DB_USER
+        self.db_type_bk = DB_TYPE
+        self.db_host_bk = DB_HOST
+        self.db_name_bk = DB_NAME
+        self.db_passwd_bk = DB_PASSWD
+        self.db_user_bk = DB_USER
         self.srv4_addr = SRV4_ADDR
         self.rel4_addr = REL4_ADDR
         self.gia4_addr = GIADDR4
@@ -150,11 +155,14 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def gethwaddr(self, ifname):
-        import fcntl, socket, struct
-        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname[:15]))
-        return ':'.join(['%02x' % ord(char) for char in info[18:24]])
-        # return "00:50:56:c0:00:02"
+        import fcntl, socket, struct, sys
+        if sys.platform != "darwin":
+            s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+            info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname))
+            return ':'.join(['%02x' % ord(char) for char in info[18:24]])
+        else:
+            # TODO fix this for MAC OS, this is temporary quick fix just for my local system
+            return "0a:00:27:00:00:00"
 
     def basic_validation(self):
         from sys import exit
@@ -356,7 +364,7 @@ def option_parser():
         parser.error("options -4 and -6 are exclusive.\n")
 
     number = '6' if opts.version6 else '4'
-    #Generate list of set tests and exit
+    # Generate list of set tests and exit
     if opts.list:
         from help import UserHelp
         hlp = UserHelp()
@@ -367,7 +375,7 @@ def option_parser():
 
 
 def test_path_select(number, test_set, name, explicit_path):
-    #path for tests, all for specified IP version or only one set
+    # path for tests, all for specified IP version or only one set
     scenario = None
     from features.init_all import SOFTWARE_UNDER_TEST
     testType = ""
@@ -413,8 +421,9 @@ def check_config_file():
         importlib.import_module("features.init_all")
     except ImportError:
         print "\n Error: You need to create 'init_all.py' file with configuration! (example file: init_all.py_example)\n"
-        #option_parser().print_help()
+        # option_parser().print_help()
         sys.exit(-1)
+
 
 def start_all(base_path, verbosity, scenario, tag, enable_xunit):
 
@@ -424,7 +433,7 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
         history = TestHistory()
         history.start()
 
-    #lettuce starter, adding options
+    # lettuce starter, adding options
     try:
         from lettuce import Runner, world
     except ImportError:
@@ -432,11 +441,11 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
         sys.exit(-1)
 
     runner = Runner(base_path,
-                    verbosity = verbosity,
-                    scenarios = scenario,
-                    failfast = False,
-                    tags = tag,
-                    enable_xunit = enable_xunit)
+                    verbosity=verbosity,
+                    scenarios=scenario,
+                    failfast=False,
+                    tags=tag,
+                    enable_xunit=enable_xunit)
 
     result = runner.run()  # start lettuce
 

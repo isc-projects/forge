@@ -369,6 +369,22 @@ def log_includes_line(step, file_path, condition, line):
     other.regular_file_contain(file_path, condition, line)
 
 
+@step('Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
+def log_includes_line(step, table_name, db_type, condition, line):
+    """
+    Check if in table X in database type Y include line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    table_name, db_type, line = test_define_value(table_name, db_type, line)
+    other.db_table_contain(table_name, db_type, condition, line)
+
+
+@step('Remove all records from table (\S+) in (\S+) database.')
+def remove_from_db_table(step, table_name, db_type):
+    table_name, db_type = test_define_value(table_name, db_type)
+    other.remove_from_db_table(table_name, db_type)
+
+
 @step('(\S+) log contains (\d+) of line: (.+)')
 def log_includes_count(step, server_type, count, line):
     """
