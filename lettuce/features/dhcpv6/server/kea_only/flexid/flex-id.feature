@@ -34,6 +34,217 @@ Feature: Kea Hook flex-id testing
   Relayed Message sub-option 5 from option 3 MUST contain address 3000::f.
 
 @v6 @flexid @kea_only
+  Scenario: v6.hooks.flexid-libreload
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets ifaceid value to port1234.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST contain sub-option 5.
+  #Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+  Relayed Message sub-option 5 from option 3 MUST contain address 3000::f.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "libreload","arguments": {}}
+  # if reload works - classification should work without changes
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets ifaceid value to port1234.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST contain sub-option 5.
+  #Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+  Relayed Message sub-option 5 from option 3 MUST contain address 3000::f.
+
+@v6 @flexid @kea_only
+  Scenario: v6.hooks.flexid-reconfigure-1
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets ifaceid value to port1234.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST contain sub-option 5.
+  #Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+  Relayed Message sub-option 5 from option 3 MUST contain address 3000::f.
+
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  Reconfigure DHCP server.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets ifaceid value to port1234.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST contain sub-option 5.
+  #Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+  Relayed Message sub-option 5 from option 3 MUST contain address 3000::f.
+
+@v6 @flexid @kea_only
+  Scenario: v6.hooks.flexid-reconfigure-2
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets ifaceid value to port1234.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST contain sub-option 5.
+  #Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+  Relayed Message sub-option 5 from option 3 MUST contain address 3000::f.
+
+  Test Setup:
+  Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port4321'.
+  For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
+  Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  Reconfigure DHCP server.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets ifaceid value to port1234.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST contain sub-option 5.
+  Relayed Message sub-option 5 from option 3 MUST NOT contain address 3000::f.
+
+  Test Procedure:
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  RelayAgent sets ifaceid value to port4321.
+  RelayAgent does include interface-id.
+  RelayAgent forwards message encapsulated in 1 level.
+
+  Pass Criteria:
+  Server MUST respond with RELAYREPLY message.
+  Response MUST include option 18.
+  Response MUST include option 9.
+  Response option 9 MUST contain Relayed Message.
+  Relayed Message MUST include option 1.
+  Relayed Message MUST include option 2.
+  Relayed Message MUST include option 3.
+  Relayed Message option 3 MUST contain sub-option 5.
+  Relayed Message sub-option 5 from option 3 MUST contain address 3000::f.
+
+@v6 @flexid @kea_only
   Scenario: v6.hooks.flexid-2
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.

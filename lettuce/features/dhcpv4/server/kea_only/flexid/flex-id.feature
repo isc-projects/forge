@@ -1,6 +1,82 @@
 Feature: Kea Hook flex-id testing
 
 @v4 @flexid @kea_only
+  Scenario: v4.hooks.flexid-libreload
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client adds to the message vendor_class_id with value docsis3.0.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.10.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "libreload","arguments": {}}
+  # if reload works - classification should work without changes
+
+  Test Procedure:
+  Client adds to the message vendor_class_id with value docsis3.0.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.10.
+
+@v4 @flexid @kea_only
+  Scenario: v4.hooks.flexid-reconfigure
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client adds to the message vendor_class_id with value docsis3.0.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.10.
+
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
+  For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
+  Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+  To hook no. 1 add parameter named identifier-expression with value: option[60].hex
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+  Reconfigure DHCP server.
+
+  Test Procedure:
+  Client adds to the message vendor_class_id with value docsis3.0.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.10.
+
+@v4 @flexid @kea_only
   Scenario: v4.hooks.flexid-inside-pool
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.

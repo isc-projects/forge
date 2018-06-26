@@ -2,6 +2,180 @@ Feature: Client Classification DHCPv4
   Expressions In Classification
 
 @v4 @dhcp4 @classification
+Scenario: v4.client.classification.member
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
+
+  Add class called Client_Class_1.
+  To class no 1 add parameter named: test with value: option[61].hex == 0xff010203ff041122
+  Server is configured with client-classification option in subnet 0 with name Client_Class_1.
+
+  Add class called Client_Class_2.
+  To class no 2 add parameter named: test with value: member('Client_Class_1')
+  To class no 2 add parameter named: server-hostname with value: hal9000
+
+  Server is configured with client-classification option in subnet 0 with name Client_Class_2.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:11:11:11:11:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST NOT respond.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain sname hal9000.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+  Response MUST contain sname hal9000.
+
+
+@v4 @dhcp4 @classification
+Scenario: v4.client.classification.unknown-pool
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with $(EMPTY) pool.
+  To subnet 0 configuration section in the config file add line: ,"pools":[{"pool": "192.168.50.50-192.168.50.50","client-class": "UNKNOWN"}]
+  Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:11:11:11:11:22.
+  Client adds to the message client_id with value ff:01:11:11:11:11:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.50.
+  Client adds to the message client_id with value ff:01:11:11:11:11:11:22.
+  Client sets chaddr value to ff:01:11:11:11:11:22.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.50.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+
+  @v4 @dhcp4 @classification
+Scenario: v4.client.classification.known-pool
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with $(EMPTY) pool.
+  To subnet 0 configuration section in the config file add line: ,"pools":[{"pool": "192.168.50.55-192.168.50.55","client-class": "KNOWN"}]
+  Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.55.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.55.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.55.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  @v4 @dhcp4 @classification
+Scenario: v4.client.classification.known-unknown-pool
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with $(EMPTY) pool.
+  To subnet 0 configuration section in the config file add line: ,"pools":[{"pool": "192.168.50.50-192.168.50.50","client-class": "UNKNOWN"},{"pool": "192.168.50.55-192.168.50.55","client-class": "KNOWN"}]
+  Reserve hostname reserved-name in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
+
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:11:11:11:11:22.
+  Client adds to the message client_id with value ff:01:11:11:11:11:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.55.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.55.
+  Client adds to the message client_id with value ff:01:11:11:11:11:11:22.
+  Client sets chaddr value to ff:01:11:11:11:11:22.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.55.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.55.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.55.
+  Client adds to the message client_id with value ff:01:02:03:ff:04:11:22.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.55.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+
+
+@v4 @dhcp4 @classification
 Scenario: v4.client.classification.option-hex
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.

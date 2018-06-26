@@ -2,6 +2,215 @@ Feature: Client Classification DHCPv6
   Expressions In Classification
 
 @v6 @dhcp6 @classification
+Scenario: v6.client.classification.member
+  Test Setup:
+  Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.
+
+  Add class called Client_Class_1.
+  To class no 1 add parameter named: test with value: option[1].hex == 0x00030001665544332211
+  Server is configured with client-classification option in subnet 0 with name Client_Class_1.
+
+  Add class called Client_Class_2.
+  To class no 2 add parameter named: test with value: member('Client_Class_1')
+  To class no 2 add option dns-servers with value 2001:db8::888.
+  Server is configured with client-classification option in subnet 0 with name Client_Class_2.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:11:11:11:11:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 23.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response MUST NOT include option 23.
+  Response option 3 MUST contain sub-option 13.
+  Response sub-option 13 from option 3 MUST contain statuscode 2.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client requests option 23.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::1.
+  Response MUST include option 23.
+  Response option 23 MUST contain addresses 2001:db8::888.
+
+@v6 @dhcp6 @classification
+Scenario: v6.client.classification.known-subnet
+  Test Setup:
+  # this is basically misconfiguration, should not work!
+  Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.
+  Server is configured with client-classification option in subnet 0 with name KNOWN.
+
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:11:11:11:11:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 13.
+  Response sub-option 13 from option 3 MUST contain statuscode 2.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::1.
+
+@v6 @dhcp6 @classification
+Scenario: v6.client.classification.known-pool
+  Test Setup:
+  Server is configured with 2001:db8:a::/64 subnet with $(EMPTY) pool.
+  To subnet 0 configuration section in the config file add line: ,"pools":[{"pool": "2001:db8:a::100-2001:db8:a::100","client-class": "KNOWN"}]
+
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:11:11:11:11:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 13.
+  Response sub-option 13 from option 3 MUST contain statuscode 2.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::100.
+
+@v6 @dhcp6 @classification
+Scenario: v6.client.classification.unknown-pool
+  Test Setup:
+  Server is configured with 2001:db8:a::/64 subnet with $(EMPTY) pool.
+To subnet 0 configuration section in the config file add line: ,"pools":[{"pool": "2001:db8:a::10-2001:db8:a::10","client-class": "UNKNOWN"}]
+
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:11:11:11:11:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::10.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  #Response option 3 MUST contain sub-option 5.
+  #Response sub-option 5 from option 3 MUST contain address 2001:db8:a::100.
+
+  Response option 3 MUST contain sub-option 13.
+  Response sub-option 13 from option 3 MUST contain statuscode 2.
+
+@v6 @dhcp6 @classification
+Scenario: v6.client.classification.unknown-known-pool
+  Test Setup:
+  Server is configured with 2001:db8:a::/64 subnet with $(EMPTY) pool.
+  To subnet 0 configuration section in the config file add line: ,"pools":[{"pool": "2001:db8:a::10-2001:db8:a::10","client-class": "UNKNOWN"},{"pool": "2001:db8:a::100-2001:db8:a::100","client-class": "KNOWN"}]
+
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:11:11:11:11:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::10.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::100.
+
+@v6 @dhcp6 @classification
 Scenario: v6.client.classification.option-hex
   Test Setup:
   Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.

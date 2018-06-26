@@ -1,5 +1,108 @@
 Feature: Kea Hook hosts_cmds testing
 
+@v4 @hosts_cmds @kea_only
+  Scenario: v4.hosts.cmds.libreload
+  Test Setup:
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_host_cmds.so.
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+
+  Use MySQL reservation system.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.100.
+
+  Test Procedure:
+  Client copies server_id option from received message.
+  Client adds to the message requested_addr with value 192.168.50.100.
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with ACK message.
+  Response MUST contain yiaddr 192.168.50.100.
+  Response MUST include option 1.
+  Response option 1 MUST contain value 255.255.255.0.
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "libreload","arguments": {}}
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+@v4 @hosts_cmds @kea_only
+  Scenario: v4.hosts.cmds.reconfigure
+  Test Setup:
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_host_cmds.so.
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+
+  Use MySQL reservation system.
+
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.50.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.100.
+
+  Test Setup:
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_host_cmds.so.
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+
+  Use MySQL reservation system.
+
+  Send server configuration using SSH and config-file.
+  Reconfigure DHCP server.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}
+
+  Test Procedure:
+  Client sets chaddr value to ff:01:02:03:ff:04.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST contain yiaddr 192.168.50.100.
+
 @v4 @hosts_cmds @kea_only 
   Scenario: v4.hosts.cmds.add-reservation-mysql
   Test Setup:
