@@ -89,6 +89,7 @@ class ForgeConfiguration:
         # no_server_management value can be set by -N option on startup to turn off remote server management
         self.no_server_management = False
         self.empty = ""
+        self.white_space = " "
         self.none = None
         # FORGE
         self.mgmt_address = MGMT_ADDRESS

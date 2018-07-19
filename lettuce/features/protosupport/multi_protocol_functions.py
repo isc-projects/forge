@@ -22,7 +22,7 @@ import sys
 import os
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, configuration_file_name,\
-        save_local_file
+        save_local_file, fabric_run_command
 from time import sleep
 
 
@@ -197,6 +197,59 @@ def regular_file_contain(file_name, condition, line):
     else:
         if result.failed:
             assert False, 'File {0} does NOT contain line/phrase: {1} .'.format(file_name, line)
+
+
+def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
+                         db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd):
+
+    if db_type in ["mysql", "MySQL"]:
+        # that is tmp solution - just clearing not saving.
+        command = 'mysql -u {db_user} -p{db_passwd} -e "delete from {table_name}" {db_name}'.format(**locals())
+        fabric_run_command(command)
+    elif db_type in ["postgresql", "PostgreSQL"]:
+        command = 'psql -U {db_user} -d {db_name} -c "delete from {table_name}"'.format(**locals())
+        fabric_run_command(command)
+    elif db_type == "cql":
+        # TODO: hardcoded passwords for now in cassandra, extend it in some time :)
+        command = 'for table_name in dhcp_option_scope host_reservations lease4 lease6 logs;' \
+                  ' do cqlsh --keyspace=keatest --user=keatest --password=keatest -e "TRUNCATE $table_name;"' \
+                  ' ; done'.format(**locals())
+        fabric_run_command(command)
+    else:
+        assert False, "db type {db_type} not recognized/not supported".format(**locals())
+
+
+def db_table_contain(table_name, db_type, condition, line, db_name=world.f_cfg.db_name,
+                     db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd):
+
+    if db_type in ["mysql", "MySQL"]:
+        command = 'mysql -u {db_user} -p{db_passwd} -e "select * from {table_name}"' \
+                  ' {db_name} --silent --raw > /tmp/mysql_out'.format(**locals())
+        fabric_run_command(command)
+        result = fabric_sudo_command('grep -c "{line}" /tmp/mysql_out'.format(**locals()))
+
+    elif db_type in ["postgresql", "PostgreSQL"]:
+        command = 'psql -U {db_user} -d {db_name} -c "select * from {table_name}" > /tmp/pgsql_out'.format(**locals())
+        fabric_run_command(command)
+        result = fabric_sudo_command('grep -c "{line}" /tmp/pgsql_out'.format(**locals()))
+
+    elif world.f_cfg.db_type == "cql":
+        result = -1
+        # command = 'for table_name in dhcp_option_scope host_reservations lease4 lease6;' \
+        #           ' do cqlsh --keyspace=keatest --user=keatest --password=keatest -e "TRUNCATE $table_name;"' \
+        #           ' ; done'.format(**locals())
+        # fabric_run_command(command)
+    else:
+        assert False, "db type {db_type} not recognized/not supported".format(**locals())
+
+    if condition is not None:
+        if int(result) > 0:
+            assert False, 'In database {0} table name "{1}" has {2} of: "{3}".' \
+                          ' That is to much.'.format(db_type, table_name, result, line)
+    else:
+        if int(result) < 1:
+            assert False, 'In database {0} table name "{1}" has {2} of: "{3}".'.format(db_type,
+                                                                                       table_name, result, line)
 
 
 def log_contains_count(step, server_type, count, line):

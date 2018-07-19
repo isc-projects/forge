@@ -124,7 +124,7 @@ def use_config_set(number):
     remove_local_file('bind.keys')
 
 
-def stop_srv(value = False):
+def stop_srv(value=False):
     fabric_sudo_command('(killall named & ); sleep ' + str(world.f_cfg.sleep_time_1), value)
 
 
@@ -144,7 +144,7 @@ def save_leases():
 
 
 def reconfigure_srv():
-    #TODO implement this when needed
+    # TODO implement this when needed
     pass
 
 
@@ -153,5 +153,7 @@ def save_logs():
 
 
 def clear_all():
+    stop_srv()
     fabric_remove_file_command('/tmp/dns.log')
     fabric_remove_file_command(world.f_cfg.dns_data_path + 'namedb/*')
+    fabric_remove_file_command(world.f_cfg.dns_data_path + '/*')

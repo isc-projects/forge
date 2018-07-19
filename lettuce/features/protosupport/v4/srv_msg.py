@@ -153,7 +153,10 @@ def client_does_include(step, opt_type, value):
     elif opt_type in ["vendor_specific_information", "vendor_class"]:
         world.cliopts += [(opt_type, value.decode("hex"))]
     else:
-        world.cliopts += [(opt_type, str(value))]
+        try:
+            world.cliopts += [(opt_type, str(value))]
+        except UnicodeEncodeError:
+            world.cliopts += [(opt_type, unicode(value))]
 
 
 def response_check_content(step, expect, data_type, expected):
@@ -227,7 +230,12 @@ def start_fuzzing():  # time_period, time_units):
 def build_msg(opts):
     conf.checkIPaddr = False
     msg_flag = 0
-    fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    import sys
+    if sys.platform != "darwin":
+        fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    else:
+        # TODO fix this for MAC OS, this is temporary quick fix just for my local system
+        hw = convert_MAC("0a:00:27:00:00:00")
     tmp_hw = None
 
     # we need to choose if we want to use chaddr, or client id. 

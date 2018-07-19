@@ -87,7 +87,10 @@ def test_define_value(*args):
     """
     tested_args = []
     for i in range(len(args)):
-        tmp = str(args[i])
+        try:
+            tmp = str(args[i])
+        except UnicodeEncodeError:
+            tmp = unicode(args[i])
         tmp_loop = ""
         while True:
             imported = None
