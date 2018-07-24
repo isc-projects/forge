@@ -27,7 +27,7 @@ from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_log
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
     add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
     set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
-    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class
+    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class, check_remote_address
 
 kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
@@ -139,14 +139,14 @@ def add_defaults():
     if "global_parameters" in world.cfg:
         world.cfg["main"] += world.cfg["global_parameters"]
 
-    if eth is not None and not eth in world.cfg["interfaces"]:
+    if eth is not None and eth not in world.cfg["interfaces"]:
         add_interface(eth)
 
-    #world.cfg["conf"] += dedent(subnetcfg)
-    #world.dhcp["subnet_cnt"] += 1
+    # world.cfg["conf"] += dedent(subnetcfg)
+    # world.dhcp["subnet_cnt"] += 1
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth = None):
+def prepare_cfg_subnet(step, subnet, pool, eth=None):
     # world.subcfg[0] = [subnet, client class/simple options, options, pools, host reservation]
     if subnet == "default":
         subnet = "192.168.0.0/24"
@@ -155,7 +155,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if eth is None:
         eth = world.f_cfg.server_iface
 
-    if not "interfaces" in world.cfg:
+    if "interfaces" not in world.cfg:
         world.cfg["interfaces"] = ''
 
     pointer_start = "{"
@@ -176,7 +176,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         #     print "\n\n\n\nabc\n1\n"
         #     print "\n"
 
-    if not eth in world.cfg["interfaces"]:
+    if eth not in world.cfg["interfaces"]:
         add_interface(eth)
 
 
@@ -188,14 +188,14 @@ def config_client_classification(step, subnet, option_value):
 
 
 def prepare_cfg_add_option(step, option_name, option_value, space,
-                           option_code = None, type = 'default', where = 'options'):
-    if not where in world.cfg:
+                           option_code=None, opt_type='default', where='options'):
+    if where not in world.cfg:
         world.cfg[where] = '"option-data": ['
     else:
         world.cfg[where] += ","
 
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
-    if type == 'default':
+    if opt_type == 'default':
         option_code = kea_options4.get(option_name)
 
     pointer_start = "{"
@@ -247,7 +247,7 @@ def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, optio
 
 def add_siaddr(step, addr, subnet_number):
     if subnet_number is None:
-        if not "simple_options" in world.cfg:
+        if "simple_options" not in world.cfg:
             world.cfg["simple_options"] = ''
         else:
             world.cfg["simple_options"] += ','
@@ -259,10 +259,10 @@ def add_siaddr(step, addr, subnet_number):
         world.subcfg[subnet][1] += '"next-server": "{addr}"\n'.format(**locals())
 
 
-def disanable_client_echo(step):
+def disable_client_echo(step):
     # after using it, we should revert that at the end!
     # keep that in mind when first time using it.
-    if not "simple_options" in world.cfg:
+    if "simple_options" not in world.cfg:
         world.cfg["simple_options"] = ''
     else:
         world.cfg["simple_options"] += ','
@@ -330,23 +330,29 @@ def add_option_to_defined_class(class_no, option_name, option_value):
             {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
             "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
-## =============================================================
-## ================ PREPARE CONFIG BLOCK END  ==================
+# =============================================================
+# ================ PREPARE CONFIG BLOCK END  ==================
 
-## =============================================================
-## ================ REMOTE SERVER BLOCK START ==================
+# =============================================================
+# ================ REMOTE SERVER BLOCK START ==================
 
 
-def build_and_send_config_files(connection_type, configuration_type="config-file"):
+def build_and_send_config_files(connection_type, configuration_type="config-file",
+                                destination_address=world.f_cfg.mgmt_address):
+    check_remote_address(destination_address)
     if configuration_type == "config-file" and connection_type == "SSH":
         world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        fabric_send_file(world.cfg["cfg_file"], world.f_cfg.software_install_path + "etc/kea/kea.conf")
-        fabric_send_file(world.cfg["cfg_file_2"], world.f_cfg.software_install_path + "etc/kea/keactrl.conf")
-        copy_configuration_file(world.cfg["cfg_file"])
-        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
+        fabric_send_file(world.cfg["cfg_file"],
+                         world.f_cfg.software_install_path + "etc/kea/kea.conf",
+                         destination_host=destination_address)
+        fabric_send_file(world.cfg["cfg_file_2"],
+                         world.f_cfg.software_install_path + "etc/kea/keactrl.conf",
+                         destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file_2"], "/kea_ctrl_config", destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
@@ -354,38 +360,40 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        copy_configuration_file(world.cfg["cfg_file"])
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file"])
 
 
-def reconfigure_srv():
-    #build_and_send_config_files()
+def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl reload '
-                                 + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+                                 + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                 destination_host=destination_address)
     check_kea_process_result(True, result, 'reconfigure')
 
 
-def start_srv(start, process):
+def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start kea with generated config
     """
-    #build_and_send_config_files() it's now separate step
     world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
-    v6, v4 = check_kea_status()
+    v6, v4 = check_kea_status(destination_address)
 
     if process is None:
         process = "starting"
     # check process - if None add some.
     if not v4:
         result = fabric_sudo_command('( ' + world.f_cfg.software_install_path + 'sbin/keactrl start '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                     destination_host=destination_address)
         check_kea_process_result(start, result, process)
     else:
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
-        #check_kea_process_result(start, result, process)
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                     destination_host=destination_address)
+        # check_kea_process_result(start, result, process)
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                     destination_host=destination_address)
         check_kea_process_result(start, result, process)
         sleep(2)
 

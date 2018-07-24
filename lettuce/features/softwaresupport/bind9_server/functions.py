@@ -16,7 +16,8 @@
 # Author: Wlodzimierz Wencel
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, \
-    copy_configuration_file, fabric_sudo_command, fabric_download_file, fabric_remove_file_command
+    copy_configuration_file, fabric_sudo_command, fabric_download_file, fabric_remove_file_command,\
+    check_local_path_for_downloaded_files
 
 from lettuce import world
 from logging_facility import *
@@ -124,36 +125,41 @@ def use_config_set(number):
     remove_local_file('bind.keys')
 
 
-def stop_srv(value=False):
-    fabric_sudo_command('(killall named & ); sleep ' + str(world.f_cfg.sleep_time_1), hide_all=value)
+def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
+    fabric_sudo_command('(killall named & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                        hide_all=value, destination_host=destination_address)
 
 
-def restart_srv():
+def restart_srv(destination_address=world.f_cfg.mgmt_address):
     stop_srv()
     start_srv(True, None)
 
 
-def start_srv(success, process):
+def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
     fabric_sudo_command('(' + world.f_cfg.dns_server_install_path + 'named -c ' +
-                        world.f_cfg.dns_data_path + 'named.conf & ); sleep ' + str(world.f_cfg.sleep_time_1))
+                        world.f_cfg.dns_data_path + 'named.conf & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                        destination_host=destination_address)
 
 
-def save_leases():
+def save_leases(destination_address=world.f_cfg.mgmt_address):
     # pointless here, but we don't want import error here.
     pass
 
 
-def reconfigure_srv():
+def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
     # TODO implement this when needed
     pass
 
 
-def save_logs():
-    fabric_download_file('/tmp/dns.log', world.cfg["dir_name"] + '/dns/dns_log_file')
+def save_logs(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file('/tmp/dns.log',
+                         check_local_path_for_downloaded_files(world.cfg["dir_name"],
+                                                               '/dns/dns_log_file', destination_address),
+                         destination_host=destination_address)
 
 
-def clear_all():
-    stop_srv(True)
-    fabric_remove_file_command('/tmp/dns.log')
-    fabric_remove_file_command(world.f_cfg.dns_data_path + 'namedb/*')
-    fabric_remove_file_command(world.f_cfg.dns_data_path + '/*')
+def clear_all(destination_address=world.f_cfg.mgmt_address):
+    stop_srv(value=True, destination_address=destination_address)
+    fabric_remove_file_command('/tmp/dns.log', destination_host=destination_address)
+    fabric_remove_file_command(world.f_cfg.dns_data_path + 'namedb/*', destination_host=destination_address)
+    fabric_remove_file_command(world.f_cfg.dns_data_path + '/*', destination_host=destination_address)

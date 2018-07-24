@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2018 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,13 +18,12 @@
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
-    fabric_download_file, fabric_remove_file_command, locate_entry
+    fabric_download_file, fabric_remove_file_command, locate_entry, check_local_path_for_downloaded_files
 from protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 from logging_facility import *
 from lettuce.registry import world
 from time import sleep
-
 
 kea_options6 = {
     "client-id": 1,
@@ -60,7 +59,7 @@ kea_options6 = {
     "bootfile-param": 60,
     "erp-local-domain-name": 65
 }
-# kea_otheoptions was originally designed for vendor options
+# kea_otheroptions was originally designed for vendor options
 # because codes sometime overlap with basic options
 kea_otheroptions = {
     "tftp-servers": 32,
@@ -88,20 +87,19 @@ def config_srv_id(id_type, id_value):
         assert False, "DUID type unknown."
 
 
-def set_time(step, which_time, value, subnet = None):
+def set_time(step, which_time, value, subnet=None):
     assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
     if subnet is None:
             world.cfg["server_times"][which_time] = value
-
     else:
         subnet = int(subnet)
         if len(world.subcfg[subnet][3]) > 2:
             world.subcfg[subnet][3] += ', '
         world.subcfg[subnet][3] += '"{which_time}": {value}'.format(**locals())
 
-## =============================================================
-## ================ PREPARE CONFIG BLOCK START =================
+# =============================================================
+# ================ PREPARE CONFIG BLOCK START =================
 #  world.subcfg - is prepare for multi-subnet configuration
 #  it's concatenated lists:
 #  world.subcfg[0] - default subnet
@@ -135,12 +133,12 @@ def add_defaults():
     if "global_parameters" in world.cfg:
         world.cfg["main"] += world.cfg["global_parameters"]
 
-    if eth is not None and not eth in world.cfg["interfaces"]:
+    if eth is not None and eth not in world.cfg["interfaces"]:
         add_interface(eth)
 
 
 def set_conf_parameter_global(parameter_name, value):
-    if not "global_parameters" in world.cfg:
+    if "global_parameters" not in world.cfg:
         world.cfg["global_parameters"] = ''
 
     world.cfg["global_parameters"] += '"{parameter_name}": {value},'.format(**locals())
@@ -150,7 +148,7 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     world.subcfg[subnet_id][0] += ',"{parameter_name}": {value}'.format(**locals())
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth = None):
+def prepare_cfg_subnet(step, subnet, pool, eth=None):
     # world.subcfg[0] = [main, prefixes, options, single options, pools, host reservation]
     if subnet == "default":
         subnet = "2001:db8:1::/64"
@@ -159,7 +157,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if eth is None:
         eth = world.f_cfg.server_iface
 
-    if not "interfaces" in world.cfg:
+    if "interfaces" not in world.cfg:
         world.cfg["interfaces"] = ''
 
     pointer_start = "{"
@@ -172,7 +170,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
     if pool is not "":
         world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
 
-    if not eth in world.cfg["interfaces"]:
+    if eth not in world.cfg["interfaces"]:
         add_interface(eth)
 
 
@@ -184,7 +182,7 @@ def prepare_cfg_subnet_specific_interface(step, interface, address, subnet, pool
 
     eth = world.f_cfg.server_iface
 
-    if not "interfaces" in world.cfg:
+    if "interfaces" not in world.cfg:
         world.cfg["interfaces"] = ''
 
     pointer_start = "{"
@@ -264,6 +262,13 @@ def config_client_classification(step, subnet, option_value):
     world.subcfg[subnet][3] += '"client-class": "{option_value}"\n'.format(**locals())
 
 
+def config_require_client_classification(step, subnet, option_value):
+    subnet = int(subnet)
+    if len(world.subcfg[subnet][3]) > 2:
+        world.subcfg[subnet][3] += ', '
+    world.subcfg[subnet][3] += '"require-client-classes": ["{option_value}"]\n'.format(**locals())
+
+
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     subnet = int(subnet)
     pointer_start = "{"
@@ -276,8 +281,8 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
 
 
 def prepare_cfg_add_option(step, option_name, option_value, space,
-                           option_code = None, option_type = 'default', where = 'options'):
-    if not where in world.cfg:
+                           option_code=None, option_type='default', where='options'):
+    if where not in world.cfg:
         world.cfg[where] = '"option-data": ['
     else:
         world.cfg[where] += ","
@@ -302,7 +307,7 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
     pointer_start = "{"
     pointer_end = "}"
 
-    if not "option_def" in world.cfg:
+    if "option_def" not in world.cfg:
         world.cfg["option_def"] = '"option-def": ['
     else:
         world.cfg["option_def"] += ","
@@ -338,7 +343,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
 
 
 def add_line_in_global(command):
-    if not "custom_lines" in world.cfg:
+    if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ''
 
     world.cfg["custom_lines"] += ('\n'+command+'\n')
@@ -388,7 +393,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
         tmp += world.subcfg[subnet][5][pointer:]
     else:
         assert False, "Not supported"
-        #TODO implement this if we needs it.
+        # TODO implement this if we needs it.
     world.subcfg[subnet][5] = tmp
 
 
@@ -399,7 +404,7 @@ def create_new_class(class_name):
 def add_test_to_class(class_number, parameter_name, parameter_value):
     if len(world.classification[class_number-1][1]) > 5:
         world.classification[class_number-1][1] += ','
-    if parameter_value[0] in ["[", "{"] or parameter_value in [True, False]:
+    if parameter_value[0] in ["[", "{"] or parameter_value in ["true", "false"]:
         world.classification[class_number-1][1] += '"{parameter_name}" : {parameter_value}'.format(**locals())
     else:
         world.classification[class_number-1][1] += '"{parameter_name}" : "{parameter_value}"'.format(**locals())
@@ -421,22 +426,6 @@ def add_option_to_defined_class(class_no, option_name, option_value):
     world.classification[class_no-1][2] += '''
             {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
             "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
-
-
-def check_kea_status():
-    v6 = 0
-    v4 = 0
-    result = fabric_sudo_command(world.f_cfg.software_install_path + "sbin/keactrl status")
-    # not very sophisticated but easiest fastest way ;)
-    if "DHCPv4 server: inactive" in result:
-        v4 = 0
-    elif "DHCPv4 server: active" in result:
-        v4 = 1
-    if "DHCPv6 server: inactive" in result:
-        v6 = 0
-    elif "DHCPv6 server: active" in result:
-        v6 = 1
-    return v6, v4
 
 
 def set_kea_ctrl_config():
@@ -472,11 +461,10 @@ def set_kea_ctrl_config():
 
 
 def add_simple_opt(passed_option):
-    if not "simple_options" in world.cfg:
+    if "simple_options" not in world.cfg:
         world.cfg["simple_options"] = ''
     else:
         world.cfg["simple_options"] += ","
-
     world.cfg["simple_options"] += passed_option
 
 
@@ -496,12 +484,18 @@ def config_add_reservation_database():
     pointer_start = '{'
     pointer_end = '}'
     if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
-            db_host = ""
+        db_host = ""
 
-    if world.reservation_backend in {"mysql", "postgresql"}:
+    if world.reservation_backend in ["mysql", "postgresql"]:
         add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
                        "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
                        "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+
+    # TODO remove hardcoded values for cassandra
+    if world.reservation_backend in ["cql"]:
+        add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
+                       "keyspace":"keatest", "host":"", "user":"keatest",
+                       "password":"keatest"{pointer_end}'''.format(**locals()))
 
 
 def config_db_backend():
@@ -518,11 +512,15 @@ def config_db_backend():
             db_host = ""
         else:
             db_host = world.f_cfg.db_host
-
-        add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
-                       "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
-                       "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
-
+        if db_type in ["mysql", "postgresql"]:
+            add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
+                           "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
+                           "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
+        # TODO remove hardcoded values for cassandra
+        elif db_type in ["cql"]:
+            add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
+                           "keyspace":"keatest", "host":"", "user":"keatest",
+                           "password":"keatest"{pointer_end}'''.format(**locals()))
     config_add_reservation_database()
 
 
@@ -538,7 +536,7 @@ def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
 
 
 def add_logger(log_type, severity, severity_level, logging_file):
-    if not "logger" in world.cfg:
+    if "logger" not in world.cfg:
         world.cfg["logger"] = ''
     else:
         if len(world.cfg["logger"]) > 20:
@@ -566,7 +564,7 @@ def agent_control_channel(host_address, host_port, socket_type, socket_name):
     world.cfg["agent"] += ',"control-sockets":{"dhcp6":{"socket-type": "' + socket_type
     world.cfg["agent"] += '","socket-name": "' + socket_name
     world.cfg["agent"] += '"}}}'
-    #add_hooks(world.f_cfg.software_install_path + 'lib/control-agent-commands.so')
+    # add_hooks(world.f_cfg.software_install_path + 'lib/control-agent-commands.so')
 
 
 def cfg_write():
@@ -579,11 +577,11 @@ def cfg_write():
         if len(world.subcfg[number][5]) > 10:
             world.subcfg[number][5] = '"reservations":[' + world.subcfg[number][5] + "]"
     cfg_file = open(world.cfg["cfg_file"], 'w')
-    ## add timers
+    # add timers
     cfg_file.write(world.cfg["main"])
     if len(world.cfg["server-id"]) > 5:
         cfg_file.write(world.cfg["server-id"])
-    ## add class definitions
+    # add class definitions
     if len(world.classification) > 0:
         if len(world.classification[0][0]) > 0:
             cfg_file.write('"client-classes": [')
@@ -600,15 +598,15 @@ def cfg_write():
                 cfg_file.write('}')  # close each class
                 counter += 1
             cfg_file.write("],")  # close classes
-    ## add interfaces
+    # add interfaces
     cfg_file.write('"interfaces-config": { "interfaces": [ ' + world.cfg["interfaces"] + ' ] },')
-    ## add header for subnets
+    # add header for subnets
     if world.subnet_add:
         if "kea6" in world.cfg["dhcp_under_test"]:
             cfg_file.write('"subnet6":[')
         elif "kea4" in world.cfg["dhcp_under_test"]:
             cfg_file.write('"subnet4":[')
-        ## add subnets
+        # add subnets
         counter = 0
         comma = 0
         for each_subnet in world.subcfg:
@@ -681,7 +679,7 @@ def cfg_write():
 
     if "custom_lines" in world.cfg:
         cfg_file.write(',' + world.cfg["custom_lines"])
-        #cfg_file.write("]")
+        # cfg_file.write("]")
         del world.cfg["custom_lines"]
 
     if "socket" in world.cfg:
@@ -756,7 +754,7 @@ def cfg_write():
         log_type = 'kea-dhcp4'
 
     cfg_file.write(',"Logging": {"loggers": [')
-    if not "logger" in world.cfg:
+    if "logger" not in world.cfg:
         cfg_file.write('{"name": "' + log_type + '","output_options": [{"output": "' + logging_file + '"}')
         cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
         if world.ddns_enable:
@@ -780,6 +778,22 @@ def cfg_write():
     json_file_layout()
 
 
+# =============================================================
+# ================ PREPARE CONFIG BLOCK END  ==================
+
+# =============================================================
+# ================ REMOTE SERVER BLOCK START ==================
+def check_remote_address(remote_address):
+    """
+    Add new remote server IP address as additional location, can be used for running dhcp server
+    From all added locations all files on clean up will be downloaded to specific local location
+    :param remote_address: IP address of remote vm
+    :return: nothing
+    """
+    if remote_address not in world.f_cfg.multiple_tested_servers:
+        world.f_cfg.multiple_tested_servers.append(remote_address)
+
+
 def check_kea_process_result(succeed, result, process):
     errors = ["Failed to apply configuration", "Failed to initialize server",
               "Service failed", "failed to initialize Kea server", "failed to initialize Kea"]
@@ -792,22 +806,30 @@ def check_kea_process_result(succeed, result, process):
             assert False, 'Server operation: ' + process + ' NOT failed!'
 
 
-## =============================================================
-## ================ PREPARE CONFIG BLOCK END  ==================
-
-## =============================================================
-## ================ REMOTE SERVER BLOCK START ==================
-
-def build_and_send_config_files(connection_type, configuration_type="config-file"):
+def build_and_send_config_files(connection_type, configuration_type="config-file",
+                                destination_address=world.f_cfg.mgmt_address):
+    """
+    Generate final config file, save it to test result directory
+    and send it to remote system unless testing step will define differently.
+    :param connection_type: for now two values expected: SSH and None for stating if files should be send
+    :param configuration_type: for now supported just config-file, generate file and save to results dir
+    :param destination_address: address of remote system to which conf file will be send,
+    default it's world.f_cfg.mgmt_address
+    """
+    check_remote_address(destination_address)
     if configuration_type == "config-file" and connection_type == "SSH":
         world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        fabric_send_file(world.cfg["cfg_file"], world.f_cfg.software_install_path + "etc/kea/kea.conf")
-        fabric_send_file(world.cfg["cfg_file_2"], world.f_cfg.software_install_path + "etc/kea/keactrl.conf")
-        copy_configuration_file(world.cfg["cfg_file"])
-        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
+        fabric_send_file(world.cfg["cfg_file"],
+                         world.f_cfg.software_install_path + "etc/kea/kea.conf",
+                         destination_host=destination_address)
+        fabric_send_file(world.cfg["cfg_file_2"],
+                         world.f_cfg.software_install_path + "etc/kea/keactrl.conf",
+                         destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file_2"], "/kea_ctrl_config", destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
@@ -815,16 +837,16 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        copy_configuration_file(world.cfg["cfg_file"])
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file"])
 
 
-def start_srv(start, process):
+def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start kea with generated config
     """
-    #build_and_send_config_files() it's now separate step
-    v6, v4 = check_kea_status()
+    # build_and_send_config_files() it's now separate step
+    v6, v4 = check_kea_status(destination_address)
     world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
 
     if process is None:
@@ -832,94 +854,112 @@ def start_srv(start, process):
 
     if not v6:
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                     destination_host=destination_address)
         check_kea_process_result(start, result, process)
     else:
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
-        #check_kea_process_result(start, result, process)
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                     destination_host=destination_address)
+        # check_kea_process_result(start, result, process)
         result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                     destination_host=destination_address)
         check_kea_process_result(start, result, process)
         sleep(2)
 
-def reconfigure_srv():
-    #build_and_send_config_files()
+
+def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
     result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl reload '
-                                 + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+                                 + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                                 destination_host=destination_address)
     check_kea_process_result(True, result, 'reconfigure')
 
 
-def stop_srv(value = False):
-    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop ' + ' & ); sleep ' + str(world.f_cfg.sleep_time_1), value)
+def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
+    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop ' + ' & ); sleep '
+                        + str(world.f_cfg.sleep_time_1), hide_all=value,
+                        destination_host=destination_address)
 
 
-def restart_srv():
-    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop ' + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
-    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start ' + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
-
-## =============================================================
-## ================ REMOTE SERVER BLOCK END ====================
-
-
-def clear_leases():
-    db_name = world.f_cfg.db_name
-    db_user = world.f_cfg.db_user
-    db_passwd = world.f_cfg.db_passwd
-
-    if world.f_cfg.db_type == "mysql":
-        # that is tmp solution - just clearing not saving.
-        #command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
-        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
-        fabric_run_command(command)
-    elif world.f_cfg.db_type == "postgresql":
-        pointer_start = '{'
-        pointer_end = '}'
-        #command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
-        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
-        fabric_run_command(command)
-    else:
-        fabric_remove_file_command(world.cfg['leases'])
+def restart_srv(destination_address=world.f_cfg.mgmt_address):
+    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop ' + ' & ); sleep '
+                        + str(world.f_cfg.sleep_time_1),
+                        destination_host=destination_address)
+    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start ' + ' & ); sleep '
+                        + str(world.f_cfg.sleep_time_1),
+                        destination_host=destination_address)
 
 
-def save_leases(tmp_db_type=None):
-    db_name = world.f_cfg.db_name
-    db_user = world.f_cfg.db_user
-    db_passwd = world.f_cfg.db_passwd
+def check_kea_status(destination_address=world.f_cfg.mgmt_address):
+    v6 = 0
+    v4 = 0
+    result = fabric_sudo_command(world.f_cfg.software_install_path + "sbin/keactrl status",
+                                 destination_host=destination_address)
+    # not very sophisticated but easiest fastest way ;)
+    if "DHCPv4 server: inactive" in result:
+        v4 = 0
+    elif "DHCPv4 server: active" in result:
+        v4 = 1
+    if "DHCPv6 server: inactive" in result:
+        v6 = 0
+    elif "DHCPv6 server: active" in result:
+        v6 = 1
+    return v6, v4
+
+
+def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                 destination_address=world.f_cfg.mgmt_address):
 
     if world.f_cfg.db_type == "mysql":
         # that is tmp solution - just clearing not saving.
-        #command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
-        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
-        fabric_run_command(command)
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs; ' \
+                  'do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
+        fabric_run_command(command, destination_host=destination_address)
     elif world.f_cfg.db_type == "postgresql":
-        pointer_start = '{'
-        pointer_end = '}'
-        #command = """psql -U {db_user} -d {db_name} -c "\\\\dtvs" -t  | awk '{pointer_start}print $3{pointer_end}' | while read table; do if [ ! -z "$table" -a "$table" != " " ]; then psql -U {db_user} -d {db_name} -c "truncate $table"; fi done""".format(**locals())
-        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
-        fabric_run_command(command)
+        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs;' \
+                  ' do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
+        fabric_run_command(command, destination_host=destination_address)
+    elif world.f_cfg.db_type == "cql":
+        # TODO: hardcoded passwords for now in cassandra, extend it in some time :)
+        command = 'for table_name in dhcp_option_scope host_reservations lease4 lease6 logs;' \
+                  ' do cqlsh --keyspace=keatest --user=keatest --password=keatest -e "TRUNCATE $table_name;"' \
+                  ' ; done'.format(**locals())
+        fabric_run_command(command, destination_host=destination_address)
     else:
-        fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/kea_leases.csv')
+        fabric_remove_file_command(world.cfg['leases'], destination_host=destination_address)
 
 
-def save_logs():
-    fabric_download_file(world.f_cfg.software_install_path + 'var/kea/kea.log*', world.cfg["dir_name"] + '/.')
+def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
+    if world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
+        # that is tmp solution - just clearing not saving.
+        clear_leases(destination_address=world.f_cfg.mgmt_address)
+    else:
+        fabric_download_file(world.cfg['leases'],
+                             check_local_path_for_downloaded_files(world.cfg["dir_name"],
+                                                                   '/leases.csv',
+                                                                   destination_address),
+                             destination_host=destination_address)
 
 
-def clear_all(tmp_db_type=None):
-    fabric_remove_file_command(world.f_cfg.software_install_path + 'var/kea/kea.log*')
+def save_logs(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.f_cfg.software_install_path + 'var/kea/kea.log*',
+                         check_local_path_for_downloaded_files(world.cfg["dir_name"], '/.', destination_address),
+                         destination_host=destination_address)
 
-    db_name = world.f_cfg.db_name
-    db_user = world.f_cfg.db_user
-    db_passwd = world.f_cfg.db_passwd
+
+def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
+    fabric_remove_file_command(world.f_cfg.software_install_path + 'var/kea/kea.log*',
+                               destination_host=destination_address)
+
     if world.f_cfg.db_type in ["memfile", ""]:
-        fabric_remove_file_command(world.cfg['leases'])
-    elif world.f_cfg.db_type == "mysql":
-        #command = '''mysql -u {db_user} -p{db_passwd} -Nse 'show tables' {db_name} | while read table; do mysql -u {db_user} -p{db_passwd} -e "truncate table $table" {db_name}; done'''.format(**locals())
-        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
-        fabric_run_command(command)
-    elif world.f_cfg.db_type == "postgresql":
-        pointer_start = '{'
-        pointer_end = '}'
-        command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6; do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
-        fabric_run_command(command)
+        fabric_remove_file_command(world.cfg['leases'],
+                                   destination_host=destination_address)
+    elif world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
+        # that is tmp solution - just clearing not saving.
+        clear_leases(destination_address=world.f_cfg.mgmt_address)
+    else:
+        assert False, "If you see that error, something went very wrong."
+
+# =============================================================
+# ================ REMOTE SERVER BLOCK END ====================

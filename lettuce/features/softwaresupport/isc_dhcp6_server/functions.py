@@ -589,7 +589,7 @@ def clear_leases():
 
 def stop_srv(value=False):
     try:
-        fabric_sudo_command("killall dhcpd &>/dev/null", value)
+        fabric_sudo_command("killall dhcpd &>/dev/null", hide_all=value)
     except:
         pass
 
