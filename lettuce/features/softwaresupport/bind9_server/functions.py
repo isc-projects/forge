@@ -125,7 +125,7 @@ def use_config_set(number):
 
 
 def stop_srv(value=False):
-    fabric_sudo_command('(killall named & ); sleep ' + str(world.f_cfg.sleep_time_1), value)
+    fabric_sudo_command('(killall named & ); sleep ' + str(world.f_cfg.sleep_time_1), hide_all=value)
 
 
 def restart_srv():
@@ -153,7 +153,7 @@ def save_logs():
 
 
 def clear_all():
-    stop_srv()
+    stop_srv(True)
     fabric_remove_file_command('/tmp/dns.log')
     fabric_remove_file_command(world.f_cfg.dns_data_path + 'namedb/*')
     fabric_remove_file_command(world.f_cfg.dns_data_path + '/*')

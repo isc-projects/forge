@@ -80,10 +80,10 @@ def send_wait_for_query(choose_must, presence):
             world.climsg[0].show()
 
     ans, unans = sr(world.climsg,
-                    iface = world.cfg["dns_iface"],
-                    timeout = world.cfg["wait_interval"],
-                    multi = True,
-                    verbose = 99)
+                    iface=world.cfg["dns_iface"],
+                    timeout=world.cfg["wait_interval"],
+                    multi=True,
+                    verbose=99)
 
     world.dns_qd = []
     world.dns_an = []
@@ -105,8 +105,8 @@ def send_wait_for_query(choose_must, presence):
 
     if presence:
         assert len(world.srvmsg) != 0, "No response received."
-        #TODO testing should be more sophisticated, it's not working for dns queries
-        #TODO make assertion for getting message that we didn't expected
+        # TODO testing should be more sophisticated, it's not working for dns queries
+        # TODO make assertion for getting message that we didn't expected
 
     elif not presence:
         assert len(world.srvmsg) == 0, "Response received, not expected"
@@ -129,19 +129,20 @@ def send_wait_for_query(choose_must, presence):
 
 
 def build_query():
-    msg = DNS(id = 1,
-              qr = 0,
-              opcode = "QUERY",
-              aa = 0,
-              tc = 0,
-              rd = 0,
-              ra = 0,
-              z = 0,
-              rcode = "ok",
-              qdcount = 1,
-              ancount = 0,
-              nscount = 0,
-              arcount = 0)
+    # TODO all those should have ability to be set from test level
+    msg = DNS(id=1,
+              qr=0,
+              opcode="QUERY",
+              aa=0,
+              tc=0,
+              rd=0,
+              ra=0,
+              z=0,
+              rcode="ok",
+              qdcount=1,
+              ancount=0,
+              nscount=0,
+              arcount=0)
     # if there will be need we could build here answers, authoritative_nameservers and additional_records.
     if hasattr(world, 'question_record'):
         msg.qd = world.question_record
@@ -156,14 +157,14 @@ def dns_question_record(addr, my_qtype, my_qclass):
     assert my_qclass in dnsclasses, "Unsupported question type " + my_qclass
     dnsclass_code = dnsclasses.get(my_qclass)
 
-    world.question_record = DNSQR(qname = addr, qtype = dnstype_code, qclass = dnsclass_code)
+    world.question_record = DNSQR(qname=addr, qtype=dnstype_code, qclass=dnsclass_code)
 
 
 def build_msg():
     if world.proto == "v6":
-        msg = IPv6(dst = world.cfg["dns_addr"])/UDP(sport = world.cfg["dns_port"], dport = world.cfg["dns_port"])
+        msg = IPv6(dst=world.cfg["dns_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
     else:
-        msg = IP(dst = world.cfg["dns_addr"])/UDP(sport = world.cfg["dns_port"], dport = world.cfg["dns_port"])
+        msg = IP(dst=world.cfg["dns_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
     msg.trid = random.randint(0, 256*256*256)
     world.climsg.append(msg/world.dns_query)
 
@@ -240,9 +241,7 @@ def parsing_received_parts(query_part_list, length, expect, value_name, value):
 
         if test == value:
             return 1, test
-
         outcome = outcome + test + ' '
-
     else:
         return 0, outcome
 

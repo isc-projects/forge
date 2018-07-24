@@ -243,7 +243,16 @@ def declare_all():
     world.subopts = []
     world.message_fields = []
     world.subnet_add = True
+    world.control_channel = None  # last received response from any communication channel
     world.cfg = {}
+
+    world.multiple_tested_servers = {}
+    world.f_cfg.multiple_tested_servers = world.multiple_tested_servers
+    # dictionary that will keep multiple configs for various servers
+    # mainly for testing multiple kea servers in the single test,
+    # multiple servers has to be configured exactly identical.
+    # supported only for Kea servers
+
     world.configString = ""
     world.cfg['leases'] = "~/none_file"
     world.cfg["dhcp_log_file"] = "~/none_file"

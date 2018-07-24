@@ -21,7 +21,7 @@ from locale import str
 import sys
 import os
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
-        fabric_remove_file_command, remove_local_file, fabric_sudo_command, configuration_file_name,\
+        fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
         save_local_file, fabric_run_command
 from time import sleep
 
@@ -144,18 +144,17 @@ def add_variable(variable_name, variable_val, val_type):
         "Variable name contain invalid characters (Allowed are only capital letters, numbers and sign '_')."
     
     if not val_type:
-        #temporary
+        # temporary
         if variable_name not in world.define:
             tmp = variable_val if variable_val.isdigit() else variable_val  
             world.define.append([variable_name, tmp])
         else:
             world.define[variable_name] = variable_val
     elif val_type:
-        #permanent
+        # permanent
         # TO: for same name change value
-        imported = None
         try:
-            imported = getattr(__import__('init_all', fromlist = [variable_name]), variable_name)
+            imported = getattr(__import__('init_all', fromlist=[variable_name]), variable_name)
         except:
             init_all = open("features/init_all.py", "a")
             init_all.write("\n# USER VARIABLE:\n" + variable_name + " = " +
@@ -275,7 +274,7 @@ def change_network_variables(value_name, value):
         world.cfg["cli_link_local"] = value
     elif value_name == "source_address":
         world.cfg["source_IP"] = value
-        #world.cfg["address_v6"] = value
+        # world.cfg["address_v6"] = value
     elif value_name == "destination_address":
         world.cfg["destination_IP"] = value
     elif value_name == "dns_iface":
@@ -292,7 +291,7 @@ def execute_shell_script(path, arguments):
     result = fabric_sudo_command(path + ' ' + arguments, False)
 
     file_name = path.split("/")[-1] + '_output'
-    file_name = configuration_file_name(1, file_name)
+    file_name = generate_file_name(1, file_name)
 
     # assert False, type(result.stdout)
     if not os.path.exists(world.cfg["dir_name"]):
@@ -323,7 +322,7 @@ def connect_socket(command):
 
 def send_through_socket_server_site(socket_path, command):
     if type(command) is unicode:
-        command = command.encode('ascii','ignore')
+        command = command.encode('ascii', 'ignore')
     command_file = open(world.cfg["dir_name"] + '/command_file', 'w')
     try:
         command_file.write(command)
@@ -337,11 +336,14 @@ def send_through_socket_server_site(socket_path, command):
     fabric_remove_file_command('command_file')
     parse_json_file(world.control_channel)
 
+
 def send_through_http(host_address, host_port, command):
     import requests
-    result = requests.post("http://" + host_address + ":" + str(host_port),headers={"Content-Type":"application/json"},data=command)
-    parse_json_file(result.text)
-    return result.text
+    world.control_channel = requests.post("http://" + host_address + ":" + str(host_port),
+                                          headers={"Content-Type": "application/json"}, data=command)
+    parse_json_file(world.control_channel.text)
+    return world.control_channel.text
+
 
 def parse_json_file(input_value, return_value=None):
     current_json = ""
@@ -350,20 +352,21 @@ def parse_json_file(input_value, return_value=None):
         current_json = json.loads(input_value)
     except:
         input_value = ""
-    save_local_file(json.dumps(current_json, sort_keys=True, indent = 2, separators = (',', ': ')), local_flie_name="JSON_RESULT")
+    save_local_file(json.dumps(current_json, sort_keys=True, indent=2,
+                               separators=(',', ': ')), local_file_name=generate_file_name(1, "command_result"))
     if return_value is None:
-        print json.dumps(current_json, sort_keys=True, indent = 2, separators = (',', ': '))
+        print json.dumps(current_json, sort_keys=True, indent=2, separators=(',', ': '))
     else:
         print json.dumps(current_json[return_value], sort_keys=True, indent=2, separators=(',', ': '))
 
     # if json.dumps(current_json["result"]) == "1":
     #     assert False, "command failed"
-    try:
-        print current_json['arguments']
-    except:
-        pass
-    #print json.dumps(current_json['arguments'], sort_keys=True, indent = 1, separators = (',', ': '))#['arguments']
-    #print json.dumps( json.loads(world.define[0][1])['Dhcp6']['control-socket'], sort_keys=True, indent=2, separators=(',', ': '))  # ['arguments']
+    # try:
+    #     print current_json['arguments']
+    # except:
+    #     pass
+    # print json.dumps(current_json['arguments'], sort_keys=True, indent = 1, separators = (',', ': '))#['arguments']
+    # print json.dumps( json.loads(world.define[0][1])['Dhcp6']['control-socket'], sort_keys=True, indent=2, separators=(',', ': '))  # ['arguments']
 
 
 def parse_socket_received_data():
