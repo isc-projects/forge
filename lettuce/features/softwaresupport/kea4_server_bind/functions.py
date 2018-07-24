@@ -209,7 +209,7 @@ def run_command(step, command):
     world.cfg["conf"] += ('\n'+command+'\n')
 
 
-def disanable_client_echo(step):
+def disable_client_echo(step):
     # after using it, we should revert that at the end!
     # keep that in mind when first time using it.
     world.cfg["conf"] += '''

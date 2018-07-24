@@ -145,8 +145,8 @@ def create_relay_forward(step, level, s):
 @step('(Client|RelayAgent) adds suboption for vendor specific information with code: (\d+) and data: (\S+).')
 def add_vendor_suboption(step, sender_type, code, data):
     """
-    After adding Vendor Specific Option we can deside to add suboptions to it. Please make sure which are
-    supported and if it's nececary add suboption by youself.
+    After adding Vendor Specific Option we can decide to add suboptions to it. Please make sure which are
+    supported and if it's necessary add suboption by yourself.
     """
     dhcpmsg.add_vendor_suboption(step, int(code), data)
 
@@ -168,12 +168,12 @@ def send_dont_wait_for_message(step):
 
 
 @step('Server (\S+) (NOT )?respond with (\w+) message.')
-def send_wait_for_message(step, type, yes_or_no, message):
+def send_wait_for_message(step, server_type, yes_or_no, message):
     """
     This step causes to send message to server and capture respond.
     """
     presence = True if yes_or_no is None else False
-    dhcpmsg.send_wait_for_message(step, type, presence, message)
+    dhcpmsg.send_wait_for_message(step, server_type, presence, message)
 
 
 @step('(Response|Relayed Message) MUST (NOT )?include option (\d+).')
