@@ -106,7 +106,7 @@ Scenario: control.channel.socket.config-write
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-write","arguments":  { "filename": "whatever"} }
 #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-write","arguments":  { "filename": "installed/git/etc/kea/kea.conf"} }
  # Pause the Test.
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:33.
@@ -169,7 +169,7 @@ Scenario: control.channel.socket.config-reload
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.

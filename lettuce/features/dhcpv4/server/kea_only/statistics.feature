@@ -198,7 +198,7 @@ DHCP server is started.
     Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.1-192.168.51.1 pool.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
@@ -207,7 +207,7 @@ Reconfigure DHCP server.
     Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.1-192.168.51.1 pool.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
@@ -216,7 +216,7 @@ Reconfigure DHCP server.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
     Server is configured with another subnet: 192.168.51.0/24 with 192.168.51.1-192.168.51.1 pool.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
@@ -228,7 +228,7 @@ Scenario: X
     Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
 
@@ -236,7 +236,7 @@ Reconfigure DHCP server.
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
@@ -245,10 +245,10 @@ Reconfigure DHCP server.
     Server is configured with 3000:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
 
-    Restart DHCP server.
+    DHCP server is restarted.
 
     Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}

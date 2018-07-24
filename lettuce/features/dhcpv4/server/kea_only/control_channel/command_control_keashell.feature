@@ -182,7 +182,7 @@ Scenario: control.channel.keashell.after-restart-load-config-file
   Response MUST contain yiaddr 192.168.51.1.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client requests option 1.
@@ -316,7 +316,7 @@ Scenario: control.channel.keashell.write-config
 
   #TODO tests needed for not valid/not permitted paths
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client requests option 1.
@@ -366,7 +366,7 @@ Scenario: control.channel.socket.reload-config
   Response MUST contain yiaddr 192.168.51.1.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client requests option 1.

@@ -65,7 +65,7 @@ Feature: Kea Hook flex-id testing
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
   Send server configuration using SSH and config-file.
-  Reconfigure DHCP server.
+  DHCP server is reconfigured.
 
   Test Procedure:
   Client adds to the message vendor_class_id with value docsis3.0.

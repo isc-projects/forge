@@ -101,7 +101,7 @@ Feature: Kea Hook hosts_cmds testing
   Use MySQL reservation system.
   Send server configuration using SSH and config-file.
 
-  Reconfigure DHCP server.
+  DHCP server is reconfigured.
 
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}
 

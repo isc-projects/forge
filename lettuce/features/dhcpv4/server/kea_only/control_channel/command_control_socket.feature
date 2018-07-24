@@ -221,7 +221,7 @@ Scenario: control.channel.socket.after-restart-load-config-file
   Response MUST contain yiaddr 192.168.50.50.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client requests option 1.

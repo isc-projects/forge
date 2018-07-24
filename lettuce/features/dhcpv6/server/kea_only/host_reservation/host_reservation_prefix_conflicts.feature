@@ -211,7 +211,7 @@ DHCP server is started.
 	Reserve prefix 2001:db8:8001::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
 Send server configuration using SSH and config-file.
 
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -311,7 +311,7 @@ DHCP server is started.
 	Reserve prefix 2001:db8:8001::/34 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
 Send server configuration using SSH and config-file.
 
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Test Procedure:
 	Client does include IA-PD.
@@ -429,7 +429,7 @@ DHCP server is started.
 	Reserve prefix 2001:db8:1::/33 in subnet 0 for host uniquely identified by hw-address 00:03:00:01:f6:f5:f4:f3:f2:02.
 Send server configuration using SSH and config-file.
 
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -563,7 +563,7 @@ DHCP server is started.
 	Reserve prefix 2001:db8:1::/33 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:02.
 Send server configuration using SSH and config-file.
 
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Sleep for 15 seconds.
 

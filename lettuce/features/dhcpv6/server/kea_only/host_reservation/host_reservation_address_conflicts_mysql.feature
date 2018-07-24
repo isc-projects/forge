@@ -167,7 +167,7 @@ DHCP server is started.
   Upload hosts reservation to MySQL database.
 
   Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -260,7 +260,7 @@ DHCP server is started.
   Upload hosts reservation to MySQL database.
 
   Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -362,7 +362,7 @@ DHCP server is started.
   Upload hosts reservation to MySQL database.
 
   Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
   Test Procedure:
   Client copies server-id option from received message.
@@ -486,7 +486,7 @@ Reconfigure DHCP server.
   Upload hosts reservation to MySQL database.
 
   Send server configuration using SSH and config-file.
-  Reconfigure DHCP server.
+  DHCP server is reconfigured.
 
   Test Procedure:
   Client sets ia_id value to 666.

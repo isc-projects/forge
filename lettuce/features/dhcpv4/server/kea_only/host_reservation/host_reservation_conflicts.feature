@@ -64,7 +64,7 @@ DHCP server is started.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.3 pool.
     Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:77.
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 
     Test Procedure:
@@ -120,7 +120,7 @@ DHCP server is started.
     Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:77.
 
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 
     Test Procedure:
@@ -163,7 +163,7 @@ DHCP server is started.
     Reserve address 192.168.50.30 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
 
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 
     Test Procedure:
@@ -214,7 +214,7 @@ DHCP server is started.
     Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
 
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -254,7 +254,7 @@ DHCP server is started.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
 
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -294,7 +294,7 @@ DHCP server is started.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
 
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -373,7 +373,7 @@ DHCP server is started.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -448,7 +448,7 @@ DHCP server is started.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -515,7 +515,7 @@ DHCP server is started.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -592,7 +592,7 @@ DHCP server is started.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client adds to the message requested_addr with value 192.168.50.5.
@@ -660,7 +660,7 @@ DHCP server is started.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -737,7 +737,7 @@ DHCP server is started.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
     Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
     Test Procedure:
     Client adds to the message requested_addr with value 192.168.50.5.

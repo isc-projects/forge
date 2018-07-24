@@ -84,7 +84,7 @@ DHCP server is started.
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Reserve address 3000::1 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -171,7 +171,7 @@ DHCP server is started.
 	Server is configured with 3000::/30 subnet with 3000::1-3000::10 pool.
 	Reserve address 3000::1 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Test Procedure:
 	Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -265,7 +265,7 @@ DHCP server is started.
 	Server is configured with 3000::/30 subnet with 3000::1-3000::3 pool.
 	Reserve address 3000::2 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
 	Send server configuration using SSH and config-file.
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Test Procedure:
 	Client copies server-id option from received message.
@@ -381,7 +381,7 @@ DHCP server is started.
 	Reserve address 3000::2 in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
 Send server configuration using SSH and config-file.
 
-Reconfigure DHCP server.
+DHCP server is reconfigured.
 
 	Test Procedure:
 	Client copies server-id option from received message.

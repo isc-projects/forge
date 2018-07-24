@@ -292,7 +292,7 @@ Scenario: control.channel.http.after-restart-load-config-file
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -454,7 +454,7 @@ Scenario: control.channel.http.config-write
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -519,7 +519,7 @@ Scenario: control.channel.http.reload-config
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
 
-  Restart DHCP server.
+  DHCP server is restarted.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
