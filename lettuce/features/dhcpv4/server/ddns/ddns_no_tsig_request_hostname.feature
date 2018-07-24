@@ -2,7 +2,7 @@ Feature: DDNS without TSIG
     This feature is testing DHCPv4 + DDNS in cooperation with DNS server BIND9 without TSIG authorisation. It's primary
     target is DDNS forward and reverse update. Testing ASCII format in domain names.
 
-@v4 @ddns @notsig @forward_reverse_add @trx
+@v4 @ddns @notsig @forward_reverse_add
     Scenario: ddns4.notsig-forw-and-rev-add-success-hostname
 
     Test Setup:
@@ -73,7 +73,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value 10.50.168.192.in-addr.arpa..
 
 
-@v4 @ddns @notsig @forward_reverse_add @trx
+@v4 @ddns @notsig @forward_reverse_add
     Scenario: ddns4.notsig-forw-and-rev-add-fail-hostname
 
     Test Setup:
@@ -140,7 +140,7 @@ DHCP server is started.
     Received DNS query MUST include empty ANSWER part.
 
 
-@v4 @ddns @notsig @forward_reverse_add @trx
+@v4 @ddns @notsig @forward_reverse_add
     Scenario: ddns4.notsig-forw-and-rev-notenabled-hostname
 
     Test Setup:
@@ -356,7 +356,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rdata with value aa.four.example.com..
     Received DNS part ANSWER MUST contain rrname with value 11.50.168.192.in-addr.arpa..
 
-@v4 @ddns @notsig @forward_reverse_add @trx
+@v4 @ddns @notsig @forward_reverse_add
     Scenario: ddns4.notsig-forw-and-rev-two-dhci-hostname
 
     Test Setup:
@@ -464,7 +464,7 @@ DHCP server is started.
     Received DNS part ANSWER MUST contain rrname with value client2.four.example.com..
 
 
-@v4 @ddns @notsig @forward_reverse_add @trx
+@v4 @ddns @notsig @forward_reverse_add
     Scenario: ddns4.notsig-forw-and-rev-dhci-conflicts-hostname
 
     Test Setup:
