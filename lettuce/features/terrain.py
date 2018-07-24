@@ -246,8 +246,7 @@ def declare_all():
     world.control_channel = None  # last received response from any communication channel
     world.cfg = {}
 
-    world.multiple_tested_servers = {}
-    world.f_cfg.multiple_tested_servers = world.multiple_tested_servers
+    world.f_cfg.multiple_tested_servers = [world.f_cfg.mgmt_address]
     # dictionary that will keep multiple configs for various servers
     # mainly for testing multiple kea servers in the single test,
     # multiple servers has to be configured exactly identical.
@@ -462,22 +461,25 @@ def cleanup(scenario):
         args = ["killall tcpdump"]
         subprocess.call(args, shell=True)
         # TODO: log output in debug mode
-
     if not world.f_cfg.no_server_management:
-        for each in world.f_cfg.software_under_test:
-            functions = importlib.import_module("softwaresupport.%s.functions" % each)
-            if world.f_cfg.save_leases:
-                # save leases, if there is none leases in your software, just put "pass" in this function.
-                functions.save_leases()
+        for each_remote_server in world.f_cfg.multiple_tested_servers:
+            for each in world.f_cfg.software_under_test:
+                functions = importlib.import_module("softwaresupport.%s.functions" % each)
+                # try:
+                if world.f_cfg.save_leases:
+                    # save leases, if there is none leases in your software, just put "pass" in this function.
+                    functions.save_leases(destination_address=each_remote_server)
 
-            if world.f_cfg.save_logs:
-                functions.save_logs()
+                if world.f_cfg.save_logs:
+                    functions.save_logs(destination_address=each_remote_server)
 
-            # every software have something else to clear. Put in clear_all() whatever you need
-            functions.clear_all()
+                # every software have something else to clear. Put in clear_all() whatever you need
+                functions.clear_all(destination_address=each_remote_server)
 
-            if '_client' in each:
-                functions.kill_clnt()
+                if '_client' in each:
+                    functions.kill_clnt()
+                # except:  # TODO this should be on multi_server_functions level!
+                #     get_common_logger().info("Remote location " + each_remote_server + " unreachable!")
 
 
 @after.all
@@ -498,22 +500,27 @@ def say_goodbye(total):
         result.close()
 
     if not world.f_cfg.no_server_management:
-        for each in world.f_cfg.software_under_test:
-            if each in ['kea4_server_bind', 'kea6_server_bind']:
-                clean_config = importlib.import_module("softwaresupport.%s.functions" % each)
-                clean_config.run_bindctl(True, 'clean')
-                kill_bind10()
+        for each_remote_server in world.f_cfg.multiple_tested_servers:
+            for each in world.f_cfg.software_under_test:
+                if each in ['kea4_server_bind', 'kea6_server_bind']:
+                    clean_config = importlib.import_module("softwaresupport.%s.functions" % each)
+                    # TODO remove bind10 support
+                    clean_config.run_bindctl(True, 'clean')
+                    kill_bind10()
 
-            elif "client" in each:
-                kill_msg = "kill the " + each[:each.find("_client")]
-                get_common_logger().debug(kill_msg)
-                clnt = importlib.import_module("softwaresupport.%s.functions" % each)
-                clnt.stop_clnt()
+                elif "client" in each:
+                    kill_msg = "kill the " + each[:each.find("_client")]
+                    get_common_logger().debug(kill_msg)
+                    clnt = importlib.import_module("softwaresupport.%s.functions" % each)
+                    clnt.stop_clnt(destination_address=each_remote_server)
 
-            else:
-                stop = importlib.import_module("softwaresupport.%s.functions" % each)
-                # True passed to stop_srv is to hide output in console.
-                stop.stop_srv(True)
+                else:
+                    stop = importlib.import_module("softwaresupport.%s.functions" % each)
+                    # True passed to stop_srv is to hide output in console.
+                    try:
+                        stop.stop_srv(value=True, destination_address=each_remote_server)
+                    except:
+                        pass
 
     if world.f_cfg.auto_archive:
         name = ""

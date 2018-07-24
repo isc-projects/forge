@@ -95,6 +95,7 @@ class ForgeConfiguration:
         self.mgmt_address = MGMT_ADDRESS
         self.mgmt_username = MGMT_USERNAME
         self.mgmt_password = MGMT_PASSWORD
+        self.multiple_tested_servers = [self.mgmt_address]
         self.loglevel = LOGLEVEL
         self.history = HISTORY
         self.tcpdump = TCPDUMP

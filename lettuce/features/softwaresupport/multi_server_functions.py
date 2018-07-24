@@ -22,53 +22,51 @@ from lettuce.registry import world
 import os
 
 
-def fabric_run_command(cmd, hide_all = False):
-    with settings(host_string = world.f_cfg.mgmt_address,
-                  user = world.f_cfg.mgmt_username,
-                  password = world.f_cfg.mgmt_password,
-                  warn_only = True):
+def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
+                       user_loc=world.f_cfg.mgmt_username,
+                       password_loc=world.f_cfg.mgmt_password, hide_all=False):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
         if hide_all:
             with hide('running', 'stdout', 'stderr'):
-                result = run(cmd, pty = True)
+                result = run(cmd, pty=True)
         else:
-            result = run(cmd, pty = True)
+            result = run(cmd, pty=True)
     return result
 
 
-def fabric_sudo_command(cmd, hide_all = False):
-    with settings(host_string = world.f_cfg.mgmt_address,
-                  user = world.f_cfg.mgmt_username,
-                  password = world.f_cfg.mgmt_password,
-                  warn_only = True):
+def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
+                        user_loc=world.f_cfg.mgmt_username,
+                        password_loc=world.f_cfg.mgmt_password, hide_all=False):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
             if hide_all:
                 with hide('running', 'stdout', 'stderr'):
                     try:
-                        result = sudo(cmd, pty = True)
+                        result = sudo(cmd, pty=True)
                     except NetworkError:
                         assert False, "Network connection failed"
             else:
                 try:
-                    result = sudo(cmd, pty = True)
+                    result = sudo(cmd, pty=True)
                 except NetworkError:
                     assert False, "Network connection failed"
     return result
 
 
-def fabric_send_file(file_local, file_remote):
-    with settings(host_string = world.f_cfg.mgmt_address,
-                  user = world.f_cfg.mgmt_username,
-                  password = world.f_cfg.mgmt_password,
-                  warn_only = True):
+def fabric_send_file(file_local, file_remote,
+                     destination_host=world.f_cfg.mgmt_address,
+                     user_loc=world.f_cfg.mgmt_username,
+                     password_loc=world.f_cfg.mgmt_password):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
         with hide('running', 'stdout', 'stderr'):
             result = put(file_local, file_remote)
     return result
 
 
-def fabric_download_file(remote_path, local_path):
-    with settings(host_string = world.f_cfg.mgmt_address,
-                  user = world.f_cfg.mgmt_username,
-                  password = world.f_cfg.mgmt_password,
-                  warn_only = True):
+def fabric_download_file(remote_path, local_path,
+                         destination_host=world.f_cfg.mgmt_address,
+                         user_loc=world.f_cfg.mgmt_username,
+                         password_loc=world.f_cfg.mgmt_password):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
         result = get(remote_path, local_path)
     return result
 
@@ -79,11 +77,11 @@ def make_tarfile(output_filename, source_dir):
         tar.add(source_dir)
 
 
-def fabric_remove_file_command(remote_path):
-    with settings(host_string = world.f_cfg.mgmt_address,
-                  user = world.f_cfg.mgmt_username,
-                  password = world.f_cfg.mgmt_password,
-                  warn_only = True):
+def fabric_remove_file_command(remote_path,
+                               destination_host=world.f_cfg.mgmt_address,
+                               user_loc=world.f_cfg.mgmt_username,
+                               password_loc=world.f_cfg.mgmt_password):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
         result = sudo("rm -f " + remote_path)
     return result
 
@@ -95,28 +93,28 @@ def remove_local_file(file_local):
         get_common_logger().error('File %s cannot be removed' % file_local)
 
 
-def save_local_file(value, value_type="string", local_flie_name=None, local_location=None):
+def save_local_file(value, value_type="string", local_file_name=None, local_location=None):
     local_location = world.cfg["dir_name"]
-    if local_flie_name == None:
-        local_flie_name = "saved_file"
+    if local_file_name is None:
+        local_file_name = "saved_file"
         # TODO: make check here for existing files with the same name
 
     if value_type == "string":
-        tmp = open(local_location + '/' + local_flie_name, 'w')
+        tmp = open(local_location + '/' + local_file_name, 'w')
         tmp.write(str(value))
         tmp.close()
     elif value_type == "file":
         from shutil import copy
-        copy(local_flie_name, local_location + '/' + local_flie_name)
+        copy(local_file_name, local_location + '/' + local_file_name)
 
 
-def configuration_file_name(counter, file_name):
+def generate_file_name(counter, file_name):
     if os.path.isfile(world.cfg["dir_name"] + '/' + file_name):
         if counter == 1:
             file_name += str(counter)
         else:
             file_name = file_name[:18] + str(counter)
-        file_name = configuration_file_name(counter + 1, file_name)
+        file_name = generate_file_name(counter + 1, file_name)
     return file_name
 
 
@@ -130,17 +128,35 @@ def archive_file_name(counter, file_name):
     return file_name
 
 
-def copy_configuration_file(local_file, file_name = 'configuration_file'):
+def check_local_path_for_downloaded_files(local_file_path, local_file_name, remote_address):
+    """
+    Function will calculate if downloaded file should be saved in main directory or in specific location in case it
+    will be downloaded from remote location that is not default one
+    :param local_file_path: default path
+    :param local_file_name: default file name
+    :param remote_address: address of remote server
+    :return: changed path if remote server is not default one
+    """
+    if remote_address != world.f_cfg.mgmt_address:
+        if not os.path.exists(local_file_path + "/" + remote_address):
+            os.makedirs(local_file_path + "/" + remote_address)
+        return local_file_path + "/" + remote_address + local_file_name
+    return local_file_path + local_file_name
+
+
+def copy_configuration_file(local_file, file_name='/configuration_file', destination_host=world.f_cfg.mgmt_address):
+    if file_name[0] != '/':
+        file_name = "/" + file_name
     if world.f_cfg.save_config_file:
-        file_name = configuration_file_name(1, file_name)
+        file_name = generate_file_name(1, file_name)
         from shutil import copy
         if not os.path.exists(world.cfg["dir_name"]):
             os.makedirs(world.cfg["dir_name"])
-        copy(local_file, world.cfg["dir_name"] + '/' + file_name)
+        copy(local_file, check_local_path_for_downloaded_files(world.cfg["dir_name"], file_name, destination_host))
 
 
 def simple_file_layout():
-    ## Make simple config file (like ISC-DHCP style) correct!
+    # Make simple config file (like ISC-DHCP style) correct!
     config = open(world.cfg["cfg_file"], 'r')
     new_config = ""
 
@@ -190,7 +206,7 @@ def locate_entry(where_we_looking, what_we_looking, n):
     return start
 
 
-def json_file_layout(input=None):
+def json_file_layout(userinput=None):
     # make json file more readable!
     config = open(world.cfg["cfg_file"], 'r')
     new_config = ""
