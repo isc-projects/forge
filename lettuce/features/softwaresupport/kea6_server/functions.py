@@ -567,6 +567,17 @@ def agent_control_channel(host_address, host_port, socket_type, socket_name):
     # add_hooks(world.f_cfg.software_install_path + 'lib/control-agent-commands.so')
 
 
+def ha_add_parameter_to_hook(parameter_name, parameter_value):
+    if parameter_name == "lib":
+        world.kea_ha[0].append(parameter_value)
+    elif parameter_name == "machine-state":
+        world.kea_ha[3] += ([parameter_value])
+    elif parameter_name == "peers":
+        world.kea_ha[2] += ([parameter_value])
+    else:
+        world.kea_ha[1] += ([[parameter_name, parameter_value]])
+
+
 def cfg_write():
     config_db_backend()
     for number in range(0, len(world.subcfg)):
@@ -644,7 +655,7 @@ def cfg_write():
         cfg_file.write("]")
         del world.cfg["option_def"]
 
-    if len(world.hooks) > 0:
+    if len(world.hooks) > 0 or len(world.kea_ha[0]) > 0:
         cfg_file.write(',"hooks-libraries": [')
         test_length_1 = len(world.hooks)
         counter_1 = 1
@@ -668,6 +679,29 @@ def cfg_write():
                 cfg_file.write('},')
             counter_1 += 1
         cfg_file.write('}')  # closing libs
+        if len(world.kea_ha[0]) > 0:
+            if len(world.hooks) > 0:
+                cfg_file.write(',')
+            cfg_file.write('{"library": "' + world.kea_ha[0][0] + '","parameters":{"high-availability":[{')
+            # add single parameters to main map
+            for each_param in world.kea_ha[1]:
+                cfg_file.write('"'+each_param[0]+'":'+each_param[1]+",")
+            # add peers
+            cfg_file.write('"peers": [')
+            for each_ha_peer in world.kea_ha[2]:
+                cfg_file.write(each_ha_peer)
+                if world.kea_ha[2].index(each_ha_peer) != len(world.kea_ha[2]) - 1:
+                    cfg_file.write(",")
+            cfg_file.write(']')
+            if len(world.kea_ha[3]) > 0:
+                cfg_file.write(',"state-machine":{"states":[')
+                for each_state in world.kea_ha[3]:
+                    cfg_file.write(each_state)
+                    if world.kea_ha[3].index(each_state) != len(world.kea_ha[3]) - 1:
+                        cfg_file.write(",")
+                cfg_file.write(']}')
+            cfg_file.write('}]}}')
+
         cfg_file.write(']')  # closing hooks
 
     if "simple_options" in world.cfg:

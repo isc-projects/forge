@@ -358,6 +358,18 @@ def add_parameter_to_hook(step, hook_no, parameter_name, parameter_value):
     dhcp.add_parameter_to_hook(int(hook_no), parameter_name, parameter_value)
 
 
+@step('Add High-Availability hook library located (\S+).')
+def add_parameter_to_hook(step, lib_location):
+    lib_location = test_define_value(lib_location)[0]
+    dhcp.ha_add_parameter_to_hook("lib", lib_location)
+
+
+@step('To HA hook configuration add (\S+) with value: (.+)')
+def add_parameter_to_hook(step, parameter_name, parameter_value):
+    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
+    dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value)
+
+
 @step('Use (\S+) as lease database backend.')
 def define_temporary_lease_db_backend(step, lease_db_type):
     lease_db_type = test_define_value(lease_db_type)[0]
