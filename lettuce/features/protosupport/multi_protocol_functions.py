@@ -320,7 +320,7 @@ def connect_socket(command):
     fabric_sudo_command(command, False)
 
 
-def send_through_socket_server_site(socket_path, command):
+def send_through_socket_server_site(socket_path, command, destination_address=world.f_cfg.mgmt_address):
     if type(command) is unicode:
         command = command.encode('ascii', 'ignore')
     command_file = open(world.cfg["dir_name"] + '/command_file', 'w')
@@ -331,42 +331,71 @@ def send_through_socket_server_site(socket_path, command):
         command_file = open(world.cfg["dir_name"] + '/command_file', 'wb')
         command_file.write(command)
     command_file.close()
-    fabric_send_file(world.cfg["dir_name"] + '/command_file', 'command_file')
-    world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', True)
+    fabric_send_file(world.cfg["dir_name"] + '/command_file', 'command_file', destination_host=destination_address)
+    world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', hide_all=True,
+                                                destination_host=destination_address)
     fabric_remove_file_command('command_file')
-    parse_json_file(world.control_channel)
 
 
 def send_through_http(host_address, host_port, command):
     import requests
     world.control_channel = requests.post("http://" + host_address + ":" + str(host_port),
-                                          headers={"Content-Type": "application/json"}, data=command)
-    parse_json_file(world.control_channel.text)
-    return world.control_channel.text
+                                          headers={"Content-Type": "application/json"}, data=command).text
+    # import json
+    # print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
 
 
-def parse_json_file(input_value, return_value=None):
-    current_json = ""
+def assert_result(condition, result, value):
+    if result == 1 and condition is None:
+        # it's ok :)
+        pass
+    elif result == 1 and condition is not None:
+        # we received something we didn't want
+        assert False, "Received message contain: " + value + "; which was not anticipated."
+    elif result == 0 and condition is None:
+        assert False, "Received message does not contain: " + value
+    elif result == 0 and condition is not None:
+        pass
+
+
+def parse_json_file(condition, parameter_name, parameter_value):
     import json
-    try:
-        current_json = json.loads(input_value)
-    except:
-        input_value = ""
-    save_local_file(json.dumps(current_json, sort_keys=True, indent=2,
+    world.control_channel_parsed = [None, None, None]
+    save_local_file(json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2,
                                separators=(',', ': ')), local_file_name=generate_file_name(1, "command_result"))
-    if return_value is None:
-        print json.dumps(current_json, sort_keys=True, indent=2, separators=(',', ': '))
-    else:
-        print json.dumps(current_json[return_value], sort_keys=True, indent=2, separators=(',', ': '))
+    print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
 
-    # if json.dumps(current_json["result"]) == "1":
-    #     assert False, "command failed"
-    # try:
-    #     print current_json['arguments']
-    # except:
-    #     pass
-    # print json.dumps(current_json['arguments'], sort_keys=True, indent = 1, separators = (',', ': '))#['arguments']
-    # print json.dumps( json.loads(world.define[0][1])['Dhcp6']['control-socket'], sort_keys=True, indent=2, separators=(',', ': '))  # ['arguments']
+    try:
+        world.control_channel_parsed[0] = "".join(json.dumps(json.loads(world.control_channel)[0]["arguments"]))
+    except:
+        world.control_channel_parsed[0] = "arguments not found in received message"
+    try:
+        world.control_channel_parsed[1] = "".join(json.dumps(json.loads(world.control_channel)[0]["result"]))
+    except:
+        world.control_channel_parsed[1] = "result not found in received message"
+    try:
+        world.control_channel_parsed[2] = "".join(json.dumps(json.loads(world.control_channel)[0]["text"]))
+    except:
+        world.control_channel_parsed[2] = "text not found in received message"
+
+    if parameter_name == "arguments":
+        if parameter_value in world.control_channel_parsed[0]:
+            assert_result(condition, 1, parameter_value)
+        else:
+            assert_result(condition, 0, parameter_value)
+    elif parameter_name == "result":
+        if parameter_value == world.control_channel_parsed[1]:
+
+            assert_result(condition, 1, parameter_value)
+        else:
+            assert_result(condition, 0, parameter_value)
+    elif parameter_name == "text":
+        if parameter_value in world.control_channel_parsed[2]:
+            assert_result(condition, 1, parameter_value)
+        else:
+            assert_result(condition, 0, parameter_value)
+    else:
+        pass
 
 
 def parse_socket_received_data():
