@@ -110,6 +110,33 @@ Feature: Kea Control Channel - socket
   Response option 1 MUST contain value 255.255.255.0.
 
 @v4 @controlchannel @kea_only
+  Scenario: control.channel.socket.config-get-basic
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Test Procedure:
+  Client requests option 1.
+  Client sends DISCOVER message.
+
+  Pass Criteria:
+  Server MUST respond with OFFER message.
+  Response MUST include option 1.
+  Response MUST contain yiaddr 192.168.50.5.
+  Response option 1 MUST contain value 255.255.255.0.
+
+  Test Setup:
+  Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Generate server configuration file.
+
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-get","arguments":  $(SERVER_CONFIG) }
+
+
+@v4 @controlchannel @kea_only
   Scenario: control.channel.socket.config-set-basic
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
