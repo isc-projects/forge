@@ -28,7 +28,7 @@ from features.init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, PROTO, SOFTWARE_U
     TCPDUMP, TCPDUMP_PATH, SAVE_CONFIG_FILE, AUTO_ARCHIVE, SLEEP_TIME_1, SLEEP_TIME_2, MGMT_ADDRESS, MGMT_USERNAME,\
     MGMT_PASSWORD, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SAVE_LEASES, DNS_IFACE, DNS_ADDR, DNS_PORT, \
     DNS_SERVER_INSTALL_PATH, DNS_DATA_PATH, ISC_DHCP_LOG_FACILITY, ISC_DHCP_LOG_FILE, DB_NAME, DB_USER, DB_PASSWD,\
-    DB_HOST, CIADDR
+    DB_HOST, CIADDR, MGMT_ADDRESS_2, MGMT_ADDRESS_3
 
 # Create Forge configuration class
 SOFTWARE_INSTALL_DIR = SOFTWARE_INSTALL_PATH  # for backward compatibility of tests
@@ -58,6 +58,8 @@ AUTO_ARCHIVE = os.getenv('AUTO_ARCHIVE', AUTO_ARCHIVE)
 SLEEP_TIME_1 = os.getenv('SLEEP_TIME_1', SLEEP_TIME_1)
 SLEEP_TIME_2 = os.getenv('SLEEP_TIME_2', SLEEP_TIME_2)
 MGMT_ADDRESS = os.getenv('MGMT_ADDRESS', MGMT_ADDRESS)
+MGMT_ADDRESS_2 = os.getenv('MGMT_ADDRESS', MGMT_ADDRESS_2)
+MGMT_ADDRESS_3 = os.getenv('MGMT_ADDRESS', MGMT_ADDRESS_3)
 MGMT_USERNAME = os.getenv('MGMT_USERNAME', MGMT_USERNAME)
 MGMT_PASSWORD = os.getenv('MGMT_PASSWORD', MGMT_PASSWORD)
 SAVE_LOGS = os.getenv('SAVE_LOGS', SAVE_LOGS)
@@ -93,6 +95,8 @@ class ForgeConfiguration:
         self.none = None
         # FORGE
         self.mgmt_address = MGMT_ADDRESS
+        self.mgmt_address_2 = MGMT_ADDRESS_2  # for additional vm, exact copy of main vm
+        self.mgmt_address_3 = MGMT_ADDRESS_3  # for additional vm, exact copy of main vm
         self.mgmt_username = MGMT_USERNAME
         self.mgmt_password = MGMT_PASSWORD
         self.multiple_tested_servers = [self.mgmt_address]

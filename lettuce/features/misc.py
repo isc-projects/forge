@@ -35,10 +35,12 @@ def set_world():
     world.dhcp["option_usr_cnt"] = 0
     # clear all config files
     world.cfg["conf"] = ""
+    world.cfg["logger"] = ""
     world.subcfg = [["", "", "", "", "", "", ""]]  # additional config structure
     world.shared_subcfg = []
     world.shared_subnets = []
     world.shared_subnets_tmp = []
+    world.kea_ha = [[], [], [], []]
     world.hooks = []
     world.classification = []
 

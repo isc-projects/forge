@@ -343,6 +343,7 @@ def initialize(scenario):
     world.shared_subcfg = []
     world.shared_subnets = []
     world.shared_subnets_tmp = []
+    world.kea_ha = [[], [], [], []]
     world.hooks = []
     world.classification = []
     world.reservation_backend = ""
