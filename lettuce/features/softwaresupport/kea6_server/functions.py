@@ -25,7 +25,7 @@ from logging_facility import *
 from lettuce.registry import world
 from time import sleep
 
-kea_options6 = {
+world.kea_options6 = {
     "client-id": 1,
     "server-id": 2,
     "IA_NA": 3,
@@ -218,7 +218,7 @@ def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, optio
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     space = world.cfg["space"]
     shared_subnet = int(shared_subnet)
-    option_code = kea_options6.get(option_name)
+    option_code = world.kea_options6.get(option_name)
     if option_code is None:
         option_code = kea_otheroptions.get(option_name)
 
@@ -289,7 +289,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space,
 
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     if option_type == 'default':
-        option_code = kea_options6.get(option_name)
+        option_code = world.kea_options6.get(option_name)
         if option_code is None:
             option_code = kea_otheroptions.get(option_name)
 
@@ -326,7 +326,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     space = world.cfg["space"]
     subnet = int(subnet)
-    option_code = kea_options6.get(option_name)
+    option_code = world.kea_options6.get(option_name)
     if option_code is None:
         option_code = kea_otheroptions.get(option_name)
 
@@ -412,7 +412,7 @@ def add_test_to_class(class_number, parameter_name, parameter_value):
 
 def add_option_to_defined_class(class_no, option_name, option_value):
     space = world.cfg["space"]
-    option_code = kea_options6.get(option_name)
+    option_code = world.kea_options6.get(option_name)
     if option_code is None:
         option_code = kea_otheroptions.get(option_name)
 
@@ -501,6 +501,7 @@ def config_add_reservation_database():
 def config_db_backend():
     if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
         add_simple_opt('"lease-database":{"type": "memfile"}')
+        # add_simple_opt('"lease-database":{"type": "memfile", "lfc-interval": 10}')
     else:
         pointer_start = '{'
         pointer_end = '}'
@@ -817,16 +818,6 @@ def cfg_write():
 
 # =============================================================
 # ================ REMOTE SERVER BLOCK START ==================
-def check_remote_address(remote_address):
-    """
-    Add new remote server IP address as additional location, can be used for running dhcp server
-    From all added locations all files on clean up will be downloaded to specific local location
-    :param remote_address: IP address of remote vm
-    :return: nothing
-    """
-    if remote_address not in world.f_cfg.multiple_tested_servers:
-        world.f_cfg.multiple_tested_servers.append(remote_address)
-
 
 def check_kea_process_result(succeed, result, process):
     errors = ["Failed to apply configuration", "Failed to initialize server",
@@ -850,7 +841,7 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     :param destination_address: address of remote system to which conf file will be send,
     default it's world.f_cfg.mgmt_address
     """
-    check_remote_address(destination_address)
+
     if configuration_type == "config-file" and connection_type == "SSH":
         world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
         add_defaults()
@@ -982,12 +973,16 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          destination_host=destination_address)
 
 
-def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
+def clear_logs(destination_address=world.f_cfg.mgmt_address):
     fabric_remove_file_command(world.f_cfg.software_install_path + 'var/kea/kea.log*',
                                destination_host=destination_address)
 
+
+def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
+    clear_logs(destination_address)
+
     if world.f_cfg.db_type in ["memfile", ""]:
-        fabric_remove_file_command(world.cfg['leases'],
+        fabric_remove_file_command(world.cfg['leases']+"*",
                                    destination_host=destination_address)
     elif world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
         # that is tmp solution - just clearing not saving.
