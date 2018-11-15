@@ -197,22 +197,20 @@ def response_check_content(step, expect, data_type, expected):
 
 
 def client_save_option(step, opt_name, count=0):
-    from softwaresupport.kea4_server.functions import kea_options4
-    opt_code = kea_options4.get(opt_name)
+    opt_code = world.kea_options4.get(opt_name)
 
-    assert opt_name in kea_options4, "Unsupported option name " + opt_name
+    assert opt_name in world.kea_options4, "Unsupported option name " + opt_name
 
-    if not count in world.savedmsg:
+    if count not in world.savedmsg:
         world.savedmsg[count] = [get_option(world.srvmsg[0], opt_code)]
     else:
         world.savedmsg[count].append(get_option(world.srvmsg[0], opt_code))
 
 
 def client_copy_option(step, opt_name):
-    from softwaresupport.kea4_server.functions import kea_options4
-    opt_code = kea_options4.get(opt_name)
+    opt_code = world.kea_options4.get(opt_name)
     
-    assert opt_name in kea_options4, "Unsupported option name " + opt_name
+    assert opt_name in world.kea_options4, "Unsupported option name " + opt_name
     
     received = get_option(world.srvmsg[0], opt_code)
     world.cliopts.append(received)
