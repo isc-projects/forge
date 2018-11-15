@@ -20,6 +20,7 @@
 #
 from lettuce import step, world
 from scapy.layers.dhcp6 import DHCP6OptOptReq
+from softwaresupport.configuration import KeaConfiguration
 
 
 def set_world():
@@ -35,7 +36,6 @@ def set_world():
     world.dhcp["option_usr_cnt"] = 0
     # clear all config files
     world.cfg["conf"] = ""
-    world.cfg["logger"] = ""
     world.subcfg = [["", "", "", "", "", "", ""]]  # additional config structure
     world.shared_subcfg = []
     world.shared_subnets = []
@@ -43,6 +43,9 @@ def set_world():
     world.kea_ha = [[], [], [], []]
     world.hooks = []
     world.classification = []
+
+    # new configuration process:
+    world.configClass = KeaConfiguration()
 
 
 @step('Pass Criteria:')
