@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (C) 2015 Internet Systems Consortium.
+# Copyright (C) 2015-2017 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -15,7 +15,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# Author: Wlodzimierz Wencel
+# Author: Włodzimierz Wencel
 
 revert_addr() {
     IFS='.' read -ra ADDR <<< $1
@@ -82,7 +82,7 @@ restore_files(){
     if [[ $REPLY =~ ^[Yy]$ ]]
     then
         cd $1
-        for file_name in $(find `pwd` -type f -name "*.feature_BACKUP");
+        for file_name in $(find `pwd` -type f -name "*_BACKUP");
         do
             printf "\nRestoring file: %s" ${file_name::-7}
             mv -f $file_name ${file_name::-7}
@@ -106,7 +106,7 @@ to change addresses that are not default:
     ./modify_address -r <path_to_directory>\n"
     exit 0
 
-elif [ "$1" == --default -o "$1" == -d ]; then
+elif [ "$1" == --default-addr -o "$1" == -d ]; then
     default_address="192.168.50"
     default_netmask="255.255.255.0"
     printf "You are about to change all tests in path: %s" $2
@@ -114,14 +114,22 @@ elif [ "$1" == --default -o "$1" == -d ]; then
     changeaddress $2 $3 $4 $default_address $default_netmask
     exit 0
 
-elif [ "$1" == --switch -o "$1" == -s ]; then
+elif [ "$1" == --switch-addr -o "$1" == -s ]; then
     printf "You are about to change all tests in path: %s" $2
     printf "\nYour variables are:\nOld subnet address: %s\nNew subnet address: %s\n" $5 $3
     printf "Old netmask: %s\nNew netmask: %s\n" $6 $4
     changeaddress $2 $3 $4 $5 $6
     exit 0
 
-elif [ "$1" == --restore -o "$1" == -r ]; then
+elif [ "$1" == --switch-str -o "$1" == -st ]; then
+    printf "You are about to change all FILES in path: %s" $2
+    printf "\nYour variables are:\nOld subnet address: %s\nNew subnet address: %s\n" $5 $3
+    printf "\nYou are about to change string: %s\nTo: %s\n" $5 $3
+    changestr $2 $3
+    exit 0
+
+
+elif [ "$1" == --restore-addr -o "$1" == -r ]; then
     printf "You are about to restore backuped tests features in directory: %s\nAll previous changes will be lost!\n" $2
     restore_files $2
     exit 0
