@@ -252,6 +252,11 @@ def declare_all():
     # multiple servers has to be configured exactly identical.
     # supported only for Kea servers
 
+    world.configClass = None
+    # list that will keep configuration class from which mysql/postgres/netconf
+    # configuration script will be generated
+    # in future it's designed to clear JSON configuration process as well
+
     world.configString = ""
     world.cfg['leases'] = "~/none_file"
     world.cfg["dhcp_log_file"] = "~/none_file"
@@ -349,6 +354,7 @@ def initialize(scenario):
     world.reservation_backend = ""
     dir_name = str(scenario.name).replace(".", "_")
     world.cfg["dir_name"] = 'tests_results/' + dir_name
+    world.f_cfg.dir_name = world.cfg["dir_name"]
     world.cfg["subnet"] = ""
     world.cfg["server-id"] = ""
     world.cfg["csv-format"] = "true"
@@ -394,6 +400,10 @@ def initialize(scenario):
         os.makedirs(world.cfg["dir_name"])
     if not os.path.exists(world.cfg["dir_name"] + '/dns') and world.dns_enable:
         os.makedirs(world.cfg["dir_name"] + '/dns')
+
+    cfg_file = open(world.cfg["dir_name"]+'/test_steps', 'w')
+    cfg_file.write(str(scenario.name))
+    cfg_file.close()
 
     if world.f_cfg.tcpdump:
         cmd = world.f_cfg.tcpdump_path + 'tcpdump'
@@ -445,7 +455,13 @@ def outline_result(scenario, number, step, failed):
 
 @after.each_step
 def cleanup_option(step):
-    pass
+    cfg_file = open(world.cfg["dir_name"]+'/test_steps', 'a')
+    # assert False, step.__dict__
+    if str(step.proposed_sentence) in ["Test Procedure:", "Pass Criteria:", "Test Setup:"]:
+        cfg_file.write("\n\n"+str(step.proposed_sentence)+"\n")
+    else:
+        cfg_file.write("\n  "+str(step.proposed_sentence))
+    cfg_file.close()
 
 
 @after.each_scenario
@@ -537,3 +553,7 @@ def say_goodbye(total):
         make_tarfile(archive_name + '.tar.gz', 'tests_results')
 
     get_common_logger().info("Goodbye.")
+
+
+if __name__ == "__main__":
+    pass
