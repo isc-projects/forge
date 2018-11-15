@@ -17,11 +17,11 @@
 
 from lettuce import world, step
 import importlib
+from srv_control import test_define_value
 
 dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % world.f_cfg.proto)
 dns = importlib.import_module("protosupport.dns")
 other = importlib.import_module("protosupport.multi_protocol_functions")
-from srv_control import test_define_value
 
 
 ##building DHCP messages
@@ -526,6 +526,7 @@ def execute_shell(step, path):
 
 @step('Execute shell command: (.+)')
 def execute_shell_command(step, command):
+    command = test_define_value(command)[0]
     other.execute_shell_command(command)
 
 
