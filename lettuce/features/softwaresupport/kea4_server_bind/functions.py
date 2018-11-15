@@ -23,7 +23,7 @@ from logging_facility import get_common_logger
 from softwaresupport.kea6_server_bind.functions import search_for_errors, parsing_bind_stdout, prepare_config_file,\
     set_logger, cfg_write, set_time, save_leases, save_logs, clear_all
 
-kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
+world.kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "time-offset": 2, 
                 "routers": 3, # ipv4-address (single)
                 "time-servers": 4, # ipv4-address (single)
@@ -190,8 +190,8 @@ def add_siaddr(step, addr, subnet_number):
 
 
 def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
-    assert option_name in kea_options4, "Unsupported option name " + option_name
-    option_code = kea_options4.get(option_name)
+    assert option_name in world.kea_options4, "Unsupported option name " + option_name
+    option_code = world.kea_options4.get(option_name)
     csv_format, option_value = check_empty_value(option_value)
     
     # need to have numbers for multiple options for each subnet! 
@@ -229,8 +229,8 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
     if not "conf" in world.cfg:
         world.cfg["conf"] = ""
 
-    assert option_name in kea_options4, "Unsupported option name " + option_name
-    option_code = kea_options4.get(option_name)
+    assert option_name in world.kea_options4, "Unsupported option name " + option_name
+    option_code = world.kea_options4.get(option_name)
     csv_format, option_value = check_empty_value(option_value)
     option_cnt = world.dhcp["option_cnt"]
 
