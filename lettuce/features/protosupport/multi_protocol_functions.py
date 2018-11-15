@@ -24,6 +24,7 @@ from features.softwaresupport.multi_server_functions import fabric_send_file, fa
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
         save_local_file, fabric_run_command
 from time import sleep
+import json
 
 
 def forge_sleep(time, time_units):
@@ -288,7 +289,7 @@ def change_network_variables(value_name, value):
 
 
 def execute_shell_script(path, arguments):
-    result = fabric_sudo_command(path + ' ' + arguments, False)
+    result = fabric_sudo_command(path + ' ' + arguments, hide_all=False)
 
     file_name = path.split("/")[-1] + '_output'
     file_name = generate_file_name(1, file_name)
@@ -313,11 +314,11 @@ def execute_shell_script(path, arguments):
 
 
 def execute_shell_command(command):
-    fabric_sudo_command(command, False)
+    fabric_sudo_command(command, hide_all=False)
 
 
 def connect_socket(command):
-    fabric_sudo_command(command, False)
+    fabric_sudo_command(command, hide_all=False)
 
 
 def send_through_socket_server_site(socket_path, command, destination_address=world.f_cfg.mgmt_address):
@@ -335,14 +336,15 @@ def send_through_socket_server_site(socket_path, command, destination_address=wo
     world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', hide_all=True,
                                                 destination_host=destination_address)
     fabric_remove_file_command('command_file')
+    print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
 
 
 def send_through_http(host_address, host_port, command):
     import requests
     world.control_channel = requests.post("http://" + host_address + ":" + str(host_port),
                                           headers={"Content-Type": "application/json"}, data=command).text
-    # import json
-    # print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
+
+    print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
 
 
 def assert_result(condition, result, value):
@@ -359,23 +361,26 @@ def assert_result(condition, result, value):
 
 
 def parse_json_file(condition, parameter_name, parameter_value):
-    import json
     world.control_channel_parsed = [None, None, None]
     save_local_file(json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2,
                                separators=(',', ': ')), local_file_name=generate_file_name(1, "command_result"))
-    print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
+
+    # here there is messed situation, when JSON respond comes via HTTP it's a list, when via socket, it's dict.
+    loaded_json = json.loads(world.control_channel)
+    if type(loaded_json) is list:
+        loaded_json = loaded_json[0]
 
     try:
-        world.control_channel_parsed[0] = "".join(json.dumps(json.loads(world.control_channel)[0]["arguments"]))
-    except:
+        world.control_channel_parsed[0] = "".join(json.dumps(loaded_json["arguments"]))
+    except KeyError:
         world.control_channel_parsed[0] = "arguments not found in received message"
     try:
-        world.control_channel_parsed[1] = "".join(json.dumps(json.loads(world.control_channel)[0]["result"]))
-    except:
+        world.control_channel_parsed[1] = "".join(json.dumps(loaded_json["result"]))
+    except KeyError:
         world.control_channel_parsed[1] = "result not found in received message"
     try:
-        world.control_channel_parsed[2] = "".join(json.dumps(json.loads(world.control_channel)[0]["text"]))
-    except:
+        world.control_channel_parsed[2] = "".join(json.dumps(loaded_json["text"]))
+    except KeyError:
         world.control_channel_parsed[2] = "text not found in received message"
 
     if parameter_name == "arguments":
