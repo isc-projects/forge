@@ -27,10 +27,10 @@ from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_log
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
     add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
     set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
-    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class, check_remote_address,\
-    ha_add_parameter_to_hook
+    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class,\
+    ha_add_parameter_to_hook, clear_logs, prepare_cfg_subnet_specific_interface
 
-kea_options4 = {
+world.kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)
     "time-offset": 2,
     "routers": 3,  # ipv4-address (single)
@@ -197,7 +197,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space,
 
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     if opt_type == 'default':
-        option_code = kea_options4.get(option_name)
+        option_code = world.kea_options4.get(option_name)
 
     pointer_start = "{"
     pointer_end = "}"
@@ -214,7 +214,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     space = world.cfg["space"]
     subnet = int(subnet)
-    option_code = kea_options4.get(option_name)
+    option_code = world.kea_options4.get(option_name)
 
     pointer_start = "{"
     pointer_end = "}"
@@ -232,7 +232,7 @@ def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, optio
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     space = world.cfg["space"]
     shared_subnet = int(shared_subnet)
-    option_code = kea_options4.get(option_name)
+    option_code = world.kea_options4.get(option_name)
 
     pointer_start = "{"
     pointer_end = "}"
@@ -316,7 +316,7 @@ def config_srv_id(id_type, id_value):
 
 def add_option_to_defined_class(class_no, option_name, option_value):
     space = world.cfg["space"]
-    option_code = kea_options4.get(option_name)
+    option_code = world.kea_options4.get(option_name)
     # if option_code is None:
     #     option_code = kea_otheroptions.get(option_name)
 
@@ -340,7 +340,6 @@ def add_option_to_defined_class(class_no, option_name, option_value):
 
 def build_and_send_config_files(connection_type, configuration_type="config-file",
                                 destination_address=world.f_cfg.mgmt_address):
-    check_remote_address(destination_address)
     if configuration_type == "config-file" and connection_type == "SSH":
         world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
         add_defaults()
