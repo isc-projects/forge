@@ -9,15 +9,15 @@ Feature: Kea6 User Check Hook Library
 @v6 @dhcp6 @kea_only @user_check @vendor_options
     Scenario: user_check.hook-vendor_options-all
 
-    # Install the requisite user registry file onto the server and then 
-    # Configure the server with two subnets.  The first subnet will be used 
-    # for registeted users, the second for unregistered users.  
+    # Install the requisite user registry file onto the server and then
+    # Configure the server with two subnets.  The first subnet will be used
+    # for registeted users, the second for unregistered users.
     Test Setup:
     Client sends local file stored in: features/dhcpv6/server/kea_only/user_chk/registry_1.txt to server, to location: /tmp/user_chk_registry.txt.
     Client removes file from server located in: /tmp/user_chk_outcome.txt.
     Server is configured with 3000::/64 subnet with 3000::5-3000::20 pool.
     Server is configured with another subnet: 1000:1::/64 with 1000:1::5-1000:1::5 pool on interface eth3.
-    Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_user_chk.so.
+    Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_user_chk.so.
     On space vendor-4491 server is configured with tftp-servers option with value 7000::1.
     On space vendor-4491 server is configured with config-file option with value bootfile.from.server.
     Send server configuration using SSH and config-file.

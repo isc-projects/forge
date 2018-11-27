@@ -39,7 +39,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.options
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.options
 
 
 @v6 @kea_only @logging
@@ -80,7 +80,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.options
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.options
 
 
 @v6 @kea_only @logging
@@ -97,7 +97,7 @@ DHCP server is started.
     Client sends SOLICIT message.
 
 	Server MUST NOT respond.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.bad-packets
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.bad-packets
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.bad-packets-info
@@ -113,7 +113,7 @@ DHCP server is started.
     Client sends SOLICIT message.
 
 	Server MUST NOT respond.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.bad-packets
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.bad-packets
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.dhcp6
@@ -154,7 +154,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.dhcp6-info
@@ -196,8 +196,8 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcp6
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcp6
 
 
 @v6 @kea_only @logging
@@ -237,7 +237,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.dhcpsrv-debug
@@ -276,7 +276,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.dhcpsrv-info
@@ -315,8 +315,8 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcpsrv
 
 
 @v6 @kea_only @logging
@@ -356,7 +356,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.leases
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.leases
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.leases-info
@@ -395,7 +395,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.leases
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.leases
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.packets-debug
@@ -434,7 +434,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.packets-info
@@ -473,7 +473,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.packets
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.packets
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.hosts-debug
@@ -512,7 +512,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.hosts
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.hosts
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.hosts-info
@@ -551,7 +551,7 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.hosts
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.hosts
 
 @v6 @kea_only @logging
     Scenario: v6.loggers.all
@@ -591,12 +591,12 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.leases
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.options
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.leases
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.options
 
 
 @v6 @kea_only @logging
@@ -652,14 +652,14 @@ DHCP server is started.
 
 	Server MUST NOT respond.
 
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.leases
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcp6
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcpsrv
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.options
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.leases
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcp6
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.options
 
 
 @v6 @kea_only @logging
@@ -714,14 +714,14 @@ DHCP server is started.
 
 	Server MUST NOT respond.
 
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log4 MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log5 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.leases
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log6 MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log1 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log1 MUST contain line or phrase: INFO  \[kea-dhcp6.dhcp6
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log2 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log2 MUST contain line or phrase: INFO  \[kea-dhcp6.dhcpsrv
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log3 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.options
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log4 MUST contain line or phrase: DEBUG \[kea-dhcp6.packets
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log5 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.leases
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log6 MUST contain line or phrase: DEBUG \[kea-dhcp6.alloc-engine
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log1 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcp6
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log1 MUST contain line or phrase: INFO  \[kea-dhcp6.dhcp6
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log2 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log2 MUST contain line or phrase: INFO  \[kea-dhcp6.dhcpsrv
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log3 MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.options
 
 @v6 @kea_only @logging
     Scenario: ddns6.logging-all-types-debug
@@ -778,9 +778,9 @@ DHCP server is started.
     Response MUST include option 1.
     Response MUST include option 2.
 
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp-ddns.dhcpddns
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.dhcpddns
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.libdhcp-ddns
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.d2-to-dns
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: ERROR \[kea-dhcp-ddns.d2-to-dns
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.dhcp-to-d2
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp-ddns.dhcpddns
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.dhcpddns
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.libdhcp-ddns
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.d2-to-dns
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: ERROR \[kea-dhcp-ddns.d2-to-dns
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp-ddns.dhcp-to-d2

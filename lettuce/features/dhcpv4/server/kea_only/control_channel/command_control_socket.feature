@@ -5,7 +5,7 @@ Feature: Kea Control Channel - socket
   Scenario: control.channel.socket.dhcp-disable-timer
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -20,7 +20,7 @@ Feature: Kea Control Channel - socket
   Response MUST contain yiaddr 192.168.50.5.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-disable", "arguments": {"max-period": 5}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "dhcp-disable", "arguments": {"max-period": 5}}
 
   Test Procedure:
   Client requests option 1.
@@ -45,7 +45,7 @@ Feature: Kea Control Channel - socket
   Scenario: control.channel.socket.dhcp-disable
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -60,7 +60,7 @@ Feature: Kea Control Channel - socket
   Response MUST contain yiaddr 192.168.50.5.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-disable" }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "dhcp-disable" }
 
   Test Procedure:
   Client requests option 1.
@@ -73,7 +73,7 @@ Feature: Kea Control Channel - socket
   Scenario: control.channel.socket.dhcp-disable-and-enable
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -88,7 +88,7 @@ Feature: Kea Control Channel - socket
   Response MUST contain yiaddr 192.168.50.5.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-disable" }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "dhcp-disable" }
 
   Test Procedure:
   Client requests option 1.
@@ -97,7 +97,7 @@ Feature: Kea Control Channel - socket
   Pass Criteria:
   Server MUST NOT respond.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "dhcp-enable" }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "dhcp-enable" }
 
   Test Procedure:
   Client requests option 1.
@@ -113,7 +113,7 @@ Feature: Kea Control Channel - socket
   Scenario: control.channel.socket.config-get-basic
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -130,17 +130,17 @@ Feature: Kea Control Channel - socket
 
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-get","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-get","arguments":  $(SERVER_CONFIG) }
 
 
 @v4 @controlchannel @kea_only
   Scenario: control.channel.socket.config-set-basic
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -157,10 +157,10 @@ Feature: Kea Control Channel - socket
 
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client requests option 1.
@@ -176,7 +176,7 @@ Feature: Kea Control Channel - socket
   Scenario: control.channel.socket.change-socket-during-reconfigure
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -193,10 +193,10 @@ Feature: Kea Control Channel - socket
 
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client requests option 1.
@@ -208,15 +208,15 @@ Feature: Kea Control Channel - socket
   Response MUST contain yiaddr 192.168.50.50.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "list-commands","arguments": {}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command": "list-commands","arguments": {}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "list-commands","arguments": {}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command": "list-commands","arguments": {}}
 
 @v4 @controlchannel @kea_only
 Scenario: control.channel.socket.after-restart-load-config-file
 
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -233,10 +233,10 @@ Scenario: control.channel.socket.after-restart-load-config-file
 
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
-  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Generate server configuration file.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-set","arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client requests option 1.

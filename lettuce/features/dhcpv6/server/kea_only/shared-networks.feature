@@ -177,7 +177,7 @@ Feature: Shared-Networks
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 13.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
 
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sharednetworks.single-shared-subnet-with-one-subnet-based-on-id
@@ -267,7 +267,7 @@ Feature: Shared-Networks
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 13.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
 
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sharednetworks.single-shared-subnet-with-two-subnets-based-on-iface
@@ -337,8 +337,8 @@ Feature: Shared-Networks
   Response MUST include option 3.
   Response option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sharednetworks.single-shared-subnet-with-tree-subnets-based-on-iface-options-override
@@ -679,8 +679,8 @@ Feature: Shared-Networks
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sharednetworks.single-shared-subnet-with-three-subnets-based-on-relay-address-options-override
@@ -938,8 +938,8 @@ Scenario: v6.sharednetworks.single-shared-subnet-with-two-subnets-based-on-relay
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sharednetworks.three-shared-subnet-with-two-subnets-based-on-id-and-iface-and-relay-address
@@ -1068,8 +1068,8 @@ Scenario: v6.sharednetworks.single-shared-subnet-with-two-subnets-based-on-relay
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:e::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:f::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:e::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:f::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -1153,8 +1153,8 @@ Scenario: v6.sharednetworks.single-shared-subnet-with-two-subnets-based-on-relay
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -1211,8 +1211,8 @@ Scenario: v6.sharednetworks.single-shared-subnet-with-two-subnets-based-on-relay
   Response MUST include option 3.
   Response option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
 
 @v6 @sharednetworks @sharedsubnets @kea_only
@@ -1691,8 +1691,8 @@ Scenario: v6.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -1780,8 +1780,8 @@ Scenario: v6.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:03.
@@ -1948,8 +1948,8 @@ Scenario: v6.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
@@ -2033,8 +2033,8 @@ Scenario: v6.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Relayed Message MUST include option 3.
   Relayed Message option 3 MUST contain sub-option 5.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:03.
@@ -2179,9 +2179,9 @@ Scenario: v6.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response MUST include option 23.
   Response option 23 MUST contain addresses 2001:db8::1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2
-  
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2
+
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sharednetworks.host.reservation.duplicate-reservation
   Test Setup:
