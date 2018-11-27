@@ -15,6 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
+import os
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
@@ -115,13 +116,13 @@ class KeaConfiguration:
         self.delay1 = world.f_cfg.sleep_time_1
         self.delay2 = world.f_cfg.sleep_time_2
         self.subnet_count = 0
-        self.config_path = world.f_cfg.software_install_path + "etc/kea/kea.conf"
-        self.log_file_path = world.f_cfg.software_install_path + 'var/kea/kea.log*'
-        self.keactrl_config_path = world.f_cfg.software_install_path + "etc/kea/keactrl.conf"
+        self.config_path = os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf")
+        self.log_file_path = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea.log*')
+        self.keactrl_config_path = os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf")
         if ver == 6:
-            self.csv_path = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
+            self.csv_path = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases6.csv')
         elif ver == 4:
-            self.csv_path = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
+            self.csv_path = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
         # configurations lists,
         self.global_parameter_lst = []
         self.interfaces_lst = []
@@ -482,7 +483,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 def check_kea_status():
     v6 = 0
     v4 = 0
-    result = fabric_sudo_command(world.f_cfg.software_install_path + "sbin/keactrl status")
+    result = fabric_sudo_command(os.path.join(world.f_cfg.software_install_path, "sbin/keactrl") + " status")
     # not very sophisticated but easiest fastest way ;)
     if "DHCPv4 server: inactive" in result:
         v4 = 0
@@ -496,7 +497,11 @@ def check_kea_status():
 
 
 def set_kea_ctrl_config():
-    path = world.f_cfg.software_install_path[:-1]
+    # TODO: there should be no wrangling with /
+    if world.f_cfg.software_install_path.endswith('/'):
+        path = world.f_cfg.software_install_path[:-1]
+    else:
+        path = world.f_cfg.software_install_path
 
     kea6 = 'no'
     kea4 = 'no'
@@ -594,7 +599,7 @@ def add_logger(log_type, severity, severity_level, logging_file):
     else:
         if len(world.cfg["logger"]) > 20:
             world.cfg["logger"] += ','
-    logging_file_path = world.f_cfg.software_install_path + 'var/kea/' + logging_file
+    logging_file_path = os.path.join(world.f_cfg.software_install_path, 'var/kea', logging_file)
     if severity_level != "None":
         world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '"' \
                                '}],"debuglevel": ' + severity_level + ',"severity": ' \
@@ -705,7 +710,7 @@ def cfg_write():
         cfg_file.write(',' + world.cfg["agent"])
         del world.cfg["agent"]
 
-    logging_file = world.f_cfg.software_install_path + 'var/kea/kea.log'
+    logging_file = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea.log')
 
     log_type = ''
     if "kea6" in world.cfg["dhcp_under_test"]:
@@ -758,18 +763,18 @@ def check_kea_process_result(succeed, result, process):
 
 def build_and_send_config_files(connection_type, configuration_type="config-file"):
     if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases6.csv')
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        fabric_send_file(world.cfg["cfg_file"], world.f_cfg.software_install_path + "etc/kea/kea.conf")
-        fabric_send_file(world.cfg["cfg_file_2"], world.f_cfg.software_install_path + "etc/kea/keactrl.conf")
+        fabric_send_file(world.cfg["cfg_file"], os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"))
+        fabric_send_file(world.cfg["cfg_file_2"], os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"))
         copy_configuration_file(world.cfg["cfg_file"])
         copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config")
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = world.f_cfg.software_install_path + 'var/kea/kea-leases6.csv'
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases6.csv')
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -789,31 +794,31 @@ def start_srv(start, process):
         process = "starting"
 
     if not v6:
-        result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' start '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
     else:
-        result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop '
+        result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
-        result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start '
+        result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' start '
                                      + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
         check_kea_process_result(start, result, process)
 
 
 def reconfigure_srv():
     #build_and_send_config_files()
-    result = fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl reload '
+    result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' reload '
                                  + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
     check_kea_process_result(True, result, 'reconfigure')
 
 
 def stop_srv(value = False):
-    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop ' + ' & ); sleep ' + str(world.f_cfg.sleep_time_1), value)
+    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop & ); sleep ' + str(world.f_cfg.sleep_time_1), value)
 
 
 def restart_srv():
-    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl stop ' + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
-    fabric_sudo_command('(' + world.f_cfg.software_install_path + 'sbin/keactrl start ' + ' & ); sleep ' + str(world.f_cfg.sleep_time_1))
+    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop & ); sleep ' + str(world.f_cfg.sleep_time_1))
+    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' start & ); sleep ' + str(world.f_cfg.sleep_time_1))
 
 ## =============================================================
 ## ================ REMOTE SERVER BLOCK END ====================
@@ -860,11 +865,11 @@ def save_leases(tmp_db_type=None):
 
 
 def save_logs():
-    fabric_download_file(world.f_cfg.software_install_path + 'var/kea/kea.log*', world.cfg["dir_name"] + '/.')
+    fabric_download_file(os.path.join(world.f_cfg.software_install_path, 'var/kea/kea.log*'), world.cfg["dir_name"] + '/.')
 
 
 def clear_all(tmp_db_type=None):
-    fabric_remove_file_command(world.f_cfg.software_install_path + 'var/kea/kea.log*')
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'var/kea/kea.log*'))
 
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user

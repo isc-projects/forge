@@ -14,6 +14,7 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 # Author: Wlodzimierz Wencel
 
+import os
 from lettuce.registry import world
 
 from multi_server_functions import fabric_run_command, fabric_send_file,\
@@ -543,7 +544,7 @@ class ConfigurationGlobalParameters:
         self.value_name = value_name
         self.value = value
         # maybe this won't be needed:
-        self.socket_name = world.f_cfg.software_install_path + "var/kea/control_socket"
+        self.socket_name = os.path.join(world.f_cfg.software_install_path, "var/kea/control_socket")
         self.socket_type = "unix"
         self.decline_probation_period = ""
         self.re_detect = ""
@@ -565,7 +566,7 @@ class ConfigurationGlobalParameters:
         # leases:
         self.db_leases_type = "memfile"
         self.lfc_interval = ""
-        self.file_name = world.f_cfg.software_install_path + 'var/kea/kea-leases4.csv'
+        self.file_name = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
         self.persist = ""
         self.db_name = ""
         self.db_host = ""
@@ -618,7 +619,7 @@ class ConfigurationLogging:
         self.flush = "true"
         self.maxsize = 10240000
         self.maxver = 1
-        self.output = world.f_cfg.software_install_path + "var/kea/kea.log"
+        self.output = os.path.join(world.f_cfg.software_install_path, "var/kea/kea.log")
 
     def __getitem__(self, item):
         return getattr(self, item)

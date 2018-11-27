@@ -15,11 +15,13 @@
 
 # Author: Wlodzimierz Wencel
 
+import os
+from shutil import copy
+
 from fabric.api import get, settings, put, sudo, run, hide
 from fabric.exceptions import NetworkError
 from features.logging_facility import get_common_logger
 from lettuce.registry import world
-import os
 
 
 def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
@@ -56,17 +58,17 @@ def fabric_send_file(file_local, file_remote,
                      destination_host=world.f_cfg.mgmt_address,
                      user_loc=world.f_cfg.mgmt_username,
                      password_loc=world.f_cfg.mgmt_password):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
         with hide('running', 'stdout', 'stderr'):
-            result = put(file_local, file_remote)
+            result = put(file_local, file_remote, use_sudo=True)
     return result
 
 
 def fabric_download_file(remote_path, local_path,
                          destination_host=world.f_cfg.mgmt_address,
                          user_loc=world.f_cfg.mgmt_username,
-                         password_loc=world.f_cfg.mgmt_password):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+                         password_loc=world.f_cfg.mgmt_password, warn_only=False):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=warn_only):
         result = get(remote_path, local_path)
     return result
 
@@ -81,7 +83,7 @@ def fabric_remove_file_command(remote_path,
                                destination_host=world.f_cfg.mgmt_address,
                                user_loc=world.f_cfg.mgmt_username,
                                password_loc=world.f_cfg.mgmt_password):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
         result = sudo("rm -f " + remote_path)
     return result
 
@@ -100,16 +102,15 @@ def save_local_file(value, value_type="string", local_file_name=None, local_loca
         # TODO: make check here for existing files with the same name
 
     if value_type == "string":
-        tmp = open(local_location + '/' + local_file_name, 'w')
+        tmp = open(os.path.join(local_location, local_file_name), 'w')
         tmp.write(str(value))
         tmp.close()
     elif value_type == "file":
-        from shutil import copy
-        copy(local_file_name, local_location + '/' + local_file_name)
+        copy(local_file_name, os.path.join(local_location, local_file_name))
 
 
 def generate_file_name(counter, file_name):
-    if os.path.isfile(world.cfg["dir_name"] + '/' + file_name):
+    if os.path.isfile(os.path.join(world.cfg["dir_name"], file_name)):
         if counter == 1:
             file_name += str(counter)
         else:
@@ -138,18 +139,15 @@ def check_local_path_for_downloaded_files(local_file_path, local_file_name, remo
     :return: changed path if remote server is not default one
     """
     if remote_address != world.f_cfg.mgmt_address:
-        if not os.path.exists(local_file_path + "/" + remote_address):
-            os.makedirs(local_file_path + "/" + remote_address)
-        return local_file_path + "/" + remote_address + local_file_name
-    return local_file_path + local_file_name
+        if not os.path.exists(os.path.join(local_file_path, remote_address)):
+            os.makedirs(os.path.join(local_file_path, remote_address))
+        return os.path.join(local_file_path, remote_address, local_file_name)
+    return os.path.join(local_file_path, local_file_name)
 
 
-def copy_configuration_file(local_file, file_name='/configuration_file', destination_host=world.f_cfg.mgmt_address):
-    if file_name[0] != '/':
-        file_name = "/" + file_name
+def copy_configuration_file(local_file, file_name='configuration_file', destination_host=world.f_cfg.mgmt_address):
     if world.f_cfg.save_config_file:
         file_name = generate_file_name(1, file_name)
-        from shutil import copy
         if not os.path.exists(world.cfg["dir_name"]):
             os.makedirs(world.cfg["dir_name"])
         copy(local_file, check_local_path_for_downloaded_files(world.cfg["dir_name"], file_name, destination_host))

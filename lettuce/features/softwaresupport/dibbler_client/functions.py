@@ -40,15 +40,15 @@ def restart_clnt(step):
     This function shut downs and later starts dibbler-client on DUT.
     @step("Restart client.")
     """
-    fabric_sudo_command("("+world.f_cfg.software_install_path+"dibbler-client stop); sleep 1;")
-    fabric_sudo_command("("+world.f_cfg.software_install_path+"dibbler-client start); sleep 1;")
+    fabric_sudo_command("(" + os.path.join(world.f_cfg.software_install_path, "dibbler-client") + " stop); sleep 1;")
+    fabric_sudo_command("(" + os.path.join(world.f_cfg.software_install_path, "dibbler-client") + " start); sleep 1;")
 
 
 def stop_clnt():
     """
     Command that shut downs one instance of running dibbler-client on DUT.
     """
-    fabric_sudo_command ("("+world.f_cfg.software_install_path+"dibbler-client stop); sleep 1;")
+    fabric_sudo_command("(" + os.path.join(world.f_cfg.software_install_path, "dibbler-client") + " stop); sleep 1;")
 
 def kill_clnt():
     """
@@ -60,7 +60,7 @@ def kill_clnt():
 def create_clnt_cfg():
     """
     This command generates a starting template for dibbler-client config
-    file. Config is stored in variable and will be handled by other 
+    file. Config is stored in variable and will be handled by other
     functions.
     """
     openBracket = "{"
@@ -84,9 +84,9 @@ def release_command():
     world.clntCfg["script"] = ""
     make_script("stop")
     get_common_logger().debug("Stopping Dibbler Client and waiting for RELEASE.")
-    fabric_send_file(world.clntCfg["script"], world.f_cfg.software_install_path+'comm.sh')
+    fabric_send_file(world.clntCfg["script"], os.path.join(world.f_cfg.software_install_path, 'comm.sh'))
     fabric_run_command ('(rm nohup.out; nohup bash ' \
-                        + world.f_cfg.software_install_path + 'comm.sh &); sleep 3;')
+                        + os.path.join(world.f_cfg.software_install_path, 'comm.sh') + ' &); sleep 3;')
 
 
 def client_option_req(step, another1, opt):
@@ -145,8 +145,7 @@ def make_script(option):
     option argument can be equal to "start" or "stop".
     """
     world.clntCfg["content"] = "!#/bin/sh\nsleep 10;\n"
-    world.clntCfg["content"] += "sudo " + world.f_cfg.software_install_path + \
-                                "dibbler-client " + str(option) + "&\n"
+    world.clntCfg["content"] += "sudo " + os.path.join(world.f_cfg.software_install_path, "dibbler-client") + " " + str(option) + "&\n"
     world.clntCfg["script"] = "temp1"
     script = open(world.clntCfg["script"], "w")
     script.write(world.clntCfg["content"])
@@ -193,7 +192,7 @@ def client_parse_config(step, contain):
     This step creates a structure similar to structure returned
     by iscpy.ISCParseString function; it is easier to
     play with parsing xml, so we won't touch that much
-    isc's dhclient dict; 
+    isc's dhclient dict;
     """
     result = {}
     result['lease6'] = {}
@@ -218,7 +217,7 @@ def client_parse_config(step, contain):
     """
     print result
     print "\n\n\n"
-    print world.clntCfg['scapy_lease'] 
+    print world.clntCfg['scapy_lease']
     print "\n\n\n"
     """
     if contain:
@@ -240,12 +239,12 @@ def start_clnt(step):
     make_script("start")
     get_common_logger().debug("Starting Dibbler Client with generated config:")
     fabric_send_file(world.clntCfg["Filename"], '/etc/dibbler/client.conf')
-    fabric_send_file(world.clntCfg["script"], world.f_cfg.software_install_path+'comm.sh')
+    fabric_send_file(world.clntCfg["script"], os.path.join(world.f_cfg.software_install_path, 'comm.sh'))
     fabric_remove_file_command(world.clntCfg["Filename"])
     # start client with clean log file
     fabric_remove_file_command(world.clntCfg["log_file"])
     fabric_run_command ('(rm nohup.out; nohup bash ' \
-                        + world.f_cfg.software_install_path + 'comm.sh &); sleep 3;')
+                        + os.path.join(world.f_cfg.software_install_path, 'comm.sh') + ' &); sleep 3;')
 
 
 # that could be use for making terrain.py even more generic ;)
@@ -264,11 +263,9 @@ def save_logs():
 
 
 def clear_all():
-    fabric_remove_file_command(world.f_cfg.software_install_path + 'comm.sh')
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'comm.sh'))
     fabric_remove_file_command('/etc/dibbler/client.conf')
     remove_local_file(world.clntCfg["Filename"])
     remove_local_file(world.clntCfg["script"])
     if not world.clntCfg["keep_lease"] and world.clntCfg['lease_file'] is not "":
         remove_local_file(world.clntCfg['lease_file'])
-
-

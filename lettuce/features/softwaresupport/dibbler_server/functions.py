@@ -22,17 +22,17 @@ from lettuce.registry import world
 
 
 def restart_srv():
-    fabric_run_command("("+world.f_cfg.software_install_path+"sbin/dibbler-server restart); sleep 1;")
+    fabric_run_command("(" + os.path.join(world.f_cfg.software_install_path, "sbin/dibbler-server") + " restart); sleep 1;")
 
 
 def stop_srv(value = False):
     #pass
-    fabric_run_command("("+world.f_cfg.software_install_path+"sbin/dibbler-server stop); sleep 1;", value)
+    fabric_run_command("(" + os.path.join(world.f_cfg.software_install_path, "sbin/dibbler-server") + " stop); sleep 1;", value)
 
 
 def prepare_cfg_default(step):
     world.cfg["conf"] = "# This is Forge generated config file.\n"
-    
+
 
 def add_defaults(rebinding_time = '1400', renewal_time = '10', preferred_lifetime = '1000',
                  lease_time = '2000', max_lease_time = '2000'):
@@ -128,12 +128,12 @@ def start_srv(a, b):
     """
     Start ISC-DHCPv6 with generated config.
     """
-    cfg_write() 
+    cfg_write()
     stop_srv()
     get_common_logger().debug("Starting Dibbler with generated config:")
     fabric_send_file(world.cfg["cfg_file"], '/etc/dibbler/server.conf')
     remove_local_file(world.cfg["cfg_file"])
-    fabric_run_command ('('+world.f_cfg.software_install_path+'sbin/dibbler-server start & ); sleep 4;')
+    fabric_run_command ('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/dibbler-server') + ' start & ); sleep 4;')
 
 
 def save_leases():

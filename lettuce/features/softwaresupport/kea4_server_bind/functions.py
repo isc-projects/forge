@@ -24,7 +24,7 @@ from softwaresupport.kea6_server_bind.functions import search_for_errors, parsin
     set_logger, cfg_write, set_time, save_leases, save_logs, clear_all
 
 world.kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
-                "time-offset": 2, 
+                "time-offset": 2,
                 "routers": 3, # ipv4-address (single)
                 "time-servers": 4, # ipv4-address (single)
                 "name-servers": 5, # ipv4-address (array)
@@ -34,13 +34,13 @@ world.kea_options4 = {"subnet-mask": 1, # ipv4-address (array)
                 "lpr-servers": 9, # ipv4-address (single)
                 "impress-servers": 10, # ipv4-address (single)
                 "resource-location-servers": 11, # ipv4-address (single)
-                "host-name": 12, # string 
+                "host-name": 12, # string
                 "boot-size": 13,
-                "merit-dump": 14, # string 
+                "merit-dump": 14, # string
                 "domain-name": 15, # fqdn (single)
                 "swap-server": 16, # ipv4-address (single)
-                "root-path": 17, # string 
-                "extensions-path": 18, # string 
+                "root-path": 17, # string
+                "extensions-path": 18, # string
                 "ip-forwarding": 19, # boolean
                 "non-local-source-routing": 20, # boolean
                 "policy-filter": 21, # ipv4-address (single)
@@ -193,8 +193,8 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
     assert option_name in world.kea_options4, "Unsupported option name " + option_name
     option_code = world.kea_options4.get(option_name)
     csv_format, option_value = check_empty_value(option_value)
-    
-    # need to have numbers for multiple options for each subnet! 
+
+    # need to have numbers for multiple options for each subnet!
     world.cfg["conf"] += '''
         config add Dhcp4/subnet4[{subnet}]/option-data
         config set Dhcp4/subnet4[{subnet}]/option-data[0]/name "{option_name}"
@@ -293,9 +293,9 @@ def prepare_cfg_kea4_for_kea4_stop(filename):
 def run_bindctl(succeed, opt):
     """
     Run bindctl with prepered config file
-    """    
-    world.cfg['leases'] = world.f_cfg.software_install_path + 'var/bind10/kea-leases4.csv'
-    
+    """
+    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/bind10/kea-leases4.csv')
+
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
         cfg_file = 'kea4-stop.cfg'
@@ -303,18 +303,18 @@ def run_bindctl(succeed, opt):
         prepare_config_file(cfg_file)
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
-        
+
     if opt == "start":
         if world.f_cfg.save_logs:
             set_logger()
-        
+
         get_common_logger().debug('starting fresh kea')
         cfg_file = 'kea4-start.cfg'
         prepare_cfg_kea4_for_kea4_start(cfg_file)
         prepare_config_file(cfg_file)
         fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
-        
+
     if opt == "configuration":
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
@@ -329,13 +329,13 @@ def run_bindctl(succeed, opt):
         copy_configuration_file(cfg_file + '_processed')
         remove_local_file(cfg_file + '_processed')
         world.cfg["conf"] = ""
-        
+
     if opt == "restart":
         restart_srv()
-    
+
     result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | '
-                                + world.f_cfg.software_install_path + 'bin/bindctl ); sleep 1')
-    
+                                + os.path.join(world.f_cfg.software_install_path, 'bin/bindctl') + ' ); sleep 1')
+
     search_for_errors(succeed, opt, result, ["ImportError:", '"config revert".', "Error"])
     parsing_bind_stdout(result.stdout, opt, ['Broken pipe'])
 
@@ -345,8 +345,8 @@ def start_srv(start, process):
     start = True
     clean = True
 
-    # Switch one of three processess to false, which? That is decided in 
-    # Server failed to start. During (\S+) process.) step.    
+    # Switch one of three processess to false, which? That is decided in
+    # Server failed to start. During (\S+) process.) step.
     if process is None and start:
         pass
     elif process == 'configuration':
@@ -357,7 +357,7 @@ def start_srv(start, process):
         clean = False
     else:
         assert False, "Process: '" + process + "' not supported."
-        
+
     cfg_write()
     get_common_logger().debug("Bind10, dhcp4 configuration procedure:")
     run_bindctl(clean, 'clean')  # clean and stop
@@ -372,7 +372,7 @@ def stop_srv(value = False):
 
 def restart_srv():
     # can't be less then 7, server needs time to restart.
-    fabric_run_command('(echo "Dhcp4 shutdown" | ' + world.f_cfg.software_install_path + 'bin/bindctl ); sleep 10')
+    fabric_run_command('(echo "Dhcp4 shutdown" | ' + os.path.join(world.f_cfg.software_install_path, 'bin/bindctl') + ' ); sleep 10')
 
 
 def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):

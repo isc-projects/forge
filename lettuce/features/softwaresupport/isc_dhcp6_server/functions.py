@@ -148,8 +148,7 @@ def restart_srv():
     stop_srv()
     fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
-    fabric_sudo_command('(' + world.f_cfg.software_install_path
-                        + 'sbin/dhcpd -6 -cf server.cfg_processed -lf '
+    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/dhcpd') + ' -6 -cf server.cfg_processed -lf '
                         + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 
 
@@ -469,8 +468,10 @@ def set_ethernet_interface():
 #     fabric_cmd(cmd1,0)
 def build_leases_path():
     leases_file = '/var/db/dhcpd6.leases'
-    if world.f_cfg.software_install_path != "/usr/local/":
-        leases_file = world.f_cfg.software_install_path + 'dhcpd6.leases'
+
+    # TODO: why this hack?
+    if not world.f_cfg.software_install_path.startswith("/usr/local"):
+        leases_file = os.path.join(world.f_cfg.software_install_path, 'dhcpd6.leases')
     return leases_file
 
 
@@ -558,8 +559,7 @@ def start_srv(start, process):
     #fabric_run_command('echo y |rm ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
 
-    result = fabric_sudo_command('(' + world.f_cfg.software_install_path
-                                 + 'sbin/dhcpd -6 -cf server.cfg_processed'
+    result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/dhcpd') + ' -6 -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
                                  + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 

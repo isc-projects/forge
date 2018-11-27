@@ -154,8 +154,9 @@ def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
 def save_logs(destination_address=world.f_cfg.mgmt_address):
     fabric_download_file('/tmp/dns.log',
                          check_local_path_for_downloaded_files(world.cfg["dir_name"],
-                                                               '/dns/dns_log_file', destination_address),
-                         destination_host=destination_address)
+                                                               'dns/dns_log_file',
+                                                               destination_address),
+                         destination_host=destination_address, warn_only=True)
 
 
 def clear_all(destination_address=world.f_cfg.mgmt_address):
