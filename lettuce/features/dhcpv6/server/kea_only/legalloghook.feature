@@ -1,11 +1,11 @@
 Feature: Kea6 Legal logging hook
 Testing hook that is creating additional file with detailed logs about clients
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-duid
 
 Test Procedure:
-Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
 Test Setup:
 Time renew-timer is configured with value 100.
@@ -14,7 +14,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -43,7 +43,7 @@ Server MUST respond with REPLY message.
 Response MUST include option 3.
 Response option 3 MUST contain sub-option 5.
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-duid-mysql
 
 Remove all records from table logs in MySQL database.
@@ -55,7 +55,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: mysql
@@ -90,7 +90,7 @@ Response option 3 MUST contain sub-option 5.
 
 Table logs in MySQL database MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-duid-pgsql
 
 Remove all records from table logs in PostgreSQL database.
@@ -102,7 +102,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: postgresql
@@ -137,11 +137,11 @@ Response option 3 MUST contain sub-option 5.
 
 Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-renewed-duid
 
 Test Procedure:
-Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
 Test Setup:
 Time renew-timer is configured with value 100.
@@ -150,7 +150,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -193,12 +193,12 @@ Response MUST include option 2.
 Response MUST include option 3.
 Response option 3 MUST contain sub-option 5.
 
-Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-renewed-duid-mysql
 
 Test Procedure:
@@ -211,7 +211,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: mysql
@@ -261,7 +261,7 @@ Response option 3 MUST contain sub-option 5.
 Table logs in MySQL database MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 Table logs in MySQL database MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-renewed-duid-pgsql
 
 Test Procedure:
@@ -274,7 +274,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: postgresql
@@ -325,11 +325,11 @@ Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 h
 Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-rebind-duid
 
 Test Procedure:
-Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
 Test Setup:
 Time renew-timer is configured with value 100.
@@ -338,7 +338,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -380,12 +380,12 @@ Response MUST include option 2.
 Response MUST include option 3.
 Response option 3 MUST contain sub-option 5.
 
-Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 # Spec says that when we are rebinding address it will be logged 'renewed', misleading :/
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-rebind-duid-pgsql
 
 Test Procedure:
@@ -398,7 +398,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: postgresql
@@ -448,7 +448,7 @@ Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 h
 # Spec says that when we are rebinding address it will be logged 'renewed', misleading :/
 Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-rebind-duid-mysql
 
 Test Procedure:
@@ -461,7 +461,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: mysql
@@ -511,11 +511,11 @@ Table logs in MySQL database MUST contain line or phrase: Address:3000::5 has be
 # Spec says that when we are rebinding address it will be logged 'renewed', misleading :/
 Table logs in MySQL database MUST contain line or phrase: Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-modem
 
 Test Procedure:
-Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
 Test Setup:
 Time renew-timer is configured with value 100.
@@ -524,7 +524,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 Run configuration command: "mac-sources": [ "docsis-modem" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -558,10 +558,10 @@ Server MUST respond with REPLY message.
 Response MUST include option 3.
 Response option 3 MUST contain sub-option 5.
 
-Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)
+Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-modem-pgsql
 
 Test Procedure:
@@ -574,7 +574,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: postgresql
@@ -614,7 +614,7 @@ Response option 3 MUST contain sub-option 5.
 
 Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-modem-mysql
 
 Test Procedure:
@@ -627,7 +627,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: mysql
@@ -667,11 +667,11 @@ Response option 3 MUST contain sub-option 5.
 
 Table logs in MySQL database MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-cmts
 
 Test Procedure:
-Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
 Test Setup:
 Time renew-timer is configured with value 100.
@@ -680,7 +680,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 Run configuration command: "mac-sources": [ "docsis-cmts" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -711,10 +711,10 @@ Pass Criteria:
 Server MUST respond with RELAYREPLY message.
 Response MUST include option 18.
 Response MUST include option 9.
-Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)
+Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-cmts-pgsql
 
 Test Procedure:
@@ -727,7 +727,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: postgresql
@@ -765,7 +765,7 @@ Response MUST include option 9.
 
 Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-docsis-cmts-mysql
 
 Test Procedure:
@@ -778,7 +778,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: mysql
@@ -816,11 +816,11 @@ Response MUST include option 9.
 
 Table logs in MySQL database MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-relay
 
 Test Procedure:
-Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
 Test Setup:
 Time renew-timer is configured with value 100.
@@ -829,7 +829,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -864,12 +864,12 @@ Pass Criteria:
 Server MUST respond with RELAYREPLY message.
 Response MUST include option 18.
 Response MUST include option 9.
-Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) connected via relay
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: connected via relay at address:
-File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: for client on link address: 3000::1005, hop count: 5
+Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) connected via relay
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: connected via relay at address:
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: for client on link address: 3000::1005, hop count: 5
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-relay-pgsql
 
 Test Procedure:
@@ -882,7 +882,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: postgresql
@@ -926,7 +926,7 @@ Table logs in PostgreSQL database MUST contain line or phrase: Address:3000::5 h
 Table logs in PostgreSQL database MUST contain line or phrase: connected via relay at address:
 Table logs in PostgreSQL database MUST contain line or phrase: for client on link address: 3000::1005, hop count: 5
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-address-assigned-relay-mysql
 
 Test Procedure:
@@ -939,7 +939,7 @@ Time preferred-lifetime is configured with value 400.
 Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: mysql
@@ -984,7 +984,7 @@ Table logs in MySQL database MUST contain line or phrase: connected via relay at
 Table logs in MySQL database MUST contain line or phrase: for client on link address: 3000::1005, hop count: 5
 
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-with-flex-id-address-assigned-mysql
 
 Remove all records from table logs in MySQL database.
@@ -998,12 +998,12 @@ Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
 For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: mysql
 To hook no. 1 add parameter named user with value: keauser
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
 To hook no. 2 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
 Send server configuration using SSH and config-file.
@@ -1043,7 +1043,7 @@ Response option 3 MUST contain sub-option 5.
 
 Table logs in MySQL database MUST contain line or phrase: Address:3000::f has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
-@v6 @dhcp6 @kea_only @legal_logging 
+@v6 @dhcp6 @kea_only @legal_logging
 Scenario: v6.loggers.legal-log-hook-with-flex-id-address-assigned-pgsql
 
 Remove all records from table logs in PostgreSQL database.
@@ -1057,12 +1057,12 @@ Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
 For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
 To hook no. 1 add parameter named name with value: keadb
 To hook no. 1 add parameter named password with value: keapass
 To hook no. 1 add parameter named type with value: postgresql
 To hook no. 1 add parameter named user with value: keauser
-Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_flex_id.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
 To hook no. 2 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
 Send server configuration using SSH and config-file.

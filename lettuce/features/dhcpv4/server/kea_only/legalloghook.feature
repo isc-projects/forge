@@ -3,14 +3,14 @@ Feature: Kea6 legal logging
 @v4 @dhcp4 @kea_only @legal_logging
 Scenario: v4.legal.log.assigned-address
   Test Procedure:
-  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
   Test Setup:
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -46,9 +46,9 @@ DHCP server is started.
   Response option 1 MUST contain value 255.255.255.0.
   Response option 61 MUST contain value 00010203040506.
 
-  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06
+  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06
 
 Scenario: v4.legal.log.assigned-address-pgsql
   Test Procedure:
@@ -59,7 +59,7 @@ Scenario: v4.legal.log.assigned-address-pgsql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: postgresql
@@ -111,7 +111,7 @@ Scenario: v4.legal.log.assigned-address-mysql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: mysql
@@ -157,14 +157,14 @@ Scenario: v4.legal.log.assigned-address-mysql
 @v4 @dhcp4 @kea_only @legal_logging
 Scenario: v4.legal.log.assigned-address-without-client-id
   Test Procedure:
-  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
   Test Setup:
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -194,10 +194,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id
   Response MUST include option 54.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST NOT contain line or phrase: client-id:
+  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST NOT contain line or phrase: client-id:
 
 @v4 @dhcp4 @kea_only @legal_logging
 Scenario: v4.legal.log.assigned-address-without-client-id-pgsql
@@ -209,7 +209,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-pgsql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: postgresql
@@ -258,7 +258,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: mysql
@@ -300,14 +300,14 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
 @v4 @dhcp4 @kea_only @legal_logging
   Scenario: v4.legal.log.assigned-address-via-relay-pgsql
   Test Procedure:
-  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
   Test Setup:
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.2-192.168.50.2 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -344,10 +344,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 
-  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs to a device with hardware address: hwtype=1 00:00:00:00:00:00,
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: client-id: 00:01:02:03:04:05:77 connected via relay at address: $(GIADDR4)
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs to a device with hardware address: hwtype=1 00:00:00:00:00:00,
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: client-id: 00:01:02:03:04:05:77 connected via relay at address: $(GIADDR4)
 
 @v4 @dhcp4 @kea_only @legal_logging
   Scenario: v4.legal.log.assigned-address-via-relay-pgsql
@@ -359,7 +359,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.2-192.168.50.2 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: postgresql
@@ -413,7 +413,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.2-192.168.50.2 pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: mysql
@@ -460,13 +460,13 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
 @v4 @dhcp4 @kea_only @legal_logging
   Scenario: v4.legal.log.renewed-address
   Test Procedure:
-  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
   Test Setup:
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -522,9 +522,9 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Response MUST include option 54.
   Response option 54 MUST contain value $(SRV4_ADDR).
 
-  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)
+  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)
 
 @v4 @dhcp4 @kea_only @legal_logging
   Scenario: v4.legal.log.renewed-address-pgsql
@@ -535,7 +535,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: postgresql
@@ -607,7 +607,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: mysql
@@ -673,13 +673,13 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
 @v4 @dhcp4 @kea_only @legal_logging
   Scenario: v4.legal.log.rebind-address
   Test Procedure:
-  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
+  Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
 
   Test Setup:
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 4.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -735,9 +735,9 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Response MUST include option 54.
   Response option 54 MUST contain value $(SRV4_ADDR).
 
-  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt.
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)
+  Client download file from server stored in: $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt.
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)
 
 @v4 @dhcp4 @kea_only @legal_logging
   Scenario: v4.legal.log.rebind-address-mysql
@@ -748,7 +748,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 4.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: mysql
@@ -821,7 +821,7 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time renew-timer is configured with value 3.
   Time rebind-timer is configured with value 4.
   Time valid-lifetime is configured with value 600.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)lib/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
   To hook no. 1 add parameter named name with value: keadb
   To hook no. 1 add parameter named password with value: keapass
   To hook no. 1 add parameter named type with value: postgresql

@@ -27,8 +27,8 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01,0
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: f6:f5:f4:f3:f2:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01,0
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: f6:f5:f4:f3:f2:01
 
 @v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.duid-type1
@@ -57,8 +57,8 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,08:00:27:58:f1:e8
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 08:00:27:58:f1:e8
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,08:00:27:58:f1:e8
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: 08:00:27:58:f1:e8
 
 @v6 @MACinDHCP6 @kea_only
     Scenario: v6.mac.in.dhcp6.any
@@ -86,8 +86,8 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: f6:f5:f4:f3:f2:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: f6:f5:f4:f3:f2:01
 
 
 @v6 @MACinDHCP6 @kea_only
@@ -116,8 +116,8 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: $(CLI_MAC)
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: $(CLI_MAC)
 
 
 @v6 @MACinDHCP6 @kea_only
@@ -153,8 +153,8 @@ DHCP server is started.
 	Server MUST respond with RELAYREPLY message.
     Response MUST include option 18.
     Response MUST include option 9.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: $(CLI_MAC)
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: $(CLI_MAC)
 
 
 @v6 @MACinDHCP6 @kea_only
@@ -189,8 +189,8 @@ DHCP server is started.
 	Server MUST respond with RELAYREPLY message.
     Response MUST include option 18.
     Response MUST include option 9. #we need to check logs
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: $(CLI_MAC)
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,$(CLI_MAC)
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: $(CLI_MAC)
 
 
 @v6 @MACinDHCP6 @kea_only
@@ -226,8 +226,8 @@ DHCP server is started.
 	Server MUST respond with RELAYREPLY message.
     Response MUST include option 18.
     Response MUST include option 9.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:01
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:01
 
 
 @v6 @MACinDHCP6 @kea_only
@@ -263,8 +263,8 @@ DHCP server is started.
 	Server MUST respond with RELAYREPLY message.
     Response MUST include option 18.
     Response MUST include option 9.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:01
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:01
 
 
 @v6 @MACinDHCP6 @kea_only @disabled
@@ -301,8 +301,8 @@ DHCP server is started.
 	Server MUST respond with RELAYREPLY message.
     Response MUST include option 18.
     Response MUST include option 9.
-	File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:02
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:02
+	File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:02
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:02
 
 
 @v6 @MACinDHCP6 @kea_only @disabled
@@ -339,8 +339,8 @@ DHCP server is started.
 	Server MUST respond with RELAYREPLY message.
     Response MUST include option 18.
     Response MUST include option 9.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:02
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:02
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,0a:00:27:00:00:02
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: 0a:00:27:00:00:02
 
 
 @v6 @MACinDHCP6 @kea_only
@@ -372,8 +372,8 @@ DHCP server is started.
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: f6:f5:f4:f3:f2:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,f6:f5:f4:f3:f2:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: f6:f5:f4:f3:f2:01
 
 
 @v6 @MACinDHCP6 @kea_only
@@ -410,5 +410,5 @@ DHCP server is started.
 	Server MUST respond with RELAYREPLY message.
     Response MUST include option 18.
     Response MUST include option 9.
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases6.csv MUST contain line or phrase: ,00:f5:f4:00:f2:01
-    File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea.log MUST contain line or phrase: Hardware addr: 00:f5:f4:00:f2:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: ,00:f5:f4:00:f2:01
+    File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: Hardware addr: 00:f5:f4:00:f2:01

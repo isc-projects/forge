@@ -75,14 +75,11 @@ def test_define_value(*args):
     Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
     Bash like define variables: $(variable_name)
     You can use steps like:
-        Client download file from server stored in: $(SERVER_SETUP_DIR)other_dir/my_file
+        Client download file from server stored in: $(SERVER_SETUP_DIR)/other_dir/my_file
     or
-        Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)my_file
+        Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/my_file
 
     $ sign is very important without it Forge wont find variable in init_all.
-
-    There is no slash ("/") between $(SOFTWARE_INSTALL_DIR) and my_file because variable $(SOFTWARE_INSTALL_DIR)
-    should end with slash.
 
     You can use any variable form init_all in that way. Also you can add them using step:
     "Client defines new variable: (\S+) with value (\S+)."

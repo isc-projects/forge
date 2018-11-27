@@ -6,7 +6,7 @@ Scenario: stats_6
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-    Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket.
+    Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 	DHCP server is started.
 
     Test Procedure:
@@ -26,12 +26,12 @@ Scenario: stats_6
 
 	Exchange messages SOLICIT - ADVERTISE 50 times.
 
-	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "list-commands","arguments": {}}
-	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
+	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "list-commands","arguments": {}}
+	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
 	Exchange messages SOLICIT - ADVERTISE 50 times.
 
-	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
+	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
     Exchange messages SOLICIT - ADVERTISE 50 times.
 
@@ -62,14 +62,14 @@ Scenario: stats_6
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-receive-drop"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-parse-failed"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-solicit-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-confirm-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-advertise-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-reply-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-receive-drop"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-parse-failed"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-solicit-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-confirm-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-advertise-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-reply-received"}}
 
 	Test Procedure:
 	Client does include client-id.
@@ -103,7 +103,7 @@ Scenario: stats_6
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-renew-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-renew-received"}}
 
 	Test Procedure:
 	Client requests option 7.
@@ -133,9 +133,9 @@ Scenario: stats_6
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-rebind-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-release-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-rebind-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-release-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}
 
 	Test Procedure:
 	Client requests option 7.
@@ -143,15 +143,15 @@ Scenario: stats_6
 
 	Pass Criteria:
 	Server MUST respond with REPLY message.
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-infrequest-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-unknown-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-sent"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-infrequest-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-unknown-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-sent"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}
 
     Exchange messages REQUEST - REPLY 50 times.
 
@@ -181,39 +181,39 @@ Scenario: stats_6
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}
 
     Exchange messages REQUEST - REPLY 50 times.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get-all","arguments":{}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-reset","arguments": {"name": "pkt6-request-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get-all","arguments":{}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-reset","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
 
     Exchange messages SOLICIT - ADVERTISE 50 times.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
 
     Exchange messages REQUEST - REPLY 50 times.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-remove","arguments": {"name": "pkt6-request-received"}}
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-remove","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
 
     Exchange messages SOLICIT - ADVERTISE 50 times.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
 
     Exchange messages REQUEST - REPLY 50 times.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}
 
 	Test Procedure:
 	Client requests option 7.
@@ -243,32 +243,32 @@ Scenario: stats_6
 	Pass Criteria:
 	Server MUST respond with REPLY message.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 	Server is configured with another subnet: 3000:100::/64 with 3000:100::5-3000:100::ff pool.
     Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-    Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
+    Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2.
 	Reconfigure DHCP server.
 
-	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
+	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
 	Reconfigure DHCP server.
 
-	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
+	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-    Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2.
+    Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2.
 	Reconfigure DHCP server.
 
-	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
+	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
 
     Restart DHCP server.
 
-    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
+    Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}

@@ -191,8 +191,8 @@ Feature: Shared-Networks
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
 @v4 @sharednetworks @sharedsubnets @kea_only
   Scenario: v4.sharednetworks.single-shared-subnet-with-tree-subnets-based-on-iface-options-override
@@ -251,7 +251,7 @@ Feature: Shared-Networks
   Response option 4 MUST NOT contain value 199.199.199.200.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
 
   Test Procedure:
   Client sets chaddr value to 00:00:00:00:00:33.
@@ -289,7 +289,7 @@ Feature: Shared-Networks
   Response option 4 MUST NOT contain value 199.199.199.200.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
   Test Procedure:
   Client sets chaddr value to 00:00:00:00:00:44.
@@ -327,7 +327,7 @@ Feature: Shared-Networks
   Response option 4 MUST NOT contain value 199.199.199.100.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.52.1,00:00:00:00:00:44
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.52.1,00:00:00:00:00:44
 
 @v4 @sharednetworks @sharedsubnets @kea_only
   Scenario: v4.sharednetworks.single-shared-subnet-with-three-subnets-based-on-relay-address-options-override
@@ -395,7 +395,7 @@ Feature: Shared-Networks
   Response option 4 MUST NOT contain value 199.199.199.200.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:11
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:11
 
   #2
   Test Procedure:
@@ -441,7 +441,7 @@ Feature: Shared-Networks
   Response option 4 MUST NOT contain value 199.199.199.200.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:22
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:22
 
   #3
   Test Procedure:
@@ -487,7 +487,7 @@ Feature: Shared-Networks
   Response option 4 MUST NOT contain value 199.199.199.100.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.52.1,00:00:00:00:00:33
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.52.1,00:00:00:00:00:33
 
   #4
   Test Procedure:
@@ -578,8 +578,8 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:aa
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:bb
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:aa
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:bb
 
   Test Procedure:
   Set network variable source_port with value 67.
@@ -624,7 +624,7 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response option 4 MUST NOT contain value 199.199.199.200.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.52.1,00:00:00:00:00:22
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.52.1,00:00:00:00:00:22
 
   #3
   Test Procedure:
@@ -670,7 +670,7 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response option 4 MUST NOT contain value 199.199.199.100.
   Response option 4 MUST NOT contain value 199.199.199.1.
 
-  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.53.1,00:00:00:00:00:33
+  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.53.1,00:00:00:00:00:33
 
 
 @v4 @sharednetworks @sharedsubnets @kea_only
@@ -735,7 +735,7 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 
-#  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+#  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
 
   Test Procedure:
   Client sets chaddr value to 00:00:00:00:00:33.
@@ -765,7 +765,7 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 
-#  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+#  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
 @v4 @sharednetworks @sharedsubnets @kea_only
   Scenario: v4.sharednetworks.single-shared-subnet-with-three-subnets-client-classification-server-identifier
@@ -833,7 +833,7 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response option 54 MUST NOT contain value 44.44.44.222.
   Response option 54 MUST contain value 11.22.33.123.
 
-#  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+#  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
 
   Test Procedure:
   Client sets chaddr value to 00:00:00:00:00:33.
@@ -904,7 +904,7 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response option 54 MUST NOT contain value 11.22.33.123.
   Response option 54 MUST NOT contain value 44.44.44.222.
   Response option 54 MUST contain value $(SRV4_ADDR).
-#  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+#  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
   @v4 @sharednetworks @sharedsubnets @kea_only
   Scenario: v4.sharednetworks.single-shared-subnet-with-three-subnets-client-classification-server-identifier-negative
@@ -974,7 +974,7 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response option 54 MUST NOT contain value 44.44.44.222.
   Response option 54 MUST contain value 11.22.33.123.
 
-#  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+#  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
 
   Test Procedure:
   Client sets chaddr value to 00:00:00:00:00:33.
@@ -1045,4 +1045,4 @@ Scenario: v4.sharednetworks.two-shared-subnet-with-two-subnets-based-on-relay-ad
   Response option 54 MUST NOT contain value 11.22.33.123.
   Response option 54 MUST NOT contain value 44.44.44.222.
   Response option 54 MUST contain value $(SRV4_ADDR).
-#  File stored in $(SOFTWARE_INSTALL_DIR)var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+#  File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
