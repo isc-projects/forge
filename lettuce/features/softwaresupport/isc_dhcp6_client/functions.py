@@ -26,25 +26,25 @@ def prepare_default_command():
     """
     build_leases_path()
     build_config_path()
-    world.clntCfg["log_file"] = world.f_cfg.software_install_path + "dhclient.log"
-    world.clntCfg["command"] = world.f_cfg.software_install_path + 'sbin/dhclient -6 -v ' \
+    world.clntCfg["log_file"] = os.path.join(world.f_cfg.software_install_path, "dhclient.log")
+    world.clntCfg["command"] = os.path.join(world.f_cfg.software_install_path, 'sbin/dhclient') + ' -6 -v ' \
                                + world.f_cfg.iface + " -lf " +  world.clntCfg["leases"] + \
                                " -cf " + world.clntCfg["confpath"] + " &> " + \
-                               world.clntCfg["log_file"] 
+                               world.clntCfg["log_file"]
 
 
 def build_leases_path():
     """
     This small function stores in variable a path for leases file.
     """
-    world.clntCfg["leases"] = world.f_cfg.software_install_path + "dhclient.leases"
+    world.clntCfg["leases"] = os.path.join(world.f_cfg.software_install_path, "dhclient.leases")
 
 
 def build_config_path():
     """
     This small function stores in variable a path for config file.
     """
-    world.clntCfg["confpath"] = world.f_cfg.software_install_path + "dhclient.conf"
+    world.clntCfg["confpath"] = os.path.join(world.f_cfg.software_install_path, "dhclient.conf")
 
 
 def clean_leases():
@@ -111,7 +111,7 @@ def kill_clnt():
 
 def release_command():
     """
-    Function that executes a previously generated command with "-r" 
+    Function that executes a previously generated command with "-r"
     option, which results in sending by dhclient RELEASE repeatedly, until
     REPLY is received. There's no need to execute it with delay like in
     dibbler-client's case, since message will being retransmitted.
@@ -166,7 +166,7 @@ def client_parse_config(step, contain):
     @step("Client MUST (NOT )?use prefix with values given by server.")
 
     Step firstly downloads a lease file from DUT. Then, the needed parts
-    are further parsed and specific lease structure is created. 
+    are further parsed and specific lease structure is created.
     """
     world.clntCfg["lease_file"] = world.cfg["dir_name"] + "/dhclient.leases"
     fabric_download_file(world.clntCfg["leases"], world.clntCfg["lease_file"])
@@ -202,7 +202,7 @@ def client_parse_config(step, contain):
         elif line[0] == "}":
             line[0] += ";"
         copied.append(line)
-    
+
     copied = [" ".join(line) + "\n" for line in copied]
     result = " ".join(copied)
     parsed = ParseISCString(result)
@@ -214,11 +214,11 @@ def client_parse_config(step, contain):
                 for key in parsed['lease6'][entry].keys():
                     if key.startswith('iaprefix'):
                         del(parsed['lease6'][entry][key]['starts'])
-   
-    world.clntCfg["real_lease"] = parsed 
+
+    world.clntCfg["real_lease"] = parsed
     """
     print "\n\n\n"
-    print world.clntCfg["real_lease"] 
+    print world.clntCfg["real_lease"]
     print "\n\n\n"
     print world.clntCfg['scapy_lease']
     print "\n\n\n"
@@ -242,12 +242,12 @@ def start_clnt(step):
     get_common_logger().debug("Start dhclient6 with generated config:")
     clean_leases()
     world.clntCfg["keep_lease"] = False
-    fabric_send_file(world.clntCfg["Filename"], world.f_cfg.software_install_path + "dhclient.conf")
-    fabric_send_file(world.clntCfg["script"], world.f_cfg.software_install_path + "comm.sh")
+    fabric_send_file(world.clntCfg["Filename"], os.path.join(world.f_cfg.software_install_path, "dhclient.conf"))
+    fabric_send_file(world.clntCfg["script"], os.path.join(world.f_cfg.software_install_path, "comm.sh"))
     fabric_remove_file_command(world.clntCfg["Filename"])
     fabric_remove_file_command(world.clntCfg["log_file"])
     fabric_sudo_command('(rm nohup.out; nohup bash ' + \
-                        world.f_cfg.software_install_path + 'comm.sh &); sleep 1;')
+                        os.path.join(world.f_cfg.software_install_path, 'comm.sh') + ' &); sleep 1;')
 
 
 def save_leases():
@@ -260,12 +260,10 @@ def save_logs():
 
 
 def clear_all():
-    fabric_remove_file_command(world.f_cfg.software_install_path + 'comm.sh')
-    fabric_remove_file_command(world.f_cfg.software_install_path + 'dhclient.conf')
-    fabric_remove_file_command(world.f_cfg.software_install_path + 'dhclient.leases')
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'comm.sh'))
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'dhclient.conf'))
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'dhclient.leases'))
     remove_local_file(world.clntCfg["Filename"])
     remove_local_file(world.clntCfg["script"])
     if not world.clntCfg["keep_lease"] and world.clntCfg['lease_file'] is not "":
         remove_local_file(world.clntCfg['lease_file'])
-
-

@@ -217,10 +217,10 @@ def upload_db_reservation():
         db_reservation = open("db_reservation", 'w')
         db_reservation.write(each_record.configuration_script)
         db_reservation.close()
-        fabric_send_file("db_reservation", world.f_cfg.software_install_path + "etc/kea/db_reservation")
+        fabric_send_file("db_reservation", os.path.join(world.f_cfg.software_install_path, "etc/kea/db_reservation"))
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
-        result = fabric_sudo_command('cat ' + world.f_cfg.software_install_path + 'etc/kea/db_reservation |  psql -U {db_user} -d {db_name}'.format(**locals()))
+        result = fabric_sudo_command('cat ' + os.path.join(world.f_cfg.software_install_path, 'etc/kea/db_reservation') + ' |  psql -U {db_user} -d {db_name}'.format(**locals()))
         # TODO check result of uploading, fail the test if necessary
 
 

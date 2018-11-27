@@ -16,13 +16,13 @@
 # Author: Wlodzimierz Wencel
 
 #
-# This file contain management functions for BIND 10 
-# 
+# This file contain management functions for BIND 10
+#
 #
 
 from features.logging_facility import get_common_logger
 
-from multi_server_functions import fabric_sudo_command 
+from multi_server_functions import fabric_sudo_command
 
 
 def kill_bind10():
@@ -39,5 +39,4 @@ def start_bind10():
     """
     get_common_logger().debug("Starting Bind instances")
 
-    return fabric_sudo_command('(rm nohup.out; nohup ' + world.f_cfg.software_install_path +
-                               'sbin/bind10 &); sleep ' + str(world.f_cfg.sleep_time_1))
+    return fabric_sudo_command('(rm nohup.out; nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/bind10') + ' &); sleep ' + str(world.f_cfg.sleep_time_1))

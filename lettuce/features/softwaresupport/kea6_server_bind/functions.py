@@ -85,9 +85,9 @@ def prepare_cfg_subnet(step, subnet, pool):
     eth = world.f_cfg.server_iface
     world.cfg["conf"] = '''
         # subnet defintion Kea 6
-        config set Dhcp6/renew-timer {t1} 
+        config set Dhcp6/renew-timer {t1}
         config set Dhcp6/rebind-timer {t2}
-        config set Dhcp6/preferred-lifetime {t3} 
+        config set Dhcp6/preferred-lifetime {t3}
         config set Dhcp6/valid-lifetime {t4}
         config add Dhcp6/subnet6
         config set Dhcp6/subnet6[0]/subnet "{subnet}"
@@ -133,15 +133,15 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
 def prepare_cfg_add_option(step, option_name, option_value, space):
 #     if (not "conf" in world.cfg):
 #         world.cfg["conf"] = ""
-    
+
     option_code = kea_options6.get(option_name)
-    
+
     if option_code is None:
         option_code = kea_otheroptions.get(option_name)
-    
+
     assert option_code is not None, "Unsupported option name for other Kea6 options: " + option_name
     number = world.dhcp["option_cnt"]
-    
+
     world.cfg["conf"] += '''config add Dhcp6/option-data
         config set Dhcp6/option-data[{number}]/name "{option_name}"
         config set Dhcp6/option-data[{number}]/code {option_code}
@@ -240,14 +240,14 @@ def prepare_cfg_kea6_for_kea6_start():
 
 
 def run_command(step, command):
-    world.cfg["conf"] += ('\n'+command+'\n') 
+    world.cfg["conf"] += ('\n'+command+'\n')
 
 
 def set_logger():
     file_name = world.name.replace(".", "_")
-    type = BIND_LOG_TYPE 
+    type = BIND_LOG_TYPE
     lvl = BIND_LOG_LVL
-    module = BIND_MODULE 
+    module = BIND_MODULE
 
     logger_str = '''
     config add Logging/loggers
@@ -269,7 +269,7 @@ def set_logger():
 
     fabric_send_file(cfg_file + '_processed', cfg_file + '_processed')
     fabric_run_command('(rm -f log_file | echo "execute file ' + cfg_file + '_processed" | '
-                       + world.f_cfg.software_install_path + 'bin/bindctl ); sleep ' + str(world.f_cfg.sleep_time_2))
+                       + os.path.join(world.f_cfg.software_install_path, 'bin/bindctl') + ' ); sleep ' + str(world.f_cfg.sleep_time_2))
     remove_local_file(cfg_file + '_processed')
 
 
@@ -310,14 +310,14 @@ def start_srv(start, process):
     """
     Start kea with generated config
     """
-    
+
     # All 3 available processess set to 'True' it means that they should to succeed
     configuration = True
     start = True
     clean = True
 
-    # Switch one of three processess to false, which? That is decided in 
-    # Server failed to start. During (\S+) process.) step.    
+    # Switch one of three processess to false, which? That is decided in
+    # Server failed to start. During (\S+) process.) step.
     if process is None and start:
         pass
     elif process == 'configuration':
@@ -343,19 +343,19 @@ def stop_srv(value = False):
 
 def restart_srv():
     # can't be less then 7, server needs time to restart.
-    fabric_run_command('(echo "Dhcp6 shutdown" | ' + world.f_cfg.software_install_path + 'bin/bindctl ); sleep 10')
+    fabric_run_command('(echo "Dhcp6 shutdown" | ' + os.path.join(world.f_cfg.software_install_path, 'bin/bindctl') + ' ); sleep 10')
 
 
 def parsing_bind_stdout(stdout, opt, search = []):
     """
     Modify this function if you wont react to some bind stdout
-    This function is particulary of one type of error that causes BIND to stop responding. 
+    This function is particulary of one type of error that causes BIND to stop responding.
     BIND restart is necessary.
     """
     #search = []
-    for each in search: 
+    for each in search:
         if each in stdout:
-            print "RESTART BIND10, found ", each 
+            print "RESTART BIND10, found ", each
             #Bind10 needs to be restarted after error, can be removed after fix ticket #3074
             #error fixed, but I decided to keep it anyway.
             from softwaresupport.bind10 import kill_bind10, start_bind10
@@ -370,11 +370,11 @@ def search_for_errors(succeed, opt, result, search = []):
     """
     if opt is not "clean":
         if succeed:
-            for each in search: 
+            for each in search:
                 if each in result.stdout or each in result.stderr:
                     assert False, 'Server operation: ' + opt + ' failed! '
         if not succeed:
-            for each in search: 
+            for each in search:
                 if each in result.stdout or each in result.stderr:
                     break
             else:
@@ -384,12 +384,12 @@ def search_for_errors(succeed, opt, result, search = []):
 def run_bindctl (succeed, opt):
     """
     Run bindctl with prepered config file
-    """    
-    world.cfg['leases'] = world.f_cfg.software_install_path + 'var/bind10/kea-leases6.csv'
+    """
+    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/bind10/kea-leases6.csv')
 
     if opt == "clean":
         get_common_logger().debug('cleaning kea configuration')
-        # build configuration file with for:  
+        # build configuration file with for:
         #  - stopping Kea
         #  - cleaning configuration
         #  - default logging
@@ -401,7 +401,7 @@ def run_bindctl (succeed, opt):
         remove_local_file(cfg_file + '_processed')
 
     elif opt == "start":
-        # build configuration file with for:  
+        # build configuration file with for:
         #  - clean start Kea
         get_common_logger().debug('starting fresh kea')
         prepare_cfg_kea6_for_kea6_start()
@@ -415,7 +415,7 @@ def run_bindctl (succeed, opt):
         # start logging on different file:
         if world.f_cfg.save_logs:
             set_logger()
-        # build configuration file with for:  
+        # build configuration file with for:
         #  - configure all needed to test features
         get_common_logger().debug('kea configuration')
         cfg_file = world.cfg["cfg_file"]
@@ -435,7 +435,7 @@ def run_bindctl (succeed, opt):
         restart_srv()
 
     result = fabric_run_command('(echo "execute file ' + cfg_file + '_processed" | '
-                                + world.f_cfg.software_install_path + 'bin/bindctl ); sleep ' + str(world.f_cfg.sleep_time_2))
+                                + os.path.join(world.f_cfg.software_install_path, 'bin/bindctl') + ' ); sleep ' + str(world.f_cfg.sleep_time_2))
 
     # now let's test output, looking for errors,
     # some times clean can fail, so we wanna test only start and conf
