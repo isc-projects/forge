@@ -1,0 +1,4 @@
+-e git+http://github.com/godfryd/lettuce.git@changes-for-forge#egg=lettuce
+PyCryptodome
+Fabric==1.14
+Scapy

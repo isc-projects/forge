@@ -17,10 +17,11 @@
 
 from lettuce import world
 from logging_facility import *
-from scapy.all import get_if_raw_hwaddr, Ether, srp 
+from scapy.all import get_if_raw_hwaddr, Ether, srp
 from scapy.config import conf
 from scapy.fields import Field
-from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions, Raw
+from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
+from scapy.packet import Raw
 from scapy.layers.inet import IP, UDP
 from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
@@ -46,12 +47,12 @@ def client_send_msg(step, msgname, iface, addr):
     if iface is not None:
         world.cfg["iface"] = iface
         world.cfg["srv4_addr"] = addr
-        
+
     world.climsg = []
     options = world.cliopts
 
     if hasattr(world, 'prl') and len(world.prl) > 0:
-        options += [("param_req_list", str(world.prl))]
+        options += [("param_req_list", [ord(o) for o in world.prl])]
 #     else:
 #         assert False, "No PRL defined"
 
@@ -63,19 +64,19 @@ def client_send_msg(step, msgname, iface, addr):
         # msg code: 1
         # world.cfg["values"]["broadcastBit"] = True
         msg = build_msg([("message-type", "discover")] + options)
-        
+
     elif msgname == "REQUEST":
         # msg code: 3
         msg = build_msg([("message-type", "request")] + options)
-        
+
     elif msgname == "DECLINE":
         # msg code: 4
         msg = build_msg([("message-type", "decline")] + options)
-        
+
     elif msgname == "RELEASE":
         # msg code: 7
         msg = build_msg([("message-type", "release")] + options)
-        
+
     elif msgname == "INFORM":
         # msg code: 8
         msg = build_msg([("message-type", "inform")] + options)
@@ -160,7 +161,7 @@ def client_does_include(step, opt_type, value):
 
 
 def response_check_content(step, expect, data_type, expected):
-    
+
     if data_type == 'yiaddr':
         received = world.srvmsg[0].yiaddr
     elif data_type == 'ciaddr':
@@ -179,10 +180,10 @@ def response_check_content(step, expect, data_type, expected):
         received = world.srvmsg[0].sname.replace('\x00', '')
     elif data_type == 'file':
         received = world.srvmsg[0].file.replace('\x00', '')
-        
+
     else:
         assert False, "Value %s is not supported" % data_type
-    
+
     # because we are using function to parse full option not just value
     # I did little hack, added 'value:' as option code, and changed assertion message
     outcome, received = test_option(0, ['value:', received], expected)
@@ -209,9 +210,9 @@ def client_save_option(step, opt_name, count=0):
 
 def client_copy_option(step, opt_name):
     opt_code = world.kea_options4.get(opt_name)
-    
+
     assert opt_name in world.kea_options4, "Unsupported option name " + opt_name
-    
+
     received = get_option(world.srvmsg[0], opt_code)
     world.cliopts.append(received)
 
@@ -236,7 +237,7 @@ def build_msg(opts):
         hw = convert_MAC("0a:00:27:00:00:00")
     tmp_hw = None
 
-    # we need to choose if we want to use chaddr, or client id. 
+    # we need to choose if we want to use chaddr, or client id.
     # also we can include both: client_id and chaddr
     if world.cfg["values"]["chaddr"] is None or world.cfg["values"]["chaddr"] == "default":
         tmp_hw = hw
@@ -281,7 +282,7 @@ def build_msg(opts):
 
 
 def get_msg_type(msg):
-    
+
     msg_types = {1: "DISCOVER",
                  2: "OFFER",
                  3: "REQUEST",
@@ -294,15 +295,15 @@ def get_msg_type(msg):
     # option 53 it's message type
     opt = get_option(msg, 53)
 
-    # BOOTP_REPLYs have no message type   
+    # BOOTP_REPLYs have no message type
     if opt is None:
         return "BOOTP_REPLY"
-    
+
     # opt[1] it's value of message-type option
     for msg_code in msg_types.keys():
         if opt[1] == msg_code:
             return msg_types[msg_code]
-        
+
     return "UNKNOWN-TYPE"
 
 
@@ -363,7 +364,7 @@ def get_option(msg, opt_code):
     # if there's one we're looking for
     world.opts = []
     opt_name = DHCPOptions[int(opt_code)]
-    # dhcpv4 implementation in Scapy is a mess. The options array contains mix of 
+    # dhcpv4 implementation in Scapy is a mess. The options array contains mix of
     # strings, IPField, ByteEnumField and who knows what else. In each case the
     # values are accessed differently
     if isinstance(opt_name, Field):
@@ -417,7 +418,7 @@ def response_check_include_option(step, expected, opt_code):
 def response_check_option_content(opt_code, expect, data_type, expected):
     # expect == None when we want that content and NOT when we dont want! that's messy correct that!
     assert len(world.srvmsg) != 0, "No response received."
-    
+
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
 

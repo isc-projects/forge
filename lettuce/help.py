@@ -223,23 +223,38 @@ def find_scenario(name, IPversion):
         elif "server" in each:
             testType = "server"
 
-    scenario = 0
     for path, dirs, files in os.walk("features/dhcpv" + IPversion + "/" + testType + "/"):
         for each_file in files:
-            file_name = open(path + '/' + each_file, 'r')
-            for each_line in file_name:
-                if 'Scenario' in each_line:
-                    scenario += 1
-                    tmp_line = each_line.strip()
-                    if name == tmp_line[10:]:
-                        file_name.close()
-                        return path + '/' + each_file, str(scenario)
-                    elif name == tmp_line[18:]:
-                        file_name.close()
-                        return path + '/' + each_file, str(scenario)
-            else:
-                scenario = 0
-                file_name.close()
+            if not each_file.endswith('.feature') and not each_file.endswith('.py'):
+                continue
+
+            fpath = os.path.join(path, each_file)
+            scenario_idx = 0
+            with open(fpath, 'r') as f:
+
+                if each_file.endswith('.feature'):
+                    for line in f:
+                        if 'Scenario' in line:
+                            scenario_idx += 1
+                            line = line.strip()
+                            if name == line[10:]:
+                                return os.path.join(path, each_file), str(scenario_idx)
+                            elif name == line[18:]:
+                                return os.path.join(path, each_file), str(scenario_idx)
+
+                elif each_file.endswith('.py'):
+                    prev_line_func = False
+                    scen_docstr = '"""%s"""' % name
+                    for line in f:
+                        if prev_line_func and scen_docstr in line:
+                            return os.path.join(path, each_file), str(scenario_idx)
+
+                        if line.startswith('def test_'):
+                            scenario_idx += 1
+                            prev_line_func = True
+                        else:
+                            prev_line_func = False
+
     return None, 0
 
 

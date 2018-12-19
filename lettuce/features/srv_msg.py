@@ -15,6 +15,8 @@
 
 # Author: Wlodzimierz Wencel
 
+import json
+
 from lettuce import world, step
 import importlib
 from srv_control import test_define_value
@@ -96,7 +98,7 @@ def client_does_include(step, sender_type, yes_or_not, opt_type):
 
 
 @step('Relay-agent does include (\S+).')
-def client_does_include(step, opt_type):
+def relay_agent_does_include(step, opt_type):
     # add " option." to the end of the step - change all tests!
     """
     """
@@ -294,7 +296,7 @@ def client_save_option(step, option_name):
 
 
 @step('Client saves into set no. (\d+) (\S+) option from received message.')
-def client_save_option(step, count, option_name):
+def client_save_option_count(step, count, option_name):
     """
     """
     assert len(world.srvmsg), "No messages received, nothing to save."
@@ -313,7 +315,7 @@ def client_add_saved_option(step, yes_or_no):
 
 
 @step('Client adds saved options in set no. (\d+). And (DONT )?Erase.')
-def client_add_saved_option(step, count, yes_or_no):
+def client_add_saved_option_count(step, count, yes_or_no):
     """
     """
     assert len(world.savedmsg), "No options to add."
@@ -350,7 +352,7 @@ def network_variable(step, value_name, value):
 
 
 @step('(\S+) log MUST (NOT )?contain line: (.+)')
-def log_includes_line(step, server_type, condition, line):
+def log_contains_line(step, server_type, condition, line):
     """
     Check if Log includes line.
     Be aware that tested line is every thing after "line: " until end of the line.
@@ -360,7 +362,7 @@ def log_includes_line(step, server_type, condition, line):
 
 
 @step('File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
-def log_includes_line(step, file_path, condition, line):
+def file_contains_line(step, file_path, condition, line):
     """
     Check if Log includes line.
     Be aware that tested line is every thing after "line: " until end of the line.
@@ -380,7 +382,7 @@ def remote_log_includes_line(step, destination, file_path, condition, line):
 
 
 @step('Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
-def log_includes_line(step, table_name, db_type, condition, line):
+def table_contains_line(step, table_name, db_type, condition, line):
     """
     Check if in table X in database type Y include line.
     Be aware that tested line is every thing after "line: " until end of the line.
@@ -430,7 +432,7 @@ def test_stop(step):
 
 
 @step('Fail test.')
-def test_stop(step):
+def test_fail(step):
     assert False, "Test failed on purpose."
 
 
@@ -523,7 +525,7 @@ def test_victory(step):
 
 
 @step('Execute (\S+) script in path: (\S+) with arguments: (.+)')
-def execute_shell(step, script_type, path, arg):
+def execute_shell_with_args(step, script_type, path, arg):
     path, arg = test_define_value(path, arg)
     other.execute_shell_script(path, arg)
 
@@ -551,7 +553,7 @@ def check_socket_server_site(step, socket_path):
 
 
 @step('Using UNIX socket on remote server (\S+) in path (\S+) send (.+)')
-def send_through_socket_server_site(step, destination_address, socket_path, command):
+def send_through_socket_given_server_site(step, destination_address, socket_path, command):
     destination_address, socket_path, command = test_define_value(destination_address, socket_path, command)
     other.send_through_socket_server_site(socket_path, command, destination_address=destination_address)
 
