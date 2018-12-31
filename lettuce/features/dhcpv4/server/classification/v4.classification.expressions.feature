@@ -141,7 +141,7 @@ Scenario: v4.client.classification.known-unknown-pool
 
   Test Procedure:
   Client copies server_id option from received message.
-  Client adds to the message requested_addr with value 192.168.50.55.
+  Client adds to the message requested_addr with value 192.168.50.50.
   Client adds to the message client_id with value ff:01:11:11:11:11:11:22.
   Client sets chaddr value to ff:01:11:11:11:11:22.
   Client sends REQUEST message.

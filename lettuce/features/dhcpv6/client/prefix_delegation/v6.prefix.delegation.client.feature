@@ -648,7 +648,7 @@ Feature: DHCPv6 Client Prefix Delegation
     Client message option 25 MUST include sub-option 26.
     Client message sub-option 26 from option 25 MUST contain prefix 4444::.
 
-    Pause the Test.
+    #Pause the Test.
 
     References: RFC 3633
 
