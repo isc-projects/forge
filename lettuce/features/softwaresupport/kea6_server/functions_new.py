@@ -28,7 +28,6 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
     fabric_download_file, fabric_remove_file_command, locate_entry
 from features.protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
-from logging_facility import *  # TODO
 
 kea_options6 = {
     "client-id": 1,

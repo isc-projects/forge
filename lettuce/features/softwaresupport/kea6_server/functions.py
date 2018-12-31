@@ -29,7 +29,6 @@ from features.softwaresupport.multi_server_functions import fabric_run_command, 
     fabric_download_file, fabric_remove_file_command, locate_entry, check_local_path_for_downloaded_files
 from features.protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
-from features.logging_facility import *
 
 
 world.kea_options6 = {

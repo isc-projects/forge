@@ -19,6 +19,7 @@ import sys
 import time
 import importlib
 import random
+import logging
 
 from scapy.layers.dhcp6 import *
 from scapy.sendrecv import debug
@@ -28,7 +29,6 @@ if 'pytest' in sys.argv[0]:
 else:
     from lettuce import world
 
-from features.logging_facility import get_common_logger
 
 ############################################################################
 #TODO That import have to be switched to ForgeConfiguration class, world.f_cfg
@@ -359,14 +359,14 @@ def client_send_receive(step, contain, msgType):
             world.timestamps.append(received.time)
             if len(world.timestamps) >= 2:
                 world.RTlist.append(world.timestamps[-1] - world.timestamps[-2])
-            get_common_logger().info("Received packet type = %s" % get_msg_type(received))
+            log.info("Received packet type = %s" % get_msg_type(received))
             msg_traverse(world.climsg[-1])
             if get_msg_type(received) == msgType:
                 found = True
         # print unans
         for x in unans:
-            get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
-        get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
+            log.error(("Unmatched packet type = %s" % get_msg_type(x)))
+        log.debug("Received traffic (answered/unanswered): %d/%d packet(s)."
             % (len(ans), len(unans)))
 
     # set timestamp after sending msg

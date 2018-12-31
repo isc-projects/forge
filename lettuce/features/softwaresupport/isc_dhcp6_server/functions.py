@@ -17,17 +17,21 @@
 
 import os
 import sys
+import logging
 
 if 'pytest' in sys.argv[0]:
     from features.lettuce_compat import world
 else:
     from lettuce import world
 
-from logging_facility import *  # TODO
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file,\
     fabric_remove_file_command, simple_file_layout
 from functions_ddns import build_ddns_config
+
+
+log = logging.getLogger('forge')
+
 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.

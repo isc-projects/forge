@@ -21,6 +21,7 @@
 #
 import random
 import sys
+import logging
 from cookielib import debug
 
 from scapy.layers.dhcp6 import *  # TODO
@@ -29,7 +30,7 @@ if 'pytest' in sys.argv[0]:
 else:
     from lettuce import world
 
-from features.logging_facility import get_common_logger
+log = logging.getLogger('forge')
 
 
 # option codes for options and sub-options for dhcp v6
@@ -128,7 +129,7 @@ def client_send_msg(step, msgname, iface, addr):
     if msg:
         world.climsg.append(msg)
 
-    get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
 
 def client_sets_value(step, value_name, new_value):
@@ -625,17 +626,17 @@ def send_wait_for_message(step, condition_type, presence, exp_message):
             b.show()
 
         if not world.loops["active"]:
-            get_common_logger().info("Received packet type=%s" % get_msg_type(b))
+            log.info("Received packet type=%s" % get_msg_type(b))
 
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:
             expected_type_found = True
 
     for x in unans:
-        get_common_logger().error(("Unmatched packet type=%s" % get_msg_type(x)))
+        log.error(("Unmatched packet type=%s" % get_msg_type(x)))
 
     if not world.loops["active"]:
-        get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
+        log.debug("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
 
     if may_flag:
         if len(world.srvmsg) != 0:
@@ -1013,7 +1014,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         for x in range(repeat):
             if x % x_range == 0:
                 print x
-                # get_common_logger().info("Message exchange no. %d", x)
+                # log.info("Message exchange no. %d", x)
             generate_new(step, "client")
             client_does_include("Client", "client-id", None)
             client_does_include("Client", "IA-NA", None)
@@ -1038,7 +1039,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
-                get_common_logger().info("Message exchane no. %d", x)
+                log.info("Message exchane no. %d", x)
             generate_new(step, "client")
             client_add_saved_option(step, False)
             client_send_msg(step, "REQUEST", None, None)
@@ -1054,7 +1055,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
-                get_common_logger().info("Message exchane no. %d", x)
+                log.info("Message exchane no. %d", x)
 
             client_add_saved_option(step, False)
             client_send_msg(step, "REQUEST", None, None)
@@ -1075,7 +1076,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
-                get_common_logger().info("Message exchane no. %d", x)
+                log.info("Message exchane no. %d", x)
 
             client_add_saved_option(step, False)
             client_send_msg(step, "REQUEST", None, None)

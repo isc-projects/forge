@@ -17,6 +17,7 @@
 
 import os
 import sys
+import logging
 
 if 'pytest' in sys.argv[0]:
     from features.lettuce_compat import world
@@ -26,7 +27,9 @@ else:
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
     fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file, \
     remove_local_file
-from logging_facility import *  # TODO
+
+
+log = logging.getLogger('forge')
 
 
 ############################################################################
@@ -91,7 +94,7 @@ def release_command():
     """
     world.clntCfg["script"] = ""
     make_script("stop")
-    get_common_logger().debug("Stopping Dibbler Client and waiting for RELEASE.")
+    log.debug("Stopping Dibbler Client and waiting for RELEASE.")
     fabric_send_file(world.clntCfg["script"], os.path.join(world.f_cfg.software_install_path, 'comm.sh'))
     fabric_run_command ('(rm nohup.out; nohup bash ' \
                         + os.path.join(world.f_cfg.software_install_path, 'comm.sh') + ' &); sleep 3;')
@@ -245,7 +248,7 @@ def start_clnt(step):
     world.clntCfg["log_file"] = "/var/log/dibbler/dibbler-client.log"
     write_clnt_cfg_to_file()
     make_script("start")
-    get_common_logger().debug("Starting Dibbler Client with generated config:")
+    log.debug("Starting Dibbler Client with generated config:")
     fabric_send_file(world.clntCfg["Filename"], '/etc/dibbler/client.conf')
     fabric_send_file(world.clntCfg["script"], os.path.join(world.f_cfg.software_install_path, 'comm.sh'))
     fabric_remove_file_command(world.clntCfg["Filename"])

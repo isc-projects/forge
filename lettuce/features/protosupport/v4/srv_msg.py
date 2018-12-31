@@ -16,6 +16,7 @@
 # Author: Wlodzimierz Wencel
 
 import sys
+import logging
 from random import randint
 
 if 'pytest' in sys.argv[0]:
@@ -32,7 +33,9 @@ from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
 
 from features.protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
-from features.logging_facility import *  # TODO
+
+
+log = logging.getLogger('forge')
 
 
 def client_requests_option(step, opt_type):
@@ -101,7 +104,7 @@ def client_send_msg(step, msgname, iface, addr):
     if msg:
         world.climsg.append(msg)
 
-    get_common_logger().debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
 
 def client_sets_value(step, value_name, new_value):
@@ -350,11 +353,11 @@ def send_wait_for_message(step, msgtype, presence, exp_message):
         if get_msg_type(b) == exp_message:
             expected_type_found = True
 
-    get_common_logger().debug("Received traffic (answered/unanswered): %d/%d packet(s)."
+    log.debug("Received traffic (answered/unanswered): %d/%d packet(s)."
                               % (len(ans), len(unans)))
     if exp_message != "None":
         for x in unans:
-            get_common_logger().error(("Unmatched packet type = %s" % get_msg_type(x)))
+            log.error(("Unmatched packet type = %s" % get_msg_type(x)))
 
         if presence:
             assert len(world.srvmsg) != 0, "No response received."

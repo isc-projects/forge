@@ -26,7 +26,6 @@ else:
 
 from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
     copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
-from features.logging_facility import *  # TODO
 from features.softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config,\
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
@@ -34,6 +33,7 @@ from features.softwaresupport.kea6_server.functions import stop_srv, restart_srv
     set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
     set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class,\
     ha_add_parameter_to_hook, clear_logs, prepare_cfg_subnet_specific_interface
+
 
 world.kea_options4 = {
     "subnet-mask": 1,  # ipv4-address (array)

@@ -17,6 +17,7 @@
 
 import os
 import sys
+import logging
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide
@@ -27,7 +28,9 @@ if 'pytest' in sys.argv[0]:
 else:
     from lettuce import world
 
-from features.logging_facility import get_common_logger
+
+
+log = logging.getLogger('forge')
 
 
 def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,

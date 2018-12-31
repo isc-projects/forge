@@ -17,19 +17,21 @@
 
 import os
 import sys
+import logging
 
 if 'pytest' in sys.argv[0]:
     from features.lettuce_compat import world
 else:
     from lettuce import world
 
-from logging_facility import *
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
     fabric_remove_file_command, clear_all, add_line_in_global, check_process_result, clear_leases, add_parameter_to_hook
 from functions_ddns import build_ddns_config
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
     copy_configuration_file, fabric_sudo_command, fabric_download_file, simple_file_layout
 
+
+log = logging.getLogger('forge')
 
 # option names in isc-dhcp v4, list is that you can check which one is different then Kea names - Kea names are used
 # in test scenarios.
@@ -214,7 +216,7 @@ def netmask(subnet):
 
 
 def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    get_common_logger().debug("Configure subnet...")
+    log.debug("Configure subnet...")
     if not "conf_subnet" in world.cfg:
         world.cfg["conf_subnet"] = ""
 
@@ -472,7 +474,7 @@ def start_srv(start, process):
 
     add_defaults()
     cfg_write()
-    get_common_logger().debug("Start ISC-DHCP with generated config:")
+    log.debug("Start ISC-DHCP with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
     fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
     copy_configuration_file(world.cfg["cfg_file"] + '_processed')

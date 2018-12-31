@@ -18,7 +18,6 @@
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
 from features.protosupport.multi_protocol_functions import test_pause
-from logging_facility import *
 
 
 def config_srv_id(id_type, id_value):

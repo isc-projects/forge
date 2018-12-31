@@ -18,6 +18,7 @@
 import os
 import sys
 import time
+import logging
 from shutil import rmtree
 import subprocess
 import importlib
@@ -32,10 +33,11 @@ if 'pytest' in sys.argv[0]:
 else:
     from lettuce import world, before, after
 
-from features.logging_facility import *   # TODO: do not import *
 from features.softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
+from features import logging_facility
 
+log = logging.getLogger('forge')
 
 values_v6 = {"T1": 0,  # IA_NA IA_PD
              "T2": 0,  # IA_NA IA_PD
@@ -298,9 +300,8 @@ def test_start():
 
     world.result = []
 
-    # Initialize the common logger. The instance of this logger can
-    # be instantiated by get_common_logger()
-    logger_initialize(world.f_cfg.loglevel)
+    # Initialize the common logger.
+    logging_facility.logger_initialize(world.f_cfg.loglevel)
 
     if not world.f_cfg.no_server_management:
         for each in world.f_cfg.software_under_test:
@@ -484,7 +485,7 @@ def cleanup(scenario):
                 if '_client' in each:
                     functions.kill_clnt()
                 # except:  # TODO this should be on multi_server_functions level!
-                #     get_common_logger().info("Remote location " + each_remote_server + " unreachable!")
+                #     log.info("Remote location " + each_remote_server + " unreachable!")
 
 
 @after.all
@@ -494,7 +495,7 @@ def say_goodbye(total):
     """
     world.clntCounter = 0
     world.srvCounter = 0
-    get_common_logger().info("%d of %d scenarios passed." % (
+    log.info("%d of %d scenarios passed." % (
         total.scenarios_passed,
         total.scenarios_ran
     ))
@@ -509,7 +510,7 @@ def say_goodbye(total):
             for each in world.f_cfg.software_under_test:
                 if "client" in each:
                     kill_msg = "kill the " + each[:each.find("_client")]
-                    get_common_logger().debug(kill_msg)
+                    log.debug(kill_msg)
                     clnt = importlib.import_module("features.softwaresupport.%s.functions" % each)
                     clnt.stop_clnt(destination_address=each_remote_server)
 
@@ -534,7 +535,7 @@ def say_goodbye(total):
         archive_name = archive_file_name(1, 'tests_results_archive/' + archive_name)
         make_tarfile(archive_name + '.tar.gz', 'tests_results')
 
-    get_common_logger().info("Goodbye.")
+    log.info("Goodbye.")
 
 
 if __name__ == "__main__":
