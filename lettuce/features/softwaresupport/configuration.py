@@ -15,6 +15,7 @@
 # Author: Wlodzimierz Wencel
 
 import os
+
 from lettuce.registry import world
 
 from multi_server_functions import fabric_run_command, fabric_send_file,\
@@ -179,8 +180,6 @@ class KeaConfiguration:
             self.add_to_xml_script('test', each_class.test)
             self.add_to_xml_script('/client-class')
         self.add_to_xml_script('/client-classes')
-
-
         self.add_to_xml_script('expired-leases-processing')
         # self.add_to_xml_script('expired-leases-processing')
         self.add_to_xml_script('reclaim-timer-wait-time', tmp.reclaim_timer_wait_time)
@@ -223,14 +222,12 @@ class KeaConfiguration:
         self.add_to_xml_script('/control-socket')
 
         # lease database
-        # self.add_to_xml_script('databases')
         self.add_to_xml_script('lease-database')
-        # self.add_to_xml_script('database')
         self.add_to_xml_script('database-type', tmp.db_leases_type)
         if tmp.db_leases_type == "memfile":
             self.add_to_xml_script('name', tmp.file_name)
             self.add_to_xml_script('persist', tmp.persist)
-            self.add_to_xml_script('lfc_interval', tmp.lfc_interval)
+            self.add_to_xml_script('lfc-interval', tmp.lfc_interval)
         elif tmp.db_leases_type.lower() == "mysql" or tmp.db_leases_type.lower() == "postgresql":
             self.add_to_xml_script('name', tmp.db_name)
             self.add_to_xml_script('host', tmp.db_host)
@@ -242,12 +239,11 @@ class KeaConfiguration:
             self.add_to_xml_script('name', tmp.db_name)
         else:
             assert False, "Forge should not get here... bug!"
-        # self.add_to_xml_script('/database')
         self.add_to_xml_script('/lease-database')
         # host reservation db add here!
-        # self.add_to_xml_script('/databases')
 
         # subnets
+
         if self.getsubnetlength() > 0:
             self.add_to_xml_script('subnet4')
             for each_subnet in self.subnetList:
@@ -278,15 +274,33 @@ class KeaConfiguration:
 
                 # uses dhcp:subnet-client-class;
                 # uses dhcp:subnet-require-client-classes;
-                # uses reservations {
-                #   refine reservations {
-                # TODO
-                #     description "Subnet host reservations.";
-                #   }
-                # }
+                if self.getreservationlength() > 0:
+                    self.add_to_xml_script('reservations')
+                    for each_reservation in self.reservationList:
+                        if each_reservation.subnet_id == each_subnet.subnet_id:
+                            self.add_to_xml_script('host')
+                            self.add_to_xml_script('identifier-type', each_reservation.host_identifier_type)
+                            self.add_to_xml_script('identifier', each_reservation.hw_address)  # can be more
+                            self.add_to_xml_script('ip-address', each_reservation.address)
+                            self.add_to_xml_script('host-hostname', each_reservation.hostname)
+                            self.add_to_xml_script('host-client-classes', each_reservation.host_client_class)
+                            if self.getoptionlength() > 0:
+                                self.add_to_xml_script('option-data-list')
+                                for each_option in self.optionList:
+                                    if each_option.reservation_id == each_reservation.reservation_id:
+                                        self.add_to_xml_script('option-data')
+                                        add_option_def(each_option)
+                                        self.add_to_xml_script('/option-data')
+                                self.add_to_xml_script('/option-data-list')
+                            self.add_to_xml_script('next-server', each_reservation.next_server)
+                            self.add_to_xml_script('server-hostname', each_reservation.server_hostname)
+                            self.add_to_xml_script('boot-file-name', each_reservation.boot_file_name)
+                            self.add_to_xml_script('/host')
+                    self.add_to_xml_script('/reservations')
 
                 # add relay, for now just single
                 self.add_to_xml_script('relay')
+                # TODO change it from single to list
                 # for each_relay in each_subnet.relay:
                 #     self.add_to_xml_script('ip-address', each_relay)
                 self.add_to_xml_script('ip-addresses', each_subnet.relay)
@@ -306,7 +320,7 @@ class KeaConfiguration:
                             if self.getoptionlength() > 0:
                                 self.add_to_xml_script('option-data-list')
                                 for each_option in self.optionList:
-                                    if each_option.dhcp_subnet_id == each_subnet.subnet_id and each_option.pool_id == each_subnet.subnet_id:
+                                    if each_option.dhcp_subnet_id == each_subnet.subnet_id and each_option.pool_id == each_pool.pool_id:
                                         self.add_to_xml_script('option-data')
                                         add_option_def(each_option)
                                         self.add_to_xml_script('/option-data')
@@ -348,9 +362,9 @@ class KeaConfiguration:
         import xml.dom.minidom
         xml = xml.dom.minidom.parseString(self.final_config_script)  # or xml.dom.minidom.parseString(xml_string)
 
-        xml_config = open(world.cfg["cfg_file"]+'XML', 'w')
-        xml_config.write(xml.toprettyxml())
-        xml_config.close()
+        # xml_config = open(world.cfg["cfg_file"]+'XML', 'w')
+        # xml_config.write(xml.toprettyxml())
+        # xml_config.close()
 
         # assert False, self.optionList[0].__dict__
 
@@ -358,38 +372,38 @@ class KeaConfiguration:
         pass
 
     def sendconfiguration(self):
-        pass
-        # from kea6_server.functions import set_kea_ctrl_config, start_srv
-        #
+        # pass
+        from kea6_server.functions import set_kea_ctrl_config, start_srv
+
         # set_kea_ctrl_config()
         # cfg4 = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'var/kea/control_socket"}},"Logging":{"loggers":[{"name":"kea-dhcp4","output_options":[{"output":"'+world.f_cfg.software_install_path+'var/kea/kea.log"}],"debuglevel":99,"severity":"DEBUG"}]}}'
         # netconfdaemoncfg = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'var/kea/control_socket"}}}'
         # config = open(world.cfg["cfg_file"], 'w')
         # config.write(cfg4)
         # config.close()
-        #
-        # # config = open(world.cfg["cfg_file"], 'w')
-        # # config.write(cfg4)
-        # # config.close()
-        #
-        # destination_address = world.f_cfg.mgmt_address
-        #
-        # copy_configuration_file(world.cfg["cfg_file"]+'XML', "/yang.xml", destination_host=destination_address)
-        #
-        # copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        # # copy_configuration_file(world.cfg["cfg_file_2"], "/kea_ctrl_config", destination_host=destination_address)
-        # fabric_send_file(world.cfg["cfg_file"],
-        #                  world.f_cfg.software_install_path + "etc/kea/kea.conf",
+
+        # config = open(world.cfg["cfg_file"], 'w')
+        # config.write(cfg4)
+        # config.close()
+
+        destination_address = world.f_cfg.mgmt_address
+
+        copy_configuration_file(world.cfg["cfg_file"]+'XML', "/yang.xml", destination_host=destination_address)
+
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        # copy_configuration_file(world.cfg["cfg_file_2"], "/kea_ctrl_config", destination_host=destination_address)
+        fabric_send_file(world.cfg["cfg_file"],
+                         world.f_cfg.software_install_path + "etc/kea/kea.conf",
+                         destination_host=destination_address)
+        # fabric_send_file(world.cfg["cfg_file_2"],
+        #                  world.f_cfg.software_install_path + "etc/kea/keactrl.conf",
         #                  destination_host=destination_address)
-        # # fabric_send_file(world.cfg["cfg_file_2"],
-        # #                  world.f_cfg.software_install_path + "etc/kea/keactrl.conf",
-        # #                  destination_host=destination_address)
-        # fabric_send_file(world.cfg["cfg_file"]+'XML',
-        #                  world.f_cfg.software_install_path + "etc/kea/yang.xml",
-        #                  destination_host=destination_address)
-        #
-        # # fabric_sudo_command(world.f_cfg.software_install_path)
-        # # start_srv(True, "DHCP")
+        fabric_send_file(world.cfg["cfg_file"]+'XML',
+                         world.f_cfg.software_install_path + "etc/kea/yang.xml",
+                         destination_host=destination_address)
+
+        # fabric_sudo_command(world.f_cfg.software_install_path)
+        # start_srv(True, "DHCP")
 
     def updateconfiguration(self):
         pass
@@ -415,14 +429,14 @@ class ConfigurationClass:
 
 
 class ConfigurationPool:
-    def __init__(self, address):
+    def __init__(self, address, subnet_id=None):
         self.start_address = address.split("-")[0]
         self.end_address = address.split("-")[1]
         self.pool_client_class = ""
         self.pool_require_client_classes = ""
         self.pool_user_context = ""
         # relations
-        self.subnet_id = world.configClass.getsubnetlength()
+        self.subnet_id = int(subnet_id) if subnet_id is not None else world.configClass.getsubnetlength()
         self.pool_id = world.configClass.getpoollength()
 
     def __getitem__(self, item):
@@ -431,7 +445,7 @@ class ConfigurationPool:
 
 class ConfigurationOption:
     def __init__(self, option_name, value, space, custom_code=None, client_class=None,
-                 subnet_id=None, shared_id=None, pool_id=None):
+                 subnet_id=None, shared_id=None, pool_id=None, reservation_id=None):
         self.option_id = 1
         self.name = option_name
         self.code = self.translate_name_to_code(option_name, custom_code)
@@ -444,11 +458,11 @@ class ConfigurationOption:
         self.scope_id = ""
         self.user_context = ""
         # relations:
-        self.dhcp_client_class = client_class
+        self.dhcp_client_class = int(client_class) if client_class is not None else client_class
         self.dhcp_subnet_id = int(subnet_id) if subnet_id is not None else subnet_id
-        self.shared_network_name = shared_id
+        self.shared_network_name = int(shared_id) if shared_id is not None else shared_id
         self.pool_id = int(pool_id) if pool_id is not None else pool_id
-        self.reservation_id = None  # future use
+        self.reservation_id = int(reservation_id) if reservation_id is not None else reservation_id
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -495,7 +509,7 @@ class ConfigurationSubnet:
         self.match_clientid = ""
         self.next_server = ""
         self.rebind_timer = world.cfg["server_times"]["rebind-timer"]
-        self.relay = []
+        self.relay = ""
         self.renew_timer = world.cfg["server_times"]["renew-timer"]
         self.require_client_class = ""
         self.reservation_mode = ""
@@ -544,7 +558,7 @@ class ConfigurationGlobalParameters:
         self.value_name = value_name
         self.value = value
         # maybe this won't be needed:
-        self.socket_name = os.path.join(world.f_cfg.software_install_path, "var/kea/control_socket")
+        self.socket_name = os.path.join(world.f_cfg.software_install_path, 'var/kea/control_socket')
         self.socket_type = "unix"
         self.decline_probation_period = ""
         self.re_detect = ""
@@ -565,7 +579,7 @@ class ConfigurationGlobalParameters:
 
         # leases:
         self.db_leases_type = "memfile"
-        self.lfc_interval = ""
+        self.lfc_interval = 0
         self.file_name = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
         self.persist = ""
         self.db_name = ""
@@ -615,10 +629,9 @@ class ConfigurationLogging:
         self.debuglevel = 99
         self.name = "kea-dhcp4"
         self.severity = "DEBUG"
-        # in output_options": []
         self.flush = "true"
-        self.maxsize = 10240000
-        self.maxver = 1
+        self.maxsize = ""
+        self.maxver = ""
         self.output = os.path.join(world.f_cfg.software_install_path, "var/kea/kea.log")
 
     def __getitem__(self, item):
@@ -626,16 +639,18 @@ class ConfigurationLogging:
 
 
 class ConfigurationReservation:
-    def __init__(self, hw_address, hostname="", address="", prefix="", next_server="", server_hostname="",
-                 boot_file_name=""):
+    def __init__(self, host_identifier_type="", host_identifier="", reservation_type="", reservation_value="", subnetid=""):
         self.reservation_id = world.configClass.getreservationlength()
-        self.boot_file_name = boot_file_name
-        self.hostname = hostname
-        self.hw_address = hw_address
-        self.address = address
-        self.prefix = prefix
-        self.next_server = next_server
-        self.server_hostname = server_hostname
+        self.host_identifier_type = host_identifier_type
+        self.hw_address = host_identifier if host_identifier_type == "hw-address" else ""  # TODO in v6 can be multiple options
+        self.address = reservation_value if reservation_type == "address" else ""
+        self.prefix = reservation_value if reservation_type == "prefix" else ""
+        self.hostname = reservation_value if reservation_type == "hostname" else ""
+        self.boot_file_name = reservation_value if reservation_type == "bootfilename" else ""
+        self.next_server = reservation_value if reservation_type == "next-server" else ""
+        self.server_hostname = reservation_value if reservation_type == "server-hostname" else ""
+        self.subnet_id = subnetid if subnetid != "" else world.configClass.getsubnetlength()
+        self.host_client_class = ""
 
     def __getitem__(self, item):
         return getattr(self, item)

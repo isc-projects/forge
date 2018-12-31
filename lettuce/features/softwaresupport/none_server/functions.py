@@ -25,7 +25,7 @@ def config_srv_id(id_type, id_value):
     pass
 
 
-def set_time(step, which_time, value, subnet = None):
+def set_time(*args):
     pass
 
 
@@ -85,8 +85,7 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     pass
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space,
-                           option_code = None, option_type = 'default', where = 'options'):
+def prepare_cfg_add_option(*args):
     pass
 
 
@@ -106,27 +105,27 @@ def add_line_in_subnet(subnetid, command):
     pass
 
 
-def set_logger():
+def set_logger(*args):
     pass
 
 
-def host_reservation(reservation_type, reserved_value, unique_host_value, subnet):
+def host_reservation(*args):
     pass
 
 
-def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
+def host_reservation_extension(*args):
     pass
 
 
-def create_new_class(class_name):
+def create_new_class(*args):
     pass
 
 
-def add_test_to_class(class_number, parameter_name, parameter_value):
+def add_test_to_class(*args):
     pass
 
 
-def add_option_to_defined_class(class_no, option_name, option_value):
+def add_option_to_defined_class(*args):
     pass
 
 
@@ -186,17 +185,17 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     pass
 
 
-def start_srv(start, process):
+def start_srv(*args):
     print "Prepare server as stated in the test, press Enter to continue."
     test_pause()
 
 
-def reconfigure_srv():
+def reconfigure_srv(*args):
     print "Prepare server as stated in the test, press Enter to continue."
     test_pause()
 
 
-def stop_srv(value = False):
+def stop_srv(*args):
     pass
 
 
