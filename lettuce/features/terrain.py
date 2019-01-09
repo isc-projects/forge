@@ -22,7 +22,6 @@ from lettuce import world, before, after
 from logging_facility import *
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
-from softwaresupport.bind10 import kill_bind10, start_bind10
 from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
 
@@ -301,22 +300,7 @@ def test_start():
 
     if not world.f_cfg.no_server_management:
         for each in world.f_cfg.software_under_test:
-            if "server" in each:
-                if each in ['kea4_server_bind', 'kea6_server_bind']:
-                    get_common_logger().debug("Starting Bind:")
-                    kill_bind10()
-                    try:
-                        # Make sure there is noo garbage instance of bind10 running.
-                        start_bind10()
-                    except ():
-                        get_common_logger().error("Bind10 start failed\n\nSomething go wrong with connection\n\
-                                                    Please make sure it's configured properly\nIP destination \
-                                                    address: %s\nLocal Mac address: %s\nNetwork interface: %s"
-                                                  % (world.f_cfg.mgmt_address, world.f_cfg.cli_mac, world.f_cfg.iface))
-                        sys.exit(-1)
-                    get_common_logger().debug("Bind10 successfully started")
-
-            elif "client" in each:
+            if "client" in each:
                 clnt = importlib.import_module("softwaresupport.%s.functions" % each)
                 clnt.stop_clnt()
 
@@ -519,13 +503,7 @@ def say_goodbye(total):
     if not world.f_cfg.no_server_management:
         for each_remote_server in world.f_cfg.multiple_tested_servers:
             for each in world.f_cfg.software_under_test:
-                if each in ['kea4_server_bind', 'kea6_server_bind']:
-                    clean_config = importlib.import_module("softwaresupport.%s.functions" % each)
-                    # TODO remove bind10 support
-                    clean_config.run_bindctl(True, 'clean')
-                    kill_bind10()
-
-                elif "client" in each:
+                if "client" in each:
                     kill_msg = "kill the " + each[:each.find("_client")]
                     get_common_logger().debug(kill_msg)
                     clnt = importlib.import_module("softwaresupport.%s.functions" % each)
