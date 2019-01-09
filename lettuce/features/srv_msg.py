@@ -589,4 +589,7 @@ def values_for_loops(step, value_name, file_flag, values):
 
 @step('Exchange messages (\S+) - (\S+) (\d+) times.')
 def loops(step, message_type_1, message_type_2, repeat):
+    tmp = world.f_cfg.show_packets_from
+    world.f_cfg.show_packets_from = ""
     dhcpmsg.loops(step, message_type_1, message_type_2, repeat)
+    world.f_cfg.show_packets_from = tmp

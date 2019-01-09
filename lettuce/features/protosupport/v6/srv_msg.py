@@ -976,8 +976,10 @@ def loops(step, message_type_1, message_type_2, repeat):
 
     if repeat < 1000:
         x_range = 10
-    else:
+    elif 1000 <= repeat < 10000:
         x_range = 250
+    else:
+        x_range = 1000
 
     world.loops["active"] = True
     world.scapy_verbose = 0
@@ -1000,9 +1002,10 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(1, repeat):
-            # if x % x_range == 0:
-            #     get_common_logger().info("Message exchange no. %d", x)
+        for x in range(0, repeat):
+            if x % x_range == 0:
+                print x
+                # get_common_logger().info("Message exchange no. %d", x)
             generate_new(step, "client")
             client_does_include("Client", "client-id", None)
             client_does_include("Client", "IA-NA", None)
@@ -1025,7 +1028,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(1, repeat):
+        for x in range(0, repeat):
             if x % x_range == 0:
                 get_common_logger().info("Message exchane no. %d", x)
             generate_new(step, "client")
@@ -1041,7 +1044,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(1, repeat):
+        for x in range(0, repeat):
             if x % x_range == 0:
                 get_common_logger().info("Message exchane no. %d", x)
 
@@ -1062,7 +1065,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(1, repeat):
+        for x in range(0, repeat):
             if x % x_range == 0:
                 get_common_logger().info("Message exchane no. %d", x)
 
