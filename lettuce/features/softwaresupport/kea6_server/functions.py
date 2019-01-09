@@ -452,14 +452,17 @@ def set_kea_ctrl_config():
     dhcp6_srv={path}/sbin/kea-dhcp6
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
     ctrl_agent_srv={path}/sbin/kea-ctrl-agent
+    netconf_srv={path}/sbin/kea-netconf
     kea_dhcp4_config_file={path}/etc/kea/kea.conf
     kea_dhcp6_config_file={path}/etc/kea/kea.conf
     kea_dhcp_ddns_config_file={path}/etc/kea/kea.conf
     kea_ctrl_agent_config_file={path}/etc/kea/kea.conf
+    kea_netconf_config_file={path}/etc/kea/kea.conf
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
     kea_verbose=no
+    netconf=no
     ctrl_agent={ctrl_agent}
     '''.format(**locals())
 
