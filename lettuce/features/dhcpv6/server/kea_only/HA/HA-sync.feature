@@ -9,7 +9,8 @@ Test Setup:
 Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 Server has control agent configured on HTTP connection with address $(MGMT_ADDRESS):8080 and socket unix path: $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.ha-hooks, severity DEBUG, severity level 99 and log file kea.log.
 Server logging system is configured with logger type kea-ctrl-agent, severity DEBUG, severity level 99 and log file kea.log-CTRL.
 
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
@@ -36,7 +37,8 @@ Test Setup:
 Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 Server has control agent configured on HTTP connection with address $(MGMT_ADDRESS_2):8080 and socket unix path: $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.ha-hooks, severity DEBUG, severity level 99 and log file kea.log.
 Server logging system is configured with logger type kea-ctrl-agent, severity DEBUG, severity level 99 and log file kea.log-CTRL2.
 
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
@@ -56,6 +58,7 @@ To HA hook configuration add peers with value: {"name":"server2","url":"http://$
 
 Send server configuration using SSH and config-file and destination address $(MGMT_ADDRESS_2).
 
+Test Procedure:
 Sleep for 3 seconds.
 
 Exchange messages SOLICIT - REPLY 100 times.
@@ -63,7 +66,12 @@ Exchange messages SOLICIT - REPLY 100 times.
 Remote DHCP server is started on address $(MGMT_ADDRESS_2).
 
 Sleep for 10 seconds.
-# Server 2 should have all the leases by now, so we are looking for sync logs and address in logs
+
+Pass Criteria:
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv6 leases starting from address 2001:db8:1::5b
+Remote $(MGMT_ADDRESS_2) file stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from server1
+Remote $(MGMT_ADDRESS_2) file stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DHCPSRV_MEMFILE_GET_ADDR6 obtaining IPv6 lease for address 2001:db8:1::65 and lease type IA_NA
+
 
 
 @v6 @hook @HA @HA_state @disabled
@@ -74,7 +82,8 @@ Test Setup:
 Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 Server has control agent configured on HTTP connection with address $(MGMT_ADDRESS):8080 and socket unix path: $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.ha-hooks, severity DEBUG, severity level 99 and log file kea.log.
 Server logging system is configured with logger type kea-ctrl-agent, severity DEBUG, severity level 99 and log file kea.log-CTRL.
 
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
@@ -101,7 +110,8 @@ Test Setup:
 Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 Server has control agent configured on HTTP connection with address $(MGMT_ADDRESS_2):8080 and socket unix path: $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.ha-hooks, severity DEBUG, severity level 99 and log file kea.log.
 Server logging system is configured with logger type kea-ctrl-agent, severity DEBUG, severity level 99 and log file kea.log-CTRL2.
 
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
@@ -121,6 +131,7 @@ To HA hook configuration add peers with value: {"name":"server2","url":"http://$
 
 Send server configuration using SSH and config-file and destination address $(MGMT_ADDRESS_2).
 
+Test Procedure:
 Sleep for 3 seconds.
 
 # create leases in HA 1
@@ -130,38 +141,44 @@ Remote DHCP server is started on address $(MGMT_ADDRESS_2).
 # sync HA 2 with HA 1
 Sleep for 10 seconds.
 
+Pass Criteria:
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 15 IPv6 leases starting from address 2001:db8:1::5
+Remote $(MGMT_ADDRESS_2) file stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 15 leases from server1
+Remote $(MGMT_ADDRESS_2) file stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DHCPSRV_MEMFILE_GET_ADDR6 obtaining IPv6 lease for address 2001:db8:1::65 and lease type IA_NA
+
+Remote $(MGMT_ADDRESS_2) file stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv6 leases starting from address 2001:
+File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from
+Remote $(MGMT_ADDRESS_2) file stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: HA_SYNC_SUCCESSFUL lease database synchronization with server1 completed successfully
+
 # stop HA !
 DHCP server is stopped.
 
+Test Procedure:
 Sleep for 3 seconds.
 
 # create leases in HA 2
 Exchange messages SOLICIT - REPLY 100 times.
-
 Clear logs.
 
 DHCP server is started.
 
-# sync HA 1 with HA 2, we suppose to have all leases here now
 Sleep for 10 seconds.
 
-#File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: { "arguments": { "from": "2001:db8:1::b", "limit": 10 }, "command": "lease6-get-page", "service": [ "dhcp6" ] }
-#File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: "state": "hot-standby" }, "result": 0, "text": "HA peer status returned." } ]
-
-# if last lease was transferred everything is ok
+Pass Criteria:
 File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DHCPSRV_MEMFILE_ADD_ADDR6 adding IPv6 lease with address 2001:db8:1::c9
 
 
 @v6 @hook @HA @HA_state @disabled
 Scenario: v6.hooks.HA.page-size-sync-large
-# This is to big to be run in forge setup, run manually
+# This is to big to be run in forge setup, run manually, if by mistake someone will start it - uncomment lines at the bottom
 
 # HA SERVER 1
 Test Setup:
 Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::1-2001:db8:1::ffff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 Server has control agent configured on HTTP connection with address $(MGMT_ADDRESS):8080 and socket unix path: $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Server logging system is configured with logger type kea-dhcp6, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.dhcpsrv, severity DEBUG, severity level 99 and log file kea.log.
+Server logging system is configured with logger type kea-dhcp6.ha-hooks, severity DEBUG, severity level 99 and log file kea.log.
 Server logging system is configured with logger type kea-ctrl-agent, severity DEBUG, severity level 99 and log file kea.log-CTRL.
 
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
@@ -205,9 +222,10 @@ To HA hook configuration add peers with value: {"name":"server2","url":"http://$
 Send server configuration using SSH and config-file and destination address $(MGMT_ADDRESS_2).
 
 Sleep for 3 seconds.
-
-Exchange messages SOLICIT - REPLY 200000 times.
+# UNCOMMENT:
+# Exchange messages SOLICIT - REPLY 200000 times.
 
 Remote DHCP server is started on address $(MGMT_ADDRESS_2).
 
-Sleep for 3000 seconds.
+# UNCOMMENT:
+# Sleep for 3000 seconds.

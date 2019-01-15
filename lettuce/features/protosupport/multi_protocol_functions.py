@@ -188,9 +188,13 @@ def log_contains(step, server_type, condition, line):
             assert False, 'Log does NOT contain line: "%s"' % line
 
 
-def regular_file_contain(file_name, condition, line):
+def regular_file_contain(file_name, condition, line, destination=None):
 
-    result = fabric_sudo_command('grep -c \"' + line + '\" ' + file_name)
+    if destination is None:
+        result = fabric_sudo_command('grep -c \"' + line + '\" ' + file_name)
+    else:
+        result = fabric_sudo_command('grep -c \"' + line + '\" ' + file_name, destination_host=destination)
+
     if condition is not None:
         if result.succeeded:
             assert False, 'File {0} contains line/phrase: {1} But it should NOT.'.format(file_name, line)

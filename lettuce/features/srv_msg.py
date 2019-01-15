@@ -369,6 +369,16 @@ def log_includes_line(step, file_path, condition, line):
     other.regular_file_contain(file_path, condition, line)
 
 
+@step('Remote (\S+) file stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
+def remote_log_includes_line(step, destination, file_path, condition, line):
+    """
+    Check if Log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    destination, file_path, line = test_define_value(destination, file_path, line)
+    other.regular_file_contain(file_path, condition, line, destination=destination)
+
+
 @step('Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
 def log_includes_line(step, table_name, db_type, condition, line):
     """
@@ -571,10 +581,10 @@ def json_response_parsing(step, parameter_name, condition, parameter_value):
 # @step('Start fuzzing. Time: (\d+) (hours|minutes).')
 # def start_fuzzing(step, time_period, time_units):
 #     dhcpmsg.start_fuzzing(time_period, time_units)
-
-@step('Start fuzzing.')
-def start_fuzzing(step):
-    dhcpmsg.start_fuzzing()
+#
+# @step('Start fuzzing.')
+# def start_fuzzing(step):
+#     dhcpmsg.start_fuzzing()
 
 
 @step('Loops config: Save leases details.')
