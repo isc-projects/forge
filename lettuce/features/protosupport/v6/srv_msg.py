@@ -333,7 +333,7 @@ def apply_message_fields_changes():
         try:
             setattr(world.climsg[0], field_details[0], field_details[1])
         except:
-            assert False, "Message does not contain field  " % str(field_details[0])
+            assert False, "Message does not contain field: %s " % str(field_details[0])
 
 
 def add_vendor_suboption(step, code, data):
@@ -986,7 +986,7 @@ def loops(step, message_type_1, message_type_2, repeat):
 
     if message_type_1 == "SOLICIT" and message_type_2 == "ADVERTISE":
         # short two message exchange without saving leases.
-        for x in range(0, repeat):
+        for x in range(repeat):
             generate_new(step, "client")
             client_does_include("Client", "client-id", None)
             client_does_include("Client", "IA-NA", None)
@@ -1002,7 +1002,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(0, repeat):
+        for x in range(repeat):
             if x % x_range == 0:
                 print x
                 # get_common_logger().info("Message exchange no. %d", x)
@@ -1028,7 +1028,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(0, repeat):
+        for x in range(repeat):
             if x % x_range == 0:
                 get_common_logger().info("Message exchane no. %d", x)
             generate_new(step, "client")
@@ -1044,7 +1044,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(0, repeat):
+        for x in range(repeat):
             if x % x_range == 0:
                 get_common_logger().info("Message exchane no. %d", x)
 
@@ -1065,7 +1065,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         client_save_option(step, "server-id")
 
         # long 4 message exchange with saving leases.
-        for x in range(0, repeat):
+        for x in range(repeat):
             if x % x_range == 0:
                 get_common_logger().info("Message exchane no. %d", x)
 
@@ -1080,7 +1080,7 @@ def loops(step, message_type_1, message_type_2, repeat):
 
     else:
         pass
-    for x in range(0, len(world.savedmsg)):
+    for x in range(len(world.savedmsg)):
         world.savedmsg[x] = []
 
 

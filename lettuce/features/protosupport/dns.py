@@ -230,7 +230,7 @@ def check_dns_option(step, expect_empty, part_name):
 
 def parsing_received_parts(query_part_list, length, expect, value_name, value):
     outcome = ""
-    for number in range(0, length):
+    for number in range(length):
         try:
             test = getattr(query_part_list[number], value_name.lower())
         except AttributeError:

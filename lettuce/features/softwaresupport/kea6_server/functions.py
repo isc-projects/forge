@@ -588,7 +588,7 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value):
 
 def cfg_write():
     config_db_backend()
-    for number in range(0, len(world.subcfg)):
+    for number in range(len(world.subcfg)):
         if len(world.subcfg[number][2]) > 10:
             world.subcfg[number][2] = '"option-data": [' + world.subcfg[number][2] + "]"
         if len(world.subcfg[number][4]) > 10:

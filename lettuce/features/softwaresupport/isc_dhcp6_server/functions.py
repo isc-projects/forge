@@ -88,7 +88,7 @@ def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
                 assert False, "Error! Please enter correct IPv6 address!"
             error_flag = True
 
-    for i in range(0, 6):
+    for i in range(6):
         if ip6_addr_splited[i]:
             continue
         else:
@@ -113,7 +113,7 @@ def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
     highest_prefix = lowest_prefix[0:length] + '1' * (delegated_length - length) + lowest_prefix[delegated_length:]
 
     ip6_addr_new = []
-    for i in range(0, 8):
+    for i in range(8):
         ip6_addr_new.append(highest_prefix[:16])
         highest_prefix = highest_prefix[16:]
 
@@ -125,7 +125,7 @@ def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
     prefix = []
     flag1 = False
     flag2 = False
-    for i in range(0, 8):
+    for i in range(8):
         if tmp[i] == "0" and not flag1 and not flag2:
             prefix.append("")
             flag1 = True
