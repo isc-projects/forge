@@ -178,7 +178,7 @@ def log_contains(step, server_type, condition, line):
     else:
         assert False, "No such name as: {server_type}".format(**locals())
 
-    result = fabric_sudo_command('grep -c \"' + line + '\" ' + log_file)
+    result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
 
     if condition is not None:
         if result.succeeded:
@@ -188,9 +188,13 @@ def log_contains(step, server_type, condition, line):
             assert False, 'Log does NOT contain line: "%s"' % line
 
 
-def regular_file_contain(file_name, condition, line):
+def regular_file_contain(file_name, condition, line, destination=None):
 
-    result = fabric_sudo_command('grep -c \"' + line + '\" ' + file_name)
+    if destination is None:
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name))
+    else:
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), destination_host=destination)
+
     if condition is not None:
         if result.succeeded:
             assert False, 'File {0} contains line/phrase: {1} But it should NOT.'.format(file_name, line)
@@ -260,7 +264,7 @@ def log_contains_count(step, server_type, count, line):
     else:
         assert False, "No such name as: {server_type}".format(**locals())
 
-    result = fabric_sudo_command('grep -c \"' + line + '\" ' + log_file)
+    result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
 
     if count != result:
         assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)

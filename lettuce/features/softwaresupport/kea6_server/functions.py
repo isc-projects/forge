@@ -452,14 +452,17 @@ def set_kea_ctrl_config():
     dhcp6_srv={path}/sbin/kea-dhcp6
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
     ctrl_agent_srv={path}/sbin/kea-ctrl-agent
+    netconf_srv={path}/sbin/kea-netconf
     kea_dhcp4_config_file={path}/etc/kea/kea.conf
     kea_dhcp6_config_file={path}/etc/kea/kea.conf
     kea_dhcp_ddns_config_file={path}/etc/kea/kea.conf
     kea_ctrl_agent_config_file={path}/etc/kea/kea.conf
+    kea_netconf_config_file={path}/etc/kea/kea.conf
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
     kea_verbose=no
+    netconf=no
     ctrl_agent={ctrl_agent}
     '''.format(**locals())
 
@@ -585,7 +588,7 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value):
 
 def cfg_write():
     config_db_backend()
-    for number in range(0, len(world.subcfg)):
+    for number in range(len(world.subcfg)):
         if len(world.subcfg[number][2]) > 10:
             world.subcfg[number][2] = '"option-data": [' + world.subcfg[number][2] + "]"
         if len(world.subcfg[number][4]) > 10:
