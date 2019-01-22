@@ -52,7 +52,10 @@ def client_send_msg(step, msgname, iface, addr):
     options = world.cliopts
 
     if hasattr(world, 'prl') and len(world.prl) > 0:
-        options += [("param_req_list", [ord(o) for o in world.prl])]
+        if conf.version == '2.2.0-dev':
+            options += [("param_req_list", str(world.prl))]
+        else:
+            options += [("param_req_list", [ord(o) for o in world.prl])]
 #     else:
 #         assert False, "No PRL defined"
 

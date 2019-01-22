@@ -19,6 +19,8 @@
 # This file contains a number of common steps that are general and may be used
 # By a lot of feature files.
 #
+import random
+
 from cookielib import debug
 from features.logging_facility import get_common_logger
 from lettuce.registry import world
