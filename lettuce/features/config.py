@@ -34,7 +34,7 @@ def stop_a_named_process(step, process_name):
     world.processes.stop_process(process_name)
 
 @step('wait for (new )?(\w+) stderr message (\w+)(?: not (\w+))?')
-def wait_for_message(step, new, process_name, message, not_message):
+def wait_for_err_message(step, new, process_name, message, not_message):
     """
     Block until the given message is printed to the given process's stderr
     output.
@@ -54,7 +54,7 @@ def wait_for_message(step, new, process_name, message, not_message):
         assert found != not_message, line
 
 @step('wait for (new )?(\w+) stdout message (\w+)(?: not (\w+))?')
-def wait_for_message(step, process_name, message, not_message):
+def wait_for_out_message(step, process_name, message, not_message):
     """
     Block until the given message is printed to the given process's stdout
     output.

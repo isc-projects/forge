@@ -154,7 +154,7 @@ def config_srv_subnet(step, subnet, pool):
 
 
 @step('Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
-def config_srv_subnet(step, interface, address, subnet, pool):
+def config_srv_subnet_with_iface(step, interface, address, subnet, pool):
     """
     Adds server configuration with specified subnet and pool.
     subnet may define specific subnet or use the word "default"
@@ -436,7 +436,7 @@ def add_parameter_to_hook(step, hook_no, parameter_name, parameter_value):
 
 
 @step('Add High-Availability hook library located (\S+).')
-def add_parameter_to_hook(step, lib_location):
+def add_ha_hook(step, lib_location):
     lib_location = test_define_value(lib_location)[0]
     dhcp.ha_add_parameter_to_hook("lib", lib_location)
 
@@ -445,7 +445,7 @@ def add_parameter_to_hook(step, lib_location):
 
 
 @step('To HA hook configuration add (\S+) with value: (.+)')
-def add_parameter_to_hook(step, parameter_name, parameter_value):
+def add_parameter_to_ha_hook(step, parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value)
 
@@ -579,7 +579,7 @@ def option_db_record_reservation(step, reserved_option_code, reserved_option_val
 
 
 @step('Dump all the reservation entries from (\S+) database.')
-def upload_db_reservation(step, db_type):
+def dump_db_reservation(step, db_type):
     if db_type == 'MySQL':
         mysql_reservation.clear_all_reservations()
     elif db_type == 'PostgreSQL':
@@ -667,7 +667,7 @@ def set_conf_parameter_shared_subnet(step, parameter_name, value, subnet_id):
 
 ##subnet options
 @step('Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
-def host_reservation(step, reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
+def host_reservation_in_subnet(step, reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
     """
     Ability to configure simple host reservations in subnet.
     """
@@ -686,7 +686,7 @@ def host_reservation(step, reservation_type, reserved_value, subnet, unique_host
 
 
 @step('For host reservation entry no. (\d+) in subnet (\d+) add (\S+) with value (\S+).')
-def host_reservation(step, reservation_number, subnet, reservation_type, reserved_value):
+def host_reservation_in_subnet_add_value(step, reservation_number, subnet, reservation_type, reserved_value):
     """
     Ability to configure simple host reservations in subnet.
     """
@@ -698,7 +698,7 @@ def host_reservation(step, reservation_number, subnet, reservation_type, reserve
 
 
 @step('Time (\S+) in subnet (\d+) is configured with value (\d+).')
-def set_time(step, which_time, subnet, value):
+def set_time_in_subnet(step, which_time, subnet, value):
     """
     Change values of T1, T2, preffered lifetime and valid lifetime.
     """
@@ -729,7 +729,7 @@ def config_srv(step, option_name, subnet, option_value):
 
 
 @step('Server is configured with (\S+) option in subnet (\d+) and pool (\d+) with value (\S+).')
-def config_srv(step, option_name, subnet, pool, option_value):
+def config_srv_pool(step, option_name, subnet, pool, option_value):
     """
     """
     # dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
@@ -739,7 +739,7 @@ def config_srv(step, option_name, subnet, pool, option_value):
 
 
 @step('On space (\S+) server is configured with (\S+) option in subnet (\d+) with value (\S+).')
-def config_srv(step, space, option_name, subnet, option_value):
+def config_srv_on_space(step, space, option_name, subnet, option_value):
     """
     Prepare server configuration with the specified option.
     option_name name of the option, e.g. dns-servers (number may be used here)
@@ -757,7 +757,7 @@ def config_client_classification(step, subnet, option_value):
 
 
 @step('Server is configured with require-client-classification option in subnet (\d+) with name (\S+).')
-def config_client_classification(step, subnet, option_value):
+def config_require_client_classification(step, subnet, option_value):
     """
     """
     dhcp.config_require_client_classification(step, subnet, option_value)
@@ -844,7 +844,7 @@ def build_and_send_config_files(step, connection_type, configuration_type):
 
 
 @step('Send server configuration using (\S+) and (\S+) and destination address (\S+).')
-def build_and_send_config_files(step, connection_type, configuration_type, destination_address):
+def build_and_send_config_files_dest_addr(step, connection_type, configuration_type, destination_address):
     """
     Step used to choosing configuration type and channel to send it.
     :param step:
@@ -915,7 +915,7 @@ def check_remote_address(remote_address):
 
 
 @step('Remote (\S+) server is (started|stopped|restarted|reconfigured) on address (\S+).')
-def start_srv(step, name, type_of_action, destination_address):
+def remote_start_srv(step, name, type_of_action, destination_address):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -949,7 +949,7 @@ def start_srv(step, name, type_of_action, destination_address):
 
 
 @step('(\S+) server failed to start. During (\S+) process.')
-def start_srv(step, name, process):
+def start_srv_during_process(step, name, process):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -963,7 +963,7 @@ def start_srv(step, name, process):
 
 
 @step('(\S+) server failed to start. During (\S+) process on remote destination (\S+).')
-def start_srv(step, name, process, destination_address):
+def start_srv_during_remote_process(step, name, process, destination_address):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -1028,9 +1028,5 @@ def add_keys(step, name, algorithm, secret):
 
 
 @step('Use DNS set no. (\d+).')
-def log_includes_count(step, number):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
+def use_dns_set_number(step, number):
     dns.use_config_set(int(number))

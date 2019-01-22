@@ -36,7 +36,7 @@ def forge_sleep(time, time_units):
 
 def test_pause():
     """
-    Pause the test for any reason. Press any key to continue. 
+    Pause the test for any reason. Press any key to continue.
     """
     def getch():
         import tty
@@ -62,9 +62,9 @@ def copy_file_from_server(step, remote_path):
 def send_file_to_server(step, local_path, remote_path):
     """
     Send file to remote server via ssh. Address/login/password from init_all
-    Two paths required. 
+    Two paths required.
     Local - relative to lettuce directory
-    Remote - absolute 
+    Remote - absolute
     """
     fabric_send_file(local_path, remote_path)
 
@@ -97,9 +97,9 @@ def compare_file(step, local_path):
     """
     if not os.path.exists(local_path):
         assert False, 'No local file %s' % local_path
-    
+
     outcome = open(world.cfg["dir_name"] + '/file_compare', 'w')
-    
+
     # first remove all commented and blank lines of both files
     downloaded_stripped = strip_file(world.cfg["dir_name"] + '/downloaded_file')
     local_stripped = strip_file(local_path)
@@ -114,10 +114,10 @@ def compare_file(step, local_path):
         line_number += 1
     if error_flag:
         remove_local_file(world.cfg["dir_name"] + '/file_compare')
-        
+
     assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details'\
                        % world.cfg["dir_name"]
-    
+
     if len(downloaded_stripped) != len(local_stripped):
         assert len(downloaded_stripped) > len(local_stripped), 'Downloaded file is part of a local file.'
         assert len(downloaded_stripped) < len(local_stripped), 'Local file is a part of a downlaoded life.'
@@ -138,16 +138,16 @@ def file_includes_line(step, condition, line):
 
 def add_variable(variable_name, variable_val, val_type):
     """
-    Define variable and add it to temporary list or to init_all.py file. 
+    Define variable and add it to temporary list or to init_all.py file.
     """
     import re
     assert not bool(re.compile('[^A-Z^0-9^_] + ').search(variable_name)),\
         "Variable name contain invalid characters (Allowed are only capital letters, numbers and sign '_')."
-    
+
     if not val_type:
         # temporary
         if variable_name not in world.define:
-            tmp = variable_val if variable_val.isdigit() else variable_val  
+            tmp = variable_val if variable_val.isdigit() else variable_val
             world.define.append([variable_name, tmp])
         else:
             world.define[variable_name] = variable_val
@@ -333,14 +333,16 @@ def send_through_socket_server_site(socket_path, command, destination_address=wo
         command_file.write(command)
     except:
         command_file.close()
-        command_file = open(world.cfg["dir_name"] + '/command_file', 'wb')
+        command_file = open(world.cfg["dir_name"] + '/command_file', 'wb')  # TODO: why 'w' / 'wb'
         command_file.write(command)
     command_file.close()
     fabric_send_file(world.cfg["dir_name"] + '/command_file', 'command_file', destination_host=destination_address)
     world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', hide_all=True,
                                                 destination_host=destination_address)
     fabric_remove_file_command('command_file')
-    print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
+    result = json.loads(world.control_channel)
+    print json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
+    world.cmd_resp = result
 
 
 def send_through_http(host_address, host_port, command):

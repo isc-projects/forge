@@ -14,6 +14,8 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Author: Wlodzimierz Wencel
+import os
+
 from lettuce.registry import world
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\

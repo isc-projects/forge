@@ -398,7 +398,7 @@ def test_path_select(number, test_set, name, explicit_path):
         # Test search path will be <forge>/letttuce/features/<explicit_path/
         # without regard to SUT or protocol.  Can be used with -n to run
         # specific scenarios.
-        base_path = os.getcwd() + "/features/" + explicit_path + "/"
+        base_path = os.path.join(os.getcwd(), explicit_path)
         if name is not None:
             from help import find_scenario_in_path
             base_path, scenario = find_scenario_in_path(name, base_path)
@@ -406,7 +406,7 @@ def test_path_select(number, test_set, name, explicit_path):
                 print "Scenario named %s has been not found" % name
                 sys.exit(-1)
     elif test_set is not None:
-        path = "/features/dhcpv" + number + "/" + testType + "/" + test_set + "/"
+        path = "/features/dhcpv" + number + "/" + testType + "/" + test_set
         base_path = os.getcwd() + path
     elif name is not None:
         from help import find_scenario
@@ -416,7 +416,7 @@ def test_path_select(number, test_set, name, explicit_path):
             sys.exit(-1)
     else:
         scenario = None
-        path = "/features/dhcpv" + number + "/" + testType + "/"
+        path = "/features/dhcpv" + number + "/" + testType
         base_path = os.getcwd() + path
 
     return base_path, scenario

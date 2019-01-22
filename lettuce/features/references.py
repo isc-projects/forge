@@ -29,5 +29,5 @@ def references_check(step, references):
 
 
 @step('Tags: (\S+)')
-def references_check(step, tags):
+def tags_check(step, tags):
     assert len(tags), "Tags cannot be empty."
