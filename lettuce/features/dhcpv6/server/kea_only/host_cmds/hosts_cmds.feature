@@ -531,7 +531,7 @@ Feature: Kea Hook hosts_cmds testing
   Response option 25 MUST contain sub-option 13.
   Response sub-option 13 from option 25 MUST contain statuscode 6.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:0:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
   Client does include client-id.
@@ -544,7 +544,7 @@ Feature: Kea Hook hosts_cmds testing
   Server MUST respond with ADVERTISE message.
   Response MUST include option 3.
   Response option 3 MUST contain sub-option 5.
-  Response sub-option 5 from option 3 MUST contain address 2001:db8:1:cafe::1.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:1:0:cafe::1.
   Response MUST include option 25.
   Response sub-option 26 from option 25 MUST contain prefix 2001:db8:2:abcd::.
 
@@ -575,7 +575,7 @@ Feature: Kea Hook hosts_cmds testing
   Response option 25 MUST contain sub-option 13.
   Response sub-option 13 from option 25 MUST contain statuscode 6.
 
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:0:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
   Client does include client-id.
@@ -588,6 +588,6 @@ Feature: Kea Hook hosts_cmds testing
   Server MUST respond with ADVERTISE message.
   Response MUST include option 3.
   Response option 3 MUST contain sub-option 5.
-  Response sub-option 5 from option 3 MUST contain address 2001:db8:1:cafe::1.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:1:0:cafe::1.
   Response MUST include option 25.
   Response sub-option 26 from option 25 MUST contain prefix 2001:db8:2:abcd::.
