@@ -18,8 +18,15 @@
 # This file contains a number of common steps that are general and may be used
 # By a lot of feature files.
 #
-from lettuce import step, world
+
+import sys
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import step, world
+else:
+    from lettuce import step, world
 from scapy.layers.dhcp6 import DHCP6OptOptReq
+
 from softwaresupport.configuration import KeaConfiguration
 
 
@@ -81,7 +88,7 @@ def test_procedure(step):
                     world.oro.reqopts = [] # don't request anything by default
 
             # some tests skip "test setup" procedure and goes to "test procedure"
-            # e.g. tests for server configuration. Then we need to setup 
+            # e.g. tests for server configuration. Then we need to setup
             # world.kea["option_cnt"] here.
             set_world()
         else:

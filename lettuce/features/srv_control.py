@@ -15,10 +15,16 @@
 
 # Author: Wlodzimierz Wencel
 
-from lettuce import world, step
+import sys
+import importlib
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world, step
+else:
+    from lettuce import world, step
+
 from init_all import SOFTWARE_UNDER_TEST
 from terrain import declare_all
-import importlib
 
 DHCP = world.f_cfg.dhcp_used
 DNS = world.f_cfg.dns_used
@@ -26,43 +32,43 @@ declare_all()
 
 for each_server_name in SOFTWARE_UNDER_TEST:
     if each_server_name in DHCP and not world.f_cfg.no_server_management:
-        dhcp = importlib.import_module("softwaresupport.%s.functions" % each_server_name)
+        dhcp = importlib.import_module("features.softwaresupport.%s.functions" % each_server_name)
         world.cfg["dhcp_under_test"] = each_server_name
         ddns_enable = True
         mysql_reservation_enable = True
         pgsql_reservation_enable = True
         cql_reservation_enable = True
         try:
-            ddns = importlib.import_module("softwaresupport.%s.functions_ddns" % each_server_name)
+            ddns = importlib.import_module("features.softwaresupport.%s.functions_ddns" % each_server_name)
         except ImportError:
             ddns_enable = False
         try:
-            mysql_reservation = importlib.import_module("softwaresupport.%s.mysql_reservation" % each_server_name)
+            mysql_reservation = importlib.import_module("features.softwaresupport.%s.mysql_reservation" % each_server_name)
         except ImportError:
             mysql_reservation_enable = False
         try:
-            pgsql_reservation = importlib.import_module("softwaresupport.%s.pgsql_reservation" % each_server_name)
+            pgsql_reservation = importlib.import_module("features.softwaresupport.%s.pgsql_reservation" % each_server_name)
         except ImportError:
             pgsql_reservation_enable = False
         try:
-            cql_reservation = importlib.import_module("softwaresupport.%s.cql_reservation" % each_server_name)
+            cql_reservation = importlib.import_module("features.softwaresupport.%s.cql_reservation" % each_server_name)
         except ImportError:
             cql_reservation_enable = False
     elif each_server_name in DNS and not world.f_cfg.no_server_management:
         try:
-            dns = importlib.import_module("softwaresupport.%s.functions" % each_server_name)
+            dns = importlib.import_module("features.softwaresupport.%s.functions" % each_server_name)
             world.cfg["dns_under_test"] = each_server_name
         except ImportError:
             dns_enable = False
     elif world.f_cfg.no_server_management:
-        dhcp = importlib.import_module("softwaresupport.none_server.functions")
+        dhcp = importlib.import_module("features.softwaresupport.none_server.functions")
         mysql_reservation_enable = False
         pgsql_reservation_enable = False
         cql_reservation_enable = False
-        dns = importlib.import_module("softwaresupport.none_server.functions")
+        dns = importlib.import_module("features.softwaresupport.none_server.functions")
 
 # new configuration system:
-new_config = importlib.import_module("softwaresupport.configuration")
+new_config = importlib.import_module("features.softwaresupport.configuration")
 
 
 def ddns_block():

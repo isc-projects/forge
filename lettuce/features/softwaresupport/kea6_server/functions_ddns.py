@@ -15,7 +15,12 @@
 
 # Author: Wlodzimierz Wencel
 
-from lettuce.registry import world
+import sys
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
 
 
 def add_ddns_server(address, port):

@@ -14,8 +14,12 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Author: Wlodzimierz Wencel
+import sys
 
-from lettuce.decorators import step
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import step
+else:
+    from lettuce import step
 
 #
 # This file contains a number of common steps that are general and may be used

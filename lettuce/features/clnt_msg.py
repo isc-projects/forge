@@ -15,10 +15,15 @@
 
 # Author: Maciek Fijalkowski
 
+import sys
+import importlib
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world, step
+else:
+    from lettuce import world, step
 
 from init_all import PROTO, SOFTWARE_UNDER_TEST
-from lettuce import world, step
-import importlib
 
 # TODO: write some comments what particular functions do; file's getting messy.
 
@@ -29,11 +34,11 @@ if PROTO == "v6":
 ##############   getting client message   ##############
 
     """
-    Step sniffs message(s) sent by client and stores it in list. It is an 
+    Step sniffs message(s) sent by client and stores it in list. It is an
     important step and a lot of things take place here. We can sniff a
     message with or without a timeout. If, after reaching timeout, specific
-    message was not sniffed, whole test fails. 
-    Sniffed message is splitted onto particular options and stored in 
+    message was not sniffed, whole test fails.
+    Sniffed message is splitted onto particular options and stored in
     variable. Time of receiving message is also saved.
     """
     @step("Sniffing client (\S+) message from network( with timeout)?.")
@@ -108,8 +113,8 @@ if PROTO == "v6":
 
 
     """
-    Step verifies the presence of particular sub-option within option 
-    in received message from client. Sub-options and options are checked 
+    Step verifies the presence of particular sub-option within option
+    in received message from client. Sub-options and options are checked
     by their option code.
     """
     @step("Client message option (\d+) MUST (NOT )?include sub-option (\d+).")
@@ -217,7 +222,7 @@ if PROTO == "v6":
 
 
     """
-    Server sets value of one key from world.clntCfg["values"] 
+    Server sets value of one key from world.clntCfg["values"]
     to different than its default value. It can be for example
     T1, T2, preferred-lifetime, valid-lifetime, prefix.
     """

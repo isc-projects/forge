@@ -349,7 +349,7 @@ Scenario: control.channel.http.config-write
   Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Generate server configuration file.
 
-  Using unix socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-set", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-set", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }
 
   Test Procedure:
   Client requests option 1.

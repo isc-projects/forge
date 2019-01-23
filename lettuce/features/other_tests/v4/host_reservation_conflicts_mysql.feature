@@ -67,7 +67,7 @@ Feature: Host Reservation DHCPv4
 	Upload hosts reservation to MySQL database.
 
     #Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:77.
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
 
     Test Procedure:
@@ -127,7 +127,7 @@ Feature: Host Reservation DHCPv4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.3 pool.
     Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:77.
 
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
 
     Test Procedure:
@@ -168,7 +168,7 @@ Feature: Host Reservation DHCPv4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.9 pool.
     Reserve address 192.168.50.30 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
 
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
 
     Test Procedure:
@@ -217,7 +217,7 @@ Feature: Host Reservation DHCPv4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
     Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
 
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -255,7 +255,7 @@ Feature: Host Reservation DHCPv4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.30 pool.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
 
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -293,7 +293,7 @@ Feature: Host Reservation DHCPv4
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
 
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:01.
@@ -370,7 +370,7 @@ Feature: Host Reservation DHCPv4
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -443,7 +443,7 @@ Feature: Host Reservation DHCPv4
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -508,7 +508,7 @@ Feature: Host Reservation DHCPv4
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -583,7 +583,7 @@ Feature: Host Reservation DHCPv4
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client adds to the message requested_addr with value 192.168.50.5.
@@ -650,7 +650,7 @@ Feature: Host Reservation DHCPv4
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.10 pool.
     Reserve address 192.168.50.5 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:04.
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client sets chaddr value to ff:01:02:03:ff:04.
@@ -725,7 +725,7 @@ Feature: Host Reservation DHCPv4
     Time valid-lifetime is configured with value 500.
     Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.60 pool.
     Reserve address 192.168.50.50 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:01.
-    Reconfigure DHCP server.
+    DHCP server is reconfigured.
 
     Test Procedure:
     Client adds to the message requested_addr with value 192.168.50.5.
@@ -754,4 +754,3 @@ Feature: Host Reservation DHCPv4
     Pass Criteria:
     Server MUST respond with ACK message.
     Response MUST contain yiaddr 192.168.50.50.
-

@@ -14,17 +14,27 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Author: Wlodzimierz Wencel
-
-from _pyio import open
-from lettuce.registry import world
-from locale import str
 import sys
 import os
+from time import sleep
+import json
+import locale
+import re
+import tty
+import termios
+from shutil import copy
+
+from _pyio import open
+import requests
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
+
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
         save_local_file, fabric_run_command
-from time import sleep
-import json
 
 
 def forge_sleep(time, time_units):
@@ -39,8 +49,6 @@ def test_pause():
     Pause the test for any reason. Press any key to continue.
     """
     def getch():
-        import tty
-        import termios
         fd = sys.stdin.fileno()
         old = termios.tcgetattr(fd)
         try:
@@ -108,7 +116,7 @@ def compare_file(step, local_path):
     error_flag = True
     for i, j in zip(downloaded_stripped, local_stripped):
         if i != j:
-            outcome.write('Line number: ' + str(line_number) + ' \n\tDownloaded file line: "' +
+            outcome.write('Line number: ' + locale.str(line_number) + ' \n\tDownloaded file line: "' +
                           i.rstrip('\n') + '" and local file line: "' + j.rstrip('\n') + '"\n')
             error_flag = False
         line_number += 1
@@ -140,7 +148,6 @@ def add_variable(variable_name, variable_val, val_type):
     """
     Define variable and add it to temporary list or to init_all.py file.
     """
-    import re
     assert not bool(re.compile('[^A-Z^0-9^_] + ').search(variable_name)),\
         "Variable name contain invalid characters (Allowed are only capital letters, numbers and sign '_')."
 
@@ -164,7 +171,6 @@ def add_variable(variable_name, variable_val, val_type):
 
 
 def user_victory(step):
-    from shutil import copy
     if not os.path.exists(world.cfg["dir_name"]):
         os.makedirs(world.cfg["dir_name"])
     copy('../doc/.victory.jpg', world.cfg["dir_name"] + '/celebrate_success.jpg')
@@ -350,8 +356,7 @@ def send_through_socket_server_site(socket_path, command, destination_address=wo
 
 
 def send_through_http(host_address, host_port, command):
-    import requests
-    world.control_channel = requests.post("http://" + host_address + ":" + str(host_port),
+    world.control_channel = requests.post("http://" + host_address + ":" + locale.str(host_port),
                                           headers={"Content-Type": "application/json"}, data=command).text
 
     print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))

@@ -16,15 +16,18 @@
 # Author: Wlodzimierz Wencel
 
 import os
+import sys
 from time import sleep
 
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
-    copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
-from lettuce import world
-from logging_facility import *
-from logging_facility import get_common_logger
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
 
-from softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
+from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
+    copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
+from features.logging_facility import *  # TODO
+from features.softwaresupport.kea6_server.functions import stop_srv, restart_srv, set_logger, cfg_write, set_time, \
     add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config,\
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
     add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \

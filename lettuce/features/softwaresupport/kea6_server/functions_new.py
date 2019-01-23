@@ -15,15 +15,20 @@
 
 # Author: Wlodzimierz Wencel
 
+import sys
 import os
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
     fabric_download_file, fabric_remove_file_command, locate_entry
-from protosupport.multi_protocol_functions import add_variable
+from features.protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
-from logging_facility import *
-from lettuce.registry import world
+from logging_facility import *  # TODO
 
 kea_options6 = {
     "client-id": 1,

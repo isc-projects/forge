@@ -15,15 +15,20 @@
 
 # Author: Wlodzimierz Wencel
 
+import sys
 import json
-
-from lettuce import world, step
 import importlib
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world, step
+else:
+    from lettuce import world, step
+
 from srv_control import test_define_value
 
-dhcpmsg = importlib.import_module("protosupport.%s.srv_msg" % world.f_cfg.proto)
-dns = importlib.import_module("protosupport.dns")
-other = importlib.import_module("protosupport.multi_protocol_functions")
+dhcpmsg = importlib.import_module("features.protosupport.%s.srv_msg" % world.f_cfg.proto)
+dns = importlib.import_module("features.protosupport.dns")
+other = importlib.import_module("features.protosupport.multi_protocol_functions")
 
 
 ##building DHCP messages

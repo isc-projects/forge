@@ -18,11 +18,14 @@
 # By a lot of feature files.
 #
 
-
-from lettuce.decorators import step
-from lettuce.registry import world
-import new
 import os
+import sys
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world, step
+else:
+    from lettuce import world, step
+
 
 @step('stop process (\w+)')
 def stop_a_named_process(step, process_name):

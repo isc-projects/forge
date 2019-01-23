@@ -15,8 +15,13 @@
 
 # Author: Wlodzimierz Wencel
 
-from lettuce import world
-from logging_facility import *
+import sys
+from random import randint
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
 from scapy.all import get_if_raw_hwaddr, Ether, srp
 from scapy.config import conf
 from scapy.fields import Field
@@ -25,8 +30,9 @@ from scapy.packet import Raw
 from scapy.layers.inet import IP, UDP
 from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
-from random import randint
-from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
+
+from features.protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
+from features.logging_facility import *  # TODO
 
 
 def client_requests_option(step, opt_type):

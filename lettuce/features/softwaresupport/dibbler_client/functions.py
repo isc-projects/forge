@@ -15,12 +15,20 @@
 
 # Author: Maciek Fijalkowski
 
+import os
+import sys
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
 
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
     fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file, \
     remove_local_file
-from logging_facility import *
-from lettuce.registry import world
+from logging_facility import *  # TODO
+
+
 ############################################################################
 #from init_all import  IFACE
 #TODO That import have to be switched to ForgeConfiguration class, world.f_cfg

@@ -16,12 +16,18 @@
 # Author: Wlodzimierz Wencel
 
 import os
+import sys
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide
 from fabric.exceptions import NetworkError
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
+
 from features.logging_facility import get_common_logger
-from lettuce.registry import world
 
 
 def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
@@ -58,7 +64,7 @@ def fabric_send_file(file_local, file_remote,
                      destination_host=world.f_cfg.mgmt_address,
                      user_loc=world.f_cfg.mgmt_username,
                      password_loc=world.f_cfg.mgmt_password):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
         with hide('running', 'stdout', 'stderr'):
             result = put(file_local, file_remote, use_sudo=True)
     return result

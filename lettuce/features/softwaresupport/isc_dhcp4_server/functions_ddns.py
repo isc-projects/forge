@@ -15,7 +15,12 @@
 
 # Author: Wlodzimierz Wencel
 
-from lettuce.registry import world
+import sys
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
 
 
 def add_ddns_server(address, port):
@@ -48,12 +53,12 @@ def add_forward_ddns(name, key_name, ip_address, port):
     pointer_end = "}"
     world.ddns_domainname = name
     if key_name == "EMPTY_KEY":
-        world.ddns_forw.append('''\nzone {name} 
+        world.ddns_forw.append('''\nzone {name}
                                 {pointer_start}
                                 primary {ip_address};
                                 {pointer_end}'''.format(**locals()))
     else:
-        world.ddns_forw.append('''\nzone {name} 
+        world.ddns_forw.append('''\nzone {name}
                                 {pointer_start}
                                 key {key_name};
                                 primary {ip_address};
@@ -72,12 +77,12 @@ def add_reverse_ddns(name, key_name, ip_address, port):
     world.ddns_rev_domainname = ".".join(tmp[::-1])
 
     if key_name == "EMPTY_KEY":
-        world.ddns_rev.append('''\nzone {name} 
+        world.ddns_rev.append('''\nzone {name}
                                 {pointer_start}
                                 primary {ip_address};
                                 {pointer_end}'''.format(**locals()))
     else:
-        world.ddns_rev.append('''\nzone {name} 
+        world.ddns_rev.append('''\nzone {name}
                                 {pointer_start}
                                 key {key_name};
                                 primary {ip_address};
@@ -104,4 +109,3 @@ def build_ddns_config():
         world.ddns += each
     for each in world.ddns_forw:
         world.ddns += each
-

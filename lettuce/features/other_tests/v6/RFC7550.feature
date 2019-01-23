@@ -1,6 +1,6 @@
 Feature: How Kea cope with new RFC7550
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.1
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -45,7 +45,7 @@ Feature: How Kea cope with new RFC7550
 
   References: RFC 7550 Section 4.1. - Status Code placement
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.2
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -99,7 +99,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 26.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.3
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -148,7 +148,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 26.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.4
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -196,7 +196,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 13.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.5
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -247,7 +247,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 13.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.6
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -304,7 +304,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 13.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.7
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -374,7 +374,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 26.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.8
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -432,7 +432,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 13.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.9
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -489,7 +489,7 @@ Feature: How Kea cope with new RFC7550
   Response option 3 MUST contain sub-option 5.
   Response MUST include option 25.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.10
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -536,7 +536,7 @@ Feature: How Kea cope with new RFC7550
   Response option 3 MUST contain sub-option 5.
   Response MUST include option 25.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.11
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -584,7 +584,7 @@ Feature: How Kea cope with new RFC7550
   Response option 3 MUST contain sub-option 5.
   Response MUST include option 25.
 
-@v6 @7550 @dhcp6 @PD @rfc3633
+@v6 @rfc7550 @dhcp6 @PD @rfc3633
   Scenario: prefix
 
   Test Setup:
@@ -645,7 +645,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 26.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.12
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -711,7 +711,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 26.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.13
   Test Setup:
   Time preferred-lifetime is configured with value 300.
@@ -766,7 +766,7 @@ Feature: How Kea cope with new RFC7550
   Response MUST include option 25.
   Response option 25 MUST contain sub-option 26.
 
-@v6 @7550
+@v6 @rfc7550
   Scenario: v6.rfc7550.14
   Test Setup:
   Time preferred-lifetime is configured with value 300.

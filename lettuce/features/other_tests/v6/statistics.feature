@@ -250,14 +250,14 @@ Scenario: stats_6
 	Server is configured with another subnet: 3000:100::/64 with 3000:100::5-3000:100::ff pool.
     Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2.
-	Reconfigure DHCP server.
+	DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
 
 	Test Setup:
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
-	Reconfigure DHCP server.
+	DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"statistic-get-all","arguments":{}}
 
@@ -265,10 +265,10 @@ Scenario: stats_6
 	Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
     Server is configured with 2001:db8:1:: prefix in subnet 0 with 90 prefix length and 92 delegated prefix length.
     Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2.
-	Reconfigure DHCP server.
+	DHCP server is reconfigured.
 
 	Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}
 
-    Restart DHCP server.
+    DHCP server is restarted.
 
     Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command":"statistic-get-all","arguments":{}}

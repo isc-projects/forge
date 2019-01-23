@@ -41,16 +41,16 @@ def load_steps():
 
 
 def _find_matching_func(steps, line):
-    if 'Server MUST NOT respond' in line:
-        print('  %r' % line)
+    #if 'Server MUST NOT respond' in line:
+    #    print('  %r' % line)
     for regex, fname, func in steps:
-        if 'Server MUST NOT respond' in line:
-            print('  %r' % regex)
+        #if 'Server MUST NOT respond' in line:
+        #    print('  %r' % regex)
         m = re.search(regex, line)
         if m:
-            print('match %s' % str(m.groups()))
-            print('  %r' % line)
-            print('  %r' % regex)
+            #print('match %s' % str(m.groups()))
+            #print('  %r' % line)
+            #print('  %r' % regex)
             return fname, func, m.groups(), regex
     raise Exception("no match for '%s'" % line)
 
@@ -72,7 +72,7 @@ def parse_feature_file(feature_file_path, steps):
 
                 if sline.startswith('@'):
                     sline = sline.replace('@', '')
-                    tags = sline.split(' ')
+                    tags = [t for t in sline.split(' ') if t]
                     scenario = None
                     continue
 
@@ -111,7 +111,11 @@ def generate_py_file(feature, scenarios_list, used_modules, py_file_path):
         f.write("if 'features' not in sys.path:\n")
         f.write("    sys.path.append('features')\n")
         f.write("\n")
-        f.write("import lettuce\n")
+        f.write("if 'pytest' in sys.argv[0]:\n")
+        f.write("    import pytest\n")
+        f.write("else:\n")
+        f.write("    import lettuce as pytest\n")
+
         f.write("\n")
 
         for mod in used_modules:
@@ -124,9 +128,9 @@ def generate_py_file(feature, scenarios_list, used_modules, py_file_path):
 
         for scen in scenarios_list:
 
-            f.write("@lettuce.mark.py_test\n")
+            f.write("@pytest.mark.py_test\n")
             for tag in scen['tags']:
-                f.write("@lettuce.mark.%s\n" % tag)
+                f.write("@pytest.mark.%s\n" % tag.replace('-', '_'))
 
             name = scen['name']
             name = name.replace('.', '_')
@@ -186,17 +190,19 @@ def main(feature_file_path):
         feature_file_path = feature_file_path.replace('/logging.feature', '/kea_logging.feature')
 
     py_file_path = feature_file_path.replace('.feature', '').replace('.', '_') + '.py'
+    p1, p2 = py_file_path.rsplit('/', 1)
+    py_file_path = os.path.join(p1, 'test_' + p2)
 
     generate_py_file(feature, scenarios_list, used_modules, py_file_path)
 
     print('Feature: %s' % feature)
-    for idx, scen in enumerate(scenarios_list):
-        print('%s. Scenario: %s' % (idx, scen['name']))
-        print('  Tags: %s' % scen['tags'])
-        print('  Commands:')
-        for cmd in scen['commands']:
-            print('      %s' % str(cmd))
-        print('')
+    #for idx, scen in enumerate(scenarios_list):
+    #    print('%s. Scenario: %s' % (idx, scen['name']))
+        #print('  Tags: %s' % scen['tags'])
+        #print('  Commands:')
+        #for cmd in scen['commands']:
+        #    print('      %s' % str(cmd))
+        #print('')
 
 
 

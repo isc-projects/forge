@@ -15,12 +15,19 @@
 
 # Author: Wlodzimierz Wencel
 
-from lettuce.registry import world
+import sys
 from locale import str
+
 from scapy.all import sr
-from scapy.layers.dns import *
+from scapy.layers.dns import *  # TODO
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
+
 
 dnstypes = {"ANY": 0,
             "ALL": 255,

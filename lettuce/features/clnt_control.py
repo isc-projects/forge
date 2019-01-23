@@ -15,10 +15,14 @@
 
 # Author: Maciek Fijalkowski
 
-
-from lettuce import world, step
-from terrain import declare_all
+import sys
 import importlib
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world, step
+else:
+    from lettuce import world, step
+
 from terrain import declare_all
 
 

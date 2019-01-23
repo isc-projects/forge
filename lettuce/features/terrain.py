@@ -15,21 +15,26 @@
 
 # Author: Wlodzimierz Wencel
 
-from Crypto.Random.random import randint
-
-#from init_all import ForgeConfiguration
-from lettuce import world, before, after
-from logging_facility import *
-from scapy.config import conf
-from scapy.layers.dhcp6 import DUID_LLT
-from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
-    fabric_remove_file_command, fabric_run_command
-
-import importlib
 import os
-import subprocess
 import sys
 import time
+from shutil import rmtree
+import subprocess
+import importlib
+
+from Crypto.Random.random import randint
+from scapy.config import conf
+from scapy.layers.dhcp6 import DUID_LLT
+
+#from init_all import ForgeConfiguration
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world, before, after
+else:
+    from lettuce import world, before, after
+
+from features.logging_facility import *   # TODO: do not import *
+from features.softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
+    fabric_remove_file_command, fabric_run_command
 
 
 values_v6 = {"T1": 0,  # IA_NA IA_PD
@@ -117,7 +122,6 @@ values_v4 = {"ciaddr": "0.0.0.0",
 # we should consider transfer most of functions to separate v4 and v6 files
 # TODO: make separate files after branch merge
 
-@world.absorb
 def set_values():
     # this function is called after each message send.
     if world.f_cfg.proto == "v6":
@@ -133,6 +137,8 @@ def set_values():
     else:
         world.cfg["values"] = values_v4.copy()
         world.cfg["server_times"] = server_times_v4.copy()
+
+world.set_values = set_values
 
 
 def add_result_to_report(info):
@@ -284,8 +290,6 @@ def test_start():
     Server starting before testing
     """
     # clear tests results
-    from shutil import rmtree
-
     if os.path.exists('tests_results'):
         rmtree('tests_results')
     os.makedirs('tests_results')
@@ -301,11 +305,11 @@ def test_start():
     if not world.f_cfg.no_server_management:
         for each in world.f_cfg.software_under_test:
             if "client" in each:
-                clnt = importlib.import_module("softwaresupport.%s.functions" % each)
+                clnt = importlib.import_module("features.softwaresupport.%s.functions" % each)
                 clnt.stop_clnt()
 
             else:
-                stop = importlib.import_module("softwaresupport.%s.functions" % each)
+                stop = importlib.import_module("features.softwaresupport.%s.functions" % each)
                 # True passed to stop_srv is to hide output in console.
                 stop.stop_srv(True)
                 #  that is pointless, we should use same name for stop_srv and stop_clnt functions,
@@ -465,7 +469,7 @@ def cleanup(scenario):
     if not world.f_cfg.no_server_management:
         for each_remote_server in world.f_cfg.multiple_tested_servers:
             for each in world.f_cfg.software_under_test:
-                functions = importlib.import_module("softwaresupport.%s.functions" % each)
+                functions = importlib.import_module("features.softwaresupport.%s.functions" % each)
                 # try:
                 if world.f_cfg.save_leases:
                     # save leases, if there is none leases in your software, just put "pass" in this function.
@@ -506,11 +510,11 @@ def say_goodbye(total):
                 if "client" in each:
                     kill_msg = "kill the " + each[:each.find("_client")]
                     get_common_logger().debug(kill_msg)
-                    clnt = importlib.import_module("softwaresupport.%s.functions" % each)
+                    clnt = importlib.import_module("features.softwaresupport.%s.functions" % each)
                     clnt.stop_clnt(destination_address=each_remote_server)
 
                 else:
-                    stop = importlib.import_module("softwaresupport.%s.functions" % each)
+                    stop = importlib.import_module("features.softwaresupport.%s.functions" % each)
                     # True passed to stop_srv is to hide output in console.
                     try:
                         stop.stop_srv(value=True, destination_address=each_remote_server)

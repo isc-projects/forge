@@ -15,16 +15,18 @@
 
 # Author: Wlodzimierz Wencel
 
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, \
+import sys
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
+
+from features.logging_facility import *  # TODO
+from features.softwaresupport.bind9_server.bind_configs import config_file_set, keys
+from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, \
     copy_configuration_file, fabric_sudo_command, fabric_download_file, fabric_remove_file_command,\
     check_local_path_for_downloaded_files
-
-from lettuce import world
-from logging_facility import *
-
-from logging_facility import get_common_logger
-
-from softwaresupport.bind9_server.bind_configs import config_file_set, keys
 
 
 def make_file(name, content):
@@ -103,6 +105,8 @@ def use_config_set(number):
     make_file('rev.db', config_file_set[number][3])
     world.cfg["dns_log_file"] = '/tmp/dns.log'
     make_file('bind.keys', keys)
+
+    fabric_sudo_command('mkdir -p %s' % world.f_cfg.dns_data_path)
 
     fabric_send_file('named.conf', world.f_cfg.dns_data_path + 'named.conf')
     copy_configuration_file('named.conf', 'dns/DNS_named.conf')

@@ -14,17 +14,23 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Author: Wlodzimierz Wencel
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
-    copy_configuration_file, fabric_sudo_command, fabric_download_file, simple_file_layout
 
-from lettuce import world
+import os
+import sys
+
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
+
 from logging_facility import *
-
-from logging_facility import get_common_logger
-
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
     fabric_remove_file_command, clear_all, add_line_in_global, check_process_result, clear_leases, add_parameter_to_hook
 from functions_ddns import build_ddns_config
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
+    copy_configuration_file, fabric_sudo_command, fabric_download_file, simple_file_layout
+
+
 # option names in isc-dhcp v4, list is that you can check which one is different then Kea names - Kea names are used
 # in test scenarios.
 

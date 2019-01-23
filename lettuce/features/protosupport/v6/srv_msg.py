@@ -20,11 +20,17 @@
 # By a lot of feature files.
 #
 import random
-
+import sys
 from cookielib import debug
+
+from scapy.layers.dhcp6 import *  # TODO
+if 'pytest' in sys.argv[0]:
+    from features.lettuce_compat import world
+else:
+    from lettuce import world
+
 from features.logging_facility import get_common_logger
-from lettuce.registry import world
-from scapy.layers.dhcp6 import *
+
 
 # option codes for options and sub-options for dhcp v6
 options = {"client-id": 1,
