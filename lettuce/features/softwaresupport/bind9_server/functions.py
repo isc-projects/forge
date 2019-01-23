@@ -163,4 +163,5 @@ def clear_all(destination_address=world.f_cfg.mgmt_address):
     stop_srv(value=True, destination_address=destination_address)
     fabric_remove_file_command('/tmp/dns.log', destination_host=destination_address)
     fabric_remove_file_command(world.f_cfg.dns_data_path + 'namedb/*', destination_host=destination_address)
-    fabric_remove_file_command(world.f_cfg.dns_data_path + '/*', destination_host=destination_address)
+    fabric_remove_file_command(world.f_cfg.dns_data_path + '/*.conf', destination_host=destination_address)
+    fabric_remove_file_command(world.f_cfg.dns_data_path + '/managed-keys.bind', destination_host=destination_address)
