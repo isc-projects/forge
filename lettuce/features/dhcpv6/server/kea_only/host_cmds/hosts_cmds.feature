@@ -591,3 +591,231 @@ Feature: Kea Hook hosts_cmds testing
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1:0:cafe::1.
   Response MUST include option 25.
   Response sub-option 26 from option 25 MUST contain prefix 2001:db8:2:abcd::.
+
+@v6 @host_reservation @kea_only
+Scenario: v6.hosts.cmds.reservation-get-all
+Test Setup:
+Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
+Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Reserve hostname reserved-hostname1 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+Reserve hostname reserved-hostname2 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:02.
+Reserve hostname reserved-hostname3 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:03.
+Reserve hostname reserved-hostname4 in subnet 1 for host uniquely identified by hw-address f6:f5:f4:f3:f2:04.
+Reserve hostname reserved-hostname5 in subnet 1 for host uniquely identified by hw-address f6:f5:f4:f3:f2:05.
+Send server configuration using SSH and config-file.
+DHCP server is started.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-all","arguments":{"subnet-id":1}}
+JSON response in arguments MUST include value: reserved-hostname1
+JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname3
+JSON response in arguments MUST NOT include value: reserved-hostname4
+JSON response in arguments MUST NOT include value: reserved-hostname5
+JSON response in text MUST include value: 3 IPv6 host(s) found.
+
+@v6 @host_reservation @kea_only
+Scenario: v6.hosts.cmds.reservation-get-all-mysql
+Test Setup:
+Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
+Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Use MySQL reservation system.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
+Add hostname reserved-hostname1 to MySQL reservation record id 1.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 1.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:02.
+Add hostname reserved-hostname2 to MySQL reservation record id 2.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 2.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:03.
+Add hostname reserved-hostname3 to MySQL reservation record id 3.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 3.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:04.
+Add hostname reserved-hostname4 to MySQL reservation record id 4.
+Add dhcp6_subnet_id 2 to MySQL reservation record id 4.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:05.
+Add hostname reserved-hostname5 to MySQL reservation record id 5.
+Add dhcp6_subnet_id 2 to MySQL reservation record id 5.
+Upload hosts reservation to MySQL database.
+Send server configuration using SSH and config-file.
+DHCP server is started.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-all","arguments":{"subnet-id":1}}
+JSON response in arguments MUST include value: reserved-hostname1
+JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname3
+JSON response in arguments MUST NOT include value: reserved-hostname4
+JSON response in arguments MUST NOT include value: reserved-hostname5
+JSON response in text MUST include value: 3 IPv6 host(s) found.
+
+@v6 @host_reservation @kea_only
+Scenario: v6.hosts.cmds.reservation-get-all-pgsql
+Test Setup:
+Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
+Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Use PostgreSQL reservation system.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
+Add hostname reserved-hostname1 to PostgreSQL reservation record id 1.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 1.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:02.
+Add hostname reserved-hostname2 to PostgreSQL reservation record id 2.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 2.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:03.
+Add hostname reserved-hostname3 to PostgreSQL reservation record id 3.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 3.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:04.
+Add hostname reserved-hostname4 to PostgreSQL reservation record id 4.
+Add dhcp6_subnet_id 2 to PostgreSQL reservation record id 4.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:05.
+Add hostname reserved-hostname5 to PostgreSQL reservation record id 5.
+Add dhcp6_subnet_id 2 to PostgreSQL reservation record id 5.
+Upload hosts reservation to PostgreSQL database.
+Send server configuration using SSH and config-file.
+DHCP server is started.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-all","arguments":{"subnet-id":1}}
+
+JSON response in arguments MUST include value: reserved-hostname1
+JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname3
+JSON response in arguments MUST NOT include value: reserved-hostname4
+JSON response in arguments MUST NOT include value: reserved-hostname5
+JSON response in text MUST include value: 3 IPv6 host(s) found.
+
+@v6 @host_reservation @kea_only
+Scenario: v6.hosts.cmds.reservation-get-page
+Test Setup:
+Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
+Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Reserve hostname reserved-hostname1 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+Reserve hostname reserved-hostname2 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:02.
+Reserve hostname reserved-hostname3 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:03.
+Reserve hostname reserved-hostname4 in subnet 1 for host uniquely identified by hw-address f6:f5:f4:f3:f2:04.
+Reserve hostname reserved-hostname5 in subnet 1 for host uniquely identified by hw-address f6:f5:f4:f3:f2:05.
+Reserve hostname reserved-hostname6 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:06.
+Reserve hostname reserved-hostname7 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:07.
+Send server configuration using SSH and config-file.
+DHCP server is started.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}
+JSON response in arguments MUST include value: reserved-hostname1
+JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname3
+JSON response in arguments MUST NOT include value: reserved-hostname4
+JSON response in arguments MUST NOT include value: reserved-hostname5
+JSON response in arguments MUST NOT include value: reserved-hostname6
+JSON response in arguments MUST NOT include value: reserved-hostname7
+JSON response in text MUST include value: 3 IPv6 host(s) found.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}
+JSON response in arguments MUST include value: reserved-hostname6
+JSON response in arguments MUST include value: reserved-hostname7
+JSON response in text MUST include value: 2 IPv6 host(s) found.
+
+
+@v6 @host_reservation @kea_only
+Scenario: v6.hosts.cmds.reservation-get-all-page-mysql
+Test Setup:
+Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
+Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Use MySQL reservation system.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
+Add hostname reserved-hostname1 to MySQL reservation record id 1.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 1.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:02.
+Add hostname reserved-hostname2 to MySQL reservation record id 2.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 2.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:03.
+Add hostname reserved-hostname3 to MySQL reservation record id 3.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 3.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:04.
+Add hostname reserved-hostname4 to MySQL reservation record id 4.
+Add dhcp6_subnet_id 2 to MySQL reservation record id 4.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:05.
+Add hostname reserved-hostname5 to MySQL reservation record id 5.
+Add dhcp6_subnet_id 2 to MySQL reservation record id 5.
+
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:06.
+Add hostname reserved-hostname6 to MySQL reservation record id 6.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 6.
+Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:07.
+Add hostname reserved-hostname7 to MySQL reservation record id 7.
+Add dhcp6_subnet_id 1 to MySQL reservation record id 7.
+
+Upload hosts reservation to MySQL database.
+Send server configuration using SSH and config-file.
+DHCP server is started.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}
+JSON response in arguments MUST include value: reserved-hostname1
+JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname3
+JSON response in arguments MUST NOT include value: reserved-hostname4
+JSON response in arguments MUST NOT include value: reserved-hostname5
+JSON response in arguments MUST NOT include value: reserved-hostname6
+JSON response in arguments MUST NOT include value: reserved-hostname7
+JSON response in text MUST include value: 3 IPv6 host(s) found.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}
+JSON response in arguments MUST include value: reserved-hostname6
+JSON response in arguments MUST include value: reserved-hostname7
+JSON response in text MUST include value: 2 IPv6 host(s) found.
+
+
+@v6 @host_reservation @kea_only
+Scenario: v6.hosts.cmds.reservation-get-all-page-pgsql
+Test Setup:
+Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
+Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
+Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Use PostgreSQL reservation system.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
+Add hostname reserved-hostname1 to PostgreSQL reservation record id 1.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 1.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:02.
+Add hostname reserved-hostname2 to PostgreSQL reservation record id 2.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 2.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:03.
+Add hostname reserved-hostname3 to PostgreSQL reservation record id 3.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 3.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:04.
+Add hostname reserved-hostname4 to PostgreSQL reservation record id 4.
+Add dhcp6_subnet_id 2 to PostgreSQL reservation record id 4.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:05.
+Add hostname reserved-hostname5 to PostgreSQL reservation record id 5.
+Add dhcp6_subnet_id 2 to PostgreSQL reservation record id 5.
+
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:06.
+Add hostname reserved-hostname6 to PostgreSQL reservation record id 6.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 6.
+Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:07.
+Add hostname reserved-hostname7 to PostgreSQL reservation record id 7.
+Add dhcp6_subnet_id 1 to PostgreSQL reservation record id 7.
+
+Upload hosts reservation to PostgreSQL database.
+Send server configuration using SSH and config-file.
+DHCP server is started.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}
+JSON response in arguments MUST include value: reserved-hostname1
+JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname3
+JSON response in arguments MUST NOT include value: reserved-hostname4
+JSON response in arguments MUST NOT include value: reserved-hostname5
+JSON response in arguments MUST NOT include value: reserved-hostname6
+JSON response in arguments MUST NOT include value: reserved-hostname7
+JSON response in text MUST include value: 3 IPv6 host(s) found.
+
+Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}
+JSON response in arguments MUST include value: reserved-hostname6
+JSON response in arguments MUST include value: reserved-hostname7
+JSON response in text MUST include value: 2 IPv6 host(s) found.
