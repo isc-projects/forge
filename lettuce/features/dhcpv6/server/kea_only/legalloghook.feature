@@ -56,10 +56,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: mysql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -103,10 +103,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: postgresql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -212,10 +212,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: mysql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -275,10 +275,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: postgresql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -399,10 +399,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: postgresql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -462,10 +462,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: mysql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -575,10 +575,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: postgresql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Run configuration command: "mac-sources": [ "docsis-modem" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -628,10 +628,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: mysql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Run configuration command: "mac-sources": [ "docsis-modem" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -728,10 +728,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: postgresql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Run configuration command: "mac-sources": [ "docsis-cmts" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -779,10 +779,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: mysql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Run configuration command: "mac-sources": [ "docsis-cmts" ]
 Send server configuration using SSH and config-file.
 DHCP server is started.
@@ -883,10 +883,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: postgresql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -940,10 +940,10 @@ Time valid-lifetime is configured with value 600.
 Server is configured with 3000::/64 subnet with 3000::5-3000::50 pool.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: mysql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Send server configuration using SSH and config-file.
 DHCP server is started.
 
@@ -999,10 +999,10 @@ Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by f
 For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: mysql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
 To hook no. 2 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
@@ -1058,10 +1058,10 @@ Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by f
 For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
 Server is configured with 3001:: prefix in subnet 0 with 90 prefix length and 94 delegated prefix length.
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-To hook no. 1 add parameter named name with value: keadb
-To hook no. 1 add parameter named password with value: keapass
+To hook no. 1 add parameter named name with value: $(DB_NAME)
+To hook no. 1 add parameter named password with value: $(DB_PASSWD)
 To hook no. 1 add parameter named type with value: postgresql
-To hook no. 1 add parameter named user with value: keauser
+To hook no. 1 add parameter named user with value: $(DB_USER)
 Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
 To hook no. 2 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]

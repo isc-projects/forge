@@ -60,10 +60,10 @@ Scenario: v4.legal.log.assigned-address-pgsql
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: postgresql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -112,10 +112,10 @@ Scenario: v4.legal.log.assigned-address-mysql
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: mysql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -210,10 +210,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-pgsql
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: postgresql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -259,10 +259,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: mysql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -360,10 +360,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.2-192.168.50.2 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: postgresql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -414,10 +414,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time valid-lifetime is configured with value 600.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.2-192.168.50.2 pool.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: mysql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
@@ -536,10 +536,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: postgresql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -608,10 +608,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time rebind-timer is configured with value 50.
   Time valid-lifetime is configured with value 600.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: mysql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -749,10 +749,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time rebind-timer is configured with value 4.
   Time valid-lifetime is configured with value 600.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: mysql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -822,10 +822,10 @@ Scenario: v4.legal.log.assigned-address-without-client-id-mysql
   Time rebind-timer is configured with value 4.
   Time valid-lifetime is configured with value 600.
   Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  To hook no. 1 add parameter named name with value: keadb
-  To hook no. 1 add parameter named password with value: keapass
+  To hook no. 1 add parameter named name with value: $(DB_NAME)
+  To hook no. 1 add parameter named password with value: $(DB_PASSWD)
   To hook no. 1 add parameter named type with value: postgresql
-  To hook no. 1 add parameter named user with value: keauser
+  To hook no. 1 add parameter named user with value: $(DB_USER)
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Send server configuration using SSH and config-file.
   DHCP server is started.
