@@ -334,67 +334,6 @@ Scenario: ddns4.notsig-forw-and-rev-release-fqdn-sanitization-replace-2
   Response MUST contain yiaddr 192.168.50.10.
   Response option 1 MUST contain value 255.255.255.0.
 
-
-
-
-
-
-
-@v4 @ddns @notsig @forward_reverse_remove @hostname_sanitization
-Scenario: ddns4.test
-
-  Test Setup:
-  Server is configured with 192.168.50.0/24 subnet with 192.168.50.10-192.168.50.10 pool.
-  DDNS server is configured on 127.0.0.1 address and 53001 port.
-  DDNS server is configured with enable-updates option set to true.
-  DDNS server is configured with qualifying-suffix option set to example.com.
-  DDNS server is configured with hostname-char-set option set to [^A-Za-z0-9.-].
-  DDNS server is configured with hostname-char-replacement option set to $(EMPTY).
-  Add forward DDNS with name four.example.com. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-  Add reverse DDNS with name 50.168.192.in-addr.arpa. and key EMPTY_KEY on address 192.168.50.252 and port 53.
-  Send server configuration using SSH and config-file.
-  DHCP server is started.
-
-  Test Procedure:
-  Client requests option 1.
-  Client sends DISCOVER message.
-
-  Pass Criteria:
-  Server MUST respond with OFFER message.
-  Response MUST include option 1.
-  Response MUST contain yiaddr 192.168.50.10.
-  Response option 1 MUST contain value 255.255.255.0.
-
-  Test Procedure:
-  Client saves into set no. 1 server_id option from received message.
-  Client adds saved options in set no. 1. And DONT Erase.
-  Client adds to the message requested_addr with value 192.168.50.10.
-  Client requests option 1.
-  Client adds to the message hostname with value one.example.com..
-#  Client adds to the message hostname with value $(WHITE_SPACE)*aa*.fo^ur.exa(mple.c)om.$(WHITE_SPACE).
-  Client sends REQUEST message.
-
-  Pass Criteria:
-  Server MUST respond with ACK message.
-  Response MUST contain yiaddr 192.168.50.10.
-  Response MUST include option 1.
-  Response option 1 MUST contain value 255.255.255.0.
-  Response MUST include option 12.
-  Response option 12 MUST contain value aa.four.example.com.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @v4 @ddns @notsig @forward_reverse_remove @hostname_sanitization
 Scenario: ddns4.notsig-forw-and-rev-release-hostname-sanitization-omit-1
 
@@ -445,7 +384,7 @@ Scenario: ddns4.notsig-forw-and-rev-release-hostname-sanitization-omit-1
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
   Response MUST include option 12.
-  Response option 12 MUST contain value aa.four.example.com.
+  Response option 12 MUST contain value aa.four.example.com..
 
   Test Procedure:
   Client saves server_id option from received message.

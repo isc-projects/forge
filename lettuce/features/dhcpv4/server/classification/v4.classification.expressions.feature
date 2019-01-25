@@ -137,7 +137,7 @@ Scenario: v4.client.classification.known-unknown-pool
 
   Pass Criteria:
   Server MUST respond with OFFER message.
-  Response MUST contain yiaddr 192.168.50.55.
+  Response MUST contain yiaddr 192.168.50.50.
 
   Test Procedure:
   Client copies server_id option from received message.
@@ -148,7 +148,7 @@ Scenario: v4.client.classification.known-unknown-pool
 
   Pass Criteria:
   Server MUST respond with ACK message.
-  Response MUST contain yiaddr 192.168.50.55.
+  Response MUST contain yiaddr 192.168.50.50.
   Response MUST include option 1.
   Response option 1 MUST contain value 255.255.255.0.
 

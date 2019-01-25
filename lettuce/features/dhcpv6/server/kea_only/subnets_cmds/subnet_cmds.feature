@@ -177,7 +177,7 @@ Feature: Kea Subnet manipulation commands
 
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-list","arguments":{}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-add","arguments":{"subnet6":[{"id": 1,"interface":"$(SERVER_IFACE)","subnet": "2001:db8:1::/64","pools":[{"pool":"2001:db8:1::10-2001:db8:1::20"}]}]}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}}
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -221,7 +221,7 @@ Feature: Kea Subnet manipulation commands
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-list","arguments":{}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-del","arguments":{"id":1}}
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-add","arguments":{"subnet6":[{"id": 234,"interface":"$(SERVER_IFACE)","subnet": "2001:db8:1::/64","pools":[{"pool":"2001:db8:1::1-2001:db8:1::2"}]}]}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}}
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -264,7 +264,7 @@ Feature: Kea Subnet manipulation commands
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-list","arguments":{}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-del","arguments":{"id":2}}
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-add","arguments":{"subnet6":[{"id": 234,"interface":"$(SERVER_IFACE)","subnet": "2001:db8:1::/64","pools":[{"pool":"2001:db8:1::1-2001:db8:1::2"}]}]}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}}
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -312,7 +312,7 @@ Feature: Kea Subnet manipulation commands
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-list","arguments":{}}
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-del","arguments":{"id":1}}
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-add","arguments":{"subnet6":[{"id": 234,"interface":"$(SERVER_IFACE)","subnet": "2001:db8:1::/64","pools":[{"pool":"2001:db8:1::1-2001:db8:1::2"}]}]}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}}
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.
@@ -383,7 +383,7 @@ Feature: Kea Subnet manipulation commands
 
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-del","arguments":{"id":234}}
   #Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "subnet6-add","arguments":{"subnet6":[{"id": 234,"interface":"$(SERVER_IFACE)","subnet": "2001:db8:1::/64","pools":[{"pool":"2001:db8:1::1-2001:db8:1::2"}]}]}}
-  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}
+  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"subnet6-get","arguments":{}}
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:66:55:44:33:22:11.

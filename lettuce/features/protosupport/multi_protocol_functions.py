@@ -340,9 +340,13 @@ def send_through_socket_server_site(socket_path, command, destination_address=wo
     world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', hide_all=True,
                                                 destination_host=destination_address)
     fabric_remove_file_command('command_file')
-    result = json.loads(world.control_channel)
-    print json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
-    world.cmd_resp = result
+    try:
+        result = json.loads(world.control_channel)
+        print json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
+        world.cmd_resp = result
+    except:
+        print world.control_channel
+        world.cmd_resp = world.control_channel
 
 
 def send_through_http(host_address, host_port, command):

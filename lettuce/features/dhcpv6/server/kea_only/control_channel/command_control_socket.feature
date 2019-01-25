@@ -226,8 +226,11 @@ Feature: Kea Control Channel - socket
   Response MUST include option 3.
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
+#  this should fail
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "list-commands","arguments": {}}
+#
   Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2 send {"command": "list-commands","arguments": {}}
+  JSON response in arguments MUST include value: leases-reclaim
 
 @v6 @controlchannel @kea_only
 Scenario: control.channel.socket.after-restart-load-config-file

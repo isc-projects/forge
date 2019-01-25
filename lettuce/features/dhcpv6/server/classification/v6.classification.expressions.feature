@@ -51,14 +51,55 @@ Scenario: v6.client.classification.member
   Response MUST include option 23.
   Response option 23 MUST contain addresses 2001:db8::888.
 
-@v6 @dhcp6 @classification
-Scenario: v6.client.classification.known-subnet
+@v6 @dhcp6 @classification @disabled
+Scenario: v6.client.classification.known-subnet-hw-address
   Test Setup:
+  # KNOWN/UNKNOWN are not meant to select subnet!
   # this is basically misconfiguration, should not work!
   Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.
   Server is configured with client-classification option in subnet 0 with name KNOWN.
 
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
+  Send server configuration using SSH and config-file.
+  DHCP server is started.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:11:11:11:11:11:11.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 13.
+  Response sub-option 13 from option 3 MUST contain statuscode 2.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8:a::1.
+
+@v6 @dhcp6 @classification @disabled
+Scenario: v6.client.classification.known-subnet-duid
+  Test Setup:
+  # KNOWN/UNKNOWN are not meant to select subnet!£
+  # this is basically misconfiguration, should not work!
+  Server is configured with 2001:db8:a::/64 subnet with 2001:db8:a::1-2001:db8:a::1 pool.
+  Server is configured with client-classification option in subnet 0 with name KNOWN.
+
+  Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by duid 00:03:00:01:f6:f5:f4:f3:f2:01.
   Send server configuration using SSH and config-file.
   DHCP server is started.
 
