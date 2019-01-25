@@ -755,20 +755,14 @@ Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}
-JSON response in arguments MUST include value: reserved-hostname1
-JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname7
+JSON response in arguments MUST include value: reserved-hostname6
 JSON response in arguments MUST include value: reserved-hostname3
 JSON response in arguments MUST NOT include value: reserved-hostname4
 JSON response in arguments MUST NOT include value: reserved-hostname5
-JSON response in arguments MUST NOT include value: reserved-hostname6
-JSON response in arguments MUST NOT include value: reserved-hostname7
+JSON response in arguments MUST NOT include value: reserved-hostname1
+JSON response in arguments MUST NOT include value: reserved-hostname2
 JSON response in text MUST include value: 3 IPv6 host(s) found.
-
-Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}
-JSON response in arguments MUST include value: reserved-hostname6
-JSON response in arguments MUST include value: reserved-hostname7
-JSON response in text MUST include value: 2 IPv6 host(s) found.
-
 
 @v6 @host_reservation @kea_only
 Scenario: v6.hosts.cmds.reservation-get-all-page-pgsql
@@ -806,16 +800,11 @@ Send server configuration using SSH and config-file.
 DHCP server is started.
 
 Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}
-JSON response in arguments MUST include value: reserved-hostname1
-JSON response in arguments MUST include value: reserved-hostname2
+JSON response in arguments MUST include value: reserved-hostname6
+JSON response in arguments MUST include value: reserved-hostname7
 JSON response in arguments MUST include value: reserved-hostname3
 JSON response in arguments MUST NOT include value: reserved-hostname4
 JSON response in arguments MUST NOT include value: reserved-hostname5
-JSON response in arguments MUST NOT include value: reserved-hostname6
-JSON response in arguments MUST NOT include value: reserved-hostname7
+JSON response in arguments MUST NOT include value: reserved-hostname1
+JSON response in arguments MUST NOT include value: reserved-hostname2
 JSON response in text MUST include value: 3 IPv6 host(s) found.
-
-Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}
-JSON response in arguments MUST include value: reserved-hostname6
-JSON response in arguments MUST include value: reserved-hostname7
-JSON response in text MUST include value: 2 IPv6 host(s) found.
