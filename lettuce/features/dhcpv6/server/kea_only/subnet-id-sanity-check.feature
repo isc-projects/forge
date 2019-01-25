@@ -42,9 +42,6 @@ Feature: Kea subnet-id sanity-check
   Response option 3 MUST contain sub-option 5.
   Response sub-option 5 from option 3 MUST contain address 2001:db8::1.
 
-# Client has to send proper IA_NA at the end of the test
-	Client saves IA_NA option from received message.
-
   File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01
   File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01
 
@@ -74,15 +71,14 @@ Feature: Kea subnet-id sanity-check
   Response MUST include option 1.
   Response MUST include option 2.
   Response MUST include option 3.
-	Response option 3 MUST contain sub-option 13.
-	Response sub-option 13 from option 3 MUST contain statuscode 2.
+  Response option 3 MUST contain sub-option 5.
 
   Test Procedure:
   Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:22.
-  Client does include client-id.
-  Client adds saved options. And DONT Erase.
+  Client copies IA_NA option from received message.
   Client copies server-id option from received message.
-  Client sends RENEW message.
+  Client does include client-id.
+  Client sends REQUEST message.
 
   Pass Criteria:
   Server MUST respond with REPLY message.
@@ -725,6 +721,68 @@ Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_sock
   Sleep for 2 seconds.
   File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01
   File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01
+
+@v6 @kea_only
+  Scenario: v6.sanitydsasdasd
+
+#  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-get","arguments":  {} }
+#  Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "list-commands","arguments":  {} }
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client does include client-id.
+  Client sets ia_id value to 1234567.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:01.
+  Client copies IA_NA option from received message.
+  Client copies server-id option from received message.
+  Client does include client-id.
+  Client sends REQUEST message.
+
+  Pass Criteria:
+  Server MUST respond with REPLY message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+  Response sub-option 5 from option 3 MUST contain address 2001:db8::1.
+
+  Test Setup:
+  Server is configured with 2001:db8::/64 subnet with 2001:db8::1-2001:db8::1 pool.
+  Add configuration parameter id with value 888 to subnet 0 configuration.
+  Add configuration parameter sanity-checks with value {"lease-checks":"fix"} to global configuration.
+  Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
+
+  Send server configuration using SSH and config-file.
+
+  DHCP server is started.
+
+  Sleep for 5 seconds.
+
+  Test Procedure:
+  Client sets DUID value to 00:03:00:01:f6:f5:f4:f3:f2:22.
+  Client does include client-id.
+  Client sets ia_id value to 1234567.
+  Client does include IA-NA.
+  Client sends SOLICIT message.
+
+  Pass Criteria:
+  Server MUST respond with ADVERTISE message.
+  Response MUST include option 1.
+  Response MUST include option 2.
+  Response MUST include option 3.
+  Response option 3 MUST contain sub-option 5.
+
 
 @v6 @sharednetworks @sharedsubnets @kea_only
   Scenario: v6.sanity-check-subnet-id
