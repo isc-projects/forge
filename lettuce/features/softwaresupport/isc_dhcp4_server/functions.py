@@ -14,6 +14,7 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Author: Wlodzimierz Wencel
+import os
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
     copy_configuration_file, fabric_sudo_command, fabric_download_file, simple_file_layout
 
@@ -160,12 +161,13 @@ needs_changing_coma = [
 ]
 
 
-def restart_srv():
-    stop_srv()
-    fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
+def restart_srv(destination_address=world.f_cfg.mgmt_address):
+    stop_srv(destination_address=destination_address)
+    fabric_sudo_command('echo y |rm ' + world.cfg['leases'], destination_host=destination_address)
+    fabric_sudo_command('touch ' + world.cfg['leases'], destination_host=destination_address)
     fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/dhcpd') + ' -cf server.cfg_processed -lf '
-                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
+                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';',
+                        destination_host=destination_address)
 
 
 def add_siaddr(step, addr, subnet_number):
@@ -447,7 +449,7 @@ def build_and_send_config_files(connection_type, configuration_type):
     pass
 
 
-def start_srv(start, process):
+def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start ISC-DHCP with generated config.
     """
@@ -455,7 +457,7 @@ def start_srv(start, process):
         world.cfg["conf_option"] = ""
 
     world.cfg['log_file'] = build_log_path()
-    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
+    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'], destination_host=destination_address)
     world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     log = "local7"
@@ -468,7 +470,8 @@ def start_srv(start, process):
     cfg_write()
     get_common_logger().debug("Start ISC-DHCP with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
-    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
+    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed',
+                     destination_host=destination_address)
     copy_configuration_file(world.cfg["cfg_file"] + '_processed')
     remove_local_file(world.cfg["cfg_file"])
     #set_ethernet_interface()
@@ -477,11 +480,12 @@ def start_srv(start, process):
     world.cfg['leases'] = build_leases_path()
 
     #fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
+    fabric_sudo_command('touch ' + world.cfg['leases'], destination_host=destination_address)
 
     result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/dhcpd') + ' -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
-                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
+                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';',
+                                 destination_host=destination_address)
 
     check_process_result(start, result, process)
 
@@ -493,12 +497,14 @@ def start_srv(start, process):
     world.cfg["conf_vendor"] = ""
 
 
-def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd.leases')
+def save_leases(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.cfg['leases'], os.path.join(world.cfg["dir_name"], 'dcpd.leases'),
+                         destination_host=destination_address)
 
 
-def save_logs():
-    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+def save_logs(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.cfg["dhcp_log_file"], os.path.join(world.cfg["dir_name"], 'forge_dhcpd.log'),
+                         destination_host=destination_address)
 
 
 def config_client_classification(step, subnet, option_value):

@@ -15,6 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
+import os
 
 from logging_facility import *
 from lettuce.registry import world
@@ -144,12 +145,13 @@ def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
     return final
 
 
-def restart_srv():
-    stop_srv()
-    fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
+def restart_srv(destination_address=world.f_cfg.mgmt_address):
+    stop_srv(destination_address=destination_address)
+    fabric_sudo_command('echo y |rm ' + world.cfg['leases'], destination_host=destination_address)
+    fabric_sudo_command('touch ' + world.cfg['leases'], destination_host=destination_address)
     fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/dhcpd') + ' -6 -cf server.cfg_processed -lf '
-                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
+                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';',
+                        destination_host=destination_address)
 
 
 def set_time(step, which_time, value, subnet = None):
@@ -170,7 +172,7 @@ def set_time(step, which_time, value, subnet = None):
             assert False, "If you see that message something went terribly wrong! Please report bug!"
 
 
-def unset_time(step, which_time, subnet = None):
+def unset_time(step, which_time, subnet=None):
     if which_time in world.cfg["server_times"]:
             world.cfg["server_times"][which_time] = None
     else:
@@ -528,7 +530,7 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
         #world.subcfg[subnet_id][0] += '{parameter_name} {value};'.format(**locals())
 
 
-def start_srv(start, process):
+def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start ISC-DHCPv6 with generated config.
     """
@@ -536,7 +538,7 @@ def start_srv(start, process):
         world.cfg["conf_option"] = ""
 
     world.cfg['log_file'] = build_log_path()
-    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
+    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'], destination_host=destination_address)
     world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     log = "local7"
@@ -549,7 +551,8 @@ def start_srv(start, process):
     cfg_write()
     get_common_logger().debug("Start ISC-DHCPv6 with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
-    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
+    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed',
+                     destination_host=destination_address)
     copy_configuration_file(world.cfg["cfg_file"] + '_processed')
     remove_local_file(world.cfg["cfg_file"])
     #set_ethernet_interface()
@@ -557,11 +560,12 @@ def start_srv(start, process):
 
     world.cfg['leases'] = build_leases_path()
     #fabric_run_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
+    fabric_sudo_command('touch ' + world.cfg['leases'], destination_host=destination_address)
 
     result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/dhcpd') + ' -6 -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
-                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
+                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';',
+                                 destination_host=destination_address)
 
     check_process_result(start, result, process)
 
@@ -573,39 +577,43 @@ def start_srv(start, process):
     world.cfg["conf_vendor"] = ""
 
 
-def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+def save_leases(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.cfg['leases'], os.path.join(world.cfg["dir_name"], 'dhcpd6.leases'),
+                         destination_host=destination_address)
 
 
-def save_logs():
-    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+def save_logs(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.cfg["dhcp_log_file"], os.path.join(world.cfg["dir_name"], 'forge_dhcpd.log'),
+                         destination_host=destination_address)
 
 
-def clear_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
-    fabric_remove_file_command(world.cfg["leases"])
-    fabric_run_command('echo y |rm ' + world.cfg['leases'])
+def clear_leases(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.cfg['leases'], os.path.join(world.cfg["dir_name"], 'dhcpd6.leases'),
+                         destination_host=destination_address)
+    fabric_remove_file_command(world.cfg["leases"], destination_host=destination_address)
+    fabric_run_command('echo y |rm ' + world.cfg['leases'], destination_host=destination_address)
 
 
-def stop_srv(value=False):
+def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     try:
-        fabric_sudo_command("killall dhcpd &>/dev/null", hide_all=value)
+        fabric_sudo_command("killall dhcpd &>/dev/null", hide_all=value, destination_host=destination_address)
     except:
         pass
 
 
-def clear_all():
+def clear_all(destination_address=world.f_cfg.mgmt_address):
     # TODO we should consider moving it to multi_server_functions, and set just world.cfg["dhcp_log_file"]
     #  and world.cfg["leases"] in every supported server files
     try:
         # ISC_DHCP logs using syslog/rsyslog (OS dependent). DO NOT delete the log file as
         # not all implementations will re-create it.
         # fabric_remove_file_command(world.cfg["dhcp_log_file"])
-        fabric_remove_file_command(world.cfg["leases"])
-        fabric_remove_file_command(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+        fabric_remove_file_command(world.cfg["leases"], destination_host=destination_address)
+        fabric_remove_file_command(world.cfg["leases"], os.path.join(world.cfg["dir_name"], 'dhcpd6.leases'),
+                                   destination_host=destination_address)
     except:
         pass
 
 
-def add_parameter_to_hook(a, b, c):
+def add_parameter_to_hook(**xargs):
     assert False, "Unused in ISC-DHCP"
