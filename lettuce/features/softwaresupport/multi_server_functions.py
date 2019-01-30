@@ -18,6 +18,7 @@
 import os
 import sys
 import logging
+import warnings
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide
@@ -67,9 +68,11 @@ def fabric_send_file(file_local, file_remote,
                      destination_host=world.f_cfg.mgmt_address,
                      user_loc=world.f_cfg.mgmt_username,
                      password_loc=world.f_cfg.mgmt_password):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
-        with hide('running', 'stdout', 'stderr'):
-            result = put(file_local, file_remote, use_sudo=True)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+            with hide('running', 'stdout', 'stderr'):
+                result = put(file_local, file_remote, use_sudo=True)
     return result
 
 
@@ -77,8 +80,10 @@ def fabric_download_file(remote_path, local_path,
                          destination_host=world.f_cfg.mgmt_address,
                          user_loc=world.f_cfg.mgmt_username,
                          password_loc=world.f_cfg.mgmt_password, warn_only=False):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=warn_only):
-        result = get(remote_path, local_path)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=warn_only):
+            result = get(remote_path, local_path)
     return result
 
 
@@ -92,8 +97,10 @@ def fabric_remove_file_command(remote_path,
                                destination_host=world.f_cfg.mgmt_address,
                                user_loc=world.f_cfg.mgmt_username,
                                password_loc=world.f_cfg.mgmt_password):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
-        result = sudo("rm -f " + remote_path)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
+            result = sudo("rm -f " + remote_path)
     return result
 
 

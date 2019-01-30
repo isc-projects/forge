@@ -351,15 +351,18 @@ def send_through_socket_server_site(socket_path, command, destination_address=wo
         print json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
         world.cmd_resp = result
     except:
-        print world.control_channel
+        print 'Problem with parsing json: ', str(world.control_channel)
         world.cmd_resp = world.control_channel
+    return world.cmd_resp
 
 
 def send_through_http(host_address, host_port, command):
     world.control_channel = requests.post("http://" + host_address + ":" + locale.str(host_port),
                                           headers={"Content-Type": "application/json"}, data=command).text
 
-    print json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2, separators=(',', ': '))
+    result = json.loads(world.control_channel)
+    print json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
+    return result
 
 
 def assert_result(condition, result, value):

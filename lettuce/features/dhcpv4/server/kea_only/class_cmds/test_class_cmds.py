@@ -1,0 +1,568 @@
+"""Kea classification manipulation commands"""
+
+
+import sys
+import re
+import json
+
+if 'features' not in sys.path:
+    sys.path.append('features')
+
+if 'pytest' in sys.argv[0]:
+    import pytest
+else:
+    import lettuce as pytest
+
+import srv_msg
+import srv_control
+import misc
+
+
+pytestmark = [pytest.mark.py_test,
+              pytest.mark.v4,
+              pytest.mark.v6,
+              pytest.mark.kea_only,
+              pytest.mark.controlchannel,
+              pytest.mark.hook,
+              pytest.mark.class_cmds]
+
+
+DHCP_VERSION = srv_msg.world.proto
+
+
+def _setup_server_for_class_cmds(step, with_class=False):
+    if DHCP_VERSION == 'v4':
+        srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    else:
+        srv_control.config_srv_subnet(step, '2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
+    srv_control.config_client_classification(step, '0', 'Client_Class_1')
+
+    srv_control.open_control_channel(step,
+                                     'unix',
+                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.agent_control_channel(step,
+                                      '$(SRV4_ADDR)',
+                                      '8000',
+                                      'unix',
+                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_class_cmds.so')
+
+    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
+
+    srv_control.start_srv(step, 'DHCP', 'started')
+
+
+def _send_request(step, cmd, channel='http'):
+    if channel == 'http':
+        if DHCP_VERSION == 'v4':
+            cmd["service"] = ['dhcp4']
+        else:
+            cmd["service"] = ['dhcp6']
+    cmd_str = json.dumps(cmd)
+
+    if channel == 'http':
+        response = srv_msg.send_through_http(step,
+                                             '$(SRV4_ADDR)',
+                                             '8000',
+                                             cmd_str)
+        response = response[0]
+    elif channel == 'socket':
+        response = srv_msg.send_through_socket_server_site(step,
+                                                           '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+                                                           cmd_str)
+    else:
+        raise ValueError('unsupported channel type: %s' % str(channel))
+    return response
+
+
+@pytest.fixture(autouse=True)
+def run_around_tests(step):
+    misc.test_setup(step)
+    _setup_server_for_class_cmds(step)
+
+
+def test_availability(step):
+    response = srv_msg.send_through_socket_server_site(step,
+                                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+                                                       '{"command":"list-commands","arguments":{}}')
+
+    for cmd in ['class-list', 'class-add', 'class-update', 'class-get', 'class-del']:
+        assert cmd in response['arguments']
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_basic(step, channel):
+    # check that at the beginning there is no class
+    cmd = dict(command='class-list')
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'arguments': {'client-classes': []}, 'result': 3, 'text': '0 classes found'}
+
+    # add new class ipxe
+    if DHCP_VERSION == 'v4':
+        exp_class = {'boot-file-name': '/dev/null',
+                     'name': 'ipxe_efi_x64',
+                     'next-server': '192.0.2.254',
+                     'option-data': [],
+                     'option-def': [],
+                     'server-hostname': 'hal9000',
+                     'test': "option[93].hex == 0x0009"}
+    else:
+        exp_class = {'name': 'ipxe_efi_x64',
+                     'option-data': [],
+                     'test': "option[93].hex == 0x0009"}
+    cmd = dict(command='class-add', arguments={"client-classes": [exp_class]})
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'result': 0, 'text': "Class 'ipxe_efi_x64' added"}
+
+    # check what classes are available now
+    cmd = dict(command='class-list')
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'arguments': {'client-classes': [{'name': 'ipxe_efi_x64'}]}, 'result': 0, 'text': '1 class found'}
+
+    # retrieve newly added ipxe class
+    cmd = dict(command='class-get', arguments=dict(name='ipxe_efi_x64'))
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'arguments': {'client-classes': [exp_class]},
+                        'result': 0,
+                        'text': "Class 'ipxe_efi_x64' definition returned"}
+
+    # update ipxe class
+    exp_class['test'] = "option[93].hex == 0x0010"    # changed from 0x0009 to 0x0010
+    cmd = dict(command='class-update', arguments={"client-classes": [exp_class]})
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'result': 0, 'text': "Class 'ipxe_efi_x64' updated"}
+
+    # retrieve modified ipxe class
+    cmd = dict(command='class-get', arguments=dict(name='ipxe_efi_x64'))
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'arguments': {'client-classes': [exp_class]},
+                        'result': 0,
+                        'text': "Class 'ipxe_efi_x64' definition returned"}
+
+    # delete ipxe class
+    cmd = dict(command='class-del', arguments=dict(name='ipxe_efi_x64'))
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'result': 0, 'text': "Class 'ipxe_efi_x64' deleted"}
+
+    # check if deleted class is missing
+    cmd = dict(command='class-list')
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'arguments': {'client-classes': []}, 'result': 3, 'text': '0 classes found'}
+
+    # check if it is realy deleted
+    cmd = dict(command='class-get', arguments=dict(name='ipxe_efi_x64'))
+    response = _send_request(step, cmd, channel=channel)
+    assert response == {'result': 3, 'text': "Class 'ipxe_efi_x64' not found"}
+
+
+def test_add_class_and_check_traffic(step):
+    # check that at the beginning there is no class
+    cmd = dict(command='class-list')
+    response = _send_request(step, cmd)
+    assert response == {'arguments': {'client-classes': []}, 'result': 3, 'text': '0 classes found'}
+
+    # add class
+    if DHCP_VERSION == 'v4':
+        cls = {'name': 'Client_Class_1',
+               'test': "option[61].hex == 0xff010203ff041122"}
+    else:
+        cls = {'name': 'Client_Class_1',
+               'test': "option[1].hex == 0x00030001665544332211"}
+    cmd = dict(command='class-add', arguments={"client-classes": [cls]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 0, 'text': "Class 'Client_Class_1' added"}
+
+    # check traffic
+    misc.test_procedure(step)
+    if DHCP_VERSION == 'v4':
+        srv_msg.client_sets_value(step, 'Client', 'chaddr', 'ff:01:02:03:ff:04')
+        srv_msg.client_does_include_with_value(step, 'client_id', 'ff:01:11:11:11:11:11:22')
+        srv_msg.client_send_msg(step, 'DISCOVER')
+
+        misc.pass_criteria(step)
+        srv_msg.send_dont_wait_for_message(step)
+
+        misc.test_procedure(step)
+        srv_msg.client_sets_value(step, 'Client', 'chaddr', 'ff:01:02:03:ff:04')
+        srv_msg.client_does_include_with_value(step, 'client_id', 'ff:01:02:03:ff:04:11:22')
+        srv_msg.client_send_msg(step, 'DISCOVER')
+
+        misc.pass_criteria(step)
+        srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
+        srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.50')
+
+        misc.test_procedure(step)
+        srv_msg.client_copy_option(step, 'server_id')
+        srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.50')
+        srv_msg.client_does_include_with_value(step, 'client_id', 'ff:01:02:03:ff:04:11:22')
+        srv_msg.client_sets_value(step, 'Client', 'chaddr', 'ff:01:02:03:ff:04')
+        srv_msg.client_send_msg(step, 'REQUEST')
+
+        misc.pass_criteria(step)
+        srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
+        srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.50')
+        srv_msg.response_check_include_option(step, 'Response', None, '1')
+        srv_msg.response_check_option_content(step, 'Response', '1', None, 'value', '255.255.255.0')
+    else:
+        srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:11:11:11:11:11')
+        srv_msg.client_does_include(step, 'Client', None, 'client-id')
+        srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+        srv_msg.client_send_msg(step, 'SOLICIT')
+
+        misc.pass_criteria(step)
+        srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+        srv_msg.response_check_include_option(step, 'Response', None, '1')
+        srv_msg.response_check_include_option(step, 'Response', None, '2')
+        srv_msg.response_check_include_option(step, 'Response', None, '3')
+        srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '13')
+        srv_msg.response_check_suboption_content(step, 'Response', '13', '3', None, 'statuscode', '2')
+
+        misc.test_procedure(step)
+        srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+        srv_msg.client_does_include(step, 'Client', None, 'client-id')
+        srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+        srv_msg.client_send_msg(step, 'SOLICIT')
+
+        misc.pass_criteria(step)
+        srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+        srv_msg.response_check_include_option(step, 'Response', None, '1')
+        srv_msg.response_check_include_option(step, 'Response', None, '2')
+        srv_msg.response_check_include_option(step, 'Response', None, '3')
+        srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+        srv_msg.response_check_suboption_content(step,
+                                                 'Response',
+                                                 '5',
+                                                 '3',
+                                                 None,
+                                                 'address',
+                                                 '2001:db8:a::1')
+
+
+def test_negative_add_unknown_field(step):
+    # bug: #229
+    cmd = dict(command='class-add', arguments={"client-classes": [{"name": 'ipxe',
+                                                                 "unknown": "123"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "unsupported client class parameter 'unknown'"}
+
+
+def test_negative_update_unknown_field(step):
+    # bug: #229
+    # add new class ipxe
+    if DHCP_VERSION == 'v4':
+        exp_class = {'boot-file-name': '/dev/null',
+                     'name': 'voip',
+                     'next-server': '192.0.2.254',
+                     'option-data': [],
+                     'option-def': [],
+                     'server-hostname': 'hal9000',
+                     'test': "option[93].hex == 0x0009"}
+    else:
+        exp_class = {'name': 'voip',
+                     'option-data': [],
+                     'test': "option[93].hex == 0x0009"}
+    cmd = dict(command='class-add', arguments={"client-classes": [exp_class]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 0, 'text': "Class 'voip' added"}
+
+    # update unknown field
+    cmd = dict(command='class-update', arguments={"client-classes": [{"name": 'voip',
+                                                                      "unknown": "123"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "unsupported client class parameter 'unknown'"}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
+def test_negative_missing_class_data_1(step, class_cmd):
+    # bug: #254
+    cmd = dict(command=class_cmd, arguments={"client-classes": []})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
+def test_negative_missing_class_data_2(step, class_cmd):
+    # bug: #254
+    cmd = dict(command=class_cmd, arguments={"client-classes": [{}]})
+    response = _send_request(step, cmd)
+    assert response['result'] == 1
+    assert 'missing' in response['text'] and "'name'" in response['text']
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update', 'class-del', 'class-get'])
+def test_negative_wrong_args_1(step, class_cmd):
+    cmd = dict(command=class_cmd, wrong_arg={"client-classes": [{"name": "ipxe"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'wrong_arg'"}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
+def test_negative_wrong_args_2a(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"client-classes-wrong": [{"name": "ipxe"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "missing 'client-classes' argument for the '%s' command" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
+def test_negative_wrong_args_2b(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"name-wrong": "ipxe"})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "missing 'name' argument for the '%s' command" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
+def test_negative_wrong_args_3a(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"client-classes": {"name": "ipxe"}})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "'client-classes' argument specified for the '%s' command is not a list" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
+def test_negative_wrong_args_3b(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"name": ["voip", "ipxe"]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "'name' argument specified for the '%s' command is not a string" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update', 'class-del', 'class-get'])
+def test_negative_wrong_args_4(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments=["client-classes"])
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "arguments specified for the '%s' command are not a map" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
+def test_negative_wrong_args_5(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"client-classes": [{"name": "ipxe-1"}, {"name": "ipxe-2"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
+def test_negative_wrong_args_6a(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"client-classes": [{"name": "ipxe-1"}], "extra-wrong": 1})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "invalid number of arguments 2 for the '%s' command. Expecting 'client-classes' list" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
+def test_negative_wrong_args_6b(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"name": "ipxe-1", "extra-wrong": 1})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "invalid number of arguments 2 for the '%s' command. Expecting 'name' string" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
+def test_negative_wrong_args_6c(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "arguments must not be empty for the '%s' command" % class_cmd}
+
+
+def test_negative_redundant_args_in_list(step):
+    # bug: #253
+    cmd = dict(command='class-list', extra_arg={})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1,
+                        'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+
+
+def test_negative_redundant_args_in_add(step):
+    # bug: #253
+    cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe"}]}, extra_arg={})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+
+
+def test_negative_redundant_args_in_update(step):
+    # bug: #253
+    cmd = dict(command='class-update', arguments={"client-classes": [{"name": "voip"}]}, extra_arg={})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
+def test_negative_redundant_args_in_other(step, class_cmd):
+    # bug: #253
+    cmd = dict(command=class_cmd, arguments=dict(name='voip'), extra_arg={})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+
+
+def test_negative_wrong_command_1(step):
+    cmd = dict(wrong_command='class-add', arguments={"client-classes": [{"name": "ipxe"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "Error during command processing: Invalid answer specified, does not contain mandatory 'command'"}
+
+
+def test_negative_wrong_command_2(step):
+    cmd = dict(command='class-wrong', arguments={"client-classes": [{"name": "ipxe"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 2, 'text': "'class-wrong' command not supported."}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
+def test_negative_wrong_args_7(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"client-classes": ["wrong-arg"]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "invalid class definition specified for the '%s' command. Expected a map" % class_cmd}
+
+
+@pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
+def test_negative_wrong_args_8(step, class_cmd):
+    cmd = dict(command=class_cmd, arguments={"name": "wrong-name"})
+    response = _send_request(step, cmd)
+    assert response == {'result': 3, 'text': "Class 'wrong-name' not found"}
+
+
+def test_negative_update_wrong_args(step):
+    cmd = dict(command='class-update', arguments={"client-classes": [{'name': 'missing-name'}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 3, 'text': "Class 'missing-name' is not found"}
+
+
+def test_stress_1(step, iters_factor):
+    iterations = 1 * iters_factor
+    for idx in range(iterations):
+        name = 'ipxe-%d' % idx
+        if DHCP_VERSION == 'v4':
+            cmd = dict(command='class-add', arguments={"client-classes": [{"name": name,
+                                                                           "test": "option[93].hex == 0x0009",
+                                                                           "next-server": "192.0.2.254",
+                                                                           "server-hostname": "hal9000",
+                                                                           "boot-file-name": "/dev/null"}]})
+        else:
+            cmd = dict(command='class-add', arguments={"client-classes": [{"name": name,
+                                                                           "test": "option[93].hex == 0x0009"}]})
+
+        response = _send_request(step, cmd)
+        assert response == {'result': 0, 'text': "Class '%s' added" % name}
+
+        cmd = dict(command='class-update', arguments={"client-classes": [{"name": name}]})
+        response = _send_request(step, cmd)
+        assert response == {'result': 0, 'text': "Class '%s' updated" % name}
+
+        cmd = dict(command='class-list')
+        response = _send_request(step, cmd)
+        assert len(response['arguments']['client-classes']) == idx + 1
+
+    for idx in range(iterations):
+        name = 'ipxe-%d' % idx
+        cmd = dict(command='class-del', arguments=dict(name=name))
+        response = _send_request(step, cmd)
+        assert response == {'result': 0, 'text': "Class '%s' deleted" % name}
+
+        cmd = dict(command='class-list')
+        response = _send_request(step, cmd)
+        assert len(response['arguments']['client-classes']) == iterations - idx - 1
+
+
+def test_stress_2(step, iters_factor):
+    iterations = 1 * iters_factor
+    for idx in range(iterations):
+        name = 'ipxe-%d' % idx
+        if DHCP_VERSION == 'v4':
+            cmd = dict(command='class-add', arguments={"client-classes": [{"name": name,
+                                                                           "test": "option[93].hex == 0x0009",
+                                                                           "next-server": "192.0.2.254",
+                                                                           "server-hostname": "hal9000",
+                                                                           "boot-file-name": "/dev/null"}]})
+        else:
+            cmd = dict(command='class-add', arguments={"client-classes": [{"name": name,
+                                                                           "test": "option[93].hex == 0x0009"}]})
+        response = _send_request(step, cmd)
+        assert response == {'result': 0, 'text': "Class '%s' added" % name}
+
+        cmd = dict(command='class-update', arguments={"client-classes": [{"name": name}]})
+        response = _send_request(step, cmd)
+        assert response == {'result': 0, 'text': "Class '%s' updated" % name}
+
+        cmd = dict(command='class-list')
+        response = _send_request(step, cmd)
+        assert len(response['arguments']['client-classes']) == 1
+
+        cmd = dict(command='class-del', arguments=dict(name=name))
+        response = _send_request(step, cmd)
+        assert response == {'result': 0, 'text': "Class '%s' deleted" % name}
+
+        cmd = dict(command='class-list')
+        response = _send_request(step, cmd)
+        assert len(response['arguments']['client-classes']) == 0
+
+
+def test_negative_missing_dependency(step):
+    if DHCP_VERSION == 'v4':
+        cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe_efi_x64",
+                                                                       "test": "member('missing_class')",
+                                                                       "next-server": "192.0.2.254",
+                                                                       "server-hostname": "hal9000",
+                                                                       "boot-file-name": "/dev/null"}]})
+    else:
+        cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe_efi_x64",
+                                                                       "test": "member('missing_class')"}]})
+    response = _send_request(step, cmd)
+    assert response['result'] == 1
+    assert re.search("expression: \[member\('missing_class'\)\] error: <string>:1.8-22: Not defined client class 'missing_class' at \(<wire>:0:\d+\)",
+                     response['text'])
+
+
+def test_negative_break_dependency(step):
+    # add new class ipxe
+    if DHCP_VERSION == 'v4':
+        cls = {'boot-file-name': '/dev/null',
+               'name': 'voip',
+               'next-server': '192.0.2.254',
+               'option-data': [],
+               'option-def': [],
+               'server-hostname': 'hal9000',
+               'test': "option[93].hex == 0x0009"}
+    else:
+        cls = {'name': 'voip',
+               'test': "option[93].hex == 0x0009"}
+    cmd = dict(command='class-add', arguments={"client-classes": [cls]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 0, 'text': "Class 'voip' added"}
+
+    # add second class that refers voip class
+    if DHCP_VERSION == 'v4':
+        cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe_efi_x64",
+                                                                       "test": "member('voip')",
+                                                                       "next-server": "192.0.2.254",
+                                                                       "server-hostname": "hal9000",
+                                                                       "boot-file-name": "/dev/null"}]})
+    else:
+        cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe_efi_x64",
+                                                                       "test": "member('voip')"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 0, 'text': "Class 'ipxe_efi_x64' added"}
+
+    cmd = dict(command='class-del', arguments=dict(name='voip'))
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "Class 'voip' is used by class 'ipxe_efi_x64'"}
+
+
+def test_negative_change_dependency(step):
+    # add new class ipxe
+    if DHCP_VERSION == 'v4':
+        cls = {'boot-file-name': '/dev/null',
+               'name': 'voip',
+               'next-server': '192.0.2.254',
+               'option-data': [],
+               'option-def': [],
+               'server-hostname': 'hal9000',
+               'test': "option[93].hex == 0x0009"}
+    else:
+        cls = {'name': 'voip',
+               'option-data': [],
+               'test': "option[93].hex == 0x0009"}
+    cmd = dict(command='class-add', arguments={"client-classes": [cls]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 0, 'text': "Class 'voip' added"}
+
+    # update class
+    cmd = dict(command='class-update', arguments={"client-classes": [{'name': 'voip',
+                                                                      'test': "member('KNOWN')"}]})
+    response = _send_request(step, cmd)
+    assert response == {'result': 1, 'text': "modification of the class 'voip' would affect its dependency on the KNOWN and/or UNKNOWN built-in classes. "
+                        "Such modification is not allowed because there may be other classes depending on those built-ins via the updated class"}

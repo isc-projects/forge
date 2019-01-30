@@ -34,3 +34,14 @@ def pytest_unconfigure(config):
     from features import terrain
     print("~~~~~~~~~~~~~~~~~~~~~ terrain.say_goodbye() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     terrain.say_goodbye(Total())
+
+
+
+def pytest_addoption(parser):
+    parser.addoption("--iters-factor", action="store", default=1,
+        help="iterations factor, initial iterations in tests are multiplied by this value, default 1")
+
+
+@pytest.fixture
+def iters_factor(request):
+    return int(request.config.getoption("--iters-factor"))

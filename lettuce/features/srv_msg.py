@@ -560,19 +560,19 @@ def check_socket_server_site(step, socket_path):
 @step('Using UNIX socket on remote server (\S+) in path (\S+) send (.+)')
 def send_through_socket_given_server_site(step, destination_address, socket_path, command):
     destination_address, socket_path, command = test_define_value(destination_address, socket_path, command)
-    other.send_through_socket_server_site(socket_path, command, destination_address=destination_address)
+    return other.send_through_socket_server_site(socket_path, command, destination_address=destination_address)
 
 
 @step('Using UNIX socket on server in path (\S+) send (.+)')
 def send_through_socket_server_site(step, socket_path, command):
     socket_path, command = test_define_value(socket_path, command)
-    other.send_through_socket_server_site(socket_path, command)
+    return other.send_through_socket_server_site(socket_path, command)
 
 
 @step('Using existing HTTP (\S+):(\S+) connection send: (.+)')
 def send_through_http(step, http_address, http_port, command):
     http_address, http_port, command = test_define_value(http_address, http_port, command)
-    other.send_through_http(http_address, int(http_port), command)
+    return other.send_through_http(http_address, int(http_port), command)
 
 
 @step('JSON response in (\S+) MUST (NOT )?include value: (.+)')
