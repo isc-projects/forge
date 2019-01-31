@@ -1,0 +1,5 @@
+pylint:
+  image: python:2.7
+  script:
+    - pip install pylint --quiet
+    - cd lettuce && pylint --rcfile=../pylint.rc ./feat2py.py
