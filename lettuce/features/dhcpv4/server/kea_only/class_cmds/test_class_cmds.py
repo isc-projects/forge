@@ -13,9 +13,9 @@ if 'pytest' in sys.argv[0]:
 else:
     import lettuce as pytest
 
-import srv_msg
-import srv_control
-import misc
+from features import srv_msg
+from features import srv_control
+from features import misc
 
 
 pytestmark = [pytest.mark.py_test,
