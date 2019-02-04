@@ -17,6 +17,7 @@
 
 import sys
 import os
+import logging
 
 if 'pytest' in sys.argv[0]:
     from features.lettuce_compat import world
@@ -28,6 +29,10 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
     fabric_download_file, fabric_remove_file_command, locate_entry
 from features.protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
+
+
+log = logging.getLogger('forge')
+
 
 kea_options6 = {
     "client-id": 1,
@@ -216,7 +221,7 @@ class KeaConfiguration:
 
     def build_hooks_cfg(self):
         for each in self.hooks_lst:
-            print '{"library": "' + each + '"}' #final config
+            log.info('{"library": "' + each + '"}')  # final config
 
     def built_config(self):
         pass

@@ -23,6 +23,7 @@ import re
 import tty
 import termios
 from shutil import copy
+import logging
 
 from _pyio import open
 import requests
@@ -35,6 +36,9 @@ else:
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
         save_local_file, fabric_run_command
+
+
+log = logging.getLogger('forge')
 
 
 def forge_sleep(time, time_units):
@@ -348,10 +352,10 @@ def send_through_socket_server_site(socket_path, command, destination_address=wo
     fabric_remove_file_command('command_file')
     try:
         result = json.loads(world.control_channel)
-        print json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
+        log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
         world.cmd_resp = result
     except:
-        print 'Problem with parsing json: ', str(world.control_channel)
+        log.exception('Problem with parsing json: ', str(world.control_channel))
         world.cmd_resp = world.control_channel
     return world.cmd_resp
 
@@ -361,7 +365,7 @@ def send_through_http(host_address, host_port, command):
                                           headers={"Content-Type": "application/json"}, data=command).text
 
     result = json.loads(world.control_channel)
-    print json.dumps(result, sort_keys=True, indent=2, separators=(',', ': '))
+    log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
     return result
 
 

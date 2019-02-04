@@ -15,9 +15,13 @@
 
 # Author: Wlodzimierz Wencel
 
-from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
+import logging
 
+from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 from features.protosupport.multi_protocol_functions import test_pause
+
+
+log = logging.getLogger('forge')
 
 
 def config_srv_id(id_type, id_value):
@@ -185,12 +189,12 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
 
 
 def start_srv(*args):
-    print "Prepare server as stated in the test, press Enter to continue."
+    log.info("Prepare server as stated in the test, press Enter to continue.")
     test_pause()
 
 
 def reconfigure_srv(*args):
-    print "Prepare server as stated in the test, press Enter to continue."
+    log.info("Prepare server as stated in the test, press Enter to continue.")
     test_pause()
 
 
@@ -199,7 +203,7 @@ def stop_srv(*args):
 
 
 def restart_srv():
-    print "I changes needed, prepare server as stated in the test, press Enter to continue."
+    log.info("I changes needed, prepare server as stated in the test, press Enter to continue.")
     test_pause()
 
 

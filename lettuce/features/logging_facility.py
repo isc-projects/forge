@@ -32,6 +32,10 @@ def logger_initialize(loglevel):
         raise ValueError('Invalid log level: %s' % loglevel)
     logger.setLevel(numeric_level)
 
+    # make paramiko logger from fabric quiet
+    paramiko_sftp_logger = logging.getLogger('paramiko')
+    paramiko_sftp_logger.setLevel(logging.WARN)
+
     # This is the only message that is logged using the 'print' function because we
     # always want to have this message printed. Further log messages should go through
     # the logger.

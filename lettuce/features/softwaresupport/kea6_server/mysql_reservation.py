@@ -16,6 +16,7 @@
 
 import sys
 import os
+import logging
 
 if 'pytest' in sys.argv[0]:
     from features.lettuce_compat import world
@@ -25,6 +26,10 @@ else:
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
     fabric_download_file, fabric_remove_file_command, locate_entry
+
+
+log = logging.getLogger('forge')
+
 
 list_of_all_reservations = []
 
@@ -204,7 +209,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
             self.build_v6_script()
 
     def print_config(self):
-        print self.configuration_script
+        log.info(self.configuration_script)
 
 
 def enable_db_backend_reservation():

@@ -1,14 +1,18 @@
 import pytest
 
+# import logging
+# log = logging.getLogger('forge')
+
+
 def pytest_runtest_setup(item):
     from features import terrain
-    print("~~~~~~~~~~~~~~~~~~~~~ terrain.initialize(%s) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" % item)
+    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.initialize(%s) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" % item)
     terrain.initialize(item)
 
 
 def pytest_runtest_teardown(item, nextitem):
     from features import terrain
-    print("~~~~~~~~~~~~~~~~~~~~~ terrain.cleanup(%s) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" % item)
+    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.cleanup(%s) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" % item)
     item.failed = None
     terrain.cleanup(item)
 
@@ -21,7 +25,7 @@ def step():
 
 def pytest_configure(config):
     from features import terrain
-    print("~~~~~~~~~~~~~~~~~~~~~ terrain.test_start() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.test_start() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     terrain.test_start()
 
 
@@ -32,7 +36,7 @@ class Total(object):
 
 def pytest_unconfigure(config):
     from features import terrain
-    print("~~~~~~~~~~~~~~~~~~~~~ terrain.say_goodbye() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.say_goodbye() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     terrain.say_goodbye(Total())
 
 

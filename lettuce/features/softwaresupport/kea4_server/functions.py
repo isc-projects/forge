@@ -18,6 +18,7 @@
 import os
 import sys
 from time import sleep
+import logging
 
 if 'pytest' in sys.argv[0]:
     from features.lettuce_compat import world
@@ -33,6 +34,9 @@ from features.softwaresupport.kea6_server.functions import stop_srv, restart_srv
     set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
     set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class,\
     ha_add_parameter_to_hook, clear_logs, prepare_cfg_subnet_specific_interface
+
+
+log = logging.getLogger('forge')
 
 
 world.kea_options4 = {
@@ -178,9 +182,9 @@ def prepare_cfg_subnet(step, subnet, pool, eth=None):
         # if eth is not None:
         #     # world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
         #
-        #     print "\n"
-        #     print "\n\n\n\nabc\n1\n"
-        #     print "\n"
+        #     log.info("\n")
+        #     log.info("\n\n\n\nabc\n1\n")
+        #     log.info("\n")
 
     if eth not in world.cfg["interfaces"]:
         add_interface(eth)
@@ -350,7 +354,7 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        print(os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"))
+        log.info((os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"))
         fabric_send_file(world.cfg["cfg_file"],
                          os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
                          destination_host=destination_address)

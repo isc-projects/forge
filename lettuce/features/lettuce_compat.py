@@ -25,7 +25,6 @@ class Main(object):
 
     def __getattr__(self, name):
         def wrapper(func):
-            print("WRAP %s.%s for %s" % (self.name, name, func.__name__))
             return func
 
         return wrapper

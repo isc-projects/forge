@@ -216,13 +216,11 @@ def client_parse_config(step, contain):
                         del(parsed['lease6'][entry][key]['starts'])
 
     world.clntCfg["real_lease"] = parsed
-    """
-    print "\n\n\n"
-    print world.clntCfg["real_lease"]
-    print "\n\n\n"
-    print world.clntCfg['scapy_lease']
-    print "\n\n\n"
-    """
+    # log.info("\n\n\n")
+    # log.info(world.clntCfg["real_lease"])
+    # log.info("\n\n\n")
+    # log.info(world.clntCfg['scapy_lease'])
+    # log.info("\n\n\n")
     if contain:
         assert world.clntCfg["real_lease"] == world.clntCfg['scapy_lease'], \
                "leases are different."

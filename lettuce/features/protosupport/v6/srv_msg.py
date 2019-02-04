@@ -1013,8 +1013,7 @@ def loops(step, message_type_1, message_type_2, repeat):
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
-                print x
-                # log.info("Message exchange no. %d", x)
+                log.info("Message exchange no. %d", x)
             generate_new(step, "client")
             client_does_include("Client", "client-id", None)
             client_does_include("Client", "IA-NA", None)
