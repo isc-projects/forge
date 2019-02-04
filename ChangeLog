@@ -1,0 +1,82 @@
+
+13.	[func]		godfryd
+	Implemented tests for class_cmds hook in Kea.
+	(gitlab !9, commit 4a0b0f8d6306c03f6f3a6b1bcb50bc759dde9d19)
+
+12.	[func]		godfryd
+	Implemented better logging.
+	(gitlab !2, commit 5f0b7db718347601438cd2bc38af50411e651755)
+
+11.	[func]		godfryd
+	Added support for pytest. Many cleanups.
+	(gitlab !5, commit 5b9328e18e5643e73f0be2d3cff46494758628a4)
+
+10.	[func]		wlodek
+	Implemented new tests for reservation-get-all and reservation-get-page
+	commands.
+	(gitlab !7, commit bb4954a9926d1842d1abc7c3f33985f974fefc67)
+
+9.	[bug]		wlodek
+	Fixes for multiple tests.
+	(gitlab !8, commit 9c01446f4f8c8bbcbcfc5d789e571cd1bff60214)
+
+8.	[func]		godfryd
+	Preparation for pytest support, as an intended replacement for lettuce
+	that is no longer being developed.
+	(gitlab !1, commit 1cb9ed114c120aec04bed84a8e56b8ec547e4d0c)
+
+7.	[func]		wlodek
+	Imlemented new tests for lease retrieval page by page.
+	(gitlab !3, commit a80c2a94f2ee73b325c4a8864a5d01e81e50279c)
+
+Code migrated from github (http://github.com/isc-projects/forge)
+            to gitlab (http://gitlab.isc.org/isc-projects/forge)
+
+6.	[func]		Maciej Fijalkowski
+	Experimental DHCP client tests.
+	(github, 70 commits)
+
+5.	[func]		thomas
+	user_chk hook library tests, improved support for isc-dhcp v6,
+	several smaller improvements.
+	(github, 14 commits)
+
+4.	[build]		marcin
+	Several improvements: logging, scapy patch, v6 option tests,
+	better results reporting.
+	(github, 16 commits)
+
+3. 	[bug]		tomek
+	Several bugfixes throughout the years.
+	(github, 18 commits)
+
+2.	[func]		Rafal Jankowski
+	Partial incomplete DHCPv4 implementation.
+	(github, 12 commits)
+
+1.	[func]		wlodek
+	Initial Forge implementation, started in 2013 as master thesis that
+	focused on DHCPv6 server validation, mostly address assignment and few
+	options. Over the years, it evolved dramatically and by late 2018
+	covered DHCPv4, DHCPv6, many features published as RFCs and even more
+	administrative features implemented in Kea and ISC DHCP, such as: subnet
+	selection, host reservations, MySQL, PostgreSQL backends, RESTful API,
+	hooks, IPv6 prefix delegation, lease file, lease file cleanup, and many
+	many more.
+	(github, 1012 commits)
+
+For complete code revision history, see	http://gitlab.isc/org/isc-projects/forge
+
+LEGEND
+[bug]      general bug fix. This is generally a backward compatible change,
+	   unless it's deemed to be impossible or very hard to keep
+	   compatibility to fix the bug.
+[build]    compilation and installation infrastructure change.
+[doc]      update to documentation. This shouldn't change run time behavior.
+[func]     new feature.  In some cases this may be a backward incompatible
+	   change, which would require a bump of major version.
+[security] security hole fix. This is no different than a general bug
+	   fix except that it will be handled as confidential and will cause
+	   security patch releases.
+
+*: Backward incompatible or operational change.
