@@ -2,3 +2,4 @@
 PyCryptodome
 Fabric==1.14
 requests
+pytest
