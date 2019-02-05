@@ -1,17 +1,10 @@
 """Kea classification manipulation commands"""
 
 
-import sys
 import re
 import json
 
-if 'features' not in sys.path:
-    sys.path.append('features')
-
-if 'pytest' in sys.argv[0]:
-    import pytest
-else:
-    import lettuce as pytest
+import pytest
 
 from features import srv_msg
 from features import srv_control
@@ -30,7 +23,7 @@ pytestmark = [pytest.mark.py_test,
 DHCP_VERSION = srv_msg.world.proto
 
 
-def _setup_server_for_class_cmds(step, with_class=False):
+def _setup_server_for_class_cmds(step):
     if DHCP_VERSION == 'v4':
         srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.50-192.168.50.50')
     else:
@@ -118,7 +111,8 @@ def test_basic(step, channel):
     # check what classes are available now
     cmd = dict(command='class-list')
     response = _send_request(step, cmd, channel=channel)
-    assert response == {'arguments': {'client-classes': [{'name': 'ipxe_efi_x64'}]}, 'result': 0, 'text': '1 class found'}
+    assert response == {'arguments': {'client-classes': [{'name': 'ipxe_efi_x64'}]}, 'result': 0,
+                        'text': '1 class found'}
 
     # retrieve newly added ipxe class
     cmd = dict(command='class-get', arguments=dict(name='ipxe_efi_x64'))
@@ -242,7 +236,7 @@ def test_add_class_and_check_traffic(step):
 def test_negative_add_unknown_field(step):
     # bug: #229
     cmd = dict(command='class-add', arguments={"client-classes": [{"name": 'ipxe',
-                                                                 "unknown": "123"}]})
+                                                                   "unknown": "123"}]})
     response = _send_request(step, cmd)
     assert response == {'result': 1, 'text': "unsupported client class parameter 'unknown'"}
 
@@ -278,7 +272,9 @@ def test_negative_missing_class_data_1(step, class_cmd):
     # bug: #254
     cmd = dict(command=class_cmd, arguments={"client-classes": []})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd}
+    expected = {'result': 1,
+                'text': "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd}
+    assert response == expected
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
@@ -294,7 +290,9 @@ def test_negative_missing_class_data_2(step, class_cmd):
 def test_negative_wrong_args_1(step, class_cmd):
     cmd = dict(command=class_cmd, wrong_arg={"client-classes": [{"name": "ipxe"}]})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'wrong_arg'"}
+    expected = {'result': 1,
+                'text': "Error during command processing: Received command contains unsupported parameter 'wrong_arg'"}
+    assert response == expected
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
@@ -315,42 +313,52 @@ def test_negative_wrong_args_2b(step, class_cmd):
 def test_negative_wrong_args_3a(step, class_cmd):
     cmd = dict(command=class_cmd, arguments={"client-classes": {"name": "ipxe"}})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "'client-classes' argument specified for the '%s' command is not a list" % class_cmd}
+    assert response == {'result': 1,
+                        'text': "'client-classes' argument specified for the '%s' command is not a list" % class_cmd}
 
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
 def test_negative_wrong_args_3b(step, class_cmd):
     cmd = dict(command=class_cmd, arguments={"name": ["voip", "ipxe"]})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "'name' argument specified for the '%s' command is not a string" % class_cmd}
+    assert response == {'result': 1,
+                        'text': "'name' argument specified for the '%s' command is not a string" % class_cmd}
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update', 'class-del', 'class-get'])
 def test_negative_wrong_args_4(step, class_cmd):
     cmd = dict(command=class_cmd, arguments=["client-classes"])
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "arguments specified for the '%s' command are not a map" % class_cmd}
+    assert response == {'result': 1,
+                        'text': "arguments specified for the '%s' command are not a map" % class_cmd}
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
 def test_negative_wrong_args_5(step, class_cmd):
     cmd = dict(command=class_cmd, arguments={"client-classes": [{"name": "ipxe-1"}, {"name": "ipxe-2"}]})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd}
+    expected = {'result': 1,
+                'text': "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd}
+    assert response == expected
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
 def test_negative_wrong_args_6a(step, class_cmd):
     cmd = dict(command=class_cmd, arguments={"client-classes": [{"name": "ipxe-1"}], "extra-wrong": 1})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "invalid number of arguments 2 for the '%s' command. Expecting 'client-classes' list" % class_cmd}
+    expected = {'result': 1,
+                'text': "invalid number of arguments 2 for the '%s' command. Expecting 'client-classes' list" %
+                        class_cmd}
+    assert response == expected
 
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
 def test_negative_wrong_args_6b(step, class_cmd):
     cmd = dict(command=class_cmd, arguments={"name": "ipxe-1", "extra-wrong": 1})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "invalid number of arguments 2 for the '%s' command. Expecting 'name' string" % class_cmd}
+    expected = {'result': 1,
+                'text': "invalid number of arguments 2 for the '%s' command. Expecting 'name' string" % class_cmd}
+    assert response == expected
 
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
@@ -364,22 +372,27 @@ def test_negative_redundant_args_in_list(step):
     # bug: #253
     cmd = dict(command='class-list', extra_arg={})
     response = _send_request(step, cmd)
-    assert response == {'result': 1,
-                        'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    expected = {'result': 1,
+                'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    assert response == expected
 
 
 def test_negative_redundant_args_in_add(step):
     # bug: #253
     cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe"}]}, extra_arg={})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    expected = {'result': 1,
+                'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    assert response == expected
 
 
 def test_negative_redundant_args_in_update(step):
     # bug: #253
     cmd = dict(command='class-update', arguments={"client-classes": [{"name": "voip"}]}, extra_arg={})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    expected = {'result': 1,
+                'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    assert response == expected
 
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
@@ -387,13 +400,18 @@ def test_negative_redundant_args_in_other(step, class_cmd):
     # bug: #253
     cmd = dict(command=class_cmd, arguments=dict(name='voip'), extra_arg={})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    expected = {'result': 1,
+                'text': "Error during command processing: Received command contains unsupported parameter 'extra_arg'"}
+    assert response == expected
 
 
 def test_negative_wrong_command_1(step):
     cmd = dict(wrong_command='class-add', arguments={"client-classes": [{"name": "ipxe"}]})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "Error during command processing: Invalid answer specified, does not contain mandatory 'command'"}
+    expected = {'result': 1,
+                'text': "Error during command processing: Invalid answer specified, "
+                        "does not contain mandatory 'command'"}
+    assert response == expected
 
 
 def test_negative_wrong_command_2(step):
@@ -406,7 +424,9 @@ def test_negative_wrong_command_2(step):
 def test_negative_wrong_args_7(step, class_cmd):
     cmd = dict(command=class_cmd, arguments={"client-classes": ["wrong-arg"]})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "invalid class definition specified for the '%s' command. Expected a map" % class_cmd}
+    expected = {'result': 1,
+                'text': "invalid class definition specified for the '%s' command. Expected a map" % class_cmd}
+    assert response == expected
 
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
@@ -503,7 +523,8 @@ def test_negative_missing_dependency(step):
                                                                        "test": "member('missing_class')"}]})
     response = _send_request(step, cmd)
     assert response['result'] == 1
-    assert re.search("expression: \[member\('missing_class'\)\] error: <string>:1.8-22: Not defined client class 'missing_class' at \(<wire>:0:\d+\)",
+    assert re.search(r"expression: \[member\('missing_class'\)\] error: <string>:1.8-22: "
+                     r"Not defined client class 'missing_class' at \(<wire>:0:\d+\)",
                      response['text'])
 
 
@@ -564,5 +585,8 @@ def test_negative_change_dependency(step):
     cmd = dict(command='class-update', arguments={"client-classes": [{'name': 'voip',
                                                                       'test': "member('KNOWN')"}]})
     response = _send_request(step, cmd)
-    assert response == {'result': 1, 'text': "modification of the class 'voip' would affect its dependency on the KNOWN and/or UNKNOWN built-in classes. "
-                        "Such modification is not allowed because there may be other classes depending on those built-ins via the updated class"}
+    expected = {'result': 1,
+                'text': "modification of the class 'voip' would affect its dependency on the KNOWN and/or "
+                        "UNKNOWN built-in classes. Such modification is not allowed because there may be "
+                        "other classes depending on those built-ins via the updated class"}
+    assert response == expected

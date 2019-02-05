@@ -1,0 +1,455 @@
+"""Kea leases manipulation commands with legal logging hook"""
+
+# pylint: disable=invalid-name,line-too-long
+
+import pytest
+
+from features import srv_control
+from features import srv_msg
+from features import misc
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+@pytest.mark.legal_logging
+def test_hook_v6_lease_cmds_legal_logging_add(step):
+    misc.test_procedure(step)
+    srv_msg.remove_file_from_server(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+
+    misc.test_setup(step)
+    srv_control.config_srv_subnet(step, '2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.config_srv_opt(step, 'preference', '123')
+    srv_control.config_srv_opt(step, 'domain-search', 'domain1.example.com,domain2.isc.org')
+    srv_control.open_control_channel(step,
+                                     'unix',
+                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so')
+    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
+
+    srv_control.start_srv(step, 'DHCP', 'started')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content(step,
+                                             'Response',
+                                             '5',
+                                             '3',
+                                             None,
+                                             'address',
+                                             '2001:db8:1::1')
+
+    srv_msg.send_through_socket_server_site(step,
+                                            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+                                            '{"command": "lease6-add","arguments": {"subnet-id": 1,"ip-address": "2001:db8:1::1","duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24","iaid": 1234}}')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '13')
+    srv_msg.response_check_suboption_content(step, 'Response', '13', '3', None, 'statuscode', '2')
+
+    srv_msg.copy_remote(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt',
+                               None,
+                               'Administrator added a lease of address: 2001:db8:1::1 to a device with DUID: 1a:1b:1c:1d:1e:1f:20:21:22:23:24')
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+@pytest.mark.legal_logging
+def test_hook_v6_lease_cmds_legal_logging_del_using_address(step):
+    misc.test_procedure(step)
+    srv_msg.remove_file_from_server(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+
+    misc.test_setup(step)
+    srv_control.config_srv_subnet(step, '2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.open_control_channel(step,
+                                     'unix',
+                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so')
+    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
+
+    srv_control.start_srv(step, 'DHCP', 'started')
+
+    misc.test_procedure(step)
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    misc.test_procedure(step)
+    srv_msg.client_copy_option(step, 'IA_NA')
+    srv_msg.client_copy_option(step, 'server-id')
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_send_msg(step, 'REQUEST')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content(step,
+                                             'Response',
+                                             '5',
+                                             '3',
+                                             None,
+                                             'address',
+                                             '2001:db8:1::1')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:22:33:44:55:66')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '13')
+    srv_msg.response_check_suboption_content(step, 'Response', '13', '3', None, 'statuscode', '2')
+
+    srv_msg.send_through_socket_server_site(step,
+                                            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+                                            '{"command":"lease6-del","arguments":{"ip-address": "2001:db8:1::1"}}')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:22:33:44:55:66')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content(step,
+                                             'Response',
+                                             '5',
+                                             '3',
+                                             None,
+                                             'address',
+                                             '2001:db8:1::1')
+
+    srv_msg.copy_remote(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt',
+                               None,
+                               'Administrator deleted the lease for address: 2001:db8:1::1')
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+@pytest.mark.legal_logging
+def test_hook_v6_lease_cmds_legal_logging_del_using_duid(step):
+    misc.test_procedure(step)
+    srv_msg.remove_file_from_server(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+
+    misc.test_setup(step)
+    srv_control.config_srv_subnet(step, '2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.open_control_channel(step,
+                                     'unix',
+                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so')
+    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
+
+    srv_control.start_srv(step, 'DHCP', 'started')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_sets_value(step, 'Client', 'ia_id', '666')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    misc.test_procedure(step)
+    srv_msg.client_copy_option(step, 'IA_NA')
+    srv_msg.client_copy_option(step, 'server-id')
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_send_msg(step, 'REQUEST')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content(step,
+                                             'Response',
+                                             '5',
+                                             '3',
+                                             None,
+                                             'address',
+                                             '2001:db8:1::1')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:22:33:44:55:66')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '13')
+    srv_msg.response_check_suboption_content(step, 'Response', '13', '3', None, 'statuscode', '2')
+
+    srv_msg.send_through_socket_server_site(step,
+                                            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+                                            '{"command":"lease6-del","arguments":{"subnet-id":1,"identifier": "00:03:00:01:66:55:44:33:22:11","identifier-type": "duid","iaid":666}}')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:22:33:44:55:66')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content(step,
+                                             'Response',
+                                             '5',
+                                             '3',
+                                             None,
+                                             'address',
+                                             '2001:db8:1::1')
+
+    srv_msg.copy_remote(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt',
+                               None,
+                               'Administrator deleted a lease for a device identified by: duid of 00:03:00:01:66:55:44:33:22:11')
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+@pytest.mark.legal_logging
+@pytest.mark.disabled
+def test_hook_v6_lease_cmds_legal_logging_wipe(step):
+    misc.test_procedure(step)
+    srv_msg.remove_file_from_server(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+
+    misc.test_setup(step)
+    srv_control.config_srv_subnet(step, '2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
+    srv_control.open_control_channel(step,
+                                     'unix',
+                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so')
+    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
+
+    srv_control.start_srv(step, 'DHCP', 'started')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    misc.test_procedure(step)
+    srv_msg.client_copy_option(step, 'IA_NA')
+    srv_msg.client_copy_option(step, 'server-id')
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_send_msg(step, 'REQUEST')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:22:33:44:55:66')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    misc.test_procedure(step)
+    srv_msg.client_copy_option(step, 'IA_NA')
+    srv_msg.client_copy_option(step, 'server-id')
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:22:33:44:55:66')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_send_msg(step, 'REQUEST')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:11:11:11:11:11:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '13')
+    srv_msg.response_check_suboption_content(step, 'Response', '13', '3', None, 'statuscode', '2')
+
+    srv_msg.send_through_socket_server_site(step,
+                                            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+                                            '{"command":"lease6-wipe", "arguments": {"subnet-id":1}}')
+
+    srv_msg.copy_remote(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+    srv_msg.test_fail(step)
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+@pytest.mark.legal_logging
+def test_hook_v6_lease_cmds_legal_logging_update(step):
+    misc.test_procedure(step)
+    srv_msg.remove_file_from_server(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+
+    misc.test_setup(step)
+    srv_control.config_srv_subnet(step, '2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
+    srv_control.open_control_channel(step,
+                                     'unix',
+                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so')
+    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
+
+    srv_control.start_srv(step, 'DHCP', 'started')
+
+    misc.test_procedure(step)
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_sets_value(step, 'Client', 'ia_id', '666')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
+    srv_msg.client_send_msg(step, 'SOLICIT')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    misc.test_procedure(step)
+    srv_msg.client_copy_option(step, 'IA_NA')
+    srv_msg.client_copy_option(step, 'server-id')
+    srv_msg.client_sets_value(step, 'Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include(step, 'Client', None, 'client-id')
+    srv_msg.client_send_msg(step, 'REQUEST')
+
+    misc.pass_criteria(step)
+    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    srv_msg.response_check_include_option(step, 'Response', None, '1')
+    srv_msg.response_check_include_option(step, 'Response', None, '2')
+    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+                               None,
+                               '2001:db8:1::1,00:03:00:01:66:55:44:33:22:11,4000,')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+                               None,
+                               ',1,3000,0,666,128,0,0,,66:55:44:33:22:11,0')
+
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+                               'NOT ',
+                               '2001:db8:1::1,01:02:03:04:05:06:07:08')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+                               'NOT ',
+                               ',urania.example.org,1a:1b:1c:1d:1e:1f,')
+
+    srv_msg.send_through_socket_server_site(step,
+                                            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+                                            '{"command":"lease6-update", "arguments":{"subnet-id": 1,"ip-address": "2001:db8:1::1","duid": "01:02:03:04:05:06:07:08","iaid": 1234,"hw-address": "1a:1b:1c:1d:1e:1f","preferred-lft": 500,"valid-lft": 1000,"hostname": "urania.example.org"}}')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+                               None,
+                               ',1,500,0,1234,128,0,0,urania.example.org,1a:1b:1c:1d:1e:1f,0')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+                               None,
+                               '2001:db8:1::1,01:02:03:04:05:06:07:08,1000')
+
+    srv_msg.copy_remote(step, '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
+    srv_msg.file_contains_line(step,
+                               '$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt',
+                               None,
+                               'Administrator updated information on the lease of address: 2001:db8:1::1 to a device with DUID: 01:02:03:04:05:06:07:08, hardware address: 1a:1b:1c:1d:1e:1f for 0 hrs 16 mins 40 secs')
