@@ -20,10 +20,7 @@ import sys
 from time import sleep
 import logging
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
+from forge import world
 
 from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
     copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
@@ -156,7 +153,7 @@ def add_defaults():
     # world.dhcp["subnet_cnt"] += 1
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth=None):
+def prepare_cfg_subnet(subnet, pool, eth=None):
     # world.subcfg[0] = [subnet, client class/simple options, options, pools, host reservation]
     if subnet == "default":
         subnet = "192.168.0.0/24"
@@ -190,14 +187,14 @@ def prepare_cfg_subnet(step, subnet, pool, eth=None):
         add_interface(eth)
 
 
-def config_client_classification(step, subnet, option_value):
+def config_client_classification(subnet, option_value):
     subnet = int(subnet)
     if len(world.subcfg[subnet][1]) > 2:
         world.subcfg[subnet][1] += ', '
     world.subcfg[subnet][1] += '"client-class": "{option_value}"\n'.format(**locals())
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space,
+def prepare_cfg_add_option(option_name, option_value, space,
                            option_code=None, opt_type='default', where='options'):
     if where not in world.cfg:
         world.cfg[where] = '"option-data": ['
@@ -219,7 +216,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space,
             \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     space = world.cfg["space"]
     subnet = int(subnet)
@@ -237,7 +234,7 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
             \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
-def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, option_value):
+def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_value):
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     space = world.cfg["space"]
     shared_subnet = int(shared_subnet)
@@ -255,7 +252,7 @@ def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, optio
             "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
-def add_siaddr(step, addr, subnet_number):
+def add_siaddr(addr, subnet_number):
     if subnet_number is None:
         if "simple_options" not in world.cfg:
             world.cfg["simple_options"] = ''
@@ -269,7 +266,7 @@ def add_siaddr(step, addr, subnet_number):
         world.subcfg[subnet][1] += '"next-server": "{addr}"\n'.format(**locals())
 
 
-def disable_client_echo(step):
+def disable_client_echo():
     # after using it, we should revert that at the end!
     # keep that in mind when first time using it.
     if "simple_options" not in world.cfg:
@@ -408,5 +405,5 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
         sleep(2)
 
 
-def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"

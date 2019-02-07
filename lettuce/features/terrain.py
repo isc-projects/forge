@@ -28,11 +28,7 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 
 #from init_all import ForgeConfiguration
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world, before, after
-else:
-    from lettuce import world, before, after
-
+from forge import world, step
 from features.softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
 from features import logging_facility
@@ -286,7 +282,7 @@ def declare_all():
     world.f_cfg.db_user = world.f_cfg.db_user_bk
 
 
-@before.all
+#@before.all
 def test_start():
     """
     Server starting before testing
@@ -317,7 +313,7 @@ def test_start():
                 #  and erase that last elif.
 
 
-@before.each_scenario
+#@before.each_scenario
 def initialize(scenario):
 
     # Declare all default values
@@ -411,7 +407,7 @@ def initialize(scenario):
                 subprocess.Popen(args2)
 
 
-@before.outline
+#@before.outline
 def outline_before(scenario, number, step, failed):
     """
     For Outline Scenarios,
@@ -424,7 +420,7 @@ def outline_before(scenario, number, step, failed):
     initialize(scenario)  # we need to initialize all
 
 
-@after.outline
+#@after.outline
 def outline_result(scenario, number, step, failed):
     """
     For Outline Scenarios,
@@ -442,7 +438,7 @@ def outline_result(scenario, number, step, failed):
     add_result_to_report(info)
 
 
-@after.each_step
+#@after.each_step
 def cleanup_option(step):
     cfg_file = open(world.cfg["dir_name"]+'/test_steps', 'a')
     # assert False, step.__dict__
@@ -453,7 +449,7 @@ def cleanup_option(step):
     cfg_file.close()
 
 
-@after.each_scenario
+#@after.each_scenario
 def cleanup(scenario):
     """
     Global cleanup for each scenario. Implemented within tests by "Server is started."
@@ -488,7 +484,7 @@ def cleanup(scenario):
                 #     log.info("Remote location " + each_remote_server + " unreachable!")
 
 
-@after.all
+#@after.all
 def say_goodbye(total):
     """
     Server stopping after whole work

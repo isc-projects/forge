@@ -4,75 +4,75 @@
 
 import pytest
 
-from features import clnt_msg
-from features import references
 from features import clnt_control
 from features import misc
+from features import references
+from features import clnt_msg
 
 
 @pytest.mark.v6
 @pytest.mark.rfc3315
 @pytest.mark.basic
 @pytest.mark.client
-def test_message_validation_client_elapsed_time(step):
+def test_message_validation_client_elapsed_time():
 
-    clnt_control.client_setup(step)
+    clnt_control.client_setup()
 
-    misc.test_procedure(step)
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
+    misc.test_procedure()
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
 
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '8')
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '8')
 
-    references.references_check(step, 'RFC')
-
-
-@pytest.mark.v6
-@pytest.mark.rfc3315
-@pytest.mark.basic
-@pytest.mark.client
-def test_message_validation_client_unique_IAID(step):
-
-    clnt_control.client_setup(step)
-
-    misc.test_procedure(step)
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
-
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '8')
-
-    misc.test_procedure(step)
-    clnt_control.client_restart(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
-
-    misc.pass_criteria(step)
-    clnt_msg.client_cmp_values(step, 'IAID')
-
-    references.references_check(step, 'RFC')
+    references.references_check('RFC')
 
 
 @pytest.mark.v6
 @pytest.mark.rfc3315
 @pytest.mark.basic
 @pytest.mark.client
-def test_message_validation_client_rapid_commit(step):
+def test_message_validation_client_unique_IAID():
 
-    clnt_control.client_setup(step)
+    clnt_control.client_setup()
 
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'rapid_commit')
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
+    misc.test_procedure()
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
 
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '8')
-    clnt_msg.client_msg_contains_opt(step, None, '14')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '8')
 
-    references.references_check(step, 'RFC')
+    misc.test_procedure()
+    clnt_control.client_restart()
+    clnt_msg.client_msg_capture('SOLICIT', None)
+
+    misc.pass_criteria()
+    clnt_msg.client_cmp_values('IAID')
+
+    references.references_check('RFC')
+
+
+@pytest.mark.v6
+@pytest.mark.rfc3315
+@pytest.mark.basic
+@pytest.mark.client
+def test_message_validation_client_rapid_commit():
+
+    clnt_control.client_setup()
+
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'rapid_commit')
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
+
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '8')
+    clnt_msg.client_msg_contains_opt(None, '14')
+    clnt_msg.client_msg_contains_opt(None, '25')
+
+    references.references_check('RFC')

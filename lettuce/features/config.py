@@ -21,14 +21,11 @@
 import os
 import sys
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world, step
-else:
-    from lettuce import world, step
+from forge import world, step
 
 
 @step('stop process (\w+)')
-def stop_a_named_process(step, process_name):
+def stop_a_named_process(process_name):
     """
     Stop the process with the given name.
     Parameters:
@@ -37,7 +34,7 @@ def stop_a_named_process(step, process_name):
     world.processes.stop_process(process_name)
 
 @step('wait for (new )?(\w+) stderr message (\w+)(?: not (\w+))?')
-def wait_for_err_message(step, new, process_name, message, not_message):
+def wait_for_err_message(new, process_name, message, not_message):
     """
     Block until the given message is printed to the given process's stderr
     output.
@@ -57,7 +54,7 @@ def wait_for_err_message(step, new, process_name, message, not_message):
         assert found != not_message, line
 
 @step('wait for (new )?(\w+) stdout message (\w+)(?: not (\w+))?')
-def wait_for_out_message(step, process_name, message, not_message):
+def wait_for_out_message(process_name, message, not_message):
     """
     Block until the given message is printed to the given process's stdout
     output.
@@ -77,7 +74,7 @@ def wait_for_out_message(step, process_name, message, not_message):
         assert found != not_message, line
 
 @step('the file (\S+) should (not )?exist')
-def check_existence(step, file_name, should_not_exist):
+def check_existence(file_name, should_not_exist):
     """
     Check the existence of the given file.
     Parameters:

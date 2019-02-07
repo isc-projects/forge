@@ -19,10 +19,6 @@ import sys
 import logging
 from random import randint
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
 from scapy.all import get_if_raw_hwaddr, Ether, srp
 from scapy.config import conf
 from scapy.fields import Field
@@ -32,19 +28,20 @@ from scapy.layers.inet import IP, UDP
 from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
 
+from forge import world
 from features.protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
 
 
 log = logging.getLogger('forge')
 
 
-def client_requests_option(step, opt_type):
+def client_requests_option(opt_type):
     if not hasattr(world, 'prl'):
         world.prl = ""  # don't request anything by default
     world.prl += chr(int(opt_type))  # put a single byte there
 
 
-def client_send_msg(step, msgname, iface, addr):
+def client_send_msg(msgname, iface, addr):
     """
     Sends specified message with defined options.
     Parameters:
@@ -107,7 +104,7 @@ def client_send_msg(step, msgname, iface, addr):
     log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
 
-def client_sets_value(step, value_name, new_value):
+def client_sets_value(value_name, new_value):
     if value_name in world.cfg["values"]:
         if isinstance(world.cfg["values"][value_name], str):
             world.cfg["values"][value_name] = str(new_value)
@@ -138,7 +135,7 @@ options_formatted_by_forge = ["vendor_specific",  # code 43
                               ]
 
 
-def client_does_include(step, opt_type, value):
+def client_does_include(opt_type, value):
     if opt_type == 'client_id':
         # code - 61
         world.cliopts += [(opt_type, convert_MAC(value))]
@@ -172,7 +169,7 @@ def client_does_include(step, opt_type, value):
             world.cliopts += [(opt_type, unicode(value))]
 
 
-def response_check_content(step, expect, data_type, expected):
+def response_check_content(expect, data_type, expected):
 
     if data_type == 'yiaddr':
         received = world.srvmsg[0].yiaddr
@@ -209,7 +206,7 @@ def response_check_content(step, expect, data_type, expected):
     return received
 
 
-def client_save_option(step, opt_name, count=0):
+def client_save_option(opt_name, count=0):
     opt_code = world.kea_options4.get(opt_name)
 
     assert opt_name in world.kea_options4, "Unsupported option name " + opt_name
@@ -220,7 +217,7 @@ def client_save_option(step, opt_name, count=0):
         world.savedmsg[count].append(get_option(world.srvmsg[0], opt_code))
 
 
-def client_copy_option(step, opt_name):
+def client_copy_option(opt_name):
     opt_code = world.kea_options4.get(opt_name)
 
     assert opt_name in world.kea_options4, "Unsupported option name " + opt_name
@@ -319,7 +316,7 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
-def send_wait_for_message(step, msgtype, presence, exp_message):
+def send_wait_for_message(msgtype, presence, exp_message):
     """
     Block until the given message is (not) received.
     """
@@ -418,7 +415,7 @@ def test_option(opt_code, received, expected):
     return False, tmp
 
 
-def response_check_include_option(step, expected, opt_code):
+def response_check_include_option(expected, opt_code):
     assert len(world.srvmsg) != 0, "No response received."
     opt = get_option(world.srvmsg[0], opt_code)
     if expected:

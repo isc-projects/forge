@@ -21,12 +21,9 @@
 
 import sys
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import step, world
-else:
-    from lettuce import step, world
 from scapy.layers.dhcp6 import DHCP6OptOptReq
 
+from forge import world, step
 from softwaresupport.configuration import KeaConfiguration
 
 
@@ -56,23 +53,23 @@ def set_world():
 
 
 @step('Pass Criteria:')
-def pass_criteria(step):
+def pass_criteria():
     # Do nothing, "Pass criteria:" appears in the text as beautification only
     pass
 
 
 @step('Test Setup:')
-def test_setup(step):
+def test_setup():
     set_world()
 
 
 @step('Server reconfigure:')
-def reconfigure(step):
+def reconfigure():
     set_world()
 
 
 @step('Test Procedure:')
-def test_procedure(step):
+def test_procedure():
     for each in world.f_cfg.software_under_test:
         if "server" in each:
             if world.proto == "v4":

@@ -4,9 +4,9 @@
 
 import pytest
 
-from features import srv_control
 from features import srv_msg
 from features import misc
+from features import srv_control
 from features import references
 
 
@@ -14,7 +14,7 @@ from features import references
 @pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.preference
-def test_v6_options_inforequest_preference(step):
+def test_v6_options_inforequest_preference():
     #  Testing server ability to configure it with option
     #  preference (code 7)with value 123, and ability to share that value
     #  with client via Reply message as a respond to INFOREQUEST.
@@ -24,29 +24,29 @@ def test_v6_options_inforequest_preference(step):
     #  Pass Criteria:
     #  				REPLY MUST include option:
     # 					Preference option with value 123
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'preference', '123')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('preference', '123')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '7')
-    srv_msg.response_check_option_content(step, 'Response', '7', None, 'value', '123')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '7')
+    srv_msg.response_check_option_content('Response', '7', None, 'value', '123')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
-def test_v6_options_inforequest_sip_domains(step):
+def test_v6_options_inforequest_sip_domains():
     #  Testing server ability to configure it with option
     #  SIP domains (code 21) with domains srv1.example.com
     #  and srv2.isc.org, and ability to share that
@@ -59,27 +59,26 @@ def test_v6_options_inforequest_sip_domains(step):
     # 					sip-server-dns option with domains
     # 					srv1.example.com and srv2.isc.org
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'sip-server-dns', 'srv1.example.com,srv2.isc.org')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('sip-server-dns', 'srv1.example.com,srv2.isc.org')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '21')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('21')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '21')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '21')
+    srv_msg.response_check_option_content('Response',
                                           '21',
                                           None,
                                           'domains',
                                           'srv1.example.com,srv2.isc.org')
 
-    references.references_check(step, 'RFC331')
+    references.references_check('RFC331')
 
 
 @pytest.mark.v6
@@ -87,7 +86,7 @@ def test_v6_options_inforequest_sip_domains(step):
 @pytest.mark.options
 @pytest.mark.sip
 @pytest.mark.rfc3319
-def test_v6_options_inforequest_sip_servers(step):
+def test_v6_options_inforequest_sip_servers():
     #  Testing server ability to configure it with option
     #  SIP servers (code 22) with addresses 2001:db8::1
     #  and 2001:db8::2, and ability to share that
@@ -99,27 +98,26 @@ def test_v6_options_inforequest_sip_servers(step):
     #  				REPLY MUST include option:
     # 					sip-server-addr option with addresses
     # 					2001:db8::1 and 2001:db8::2
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '22')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('22')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '22')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '22')
+    srv_msg.response_check_option_content('Response',
                                           '22',
                                           None,
                                           'addresses',
                                           '2001:db8::1,2001:db8::2')
 
-    references.references_check(step, 'RFC331')
+    references.references_check('RFC331')
 
 
 @pytest.mark.v6
@@ -127,7 +125,7 @@ def test_v6_options_inforequest_sip_servers(step):
 @pytest.mark.options
 @pytest.mark.dns
 @pytest.mark.rfc3646
-def test_v6_options_inforequest_dns_servers(step):
+def test_v6_options_inforequest_dns_servers():
     #  Testing server ability to configure it with option
     #  DNS servers (code 23) with addresses 2001:db8::1
     #  and 2001:db8::2, and ability to share that
@@ -140,36 +138,35 @@ def test_v6_options_inforequest_dns_servers(step):
     # 					dns-servers option with addresses
     # 					2001:db8::1 and 2001:db8::2
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'dns-servers', '2001:db8::1,2001:db8::2')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '23')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('23')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '23')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '23')
+    srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
                                           'addresses',
                                           '2001:db8::1,2001:db8::2')
 
-    misc.test_procedure(step)
+    misc.test_procedure()
 
-    references.references_check(step, 'v6.options,')
+    references.references_check('v6.options,')
 
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc3646
-def test_v6_options_inforequest_domains(step):
+def test_v6_options_inforequest_domains():
     #  Testing server ability to configure it with option
     #  domains (code 24) with domains domain1.example.com
     #  and domain2.isc.org, and ability to share that
@@ -182,27 +179,26 @@ def test_v6_options_inforequest_domains(step):
     # 					domain-search option with addresses
     # 					domain1.example.com and domain2.isc.org
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '24')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('24')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '24')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '24')
+    srv_msg.response_check_option_content('Response',
                                           '24',
                                           None,
                                           'domains',
                                           'domain1.example.com,domain2.isc.org')
 
-    references.references_check(step, 'RFC364')
+    references.references_check('RFC364')
 
 
 @pytest.mark.v6
@@ -210,7 +206,7 @@ def test_v6_options_inforequest_domains(step):
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.rfc3898
-def test_v6_options_inforequest_nis_servers(step):
+def test_v6_options_inforequest_nis_servers():
     #  Testing server ability to configure it with option
     #  NIS servers (code 27) with addresses 2001:db8::abc, 3000::1
     #  and 2000::1234, and ability to share that
@@ -223,27 +219,26 @@ def test_v6_options_inforequest_nis_servers(step):
     # 					nis-servers option with addresses
     # 					2001:db8::abc, 3000::1 and 2000::1234.
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'nis-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '27')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('27')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '27')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '27')
+    srv_msg.response_check_option_content('Response',
                                           '27',
                                           None,
                                           'addresses',
                                           '2001:db8::abc,3000::1,2000::1234')
 
-    references.references_check(step, 'RFC389')
+    references.references_check('RFC389')
 
 
 @pytest.mark.v6
@@ -252,7 +247,7 @@ def test_v6_options_inforequest_nis_servers(step):
 @pytest.mark.nis
 @pytest.mark.nisp
 @pytest.mark.rfc3898
-def test_v6_options_inforequest_nisp_servers(step):
+def test_v6_options_inforequest_nisp_servers():
     #  Testing server ability to configure it with option
     #  NIS+ servers (code 28) with addresses 2001:db8::abc, 3000::1
     #  and 2000::1234, and ability to share that
@@ -265,29 +260,28 @@ def test_v6_options_inforequest_nisp_servers(step):
     # 					nisp-servers option with addresses
     # 					2001:db8::abc, 3000::1 and 2000::1234.
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'nisp-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('nisp-servers', '2001:db8::abc,3000::1,2000::1234')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '28')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('28')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '28')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '28')
+    srv_msg.response_check_option_content('Response',
                                           '28',
                                           None,
                                           'addresses',
                                           '2001:db8::abc,3000::1,2000::1234')
 
-    references.references_check(step, 'RFC389')
+    references.references_check('RFC389')
 
 
 @pytest.mark.v6
@@ -295,7 +289,7 @@ def test_v6_options_inforequest_nisp_servers(step):
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.rfc3898
-def test_v6_options_inforequest_nisdomain(step):
+def test_v6_options_inforequest_nisdomain():
     #  Testing server ability to configure it with option
     #  NIS domain (code 29) with domains ntp.example.com and ability to share that
     #  with client via Reply message as a respond to INFOREQUEST.
@@ -306,34 +300,29 @@ def test_v6_options_inforequest_nisdomain(step):
     #  				REPLY MUST include option:
     # 					domain-search option with address ntp.example.com
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'nis-domain-name', 'ntp.example.com')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('nis-domain-name', 'ntp.example.com')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '29')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('29')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '29')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
-                                          '29',
-                                          None,
-                                          'domain',
-                                          'ntp.example.com')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '29')
+    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com')
 
-    references.references_check(step, 'RFC389')
+    references.references_check('RFC389')
 
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc3898
-def test_v6_options_inforequest_nispdomain(step):
+def test_v6_options_inforequest_nispdomain():
     #  Testing server ability to configure it with option
     #  NIS+ domain (code 30) with domain ntp.example.com, and ability to share that
     #  with client via Reply message as a respond to INFOREQUEST.
@@ -344,27 +333,22 @@ def test_v6_options_inforequest_nispdomain(step):
     #  				REPLY MUST include option:
     # 					nisp-domain-name option with address ntp.example.com
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'nisp-domain-name', 'ntp.example.com')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '30')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('30')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '30')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
-                                          '30',
-                                          None,
-                                          'domain',
-                                          'ntp.example.com')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '30')
+    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com')
 
-    references.references_check(step, 'RFC389')
+    references.references_check('RFC389')
 
 
 @pytest.mark.v6
@@ -372,7 +356,7 @@ def test_v6_options_inforequest_nispdomain(step):
 @pytest.mark.options
 @pytest.mark.sntp
 @pytest.mark.rfc4075
-def test_v6_options_inforequest_sntp_servers(step):
+def test_v6_options_inforequest_sntp_servers():
     #  Testing server ability to configure it with option
     #  SNTP servers (code 31) with addresses 2001:db8::abc, 3000::1
     #  and 2000::1234, and ability to share that
@@ -385,34 +369,33 @@ def test_v6_options_inforequest_sntp_servers(step):
     # 					sntp-servers option with addresses
     # 					2001:db8::abc, 3000::1 and 2000::1234.
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'sntp-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('sntp-servers', '2001:db8::abc,3000::1,2000::1234')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '31')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('31')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '31')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '31')
+    srv_msg.response_check_option_content('Response',
                                           '31',
                                           None,
                                           'addresses',
                                           '2001:db8::abc,3000::1,2000::1234')
 
-    references.references_check(step, 'RFC407')
+    references.references_check('RFC407')
 
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc4242
-def test_v6_options_inforequest_info_refresh(step):
+def test_v6_options_inforequest_info_refresh():
     #  Testing server ability to configure it with option
     #  information refresh time (code 32) with value 12345678 and ability to share that
     #  with client via Reply message as a respond to INFOREQUEST.
@@ -423,28 +406,28 @@ def test_v6_options_inforequest_info_refresh(step):
     #  				REPLY MUST include option:
     # 					information-refresh-time option with value 12345678
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'information-refresh-time', '12345678')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('information-refresh-time', '12345678')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '32')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('32')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '32')
-    srv_msg.response_check_option_content(step, 'Response', '32', None, 'value', '12345678')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '32')
+    srv_msg.response_check_option_content('Response', '32', None, 'value', '12345678')
 
-    references.references_check(step, 'RFC424')
+    references.references_check('RFC424')
 
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.options
-def test_v6_options_inforequest_multiple(step):
+def test_v6_options_inforequest_multiple():
     #  Testing server ability to configure it with option multiple options:
     #  preference (code 7), SIP domain (code 21), DNS servers (code 23), domains (code 24)
     #  with client via Reply message as a respond to INFOREQUEST.
@@ -458,49 +441,46 @@ def test_v6_options_inforequest_multiple(step):
     # 					DNS servers with addresses 2001:db8::1 and 2001:db8::2
     # 					domain-search with addresses domain1.example.com and domain2.isc.org
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'preference', '123')
-    srv_control.config_srv_opt(step, 'sip-server-dns', 'srv1.example.com,srv2.isc.org')
-    srv_control.config_srv_opt(step, 'dns-servers', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt(step, 'domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('preference', '123')
+    srv_control.config_srv_opt('sip-server-dns', 'srv1.example.com,srv2.isc.org')
+    srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
+    srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_requests_option(step, '21')
-    srv_msg.client_requests_option(step, '23')
-    srv_msg.client_requests_option(step, '24')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_requests_option('21')
+    srv_msg.client_requests_option('23')
+    srv_msg.client_requests_option('24')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '7')
-    srv_msg.response_check_include_option(step, 'Response', None, '21')
-    srv_msg.response_check_include_option(step, 'Response', None, '23')
-    srv_msg.response_check_include_option(step, 'Response', None, '24')
-    srv_msg.response_check_option_content(step, 'Response', '7', None, 'value', '123')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '7')
+    srv_msg.response_check_include_option('Response', None, '21')
+    srv_msg.response_check_include_option('Response', None, '23')
+    srv_msg.response_check_include_option('Response', None, '24')
+    srv_msg.response_check_option_content('Response', '7', None, 'value', '123')
+    srv_msg.response_check_option_content('Response',
                                           '21',
                                           None,
                                           'addresses',
                                           'srv1.example.com,srv2.isc.org')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
                                           'addresses',
                                           '2001:db8::1,2001:db8::2')
-    srv_msg.response_check_option_content(step,
-                                          'Response',
+    srv_msg.response_check_option_content('Response',
                                           '24',
                                           None,
                                           'domains',
                                           'domain1.example.com,domain2.isc.org')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.v6
@@ -508,7 +488,7 @@ def test_v6_options_inforequest_multiple(step):
 @pytest.mark.options
 @pytest.mark.dns
 @pytest.mark.rfc3646
-def test_v6_options_inforequest_negative(step):
+def test_v6_options_inforequest_negative():
     #  Testing if server does not return option that it was not configured with.
     #  Server configured with option 23, requesting option 24.
     #  Testing Reply message as a respond to INFOREQUEST.
@@ -524,27 +504,27 @@ def test_v6_options_inforequest_negative(step):
     #  Pass Criteria:
     #  				REPLY MUST NOT include option:
     # 					domain and dns-servers
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'dns-servers', '2001:db8::1,2001:db8::2')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '24')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('24')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', 'NOT ', '23')
-    srv_msg.response_check_include_option(step, 'Response', 'NOT ', '24')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', 'NOT ', '23')
+    srv_msg.response_check_include_option('Response', 'NOT ', '24')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '23')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    misc.test_procedure()
+    srv_msg.client_requests_option('23')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '23')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '23')
 
-    references.references_check(step, 'RFC364')
+    references.references_check('RFC364')

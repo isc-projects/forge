@@ -17,12 +17,6 @@ def pytest_runtest_teardown(item, nextitem):
     terrain.cleanup(item)
 
 
-@pytest.fixture(scope='session')
-def step():
-    from features import lettuce_compat
-    return lettuce_compat.Step()
-
-
 def pytest_configure(config):
     from features import terrain
     # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.test_start() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")

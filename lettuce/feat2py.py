@@ -127,7 +127,7 @@ def generate_py_file(feature, scenarios_list, used_modules, py_file_path):
             name = name.replace('.', '_')
             name = name.replace('-', '_')
             name = 'test_' + name
-            f.write("def %s(step):\n" % name)
+            f.write("def %s():\n" % name)
 
             # count last empty lines
             last_non_empty = 0
@@ -165,21 +165,34 @@ def generate_py_file(feature, scenarios_list, used_modules, py_file_path):
                 # f.write('    # %s\n' % line)  # original line in comment
                 mod = step[0].replace('.py', '')
                 func = step[1]
-                args = step[2]
-                args = ['None' if a is None else "'%s'" % a.replace("'", "\\'") for a in args]
-                args2 = ", ".join(args)
-                if args2:
-                    args2 = ', ' + args2
+                args1 = step[2]
+                #args = ['None' if a is None else "'%s'" % a.replace("'", "\\'") for a in args]
+                args = []
+                for a in args1:
+                    if a is None:
+                        a = 'None'
+                    else:
+                        a = a.replace("'", "\\'")
+                        a = "'%s'" % a
+                        if '\[' in a:
+                            a = 'r' + a
+                    args.append(a)
 
-                new_line = '    %s.%s(step%s)\n' % (mod, func, args2)
-                if len(new_line) < 100:
+                args2 = ", ".join(args)
+
+                # try to build one long line
+                new_line = '    %s.%s(%s)\n' % (mod, func, args2)
+                # if length not to much then ok
+                if len(new_line) < 100 or len(args) <= 1:
                     f.write(new_line)
                     continue
 
-                new_line = '    %s.%s(step,\n' % (mod, func)
+                # if line to long, try to divide it by arguments
+                new_line = '    %s.%s(' % (mod, func)
+                spaces_num = len(new_line)
+                new_line += '%s,\n' % args.pop(0)
                 f.write(new_line)
 
-                spaces_num = len(new_line) - 6
                 args_txt = ""
                 for arg in args:
                     args_txt += " " * spaces_num
@@ -213,6 +226,7 @@ def main(feature_file_path):
     py_file_path = os.path.join(p1, p2)
 
     generate_py_file(feature, scenarios_list, used_modules, py_file_path)
+    print('Saved to %s' % py_file_path)
 
     print('Feature: %s' % feature)
     # for idx, scen in enumerate(scenarios_list):

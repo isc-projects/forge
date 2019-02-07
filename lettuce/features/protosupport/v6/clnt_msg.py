@@ -24,10 +24,7 @@ import logging
 from scapy.layers.dhcp6 import *
 from scapy.sendrecv import debug
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
+from forge import world
 
 
 ############################################################################
@@ -48,7 +45,7 @@ CLI_IP6 = SRV_IPV6_ADDR_LINK_LOCAL
 #clntFunc = importlib.import_module("softwaresupport.%s.functions"  % SOFTWARE_UNDER_TEST)
 
 
-def set_timer(step, timer_val):
+def set_timer(timer_val):
     """
     @step("Set timer to (\S+).")
 
@@ -74,7 +71,7 @@ def set_timer(step, timer_val):
         world.clntCfg["values"]["timer"] = tmp
 
 
-def client_msg_capture(step, msgType, tout_):
+def client_msg_capture(msgType, tout_):
     """
     @step("Sniffing client (\S+) message from network( with timeout)?.")
 
@@ -141,7 +138,7 @@ def client_msg_capture(step, msgType, tout_):
     sniffedMsg = None
 
 
-def server_build_msg(step, response, msgType):
+def server_build_msg(response, msgType):
     """
     @step("Server sends (back )?(\S+) message.")
 
@@ -225,7 +222,7 @@ def check_is_solicit_rt():
         world.notSolicit += 1
 
 
-def server_set_wrong_val(step, value):
+def server_set_wrong_val(value):
     """
     @step("Server sets wrong (\S+) value.")
 
@@ -247,7 +244,7 @@ def server_set_wrong_val(step, value):
         world.clntCfg['set_wrong']['server_id'] = True
 
 
-def server_not_add(step, opt):
+def server_not_add(opt):
     """
     @step("Server does NOT add (\S+) option to message.")
 
@@ -262,7 +259,7 @@ def server_not_add(step, opt):
         world.cfg["add_option"]["server_id"] = True
 
 
-def add_option(step, opt, optcode):
+def add_option(opt, optcode):
     """
     @step("Server adds (\S+) (\d+ )?option to message.")
 
@@ -333,7 +330,7 @@ def add_option(step, opt, optcode):
         world.srvopts.append(DHCP6OptServerUnicast(srvaddr=SRV_IP6))
 
 
-def client_send_receive(step, contain, msgType):
+def client_send_receive(contain, msgType):
     """
     @step("Client MUST (NOT )?respond with (\S+) message.")
 
@@ -383,7 +380,7 @@ def client_send_receive(step, contain, msgType):
         assert found is False, "message found but not expected"
 
 
-def srv_msg_clean(step):
+def srv_msg_clean():
     """
     @step("Server builds new message.")
 
@@ -434,7 +431,7 @@ def compute_rt_range():
     world.RTranges.append([lowTime, highTime])
 
 
-def client_rt_delay(step, timeval, dont_care):
+def client_rt_delay(timeval, dont_care):
     """
     @step("Message was (sent|retransmitted) after maximum (\S+) second(s)?.")
 
@@ -446,7 +443,7 @@ def client_rt_delay(step, timeval, dont_care):
     assert world.RTlist[-1] <= float(timeval)
 
 
-def client_time_interval(step):
+def client_time_interval():
     """
     @step("Retransmission time has required value.")
 
@@ -465,7 +462,7 @@ def client_time_interval(step):
     world.c += 1
 
 
-def client_cmp_values(step, value):
+def client_cmp_values(value):
     """
     @step("(\S+) value in client message is the same as saved one.")
 
@@ -482,7 +479,7 @@ def client_cmp_values(step, value):
     world.clntCfg['toSave'] = None
 
 
-def msg_set_value(step, value_name, new_value):
+def msg_set_value(value_name, new_value):
     """
     @step("(\S+) value is set to (\S+).")
 
@@ -506,7 +503,7 @@ def msg_set_value(step, value_name, new_value):
                                                            "name : %s" % str(value_name)
 
 
-def save_value(step, value):
+def save_value(value):
     """
     @step("Save (\S+) value.")
 
@@ -557,7 +554,7 @@ def msg_traverse(msg):
     world.iaid.append(tempIaid)
 
 
-def client_dst_address_check(step, dst_type):
+def client_dst_address_check(dst_type):
     """
     @step("Message was sent to (multicast|unicast) address.")
 
@@ -571,7 +568,7 @@ def client_dst_address_check(step, dst_type):
            "expected." % world.clntCfg["values"]["dst_addr"][0]
 
 
-def client_msg_contains_opt(step, contain, opt):
+def client_msg_contains_opt(contain, opt):
     """
     @step("Client message MUST (NOT )?contain option (\d+).")
 
@@ -606,7 +603,7 @@ def find_option(opt):
     return False
 
 
-def client_msg_contains_subopt(step, opt_code, contain, subopt_code):
+def client_msg_contains_subopt(opt_code, contain, subopt_code):
     """
     @step("Client message MUST (NOT )?contain (\d+) options with opt-code (\d+).")
 
@@ -633,7 +630,7 @@ def client_msg_contains_subopt(step, opt_code, contain, subopt_code):
                                "but not expected" % (subopt_code, opt_code)
 
 
-def client_opt_check_value(step, opt_code, expect, value_name, value):
+def client_opt_check_value(opt_code, expect, value_name, value):
     """
     @step("Client message option (\d+) MUST (NOT )?contain (\S+) (\S+).")
 
@@ -656,7 +653,7 @@ def client_opt_check_value(step, opt_code, expect, value_name, value):
                                "shouldn't." % (str(value_name), str(value))
 
 
-def client_subopt_check_value(step, subopt_code, opt_code, expect, value_name, value):
+def client_subopt_check_value(subopt_code, opt_code, expect, value_name, value):
     """
     This is the same as client_opt_check_value, but for suboption;
     """
@@ -675,7 +672,7 @@ def client_subopt_check_value(step, subopt_code, opt_code, expect, value_name, v
         assert found is False, "found value which was not expected"
 
 
-def client_msg_count_opt(step, contain, count, optcode):
+def client_msg_count_opt(contain, count, optcode):
     """
     @step("Client message MUST (NOT )?contain (\d+) options with opt-code (\d+).")
 
@@ -697,7 +694,7 @@ def client_msg_count_opt(step, contain, count, optcode):
                                                " but it should not." % (int(optcode))
 
 
-def client_msg_count_subopt(step, contain, count, subopt_code, opt_code):
+def client_msg_count_subopt(contain, count, subopt_code, opt_code):
     """
     @step("Client message MUST (NOT )?contain (\d+) sub-options with opt-code (\d+) within option (\d+).")
 
@@ -719,7 +716,7 @@ def client_msg_count_subopt(step, contain, count, subopt_code, opt_code):
                                                " but it should not." % (int(subopt_code))
 
 
-def client_check_field_presence(step, contain, field, optcode):
+def client_check_field_presence(contain, field, optcode):
     """
     @step("Client message MUST (NOT )?contain (\S+) field in option (\d+).")
 

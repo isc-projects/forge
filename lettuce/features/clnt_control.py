@@ -18,11 +18,7 @@
 import sys
 import importlib
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world, step
-else:
-    from lettuce import world, step
-
+from forge import world, step
 from terrain import declare_all
 
 
@@ -49,8 +45,8 @@ Step provides client initialization. Needs to be included before
 step "Client is started."
 """
 @step("Setting up test.")
-def client_setup(step):
-    dhcp.client_setup(step)
+def client_setup():
+    dhcp.client_setup()
 
 
 """
@@ -58,8 +54,8 @@ Step executes a command specific to currently tested software, which
 results in running a client on DUT.
 """
 @step("Client is started.")
-def client_start(step):
-    dhcp.start_clnt(step)
+def client_start():
+    dhcp.start_clnt()
 
 
 """
@@ -69,17 +65,17 @@ in softwaresupport/SOFTWARE_UNDER_TEST/functions.py file what options
 you can include with this step.
 """
 @step("Client is configured to include (another )?(\S+) option.")
-def client_option_req(step, another, opt):
+def client_option_req(another, opt):
     another1 = (another == "another ")
-    dhcp.client_option_req(step, another1, opt)
+    dhcp.client_option_req(another1, opt)
 
 
 """
 Step executes a commands that result in restarting client on DUT.
 """
 @step("Restart client.")
-def client_restart(step):
-    dhcp.restart_clnt(step)
+def client_restart():
+    dhcp.restart_clnt()
 
 
 """
@@ -94,6 +90,6 @@ Currently, this step supports only IA_PDs. Support for IA_NAs should be
 provided also.
 """
 @step("Client MUST (NOT )?use prefix with values given by server.")
-def client_parse_config(step, yes_no):
+def client_parse_config(yes_no):
     contain = not (yes_no == "NOT ")
-    dhcp.client_parse_config(step, contain)
+    dhcp.client_parse_config(contain)

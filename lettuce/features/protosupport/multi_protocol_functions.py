@@ -28,11 +28,7 @@ import logging
 from _pyio import open
 import requests
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
-
+from forge import world
 from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
         save_local_file, fabric_run_command
@@ -63,7 +59,7 @@ def test_pause():
     getch()
 
 
-def copy_file_from_server(step, remote_path):
+def copy_file_from_server(remote_path):
     """
     Copy file from remote server via ssh. Address/login/password from init_all.py
     Path required.
@@ -71,7 +67,7 @@ def copy_file_from_server(step, remote_path):
     fabric_download_file(remote_path, world.cfg["dir_name"] + '/downloaded_file')
 
 
-def send_file_to_server(step, local_path, remote_path):
+def send_file_to_server(local_path, remote_path):
     """
     Send file to remote server via ssh. Address/login/password from init_all
     Two paths required.
@@ -81,7 +77,7 @@ def send_file_to_server(step, local_path, remote_path):
     fabric_send_file(local_path, remote_path)
 
 
-def remove_file_from_server(step, remote_path):
+def remove_file_from_server(remote_path):
     """
     Remove file from remote server.
     """
@@ -103,7 +99,7 @@ def strip_file(file_path):
     return tmp_list
 
 
-def compare_file(step, local_path):
+def compare_file(local_path):
     """
     Compare two files, downloaded and local
     """
@@ -135,7 +131,7 @@ def compare_file(step, local_path):
         assert len(downloaded_stripped) < len(local_stripped), 'Local file is a part of a downlaoded life.'
 
 
-def file_includes_line(step, condition, line):
+def file_includes_line(condition, line):
     """
     Check if downloaded file contain line.
     """
@@ -174,13 +170,13 @@ def add_variable(variable_name, variable_val, val_type):
             init_all.close()
 
 
-def user_victory(step):
+def user_victory():
     if not os.path.exists(world.cfg["dir_name"]):
         os.makedirs(world.cfg["dir_name"])
     copy('../doc/.victory.jpg', world.cfg["dir_name"] + '/celebrate_success.jpg')
 
 
-def log_contains(step, server_type, condition, line):
+def log_contains(server_type, condition, line):
     if server_type == "DHCP":
         log_file = world.cfg["dhcp_log_file"]
     elif server_type == "DNS":
@@ -266,7 +262,7 @@ def db_table_contain(table_name, db_type, condition, line, db_name=world.f_cfg.d
                                                                                        table_name, result, line)
 
 
-def log_contains_count(step, server_type, count, line):
+def log_contains_count(server_type, count, line):
     if server_type == "DHCP":
         log_file = world.cfg["dhcp_log_file"]
     elif server_type == "DNS":

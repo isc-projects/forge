@@ -4,17 +4,17 @@
 
 import pytest
 
+from features import references
 from features import misc
 from features import srv_control
 from features import srv_msg
-from features import references
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_global_solicit(step):
+def test_v6_basic_message_unicast_global_solicit():
     #  Server MUST discard any Solicit it receives with
     #  a unicast address destination
     #  Message details 		Client		Server
@@ -22,45 +22,44 @@ def test_v6_basic_message_unicast_global_solicit(step):
     #  		   						 X	ADVERTISE
     #  correct message		SOLICIT -->
     #  		   						<--	ADVERTISE
-    misc.test_setup(step)
-    srv_control.config_srv_subnet_with_iface(step,
-                                             '$(SERVER_IFACE)',
+    misc.test_setup()
+    srv_control.config_srv_subnet_with_iface('$(SERVER_IFACE)',
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
     # Server is configured with
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.unicast_addres(step, 'GLOBAL', None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_global_confirm(step):
+def test_v6_basic_message_unicast_global_confirm():
     #  Server MUST discard any Confirm it receives with
     #  a unicast address destination
     #  Message details 		Client		Server
@@ -77,66 +76,65 @@ def test_v6_basic_message_unicast_global_confirm(step):
     # 					client-id
     # 					server-id
 
-    misc.test_setup(step)
+    misc.test_setup()
     # Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-    srv_control.config_srv_subnet_with_iface(step,
-                                             '$(SERVER_IFACE)',
+    srv_control.config_srv_subnet_with_iface('$(SERVER_IFACE)',
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.unicast_addres(step, 'GLOBAL', None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'CONFIRM')
+    misc.test_procedure()
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('CONFIRM')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'CONFIRM')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('CONFIRM')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '13')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_global_rebind(step):
+def test_v6_basic_message_unicast_global_rebind():
     #  Server MUST discard any Rebind it receives with
     #  a unicast address destination.
     #  Message details		Client		Server
@@ -154,64 +152,63 @@ def test_v6_basic_message_unicast_global_rebind(step):
     # 					server-id
     # 					IA-NA
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet_with_iface(step,
-                                             '$(SERVER_IFACE)',
+    misc.test_setup()
+    srv_control.config_srv_subnet_with_iface('$(SERVER_IFACE)',
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.unicast_addres(step, 'GLOBAL', None)
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REBIND')
+    misc.test_procedure()
+    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REBIND')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REBIND')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REBIND')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '3')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_global_inforequest(step):
+def test_v6_basic_message_unicast_global_inforequest():
     #  Server MUST discard any Information-Request it receives with
     #  a unicast address destination.
     #  Message details 		Client		Server
@@ -224,37 +221,36 @@ def test_v6_basic_message_unicast_global_inforequest(step):
     # 					client-id
     # 					server-id
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet_with_iface(step,
-                                             '$(SERVER_IFACE)',
+    misc.test_setup()
+    srv_control.config_srv_subnet_with_iface('$(SERVER_IFACE)',
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'preference', '123')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.config_srv_opt('preference', '123')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.unicast_addres(step, 'GLOBAL', None)
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.unicast_addres('GLOBAL', None)
     # message wont contain client-id option
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
+    misc.test_procedure()
     # message wont contain client-id option
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    srv_msg.client_requests_option('7')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', 'NOT ', '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '7')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', 'NOT ', '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '7')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
@@ -263,7 +259,7 @@ def test_v6_basic_message_unicast_global_inforequest(step):
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
-def test_v6_basic_message_unicast_global_request(step):
+def test_v6_basic_message_unicast_global_request():
     #  Server MUST discard any Request message it receives with
     #  a unicast address destination, and send back REPLY with
     #  UseMulticast status code.
@@ -291,57 +287,50 @@ def test_v6_basic_message_unicast_global_request(step):
     # 					IA_NA
     # 					IA_Address with address 3000::1.
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet_with_iface(step,
-                                             '$(SERVER_IFACE)',
+    misc.test_setup()
+    srv_control.config_srv_subnet_with_iface('$(SERVER_IFACE)',
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_save_option(step, 'server-id')
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.unicast_addres(step, 'GLOBAL', None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_save_option('server-id')
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '13')
+    srv_msg.response_check_option_content('Response', '13', None, 'statuscode', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '5',
-                                             '3',
-                                             None,
-                                             'address',
-                                             '3000::1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
@@ -350,7 +339,7 @@ def test_v6_basic_message_unicast_global_request(step):
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
-def test_v6_basic_message_unicast_global_renew(step):
+def test_v6_basic_message_unicast_global_renew():
     #  Server MUST discard any RENEW message it receives with
     #  a unicast address destination, and send back REPLY with
     #  UseMulticast status code.
@@ -374,59 +363,58 @@ def test_v6_basic_message_unicast_global_renew(step):
     # 					server-id
     # 					IA-NA
     # 					IA-Address
-    misc.test_setup(step)
-    srv_control.config_srv_subnet_with_iface(step,
-                                             '$(SERVER_IFACE)',
+    misc.test_setup()
+    srv_control.config_srv_subnet_with_iface('$(SERVER_IFACE)',
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.unicast_addres(step, 'GLOBAL', None)
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_save_option(step, 'server-id')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RENEW')
+    misc.test_procedure()
+    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_save_option('server-id')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RENEW')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '13')
+    srv_msg.response_check_option_content('Response', '13', None, 'statuscode', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RENEW')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RENEW')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
@@ -435,7 +423,7 @@ def test_v6_basic_message_unicast_global_renew(step):
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
-def test_v6_basic_message_unicast_global_release(step):
+def test_v6_basic_message_unicast_global_release():
     #  Server MUST discard any RELEASE message it receives with
     #  a unicast address destination, and send back REPLY with
     #  UseMulticast status code.
@@ -459,66 +447,65 @@ def test_v6_basic_message_unicast_global_release(step):
     # 					client-id
     # 					server-id
     # 					status-code with Success
-    misc.test_setup(step)
+    misc.test_setup()
     # Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
-    srv_control.config_srv_subnet_with_iface(step,
-                                             '$(SERVER_IFACE)',
+    srv_control.config_srv_subnet_with_iface('$(SERVER_IFACE)',
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.unicast_addres(step, 'GLOBAL', None)
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_save_option(step, 'server-id')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RELEASE')
+    misc.test_procedure()
+    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_save_option('server-id')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RELEASE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '13')
+    srv_msg.response_check_option_content('Response', '13', None, 'statuscode', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RELEASE')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RELEASE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '13')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_local_solicit(step):
+def test_v6_basic_message_unicast_local_solicit():
     #  Server MUST discard any Solicit it receives with
     #  a unicast address destination
     #  Message details 		Client		Server
@@ -526,40 +513,40 @@ def test_v6_basic_message_unicast_local_solicit(step):
     #  		   						 X	ADVERTISE
     #  correct message		SOLICIT -->
     #  		   						<--	ADVERTISE
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.unicast_addres(step, None, 'LINK_LOCAL')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.unicast_addres(None, 'LINK_LOCAL')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_local_confirm(step):
+def test_v6_basic_message_unicast_local_confirm():
     #  Server MUST discard any Confirm it receives with
     #  a unicast address destination
     #  Message details 		Client		Server
@@ -576,61 +563,61 @@ def test_v6_basic_message_unicast_local_confirm(step):
     # 					client-id
     # 					server-id
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.unicast_addres(step, None, 'LINK_LOCAL')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'CONFIRM')
+    misc.test_procedure()
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.unicast_addres(None, 'LINK_LOCAL')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('CONFIRM')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'CONFIRM')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('CONFIRM')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '13')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_local_rebind(step):
+def test_v6_basic_message_unicast_local_rebind():
     #  Server MUST discard any Rebind it receives with
     #  a unicast address destination.
     #  Message details		Client		Server
@@ -649,60 +636,60 @@ def test_v6_basic_message_unicast_local_rebind(step):
     # 					server-id
     # 					IA-NA
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.unicast_addres(step, None, 'LINK_LOCAL')
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REBIND')
+    misc.test_procedure()
+    srv_msg.unicast_addres(None, 'LINK_LOCAL')
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REBIND')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REBIND')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REBIND')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '3')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.unicast
-def test_v6_basic_message_unicast_local_inforequest(step):
+def test_v6_basic_message_unicast_local_inforequest():
     #  Server MUST discard any Information-Request it receives with
     #  a unicast address destination.
     #  Message details 		Client		Server
@@ -716,33 +703,33 @@ def test_v6_basic_message_unicast_local_inforequest(step):
     # 					client-id
     # 					server-id
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt(step, 'preference', '123')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_opt('preference', '123')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.unicast_addres(step, None, 'LINK_LOCAL')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.unicast_addres(None, 'LINK_LOCAL')
     # message wont contain client-id option
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
     # message wont contain client-id option
-    srv_msg.client_send_msg(step, 'INFOREQUEST')
+    srv_msg.client_send_msg('INFOREQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', 'NOT ', '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '7')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', 'NOT ', '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '7')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
@@ -751,7 +738,7 @@ def test_v6_basic_message_unicast_local_inforequest(step):
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
-def test_v6_basic_message_unicast_local_request(step):
+def test_v6_basic_message_unicast_local_request():
     #  Server MUST discard any Request message it receives with
     #  a unicast address destination, and send back REPLY with
     #  UseMulticast status code.
@@ -780,53 +767,47 @@ def test_v6_basic_message_unicast_local_request(step):
     # 					IA_NA
     # 					IA_Address with address 3000::1.
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_save_option(step, 'server-id')
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.unicast_addres(step, None, 'LINK_LOCAL')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_save_option('server-id')
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.unicast_addres(None, 'LINK_LOCAL')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '13')
+    srv_msg.response_check_option_content('Response', '13', None, 'statuscode', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '5',
-                                             '3',
-                                             None,
-                                             'address',
-                                             '3000::1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
@@ -835,7 +816,7 @@ def test_v6_basic_message_unicast_local_request(step):
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
-def test_v6_basic_message_unicast_local_renew(step):
+def test_v6_basic_message_unicast_local_renew():
     #  Server MUST discard any RENEW message it receives with
     #  a unicast address destination, and send back REPLY with
     #  UseMulticast status code.
@@ -860,55 +841,55 @@ def test_v6_basic_message_unicast_local_renew(step):
     # 					server-id
     # 					IA-NA
     # 					IA-Address
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.unicast_addres(step, None, 'LINK_LOCAL')
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_save_option(step, 'server-id')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RENEW')
+    misc.test_procedure()
+    srv_msg.unicast_addres(None, 'LINK_LOCAL')
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_save_option('server-id')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RENEW')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '13')
+    srv_msg.response_check_option_content('Response', '13', None, 'statuscode', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RENEW')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RENEW')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.basic
@@ -917,7 +898,7 @@ def test_v6_basic_message_unicast_local_renew(step):
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
-def test_v6_basic_message_unicast_local_release(step):
+def test_v6_basic_message_unicast_local_release():
     #  Server MUST discard any RELEASE message it receives with
     #  a unicast address destination, and send back REPLY with
     #  UseMulticast status code.
@@ -942,51 +923,51 @@ def test_v6_basic_message_unicast_local_release(step):
     # 					client-id
     # 					server-id
     # 					status-code with Success
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_requests_option(step, '7')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_requests_option('7')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.unicast_addres(step, None, 'LINK_LOCAL')
-    srv_msg.client_save_option(step, 'IA_NA')
-    srv_msg.client_save_option(step, 'server-id')
-    srv_msg.client_add_saved_option(step, 'DONT ')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RELEASE')
+    misc.test_procedure()
+    srv_msg.unicast_addres(None, 'LINK_LOCAL')
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_save_option('server-id')
+    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RELEASE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '13')
+    srv_msg.response_check_option_content('Response', '13', None, 'statuscode', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option(step, None)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'RELEASE')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option(None)
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('RELEASE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '13')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')

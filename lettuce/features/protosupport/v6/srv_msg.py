@@ -25,10 +25,8 @@ import logging
 from cookielib import debug
 
 from scapy.layers.dhcp6 import *  # TODO
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
+
+from forge import world
 
 log = logging.getLogger('forge')
 
@@ -71,7 +69,7 @@ options = {"client-id": 1,
 ## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
 
 
-def client_requests_option(step, opt_type):
+def client_requests_option(opt_type):
     """
     Add RequestOption to message.
     """
@@ -84,7 +82,7 @@ def client_requests_option(step, opt_type):
     world.oro.reqopts.append(int(opt_type))
 
 
-def client_send_msg(step, msgname, iface, addr):
+def client_send_msg(msgname, iface, addr):
     """
     Sends specified message with defined options.
     Parameters:
@@ -132,7 +130,7 @@ def client_send_msg(step, msgname, iface, addr):
     log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
 
 
-def client_sets_value(step, value_name, new_value):
+def client_sets_value(value_name, new_value):
     if value_name in world.cfg["values"]:
         if isinstance(world.cfg["values"][value_name], str):
             world.cfg["values"][value_name] = str(new_value)
@@ -144,7 +142,7 @@ def client_sets_value(step, value_name, new_value):
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
 
 
-def unicast_addres(step, addr_type):
+def unicast_addres(addr_type):
     """
     Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address.
     """
@@ -345,7 +343,7 @@ def apply_message_fields_changes():
             assert False, "Message does not contain field: %s " % str(field_details[0])
 
 
-def add_vendor_suboption(step, code, data):
+def add_vendor_suboption(code, data):
     # if code == 1 we need check if we added code=1 before
     # if we do, we need append only data not whole suboption
     if code == 1 and len(world.vendor) > 0:
@@ -363,7 +361,7 @@ def add_vendor_suboption(step, code, data):
         world.vendor.append([code, str(data)])
 
 
-def generate_new(step, opt):
+def generate_new(opt):
     """
     Generate new client id with random MAC address.
     """
@@ -407,7 +405,7 @@ def add_option_to_msg(msg, option):
     return msg
 
 
-def client_add_saved_option(step, erase, count="all"):
+def client_add_saved_option(erase, count="all"):
     """
     Add saved option to message, and erase.
     """
@@ -521,7 +519,7 @@ def build_msg(msg):
     return msg
 
 
-def create_relay_forward(step, level):
+def create_relay_forward(level):
     """
     Encapsulate message in relay-forward message.
     """
@@ -580,7 +578,7 @@ def create_relay_forward(step, level):
 ## ================ SEND/RECEIVE MESSAGE BLOCK START =================
 
 
-def send_wait_for_message(step, condition_type, presence, exp_message):
+def send_wait_for_message(condition_type, presence, exp_message):
     """
     Block until the given message is (not) received.
     Parameter:
@@ -676,7 +674,7 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
-def client_save_option(step, option_name, count=0):
+def client_save_option(option_name, count=0):
     assert option_name in options, "Unsupported option name " + option_name
     opt_code = options.get(option_name)
     opt = get_option(get_last_response(), opt_code)
@@ -690,7 +688,7 @@ def client_save_option(step, option_name, count=0):
         world.savedmsg[count].append(opt)
 
 
-def client_copy_option(step, option_name):
+def client_copy_option(option_name):
     """
     Copy option from received message
     """
@@ -766,7 +764,7 @@ def unknown_option_to_str(data_type, opt):
         assert False, "Parsing of option format " + str(data_type) + " not implemented."
 
 
-def response_check_include_option(step, must_include, opt_code):
+def response_check_include_option(must_include, opt_code):
     """
     Checking presence of expected option.
     """
@@ -926,7 +924,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                                                    " should not be equal to value from client - " + str(expected_value)
 
 
-def save_value_from_option(step, value_name, option_name):
+def save_value_from_option(value_name, option_name):
 
     assert world.srvmsg
     get_option(world.srvmsg[0], option_name)
@@ -940,7 +938,7 @@ def save_value_from_option(step, value_name, option_name):
         world.subopts = []
 
 
-def compare_values(step, value_name, option_name):
+def compare_values(value_name, option_name):
 
     assert world.srvmsg
     get_option(world.srvmsg[0], option_name)
@@ -963,11 +961,11 @@ def compare_values(step, value_name, option_name):
 ## =======================================================================
 ## ==================== TESTING IN LOOPS BLOCK START =====================
 
-def loops_config_sld(step):
+def loops_config_sld():
     world.loops["save_leases_details"] = True
 
 
-def values_for_loops(step, value_name, file_flag, values):
+def values_for_loops(value_name, file_flag, values):
     value_name = str(value_name)
     if value_name == "client-id":
         world.loops[value_name] = []
@@ -976,7 +974,7 @@ def values_for_loops(step, value_name, file_flag, values):
             world.loops[value_name].append(convert_DUID())
 
 
-def loops(step, message_type_1, message_type_2, repeat):
+def loops(message_type_1, message_type_2, repeat):
     import importlib
     testsetup = importlib.import_module("misc")
     repeat = int(repeat)
@@ -996,95 +994,95 @@ def loops(step, message_type_1, message_type_2, repeat):
     if message_type_1 == "SOLICIT" and message_type_2 == "ADVERTISE":
         # short two message exchange without saving leases.
         for x in range(repeat):
-            generate_new(step, "client")
+            generate_new("client")
             client_does_include("Client", "client-id", None)
             client_does_include("Client", "IA-NA", None)
-            client_send_msg(step, message_type_1, None, None)
-            send_wait_for_message(step, "MAY", True, message_type_2)
+            client_send_msg(message_type_1, None, None)
+            send_wait_for_message("MAY", True, message_type_2)
 
     elif message_type_1 == "SOLICIT" and message_type_2 == "REPLY":
         # first save server-id option
         client_does_include("Client", "client-id", None)
         client_does_include("Client", "IA-NA", None)
-        client_send_msg(step, message_type_1, None, None)
-        send_wait_for_message(step, "MAY", True, "ADVERTISE")
-        client_save_option(step, "server-id")
+        client_send_msg(message_type_1, None, None)
+        send_wait_for_message("MAY", True, "ADVERTISE")
+        client_save_option("server-id")
 
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
                 log.info("Message exchange no. %d", x)
-            generate_new(step, "client")
+            generate_new("client")
             client_does_include("Client", "client-id", None)
             client_does_include("Client", "IA-NA", None)
-            client_send_msg(step, message_type_1, None, None)
-            send_wait_for_message(step, "MAY", True, "ADVERTISE")
+            client_send_msg(message_type_1, None, None)
+            send_wait_for_message("MAY", True, "ADVERTISE")
 
             try:
-                client_add_saved_option(step, False)
-                client_copy_option(step, "IA_NA")
+                client_add_saved_option(False)
+                client_copy_option("IA_NA")
             except AssertionError:
                 pass
             client_does_include("Client", "client-id", None)
-            client_send_msg(step, "REQUEST", None, None)
-            send_wait_for_message(step, "MAY", True, message_type_2)
+            client_send_msg("REQUEST", None, None)
+            send_wait_for_message("MAY", True, message_type_2)
 
     elif message_type_1 == "REQUEST" and message_type_2 == "REPLY":
         # first save server-id option
-        client_send_msg(step, "SOLICIT", None, None)
-        send_wait_for_message(step, "MAY", True, "ADVERTISE")
-        client_save_option(step, "server-id")
+        client_send_msg("SOLICIT", None, None)
+        send_wait_for_message("MAY", True, "ADVERTISE")
+        client_save_option("server-id")
 
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
                 log.info("Message exchane no. %d", x)
-            generate_new(step, "client")
-            client_add_saved_option(step, False)
-            client_send_msg(step, "REQUEST", None, None)
-            send_wait_for_message(step, "MAY", True, message_type_2)
-            response_check_option_content(step, 13, 3, "NOT", "statuscode", "2")
+            generate_new("client")
+            client_add_saved_option(False)
+            client_send_msg("REQUEST", None, None)
+            send_wait_for_message("MAY", True, message_type_2)
+            response_check_option_content(13, 3, "NOT", "statuscode", "2")
 
     elif message_type_1 == "RELEASE" and message_type_2 == "REPLY":
         # first save server-id option
-        client_send_msg(step, "SOLICIT", None, None)
-        send_wait_for_message(step, "MAY", True, "ADVERTISE")
-        client_save_option(step, "server-id")
+        client_send_msg("SOLICIT", None, None)
+        send_wait_for_message("MAY", True, "ADVERTISE")
+        client_save_option("server-id")
 
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
                 log.info("Message exchane no. %d", x)
 
-            client_add_saved_option(step, False)
-            client_send_msg(step, "REQUEST", None, None)
-            send_wait_for_message(step, "MAY", True, message_type_2)
+            client_add_saved_option(False)
+            client_send_msg("REQUEST", None, None)
+            send_wait_for_message("MAY", True, message_type_2)
 
-            client_add_saved_option(step, False)
-            client_copy_option(step, "IA_NA")
-            client_send_msg(step, "RELEASE", None, None)
-            send_wait_for_message(step, "MAY", True, message_type_2)
-            #dhcpmsg.generate_new(step, "client")
+            client_add_saved_option(False)
+            client_copy_option("IA_NA")
+            client_send_msg("RELEASE", None, None)
+            send_wait_for_message("MAY", True, message_type_2)
+            #dhcpmsg.generate_new("client")
 
     elif message_type_1 == "RENEW" and message_type_2 == "REPLY":
         # first save server-id option
-        client_send_msg(step, "SOLICIT", None, None)
-        send_wait_for_message(step, "MAY", True, "ADVERTISE")
-        client_save_option(step, "server-id")
+        client_send_msg("SOLICIT", None, None)
+        send_wait_for_message("MAY", True, "ADVERTISE")
+        client_save_option("server-id")
 
         # long 4 message exchange with saving leases.
         for x in range(repeat):
             if x % x_range == 0:
                 log.info("Message exchane no. %d", x)
 
-            client_add_saved_option(step, False)
-            client_send_msg(step, "REQUEST", None, None)
-            send_wait_for_message(step, "MAY", True, message_type_2)
+            client_add_saved_option(False)
+            client_send_msg("REQUEST", None, None)
+            send_wait_for_message("MAY", True, message_type_2)
 
-            client_add_saved_option(step, False)
-            client_copy_option(step, "IA_NA")
-            client_send_msg(step, "RENEW", None, None)
-            send_wait_for_message(step, "MAY", True, message_type_2)
+            client_add_saved_option(False)
+            client_copy_option("IA_NA")
+            client_send_msg("RENEW", None, None)
+            send_wait_for_message("MAY", True, message_type_2)
 
     else:
         pass

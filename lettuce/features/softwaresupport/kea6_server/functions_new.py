@@ -19,11 +19,7 @@ import sys
 import os
 import logging
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
-
+from forge import world
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,\
     fabric_download_file, fabric_remove_file_command, locate_entry
@@ -250,7 +246,7 @@ def config_srv_id(id_type, id_value):
     #     assert False, "DUID type unknown."
 
 
-def set_time(step, which_time, value, subnet = None):
+def set_time(which_time, value, subnet = None):
     pass
     # assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
     #
@@ -316,7 +312,7 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     #world.subcfg[subnet_id][0] += ',"{parameter_name}": {value}'.format(**locals())
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth = None):
+def prepare_cfg_subnet(subnet, pool, eth = None):
     # world.subcfg[0] = [main, prefixes, options, single options, pools, host reservation]
     if subnet == "default":
         subnet = "2001:db8:1::/64"
@@ -342,7 +338,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         add_interface(eth)
 
 
-def add_pool_to_subnet(step, pool, subnet):
+def add_pool_to_subnet(pool, subnet):
     pointer_start = "{"
     pointer_end = "}"
 
@@ -350,21 +346,21 @@ def add_pool_to_subnet(step, pool, subnet):
     pass
 
 
-def config_srv_another_subnet(step, subnet, pool, eth):
+def config_srv_another_subnet(subnet, pool, eth):
     world.subcfg.append(["", "", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
-    prepare_cfg_subnet(step, subnet, pool, eth)
+    prepare_cfg_subnet(subnet, pool, eth)
 
 
-def config_client_classification(step, subnet, option_value):
+def config_client_classification(subnet, option_value):
     subnet = int(subnet)
     if len(world.subcfg[subnet][3]) > 2:
         world.subcfg[subnet][3] += ', '
     world.subcfg[subnet][3] += '"client-class": "{option_value}"\n'.format(**locals())
 
 
-def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     subnet = int(subnet)
     pointer_start = "{"
     pointer_end = "}"
@@ -375,7 +371,7 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
         "prefix-len": {length} {pointer_end}]""".format(**locals())
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space,
+def prepare_cfg_add_option(option_name, option_value, space,
                            option_code = None, option_type = 'default', where = 'options'):
     if not where in world.cfg:
         world.cfg[where] = '"option-data": ['
@@ -398,7 +394,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space,
             "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
-def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
     pointer_start = "{"
     pointer_end = "}"
 
@@ -414,10 +410,10 @@ def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value,
         .format(**locals())
 
     # add defined option
-    prepare_cfg_add_option(step, opt_name, opt_value, space, opt_code, 'user')
+    prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user')
 
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     space = world.cfg["space"]
     subnet = int(subnet)

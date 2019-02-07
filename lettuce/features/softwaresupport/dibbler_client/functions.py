@@ -19,10 +19,7 @@ import os
 import sys
 import logging
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
+from forge import world
 
 from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
     fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file, \
@@ -46,7 +43,7 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 
-def restart_clnt(step):
+def restart_clnt():
     """
     This function shut downs and later starts dibbler-client on DUT.
     @step("Restart client.")
@@ -100,7 +97,7 @@ def release_command():
                         + os.path.join(world.f_cfg.software_install_path, 'comm.sh') + ' &); sleep 3;')
 
 
-def client_option_req(step, another1, opt):
+def client_option_req(another1, opt):
     """
     @step("Client is configured to include (another )?(\S+) option.")
 
@@ -188,7 +185,7 @@ def write_clnt_cfg_to_file():
     cfgFile.close()
 
 
-def client_setup(step):
+def client_setup():
     """
     @step("Setting up test.")
 
@@ -197,7 +194,7 @@ def client_setup(step):
     create_clnt_cfg()
 
 
-def client_parse_config(step, contain):
+def client_parse_config(contain):
     """
     @step("Client MUST (NOT )?use prefix with values given by server.")
     This step creates a structure similar to structure returned
@@ -236,7 +233,7 @@ def client_parse_config(step, contain):
                                                        " but they should not be."
 
 
-def start_clnt(step):
+def start_clnt():
     """
     @step("Client is started.")
 

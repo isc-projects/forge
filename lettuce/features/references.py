@@ -16,10 +16,7 @@
 # Author: Wlodzimierz Wencel
 import sys
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import step
-else:
-    from lettuce import step
+from forge import world, step
 
 #
 # This file contains a number of common steps that are general and may be used
@@ -28,10 +25,10 @@ else:
 
 
 @step('References: (\S+).')
-def references_check(step, references):
+def references_check(references):
     assert len(references), "References cannot be empty."
 
 
 @step('Tags: (\S+)')
-def tags_check(step, tags):
+def tags_check(tags):
     assert len(tags), "Tags cannot be empty."

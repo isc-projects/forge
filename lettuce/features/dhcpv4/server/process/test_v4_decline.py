@@ -4,180 +4,180 @@
 
 import pytest
 
-from features import srv_control
 from features import misc
 from features import srv_msg
+from features import srv_control
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.decline
-def test_v4_decline_success_long_decline_period(step):
+def test_v4_decline_success_long_decline_period():
     # address in decline period
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.set_conf_parameter_global(step, 'decline-probation-period', '3600')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.set_conf_parameter_global('decline-probation-period', '3600')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_sets_value(step, 'Client', 'ciaddr', '0.0.0.0')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'DECLINE')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('DECLINE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.decline
-def test_v4_decline_success_short_decline_period(step):
+def test_v4_decline_success_short_decline_period():
     # address in decline period
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.set_conf_parameter_global(step, 'decline-probation-period', '2')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.set_conf_parameter_global('decline-probation-period', '2')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_sets_value(step, 'Client', 'ciaddr', '0.0.0.0')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'DECLINE')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('DECLINE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep(step, '3', 'seconds')
+    srv_msg.forge_sleep('3', 'seconds')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:44')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040144')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:44')
+    srv_msg.client_does_include_with_value('client_id', '00010203040144')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.decline
-def test_v4_decline_fail_without_serverid(step):
+def test_v4_decline_fail_without_serverid():
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_sets_value(step, 'Client', 'ciaddr', '0.0.0.0')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'DECLINE')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('DECLINE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
     # @v4 @dhcp4 @decline
     # Scenario: v4.decline.fail-without-serverid
@@ -223,215 +223,215 @@ def test_v4_decline_fail_without_serverid(step):
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.decline
-def test_v4_decline_fail_without_requested_ip_address(step):
+def test_v4_decline_fail_without_requested_ip_address():
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_sets_value(step, 'Client', 'ciaddr', '0.0.0.0')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_send_msg(step, 'DECLINE')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_send_msg('DECLINE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
     # client should get back this address because it's not in declined period
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.decline
-def test_v4_decline_fail_client_id_not_included(step):
+def test_v4_decline_fail_client_id_not_included():
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(step, 'Response', None, '61')
-    srv_msg.response_check_option_content(step, 'Response', '61', None, 'value', '00010203040122')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option('Response', None, '61')
+    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040122')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(step, 'Response', None, '61')
-    srv_msg.response_check_option_content(step, 'Response', '61', None, 'value', '00010203040122')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option('Response', None, '61')
+    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040122')
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'ciaddr', '0.0.0.0')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'DECLINE')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('DECLINE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040999')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040999')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040122')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040122')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(step, 'Response', None, '61')
-    srv_msg.response_check_option_content(step, 'Response', '61', None, 'value', '00010203040122')
-
-
-@pytest.mark.v4
-@pytest.mark.dhcp4
-@pytest.mark.decline
-def test_v4_decline_fail_different_client_id(step):
-
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
-
-    misc.test_procedure(step)
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
-
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(step, 'Response', None, '61')
-    srv_msg.response_check_option_content(step, 'Response', '61', None, 'value', '00010203040111')
-
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'REQUEST')
-
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(step, 'Response', None, '61')
-    srv_msg.response_check_option_content(step, 'Response', '61', None, 'value', '00010203040111')
-
-    misc.test_procedure(step)
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040666')
-    srv_msg.client_sets_value(step, 'Client', 'ciaddr', '0.0.0.0')
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_send_msg(step, 'DECLINE')
-
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
-
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040999')
-    srv_msg.client_send_msg(step, 'DISCOVER')
-
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'NAK')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option('Response', None, '61')
+    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040122')
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.decline
-def test_v4_decline_fail_different_chaddr(step):
+def test_v4_decline_fail_different_client_id():
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'OFFER')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option('Response', None, '61')
+    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040111')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ACK')
-    srv_msg.response_check_content(step, 'Response', None, 'yiaddr', '192.168.50.1')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option('Response', None, '61')
+    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040111')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'server_id')
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_sets_value(step, 'Client', 'ciaddr', '0.0.0.0')
-    srv_msg.client_does_include_with_value(step, 'requested_addr', '192.168.50.1')
-    srv_msg.client_send_msg(step, 'DECLINE')
+    misc.test_procedure()
+    srv_msg.client_does_include_with_value('client_id', '00010203040666')
+    srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_send_msg('DECLINE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_dont_wait_for_message(step)
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
 
-    misc.test_procedure(step)
-    srv_msg.client_sets_value(step, 'Client', 'chaddr', '00:00:00:00:00:11')
-    srv_msg.client_does_include_with_value(step, 'client_id', '00010203040111')
-    srv_msg.client_send_msg(step, 'DISCOVER')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040999')
+    srv_msg.client_send_msg('DISCOVER')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'NAK')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'NAK')
+
+
+@pytest.mark.v4
+@pytest.mark.dhcp4
+@pytest.mark.decline
+def test_v4_decline_fail_different_chaddr():
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_send_msg('DECLINE')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'NAK')

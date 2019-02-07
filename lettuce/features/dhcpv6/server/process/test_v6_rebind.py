@@ -4,16 +4,16 @@
 
 import pytest
 
-from features import srv_control
 from features import misc
-from features import srv_msg
 from features import references
+from features import srv_msg
+from features import srv_control
 
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.rebind
-def test_v6_message_rebind_reply_zerotime(step):
+def test_v6_message_rebind_reply_zerotime():
     #  Testing server ability server ability perform REBIND - REPLY message exchange.
     #  Message details 		Client		Server
     #  						SOLICIT -->
@@ -30,39 +30,39 @@ def test_v6_message_rebind_reply_zerotime(step):
     # 					IA-NA (with time T1 = 0 T2 = 0)
     # 					IA-Address
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_setup(step)
-    srv_control.config_srv_subnet(step, '2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REBIND')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REBIND')
 
     # Changed after RFC 7550
     # Pass Criteria:
@@ -71,35 +71,28 @@ def test_v6_message_rebind_reply_zerotime(step):
     # Response MUST include option 2.
     # Response option 3 MUST contain T1 0.
     # Response option 3 MUST contain T2 0.
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_suboption_content('Response',
                                              '5',
                                              '3',
                                              None,
                                              'address',
                                              '2001:db8:1::1')
-    srv_msg.response_check_suboption_content(step, 'Response', '5', '3', None, 'validlft', '4000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '5',
-                                             '3',
-                                             None,
-                                             'address',
-                                             '3000::1')
-    srv_msg.response_check_suboption_content(step, 'Response', '5', '3', None, 'validlft', '0')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '4000')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '0')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')
 
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.rebind
-def test_v6_message_rebind_reply_newtime(step):
+def test_v6_message_rebind_reply_newtime():
     #  Testing server ability server ability perform REBIND - REPLY message exchange.
     #  Additional server configuration:
     #  		renew-timer = 111
@@ -117,44 +110,44 @@ def test_v6_message_rebind_reply_newtime(step):
     # 					server-id
     # 					IA-NA (with time T1 = 111 T2 = 222)
     # 					IA-Address
-    misc.test_setup(step)
-    srv_control.set_time(step, 'renew-timer', '111')
-    srv_control.set_time(step, 'rebind-timer', '222')
-    srv_control.config_srv_subnet(step, '3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    srv_control.set_time('renew-timer', '111')
+    srv_control.set_time('rebind-timer', '222')
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure(step)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-NA')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_copy_option(step, 'server-id')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    misc.test_procedure(step)
-    srv_msg.client_copy_option(step, 'IA_NA')
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_send_msg(step, 'REBIND')
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_send_msg('REBIND')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '1')
-    srv_msg.response_check_include_option(step, 'Response', None, '2')
-    srv_msg.response_check_include_option(step, 'Response', None, '3')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'T1', '111')
-    srv_msg.response_check_option_content(step, 'Response', '3', None, 'T2', '222')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.response_check_include_option('Response', None, '3')
+    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.response_check_option_content('Response', '3', None, 'T1', '111')
+    srv_msg.response_check_option_content('Response', '3', None, 'T2', '222')
 
-    references.references_check(step, 'RFC3315')
+    references.references_check('RFC3315')

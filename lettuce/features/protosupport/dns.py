@@ -23,10 +23,7 @@ from scapy.layers.dns import *  # TODO
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
+from forge import world
 
 
 dnstypes = {"ANY": 0,
@@ -176,7 +173,7 @@ def build_msg():
     world.climsg.append(msg/world.dns_query)
 
 
-def check_dns_respond(step, expect, data_type, expected_data_value):
+def check_dns_respond(expect, data_type, expected_data_value):
     if data_type == 'opcode':
         data_type = op_codes.get(data_type)
         received = world.srvmsg[0].opcode
@@ -214,7 +211,7 @@ def report_dns_option(flag, expect_empty, name):
         assert False, 'In received DNS query part: "{name}" is empty.'.format(**locals())
 
 
-def check_dns_option(step, expect_empty, part_name):
+def check_dns_option(expect_empty, part_name):
     flag = 0
     if part_name == 'QUESTION':
         if len(world.dns_qd) > 0:
@@ -253,7 +250,7 @@ def parsing_received_parts(query_part_list, length, expect, value_name, value):
         return 0, outcome
 
 
-def dns_option_content(step, part_name, expect, value_name, value):
+def dns_option_content(part_name, expect, value_name, value):
     flag = 0
     if part_name == 'QUESTION':
         flag, outcome = parsing_received_parts(world.srvmsg[0].qd, world.srvmsg[0].qdcount, expect, value_name, value)

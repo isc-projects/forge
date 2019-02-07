@@ -4,312 +4,312 @@
 
 import pytest
 
-from features import clnt_msg
 from features import clnt_control
+from features import clnt_msg
 from features import references
 from features import misc
 
 
 @pytest.mark.v6
 @pytest.mark.client
-def test_message_validation_client_invalid_reply_oro(step):
+def test_message_validation_client_invalid_reply_oro():
 
-    clnt_control.client_setup(step)
+    clnt_control.client_setup()
 
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
 
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
 
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
 
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
 
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.add_option(step, 'option_request', None)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.add_option('option_request', None)
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
 
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
 
-    references.references_check(step, 'RFC')
-
-
-@pytest.mark.v6
-@pytest.mark.client
-def test_message_validation_client_invalid_reply_elapsed_time(step):
-
-    clnt_control.client_setup(step)
-
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
-
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
-
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
-
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.add_option(step, 'elapsed_time', None)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
-
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
-
-    references.references_check(step, 'RFC')
+    references.references_check('RFC')
 
 
 @pytest.mark.v6
 @pytest.mark.client
-def test_message_validation_client_invalid_reply_relay_msg(step):
+def test_message_validation_client_invalid_reply_elapsed_time():
 
-    clnt_control.client_setup(step)
+    clnt_control.client_setup()
 
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
 
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
 
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
 
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
 
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.add_option(step, 'relay_message', None)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.add_option('elapsed_time', None)
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
 
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
 
-    references.references_check(step, 'RFC')
-
-
-@pytest.mark.v6
-@pytest.mark.client
-def test_message_validation_client_invalid_reply_iface_id(step):
-
-    clnt_control.client_setup(step)
-
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
-
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
-
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
-
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.add_option(step, 'iface_id', None)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
-
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
-
-    references.references_check(step, 'RFC')
+    references.references_check('RFC')
 
 
 @pytest.mark.v6
 @pytest.mark.client
-def test_message_validation_client_invalid_reply_reconfigure(step):
+def test_message_validation_client_invalid_reply_relay_msg():
 
-    clnt_control.client_setup(step)
+    clnt_control.client_setup()
 
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
 
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
 
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
 
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
 
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.add_option(step, 'reconfigure', None)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.add_option('relay_message', None)
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
 
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
 
-    references.references_check(step, 'RFC')
-
-
-@pytest.mark.v6
-@pytest.mark.client
-def test_message_validation_client_reply_without_srv_id(step):
-
-    clnt_control.client_setup(step)
-
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
-
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
-
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
-
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.server_not_add(step, 'server_id')
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
-
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
-
-    references.references_check(step, 'RFC')
+    references.references_check('RFC')
 
 
 @pytest.mark.v6
 @pytest.mark.client
-def test_message_validation_client_reply_without_cli_id(step):
+def test_message_validation_client_invalid_reply_iface_id():
 
-    clnt_control.client_setup(step)
+    clnt_control.client_setup()
 
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
 
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
 
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
 
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
 
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.server_not_add(step, 'client_id')
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.add_option('iface_id', None)
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
 
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
 
-    references.references_check(step, 'RFC')
+    references.references_check('RFC')
 
 
 @pytest.mark.v6
 @pytest.mark.client
-def test_message_validation_client_reply_wrong_trid(step):
+def test_message_validation_client_invalid_reply_reconfigure():
 
-    clnt_control.client_setup(step)
+    clnt_control.client_setup()
 
-    misc.test_procedure(step)
-    clnt_control.client_option_req(step, None, 'IA_PD')
-    clnt_control.client_start(step)
-    clnt_msg.client_msg_capture(step, 'SOLICIT', None)
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
 
-    misc.pass_criteria(step)
-    clnt_msg.client_msg_contains_opt(step, None, '1')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
 
-    misc.test_procedure(step)
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'ADVERTISE')
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
 
-    misc.pass_criteria(step)
-    clnt_msg.client_send_receive(step, None, 'REQUEST')
-    clnt_msg.client_msg_contains_opt(step, None, '25')
-    clnt_msg.client_msg_contains_subopt(step, '25', None, '26')
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
 
-    misc.test_procedure(step)
-    clnt_msg.srv_msg_clean(step)
-    clnt_msg.server_set_wrong_val(step, 'trid')
-    clnt_msg.add_option(step, 'IA_PD', None)
-    clnt_msg.add_option(step, 'IA_Prefix', None)
-    clnt_msg.server_build_msg(step, 'back ', 'REPLY')
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.add_option('reconfigure', None)
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
 
-    misc.pass_criteria(step)
-    clnt_control.client_parse_config(step, 'NOT ')
-    clnt_msg.client_msg_capture(step, 'REQUEST', None)
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
 
-    references.references_check(step, 'RFC')
+    references.references_check('RFC')
+
+
+@pytest.mark.v6
+@pytest.mark.client
+def test_message_validation_client_reply_without_srv_id():
+
+    clnt_control.client_setup()
+
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
+
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
+
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
+
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
+
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.server_not_add('server_id')
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
+
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
+
+    references.references_check('RFC')
+
+
+@pytest.mark.v6
+@pytest.mark.client
+def test_message_validation_client_reply_without_cli_id():
+
+    clnt_control.client_setup()
+
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
+
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
+
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
+
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
+
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.server_not_add('client_id')
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
+
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
+
+    references.references_check('RFC')
+
+
+@pytest.mark.v6
+@pytest.mark.client
+def test_message_validation_client_reply_wrong_trid():
+
+    clnt_control.client_setup()
+
+    misc.test_procedure()
+    clnt_control.client_option_req(None, 'IA_PD')
+    clnt_control.client_start()
+    clnt_msg.client_msg_capture('SOLICIT', None)
+
+    misc.pass_criteria()
+    clnt_msg.client_msg_contains_opt(None, '1')
+    clnt_msg.client_msg_contains_opt(None, '25')
+
+    misc.test_procedure()
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'ADVERTISE')
+
+    misc.pass_criteria()
+    clnt_msg.client_send_receive(None, 'REQUEST')
+    clnt_msg.client_msg_contains_opt(None, '25')
+    clnt_msg.client_msg_contains_subopt('25', None, '26')
+
+    misc.test_procedure()
+    clnt_msg.srv_msg_clean()
+    clnt_msg.server_set_wrong_val('trid')
+    clnt_msg.add_option('IA_PD', None)
+    clnt_msg.add_option('IA_Prefix', None)
+    clnt_msg.server_build_msg('back ', 'REPLY')
+
+    misc.pass_criteria()
+    clnt_control.client_parse_config('NOT ')
+    clnt_msg.client_msg_capture('REQUEST', None)
+
+    references.references_check('RFC')

@@ -18,10 +18,7 @@
 import sys
 import importlib
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world, step
-else:
-    from lettuce import world, step
+from forge import world, step
 
 from init_all import SOFTWARE_UNDER_TEST
 from terrain import declare_all
@@ -140,7 +137,7 @@ def test_define_value(*args):
 
 ##DHCP server configurations
 @step('Server is configured with (\S+) subnet with (\S+) pool.')
-def config_srv_subnet(step, subnet, pool):
+def config_srv_subnet(subnet, pool):
     """
     Adds server configuration with specified subnet and pool.
     subnet may define specific subnet or use the word "default"
@@ -151,7 +148,7 @@ def config_srv_subnet(step, subnet, pool):
     interface.
     """
     subnet, pool = test_define_value(subnet, pool)
-    dhcp.prepare_cfg_subnet(step, subnet, pool)
+    dhcp.prepare_cfg_subnet(subnet, pool)
 
     # new configuration system
     # create class for pool and subnet, and add it to world.configClass
@@ -160,7 +157,7 @@ def config_srv_subnet(step, subnet, pool):
 
 
 @step('Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
-def config_srv_subnet_with_iface(step, interface, address, subnet, pool):
+def config_srv_subnet_with_iface(interface, address, subnet, pool):
     """
     Adds server configuration with specified subnet and pool.
     subnet may define specific subnet or use the word "default"
@@ -171,7 +168,7 @@ def config_srv_subnet_with_iface(step, interface, address, subnet, pool):
     interface.
     """
     interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
-    dhcp.prepare_cfg_subnet_specific_interface(step, interface, address, subnet, pool)
+    dhcp.prepare_cfg_subnet_specific_interface(interface, address, subnet, pool)
 
     # new configuration system
     # create class for pool and subnet, and add it to world.configClass
@@ -181,12 +178,12 @@ def config_srv_subnet_with_iface(step, interface, address, subnet, pool):
 
 
 @step('Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
-def config_srv_another_subnet(step, interface, subnet, pool):
+def config_srv_another_subnet(interface, subnet, pool):
     """
     Add another subnet with specified subnet/pool/interface.
     """
     subnet, pool, interface = test_define_value(subnet, pool, interface)
-    dhcp.config_srv_another_subnet(step, subnet, pool, interface)
+    dhcp.config_srv_another_subnet(subnet, pool, interface)
 
     # new configuration system
     # create class for pool and subnet with non default interface, and add it to world.configClass
@@ -196,12 +193,12 @@ def config_srv_another_subnet(step, interface, subnet, pool):
 
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool.')
-def config_srv_another_subnet_no_interface(step, subnet, pool):
+def config_srv_another_subnet_no_interface(subnet, pool):
     """
     Add another subnet to config file without interface specified.
     """
     subnet, pool = test_define_value(subnet, pool)
-    dhcp.config_srv_another_subnet(step, subnet, pool, None)
+    dhcp.config_srv_another_subnet(subnet, pool, None)
 
     # new configuration system
     # create class for pool and subnet, and add it to world.configClass
@@ -211,12 +208,12 @@ def config_srv_another_subnet_no_interface(step, subnet, pool):
 
 
 @step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')
-def config_srv_prefix(step, prefix, subnet, length, delegated_length):
+def config_srv_prefix(prefix, subnet, length, delegated_length):
     """
     Adds server configuration with specified prefix.
     """
     prefix, length, delegated_length, subnet = test_define_value(prefix, length, delegated_length, subnet)
-    dhcp.prepare_cfg_prefix(step, prefix, length, delegated_length, subnet)
+    dhcp.prepare_cfg_prefix(prefix, length, delegated_length, subnet)
 
     # new configuration system
     # this step is v6 only
@@ -224,7 +221,7 @@ def config_srv_prefix(step, prefix, subnet, length, delegated_length):
 
 
 @step('Server-id configured with type (\S+) value (\S+).')
-def config_srv_id(step, id_type, id_value):
+def config_srv_id(id_type, id_value):
     """
     Adds server configuration with specified prefix.
     """
@@ -236,9 +233,9 @@ def config_srv_id(step, id_type, id_value):
 
 
 @step('Next server value on subnet (\d+) is configured with address (\S+).')
-def subnet_add_siaddr(step, subnet_number, addr):
+def subnet_add_siaddr(subnet_number, addr):
     addr, subnet_number = test_define_value(addr, subnet_number)
-    dhcp.add_siaddr(step, addr, subnet_number)
+    dhcp.add_siaddr(addr, subnet_number)
 
     # new configuration system:
     # update next-server value, should be generic, but let's keep backward compatibility
@@ -246,41 +243,41 @@ def subnet_add_siaddr(step, subnet_number, addr):
 
 
 @step('Next server global value is configured with address (\S+).')
-def global_add_siaddr(step, addr):
+def global_add_siaddr(addr):
     addr = test_define_value(addr)[0]
-    dhcp.add_siaddr(step, addr, None)
+    dhcp.add_siaddr(addr, None)
 
     # new configuration system:
     #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters("next-server", addr))
 
 
 @step('Server is configured with (\S+) option with value (\S+).')
-def config_srv_opt(step, option_name, option_value):
+def config_srv_opt(option_name, option_value):
     """
     Add to configuration options like: preference, dns servers..
     This step causes to set in to main space!
     """
     option_name, option_value = test_define_value(option_name, option_value)
-    dhcp.prepare_cfg_add_option(step, option_name, option_value, world.cfg["space"])
+    dhcp.prepare_cfg_add_option(option_name, option_value, world.cfg["space"])
 
     # new configuration system:
     #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, world.cfg["space"]))
 
 
 @step('On space (\S+) server is configured with (\S+) option with value (\S+).')
-def config_srv_opt_space(step, space, option_name, option_value):
+def config_srv_opt_space(space, option_name, option_value):
     """
     Add to configuration options like: preference, dns servers.. but you can specify
     to which space should that be included.
     """
     option_name, option_value, space = test_define_value(option_name, option_value, space)
-    dhcp.prepare_cfg_add_option(step, option_name, option_value, space)
+    dhcp.prepare_cfg_add_option(option_name, option_value, space)
     # new configuration system:
     #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, space))
 
 
 @step('Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
-def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
+def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value):
     """
     Prepare server configuration with the specified custom option.
     opt_name name of the option, e.g. foo
@@ -289,62 +286,62 @@ def config_srv_custom_opt(step, opt_name, opt_code, opt_type, opt_value):
     opt_value value of the option, e.g. 1
     """
     opt_name, opt_code, opt_type, opt_value = test_define_value(opt_name, opt_code, opt_type, opt_value)
-    dhcp.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, world.cfg["space"])
+    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, world.cfg["space"])
 
     # new configuration system:
     #world.configClass.addoptiondef(new_config.ConfigurationOptionDef(opt_name, opt_code, opt_type, opt_value, world.cfg["space"]))
 
 
 @step('On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
-def config_srv_custom_opt_space(step, space, opt_name, opt_code, opt_type, opt_value):
+def config_srv_custom_opt_space(space, opt_name, opt_code, opt_type, opt_value):
     """
     Same step like "Server is configured with custom option.." but specify that option on different space then main.
     """
     opt_name, opt_code, opt_type, opt_value, space = test_define_value(opt_name, opt_code, opt_type, opt_value, space)
-    dhcp.prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space)
+    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space)
 
     # new configuration system:
     #world.configClass.addoptiondef(new_config.ConfigurationOptionDef(opt_name, opt_code, opt_type, opt_value, space))
 
 
 @step('Time (\S+) is configured with value (\S+).')
-def set_time(step, which_time, value):
+def set_time(which_time, value):
     """
     Change values of T1, T2, preffered lifetime and valid lifetime.
     """
     which_time, value = test_define_value(which_time, value)
-    dhcp.set_time(step, which_time, value, None)
+    dhcp.set_time(which_time, value, None)
 
     # new configuration system:
     #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(which_time, value))
 
 
 @step('Time (\S+) is not configured.')
-def unset_time(step, which_time):
+def unset_time(which_time):
     """
     Remove default values of T1, T2, preferred lifetime and valid lifetime.
     """
     which_time = test_define_value(which_time)[0]
-    dhcp.unset_time(step, which_time)
+    dhcp.unset_time(which_time)
 
     # new configuration system:
     #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(which_time, ""))
 
 
 @step('Option (\S+) is configured with value (\S+).')
-def set_time_option(step, which_time, value):
+def set_time_option(which_time, value):
     """
     Change values of rapid-commit and other options that can be set on true or false.
     """
     which_time, value = test_define_value(which_time, value)
-    dhcp.set_time(step, which_time, value)
+    dhcp.set_time(which_time, value)
 
     # new configuration system:
     #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(which_time, value))
 
 
 @step('Add configuration parameter (\S+) with value (\S+) to global configuration.')
-def set_conf_parameter_global(step, parameter_name, value):
+def set_conf_parameter_global(parameter_name, value):
     """
     Can be used on the end of configuration process, just before starting server.
     :param step:
@@ -360,7 +357,7 @@ def set_conf_parameter_global(step, parameter_name, value):
 
 
 @step('Add configuration parameter (\S+) with value (\S+) to subnet (\d+) configuration.')
-def set_conf_parameter_subnet(step, parameter_name, value, subnet_id):
+def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     """
     Can be used on the end of configuration process, just before starting server.
     :param step:
@@ -376,7 +373,7 @@ def set_conf_parameter_subnet(step, parameter_name, value, subnet_id):
 
 
 @step('Run configuration command: (.+)')
-def run_command(step, command):
+def run_command(command):
     """
     Add single line to configuration, there is no validation within this step.
     Be aware what you are putting this and in what moment. If you use that
@@ -391,7 +388,7 @@ def run_command(step, command):
 
 
 @step('Add to config file line: (.+)')
-def add_line(step, command):
+def add_line(command):
     """
     The same step as 'Run configuration command: (.+)'
     """
@@ -401,7 +398,7 @@ def add_line(step, command):
 
 
 @step('To global section of the config add file line: (.+)')
-def add_line2(step, command):
+def add_line2(command):
     """
     The same step as 'Run configuration command: (.+)'
     """
@@ -411,7 +408,7 @@ def add_line2(step, command):
 
 
 @step('To subnet (\d+) configuration section in the config file add line: (.+)')
-def add_line_to_subnet(step, subnetid, command):
+def add_line_to_subnet(subnetid, command):
     """
     The same step as 'Run configuration command: (.+)'
     """
@@ -421,7 +418,7 @@ def add_line_to_subnet(step, subnetid, command):
 
 
 @step('Add hooks library located (\S+).')
-def add_hooks(step, library_path):
+def add_hooks(library_path):
     """
     Add hooks library to configuration. Only Kea.
     """
@@ -433,7 +430,7 @@ def add_hooks(step, library_path):
 
 
 @step('To hook no. (\d+) add parameter named (\S+) with value: (.+)')
-def add_parameter_to_hook(step, hook_no, parameter_name, parameter_value):
+def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.add_parameter_to_hook(int(hook_no), parameter_name, parameter_value)
 
@@ -442,7 +439,7 @@ def add_parameter_to_hook(step, hook_no, parameter_name, parameter_value):
 
 
 @step('Add High-Availability hook library located (\S+).')
-def add_ha_hook(step, lib_location):
+def add_ha_hook(lib_location):
     lib_location = test_define_value(lib_location)[0]
     dhcp.ha_add_parameter_to_hook("lib", lib_location)
 
@@ -451,7 +448,7 @@ def add_ha_hook(step, lib_location):
 
 
 @step('To HA hook configuration add (\S+) with value: (.+)')
-def add_parameter_to_ha_hook(step, parameter_name, parameter_value):
+def add_parameter_to_ha_hook(parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value)
 
@@ -460,7 +457,7 @@ def add_parameter_to_ha_hook(step, parameter_name, parameter_value):
 
 
 @step('Use (\S+) as lease database backend.')
-def define_temporary_lease_db_backend(step, lease_db_type):
+def define_temporary_lease_db_backend(lease_db_type):
     lease_db_type = test_define_value(lease_db_type)[0]
     world.f_cfg.db_type = lease_db_type
 
@@ -469,7 +466,7 @@ def define_temporary_lease_db_backend(step, lease_db_type):
 
 
 @step('Credentials for (\S+) database. User: (\S+); Passwd: (\S+); DB-name: (\S+); Host: (\S+);')
-def define_temporary_lease_db_backend_credentials(step, db_type, tmp_db_user, tmp_db_passwd, tmp_db_name, tmp_db_host):
+def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_passwd, tmp_db_name, tmp_db_host):
     # for now it's just support for leases.
     if world.f_cfg.tmp_db_type is None:
         assert False, "You should put 'Use (\S+) as lease database backend.' step first!"
@@ -489,7 +486,7 @@ def define_temporary_lease_db_backend_credentials(step, db_type, tmp_db_user, tm
 
 # START Reservation backend section
 @step('Use (\S+) reservation system.')
-def enable_db_backend_reservation(step, db_type):
+def enable_db_backend_reservation(db_type):
     # for now we are not implementing new configuration system for this one host reservation in databases
     if db_type == 'MySQL':
         mysql_reservation.enable_db_backend_reservation()
@@ -505,7 +502,7 @@ def enable_db_backend_reservation(step, db_type):
 
 
 @step('Create new (\S+) reservation identified by (\S+) (\S+).')
-def new_db_backend_reservation(step, db_type, reservation_identifier, reservation_identifier_value):
+def new_db_backend_reservation(db_type, reservation_identifier, reservation_identifier_value):
     if db_type == 'MySQL':
         mysql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
     elif db_type == 'PostgreSQL':
@@ -517,7 +514,7 @@ def new_db_backend_reservation(step, db_type, reservation_identifier, reservatio
 
 
 @step('Add (\S+) (\S+) to (\S+) reservation record id (\d+).')
-def update_db_backend_reservation(step, field_name, field_value, db_type, reservation_record_id):
+def update_db_backend_reservation(field_name, field_value, db_type, reservation_record_id):
     if db_type == 'MySQL':
         mysql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
     elif db_type == 'PostgreSQL':
@@ -529,7 +526,7 @@ def update_db_backend_reservation(step, field_name, field_value, db_type, reserv
 
 
 @step('Add IPv6 prefix reservation (\S+) (\d+) with iaid (\S+) to (\S+) record id (\d+).')
-def ipv6_prefix_db_backend_reservation(step, reserved_prefix, reserved_prefix_len,
+def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len,
                                        reserved_iaid, db_type, reservation_record_id):
 
     if db_type == 'MySQL':
@@ -546,7 +543,7 @@ def ipv6_prefix_db_backend_reservation(step, reserved_prefix, reserved_prefix_le
 
 
 @step('Add IPv6 address reservation (\S+) with iaid (\S+) to (\S+) record id (\d+).')
-def ipv6_address_db_backend_reservation(step, reserved_address, reserved_iaid, db_type, reservation_record_id):
+def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, db_type, reservation_record_id):
     if db_type == 'MySQL':
         mysql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
                                                               int(reservation_record_id))
@@ -561,7 +558,7 @@ def ipv6_address_db_backend_reservation(step, reserved_address, reserved_iaid, d
 
 
 @step('Add option reservation code (\S+) value (\S+) space (\S+) persistent (\d+) client class (\S+) subnet id (\d+) and scope (\S+) to (\S+) record id (\d+).')
-def option_db_record_reservation(step, reserved_option_code, reserved_option_value, reserved_option_space,
+def option_db_record_reservation(reserved_option_code, reserved_option_value, reserved_option_space,
                                  reserved_option_persistent, reserved_option_client_class, reserved_subnet_id,
                                  reserved_option_scope, db_type, reservation_record_id):
     if db_type == 'MySQL':
@@ -585,7 +582,7 @@ def option_db_record_reservation(step, reserved_option_code, reserved_option_val
 
 
 @step('Dump all the reservation entries from (\S+) database.')
-def dump_db_reservation(step, db_type):
+def dump_db_reservation(db_type):
     if db_type == 'MySQL':
         mysql_reservation.clear_all_reservations()
     elif db_type == 'PostgreSQL':
@@ -597,7 +594,7 @@ def dump_db_reservation(step, db_type):
 
 
 @step('Upload hosts reservation to (\S+) database.')
-def upload_db_reservation(step, db_type):
+def upload_db_reservation(db_type):
     if db_type == 'MySQL':
         mysql_reservation.upload_db_reservation()
     elif db_type == 'PostgreSQL':
@@ -610,7 +607,7 @@ def upload_db_reservation(step, db_type):
 
 
 @step('Reserve (\S+) (\S+) for host uniquely identified by (\S+) (\S+).')
-def host_reservation(step, reservation_type, reserved_value, unique_host_value_type, unique_host_value):
+def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value):
     """
     Ability to configure simple host reservations.
     """
@@ -629,7 +626,7 @@ def host_reservation(step, reservation_type, reserved_value, unique_host_value_t
 
 ##shared-subnet cfg
 @step('Add subnet (\d+) to shared-subnet set (\d+).')
-def shared_subnet(step, subnet_id, shared_subnet_id):
+def shared_subnet(subnet_id, shared_subnet_id):
     """
     Configure shared subnets.
     """
@@ -641,7 +638,7 @@ def shared_subnet(step, subnet_id, shared_subnet_id):
 
 
 @step('Shared subnet (\d+) is configured with option line: (.+)')
-def add_option_shared_subnet(step, shared_subnet_id, conf_line):
+def add_option_shared_subnet(shared_subnet_id, conf_line):
     shared_subnet_id, conf_line = test_define_value(shared_subnet_id, conf_line)
     dhcp.add_line_to_shared_subnet(shared_subnet_id, conf_line)
 
@@ -649,7 +646,7 @@ def add_option_shared_subnet(step, shared_subnet_id, conf_line):
 
 
 @step('Add configuration parameter (\S+) with value (\S+) to shared-subnet (\d+) configuration.')
-def set_conf_parameter_shared_subnet(step, parameter_name, value, subnet_id):
+def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
     """
     Can be used on the end of configuration process, just before starting server.
     :param step:
@@ -673,7 +670,7 @@ def set_conf_parameter_shared_subnet(step, parameter_name, value, subnet_id):
 
 ##subnet options
 @step('Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
-def host_reservation_in_subnet(step, reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
+def host_reservation_in_subnet(reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
     """
     Ability to configure simple host reservations in subnet.
     """
@@ -692,7 +689,7 @@ def host_reservation_in_subnet(step, reservation_type, reserved_value, subnet, u
 
 
 @step('For host reservation entry no. (\d+) in subnet (\d+) add (\S+) with value (\S+).')
-def host_reservation_in_subnet_add_value(step, reservation_number, subnet, reservation_type, reserved_value):
+def host_reservation_in_subnet_add_value(reservation_number, subnet, reservation_type, reserved_value):
     """
     Ability to configure simple host reservations in subnet.
     """
@@ -704,90 +701,90 @@ def host_reservation_in_subnet_add_value(step, reservation_number, subnet, reser
 
 
 @step('Time (\S+) in subnet (\d+) is configured with value (\d+).')
-def set_time_in_subnet(step, which_time, subnet, value):
+def set_time_in_subnet(which_time, subnet, value):
     """
     Change values of T1, T2, preffered lifetime and valid lifetime.
     """
     which_time, subnet, value = test_define_value(which_time, subnet, value)
-    dhcp.set_time(step, which_time, value, subnet)
+    dhcp.set_time(which_time, value, subnet)
 
     # new configuration system:
     #world.configClass.updatevaluesubnet(which_time, value, int(subnet))
 
 
 @step('Server is configured with another pool (\S+) in subnet (\d+).')
-def new_pool(step, pool, subnet):
-    dhcp.add_pool_to_subnet(step, pool, int(subnet))
+def new_pool(pool, subnet):
+    dhcp.add_pool_to_subnet(pool, int(subnet))
 
     # new configuration system
     #world.configClass.addpool(new_config.ConfigurationPool(pool, int(subnet)))
 
 
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
-def config_srv(step, option_name, subnet, option_value):
+def config_srv(option_name, subnet, option_value):
     """
     Prepare server configuration with the specified option.
     option_name name of the option, e.g. dns-servers (number may be used here)
     option_value value of the configuration
     """
-    dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
+    dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value)
     #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, world.cfg["space"], subnet_id=subnet))
 
 
 @step('Server is configured with (\S+) option in subnet (\d+) and pool (\d+) with value (\S+).')
-def config_srv_pool(step, option_name, subnet, pool, option_value):
+def config_srv_pool(option_name, subnet, pool, option_value):
     """
     """
-    # dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value)
+    # dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value)
     # step just for new config system!
     #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, world.cfg["space"],
                                                                # subnet_id=subnet, pool_id=pool))
 
 
 @step('On space (\S+) server is configured with (\S+) option in subnet (\d+) with value (\S+).')
-def config_srv_on_space(step, space, option_name, subnet, option_value):
+def config_srv_on_space(space, option_name, subnet, option_value):
     """
     Prepare server configuration with the specified option.
     option_name name of the option, e.g. dns-servers (number may be used here)
     option_value value of the configuration
     """
-    dhcp.prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space)
+    dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value, space)
     #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, space, subnet_id=subnet))
 
 
 @step('Server is configured with client-classification option in subnet (\d+) with name (\S+).')
-def config_client_classification(step, subnet, option_value):
+def config_client_classification(subnet, option_value):
     """
     """
-    dhcp.config_client_classification(step, subnet, option_value)
+    dhcp.config_client_classification(subnet, option_value)
 
 
 @step('Server is configured with require-client-classification option in subnet (\d+) with name (\S+).')
-def config_require_client_classification(step, subnet, option_value):
+def config_require_client_classification(subnet, option_value):
     """
     """
-    dhcp.config_require_client_classification(step, subnet, option_value)
+    dhcp.config_require_client_classification(subnet, option_value)
 
 
 @step('Add class called (\S+).')
-def create_new_class(step, class_name):
+def create_new_class(class_name):
     dhcp.create_new_class(class_name)
 
 
 @step('To class no (\d+) add parameter named: (\S+) with value: (.+)')
-def add_test_to_class(step, class_number, parameter_name, parameter_value):
+def add_test_to_class(class_number, parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.add_test_to_class(int(class_number), parameter_name, parameter_value)
 
 
 @step('To class no (\d+) add option (\S+) with value (\S+).')
-def add_option_to_defined_class(step, class_no, option, option_value):
+def add_option_to_defined_class(class_no, option, option_value):
     dhcp.add_option_to_defined_class(int(class_no), option, option_value)
 # @step('To class no (\d+) add custom option (\S+) with value (\S+).')
 
 
 @step('Server has control channel on (\S+) socket with name (\S+).')
-def open_control_channel(step, socket_type, socket_name):
+def open_control_channel(socket_type, socket_name):
     """
     """
     socket_type, socket_name = test_define_value(socket_type, socket_name)
@@ -797,7 +794,7 @@ def open_control_channel(step, socket_type, socket_name):
 
 
 @step('Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
-def agent_control_channel(step, host_address, host_port, socket_type, socket_name):
+def agent_control_channel(host_address, host_port, socket_type, socket_name):
     """
     """
     host_address, host_port, socket_type, socket_name = test_define_value(host_address, host_port, socket_type, socket_name)
@@ -806,31 +803,31 @@ def agent_control_channel(step, host_address, host_port, socket_type, socket_nam
 
 ##DNS server configuration
 @step('DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
-def dns_conf(step, ip_type, address, port, direct):
+def dns_conf(ip_type, address, port, direct):
     ip_type, address, port, direct = test_define_value(ip_type, address, port, direct)
     dns.add_defaults(ip_type, address, port, direct)
 
 
 @step('DNS server is configured with zone (\S+) with type: (\S+) file: (\S+) with dynamic update key: (\S+).')
-def add_zone(step, zone, zone_type, file_nem, key):
+def add_zone(zone, zone_type, file_nem, key):
     zone, zone_type, file_nem, key = test_define_value(zone, zone_type, file_nem, key)
     dns.add_zone(zone, zone_type, file_nem, key)
 
 
 @step('Add DNS key named: (\S+) algorithm: (\S+) and value: (\S+).')
-def dns_add_key(step, key_name, algorithm, key_value):
+def dns_add_key(key_name, algorithm, key_value):
     key_name, algorithm, key_value = test_define_value(key_name, algorithm, key_value)
     dns.add_key(key_name, algorithm, key_value)
 
 
 @step('Add DNS rndc-key on address (\S+) and port (\d+). Using algorithm: (\S+) with value: (\S+)')
-def dns_rest(step, address, port, alg, value):
+def dns_rest(address, port, alg, value):
     address, port, alg, value = test_define_value(address, port, alg, value)
     dns.add_rndc(address, port, alg, value)
 
 
 @step('Server logging system is configured with logger type (\S+), severity (\S+), severity level (\S+) and log file (\S+).')
-def configure_loggers(step, log_type, severity, severity_level, logging_file):
+def configure_loggers(log_type, severity, severity_level, logging_file):
     log_type, severity, severity_level, logging_file = test_define_value(log_type, severity,
                                                                          severity_level, logging_file)
     dhcp.add_logger(log_type, severity, severity_level, logging_file)
@@ -838,7 +835,7 @@ def configure_loggers(step, log_type, severity, severity_level, logging_file):
 
 ##servers management
 @step('Send server configuration using (\S+) and (\S+).')
-def build_and_send_config_files(step, connection_type, configuration_type):
+def build_and_send_config_files(connection_type, configuration_type):
     """
     Step used to choosing configuration type and channel to send it.
     :param step:
@@ -850,7 +847,7 @@ def build_and_send_config_files(step, connection_type, configuration_type):
 
 
 @step('Send server configuration using (\S+) and (\S+) and destination address (\S+).')
-def build_and_send_config_files_dest_addr(step, connection_type, configuration_type, destination_address):
+def build_and_send_config_files_dest_addr(connection_type, configuration_type, destination_address):
     """
     Step used to choosing configuration type and channel to send it.
     :param step:
@@ -866,13 +863,13 @@ def build_and_send_config_files_dest_addr(step, connection_type, configuration_t
 
 
 @step('Generate server configuration file.')
-def generate_config_files(step):
+def generate_config_files():
     #world.configClass.build_xml_script()
     dhcp.build_and_send_config_files(connection_type=None, configuration_type="config-file")
 
 
 @step('(\S+) server is (started|stopped|restarted|reconfigured).')
-def start_srv(step, name, type_of_action):
+def start_srv(name, type_of_action):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -904,7 +901,7 @@ def start_srv(step, name, type_of_action):
 
 
 @step('TEMP START')
-def temporary_start(step):
+def temporary_start():
     pass
     #world.configClass.sendconfiguration()
 
@@ -921,7 +918,7 @@ def check_remote_address(remote_address):
 
 
 @step('Remote (\S+) server is (started|stopped|restarted|reconfigured) on address (\S+).')
-def remote_start_srv(step, name, type_of_action, destination_address):
+def remote_start_srv(name, type_of_action, destination_address):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -955,7 +952,7 @@ def remote_start_srv(step, name, type_of_action, destination_address):
 
 
 @step('(\S+) server failed to start. During (\S+) process.')
-def start_srv_during_process(step, name, process):
+def start_srv_during_process(name, process):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -969,7 +966,7 @@ def start_srv_during_process(step, name, process):
 
 
 @step('(\S+) server failed to start. During (\S+) process on remote destination (\S+).')
-def start_srv_during_remote_process(step, name, process, destination_address):
+def start_srv_during_remote_process(name, process, destination_address):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -985,13 +982,13 @@ def start_srv_during_remote_process(step, name, process, destination_address):
 
 
 @step('Add remote server with address: (\S+).')
-def add_remote_server(step, remote_address):
+def add_remote_server(remote_address):
     remote_address[0] = test_define_value(remote_address)
     check_remote_address(remote_address)
 
 
 @step('Clear (\S+).')
-def clear_leases(step, action):
+def clear_leases(action):
     if action == "leases":
         dhcp.clear_leases()
     elif action == "logs":
@@ -1002,37 +999,37 @@ def clear_leases(step, action):
 
 ##DDNS server
 @step('DDNS server is configured on (\S+) address and (\S+) port.')
-def add_ddns_server(step, address, port):
+def add_ddns_server(address, port):
     ddns_block()
     address, port = test_define_value(address, port)
     ddns.add_ddns_server(address, port)
 
 
 @step('DDNS server is configured with (\S+) option set to (\S+).')
-def add_ddns_server_options(step, option, value):
+def add_ddns_server_options(option, value):
     ddns_block()
     option, value = test_define_value(option, value)
     ddns.add_ddns_server_options(option, value)
 
 
 @step('Add forward DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
-def add_forward_ddns(step, name, key_name, ipaddress, port):
+def add_forward_ddns(name, key_name, ipaddress, port):
     ddns_block()
     ddns.add_forward_ddns(name, key_name, ipaddress, port)
 
 
 @step('Add reverse DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
-def add_reverse_ddns(step, name, key_name, ipaddress, port):
+def add_reverse_ddns(name, key_name, ipaddress, port):
     ddns_block()
     ddns.add_reverse_ddns(name, key_name, ipaddress, port)
 
 
 @step('Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
-def add_keys(step, name, algorithm, secret):
+def add_keys(name, algorithm, secret):
     ddns_block()
     ddns.add_keys(secret, name, algorithm)
 
 
 @step('Use DNS set no. (\d+).')
-def use_dns_set_number(step, number):
+def use_dns_set_number(number):
     dns.use_config_set(int(number))

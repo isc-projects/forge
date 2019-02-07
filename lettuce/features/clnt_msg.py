@@ -18,11 +18,7 @@
 import sys
 import importlib
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world, step
-else:
-    from lettuce import world, step
-
+from forge import world, step
 from init_all import PROTO, SOFTWARE_UNDER_TEST
 
 # TODO: write some comments what particular functions do; file's getting messy.
@@ -42,9 +38,9 @@ if PROTO == "v6":
     variable. Time of receiving message is also saved.
     """
     @step("Sniffing client (\S+) message from network( with timeout)?.")
-    def client_msg_capture(step, msgType, tout):
+    def client_msg_capture(msgType, tout):
         tout_ = not (tout == " with timeout")
-        clntMsg.client_msg_capture(step, msgType, tout_)
+        clntMsg.client_msg_capture(msgType, tout_)
 
 
 ##############   validating received message   ##############
@@ -57,8 +53,8 @@ if PROTO == "v6":
     address. Otherwise, we assume that it is an unicast address.
     """
     @step("Message was sent to (multicast|unicast) address.")
-    def client_dst_address_check(step, dst_type):
-        clntMsg.client_dst_address_check(step, dst_type)
+    def client_dst_address_check(dst_type):
+        clntMsg.client_dst_address_check(dst_type)
 
 
     """
@@ -67,9 +63,9 @@ if PROTO == "v6":
     function is used here.
     """
     @step("Client MUST (NOT )?respond with (\S+) message.")
-    def client_send_receive(step, yes_no, msgType):
+    def client_send_receive(yes_no, msgType):
         contain = not (yes_no == "NOT ")
-        clntMsg.client_send_receive(step, contain, msgType)
+        clntMsg.client_send_receive(contain, msgType)
 
 
     """
@@ -77,9 +73,9 @@ if PROTO == "v6":
     message from client. Options are checked by their option code.
     """
     @step("Client message MUST (NOT )?contain option (\d+).")
-    def client_msg_contains_opt(step, yes_or_no, opt):
+    def client_msg_contains_opt(yes_or_no, opt):
         contain = not (yes_or_no == "NOT ")
-        clntMsg.client_msg_contains_opt(step, contain, opt)
+        clntMsg.client_msg_contains_opt(contain, opt)
 
 
     """
@@ -87,9 +83,9 @@ if PROTO == "v6":
     option in message.
     """
     @step("Client message MUST (NOT )?contain (\d+) options with opt-code (\d+).")
-    def client_msg_count_opt(step, yes_no, count, optcode):
+    def client_msg_count_opt(yes_no, count, optcode):
         contain = not (yes_no == "NOT ")
-        clntMsg.client_msg_count_opt(step, contain, count, optcode)
+        clntMsg.client_msg_count_opt(contain, count, optcode)
 
 
     """
@@ -97,9 +93,9 @@ if PROTO == "v6":
     sub-option within option in message.
     """
     @step("Client message MUST (NOT )?contain (\d+) sub-options with opt-code (\d+) within option (\d+).")
-    def client_msg_count_subopt(step, yes_no, count, subopt_code, opt_code):
+    def client_msg_count_subopt(yes_no, count, subopt_code, opt_code):
         contain = not (yes_no == "NOT ")
-        clntMsg.client_msg_count_subopt(step, contain, count, subopt_code, opt_code)
+        clntMsg.client_msg_count_subopt(contain, count, subopt_code, opt_code)
 
 
     """
@@ -107,9 +103,9 @@ if PROTO == "v6":
     T1 field in option 25 (IA_PD).
     """
     @step("Client message MUST (NOT )?contain (\S+) field in option (\d+).")
-    def client_check_field_presence(step, yes_no, field, optcode):
+    def client_check_field_presence(yes_no, field, optcode):
         contain = not (yes_no == "NOT ")
-        clntMsg.client_check_field_presence(step, contain, field, optcode)
+        clntMsg.client_check_field_presence(contain, field, optcode)
 
 
     """
@@ -118,9 +114,9 @@ if PROTO == "v6":
     by their option code.
     """
     @step("Client message option (\d+) MUST (NOT )?include sub-option (\d+).")
-    def client_msg_contains_subopt(step, opt_code, yes_or_no, subopt_code):
+    def client_msg_contains_subopt(opt_code, yes_or_no, subopt_code):
         contain = not (yes_or_no == "NOT ")
-        clntMsg.client_msg_contains_subopt(step, opt_code, contain, subopt_code)
+        clntMsg.client_msg_contains_subopt(opt_code, contain, subopt_code)
 
 
     """
@@ -129,8 +125,8 @@ if PROTO == "v6":
     See retransmission_time_validation directory and tests in it.
     """
     @step("Retransmission time has required value.")
-    def client_time_interval(step):
-        clntMsg.client_time_interval(step)
+    def client_time_interval():
+        clntMsg.client_time_interval()
 
 
     """
@@ -140,11 +136,11 @@ if PROTO == "v6":
     a maximum timeout for retransmission time.
     """
     @step("Message was (sent|retransmitted) after maximum (\S+) second(s)?.")
-    def client_rt_delay(step, s_or_r, timeval, plural):
+    def client_rt_delay(s_or_r, timeval, plural):
         # s_or_r is not needed
         preciseTimeVal = float(timeval)
         dont_care = (plural == "s")
-        clntMsg.client_rt_delay(step, preciseTimeVal, dont_care)
+        clntMsg.client_rt_delay(preciseTimeVal, dont_care)
 
 
     """
@@ -152,8 +148,8 @@ if PROTO == "v6":
     saved with "Save (\S+) value." step.
     """
     @step("(\S+) value in client message is the same as saved one.")
-    def client_cmp_values(step, value):
-        clntMsg.client_cmp_values(step, value)
+    def client_cmp_values(value):
+        clntMsg.client_cmp_values(value)
 
 
     """
@@ -162,9 +158,9 @@ if PROTO == "v6":
     Client message sub-option 26 from option 25 MUST contain prefix 3111::.
     """
     @step("Client message sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).")
-    def client_subopt_check_value(step, subopt_code, opt_code, yes_or_no, value_name, value):
+    def client_subopt_check_value(subopt_code, opt_code, yes_or_no, value_name, value):
         expect = not (yes_or_no == "NOT ")
-        clntMsg.client_subopt_check_value(step, subopt_code, opt_code, expect, value_name, value)
+        clntMsg.client_subopt_check_value(subopt_code, opt_code, expect, value_name, value)
 
 
     """
@@ -173,9 +169,9 @@ if PROTO == "v6":
     Client message option 25 MUST NOT contain T1 2000.
     """
     @step("Client message option (\d+) MUST (NOT )?contain (\S+) (\S+).")
-    def client_opt_check_value(step, opt_code, yes_or_no, value_name, value):
+    def client_opt_check_value(opt_code, yes_or_no, value_name, value):
         expect = not (yes_or_no == "NOT ")
-        clntMsg.client_opt_check_value(step, opt_code, expect, value_name, value)
+        clntMsg.client_opt_check_value(opt_code, expect, value_name, value)
 
 
 ##############   building server message   #############
@@ -185,8 +181,8 @@ if PROTO == "v6":
     values are removed and every other values are set to default.
     """
     @step("Server builds new message.")
-    def srv_msg_clean(step):
-        clntMsg.srv_msg_clean(step)
+    def srv_msg_clean():
+        clntMsg.srv_msg_clean()
 
 
     """
@@ -195,8 +191,8 @@ if PROTO == "v6":
     valid-lifetime) or be set to an implicit value, like 1234.
     """
     @step("Set timer to (\S+).")
-    def set_timer(step, timer_val):
-        clntMsg.set_timer(step, timer_val)
+    def set_timer(timer_val):
+        clntMsg.set_timer(timer_val)
 
 
     """
@@ -204,8 +200,8 @@ if PROTO == "v6":
     is checking the consistency of IAID value over message exchange.
     """
     @step("Save (\S+) value.")
-    def save_value(step, value):
-        clntMsg.save_value(step, value)
+    def save_value(value):
+        clntMsg.save_value(value)
 
 
     """
@@ -217,8 +213,8 @@ if PROTO == "v6":
     - transaction id.
     """
     @step("Server sets wrong (\S+) value.")
-    def server_set_wrong_val(step, value):
-        clntMsg.server_set_wrong_val(step, value)
+    def server_set_wrong_val(value):
+        clntMsg.server_set_wrong_val(value)
 
 
     """
@@ -227,8 +223,8 @@ if PROTO == "v6":
     T1, T2, preferred-lifetime, valid-lifetime, prefix.
     """
     @step("(\S+) value is set to (\S+).")
-    def server_sets_value(step, value_name, new_value):
-        clntMsg.msg_set_value(step, value_name, new_value)
+    def server_sets_value(value_name, new_value):
+        clntMsg.msg_set_value(value_name, new_value)
 
 
     """
@@ -246,8 +242,8 @@ if PROTO == "v6":
     -  server_unicast
     """
     @step("Server adds (\S+) (\d+ )?option to message.")
-    def add_option(step, opt, optcode):
-        clntMsg.add_option(step, opt, optcode)
+    def add_option(opt, optcode):
+        clntMsg.add_option(opt, optcode)
 
 
     """
@@ -256,8 +252,8 @@ if PROTO == "v6":
     order to check client's behaviour in that situation.
     """
     @step("Server does NOT add (\S+) option to message.")
-    def server_not_add(step, opt):
-        clntMsg.server_not_add(step, opt)
+    def server_not_add(opt):
+        clntMsg.server_not_add(opt)
 
 
     """
@@ -267,9 +263,9 @@ if PROTO == "v6":
     "Client MUST (NOT )?respond with (\S+) message." step.
     """
     @step("Server sends (back )?(\S+) message.")
-    def server_build_msg(step, back, msgType):
+    def server_build_msg(back, msgType):
         response = not (back == "back ")
-        clntMsg.server_build_msg(step, response, msgType)
+        clntMsg.server_build_msg(response, msgType)
 
 else:
     pass

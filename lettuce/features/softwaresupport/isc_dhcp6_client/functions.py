@@ -84,7 +84,7 @@ def write_clnt_cfg_to_file():
     cfgFile.close()
 
 
-def restart_clnt(step):
+def restart_clnt():
     """
     This function shut downs and later starts dhclient on DUT.
     @step("Restart client.")
@@ -120,7 +120,7 @@ def release_command():
                         world.clntCfg["command"] + ' -r & ); sleep 1;')
 
 
-def client_option_req(step, another1, opt):
+def client_option_req(another1, opt):
     """
     @step("Client is configured to include (another )?(\S+) option.")
 
@@ -137,7 +137,7 @@ def client_option_req(step, another1, opt):
         world.clntCfg["config"] += "\n  send dhcp6.rapid-commit;"
 
 
-def client_setup(step):
+def client_setup():
     """
     @step("Setting up test.")
 
@@ -161,7 +161,7 @@ def make_script():
     script.write(world.clntCfg["content"])
     script.close()
 
-def client_parse_config(step, contain):
+def client_parse_config(contain):
     """
     @step("Client MUST (NOT )?use prefix with values given by server.")
 
@@ -229,7 +229,7 @@ def client_parse_config(step, contain):
                "leases are the same, but they should not be."
 
 
-def start_clnt(step):
+def start_clnt():
     """
     @step("Client is started.")
 

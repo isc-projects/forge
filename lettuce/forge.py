@@ -21,6 +21,8 @@ import importlib
 import optparse
 import os
 import sys
+import threading
+
 
 from features.init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, PROTO, SOFTWARE_UNDER_TEST, DB_TYPE, SHOW_PACKETS_FROM, \
     SRV4_ADDR, REL4_ADDR, GIADDR4, IFACE, CLI_LINK_LOCAL, SERVER_IFACE, OUTPUT_WAIT_INTERVAL, \
@@ -460,6 +462,18 @@ def start_all(base_path, verbosity, scenario, tag, enable_xunit):
         history.build_report()
 
     return result.scenarios_ran - result.scenarios_passed
+
+
+# global object that stores all needed data: configs, etc.
+world = threading.local()
+world.f_cfg = ForgeConfiguration()
+
+
+# stub that replaces lettuce step decorator
+def step(pattern):
+    def wrap(func):
+        return func
+    return wrap
 
 
 if __name__ == '__main__':

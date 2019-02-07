@@ -48,11 +48,11 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     pass
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth = None):
+def prepare_cfg_subnet(subnet, pool, eth = None):
     pass
 
 
-def prepare_cfg_subnet_specific_interface(step, interface, address, subnet, pool):
+def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     pass
 
 
@@ -64,7 +64,7 @@ def add_line_to_shared_subnet(subnet_id, cfg_line):
     pass
 
 
-def prepare_cfg_add_option_shared_subnet(step, option_name, shared_subnet, option_value):
+def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_value):
     pass
 
 
@@ -72,19 +72,19 @@ def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
     pass
 
 
-def add_pool_to_subnet(step, pool, subnet):
+def add_pool_to_subnet(pool, subnet):
     pass
 
 
-def config_srv_another_subnet(step, subnet, pool, eth):
+def config_srv_another_subnet(subnet, pool, eth):
     pass
 
 
-def config_client_classification(step, subnet, option_value):
+def config_client_classification(subnet, option_value):
     pass
 
 
-def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     pass
 
 
@@ -92,11 +92,11 @@ def prepare_cfg_add_option(*args):
     pass
 
 
-def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
     pass
 
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
     pass
 
 

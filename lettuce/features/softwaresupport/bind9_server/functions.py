@@ -17,11 +17,7 @@
 
 import sys
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
-
+from forge import world
 from features.softwaresupport.bind9_server.bind_configs import config_file_set, keys
 from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, \
     copy_configuration_file, fabric_sudo_command, fabric_download_file, fabric_remove_file_command,\

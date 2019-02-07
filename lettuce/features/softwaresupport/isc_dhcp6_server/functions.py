@@ -19,10 +19,7 @@ import os
 import sys
 import logging
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
+from forge import world
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file,\
@@ -161,7 +158,7 @@ def restart_srv():
                         + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 
 
-def set_time(step, which_time, value, subnet = None):
+def set_time(which_time, value, subnet = None):
     assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
     if subnet is None:
         world.cfg["server_times"][which_time] = value
@@ -179,7 +176,7 @@ def set_time(step, which_time, value, subnet = None):
             assert False, "If you see that message something went terribly wrong! Please report bug!"
 
 
-def unset_time(step, which_time, subnet = None):
+def unset_time(which_time, subnet = None):
     if which_time in world.cfg["server_times"]:
             world.cfg["server_times"][which_time] = None
     else:
@@ -212,7 +209,7 @@ def add_defaults():
             '''
 
 
-def add_pool_to_subnet(step, pool, subnet):
+def add_pool_to_subnet(pool, subnet):
     if pool == "default":
         pool = "2001:db8:1::0 2001:db8:1::ffff"
     else:
@@ -221,7 +218,7 @@ def add_pool_to_subnet(step, pool, subnet):
     world.subcfg[subnet][0] += 'range6 {pool};'.format(**locals())
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth = None):
+def prepare_cfg_subnet(subnet, pool, eth = None):
     get_common_logger().debug("Configure subnet...")
     ## structure of world.subcfg is [["", "", "", "",""]] but we need only one argument in the list
     ## every configuration added for subnets in ISC-DHCP is configured on the same level
@@ -257,15 +254,15 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         world.subcfg[world.dhcp["subnet_cnt"]][0] += tmp
 
 
-def config_srv_another_subnet(step, subnet, pool, eth):
+def config_srv_another_subnet(subnet, pool, eth):
     ## it will pass ethernet interface but it will have no impact on config files
     world.subcfg.append(["", "", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
-    prepare_cfg_subnet(step, subnet, pool, eth)
+    prepare_cfg_subnet(subnet, pool, eth)
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space):
+def prepare_cfg_add_option(option_name, option_value, space):
     if not "conf_option" in world.cfg:
         world.cfg["conf_option"] = ""
 
@@ -320,7 +317,7 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
             '''.format(**locals())
 
 
-def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     subnet = int(subnet)
 
     highest = switch_prefix6_lengths_to_pool(str(prefix), int(length), int(delegated_length))
@@ -329,16 +326,16 @@ def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
     world.subcfg[subnet][0] += 'prefix6 {prefix} {highest} /{delegated_length};'.format(**locals())
 
 
-def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
     #implement this
     pass #http://linux.die.net/man/5/dhcp-options
 
 
-def config_client_classification(step, subnet, option_value):
+def config_client_classification(subnet, option_value):
     assert False, "TODO!"
 
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space = 'dhcp6'):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space = 'dhcp6'):
     if not "conf_subnet" in world.cfg:
         assert False, 'Configure subnet/pool first, then subnet options'
 

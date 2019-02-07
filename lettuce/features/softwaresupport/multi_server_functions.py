@@ -24,11 +24,7 @@ from shutil import copy
 from fabric.api import get, settings, put, sudo, run, hide
 from fabric.exceptions import NetworkError
 
-if 'pytest' in sys.argv[0]:
-    from features.lettuce_compat import world
-else:
-    from lettuce import world
-
+from forge import world
 
 
 log = logging.getLogger('forge')
