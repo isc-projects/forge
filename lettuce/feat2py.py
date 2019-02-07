@@ -166,7 +166,6 @@ def generate_py_file(feature, scenarios_list, used_modules, py_file_path):
                 mod = step[0].replace('.py', '')
                 func = step[1]
                 args1 = step[2]
-                #args = ['None' if a is None else "'%s'" % a.replace("'", "\\'") for a in args]
                 args = []
                 for arg in args1:
                     if arg is None:
