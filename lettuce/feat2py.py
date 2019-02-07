@@ -168,15 +168,15 @@ def generate_py_file(feature, scenarios_list, used_modules, py_file_path):
                 args1 = step[2]
                 #args = ['None' if a is None else "'%s'" % a.replace("'", "\\'") for a in args]
                 args = []
-                for a in args1:
-                    if a is None:
-                        a = 'None'
+                for arg in args1:
+                    if arg is None:
+                        arg = 'None'
                     else:
-                        a = a.replace("'", "\\'")
-                        a = "'%s'" % a
-                        if '\[' in a:
-                            a = 'r' + a
-                    args.append(a)
+                        arg = arg.replace("'", "\\'")
+                        arg = "'%s'" % arg
+                        if r'\[' in arg:
+                            arg = 'r' + arg
+                    args.append(arg)
 
                 args2 = ", ".join(args)
 
