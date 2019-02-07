@@ -354,7 +354,7 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
-        log.info((os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"))
+        log.info(os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"))
         fabric_send_file(world.cfg["cfg_file"],
                          os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
                          destination_host=destination_address)
