@@ -405,6 +405,7 @@ def initialize(scenario):
                          "-s", str(65535), "-i", world.cfg["dns_iface"]]
 
                 subprocess.Popen(args2)
+    remove_all()
 
 
 #@before.outline
@@ -463,6 +464,10 @@ def cleanup(scenario):
         args = ["killall tcpdump"]
         subprocess.call(args, shell=True)
         # TODO: log output in debug mode
+    remove_all()
+
+
+def remove_all():
     if not world.f_cfg.no_server_management:
         for each_remote_server in world.f_cfg.multiple_tested_servers:
             for each in world.f_cfg.software_under_test:
