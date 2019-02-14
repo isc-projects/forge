@@ -67,7 +67,7 @@ def test_ddns6_notsig_forw_and_rev_add_success_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -164,7 +164,7 @@ def test_ddns6_notsig_forw_and_rev_add_fail_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.com')
 
     misc.test_procedure()
@@ -254,7 +254,7 @@ def test_ddns6_notsig_forw_and_rev_notenabled_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '6.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '6')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -344,7 +344,7 @@ def test_ddns6_notsig_forw_and_rev_update_success_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -449,7 +449,7 @@ def test_ddns6_notsig_forw_and_rev_update_success_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -546,7 +546,7 @@ def test_ddns6_notsig_forw_and_rev_two_dhci_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -591,7 +591,7 @@ def test_ddns6_notsig_forw_and_rev_two_dhci_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -677,7 +677,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -722,7 +722,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -761,7 +761,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -877,7 +877,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -922,7 +922,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -963,7 +963,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -1072,7 +1072,7 @@ def test_ddns6_notsig_forw_and_rev_add_success_withoutflag_override_client():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '3.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '3')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -1167,7 +1167,7 @@ def test_ddns6_notsig_rev_success_withoutflag():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '0.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '0')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
     srv_msg.log_contains_line('DNS',
                               None,
@@ -1254,7 +1254,7 @@ def test_ddns6_notsig_rev_withoutflag_notenabled():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '4.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '4')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
     srv_msg.log_contains_line('DNS',
                               'NOT ',
@@ -1338,7 +1338,7 @@ def test_ddns6_notsig_rev_Nflag_override_no_update():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '3.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '3')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
     srv_msg.log_contains_line('DNS',
                               None,

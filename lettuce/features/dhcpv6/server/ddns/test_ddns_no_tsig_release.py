@@ -68,7 +68,7 @@ def test_ddns6_notsig_forw_and_rev_release():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -184,7 +184,7 @@ def test_ddns6_notsig_forw_and_rev_release_notenabled():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -332,7 +332,7 @@ def test_ddns6_notsig_rev_release():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '0.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '0')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -450,7 +450,7 @@ def test_ddns6_notsig_expired():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()

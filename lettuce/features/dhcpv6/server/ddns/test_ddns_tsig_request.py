@@ -67,7 +67,7 @@ def test_ddns6_tsig_sha1_forw_and_rev():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -154,7 +154,7 @@ def test_ddns6_tsig_sha224_forw_and_rev():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -241,7 +241,7 @@ def test_ddns6_tsig_sha256_forw_and_rev():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -328,7 +328,7 @@ def test_ddns6_tsig_sha384_forw_and_rev():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -415,7 +415,7 @@ def test_ddns6_tsig_sha512_forw_and_rev():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -502,7 +502,7 @@ def test_ddns6_tsig_md5_forw_and_rev():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
@@ -590,7 +590,7 @@ def test_ddns6_tsig_multi_key_forw_and_rev():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
