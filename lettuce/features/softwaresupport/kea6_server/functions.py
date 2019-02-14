@@ -593,6 +593,7 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value):
 
 def cfg_write():
     config_db_backend()
+    checker = 0
     for number in range(len(world.subcfg)):
         if len(world.subcfg[number][2]) > 10:
             world.subcfg[number][2] = '"option-data": [' + world.subcfg[number][2] + "]"
@@ -648,6 +649,7 @@ def cfg_write():
             counter += 1
             comma = 1
             for each_subnet_config_part in each_subnet[1:]:
+                checker = 1
                 if len(each_subnet_config_part) > 0:
                     tmp += ',' + each_subnet_config_part
             cfg_file.write(tmp + '}')
@@ -669,7 +671,9 @@ def cfg_write():
         del world.cfg["option_def"]
 
     if len(world.hooks) > 0 or len(world.kea_ha[0]) > 0:
-        cfg_file.write(',"hooks-libraries": [')
+        if checker == 1:
+            cfg_file.write(',')
+        cfg_file.write('"hooks-libraries": [')
         test_length_1 = len(world.hooks)
         counter_1 = 1
         for each_hook in world.hooks:
@@ -992,6 +996,16 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address):
                                destination_host=destination_address)
 
 
+def clear_db_config(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                    destination_address=world.f_cfg.mgmt_address):
+    command = 'for table_name in dhcp4_audit_revision dhcp4_audit dhcp4_global_parameter dhcp4_global_parameter_server \
+             dhcp4_option_def dhcp4_option_def_server dhcp4_options dhcp4_options_server dhcp4_pool \
+             dhcp4_shared_network dhcp4_shared_network_server dhcp4_subnet dhcp4_subnet_server; ' \
+              'do mysql -u {db_user} -p{db_passwd} -e "SET foreign_key_checks = 0; truncate $table_name" {db_name}; done'.format(
+        **locals())
+    fabric_run_command(command, destination_host=destination_address, hide_all=True)
+
+
 def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     clear_logs(destination_address)
 
@@ -1003,6 +1017,7 @@ def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
         clear_leases(destination_address=world.f_cfg.mgmt_address)
     else:
         assert False, "If you see that error, something went very wrong."
+    clear_db_config(destination_address=world.f_cfg.mgmt_address)
 
 # =============================================================
 # ================ REMOTE SERVER BLOCK END ====================
