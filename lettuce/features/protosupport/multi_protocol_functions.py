@@ -161,6 +161,7 @@ def add_variable(variable_name, variable_val, val_type):
     elif val_type:
         # permanent
         # TO: for same name change value
+        # TODO: WTF?
         try:
             imported = getattr(__import__('init_all', fromlist=[variable_name]), variable_name)
         except:

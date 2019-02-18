@@ -531,7 +531,6 @@ def create_relay_forward(level):
 
     #get only DHCPv6 part of the message
     msg = world.climsg.pop().getlayer(2)
-    #from features.init_all import SRV_IPV6_ADDR
     level = int(level)
 
     #all three values: linkaddr, peeraddr and hopcount must be filled

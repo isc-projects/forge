@@ -21,10 +21,16 @@ import importlib
 
 from forge import world, step
 from srv_control import test_define_value
+from features.protosupport import dns
+import features.protosupport.multi_protocol_functions as other
 
-dhcpmsg = importlib.import_module("features.protosupport.%s.srv_msg" % world.f_cfg.proto)
-dns = importlib.import_module("features.protosupport.dns")
-other = importlib.import_module("features.protosupport.multi_protocol_functions")
+
+class Dispatcher(object):
+    def __getattr__(self, attr_name):
+        mod = importlib.import_module("features.protosupport.%s.srv_msg" % world.f_cfg.proto)
+        return getattr(mod, attr_name)
+
+dhcpmsg = Dispatcher()
 
 
 # config values return

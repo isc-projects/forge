@@ -85,10 +85,10 @@ DB_HOST = os.getenv('DB_HOST', DB_HOST)
 class ForgeConfiguration:
     def __init__(self):
         # default
-        self.dns_used = "bind9_server",
-        self.dhcp_used = "dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server", \
-                         "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server", \
-                         "none_server"
+        self.dns_used = ["bind9_server"]
+        self.dhcp_used = ["dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server",
+                         "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server",
+                         "none_server"]
 
         # no_server_management value can be set by -N option on startup to turn off remote server management
         self.no_server_management = False

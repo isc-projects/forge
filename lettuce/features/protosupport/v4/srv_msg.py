@@ -329,8 +329,7 @@ def send_wait_for_message(msgtype, presence, exp_message):
                      multi=True,
                      verbose=99)
 
-    from features.init_all import SHOW_PACKETS_FROM
-    if SHOW_PACKETS_FROM in ['both', 'client']:
+    if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
         print('\n')
 
@@ -342,7 +341,7 @@ def send_wait_for_message(msgtype, presence, exp_message):
     for x in ans:
         a, b = x
         world.srvmsg.append(b)
-        if SHOW_PACKETS_FROM in ['both', 'server']:
+        if world.f_cfg.show_packets_from in ['both', 'server']:
             b.show()
             print('\n')
 

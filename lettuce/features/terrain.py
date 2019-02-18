@@ -32,6 +32,7 @@ from forge import world, step
 from features.softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
 from features import logging_facility
+from features.srv_control import start_srv
 
 log = logging.getLogger('forge')
 
@@ -213,20 +214,20 @@ def dns_initialize():
     world.dns_enable = True
 
 
-def define_software():
+def define_software(dhcp_version):
     # unfortunately we have to do this every single time
     world.cfg["dhcp_under_test"] = ""
     world.cfg["dns_under_test"] = ""
-    for each_name in world.f_cfg.software_under_test:
-        if each_name in world.f_cfg.dhcp_used:
-            world.cfg["dhcp_under_test"] = each_name
+    for name in world.f_cfg.software_under_test:
+        if name in world.f_cfg.dhcp_used:
+            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version == 'v4' else name.replace('4', '6')
             # world.cfg["dns_under_test"] = ""
-        elif each_name in world.f_cfg.dns_used:
-            world.cfg["dns_under_test"] = each_name
+        elif name in world.f_cfg.dns_used:
+            world.cfg["dns_under_test"] = name
             # world.cfg["dhcp_under_test"] = ""
 
 
-def declare_all():
+def declare_all(dhcp_version=None):
     world.climsg = []  # Message(s) to be sent
     world.srvmsg = []  # Server's response(s)
     world.rlymsg = []  # Server's response(s) Relayed by Relay Agent
@@ -237,7 +238,8 @@ def declare_all():
     world.savedmsg = {0: []}  # Saved option(s)
     world.define = []  # temporary define variables
 
-    world.proto = world.f_cfg.proto
+    proto = dhcp_version if dhcp_version else world.f_cfg.proto
+    world.proto = world.f_cfg.proto = proto
     world.oro = None
     world.vendor = []
     world.iaad = []
@@ -315,10 +317,21 @@ def test_start():
 
 #@before.each_scenario
 def initialize(scenario):
+    # try to automagically detect DHCP version based on fixture presence
+    # or marker presence
+    try:
+        dhcp_version = scenario._request.getfixturevalue('dhcp_version')
+    except:
+        if scenario.get_marker('v4'):
+            dhcp_version = 'v4'
+        elif scenario.get_marker('v6'):
+            dhcp_version = 'v6'
+        else:
+            dhcp_version = None
 
     # Declare all default values
-    declare_all()
-    define_software()
+    declare_all(dhcp_version)
+    define_software(dhcp_version)
 
     world.cfg["iface"] = world.f_cfg.iface
     # world.cfg["server_type"] = SOFTWARE_UNDER_TEST for now I'll leave it here,
@@ -458,6 +471,9 @@ def cleanup(scenario):
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
         add_result_to_report(info)
+
+    # stop dhcp server
+    start_srv('DHCP', 'stopped')
 
     if world.f_cfg.tcpdump:
         time.sleep(1)
