@@ -107,48 +107,38 @@ def test_remote_subnet4_set_basic(channel):
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 1,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
 
 def test_remote_subnet4_set_empty_subnet(channel='http'):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "",
-                                                                     "interface": "$(SERVER_IFACE)"}
-                                                                    ]
-                                                        })
+                                                                     "interface": "$(SERVER_IFACE)"}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
-                        "text": "subnet configuration failed: Invalid subnet syntax (prefix/len expected): (<wire>:0:122)"
-                        }
+                        "text": "subnet configuration failed: Invalid subnet syntax (prefix/len expected): (<wire>:0:122)"}
 
 
 def test_remote_subnet4_set_missing_subnet(channel='http'):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
-                                                        "subnets": [{"interface": "$(SERVER_IFACE)"}]
-                                                        })
+                                                        "subnets": [{"interface": "$(SERVER_IFACE)"}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
-                        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:88)"
-                        }
+                        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:88)"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -156,22 +146,16 @@ def test_remote_subnet4_set_stateless(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
-                                                                     "interface": "$(SERVER_IFACE)"}
-                                                                    ]
-                                                        })
+                                                                     "interface": "$(SERVER_IFACE)"}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 1,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -180,22 +164,17 @@ def test_remote_subnet4_set_id(channel):
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 5,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -204,43 +183,33 @@ def test_remote_subnet4_set_id_duplicated_id(channel):
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 5,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.51.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.51.1-192.168.51.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.51.1-192.168.51.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 5,
-                "subnet": "192.168.51.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.51.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"]})
@@ -251,13 +220,9 @@ def test_remote_subnet4_set_id_duplicated_id(channel):
         "subnets": [
             {
                 "id": 5,
-                "subnet": "192.168.51.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.51.0/24"}]},
         "result": 0,
-        "text": "1 IPv4 subnet(s) found."
-    }
+        "text": "1 IPv4 subnet(s) found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -266,43 +231,33 @@ def test_remote_subnet4_set_id_duplicated_subnet(channel):
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 5,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 5,
-                "subnet": "192.168.51.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.51.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
     #
     # cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
     #                                                      "server-tags": ["abc"]})
@@ -337,22 +292,17 @@ def test_remote_subnet4_set_all_values(channel):
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
                                                                      "reservation-mode": "all",
                                                                      "server-hostname": "name-xyz",
-                                                                     "subnet": "192.168.50.0/24", "valid-lifetime": 1000
-                                                                     }]
-                                                        })
+                                                                     "subnet": "192.168.50.0/24",
+                                                                     "valid-lifetime": 1000}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 2,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
 
 def _subnet_set(channel):
@@ -360,22 +310,17 @@ def _subnet_set(channel):
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 5,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -387,16 +332,11 @@ def test_remote_subnet4_del_by_id(channel):
                                                               "subnets": [{"id": 5}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 1
-    },
-        "result": 0,
-        "text": "1 IPv4 subnet(s) deleted."
-    }
+    assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 subnet(s) deleted."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_id_negative(channel):
+def test_remote_subnet4_del_by_id_incorrect_id(channel):
     _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
@@ -404,16 +344,11 @@ def test_remote_subnet4_del_by_id_negative(channel):
                                                               "subnets": [{"id": 15}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 0
-    },
-        "result": 3,
-        "text": "0 IPv4 subnet(s) deleted."
-    }
+    assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 IPv4 subnet(s) deleted."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_id_negative_2(channel):
+def test_remote_subnet4_del_id_negative_missing_subnet(channel):
     _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
@@ -421,9 +356,7 @@ def test_remote_subnet4_del_id_negative_2(channel):
                                                               "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"result": 1,
-                        "text": "missing 'id' parameter"
-                        }
+    assert response == {"result": 1, "text": "missing 'id' parameter"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -435,12 +368,7 @@ def test_remote_subnet4_del_by_prefix(channel):
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 1
-    },
-        "result": 0,
-        "text": "1 IPv4 subnet(s) deleted."
-    }
+    assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 subnet(s) deleted."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -452,25 +380,18 @@ def test_remote_subnet4_del_by_prefix_non_existing_subnet(channel):
                                                                   "subnets": [{"subnet": "192.168.51.0/24"}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 0
-    },
-        "result": 3,
-        "text": "0 IPv4 subnet(s) deleted."
-    }
+    assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 IPv4 subnet(s) deleted."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_prefix_non_existing_subnet_2(channel):
+def test_remote_subnet4_del_by_prefix_missing_subnet_(channel):
     _subnet_set(channel)
     cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"id": 2}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"result": 1,
-                        "text": "missing 'subnet' parameter"
-                        }
+    assert response == {"result": 1, "text": "missing 'subnet' parameter"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -488,22 +409,17 @@ def test_remote_subnet4_get_by_id(channel):
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
                                                                      "reservation-mode": "all",
                                                                      "server-hostname": "name-xyz",
-                                                                     "subnet": "192.168.50.0/24", "valid-lifetime": 1000
-                                                                     }]
-                                                        })
+                                                                     "subnet": "192.168.50.0/24",
+                                                                     "valid-lifetime": 1000}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
             {
                 "id": 2,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
@@ -512,8 +428,7 @@ def test_remote_subnet4_get_by_id(channel):
 
     assert response == {"arguments": {
         "count": 1,
-        "subnets": [
-            {
+        "subnets": [{
                 "4o6-interface": "eth9",
                 "4o6-interface-id": "interf-id",
                 "4o6-subnet": "2000::/64",
@@ -524,31 +439,22 @@ def test_remote_subnet4_get_by_id(channel):
                 "match-client-id": False,
                 "next-server": "0.0.0.0",
                 "option-data": [],
-                "pools": [
-                    {
+            "pools": [{
                         "option-data": [],
-                        "pool": "192.168.50.1-192.168.50.100"
-                    }
-                ],
+                "pool": "192.168.50.1-192.168.50.100"}],
                 "relay": {
                     "ip-addresses": [
-                        "192.168.5.5"
-                    ]
-                },
+                        "192.168.5.5"]},
                 "reservation-mode": "all",
                 "server-hostname": "name-xyz",
                 "subnet": "192.168.50.0/24",
-                "valid-lifetime": 1000
-            }
-        ]
-    },
+            "valid-lifetime": 1000}]},
         "result": 0,
-        "text": "IPv4 subnet 2 found."
-    }
+        "text": "IPv4 subnet 2 found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_id_negative(channel):
+def test_remote_subnet4_get_by_id_incorrect_id(channel):
     _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
@@ -558,15 +464,13 @@ def test_remote_subnet4_get_by_id_negative(channel):
 
     assert response == {"arguments": {
         "count": 0,
-        "subnets": []
-    },
+        "subnets": []},
         "result": 3,
-        "text": "IPv4 subnet 3 not found."
-    }
+        "text": "IPv4 subnet 3 not found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_id_negative_2(channel):
+def test_remote_subnet4_get_by_id_missing_id(channel):
     _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
@@ -575,8 +479,7 @@ def test_remote_subnet4_get_by_id_negative_2(channel):
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
-                        "text": "missing 'id' parameter"
-                        }
+                        "text": "missing 'id' parameter"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -594,22 +497,16 @@ def test_remote_subnet4_get_by_prefix(channel):
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
                                                                      "reservation-mode": "all",
                                                                      "server-hostname": "name-xyz",
-                                                                     "subnet": "192.168.50.0/24", "valid-lifetime": 1000
-                                                                     }]
-                                                        })
+                                                                     "subnet": "192.168.50.0/24",
+                                                                     "valid-lifetime": 1000}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
-        "subnets": [
-            {
+        "subnets": [{
                 "id": 1,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+            "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "IPv4 subnet successfully set."
-    }
+        "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
@@ -618,8 +515,7 @@ def test_remote_subnet4_get_by_prefix(channel):
 
     assert response == {"arguments": {
         "count": 1,
-        "subnets": [
-            {
+        "subnets": [{
                 "4o6-interface": "eth9",
                 "4o6-interface-id": "interf-id",
                 "4o6-subnet": "2000::/64",
@@ -630,27 +526,18 @@ def test_remote_subnet4_get_by_prefix(channel):
                 "match-client-id": True,
                 "next-server": "0.0.0.0",
                 "option-data": [],
-                "pools": [
-                    {
+            "pools": [{
                         "option-data": [],
-                        "pool": "192.168.50.1-192.168.50.100"
-                    }
-                ],
+                "pool": "192.168.50.1-192.168.50.100"}],
                 "relay": {
                     "ip-addresses": [
-                        "192.168.5.5"
-                    ]
-                },
+                        "192.168.5.5"]},
                 "reservation-mode": "all",
                 "server-hostname": "name-xyz",
                 "subnet": "192.168.50.0/24",
-                "valid-lifetime": 1000
-            }
-        ]
-    },
+            "valid-lifetime": 1000}]},
         "result": 0,
-        "text": "IPv4 subnet '192.168.50.0/24' found."
-    }
+        "text": "IPv4 subnet '192.168.50.0/24' found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -664,11 +551,9 @@ def test_remote_subnet4_get_by_prefix_negative(channel):
 
     assert response == {"arguments": {
         "count": 0,
-        "subnets": []
-    },
+        "subnets": []},
         "result": 3,
-        "text": "IPv4 subnet '10.0.0.2/12' not found."
-    }
+        "text": "IPv4 subnet '10.0.0.2/12' not found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -680,12 +565,11 @@ def test_remote_subnet4_get_by_prefix_incorrect_prefix(channel):
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
-                        "text": "unable to parse invalid prefix 10.0.0/12"
-                        }
+                        "text": "unable to parse invalid prefix 10.0.0/12"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_prefix_negative_2(channel):
+def test_remote_subnet4_get_by_prefix_missing_prefix(channel):
     _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
@@ -694,8 +578,7 @@ def test_remote_subnet4_get_by_prefix_negative_2(channel):
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
-                        "text": "missing 'subnet' parameter"
-                        }
+                        "text": "missing 'subnet' parameter"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -706,18 +589,16 @@ def test_remote_subnet4_list(channel):
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.51.0/24", "id": 3,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.51.1-192.168.51.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.51.1-192.168.51.100"}]}]})
     _send_request(cmd, channel=channel)
 
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.52.0/24", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "192.168.52.1-192.168.52.100"}]}
-                                                                    ]
-                                                        })
+                                                                     "pools": [
+                                                                         {"pool": "192.168.52.1-192.168.52.100"}]}]})
     _send_request(cmd, channel=channel)
 
     cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
@@ -726,24 +607,17 @@ def test_remote_subnet4_list(channel):
 
     assert response == {"arguments": {
         "count": 3,
-        "subnets": [
-            {
+        "subnets": [{
                 "id": 1,
-                "subnet": "192.168.52.0/24"
-            },
+            "subnet": "192.168.52.0/24"},
             {
                 "id": 3,
-                "subnet": "192.168.51.0/24"
-            },
+                "subnet": "192.168.51.0/24"},
             {
                 "id": 5,
-                "subnet": "192.168.50.0/24"
-            }
-        ]
-    },
+                "subnet": "192.168.50.0/24"}]},
         "result": 0,
-        "text": "3 IPv4 subnet(s) found."
-    }
+        "text": "3 IPv4 subnet(s) found."}
 
 
 # network tests
@@ -760,21 +634,15 @@ def test_remote_network4_set_basic(channel):
                                                          "shared-networks": [{
                                                              "name": "floor13",
                                                              "subnet4": [{"subnet": "192.168.50.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}
-                                                                         ]}
-                                                         ]})
+                                                                          "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "shared-networks": [
             {
-                "name": "floor13"
-            }
-        ]
-    },
+                "name": "floor13"}]},
         "result": 0,
-        "text": "IPv4 shared network successfully set."
-    }
+        "text": "IPv4 shared network successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -783,9 +651,7 @@ def test_remote_network4_set_missing_name(channel):
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "subnet4": [{"subnet": "192.168.50.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}
-                                                                         ]}
-                                                         ]})
+                                                                          "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {}
@@ -798,9 +664,7 @@ def test_remote_network4_set_empty_name(channel):
                                                          "shared-networks": [{
                                                              "name": "",
                                                              "subnet4": [{"subnet": "192.168.50.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}
-                                                                         ]}
-                                                         ]})
+                                                                          "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {}
@@ -813,9 +677,7 @@ def test_remote_network4_set_basic(channel):
                                                          "shared-networks": [{
                                                              "name": "floor13",
                                                              "subnet4": [{"subnet": "192.168.50.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}
-                                                                         ]}
-                                                         ]})
+                                                                          "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {}
@@ -860,20 +722,16 @@ def test_remote_option_def4_set_basic(channel):
                                                                 "array": False,
                                                                 "record-types": "",
                                                                 "space": "dhcp4",
-                                                                "encapsulate": ""}]
-                                                            })
+                                                                "encapsulate": ""}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "option-defs": [
             {
                 "code": 222,
-                "space": "dhcp4"
-            }]
-    },
+                "space": "dhcp4"}]},
         "result": 0,
-        "text": "DHCPv4 option definition successfully set."
-    }
+        "text": "DHCPv4 option definition successfully set."}
 
 
 # "remote-option4-global-del",
@@ -888,8 +746,7 @@ def test_remote_global_option4_global_set_basic(channel):
                                                                "options": [{
                                                                    "code": 6,
                                                                    "space": "dhcp4",
-                                                                   "data": "192.0.2.1, 192.0.2.2"}]
-                                                               })
+                                                                   "data": "192.0.2.1, 192.0.2.2"}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 0,
@@ -897,5 +754,4 @@ def test_remote_global_option4_global_set_basic(channel):
                         "arguments": {
                             "options": [{
                                 "code": 6,
-                                "space": "dhcp4"}]}
-                        }
+                                "space": "dhcp4"}]}}
