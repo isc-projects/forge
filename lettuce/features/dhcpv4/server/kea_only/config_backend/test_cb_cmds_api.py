@@ -111,13 +111,8 @@ def test_remote_subnet4_set_basic(channel):
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 1,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
 
 def test_remote_subnet4_set_empty_subnet(channel='http'):
@@ -149,13 +144,8 @@ def test_remote_subnet4_set_stateless(channel):
                                                                      "interface": "$(SERVER_IFACE)"}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 1,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -168,13 +158,8 @@ def test_remote_subnet4_set_id(channel):
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 5,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -187,13 +172,8 @@ def test_remote_subnet4_set_id_duplicated_id(channel):
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 5,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
@@ -203,26 +183,15 @@ def test_remote_subnet4_set_id_duplicated_id(channel):
                                                                          {"pool": "192.168.51.1-192.168.51.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 5,
-                "subnet": "192.168.51.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.51.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 1,
-        "subnets": [
-            {
-                "id": 5,
-                "subnet": "192.168.51.0/24"}]},
-        "result": 0,
-        "text": "1 IPv4 subnet(s) found."}
+    assert response == {"arguments": {"count": 1, "subnets": [{"id": 5, "subnet": "192.168.51.0/24"}]},
+                        "result": 0, "text": "1 IPv4 subnet(s) found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -235,13 +204,8 @@ def test_remote_subnet4_set_id_duplicated_subnet(channel):
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 5,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
@@ -251,13 +215,8 @@ def test_remote_subnet4_set_id_duplicated_subnet(channel):
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 5,
-                "subnet": "192.168.51.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.51.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
     #
     # cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
     #                                                      "server-tags": ["abc"]})
@@ -296,13 +255,8 @@ def test_remote_subnet4_set_all_values(channel):
                                                                      "valid-lifetime": 1000}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 2,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
 
 def _subnet_set(channel):
@@ -314,13 +268,8 @@ def _subnet_set(channel):
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 5,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -413,13 +362,8 @@ def test_remote_subnet4_get_by_id(channel):
                                                                      "valid-lifetime": 1000}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [
-            {
-                "id": 2,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
@@ -449,8 +393,7 @@ def test_remote_subnet4_get_by_id(channel):
             "server-hostname": "name-xyz",
             "subnet": "192.168.50.0/24",
             "valid-lifetime": 1000}]},
-        "result": 0,
-        "text": "IPv4 subnet 2 found."}
+        "result": 0, "text": "IPv4 subnet 2 found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -462,11 +405,8 @@ def test_remote_subnet4_get_by_id_incorrect_id(channel):
                                                               "subnets": [{"id": 3}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 0,
-        "subnets": []},
-        "result": 3,
-        "text": "IPv4 subnet 3 not found."}
+    assert response == {"arguments": {"count": 0, "subnets": []},
+                        "result": 3, "text": "IPv4 subnet 3 not found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -501,12 +441,8 @@ def test_remote_subnet4_get_by_prefix(channel):
                                                                      "valid-lifetime": 1000}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "subnets": [{
-            "id": 1,
-            "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "IPv4 subnet successfully set."}
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
     cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
