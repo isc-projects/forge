@@ -429,25 +429,25 @@ def test_remote_subnet4_get_by_id(channel):
     assert response == {"arguments": {
         "count": 1,
         "subnets": [{
-                "4o6-interface": "eth9",
-                "4o6-interface-id": "interf-id",
-                "4o6-subnet": "2000::/64",
-                "authoritative": False,
-                "boot-file-name": "file-name",
-                "id": 2,
-                "interface": "enp0s9",
-                "match-client-id": False,
-                "next-server": "0.0.0.0",
-                "option-data": [],
+            "4o6-interface": "eth9",
+            "4o6-interface-id": "interf-id",
+            "4o6-subnet": "2000::/64",
+            "authoritative": False,
+            "boot-file-name": "file-name",
+            "id": 2,
+            "interface": "enp0s9",
+            "match-client-id": False,
+            "next-server": "0.0.0.0",
+            "option-data": [],
             "pools": [{
-                        "option-data": [],
+                "option-data": [],
                 "pool": "192.168.50.1-192.168.50.100"}],
-                "relay": {
-                    "ip-addresses": [
-                        "192.168.5.5"]},
-                "reservation-mode": "all",
-                "server-hostname": "name-xyz",
-                "subnet": "192.168.50.0/24",
+            "relay": {
+                "ip-addresses": [
+                    "192.168.5.5"]},
+            "reservation-mode": "all",
+            "server-hostname": "name-xyz",
+            "subnet": "192.168.50.0/24",
             "valid-lifetime": 1000}]},
         "result": 0,
         "text": "IPv4 subnet 2 found."}
@@ -503,7 +503,7 @@ def test_remote_subnet4_get_by_prefix(channel):
 
     assert response == {"arguments": {
         "subnets": [{
-                "id": 1,
+            "id": 1,
             "subnet": "192.168.50.0/24"}]},
         "result": 0,
         "text": "IPv4 subnet successfully set."}
@@ -516,25 +516,25 @@ def test_remote_subnet4_get_by_prefix(channel):
     assert response == {"arguments": {
         "count": 1,
         "subnets": [{
-                "4o6-interface": "eth9",
-                "4o6-interface-id": "interf-id",
-                "4o6-subnet": "2000::/64",
-                "authoritative": False,
-                "boot-file-name": "file-name",
-                "id": 1,
-                "interface": "enp0s9",
-                "match-client-id": True,
-                "next-server": "0.0.0.0",
-                "option-data": [],
+            "4o6-interface": "eth9",
+            "4o6-interface-id": "interf-id",
+            "4o6-subnet": "2000::/64",
+            "authoritative": False,
+            "boot-file-name": "file-name",
+            "id": 1,
+            "interface": "enp0s9",
+            "match-client-id": True,
+            "next-server": "0.0.0.0",
+            "option-data": [],
             "pools": [{
-                        "option-data": [],
+                "option-data": [],
                 "pool": "192.168.50.1-192.168.50.100"}],
-                "relay": {
-                    "ip-addresses": [
-                        "192.168.5.5"]},
-                "reservation-mode": "all",
-                "server-hostname": "name-xyz",
-                "subnet": "192.168.50.0/24",
+            "relay": {
+                "ip-addresses": [
+                    "192.168.5.5"]},
+            "reservation-mode": "all",
+            "server-hostname": "name-xyz",
+            "subnet": "192.168.50.0/24",
             "valid-lifetime": 1000}]},
         "result": 0,
         "text": "IPv4 subnet '192.168.50.0/24' found."}
@@ -608,7 +608,7 @@ def test_remote_subnet4_list(channel):
     assert response == {"arguments": {
         "count": 3,
         "subnets": [{
-                "id": 1,
+            "id": 1,
             "subnet": "192.168.52.0/24"},
             {
                 "id": 3,

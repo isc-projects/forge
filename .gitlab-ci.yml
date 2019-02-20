@@ -7,5 +7,4 @@ pylint:
     - PY_FILES="$PY_FILES feat2py.py"
     - echo "$PY_FILES"
     - pylint --rcfile=../pylint.rc $PY_FILES
-    - pycodestyle --max-line-length=2000 --ignore=E722 $PY_FILES
-    - function-rgx=[a-z_][a-z0-9_]{2,75}$
+    - pycodestyle --max-line-length=2000 --function-rgx=[a-z_][a-z0-9_]{2,75}$ --ignore=E722 $PY_FILES
