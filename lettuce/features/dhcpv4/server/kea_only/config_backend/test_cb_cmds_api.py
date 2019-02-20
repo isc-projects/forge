@@ -1,4 +1,4 @@
-"""Kea DB config commands hook testing"""
+"""Kea database config backend commands hook testing"""
 
 import sys
 import pytest
@@ -13,13 +13,13 @@ pytestmark = [pytest.mark.py_test,
               pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.mark.db_config,
-              pytest.mark.db_cmds]
+              pytest.mark.config_backend,
+              pytest.mark.cb_cmds]
 
 DHCP_VERSION = srv_msg.world.proto
 
 
-def _setup_server_for_db_cmds(step):
+def _setup_server_for_cb_cmds(step):
     srv_control.config_srv_subnet(step, '$(EMPTY)', '$(EMPTY)')
     srv_control.config_client_classification(step, '0', 'Client_Class_1')
     srv_control.open_control_channel(step,
@@ -65,7 +65,7 @@ def _send_request(step, cmd, channel='http'):
 @pytest.fixture(autouse=True)
 def run_around_tests(step):
     misc.test_setup(step)
-    _setup_server_for_db_cmds(step)
+    _setup_server_for_cb_cmds(step)
 
 
 def _check_kea(step):
@@ -448,7 +448,7 @@ def test_remote_subnet4_del_by_prefix(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_prefix_negative(step, channel):
+def test_remote_subnet4_del_by_prefix_non_existing_subnet(step, channel):
     _subnet_set(step, channel)
 
     cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
@@ -465,7 +465,7 @@ def test_remote_subnet4_del_by_prefix_negative(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_prefix_negative_2(step, channel):
+def test_remote_subnet4_del_by_prefix_non_existing_subnet_2(step, channel):
     _subnet_set(step, channel)
     cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
@@ -780,6 +780,49 @@ def test_remote_network4_set_basic(step, channel):
         "text": "IPv4 shared network successfully set."
     }
 
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_network4_set_missing_name(step, channel):
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "subnet4": [{"subnet": "192.168.50.0/24",
+                                                                          "interface": "$(SERVER_IFACE)"}
+                                                                         ]}
+                                                         ]})
+    response = _send_request(step, cmd, channel=channel)
+
+    assert response == {}
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_network4_set_empty_name(step, channel):
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "",
+                                                             "subnet4": [{"subnet": "192.168.50.0/24",
+                                                                          "interface": "$(SERVER_IFACE)"}
+                                                                         ]}
+                                                         ]})
+    response = _send_request(step, cmd, channel=channel)
+
+    assert response == {}
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_network4_set_basic(step, channel):
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "floor13",
+                                                             "subnet4": [{"subnet": "192.168.50.0/24",
+                                                                          "interface": "$(SERVER_IFACE)"}
+                                                                         ]}
+                                                         ]})
+    response = _send_request(step, cmd, channel=channel)
+
+    assert response == {}
 
 # global-parameter tests
 

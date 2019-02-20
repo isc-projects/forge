@@ -7,7 +7,7 @@ import misc
 import srv_control
 
 
-def _setup_server_for_db_config_cmds(step):
+def _setup_server_for_config_backend_cmds(step):
     misc.test_setup(step)
     srv_control.config_srv_subnet(step, '$(EMPTY)', '$(EMPTY)')
     srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_cb_cmds.so')
@@ -25,10 +25,10 @@ def _setup_server_for_db_config_cmds(step):
 
 @pytest.mark.py_test
 @pytest.mark.v4
-@pytest.mark.db_config
+@pytest.mark.config_backend
 @pytest.mark.kea_only
 def test_v4_config_backend_subnet_set(step):
-    _setup_server_for_db_config_cmds(step)
+    _setup_server_for_config_backend_cmds(step)
 
     misc.test_procedure(step)
     srv_msg.client_sets_value(step, 'Client', 'chaddr', 'ff:01:02:03:ff:04')
@@ -61,10 +61,10 @@ def test_v4_config_backend_subnet_set(step):
 
 
 @pytest.mark.v4
-@pytest.mark.db_config
+@pytest.mark.config_backend
 @pytest.mark.kea_only
 def test_v4_config_backend_subnet_set_and_del(step):
-    _setup_server_for_db_config_cmds(step)
+    _setup_server_for_config_backend_cmds(step)
 
     misc.test_procedure(step)
     srv_msg.client_sets_value(step, 'Client', 'chaddr', 'ff:01:02:03:ff:04')
@@ -113,10 +113,10 @@ def test_v4_config_backend_subnet_set_and_del(step):
 
 @pytest.mark.py_test
 @pytest.mark.v4
-@pytest.mark.db_config
+@pytest.mark.config_backend
 @pytest.mark.kea_only
 def test_v4_config_backend_subnet_set_2(step):
-    _setup_server_for_db_config_cmds(step)
+    _setup_server_for_config_backend_cmds(step)
 
     misc.test_procedure(step)
     srv_msg.client_sets_value(step, 'Client', 'chaddr', 'ff:01:02:03:ff:04')
