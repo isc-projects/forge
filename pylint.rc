@@ -287,7 +287,7 @@ docstring-min-length=-1
 
 # Regular expression matching correct function names. Overrides function-
 # naming-style.
-function-rgx=(([a-z_][a-z0-9_]{2,40})|(_[a-z0-9_]*)|(__[a-z][a-z0-9_]+__))$
+function-rgx=(([a-z_][a-z0-9_]{2,75})|(_[a-z0-9_]*)|(__[a-z][a-z0-9_]+__))$
 
 # Good variable names which should always be accepted, separated by a comma.
 good-names=i,

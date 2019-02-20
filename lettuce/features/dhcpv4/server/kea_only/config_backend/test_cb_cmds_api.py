@@ -123,7 +123,8 @@ def test_remote_subnet4_set_empty_subnet(channel='http'):
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
-                        "text": "subnet configuration failed: Invalid subnet syntax (prefix/len expected): (<wire>:0:122)"}
+                        "text": "subnet configuration failed: Invalid subnet syntax"
+                                " (prefix/len expected): (<wire>:0:122)"}
 
 
 def test_remote_subnet4_set_missing_subnet(channel='http'):
@@ -133,7 +134,8 @@ def test_remote_subnet4_set_missing_subnet(channel='http'):
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
-                        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:88)"}
+                        "text": "subnet configuration failed: mandatory 'subnet' parameter"
+                                " is missing for a subnet being configured (<wire>:0:88)"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -535,16 +537,10 @@ def test_remote_subnet4_list(channel):
                                                          "server-tags": ["abc"]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 3,
-        "subnets": [{
-            "id": 1,
-            "subnet": "192.168.52.0/24"},
-            {"id": 3,
-             "subnet": "192.168.51.0/24"},
-            {"id": 5,
-             "subnet": "192.168.50.0/24"}]},
-        "result": 0, "text": "3 IPv4 subnet(s) found."}
+    assert response == {"arguments": {"count": 3, "subnets": [{"id": 1, "subnet": "192.168.52.0/24"},
+                                                              {"id": 3, "subnet": "192.168.51.0/24"},
+                                                              {"id": 5, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "3 IPv4 subnet(s) found."}
 
 
 # network tests
