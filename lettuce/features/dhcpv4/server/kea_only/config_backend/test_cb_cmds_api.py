@@ -19,27 +19,24 @@ pytestmark = [pytest.mark.py_test,
 DHCP_VERSION = srv_msg.world.proto
 
 
-def _setup_server_for_cb_cmds(step):
-    srv_control.config_srv_subnet(step, '$(EMPTY)', '$(EMPTY)')
-    srv_control.config_client_classification(step, '0', 'Client_Class_1')
-    srv_control.open_control_channel(step,
-                                     'unix',
+def _setup_server_for_cb_cmds():
+    srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
+    srv_control.config_client_classification('0', 'Client_Class_1')
+    srv_control.open_control_channel('unix',
                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.agent_control_channel(step,
-                                      '$(SRV4_ADDR)',
+    srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_cb_cmds.so')
-    srv_control.add_hooks(step, '$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_mysql_cb.so')
-    srv_control.run_command(step,
-                            '"config-control":{"config-databases":[{"user":"$(DB_USER)",'
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_cb_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_mysql_cb.so')
+    srv_control.run_command('"config-control":{"config-databases":[{"user":"$(DB_USER)",'
                             '"password":"$(DB_PASSWD)","name":"$(DB_NAME)","type":"mysql"}]}')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
 
-def _send_request(step, cmd, channel='http'):
+def _send_request(cmd, channel='http'):
     if channel == 'http':
         if DHCP_VERSION == 'v4':
             cmd["service"] = ['dhcp4']
@@ -48,13 +45,13 @@ def _send_request(step, cmd, channel='http'):
     cmd_str = json.dumps(cmd)
 
     if channel == 'http':
-        response = srv_msg.send_through_http(step,
+        response = srv_msg.send_through_http(
                                              '$(SRV4_ADDR)',
                                              '8000',
                                              cmd_str)
         response = response[0]
     elif channel == 'socket':
-        response = srv_msg.send_through_socket_server_site(step,
+        response = srv_msg.send_through_socket_server_site(
                                                            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                                            cmd_str)
     else:
@@ -63,21 +60,21 @@ def _send_request(step, cmd, channel='http'):
 
 
 @pytest.fixture(autouse=True)
-def run_around_tests(step):
-    misc.test_setup(step)
-    _setup_server_for_cb_cmds(step)
+def run_around_tests():
+    misc.test_setup()
+    _setup_server_for_cb_cmds()
 
 
-def _check_kea(step):
-    srv_control.start_srv(step, 'DHCP', 'restarted')
-    srv_msg.send_through_socket_server_site(step,
+def _check_kea():
+    srv_control.start_srv('DHCP', 'restarted')
+    srv_msg.send_through_socket_server_site(
                                             '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                             '{"command": "config-get", "arguments": {}}')
 
 
-def test_availability(step):
+def test_availability():
     cmd = dict(command='list-commands')
-    response = _send_request(step, cmd)
+    response = _send_request(cmd)
 
     for cmd in ["remote-global-parameter4-del",
                 "remote-global-parameter4-get",
@@ -106,7 +103,7 @@ def test_availability(step):
 
 # subnet tests
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_set_basic(step, channel):
+def test_remote_subnet4_set_basic(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
@@ -114,7 +111,7 @@ def test_remote_subnet4_set_basic(step, channel):
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -129,26 +126,26 @@ def test_remote_subnet4_set_basic(step, channel):
     }
 
 
-def test_remote_subnet4_set_empty_subnet(step, channel='http'):
+def test_remote_subnet4_set_empty_subnet(channel='http'):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "",
                                                                      "interface": "$(SERVER_IFACE)"}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
                         "text": "subnet configuration failed: Invalid subnet syntax (prefix/len expected): (<wire>:0:122)"
                         }
 
 
-def test_remote_subnet4_set_missing_subnet(step, channel='http'):
+def test_remote_subnet4_set_missing_subnet(channel='http'):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"interface": "$(SERVER_IFACE)"}]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
                         "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:88)"
@@ -156,14 +153,14 @@ def test_remote_subnet4_set_missing_subnet(step, channel='http'):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_set_stateless(step, channel):
+def test_remote_subnet4_set_stateless(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "interface": "$(SERVER_IFACE)"}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -179,7 +176,7 @@ def test_remote_subnet4_set_stateless(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_set_id(step, channel):
+def test_remote_subnet4_set_id(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
@@ -187,7 +184,7 @@ def test_remote_subnet4_set_id(step, channel):
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -203,7 +200,7 @@ def test_remote_subnet4_set_id(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_set_id_duplicated_id(step, channel):
+def test_remote_subnet4_set_id_duplicated_id(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
@@ -211,7 +208,7 @@ def test_remote_subnet4_set_id_duplicated_id(step, channel):
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -232,7 +229,7 @@ def test_remote_subnet4_set_id_duplicated_id(step, channel):
                                                                      "pools": [{"pool": "192.168.51.1-192.168.51.100"}]}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -248,7 +245,7 @@ def test_remote_subnet4_set_id_duplicated_id(step, channel):
 
     cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 1,
@@ -265,7 +262,7 @@ def test_remote_subnet4_set_id_duplicated_id(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_set_id_duplicated_subnet(step, channel):
+def test_remote_subnet4_set_id_duplicated_subnet(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
@@ -273,7 +270,7 @@ def test_remote_subnet4_set_id_duplicated_subnet(step, channel):
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -294,7 +291,7 @@ def test_remote_subnet4_set_id_duplicated_subnet(step, channel):
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -310,7 +307,7 @@ def test_remote_subnet4_set_id_duplicated_subnet(step, channel):
     #
     # cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
     #                                                      "server-tags": ["abc"]})
-    # response = _send_request(step, cmd, channel=channel)
+    # response = _send_request(cmd, channel=channel)
     #
     # assert response == {"arguments": {
     #     "count": 1,
@@ -327,7 +324,7 @@ def test_remote_subnet4_set_id_duplicated_subnet(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_set_all_values(step, channel):
+def test_remote_subnet4_set_all_values(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"4o6-interface": "eth9",
@@ -344,7 +341,7 @@ def test_remote_subnet4_set_all_values(step, channel):
                                                                      "subnet": "192.168.50.0/24", "valid-lifetime": 1000
                                                                      }]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -359,7 +356,7 @@ def test_remote_subnet4_set_all_values(step, channel):
     }
 
 
-def _subnet_set(step, channel):
+def _subnet_set(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
@@ -367,7 +364,7 @@ def _subnet_set(step, channel):
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}
                                                                     ]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
     
     assert response == {"arguments": {
         "subnets": [
@@ -383,13 +380,13 @@ def _subnet_set(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_id(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_del_by_id(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
                                                               "subnets": [{"id": 5}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 1
@@ -400,13 +397,13 @@ def test_remote_subnet4_del_by_id(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_id_negative(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_del_by_id_negative(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
                                                               "subnets": [{"id": 15}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 0
@@ -417,13 +414,13 @@ def test_remote_subnet4_del_by_id_negative(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_id_negative_2(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_del_id_negative_2(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
                                                               "subnets": [{"subnet": "192.168.50.0/24"}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
                         "text": "missing 'id' parameter"
@@ -431,13 +428,13 @@ def test_remote_subnet4_del_id_negative_2(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_prefix(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_del_by_prefix(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 1
@@ -448,13 +445,13 @@ def test_remote_subnet4_del_by_prefix(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_prefix_non_existing_subnet(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_del_by_prefix_non_existing_subnet(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"subnet": "192.168.51.0/24"}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 0
@@ -465,12 +462,12 @@ def test_remote_subnet4_del_by_prefix_non_existing_subnet(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_del_by_prefix_non_existing_subnet_2(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_del_by_prefix_non_existing_subnet_2(channel):
+    _subnet_set(channel)
     cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"id": 2}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
                         "text": "missing 'subnet' parameter"
@@ -478,7 +475,7 @@ def test_remote_subnet4_del_by_prefix_non_existing_subnet_2(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_id(step, channel):
+def test_remote_subnet4_get_by_id(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"4o6-interface": "eth9",
@@ -495,7 +492,7 @@ def test_remote_subnet4_get_by_id(step, channel):
                                                                      "subnet": "192.168.50.0/24", "valid-lifetime": 1000
                                                                      }]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -512,7 +509,7 @@ def test_remote_subnet4_get_by_id(step, channel):
     cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
                                                               "subnets": [{"id": 2}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 1,
@@ -552,13 +549,13 @@ def test_remote_subnet4_get_by_id(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_id_negative(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_get_by_id_negative(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
                                                               "subnets": [{"id": 3}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 0,
@@ -570,13 +567,13 @@ def test_remote_subnet4_get_by_id_negative(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_id_negative_2(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_get_by_id_negative_2(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
                                                               "server-tags": ["abc"],
                                                               "subnets": [{"subnet": 3}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
                         "text": "missing 'id' parameter"
@@ -584,7 +581,7 @@ def test_remote_subnet4_get_by_id_negative_2(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_prefix(step, channel):
+def test_remote_subnet4_get_by_prefix(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"4o6-interface": "eth9",
@@ -601,7 +598,7 @@ def test_remote_subnet4_get_by_prefix(step, channel):
                                                                      "subnet": "192.168.50.0/24", "valid-lifetime": 1000
                                                                      }]
                                                         })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "subnets": [
@@ -618,7 +615,7 @@ def test_remote_subnet4_get_by_prefix(step, channel):
     cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 1,
@@ -658,13 +655,13 @@ def test_remote_subnet4_get_by_prefix(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_prefix_negative(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_get_by_prefix_negative(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"subnet": "10.0.0.2/12"}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 0,
@@ -676,12 +673,12 @@ def test_remote_subnet4_get_by_prefix_negative(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_prefix_incorrect_prefix(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_get_by_prefix_incorrect_prefix(channel):
+    _subnet_set(channel)
     cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"subnet": "10.0.0/12"}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
                         "text": "unable to parse invalid prefix 10.0.0/12"
@@ -689,13 +686,13 @@ def test_remote_subnet4_get_by_prefix_incorrect_prefix(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_get_by_prefix_negative_2(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_get_by_prefix_negative_2(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "subnets": [{"id": "10.0.0/12"}]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 1,
                         "text": "missing 'subnet' parameter"
@@ -703,8 +700,8 @@ def test_remote_subnet4_get_by_prefix_negative_2(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_subnet4_list(step, channel):
-    _subnet_set(step, channel)
+def test_remote_subnet4_list(channel):
+    _subnet_set(channel)
 
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
@@ -713,7 +710,7 @@ def test_remote_subnet4_list(step, channel):
                                                                      "pools": [{"pool": "192.168.51.1-192.168.51.100"}]}
                                                                     ]
                                                         })
-    _send_request(step, cmd, channel=channel)
+    _send_request(cmd, channel=channel)
 
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
@@ -722,11 +719,11 @@ def test_remote_subnet4_list(step, channel):
                                                                      "pools": [{"pool": "192.168.52.1-192.168.52.100"}]}
                                                                     ]
                                                         })
-    _send_request(step, cmd, channel=channel)
+    _send_request(cmd, channel=channel)
 
     cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "count": 3,
@@ -758,7 +755,7 @@ def test_remote_subnet4_list(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_network4_set_basic(step, channel):
+def test_remote_network4_set_basic(channel):
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
@@ -767,7 +764,7 @@ def test_remote_network4_set_basic(step, channel):
                                                                           "interface": "$(SERVER_IFACE)"}
                                                                          ]}
                                                          ]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "shared-networks": [
@@ -782,7 +779,7 @@ def test_remote_network4_set_basic(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_network4_set_missing_name(step, channel):
+def test_remote_network4_set_missing_name(channel):
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
@@ -790,13 +787,13 @@ def test_remote_network4_set_missing_name(step, channel):
                                                                           "interface": "$(SERVER_IFACE)"}
                                                                          ]}
                                                          ]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_network4_set_empty_name(step, channel):
+def test_remote_network4_set_empty_name(channel):
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
@@ -805,13 +802,13 @@ def test_remote_network4_set_empty_name(step, channel):
                                                                           "interface": "$(SERVER_IFACE)"}
                                                                          ]}
                                                          ]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_network4_set_basic(step, channel):
+def test_remote_network4_set_basic(channel):
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
@@ -820,7 +817,7 @@ def test_remote_network4_set_basic(step, channel):
                                                                           "interface": "$(SERVER_IFACE)"}
                                                                          ]}
                                                          ]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {}
 
@@ -832,14 +829,14 @@ def test_remote_network4_set_basic(step, channel):
 # "remote-global-parameter4-set",
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_global_parameter4_set_basic(step, channel):
+def test_remote_global_parameter4_set_basic(channel):
     cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": [{
                                                                       "name": "boot-file-name",
                                                                       "value": "/dev/null"
                                                                   }]})
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 0,
                         "text": "DHCPv4 global parameter successfully set."
@@ -852,7 +849,7 @@ def test_remote_global_parameter4_set_basic(step, channel):
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_option_def4_set_basic(step, channel):
+def test_remote_option_def4_set_basic(channel):
     cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
@@ -864,7 +861,7 @@ def test_remote_option_def4_set_basic(step, channel):
                                                                 "space": "dhcp4",
                                                                 "encapsulate": ""}]
                                                             })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {
         "option-defs": [
@@ -884,7 +881,7 @@ def test_remote_option_def4_set_basic(step, channel):
 # "remote-option4-global-set",
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_global_option4_global_set_basic(step, channel):
+def test_remote_global_option4_global_set_basic(channel):
     cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{
@@ -892,7 +889,7 @@ def test_remote_global_option4_global_set_basic(step, channel):
                                                                    "space": "dhcp4",
                                                                    "data": "192.0.2.1, 192.0.2.2"}]
                                                                })
-    response = _send_request(step, cmd, channel=channel)
+    response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 0,
                         "text": "DHCPv4 option successfully set.",
