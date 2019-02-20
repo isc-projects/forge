@@ -392,8 +392,7 @@ def test_remote_subnet4_get_by_id(channel):
             "reservation-mode": "all",
             "server-hostname": "name-xyz",
             "subnet": "192.168.50.0/24",
-            "valid-lifetime": 1000}]},
-        "result": 0, "text": "IPv4 subnet 2 found."}
+            "valid-lifetime": 1000}]}, "result": 0, "text": "IPv4 subnet 2 found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -471,9 +470,7 @@ def test_remote_subnet4_get_by_prefix(channel):
             "reservation-mode": "all",
             "server-hostname": "name-xyz",
             "subnet": "192.168.50.0/24",
-            "valid-lifetime": 1000}]},
-        "result": 0,
-        "text": "IPv4 subnet '192.168.50.0/24' found."}
+            "valid-lifetime": 1000}]}, "result": 0, "text": "IPv4 subnet '192.168.50.0/24' found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -485,11 +482,8 @@ def test_remote_subnet4_get_by_prefix_negative(channel):
                                                                   "subnets": [{"subnet": "10.0.0.2/12"}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 0,
-        "subnets": []},
-        "result": 3,
-        "text": "IPv4 subnet '10.0.0.2/12' not found."}
+    assert response == {"arguments": {"count": 0, "subnets": []},
+                        "result": 3, "text": "IPv4 subnet '10.0.0.2/12' not found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -546,14 +540,11 @@ def test_remote_subnet4_list(channel):
         "subnets": [{
             "id": 1,
             "subnet": "192.168.52.0/24"},
-            {
-                "id": 3,
-                "subnet": "192.168.51.0/24"},
-            {
-                "id": 5,
-                "subnet": "192.168.50.0/24"}]},
-        "result": 0,
-        "text": "3 IPv4 subnet(s) found."}
+            {"id": 3,
+             "subnet": "192.168.51.0/24"},
+            {"id": 5,
+             "subnet": "192.168.50.0/24"}]},
+        "result": 0, "text": "3 IPv4 subnet(s) found."}
 
 
 # network tests
@@ -573,12 +564,8 @@ def test_remote_network4_set_basic(channel):
                                                                           "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "shared-networks": [
-            {
-                "name": "floor13"}]},
-        "result": 0,
-        "text": "IPv4 shared network successfully set."}
+    assert response == {"arguments": {"shared-networks": [{"name": "floor13"}]},
+                        "result": 0, "text": "IPv4 shared network successfully set."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -606,17 +593,17 @@ def test_remote_network4_set_empty_name(channel):
     assert response == {}
 
 
-@pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_network4_set_basic(channel):
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
-                                                         "server-tags": ["abc"],
-                                                         "shared-networks": [{
-                                                             "name": "floor13",
-                                                             "subnet4": [{"subnet": "192.168.50.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}]}]})
-    response = _send_request(cmd, channel=channel)
-
-    assert response == {}
+# @pytest.mark.parametrize("channel", ['http', 'socket'])
+# def test_remote_network4_set_basic(channel):
+#     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+#                                                          "server-tags": ["abc"],
+#                                                          "shared-networks": [{
+#                                                              "name": "floor13",
+#                                                              "subnet4": [{"subnet": "192.168.50.0/24",
+#                                                                           "interface": "$(SERVER_IFACE)"}]}]})
+#     response = _send_request(cmd, channel=channel)
+#
+#     assert response == {}
 
 
 # global-parameter tests
@@ -637,8 +624,7 @@ def test_remote_global_parameter4_set_basic(channel):
     response = _send_request(cmd, channel=channel)
 
     assert response == {"result": 0,
-                        "text": "DHCPv4 global parameter successfully set."
-                        }
+                        "text": "DHCPv4 global parameter successfully set."}
 
 
 # "remote-option-def4-del",
@@ -661,13 +647,8 @@ def test_remote_option_def4_set_basic(channel):
                                                                 "encapsulate": ""}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "option-defs": [
-            {
-                "code": 222,
-                "space": "dhcp4"}]},
-        "result": 0,
-        "text": "DHCPv4 option definition successfully set."}
+    assert response == {"arguments": {"option-defs": [{"code": 222, "space": "dhcp4"}]},
+                        "result": 0, "text": "DHCPv4 option definition successfully set."}
 
 
 # "remote-option4-global-del",
@@ -685,9 +666,5 @@ def test_remote_global_option4_global_set_basic(channel):
                                                                    "data": "192.0.2.1, 192.0.2.2"}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"result": 0,
-                        "text": "DHCPv4 option successfully set.",
-                        "arguments": {
-                            "options": [{
-                                "code": 6,
-                                "space": "dhcp4"}]}}
+    assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
+                        "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
