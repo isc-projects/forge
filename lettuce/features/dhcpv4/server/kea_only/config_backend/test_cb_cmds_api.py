@@ -1,8 +1,7 @@
 """Kea database config backend commands hook testing"""
 
-import sys
-import pytest
 import json
+import pytest
 import features.srv_msg as srv_msg
 import features.srv_control as srv_control
 import features.misc as misc
@@ -46,14 +45,14 @@ def _send_request(cmd, channel='http'):
 
     if channel == 'http':
         response = srv_msg.send_through_http(
-                                             '$(SRV4_ADDR)',
-                                             '8000',
-                                             cmd_str)
+            '$(SRV4_ADDR)',
+            '8000',
+            cmd_str)
         response = response[0]
     elif channel == 'socket':
         response = srv_msg.send_through_socket_server_site(
-                                                           '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-                                                           cmd_str)
+            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+            cmd_str)
     else:
         raise ValueError('unsupported channel type: %s' % str(channel))
     return response
@@ -68,8 +67,8 @@ def run_around_tests():
 def _check_kea():
     srv_control.start_srv('DHCP', 'restarted')
     srv_msg.send_through_socket_server_site(
-                                            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-                                            '{"command": "config-get", "arguments": {}}')
+        '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+        '{"command": "config-get", "arguments": {}}')
 
 
 def test_availability():
@@ -365,7 +364,7 @@ def _subnet_set(channel):
                                                                     ]
                                                         })
     response = _send_request(cmd, channel=channel)
-    
+
     assert response == {"arguments": {
         "subnets": [
             {
@@ -821,6 +820,7 @@ def test_remote_network4_set_basic(channel):
 
     assert response == {}
 
+
 # global-parameter tests
 
 # "remote-global-parameter4-del",
@@ -841,6 +841,7 @@ def test_remote_global_parameter4_set_basic(channel):
     assert response == {"result": 0,
                         "text": "DHCPv4 global parameter successfully set."
                         }
+
 
 # "remote-option-def4-del",
 # "remote-option-def4-get",

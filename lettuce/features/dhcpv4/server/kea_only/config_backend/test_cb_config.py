@@ -1,10 +1,9 @@
 """Kea DB config hook testing"""
 
-import sys
 import pytest
-import srv_msg
-import misc
-import srv_control
+import features.srv_msg as srv_msg
+import features.srv_control as srv_control
+import features.misc as misc
 
 
 def _setup_server_for_config_backend_cmds():
@@ -13,11 +12,11 @@ def _setup_server_for_config_backend_cmds():
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_cb_cmds.so')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_mysql_cb.so')
     srv_control.open_control_channel(
-                                     'unix',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+        'unix',
+        '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.run_command(
-                            '"config-control":{"config-databases":[{"user":"$(DB_USER)",'
-                            '"password":"$(DB_PASSWD)","name":"$(DB_NAME)","type":"mysql"}]}')
+        '"config-control":{"config-databases":[{"user":"$(DB_USER)",'
+        '"password":"$(DB_PASSWD)","name":"$(DB_NAME)","type":"mysql"}]}')
     srv_control.run_command(',"server-tag": "abc"')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
