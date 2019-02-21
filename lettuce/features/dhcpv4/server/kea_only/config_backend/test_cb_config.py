@@ -76,7 +76,10 @@ def test_v4_config_backend_subnet_set_and_del():
                                             '{"command": "config-get", "arguments": {}}')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-                                            '{"command":"remote-subnet4-set","arguments":{"remote":{"type":"mysql"},"server-tags":["abc-my-server"],"subnets":[{"subnet": "192.168.50.0/24","interface": "$(SERVER_IFACE)","pools": [{"pool": "192.168.50.100-192.168.50.100"}]}]}}')
+                                            '{"command":"remote-subnet4-set","arguments":{"remote":{"type":"mysql"},'
+                                            '"server-tags":["abc-my-server"],"subnets":[{"subnet": "192.168.50.0/24",'
+                                            '"interface": "$(SERVER_IFACE)","pools": '
+                                            '[{"pool": "192.168.50.100-192.168.50.100"}]}]}}')
 
     srv_control.start_srv('DHCP', 'restarted')
 
@@ -90,7 +93,8 @@ def test_v4_config_backend_subnet_set_and_del():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-                                            '{"command":"remote-subnet4-del-by-id", "arguments": {"subnets":[{"id":1}],"remote":{"type":"mysql"},"server-tags":["all"]}}}')
+                                            '{"command":"remote-subnet4-del-by-id", "arguments": '
+                                            '{"subnets":[{"id":1}],"remote":{"type":"mysql"},"server-tags":["all"]}}}')
 
     srv_control.start_srv('DHCP', 'restarted')
 
@@ -120,13 +124,22 @@ def test_v4_config_backend_subnet_set_2():
                                             '{"command":"list-commands"}')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-                                            '{"command":"remote-subnet4-set","arguments":{"remote":{"type":"mysql"},"server-tags":["abc"],"subnets":[{"subnet": "192.168.50.0/24","interface": "$(SERVER_IFACE)","pools": [{"pool": "192.168.50.1-192.168.50.100"}]}]}}')
+                                            '{"command":"remote-subnet4-set","arguments":{"remote":'
+                                            '{"type":"mysql"},"server-tags":["abc"],"subnets":'
+                                            '[{"subnet": "192.168.50.0/24","interface": "$(SERVER_IFACE)",'
+                                            '"pools": [{"pool": "192.168.50.1-192.168.50.100"}]}]}}')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-                                            '{"command":"remote-subnet4-set","arguments":{"remote":{"type":"mysql"},"server-tags":["def"],"subnets":[{"subnet": "192.168.51.0/24","interface": "$(SERVER_IFACE)","pools": [{"pool": "192.168.51.1-192.168.51.100"}]}]}}')
+                                            '{"command":"remote-subnet4-set","arguments":{"remote":'
+                                            '{"type":"mysql"},"server-tags":["def"],"subnets":[{"subnet": '
+                                            '"192.168.51.0/24","interface": "$(SERVER_IFACE)","pools": '
+                                            '[{"pool": "192.168.51.1-192.168.51.100"}]}]}}')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-                                            '{"command":"remote-subnet4-set","arguments":{"remote":{"type":"mysql"},"server-tags":["xyz"],"subnets":[{"subnet": "192.168.52.0/24","interface": "$(SERVER_IFACE)","pools": [{"pool": "192.168.52.1-192.168.52.100"}]}]}}')
+                                            '{"command":"remote-subnet4-set","arguments":{"remote":'
+                                            '{"type":"mysql"},"server-tags":["xyz"],"subnets":[{"subnet": '
+                                            '"192.168.52.0/24","interface": "$(SERVER_IFACE)","pools": '
+                                            '[{"pool": "192.168.52.1-192.168.52.100"}]}]}}')
 
     srv_control.start_srv('DHCP', 'restarted')
     srv_msg.test_pause()

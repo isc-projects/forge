@@ -2,9 +2,4 @@ pylint:
   image: python:2.7
   script:
     - pip install pylint pytest pycodestyle --quiet
-    - cd lettuce
-    - PY_FILES=`find features/{dhcpv4,dhcpv6,other_tests}/ -name '*.py'`
-    - PY_FILES="$PY_FILES feat2py.py"
-    - echo "$PY_FILES"
-    - pylint --rcfile=../pylint.rc $PY_FILES
-    - pycodestyle --max-line-length=2000--ignore=E722 $PY_FILES
+    - ./check-style.sh
