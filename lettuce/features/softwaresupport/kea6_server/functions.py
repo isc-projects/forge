@@ -833,7 +833,7 @@ def cfg_write():
 
 def check_kea_process_result(succeed, result, process):
     errors = ["Failed to apply configuration", "Failed to initialize server",
-              "Service failed", "failed to initialize Kea server", "failed to initialize Kea"]
+              "Service failed", "failed to initialize Kea"]
 
     if succeed:
         if any(error_message in result for error_message in errors):
@@ -878,6 +878,31 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         remove_local_file(world.cfg["cfg_file"])
 
 
+def start_kea(destination_host):
+    # Start kea services and check if they started ok.
+    # - nohup to shield kea services from getting SIGHUP from SSH
+    # - in a loop check if there is 'server version .* started' expression in the logs;
+    #   repeat the loop only for 4 seconds
+    # - sync to disk any logs traced by keactrl or kea services
+    # - display these logs to screen using cat so forge can catch errors in the logs
+    start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
+    start_cmd += " start  < /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
+    start_cmd += " do tail /usr/local/var/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;"
+    start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
+    start_cmd += " sync; cat /tmp/keactrl.log"
+    return fabric_sudo_command(start_cmd, destination_host=destination_host)
+
+
+def stop_kea(destination_host):
+    stop_cmd = os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop'
+    return fabric_sudo_command(stop_cmd, destination_host=destination_host)
+
+
+def reload_kea(destination_host):
+    stop_cmd = os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' reload'
+    return fabric_sudo_command(stop_cmd, destination_host=destination_host)
+
+
 def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start kea with generated config
@@ -890,42 +915,26 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
         process = "starting"
 
     if not v6:
-        result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' start '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
-                                     destination_host=destination_address)
+        result = start_kea(destination_address)
         check_kea_process_result(start, result, process)
     else:
-        result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
-                                     destination_host=destination_address)
-        # check_kea_process_result(start, result, process)
-        result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' start '
-                                     + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
-                                     destination_host=destination_address)
+        result = stop_kea(destination_address)  # TODO: check result
+        result = start_kea(destination_address)
         check_kea_process_result(start, result, process)
-        sleep(2)
 
 
 def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
-    result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' reload '
-                                 + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
-                                 destination_host=destination_address)
+    result = reload_kea(destination_address)
     check_kea_process_result(True, result, 'reconfigure')
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
-    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop ' + ' & ); sleep '
-                        + str(world.f_cfg.sleep_time_1), hide_all=value,
-                        destination_host=destination_address)
+    result = stop_kea(destination_address)  # TODO: check result
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
-    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop ' + ' & ); sleep '
-                        + str(world.f_cfg.sleep_time_1),
-                        destination_host=destination_address)
-    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' start ' + ' & ); sleep '
-                        + str(world.f_cfg.sleep_time_1),
-                        destination_host=destination_address)
+    result = stop_kea(destination_address)  # TODO: check result
+    result = start_kea(destination_address)
 
 
 def check_kea_status(destination_address=world.f_cfg.mgmt_address):

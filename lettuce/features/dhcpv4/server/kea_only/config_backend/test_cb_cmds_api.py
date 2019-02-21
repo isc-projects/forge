@@ -27,8 +27,8 @@ def _setup_server_for_cb_cmds():
                                       '8000',
                                       'unix',
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_cb_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_mysql_cb.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_cb_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_mysql_cb.so')
     srv_control.run_command('"config-control":{"config-databases":[{"user":"$(DB_USER)",'
                             '"password":"$(DB_PASSWD)","name":"$(DB_NAME)","type":"mysql"}]}')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -247,7 +247,7 @@ def test_remote_subnet4_set_all_values(channel):
                                                                      "4o6-subnet": "2000::/64",
                                                                      "authoritative": False,
                                                                      "boot-file-name": "file-name",
-                                                                     "id": 2, "interface": "enp0s9",
+                                                                     "id": 2, "interface": "$(SERVER_IFACE)",
                                                                      "match-client-id": False, "next-server": "0.0.0.0",
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
@@ -354,7 +354,7 @@ def test_remote_subnet4_get_by_id(channel):
                                                                      "4o6-subnet": "2000::/64",
                                                                      "authoritative": False,
                                                                      "boot-file-name": "file-name",
-                                                                     "id": 2, "interface": "enp0s9",
+                                                                     "id": 2, "interface": "$(SERVER_IFACE)",
                                                                      "match-client-id": False, "next-server": "0.0.0.0",
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
@@ -381,7 +381,7 @@ def test_remote_subnet4_get_by_id(channel):
             "authoritative": False,
             "boot-file-name": "file-name",
             "id": 2,
-            "interface": "enp0s9",
+            "interface": "$(SERVER_IFACE)",
             "match-client-id": False,
             "next-server": "0.0.0.0",
             "option-data": [],
@@ -432,7 +432,7 @@ def test_remote_subnet4_get_by_prefix(channel):
                                                                      "4o6-subnet": "2000::/64",
                                                                      "authoritative": False,
                                                                      "boot-file-name": "file-name",
-                                                                     "interface": "enp0s9",
+                                                                     "interface": "$(SERVER_IFACE)",
                                                                      "match-client-id": True, "next-server": "0.0.0.0",
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
@@ -459,7 +459,7 @@ def test_remote_subnet4_get_by_prefix(channel):
             "authoritative": False,
             "boot-file-name": "file-name",
             "id": 1,
-            "interface": "enp0s9",
+            "interface": "$(SERVER_IFACE)",
             "match-client-id": True,
             "next-server": "0.0.0.0",
             "option-data": [],

@@ -33,12 +33,14 @@ log = logging.getLogger('forge')
 def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
                        user_loc=world.f_cfg.mgmt_username,
                        password_loc=world.f_cfg.mgmt_password, hide_all=False):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
-        if hide_all:
-            with hide('running', 'stdout', 'stderr'):
-                result = run(cmd, pty=True)
-        else:
-            result = run(cmd, pty=True)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+            if hide_all:
+                with hide('running', 'stdout', 'stderr'):
+                    result = run(cmd, pty=False)
+            else:
+                result = run(cmd, pty=False)
     return result
 
 
@@ -46,17 +48,17 @@ def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
                         user_loc=world.f_cfg.mgmt_username,
                         password_loc=world.f_cfg.mgmt_password, hide_all=False):
     with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
-            if hide_all:
-                with hide('running', 'stdout', 'stderr'):
-                    try:
-                        result = sudo(cmd, pty=True)
-                    except NetworkError:
-                        assert False, "Network connection failed"
-            else:
+        if hide_all:
+            with hide('running', 'stdout', 'stderr'):
                 try:
-                    result = sudo(cmd, pty=True)
+                    result = sudo(cmd, pty=False)
                 except NetworkError:
                     assert False, "Network connection failed"
+        else:
+            try:
+                result = sudo(cmd, pty=False)
+            except NetworkError:
+                assert False, "Network connection failed"
     return result
 
 

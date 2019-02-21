@@ -647,6 +647,8 @@ def send_wait_for_message(condition_type, presence, exp_message):
     elif not presence:
         assert len(world.srvmsg) == 0, "Response received, not expected"
 
+    return world.srvmsg
+
 
 def get_last_response():
     assert len(world.srvmsg), "No response received."

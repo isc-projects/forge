@@ -176,7 +176,7 @@ def send_wait_for_message(server_type, yes_or_no, message):
     This step causes to send message to server and capture respond.
     """
     presence = True if yes_or_no is None else False
-    dhcpmsg.send_wait_for_message(server_type, presence, message)
+    return dhcpmsg.send_wait_for_message(server_type, presence, message)
 
 
 @step('(Response|Relayed Message) MUST (NOT )?include option (\d+).')
@@ -606,3 +606,27 @@ def loops(message_type_1, message_type_2, repeat):
     world.f_cfg.show_packets_from = ""
     dhcpmsg.loops(message_type_1, message_type_2, repeat)
     world.f_cfg.show_packets_from = tmp
+
+
+def send_request(dhcp_version, cmd, channel='http'):
+    """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
+
+    if channel == 'http':
+        if dhcp_version == 'v4':
+            cmd["service"] = ['dhcp4']
+        else:
+            cmd["service"] = ['dhcp6']
+    cmd_str = json.dumps(cmd)
+
+    if channel == 'http':
+        response = send_through_http('$(SRV4_ADDR)',
+                                     8000,
+                                     cmd_str)
+        response = response[0]
+    elif channel == 'socket':
+        response = send_through_socket_server_site(
+            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+            cmd_str)
+    else:
+        raise ValueError('unsupported channel type: %s' % str(channel))
+    return response

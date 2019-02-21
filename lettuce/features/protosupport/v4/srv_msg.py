@@ -366,6 +366,8 @@ def send_wait_for_message(msgtype, presence, exp_message):
         assert len(world.srvmsg) == 0, "Response message " + received_names + "received but none message expected."
         # make assertion for receiving message that not suppose to come!
 
+    return world.srvmsg
+
 
 def get_option(msg, opt_code):
     # Returns option of specified type
