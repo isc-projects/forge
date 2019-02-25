@@ -25,9 +25,9 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"waiting","pause":"always"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"syncing","pause":"always"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"ready","pause":"always"}')
@@ -60,9 +60,9 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
     srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
@@ -454,9 +454,9 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"waiting","pause":"once"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"syncing","pause":"once"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"ready","pause":"once"}')
@@ -489,9 +489,9 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
     srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
@@ -825,9 +825,9 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"waiting","pause":"once"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"syncing","pause":"once"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"ready","pause":"once"}')
@@ -861,9 +861,9 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
     srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
@@ -1198,9 +1198,9 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"waiting","pause":"always"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"syncing","pause":"always"}')
     srv_control.add_parameter_to_ha_hook('machine-state', '{"state":"ready","pause":"always"}')
@@ -1234,9 +1234,9 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
     srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')

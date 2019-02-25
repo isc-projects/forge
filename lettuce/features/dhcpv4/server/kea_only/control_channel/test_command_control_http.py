@@ -207,7 +207,7 @@ def test_control_channel_http_change_socket_during_reconfigure():
     # change address test needed also
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',

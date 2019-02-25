@@ -19,7 +19,7 @@ def test_hook_v4_subnet_cmds_list():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -40,7 +40,7 @@ def test_hook_v4_subnet_cmds_get_by_id():
     srv_control.config_srv_another_subnet_no_interface('150.0.0.0/24', '150.0.0.5-150.0.0.5')
     srv_control.config_srv('streettalk-directory-assistance-server', '2', '199.1.1.1,200.1.1.2')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -60,7 +60,7 @@ def test_hook_v4_subnet_cmds_get_by_subnet():
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.config_srv('domain-name-servers', '1', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -79,7 +79,7 @@ def test_hook_v4_subnet_cmds_add():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -119,7 +119,7 @@ def test_hook_v4_subnet_cmds_add_with_options():
     srv_control.config_srv_subnet('192.168.50.0/24', '$(EMPTY)')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -177,7 +177,7 @@ def test_hook_v4_subnet_cmds_add_conflict():
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -223,7 +223,7 @@ def test_hook_v4_subnet_cmds_del():
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -262,7 +262,7 @@ def test_hook_v4_subnet_cmds_del_non_existing():
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -305,7 +305,7 @@ def test_hook_v4_subnet_cmds_del_global_options():
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -356,7 +356,7 @@ def test_hook_v4_subnet_cmds_add_and_del():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')

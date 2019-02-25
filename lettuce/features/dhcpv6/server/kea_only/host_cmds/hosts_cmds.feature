@@ -3,7 +3,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.librelaod
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use MySQL reservation system.
@@ -59,7 +59,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.reconfigure
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use MySQL reservation system.
@@ -95,7 +95,7 @@ Feature: Kea Hook hosts_cmds testing
   Response sub-option 5 from option 3 MUST contain address 2001:db8:1::100.
 
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use MySQL reservation system.
@@ -121,7 +121,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.add-reservation-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use MySQL reservation system.
@@ -159,7 +159,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.del-reservation-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use MySQL reservation system.
@@ -212,7 +212,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.del-reservation-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use PostgreSQL reservation system.
@@ -265,7 +265,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.add-reservation-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use PostgreSQL reservation system.
@@ -304,7 +304,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.get-reservation-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use MySQL reservation system.
@@ -344,7 +344,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.get-reservation-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use PostgreSQL reservation system.
@@ -386,9 +386,9 @@ Feature: Kea Hook hosts_cmds testing
   Scenario: v6.hosts.cmds.add-reservation-mysql-flex-id
 
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 2 add parameter named identifier-expression with value: relay6[0].option[18].hex
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
@@ -446,9 +446,9 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.add-reservation-pgsql-flex-id
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 2 add parameter named identifier-expression with value: relay6[0].option[18].hex
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
@@ -507,7 +507,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.add-reservation-complex-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use PostgreSQL reservation system.
@@ -551,7 +551,7 @@ Feature: Kea Hook hosts_cmds testing
 @v6 @hosts_cmds @kea_only
   Scenario: v6.hosts.cmds.add-reservation-complex-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 2001:db8:1::/64 subnet with 2001:db8:1::50-2001:db8:1::50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use PostgreSQL reservation system.
@@ -598,7 +598,7 @@ Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
 Reserve hostname reserved-hostname1 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
 Reserve hostname reserved-hostname2 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:02.
 Reserve hostname reserved-hostname3 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:03.
@@ -621,7 +621,7 @@ Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
 Use MySQL reservation system.
 Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
 Add hostname reserved-hostname1 to MySQL reservation record id 1.
@@ -656,7 +656,7 @@ Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
 Use PostgreSQL reservation system.
 Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
 Add hostname reserved-hostname1 to PostgreSQL reservation record id 1.
@@ -692,7 +692,7 @@ Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
 Reserve hostname reserved-hostname1 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:01.
 Reserve hostname reserved-hostname2 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:02.
 Reserve hostname reserved-hostname3 in subnet 0 for host uniquely identified by hw-address f6:f5:f4:f3:f2:03.
@@ -725,7 +725,7 @@ Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
 Use MySQL reservation system.
 Create new MySQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
 Add hostname reserved-hostname1 to MySQL reservation record id 1.
@@ -770,7 +770,7 @@ Test Setup:
 Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
 Server is configured with another subnet: 3001::/64 with 3001::1-3001::ff pool.
 Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
 Use PostgreSQL reservation system.
 Create new PostgreSQL reservation identified by hw-address f6:f5:f4:f3:f2:01.
 Add hostname reserved-hostname1 to PostgreSQL reservation record id 1.

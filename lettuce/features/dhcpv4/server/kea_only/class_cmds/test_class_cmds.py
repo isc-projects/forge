@@ -37,7 +37,7 @@ def _setup_server_for_class_cmds():
                                       'unix',
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_class_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_class_cmds.so')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 

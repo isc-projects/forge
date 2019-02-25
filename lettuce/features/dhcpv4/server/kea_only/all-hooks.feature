@@ -10,17 +10,17 @@ Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 
 Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
 For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
 Add to config file line: "host-reservation-identifiers": [ "flex-id","hw-address" ]
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
 To hook no. 1 add parameter named identifier-expression with value: option[60].hex
 # legal log
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_stat_cmds.so.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cache.so.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_stat_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cache.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
 
-Add High-Availability hook library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so.
+Add High-Availability hook library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so.
 To HA hook configuration add this-server-name with value: "server1"
 To HA hook configuration add mode with value: "load-balancing"
 To HA hook configuration add heartbeat-delay with value: 1000
@@ -48,17 +48,17 @@ Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.10
 Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
 For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
 Add to config file line: "host-reservation-identifiers": [ "flex-id","hw-address" ]
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
 To hook no. 1 add parameter named identifier-expression with value: option[60].hex
 # legal log
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
-#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
-#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_stat_cmds.so.
-#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
-#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cache.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so.
+Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
+#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
+#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_stat_cmds.so.
+#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
+#Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cache.so.
 ##
-#Add High-Availability hook library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so.
+#Add High-Availability hook library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so.
 #To HA hook configuration add this-server-name with value: "server1"
 #To HA hook configuration add mode with value: "load-balancing"
 #To HA hook configuration add heartbeat-delay with value: 1000

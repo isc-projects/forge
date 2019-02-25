@@ -14,7 +14,7 @@ from features import srv_control
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_librelaod():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('MySQL')
@@ -91,7 +91,7 @@ def test_v6_hosts_cmds_librelaod():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_reconfigure():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('MySQL')
@@ -138,7 +138,7 @@ def test_v6_hosts_cmds_reconfigure():
                                              '2001:db8:1::100')
 
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('MySQL')
@@ -173,7 +173,7 @@ def test_v6_hosts_cmds_reconfigure():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('MySQL')
@@ -225,7 +225,7 @@ def test_v6_hosts_cmds_add_reservation_mysql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_del_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('MySQL')
@@ -298,7 +298,7 @@ def test_v6_hosts_cmds_del_reservation_mysql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_del_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -371,7 +371,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -423,7 +423,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_get_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('MySQL')
@@ -478,7 +478,7 @@ def test_v6_hosts_cmds_get_reservation_mysql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_get_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -534,9 +534,9 @@ def test_v6_hosts_cmds_get_reservation_pgsql():
 def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
 
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
@@ -607,9 +607,9 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
@@ -681,7 +681,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_complex_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -744,7 +744,7 @@ def test_v6_hosts_cmds_add_reservation_complex_pgsql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_complex_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -810,7 +810,7 @@ def test_v6_hosts_cmds_reservation_get_all():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname1',
                                            '0',
@@ -857,7 +857,7 @@ def test_v6_hosts_cmds_reservation_get_all_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'MySQL', '1')
@@ -896,7 +896,7 @@ def test_v6_hosts_cmds_reservation_get_all_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'PostgreSQL', '1')
@@ -936,7 +936,7 @@ def test_v6_hosts_cmds_reservation_get_page():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname1',
                                            '0',
@@ -1001,7 +1001,7 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'MySQL', '1')
@@ -1050,7 +1050,7 @@ def test_v6_hosts_cmds_reservation_get_all_page_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'PostgreSQL', '1')

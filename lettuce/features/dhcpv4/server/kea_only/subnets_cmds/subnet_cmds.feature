@@ -6,7 +6,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
   Server is configured with another subnet: 10.0.0.0/24 with 10.0.0.5-10.0.0.5 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -21,7 +21,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with another subnet: 150.0.0.0/24 with 150.0.0.5-150.0.0.5 pool.
   Server is configured with streettalk-directory-assistance-server option in subnet 2 with value 199.1.1.1,200.1.1.2.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -35,7 +35,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with another subnet: 10.0.0.0/24 with 10.0.0.5-10.0.0.5 pool.
   Server is configured with domain-name-servers option in subnet 1 with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -48,7 +48,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with $(EMPTY) subnet with $(EMPTY) pool.
   Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -81,7 +81,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with 192.168.50.0/24 subnet with $(EMPTY) pool.
   Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -131,7 +131,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with 192.168.51.0/24 subnet with 192.168.51.1-192.168.51.1 pool.
   Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -170,7 +170,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with 192.168.51.0/24 subnet with 192.168.51.1-192.168.51.1 pool.
   Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -203,7 +203,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with 192.168.51.0/24 subnet with 192.168.51.1-192.168.51.1 pool.
   Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -240,7 +240,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with 192.168.51.0/24 subnet with 192.168.51.1-192.168.51.1 pool.
   Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -285,7 +285,7 @@ Feature: Kea Subnet manipulation commands
   Server is configured with $(EMPTY) subnet with $(EMPTY) pool.
   Server is configured with domain-name-servers option with value 199.199.199.1,100.100.100.1.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.

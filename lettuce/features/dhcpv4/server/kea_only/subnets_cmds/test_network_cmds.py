@@ -37,7 +37,7 @@ def test_hook_v4_network_cmds_list():
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -76,7 +76,7 @@ def test_hook_v4_network_cmds_get_by_name():
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -96,7 +96,7 @@ def test_hook_v4_network_cmds_add():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -156,7 +156,7 @@ def test_hook_v4_network_cmds_add_conflict():
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -187,7 +187,7 @@ def test_hook_v4_network_cmds_del():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
 
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -233,7 +233,7 @@ def test_hook_v4_network_cmds_del_keep_subnet():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
 
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -295,7 +295,7 @@ def test_hook_v4_network_cmds_del_non_existing():
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -325,7 +325,7 @@ def test_hook_v4_network_cmds_del_global_options():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
 
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -376,7 +376,7 @@ def test_hook_v4_network_cmds_add_and_del():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')

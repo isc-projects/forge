@@ -656,7 +656,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -706,7 +706,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')

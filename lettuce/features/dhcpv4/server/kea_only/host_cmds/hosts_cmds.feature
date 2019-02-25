@@ -3,7 +3,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.libreload
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -56,7 +56,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.reconfigure
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -84,7 +84,7 @@ Feature: Kea Hook hosts_cmds testing
   Response MUST contain yiaddr 192.168.50.100.
 
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -106,7 +106,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.add-reservation-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -148,7 +148,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.del-reservation-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -189,7 +189,7 @@ Feature: Kea Hook hosts_cmds testing
   Scenario: v4.hosts.cmds.del-reservation-mysql-2
   Test Setup:
   #address reserved without using command
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -224,7 +224,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.del-reservation-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -264,7 +264,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.del-reservation-pgsql-2
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -311,7 +311,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.add-reservation-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -353,7 +353,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.get-reservation-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -386,7 +386,7 @@ Feature: Kea Hook hosts_cmds testing
   Scenario: v4.hosts.cmds.get-reservation-mysql-2
   Test Setup:
   #address reserved without using command
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -413,7 +413,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.get-reservation-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -445,7 +445,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.get-reservation-pgsql-2
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
@@ -475,8 +475,8 @@ Feature: Kea Hook hosts_cmds testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 2 add parameter named identifier-expression with value: option[60].hex
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
 
@@ -525,8 +525,8 @@ Feature: Kea Hook hosts_cmds testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 2 add parameter named identifier-expression with value: option[60].hex
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
 
@@ -572,8 +572,8 @@ Feature: Kea Hook hosts_cmds testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 2 add parameter named identifier-expression with value: option[60].hex
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
 
@@ -622,8 +622,8 @@ Feature: Kea Hook hosts_cmds testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
 
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 2 add parameter named identifier-expression with value: option[60].hex
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
 
@@ -666,7 +666,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.add-reservation-complex-pgsql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use PostgreSQL reservation system.
@@ -715,7 +715,7 @@ Feature: Kea Hook hosts_cmds testing
 @v4 @hosts_cmds @kea_only
   Scenario: v4.hosts.cmds.add-reservation-complex-mysql
   Test Setup:
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.50-192.168.50.50 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Use MySQL reservation system.

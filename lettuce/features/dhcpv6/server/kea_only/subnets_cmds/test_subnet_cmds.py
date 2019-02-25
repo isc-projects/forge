@@ -20,7 +20,7 @@ def test_hook_v6_subnet_cmds_list():
     srv_control.config_srv_another_subnet_no_interface('1000::/32', '1000::5-1000::5')
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -40,7 +40,7 @@ def test_hook_v6_subnet_cmds_get_by_id():
     srv_control.config_srv_another_subnet_no_interface('1000::/32', '1000::5-1000::5')
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -60,7 +60,7 @@ def test_hook_v6_subnet_cmds_get_by_subnet():
     srv_control.config_srv_another_subnet_no_interface('1000::/32', '1000::5-1000::5')
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -80,7 +80,7 @@ def test_hook_v6_subnet_cmds_add():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -137,7 +137,7 @@ def test_hook_v6_subnet_cmds_add_with_options():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -220,7 +220,7 @@ def test_hook_v6_subnet_cmds_add_conflict():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -280,7 +280,7 @@ def test_hook_v6_subnet_cmds_del():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -336,7 +336,7 @@ def test_hook_v6_subnet_cmds_del_non_existing():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -399,7 +399,7 @@ def test_hook_v6_subnet_cmds_del_global_options():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -469,7 +469,7 @@ def test_hook_v6_subnet_cmds_add_and_del():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')

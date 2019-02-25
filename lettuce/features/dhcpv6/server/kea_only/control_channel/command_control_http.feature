@@ -197,7 +197,7 @@ Feature: Kea Control Channel Agent - HTTP
   #change address test needed also
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::f pool.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.

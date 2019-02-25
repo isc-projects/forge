@@ -22,7 +22,7 @@ def test_user_check_IA_NA_no_registry_logging():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp4.callouts', 'ERROR', 'None', 'kea.log')
     srv_control.configure_loggers('kea-dhcp4.hooks', 'ERROR', 'None', 'kea.log')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -68,7 +68,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp4.callouts', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-dhcp4.hooks', 'INFO', 'None', 'kea.log')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -110,7 +110,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
     # Server logging system is configured with logger type kea-dhcp4.callouts, severity DEBUG, severity level 99 and log file kea.log.
     # Server logging system is configured with logger type kea-dhcp4.hooks, severity INFO, severity level None and log file kea.log.
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -139,7 +139,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
     # Server logging system is configured with logger type kea-dhcp4.callouts, severity DEBUG, severity level 99 and log file kea.log.
     # Server logging system is configured with logger type kea-dhcp4.hooks, severity INFO, severity level None and log file kea.log.
     srv_control.build_and_send_config_files('SSH', 'config-file')

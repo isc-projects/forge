@@ -19,7 +19,7 @@ def test_hook_v4_lease_cmds_list():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -38,7 +38,7 @@ def test_hook_v4_lease_cmds_update():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -106,7 +106,7 @@ def test_hook_v4_lease_cmds_get_1():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -149,7 +149,7 @@ def test_hook_v4_lease_cmds_get_2():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -191,7 +191,7 @@ def test_hook_v4_lease_cmds_add_notvalid_id():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -219,7 +219,7 @@ def test_hook_v4_lease_cmds_add_address_from_different_subnet():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -247,7 +247,7 @@ def test_hook_v4_lease_cmds_add_valid():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -283,7 +283,7 @@ def test_hook_v4_lease_cmds_add_outside_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -327,7 +327,7 @@ def test_hook_v4_lease_cmds_add_with_additional_values():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -370,7 +370,7 @@ def test_hook_v4_lease_cmds_del_using_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -431,7 +431,7 @@ def test_hook_v4_lease_cmds_del_using_hw_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -492,7 +492,7 @@ def test_hook_v4_lease_cmds_wipe():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')

@@ -17,7 +17,7 @@ Feature: Kea6 User Check Hook Library
     Client removes file from server located in: /tmp/user_chk_outcome.txt.
     Server is configured with 3000::/64 subnet with 3000::5-3000::20 pool.
     Server is configured with another subnet: 1000:1::/64 with 1000:1::5-1000:1::5 pool on interface eth3.
-    Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_user_chk.so.
+    Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so.
     On space vendor-4491 server is configured with tftp-servers option with value 7000::1.
     On space vendor-4491 server is configured with config-file option with value bootfile.from.server.
     Send server configuration using SSH and config-file.

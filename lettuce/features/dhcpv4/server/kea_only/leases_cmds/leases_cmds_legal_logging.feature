@@ -9,8 +9,8 @@ Feature: Kea leases manipulation commands with legal logging hook
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Server is configured with another subnet: 10.0.0.0/24 with 10.0.0.5-10.0.0.5 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -55,8 +55,8 @@ Feature: Kea leases manipulation commands with legal logging hook
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.5-192.168.50.5 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -81,8 +81,8 @@ Feature: Kea leases manipulation commands with legal logging hook
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -143,8 +143,8 @@ Feature: Kea leases manipulation commands with legal logging hook
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.1 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -205,8 +205,8 @@ Feature: Kea leases manipulation commands with legal logging hook
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.2 pool.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.

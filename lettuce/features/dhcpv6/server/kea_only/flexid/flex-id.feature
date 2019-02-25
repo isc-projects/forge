@@ -7,7 +7,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -40,7 +40,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -98,7 +98,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -130,7 +130,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -165,7 +165,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -197,7 +197,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port4321'.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: substring(relay6[0].option[18].hex,0,8)
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -251,7 +251,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'port1234'.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: relay6[0].option[18].hex
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -286,7 +286,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -312,7 +312,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
   Add to config file line: "host-reservation-identifiers": ["flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: relay6[0].option[18].hex
 
   Use MySQL reservation system.
@@ -351,7 +351,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 
   Use MySQL reservation system.
@@ -385,7 +385,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: relay6[0].option[18].hex
 
   Use PostgreSQL reservation system.
@@ -425,7 +425,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 3000::/64 subnet with 3000::1-3000::ff pool.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
 
   Use PostgreSQL reservation system.
@@ -461,7 +461,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   To hook no. 1 add parameter named replace-client-id with value: true
 
@@ -511,7 +511,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   To hook no. 1 add parameter named replace-client-id with value: true
 
@@ -581,7 +581,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   Send server configuration using SSH and config-file.
@@ -650,7 +650,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   To hook no. 1 add parameter named replace-client-id with value: true
 
@@ -719,7 +719,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   Send server configuration using SSH and config-file.
@@ -791,7 +791,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   To hook no. 1 add parameter named replace-client-id with value: true
 
@@ -883,7 +883,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 01:02:03:04:05:06.
   For host reservation entry no. 0 in subnet 0 add address with value 3000::f.
   Add to config file line: "host-reservation-identifiers": [  "duid",  "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: vendor[4491].option[1026].hex
   To hook no. 1 add parameter named replace-client-id with value: true
 

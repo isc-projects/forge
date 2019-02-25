@@ -24,7 +24,7 @@ Feature: Kea shared networks manipulation commands
   Add subnet 5 to shared-subnet set 2.
   Add configuration parameter name with value "name-something" to shared-subnet 2 configuration.
   Add configuration parameter relay with value {"ip-address":"2001:db8::1234"} to shared-subnet 2 configuration.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
@@ -56,7 +56,7 @@ Feature: Kea shared networks manipulation commands
   Add subnet 5 to shared-subnet set 2.
   Add configuration parameter name with value "name-something" to shared-subnet 2 configuration.
   Add configuration parameter relay with value {"ip-address":"2001:db8::1234"} to shared-subnet 2 configuration.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
@@ -71,7 +71,7 @@ Feature: Kea shared networks manipulation commands
   Server is configured with preference option with value 123.
   #Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -114,7 +114,7 @@ Feature: Kea shared networks manipulation commands
   Server is configured with preference option with value 123.
   Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -164,7 +164,7 @@ Feature: Kea shared networks manipulation commands
   Server is configured with preference option with value 123.
   Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -219,7 +219,7 @@ Feature: Kea shared networks manipulation commands
   Add configuration parameter name with value "name-xyz" to shared-subnet 0 configuration.
   Add configuration parameter interface with value "$(SERVER_IFACE)" to shared-subnet 0 configuration.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -320,7 +320,7 @@ Feature: Kea shared networks manipulation commands
   Add subnet 5 to shared-subnet set 2.
   Add configuration parameter name with value "name-something" to shared-subnet 2 configuration.
   Add configuration parameter relay with value {"ip-address":"2001:db8::1234"} to shared-subnet 2 configuration.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
@@ -340,7 +340,7 @@ Feature: Kea shared networks manipulation commands
   Add configuration parameter name with value "name-abc" to shared-subnet 0 configuration.
   Add configuration parameter interface with value "$(SERVER_IFACE)" to shared-subnet 0 configuration.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -401,7 +401,7 @@ Feature: Kea shared networks manipulation commands
   Add subnet 5 to shared-subnet set 2.
   Add configuration parameter name with value "name-something" to shared-subnet 2 configuration.
   Add configuration parameter relay with value {"ip-address":"2001:db8::1234"} to shared-subnet 2 configuration.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
 
@@ -418,7 +418,7 @@ Feature: Kea shared networks manipulation commands
   Server is configured with preference option with value 123.
   Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.

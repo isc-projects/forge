@@ -572,7 +572,7 @@ Feature: Kea subnet-id sanity-check
   Add configuration parameter id with value 666 to subnet 0 configuration.
   Add configuration parameter sanity-checks with value {"lease-checks":"del"} to global configuration.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.
@@ -618,7 +618,7 @@ Feature: Kea subnet-id sanity-check
   Add configuration parameter id with value 999 to subnet 0 configuration.
   Add configuration parameter sanity-checks with value {"lease-checks":"del"} to global configuration.
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so.
   Send server configuration using SSH and config-file.
 
   DHCP server is started.

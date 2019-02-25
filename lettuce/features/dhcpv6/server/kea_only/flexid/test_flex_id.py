@@ -22,7 +22,7 @@ def test_v6_hooks_flexid_1():
                                            '\'port1234\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
@@ -69,7 +69,7 @@ def test_v6_hooks_flexid_libreload():
                                            '\'port1234\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
@@ -147,7 +147,7 @@ def test_v6_hooks_flexid_reconfigure_1():
                                            '\'port1234\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
@@ -190,7 +190,7 @@ def test_v6_hooks_flexid_reconfigure_1():
                                            '\'port1234\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
@@ -239,7 +239,7 @@ def test_v6_hooks_flexid_reconfigure_2():
                                            '\'port1234\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
@@ -282,7 +282,7 @@ def test_v6_hooks_flexid_reconfigure_2():
                                            '\'port4321\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
@@ -355,7 +355,7 @@ def test_v6_hooks_flexid_2():
                                            '\'port1234\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -401,7 +401,7 @@ def test_v6_hooks_flexid_3():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -432,7 +432,7 @@ def test_v6_hooks_flexid_mysql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.add_line('"host-reservation-identifiers": ["flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'relay6[0].option[18].hex')
 
     srv_control.enable_db_backend_reservation('MySQL')
@@ -479,7 +479,7 @@ def test_v6_hooks_flexid_mysql_2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -518,7 +518,7 @@ def test_v6_hooks_flexid_pgsql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'relay6[0].option[18].hex')
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -566,7 +566,7 @@ def test_v6_hooks_flexid_pgsql_2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -611,7 +611,7 @@ def test_v6_hooks_flexid_replace_duid():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -670,7 +670,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -749,7 +749,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -827,7 +827,7 @@ def test_v6_hooks_flexid_replace_duid_release():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -905,7 +905,7 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -986,7 +986,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
@@ -1087,7 +1087,7 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
                                            '01:02:03:04:05:06')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
     srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')

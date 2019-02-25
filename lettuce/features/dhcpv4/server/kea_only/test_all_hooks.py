@@ -23,17 +23,17 @@ def test_v4_all_hooks_start():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id","hw-address" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     # legal log
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_stat_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cache.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_stat_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cache.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so')
+    srv_control.add_ha_hook('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
     srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
@@ -70,17 +70,17 @@ def test_v4_all_hooks_test_cooperation():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id","hw-address" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     # legal log
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_legal_log.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_lease_cmds.so')
-    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so.
-    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_stat_cmds.so.
-    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_subnet_cmds.so.
-    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cache.so.
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
+    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so.
+    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_stat_cmds.so.
+    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so.
+    # Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cache.so.
     #
-    # Add High-Availability hook library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_ha.so.
+    # Add High-Availability hook library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_ha.so.
     # To HA hook configuration add this-server-name with value: "server1"
     # To HA hook configuration add mode with value: "load-balancing"
     # To HA hook configuration add heartbeat-delay with value: 1000

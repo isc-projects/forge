@@ -14,7 +14,7 @@ from features import srv_msg
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_libreload():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -73,7 +73,7 @@ def test_v4_hosts_cmds_libreload():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_reconfigure():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -102,7 +102,7 @@ def test_v4_hosts_cmds_reconfigure():
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
 
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -128,7 +128,7 @@ def test_v4_hosts_cmds_reconfigure():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_add_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -174,7 +174,7 @@ def test_v4_hosts_cmds_add_reservation_mysql():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_del_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -220,7 +220,7 @@ def test_v4_hosts_cmds_del_reservation_mysql():
 def test_v4_hosts_cmds_del_reservation_mysql_2():
     misc.test_setup()
     # address reserved without using command
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -259,7 +259,7 @@ def test_v4_hosts_cmds_del_reservation_mysql_2():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_del_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -304,7 +304,7 @@ def test_v4_hosts_cmds_del_reservation_pgsql():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_del_reservation_pgsql_2():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -355,7 +355,7 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_add_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -401,7 +401,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_get_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -439,7 +439,7 @@ def test_v4_hosts_cmds_get_reservation_mysql():
 def test_v4_hosts_cmds_get_reservation_mysql_2():
     misc.test_setup()
     # address reserved without using command
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -470,7 +470,7 @@ def test_v4_hosts_cmds_get_reservation_mysql_2():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_get_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -507,7 +507,7 @@ def test_v4_hosts_cmds_get_reservation_pgsql():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_get_reservation_pgsql_2():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
@@ -541,8 +541,8 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
 
@@ -595,8 +595,8 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
 
@@ -646,8 +646,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
 
@@ -700,8 +700,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
 
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
 
@@ -748,7 +748,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_add_reservation_complex_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -801,7 +801,7 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
 @pytest.mark.kea_only
 def test_v4_hosts_cmds_add_reservation_complex_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
     srv_control.enable_db_backend_reservation('MySQL')

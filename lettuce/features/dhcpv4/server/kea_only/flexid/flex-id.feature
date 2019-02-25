@@ -7,7 +7,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -41,7 +41,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -61,7 +61,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   Server has control channel on unix socket with name $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket.
   Send server configuration using SSH and config-file.
@@ -83,7 +83,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -118,7 +118,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -150,7 +150,7 @@ Feature: Kea Hook flex-id testing
   Reserve hostname reserved-hostname in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   For host reservation entry no. 0 in subnet 0 add address with value 192.168.50.10.
   Add to config file line: "host-reservation-identifiers": [ "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   Send server configuration using SSH and config-file.
   DHCP server is started.
@@ -183,7 +183,7 @@ Feature: Kea Hook flex-id testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.50 pool.
   Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   Add configuration parameter match-client-id with value false to global configuration.
@@ -232,7 +232,7 @@ Feature: Kea Hook flex-id testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -268,7 +268,7 @@ Feature: Kea Hook flex-id testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -334,7 +334,7 @@ Feature: Kea Hook flex-id testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -398,7 +398,7 @@ Feature: Kea Hook flex-id testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -452,7 +452,7 @@ Feature: Kea Hook flex-id testing
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Reserve address 192.168.50.10 in subnet 0 for host uniquely identified by flex-id 'docsis3.0'.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -505,7 +505,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -550,7 +550,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -590,7 +590,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
@@ -634,7 +634,7 @@ Feature: Kea Hook flex-id testing
   Test Setup:
   Server is configured with 192.168.50.0/24 subnet with 192.168.50.1-192.168.50.5 pool.
   Add to config file line: "host-reservation-identifiers": ["hw-address", "flex-id" ]
-  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/hooks/libdhcp_flex_id.so.
+  Add hooks library located $(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so.
   To hook no. 1 add parameter named identifier-expression with value: option[60].hex
   To hook no. 1 add parameter named replace-client-id with value: true
   # enable matching client id
