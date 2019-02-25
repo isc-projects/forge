@@ -152,7 +152,6 @@ def test_v4_options_domain_name_servers():
 @pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
-@pytest.mark.teraz2
 def test_v4_options_domain_name_servers_csv_correct():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -174,7 +173,6 @@ def test_v4_options_domain_name_servers_csv_correct():
 @pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
-@pytest.mark.teraz2
 def test_v4_options_domain_name_servers_csv_incorrect_hex():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -187,20 +185,6 @@ def test_v4_options_domain_name_servers_csv_incorrect_hex():
 @pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
-@pytest.mark.teraz2
-def test_v4_options_domain_name_servers_csv_incorrect_hex():
-    misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.add_line('"option-data": [{"code": 6, "data": "C000020Z1", "csv-format": false}]')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv_during_process('DHCP', 'configure')
-
-
-@pytest.mark.v4
-@pytest.mark.dhcp4
-@pytest.mark.options
-@pytest.mark.subnet
-@pytest.mark.teraz2
 def test_v4_options_domain_name_servers_csv_incorrect_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
