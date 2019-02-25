@@ -123,6 +123,63 @@ def test_v6_options_inforequest_sip_servers():
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.options
+@pytest.mark.sip
+@pytest.mark.rfc3319
+def test_v6_options_inforequest_sip_servers_csv():
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.add_line('"option-data": [{"code": 6, "data": "2001 0DB8 0001 0000 0000 0000 0000 CAFE",'
+                         '"always-send": false, "csv-format": false}]')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option('22')
+    srv_msg.client_send_msg('INFOREQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, '22')
+    srv_msg.response_check_option_content('Response',
+                                          '22',
+                                          None,
+                                          'addresses',
+                                          '2001:db8:1::cafe')
+
+    references.references_check('RFC331')
+
+
+@pytest.mark.v6
+@pytest.mark.dhcp6
+@pytest.mark.options
+@pytest.mark.sip
+@pytest.mark.rfc3319
+def test_v6_options_inforequest_sip_servers_csv_incorrect():
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.add_line('"option-data": [{"code": 6, "data": "192.167.12.2",'
+                         '"always-send": true, "csv-format": false}]')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv_during_process('DHCP', 'configure')
+
+
+@pytest.mark.v6
+@pytest.mark.dhcp6
+@pytest.mark.options
+@pytest.mark.sip
+@pytest.mark.rfc3319
+def test_v6_options_inforequest_sip_servers_csv_incorrect_hex():
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.add_line('"option-data": [{"code": 6, "data": "31 39 32 2x 31 30 2e 30 2e 31",'
+                         ' "always-send": true, "csv-format": false}]')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv_during_process('DHCP', 'configure')
+
+
+@pytest.mark.v6
+@pytest.mark.dhcp6
+@pytest.mark.options
 @pytest.mark.dns
 @pytest.mark.rfc3646
 def test_v6_options_inforequest_dns_servers():
