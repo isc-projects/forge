@@ -65,15 +65,6 @@ def run_around_tests():
     _setup_server_for_cb_cmds()
 
 
-def _check_kea():
-    # srv_control.start_srv('DHCP', 'restarted')
-    cmd = dict(command="config-reload")
-    _send_request(cmd, channel='socket')
-    srv_msg.send_through_socket_server_site(
-        '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
-        '{"command": "config-get", "arguments": {}}')
-
-
 def test_availability():
     cmd = dict(command='list-commands')
     response = _send_request(cmd)
@@ -571,30 +562,6 @@ def test_remote_network4_set_empty_name(channel):
     assert response == {"result": 1}
 
 
-@pytest.mark.disabled
-@pytest.mark.parametrize("channel", ['socket'])
-def test_remote_network4_set_empty_name2(channel):
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
-                                                         "server-tags": ["abc"],
-                                                         "shared-networks": [{
-                                                             "name": "",
-                                                             "subnet4": [{"subnet": "192.168.50.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}]}]})
-    _send_request(cmd, channel=channel)
-
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
-                                                         "server-tags": ["abc"],
-                                                         "shared-networks": [{
-                                                             "name": "",
-                                                             "interface": "$(SERVER_IFACE)",
-                                                             "subnet4": [{"subnet": "192.8.0.0/24",
-                                                                          "interface": "$(SERVER_IFACE)",
-                                                                          "pools": [{
-                                                                              "pool": "192.8.0.1-192.8.0.1"}]}]}]})
-    _send_request(cmd, channel=channel)
-    _check_kea()
-
-
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_network4_get_basic(channel):
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
@@ -700,10 +667,6 @@ def test_remote_network4_del_basic(channel):
 
     response = _send_request(cmd, channel=channel)
 
-    # assert response == {"result": 0,
-    #                     "text": "DHCPv4 shared network successfully deleted.",
-    #                     "arguments": {"shared-networks": [{"name": "net1"}]}}
-
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
     cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
@@ -720,10 +683,6 @@ def test_remote_network4_del_basic(channel):
 
     response = _send_request(cmd, channel=channel)
 
-    # assert response == {"result": 0,
-    #                     "text": "DHCPv4 shared network successfully deleted.",
-    #                     "arguments": {"shared-networks": [{"name": "net2"}]}}
-
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
     cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
@@ -735,7 +694,7 @@ def test_remote_network4_del_basic(channel):
                         "text": "0 IPv4 shared network(s) found."}
 
 
-def _parameter_set(channel):
+def _set_glabal_parameter(channel):
     cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": [{
@@ -750,7 +709,7 @@ def _parameter_set(channel):
 # global-parameter tests
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_parameter4_set_basic(channel):
-    _parameter_set(channel)
+    _set_glabal_parameter(channel)
 
 
 @pytest.mark.parametrize("channel", ['socket', 'http'])
@@ -765,12 +724,11 @@ def test_remote_global_parameter4_set_incorrect_parameter(channel):
     # for me it's bug, but I don't know what response should be. #499
     assert response == {"result": 0,
                         "text": "DHCPv4 g."}
-    _check_kea()
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_parameter4_del(channel):
-    _parameter_set(channel)
+    _set_glabal_parameter(channel)
 
     cmd = dict(command="remote-global-parameter4-del", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
@@ -796,7 +754,7 @@ def test_remote_global_parameter4_del_not_existing_parameter(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_parameter4_get(channel):
-    _parameter_set(channel)
+    _set_glabal_parameter(channel)
 
     cmd = dict(command="remote-global-parameter4-get", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
@@ -810,7 +768,7 @@ def test_remote_global_parameter4_get(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_parameter4_get_all_one(channel):
-    _parameter_set(channel)
+    _set_glabal_parameter(channel)
 
     cmd = dict(command="remote-global-parameter4-get-all", arguments={"remote": {"type": "mysql"},
                                                                       "server-tags": ["abc"]})
@@ -822,7 +780,7 @@ def test_remote_global_parameter4_get_all_one(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_parameter4_get_all_multiple(channel):
-    _parameter_set(channel)
+    _set_glabal_parameter(channel)
 
     cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
@@ -853,7 +811,7 @@ def test_remote_global_parameter4_get_all_zero(channel):
                         "result": 3, "text": "0 DHCPv4 global parameter(s) found."}
 
 
-def _option_def(channel):
+def _set_option_def(channel):
     cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
@@ -868,7 +826,7 @@ def _option_def(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_set_basic(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -961,7 +919,7 @@ def test_remote_option_def4_set_missing_parameters(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_get_basic(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
     cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
@@ -976,7 +934,7 @@ def test_remote_option_def4_get_basic(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_get_multiple_defs(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
     cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
@@ -1024,7 +982,7 @@ def test_remote_option_def4_get_all_option_not_defined(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_get_all_multiple_defs(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
     cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
@@ -1054,7 +1012,7 @@ def test_remote_option_def4_get_all_multiple_defs(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_get_all_basic(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
     cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
 
@@ -1067,7 +1025,7 @@ def test_remote_option_def4_get_all_basic(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_del_basic(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
     cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"},
                                                             "option-defs": [{"code": 222}]})
@@ -1078,7 +1036,7 @@ def test_remote_option_def4_del_basic(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_del_different_space(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
     cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"},
                                                             "option-defs": [{"code": 222, "space": "abc"}]})
@@ -1117,7 +1075,7 @@ def test_remote_option_def4_del_missing_option(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_option_def4_del_multiple_options(channel):
-    _option_def(channel)
+    _set_option_def(channel)
 
     cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
@@ -1146,7 +1104,7 @@ def test_remote_option_def4_del_multiple_options(channel):
                         "result": 0, "text": "1 DHCPv4 option definition(s) found."}
 
 
-def _option_global(channel):
+def _set_global_option(channel):
     cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{
@@ -1160,7 +1118,7 @@ def _option_global(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_option4_global_set_basic(channel):
-    _option_global(channel)
+    _set_global_option(channel)
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -1266,13 +1224,13 @@ def test_remote_global_option4_global_set_incorrect_name(channel):
                                                                             "name": 12,
                                                                             "data": 'isc.example.com'}]})
     response = _send_request(cmd, channel=channel)
-    # _check_kea()
+
     assert response == {"bug, shouldn't be accepted?"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_option4_global_get_basic(channel):
-    _option_global(channel)
+    _set_global_option(channel)
 
     cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
@@ -1335,7 +1293,6 @@ def test_remote_global_option4_global_set_csv_false_correct(channel):
                         "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
 
     # TODO after merging kea feature don't forget to run this code
-    # _check_kea()
     # misc.test_procedure()
     # srv_msg.client_requests_option('6')
     # srv_msg.client_send_msg('DISCOVER')
@@ -1362,7 +1319,7 @@ def test_remote_global_option4_global_set_csv_false_incorrect_hex(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_option4_global_del_basic(channel):
-    _option_global(channel)
+    _set_global_option(channel)
 
     cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
@@ -1451,7 +1408,7 @@ def test_remote_global_option4_global_get_csv_false(channel):
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
 def test_remote_global_option4_global_get_all(channel):
-    _option_global(channel)
+    _set_global_option(channel)
 
     cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
