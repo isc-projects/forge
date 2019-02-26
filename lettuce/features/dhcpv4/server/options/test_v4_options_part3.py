@@ -205,3 +205,29 @@ def test_v4_options_user_custom_option():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     # Response MUST include option 176.
     # Response option 176 MUST contain value 123.
+
+
+@pytest.mark.v4
+@pytest.mark.dhcp4
+@pytest.mark.options
+@pytest.mark.teraz
+def test_v4_options_user_custom_option_code_0():
+    # This test it's kind of hack, to override scapy v4 restrictions.
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
+    srv_control.config_srv_custom_opt('foo', '0', 'uint8', '123')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv_during_process('DHCP', 'configuration')
+
+
+@pytest.mark.v4
+@pytest.mark.dhcp4
+@pytest.mark.options
+@pytest.mark.teraz
+def test_v4_options_user_custom_option_using_standard_code():
+    # This test it's kind of hack, to override scapy v4 restrictions.
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
+    srv_control.config_srv_custom_opt('foo', '12', 'uint8', '123')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv_during_process('DHCP', 'configuration')
