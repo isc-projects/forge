@@ -210,7 +210,6 @@ def test_v4_options_user_custom_option():
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.options
-@pytest.mark.teraz
 def test_v4_options_user_custom_option_code_0():
     # This test it's kind of hack, to override scapy v4 restrictions.
     misc.test_setup()
@@ -223,7 +222,6 @@ def test_v4_options_user_custom_option_code_0():
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.options
-@pytest.mark.teraz
 def test_v4_options_user_custom_option_using_standard_code():
     # This test it's kind of hack, to override scapy v4 restrictions.
     misc.test_setup()

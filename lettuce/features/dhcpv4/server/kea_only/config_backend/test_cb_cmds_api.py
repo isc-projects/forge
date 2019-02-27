@@ -859,8 +859,23 @@ def _set_glabal_parameter(channel):
 
 # global-parameter tests
 @pytest.mark.parametrize("channel", ['http', 'socket'])
-def test_remote_global_parameter4_set_basic(channel):
+def test_remote_global_parameter4_set_text(channel):
     _set_glabal_parameter(channel)
+    assert False, "I will fail this tests because response is incomplete compared to design"
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_global_parameter4_set_integer(channel):
+    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
+                                                                  "server-tags": ["abc"],
+                                                                  "parameters": [{
+                                                                      "name": "valid-lifetime",
+                                                                      "value": 1000}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response == {"result": 0,
+                        "text": "DHCPv4 global parameter successfully set."}
+    assert False, "I will fail this tests because response is incomplete compared to design"
 
 
 @pytest.mark.parametrize("channel", ['socket', 'http'])
