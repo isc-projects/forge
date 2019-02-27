@@ -2,7 +2,6 @@
 
 import json
 import pytest
-from forge import world
 import features.srv_msg as srv_msg
 import features.srv_control as srv_control
 import features.misc as misc
@@ -539,7 +538,7 @@ def test_remote_subnet4_get_by_prefix(channel):
             "authoritative": False,
             "boot-file-name": "file-name",
             "id": 1,
-            "interface": world.f_cfg.iface,
+            "interface": srv_msg.world.f_cfg.iface,
             "match-client-id": True,
             "next-server": "0.0.0.0",
             "option-data": [],
@@ -722,7 +721,8 @@ def test_remote_network4_get_all_values(channel):
                                       "shared-networks": [{"authoritative": False, "client-class": "abc",
                                                            "rebind-timer": 200, "renew-timer": 100,
                                                            "valid-lifetime": 300, "reservation-mode": "global",
-                                                           "interface": world.f_cfg.iface, "match-client-id": True,
+                                                           "interface": srv_msg.world.f_cfg.iface,
+                                                           "match-client-id": True,
                                                            "name": "net1",
                                                            "option-data": [{"always-send": True, "code": 6,
                                                                             "csv-format": True, "data": "192.0.2.1",
@@ -730,7 +730,7 @@ def test_remote_network4_get_all_values(channel):
                                                                             "space": "dhcp4"}],
                                                            "relay": {"ip-addresses": []},
                                                            "subnet4": [{"subnet": "192.8.0.0/24",
-                                                                        "interface": world.f_cfg.iface,
+                                                                        "interface": srv_msg.world.f_cfg.iface,
                                                                         "pools": [{"pool": "192.8.0.1-192.8.0.1"}]}],
                                                            "user-context": "some weird network"}]},
                         "result": 0, "text": "IPv4 shared network 'net1' found."}
