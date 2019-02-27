@@ -11,8 +11,7 @@ from features import srv_control
 from features import misc
 
 
-pytestmark = [pytest.mark.py_test,
-              pytest.mark.v4,
+pytestmark = [pytest.mark.v4,
               pytest.mark.v6,
               pytest.mark.kea_only,
               pytest.mark.controlchannel,

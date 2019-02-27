@@ -316,6 +316,8 @@ good-names=i,
            p1,
            p2,
            t,
+           sn,
+           n,
            pytestmark,
            _
 
@@ -419,7 +421,7 @@ missing-member-max-choices=1
 [DESIGN]
 
 # Maximum number of arguments for function / method.
-max-args=5
+max-args=10
 
 # Maximum number of attributes for a class (see R0902).
 max-attributes=15

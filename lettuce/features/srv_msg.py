@@ -18,6 +18,7 @@
 import sys
 import json
 import importlib
+import pprint
 
 from forge import world, step
 from srv_control import test_define_value
@@ -639,6 +640,9 @@ def send_request(dhcp_version, cmd, channel='http'):
             cmd["service"] = ['dhcp4']
         else:
             cmd["service"] = ['dhcp6']
+
+    pprint.pprint(cmd)
+
     cmd_str = json.dumps(cmd)
 
     if channel == 'http':

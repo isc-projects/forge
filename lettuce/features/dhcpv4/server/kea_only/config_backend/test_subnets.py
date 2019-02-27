@@ -1,65 +1,20 @@
-"""Kea DB config hook testing"""
+"""Kea config backend testing subnets."""
 
 import pytest
-from features import srv_msg, srv_control, misc
+
+from .cb_cmds import setup_server_for_config_backend_cmds
+from .cb_cmds import send_discovery_with_no_answer
+from .cb_cmds import get_address, set_subnet, del_subnet
 
 
-def _setup_server_for_config_backend_cmds():
-    misc.test_setup()
-    srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_cb_cmds.so')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_mysql_cb.so')
-    srv_control.open_control_channel(
-        'unix',
-        '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.agent_control_channel('$(SRV4_ADDR)',
-                                      '8000',
-                                      'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-    srv_control.run_command(
-        '"config-control":{"config-databases":[{"user":"$(DB_USER)",'
-        '"password":"$(DB_PASSWD)","name":"$(DB_NAME)","type":"mysql"}]}')
-    srv_control.run_command(',"server-tag": "abc"')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv('DHCP', 'started')
-
-
-@pytest.mark.v4
-@pytest.mark.config_backend
-@pytest.mark.kea_only
-def test_subnet_set_v4():
-    dhcp_version = 'v4'
-    _setup_server_for_config_backend_cmds()
-
-    # send discover but no response should come back as there is no subnet defined yet
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('DISCOVER')
-    srv_msg.send_wait_for_message("MUST", False, "None")
-
-    # define one subnet and now response for discover should be received
-    cmd = {"command": "remote-subnet4-set",
-           "arguments": {"remote": {"type": "mysql"},
-                         "server-tags": ["abc"],
-                         "subnets": [{
-                             "subnet": "192.168.50.0/24",
-                             "interface": "$(SERVER_IFACE)",
-                             "pools": [{"pool": "192.168.50.1-192.168.50.100"}]}]}}
-    response = srv_msg.send_request(dhcp_version, cmd)
-    assert response["result"] == 0
-    srv_control.start_srv('DHCP', 'restarted')
-
-    # send discover and now offer should be received
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('DISCOVER')
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+pytestmark = [pytest.mark.kea_only,
+              pytest.mark.controlchannel,
+              pytest.mark.hook,
+              pytest.mark.config_backend]
 
 
 # TODO: Kea does not supported v6 yet
 # @pytest.mark.v6
-# @pytest.mark.config_backend
-# @pytest.mark.kea_only
 # def test_subnet_set_v6():
 #     dhcp_version = 'v6'
 #     _setup_server_for_config_backend_cmds()
@@ -102,88 +57,34 @@ def test_subnet_set_v4():
 
 
 @pytest.mark.v4
-@pytest.mark.config_backend
-@pytest.mark.kea_only
 @pytest.mark.parametrize("del_cmd", ['by-id', 'by-prefix'])
 def test_subnet_set_and_del_and_set(del_cmd):
-    dhcp_version = 'v4'
-    _setup_server_for_config_backend_cmds()
+    setup_server_for_config_backend_cmds()
 
     # send discover but no response should come back as there is no subnet defined yet
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('DISCOVER')
-    srv_msg.send_wait_for_message("MUST", False, "None")
+    send_discovery_with_no_answer()
 
     # define one subnet and now response for discover should be received
-    cmd = {"command": "remote-subnet4-set",
-           "arguments": {"remote": {"type": "mysql"},
-                         "server-tags": ["abc"],
-                         "subnets": [
-                             {"subnet": "192.168.50.0/24",
-                              "interface": "$(SERVER_IFACE)",
-                              "pools": [{"pool": "192.168.50.100-192.168.50.100"}]}]}}
-    response = srv_msg.send_request(dhcp_version, cmd)
-    assert response["result"] == 0
-    srv_control.start_srv('DHCP', 'restarted')
+    set_subnet(pool="192.168.50.100-192.168.50.100")
 
     # send discover and now offer should be received
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('DISCOVER')
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    get_address(exp_yiaddr='192.168.50.100')
 
     # delete added subnet by id or prefix, now there should be no answer to discover
-    if del_cmd == 'by-id':
-        cmd = {"command": "remote-subnet4-del-by-id",
-               "arguments": {"remote": {"type": "mysql"},
-                             "server-tags": ["all"],
-                             "subnets": [{"id": 1}]}}
-    else:
-        cmd = {"command": "remote-subnet4-del-by-prefix",
-               "arguments": {"remote": {"type": "mysql"},
-                             "server-tags": ["all"],
-                             "subnets": [{"subnet": "192.168.50.0/24"}]}}
-
-    response = srv_msg.send_request(dhcp_version, cmd)
-    assert response["result"] == 0
-    srv_control.start_srv('DHCP', 'restarted')
+    del_subnet(del_cmd)
 
     # send discover and now offer should NOT be received
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('DISCOVER')
-    srv_msg.send_wait_for_message("MUST", False, "None")
+    send_discovery_with_no_answer()
 
     # define similar subnet and now response for discover should be received
-    cmd = {"command": "remote-subnet4-set",
-           "arguments": {"remote": {"type": "mysql"},
-                         "server-tags": ["abc"],
-                         "subnets": [
-                             {"subnet": "192.168.50.0/24",
-                              "interface": "$(SERVER_IFACE)",
-                              "pools": [{"pool": "192.168.50.200-192.168.50.200"}]}]}}
-    response = srv_msg.send_request(dhcp_version, cmd)
-    assert response["result"] == 0
-    srv_control.start_srv('DHCP', 'restarted')
+    set_subnet(pool="192.168.50.200-192.168.50.200")
 
     # send discover and now offer should be received
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('DISCOVER')
-    misc.pass_criteria()
-    msgs = srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    # only 1 message received
-    assert len(msgs) == 1
-    # with address from tested server
-    assert msgs[0].yiaddr == '192.168.50.200'
+    get_address(exp_yiaddr='192.168.50.200')
 
 
 # TODO: server-tags are not supported by Kea yet
 # @pytest.mark.v4
-# @pytest.mark.config_backend
-# @pytest.mark.kea_only
 # def test_subnet_set_on_different_server_tag():
 #     dhcp_version = 'v4'
 #     _setup_server_for_config_backend_cmds()
@@ -216,8 +117,6 @@ def test_subnet_set_and_del_and_set(del_cmd):
 
 # TODO: server-tags are not supported by Kea yet
 # @pytest.mark.v4
-# @pytest.mark.config_backend
-# @pytest.mark.kea_only
 # def test_subnets_set_on_different_servers():
 #     # There are 3 defined subnets on 3 different servers using different server-tag.
 #     # Tested server
@@ -276,3 +175,11 @@ def test_subnet_set_and_del_and_set(del_cmd):
 #     assert len(msgs) == 1
 #     # with address from tested server
 #     assert msgs[0].yiaddr == '192.168.51.1'
+
+
+# globals:
+# - valid-lifetime
+# - renew-timer
+# - rebind-timer
+# - server-tag
+# - interfaces-config
