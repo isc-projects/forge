@@ -226,16 +226,113 @@ def test_remote_subnet4_set_all_values(channel):
                                                                      "boot-file-name": "file-name",
                                                                      "id": 2, "interface": "$(SERVER_IFACE)",
                                                                      "match-client-id": False, "next-server": "0.0.0.0",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}],
+                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100",
+                                                                                "option-data": [{"code": 6,
+                                                                                                 "data": '192.0.2.2',
+                                                                                                 "always-send": True,
+                                                                                                 "csv-format": True}]}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
                                                                      "reservation-mode": "all",
                                                                      "server-hostname": "name-xyz",
                                                                      "subnet": "192.168.50.0/24",
-                                                                     "valid-lifetime": 1000}]})
+                                                                     "valid-lifetime": 1000,
+                                                                     "rebind-timer": 500,
+                                                                     "renew-timer": 200,
+                                                                     "option-data": [{"code": 6,
+                                                                                      "data": '192.0.2.1',
+                                                                                      "always-send": True,
+                                                                                      "csv-format": True}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
+
+
+# reservation-mode is integer in db, so we need to check if it's converted correctly
+@pytest.mark.parametrize("channel", ['socket'])
+def test_remote_subnet4_set_reservation_mode_all(channel):
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "reservation-mode": "disabled",
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "server-tags": ["abc"],
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response["arguments"]["subnets"][0]["reservation-mode"] == "all"
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_subnet4_set_reservation_mode_global(channel):
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "reservation-mode": "global",
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "server-tags": ["abc"],
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response["arguments"]["subnets"][0]["reservation-mode"] == "global"
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_subnet4_set_reservation_mode_out_pool(channel):
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "reservation-mode": "out-of-pool",
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "server-tags": ["abc"],
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response["arguments"]["subnets"][0]["reservation-mode"] == "out-of-pool"
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_subnet4_set_reservation_mode_disabled(channel):
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "reservation-mode": "disabled"}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "server-tags": ["abc"],
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = _send_request(cmd, channel=channel)
+
+    assert response["arguments"]["subnets"][0]["reservation-mode"] == "disabled"
 
 
 def _subnet_set(channel):
@@ -322,7 +419,7 @@ def test_remote_subnet4_del_by_prefix_missing_subnet_(channel):
     assert response == {"result": 1, "text": "missing 'subnet' parameter"}
 
 
-@pytest.mark.parametrize("channel", ['http', 'socket'])
+@pytest.mark.parametrize("channel", ['http' 'socket'])
 def test_remote_subnet4_get_by_id(channel):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
@@ -333,12 +430,22 @@ def test_remote_subnet4_get_by_id(channel):
                                                                      "boot-file-name": "file-name",
                                                                      "id": 2, "interface": "$(SERVER_IFACE)",
                                                                      "match-client-id": False, "next-server": "0.0.0.0",
-                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100"}],
+                                                                     "pools": [{"pool": "192.168.50.1-192.168.50.100",
+                                                                                "option-data": [{"code": 6,
+                                                                                                 "data": '192.0.2.2',
+                                                                                                 "always-send": True,
+                                                                                                 "csv-format": True}]}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
-                                                                     "reservation-mode": "all",
+                                                                     "reservation-mode": "global",
                                                                      "server-hostname": "name-xyz",
                                                                      "subnet": "192.168.50.0/24",
-                                                                     "valid-lifetime": 1000}]})
+                                                                     "valid-lifetime": 1000,
+                                                                     "rebind-timer": 500,
+                                                                     "renew-timer": 200,
+                                                                     "option-data": [{"code": 6,
+                                                                                      "data": '192.0.2.1',
+                                                                                      "always-send": True,
+                                                                                      "csv-format": True}]}]})
     response = _send_request(cmd, channel=channel)
 
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
@@ -349,29 +456,25 @@ def test_remote_subnet4_get_by_id(channel):
                                                               "subnets": [{"id": 2}]})
     response = _send_request(cmd, channel=channel)
 
-    assert response == {"arguments": {
-        "count": 1,
-        "subnets": [{
-            "4o6-interface": "eth9",
-            "4o6-interface-id": "interf-id",
-            "4o6-subnet": "2000::/64",
-            "authoritative": False,
-            "boot-file-name": "file-name",
-            "id": 2,
-            "interface": world.f_cfg.iface,
-            "match-client-id": False,
-            "next-server": "0.0.0.0",
-            "option-data": [],
-            "pools": [{
-                "option-data": [],
-                "pool": "192.168.50.1-192.168.50.100"}],
-            "relay": {
-                "ip-addresses": [
-                    "192.168.5.5"]},
-            "reservation-mode": "all",
-            "server-hostname": "name-xyz",
-            "subnet": "192.168.50.0/24",
-            "valid-lifetime": 1000}]}, "result": 0, "text": "IPv4 subnet 2 found."}
+    assert response == {"arguments": {"count": 1,
+                                      "subnets": [{"4o6-interface": "eth9",
+                                                   "4o6-interface-id": "interf-id",
+                                                   "4o6-subnet": "2000::/64", "authoritative": False,
+                                                   "boot-file-name": "file-name", "id": 2, "interface": "enp0s9",
+                                                   "match-client-id": False, "next-server": "0.0.0.0",
+                                                   "option-data": [{"always-send": True, "code": 6, "csv-format": True,
+                                                                    "data": "192.0.2.1", "name": "domain-name-servers",
+                                                                    "space": "dhcp4"}],
+                                                   "pools": [{"option-data": [{"always-send": True, "code": 6,
+                                                                               "csv-format": True, "data": "192.0.2.2",
+                                                                               "name": "domain-name-servers",
+                                                                               "space": "dhcp4"}],
+                                                              "pool": "192.168.50.1-192.168.50.100"}],
+                                                   "rebind-timer": 500,
+                                                   "relay": {"ip-addresses": ["192.168.5.5"]}, "renew-timer": 200,
+                                                   "reservation-mode": "global", "server-hostname": "name-xyz",
+                                                   "subnet": "192.168.50.0/24", "valid-lifetime": 1000}]},
+                        "result": 0, "text": "IPv4 subnet 2 found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
@@ -583,6 +686,54 @@ def test_remote_network4_get_basic(channel):
     response = _send_request(cmd, channel=channel)
     # bug #493
     assert response == {"it should fail, bug here, -set doesnt set subnets"}
+
+
+@pytest.mark.parametrize("channel", ['socket'])
+def test_remote_network4_get_all_values(channel):
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "net1",
+                                                             "client-class": "abc",
+                                                             "rebind-timer": 200,
+                                                             "renew-timer": 100,
+                                                             "valid-lifetime": 300,
+                                                             "reservation-mode": "global",
+                                                             "user-context": "some weird network",
+                                                             "interface": "$(SERVER_IFACE)",
+                                                             "subnet4": [{"subnet": "192.8.0.0/24",
+                                                                          "interface": "$(SERVER_IFACE)",
+                                                                          "pools": [{
+                                                                              "pool": "192.8.0.1-192.8.0.1"}]}],
+                                                             "option-data": [{"code": 6,
+                                                                              "data": '192.0.2.1',
+                                                                              "always-send": True,
+                                                                              "csv-format": True}]}]})
+    _send_request(cmd, channel=channel)
+
+    cmd = dict(command="remote-network4-get", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "net1"}]})
+
+    response = _send_request(cmd, channel=channel)
+
+    assert response == {"arguments": {"count": 1,
+                                      "shared-networks": [{"authoritative": False, "client-class": "abc",
+                                                           "rebind-timer": 200, "renew-timer": 100,
+                                                           "valid-lifetime": 300, "reservation-mode": "global",
+                                                           "interface": world.f_cfg.iface, "match-client-id": True,
+                                                           "name": "net1",
+                                                           "option-data": [{"always-send": True, "code": 6,
+                                                                            "csv-format": True, "data": "192.0.2.1",
+                                                                            "name": "domain-name-servers",
+                                                                            "space": "dhcp4"}],
+                                                           "relay": {"ip-addresses": []},
+                                                           "subnet4": [{"subnet": "192.8.0.0/24",
+                                                                        "interface": world.f_cfg.iface,
+                                                                        "pools": [{"pool": "192.8.0.1-192.8.0.1"}]}],
+                                                           "user-context": "some weird network"}]},
+                        "result": 0, "text": "IPv4 shared network 'net1' found."}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
