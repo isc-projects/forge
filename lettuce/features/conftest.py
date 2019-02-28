@@ -25,7 +25,8 @@ def pytest_generate_tests(metafunc):
         return
     dhcp_versions = []
     # check if v4 and v6 markers are present in function
-    if hasattr(metafunc.function, 'v4') and hasattr(metafunc.function, 'v6'):
+    #import pudb; pudb.set_trace()
+    if metafunc.definition.get_closest_marker('v4') and metafunc.definition.get_closest_marker('v6'):
         # if tests are filtered by markers then generate test versions
         # only if given marker was selected
         markexpr = metafunc.config.getoption("-m")

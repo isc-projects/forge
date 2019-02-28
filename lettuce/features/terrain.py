@@ -322,9 +322,9 @@ def initialize(scenario):
     try:
         dhcp_version = scenario._request.getfixturevalue('dhcp_version')
     except:
-        if scenario.get_marker('v4'):
+        if scenario.get_closest_marker('v4'):
             dhcp_version = 'v4'
-        elif scenario.get_marker('v6'):
+        elif scenario.get_closest_marker('v6'):
             dhcp_version = 'v6'
         else:
             dhcp_version = None
