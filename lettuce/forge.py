@@ -119,7 +119,6 @@ class ForgeConfiguration:
         self.proto = PROTO
         self.software_under_test = SOFTWARE_UNDER_TEST
         self.software_install_path = SOFTWARE_INSTALL_PATH
-        # TODO remove trailing / if there is some
         self.software_install_dir = SOFTWARE_INSTALL_PATH  # that keeps backwards compatibility
         self.db_type = DB_TYPE
         self.db_host = DB_HOST

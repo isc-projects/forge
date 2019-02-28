@@ -32,6 +32,26 @@ def test_v4_sharednetworks_negative_missing_name():
 @pytest.mark.sharednetworks
 @pytest.mark.sharedsubnets
 @pytest.mark.kea_only
+def test_v4_sharednetworks_negative_empty_name():
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
+                                                       '192.168.51.1-192.168.51.1')
+    # first shared subnet
+    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('1', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '""', '0')
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+
+    # DHCP server is started.
+    srv_control.start_srv_during_process('DHCP', 'configure')
+
+
+@pytest.mark.v4
+@pytest.mark.sharednetworks
+@pytest.mark.sharedsubnets
+@pytest.mark.kea_only
 def test_v4_sharednetworks_negative_not_unique_names():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')

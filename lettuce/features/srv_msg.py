@@ -27,6 +27,23 @@ dns = importlib.import_module("features.protosupport.dns")
 other = importlib.import_module("features.protosupport.multi_protocol_functions")
 
 
+# config values return
+def get_interface():
+    return world.f_cfg.iface
+
+
+def get_proto_version():
+    return world.f_cfg.proto
+
+
+def get_server_interface():
+    return world.f_cfg.server_iface
+
+
+def get_server_path():
+    return world.f_cfg.software_install_path
+
+
 ##building DHCP messages
 @step('Client requests option (\d+).')
 def client_requests_option(opt_type):

@@ -59,6 +59,54 @@ def test_v6_options_user_defined_option():
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.options
+@pytest.mark.user
+def test_v6_options_user_defined_option_code_zero():
+    #  Testing server ability to configure it with user custom option
+    #  in this case: option code 100, value unit8 123.
+    #  with client via Advertise and Reply message.
+    #  					Client		Server
+    #  request option	SOLICIT -->
+    #  custom option 			<--	ADVERTISE
+    #  request option	REQUEST -->
+    #  custom option			<--	REPLY
+    #  Pass Criteria:
+    #  				REPLY/ADVERTISE MUST include option:
+    # 					custom option with value 123
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_custom_opt('foo', '0', 'uint8', '123')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv_during_process('DHCP', 'configure')
+
+
+@pytest.mark.v6
+@pytest.mark.dhcp6
+@pytest.mark.options
+@pytest.mark.user
+def test_v6_options_user_defined_option_standard_code():
+    #  Testing server ability to configure it with user custom option
+    #  in this case: option code 100, value unit8 123.
+    #  with client via Advertise and Reply message.
+    #  					Client		Server
+    #  request option	SOLICIT -->
+    #  custom option 			<--	ADVERTISE
+    #  request option	REQUEST -->
+    #  custom option			<--	REPLY
+    #  Pass Criteria:
+    #  				REPLY/ADVERTISE MUST include option:
+    # 					custom option with value 123
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_custom_opt('foo', '12', 'uint8', '123')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv_during_process('DHCP', 'configure')
+
+
+@pytest.mark.v6
+@pytest.mark.dhcp6
+@pytest.mark.options
 def test_v6_options_all():
 
     misc.test_setup()
