@@ -29,3 +29,16 @@ pip-log.txt
 
 #temp files
 *~
+
+*.pyc
+output/*
+/UserHelp.txt
+/history.html
+/lettucetests.xml
+/tests_results
+/lettucetests.xml
+/history.html
+/tests_results_archive
+/.idea/*
+/temp
+/server.cfg
