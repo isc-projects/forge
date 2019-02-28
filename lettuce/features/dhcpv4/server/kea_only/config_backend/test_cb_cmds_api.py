@@ -15,8 +15,6 @@ pytestmark = [pytest.mark.py_test,
               pytest.mark.config_backend,
               pytest.mark.cb_cmds]
 
-DHCP_VERSION = srv_msg.world.proto
-
 
 def _setup_server_for_cb_cmds():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
@@ -37,7 +35,7 @@ def _setup_server_for_cb_cmds():
 
 def _send_request(cmd, channel='http'):
     if channel == 'http':
-        if DHCP_VERSION == 'v4':
+        if srv_msg.get_proto_version() == 'v4':
             cmd["service"] = ['dhcp4']
         else:
             cmd["service"] = ['dhcp6']
@@ -538,7 +536,7 @@ def test_remote_subnet4_get_by_prefix(channel):
             "authoritative": False,
             "boot-file-name": "file-name",
             "id": 1,
-            "interface": srv_msg.world.f_cfg.iface,
+            "interface": srv_msg.get_interface(),
             "match-client-id": True,
             "next-server": "0.0.0.0",
             "option-data": [],
@@ -721,7 +719,7 @@ def test_remote_network4_get_all_values(channel):
                                       "shared-networks": [{"authoritative": False, "client-class": "abc",
                                                            "rebind-timer": 200, "renew-timer": 100,
                                                            "valid-lifetime": 300, "reservation-mode": "global",
-                                                           "interface": srv_msg.world.f_cfg.iface,
+                                                           "interface": srv_msg.get_interface(),
                                                            "match-client-id": True,
                                                            "name": "net1",
                                                            "option-data": [{"always-send": True, "code": 6,
@@ -730,7 +728,7 @@ def test_remote_network4_get_all_values(channel):
                                                                             "space": "dhcp4"}],
                                                            "relay": {"ip-addresses": []},
                                                            "subnet4": [{"subnet": "192.8.0.0/24",
-                                                                        "interface": srv_msg.world.f_cfg.iface,
+                                                                        "interface": srv_msg.get_interface(),
                                                                         "pools": [{"pool": "192.8.0.1-192.8.0.1"}]}],
                                                            "user-context": "some weird network"}]},
                         "result": 0, "text": "IPv4 shared network 'net1' found."}
