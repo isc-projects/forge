@@ -49,15 +49,10 @@ def pytest_configure(config):
     terrain.test_start()
 
 
-class Total(object):
-    def __init__(self):
-        self.scenarios_passed = 0
-        self.scenarios_ran = 0
-
 def pytest_unconfigure(config):
     from features import terrain
     # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.say_goodbye() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    terrain.say_goodbye(Total())
+    terrain.say_goodbye()
 
 
 

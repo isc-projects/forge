@@ -506,16 +506,12 @@ def remove_all():
 
 
 #@after.all
-def say_goodbye(total):
+def say_goodbye():
     """
     Server stopping after whole work
     """
     world.clntCounter = 0
     world.srvCounter = 0
-    log.info("%d of %d scenarios passed." % (
-        total.scenarios_passed,
-        total.scenarios_ran
-    ))
     if world.f_cfg.history:
         result = open('result', 'w')
         for item in world.result:

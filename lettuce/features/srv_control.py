@@ -20,18 +20,26 @@ import importlib
 
 from forge import world, step
 
+import features.softwaresupport.bind9_server.functions as dns
 
 class Dispatcher(object):
     def __init__(self, mod_name):
         self.mod_name = mod_name
 
     def __getattr__(self, attr_name):
-        if world.f_cfg.proto == 'v4':
-            server_name = 'kea4_server'
+        if any(('isc_dhcp' in s for s in world.f_cfg.software_under_test)):
+            if world.f_cfg.proto == 'v4':
+                server_name = 'isc_dhcp4_server'
+            else:
+                server_name = 'isc_dhcp6_server'
         else:
-            server_name = 'kea6_server'
+            if world.f_cfg.proto == 'v4':
+                server_name = 'kea4_server'
+            else:
+                server_name = 'kea6_server'
 
-        mod = importlib.import_module("features.softwaresupport.%s.%s" % (server_name, self.mod_name))
+        full_mod_name = "features.softwaresupport.%s.%s" % (server_name, self.mod_name)
+        mod = importlib.import_module(full_mod_name)
 
         return getattr(mod, attr_name)
 
@@ -41,56 +49,6 @@ ddns = Dispatcher('functions_ddns')
 mysql_reservation = Dispatcher('mysql_reservation')
 pgsql_reservation = Dispatcher('pgsql_reservation')
 cql_reservation = Dispatcher('cql_reservation')
-dns = Dispatcher('dns')
-
-
-def resolved_submodules():
-    DHCP = world.f_cfg.dhcp_used
-    DNS = world.f_cfg.dns_used
-    #declare_all()
-
-    for server_name in SOFTWARE_UNDER_TEST:
-        if server_name in DHCP and not world.f_cfg.no_server_management:
-            dhcp = importlib.import_module("features.softwaresupport.%s.functions" % server_name)
-            ddns_enable = True
-            mysql_reservation_enable = True
-            pgsql_reservation_enable = True
-            cql_reservation_enable = True
-            try:
-                ddns = importlib.import_module("features.softwaresupport.%s.functions_ddns" % server_name)
-            except ImportError:
-                ddns_enable = False
-            try:
-                mysql_reservation = importlib.import_module("features.softwaresupport.%s.mysql_reservation" % server_name)
-            except ImportError:
-                mysql_reservation_enable = False
-            try:
-                pgsql_reservation = importlib.import_module("features.softwaresupport.%s.pgsql_reservation" % server_name)
-            except ImportError:
-                pgsql_reservation_enable = False
-            try:
-                cql_reservation = importlib.import_module("features.softwaresupport.%s.cql_reservation" % server_name)
-            except ImportError:
-                cql_reservation_enable = False
-        elif server_name in DNS and not world.f_cfg.no_server_management:
-            try:
-                dns = importlib.import_module("features.softwaresupport.%s.functions" % server_name)
-            except ImportError:
-                dns_enable = False
-        elif world.f_cfg.no_server_management:
-            dhcp = importlib.import_module("features.softwaresupport.none_server.functions")
-            mysql_reservation_enable = False
-            pgsql_reservation_enable = False
-            cql_reservation_enable = False
-            dns = importlib.import_module("features.softwaresupport.none_server.functions")
-
-    # new configuration system:
-    new_config = importlib.import_module("features.softwaresupport.configuration")
-
-
-def ddns_block():
-    if not ddns_enable:
-        assert False, "Forge couldn't import DDNS support."
 
 
 def test_define_value(*args):
@@ -1021,33 +979,28 @@ def clear_leases(action):
 ##DDNS server
 @step('DDNS server is configured on (\S+) address and (\S+) port.')
 def add_ddns_server(address, port):
-    ddns_block()
     address, port = test_define_value(address, port)
     ddns.add_ddns_server(address, port)
 
 
 @step('DDNS server is configured with (\S+) option set to (\S+).')
 def add_ddns_server_options(option, value):
-    ddns_block()
     option, value = test_define_value(option, value)
     ddns.add_ddns_server_options(option, value)
 
 
 @step('Add forward DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
 def add_forward_ddns(name, key_name, ipaddress, port):
-    ddns_block()
     ddns.add_forward_ddns(name, key_name, ipaddress, port)
 
 
 @step('Add reverse DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
 def add_reverse_ddns(name, key_name, ipaddress, port):
-    ddns_block()
     ddns.add_reverse_ddns(name, key_name, ipaddress, port)
 
 
 @step('Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
 def add_keys(name, algorithm, secret):
-    ddns_block()
     ddns.add_keys(secret, name, algorithm)
 
 
