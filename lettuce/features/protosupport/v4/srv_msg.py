@@ -135,7 +135,7 @@ options_formatted_by_forge = ["vendor_specific",  # code 43
                               ]
 
 
-def client_does_include(opt_type, value):
+def client_does_include(sender_type, opt_type, value):
     if opt_type == 'client_id':
         # code - 61
         world.cliopts += [(opt_type, convert_MAC(value))]
