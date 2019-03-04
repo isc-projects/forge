@@ -108,7 +108,7 @@ def client_does_include_with_value(opt_type, value):
     What ever I'll do with that always takes wrong step.
     """
     opt_type, value = test_define_value(opt_type, value)
-    dhcpmsg.client_does_include(opt_type, value)
+    dhcpmsg.client_does_include(None, opt_type, value)
 
 
 @step('(\S+) does (NOT )?include (\S+).')
