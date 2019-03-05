@@ -1132,11 +1132,8 @@ def test_ddns4_logging_all_types_debug():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'abc.com')
-    srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key', '192.168.50.252', '53')
-    srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.',
-                                 'forge.sha1.key',
-                                 '192.168.50.252',
-                                 '53')
+    srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key')
+    srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.configure_loggers('kea-dhcp-ddns', 'DEBUG', '99', 'kea.log')
     srv_control.build_and_send_config_files('SSH', 'config-file')

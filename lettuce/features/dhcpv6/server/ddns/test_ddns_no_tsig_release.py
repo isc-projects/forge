@@ -22,11 +22,8 @@ def test_ddns6_notsig_forw_and_rev_release():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'EMPTY_KEY',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -138,11 +135,8 @@ def test_ddns6_notsig_forw_and_rev_release_notenabled():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'EMPTY_KEY',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -220,11 +214,8 @@ def test_ddns6_notsig_forw_and_rev_release_notenabled():
     srv_control.add_ddns_server_options('enable-updates', 'false')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'EMPTY_KEY',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -277,11 +268,8 @@ def test_ddns6_notsig_rev_release():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'EMPTY_KEY',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -405,11 +393,8 @@ def test_ddns6_notsig_expired():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'EMPTY_KEY',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

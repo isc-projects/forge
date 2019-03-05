@@ -865,11 +865,8 @@ def test_ddns6_logging_all_types_debug():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'abc.com')
-    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'EMPTY_KEY',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
     srv_control.configure_loggers('kea-dhcp-ddns', 'DEBUG', '99', 'kea.log')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')

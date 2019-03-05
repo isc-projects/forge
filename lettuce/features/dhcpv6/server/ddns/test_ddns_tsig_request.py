@@ -21,11 +21,8 @@ def test_ddns6_tsig_sha1_forw_and_rev():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'forge.sha1.key',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -108,11 +105,8 @@ def test_ddns6_tsig_sha224_forw_and_rev():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.sha224.key', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'forge.sha224.key',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha224.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha224.key')
     srv_control.add_keys('forge.sha224.key', 'HMAC-SHA224', 'TxAiO5TRKkFyHSCa4erQZQ==')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -195,11 +189,8 @@ def test_ddns6_tsig_sha256_forw_and_rev():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.sha256.key', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'forge.sha256.key',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha256.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha256.key')
     srv_control.add_keys('forge.sha256.key', 'HMAC-SHA256', '5AYMijv0rhZJyQqK/caV7g==')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -282,11 +273,8 @@ def test_ddns6_tsig_sha384_forw_and_rev():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.sha384.key', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'forge.sha384.key',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha384.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha384.key')
     srv_control.add_keys('forge.sha384.key', 'HMAC-SHA384', '21upyvp7zcG0S2PB4+kuQQ==')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -369,11 +357,8 @@ def test_ddns6_tsig_sha512_forw_and_rev():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.sha512.key', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'forge.sha512.key',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha512.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha512.key')
     srv_control.add_keys('forge.sha512.key', 'HMAC-SHA512', 'jBng5D6QL4f8cfLUUwE7OQ==')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -456,11 +441,8 @@ def test_ddns6_tsig_md5_forw_and_rev():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.md5.key', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'forge.md5.key',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.md5.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.md5.key')
     srv_control.add_keys('forge.md5.key', 'HMAC-MD5', 'bX3Hs+fG/tThidQPuhK1mA==')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -543,11 +525,8 @@ def test_ddns6_tsig_multi_key_forw_and_rev():
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.md5.key', '2001:db8:1::1000', '53')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
-                                 'forge.sha512.key',
-                                 '2001:db8:1::1000',
-                                 '53')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.md5.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha512.key')
     srv_control.add_keys('forge.sha512.key', 'HMAC-SHA512', 'jBng5D6QL4f8cfLUUwE7OQ==')
     srv_control.add_keys('forge.md5.key', 'HMAC-MD5', 'bX3Hs+fG/tThidQPuhK1mA==')
     srv_control.build_and_send_config_files('SSH', 'config-file')

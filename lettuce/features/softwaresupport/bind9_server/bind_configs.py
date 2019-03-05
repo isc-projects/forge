@@ -19,8 +19,8 @@ config_file_set = {
     #number : [named.conf, rndc.conf, fwd.db, rev.db ]
     1: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -109,8 +109,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
     2: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -198,8 +198,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 3: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -292,8 +292,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 4: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -386,8 +386,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 5: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -480,8 +480,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 6: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -574,8 +574,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 6: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -668,8 +668,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 7: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -762,8 +762,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 8: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -856,8 +856,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 9: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on-v6 port 53 { 2001:db8:1::1000; };
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -963,8 +963,8 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
     ## v4 configs!
 20: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -1054,8 +1054,8 @@ $ORIGIN 50.168.192.in-addr.arpa.
 
 21: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -1151,8 +1151,8 @@ $ORIGIN 50.168.192.in-addr.arpa.
 """],
 22: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -1248,8 +1248,8 @@ $ORIGIN 50.168.192.in-addr.arpa.
 """],
 23: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -1345,8 +1345,8 @@ $ORIGIN 50.168.192.in-addr.arpa.
 """],
 24: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -1442,8 +1442,8 @@ $ORIGIN 50.168.192.in-addr.arpa.
 """],
 25: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -1539,8 +1539,8 @@ $ORIGIN 50.168.192.in-addr.arpa.
 """],
 26: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
@@ -1636,8 +1636,8 @@ $ORIGIN 50.168.192.in-addr.arpa.
 """],
 27: ["""
 options {
-    directory "/home/test/dns/namedb";  // Working directory
-    listen-on port 53 { 192.168.50.252; };
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
     allow-query-cache { none; };       // Do not allow access to cache
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default

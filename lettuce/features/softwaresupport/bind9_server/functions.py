@@ -16,6 +16,8 @@
 # Author: Wlodzimierz Wencel
 
 import sys
+import os
+import string
 
 from forge import world
 from features.softwaresupport.bind9_server.bind_configs import config_file_set, keys
@@ -25,9 +27,8 @@ from features.softwaresupport.multi_server_functions import fabric_run_command, 
 
 
 def make_file(name, content):
-    configfile = open(name, 'w')
-    configfile.write(content)
-    configfile.close()
+    with open(name, 'w') as f:
+        f.write(content)
 
 
 def add_defaults(ip_type, address, port, direct):
@@ -91,35 +92,42 @@ def add_rndc(address, port, alg, value):
     world.cfg["rndc-key"] += 'default-server {address};	default-port 953;{pointer_e};'.format(**locals())
 
 
+def _patch_config(cfg):
+    tpl = string.Template(cfg)
+    return tpl.safe_substitute(data_path=os.path.join(world.f_cfg.dns_data_path, 'namedb'),
+                               dns_addr=world.f_cfg.dns_addr,
+                               dns_port=world.f_cfg.dns_port)
+
+
 def use_config_set(number):
-    if not number in config_file_set:
+    if number not in config_file_set:
         assert False, "There is no such config file set"
-    make_file('named.conf', config_file_set[number][0])
+    make_file('named.conf', _patch_config(config_file_set[number][0]))
     make_file('rndc.conf', config_file_set[number][1])
     make_file('fwd.db', config_file_set[number][2])
     make_file('rev.db', config_file_set[number][3])
     world.cfg["dns_log_file"] = '/tmp/dns.log'
     make_file('bind.keys', keys)
 
-    fabric_sudo_command('mkdir -p %s' % world.f_cfg.dns_data_path)
+    fabric_sudo_command('mkdir -p %s' % os.path.join(world.f_cfg.dns_data_path, 'namedb'))
 
-    fabric_send_file('named.conf', world.f_cfg.dns_data_path + 'named.conf')
+    fabric_send_file('named.conf', os.path.join(world.f_cfg.dns_data_path, 'named.conf'))
     copy_configuration_file('named.conf', 'dns/DNS_named.conf')
     remove_local_file('named.conf')
 
-    fabric_send_file('rndc.conf', world.f_cfg.dns_data_path + 'rndc.conf')
+    fabric_send_file('rndc.conf', os.path.join(world.f_cfg.dns_data_path, 'rndc.conf'))
     copy_configuration_file('rndc.conf', 'dns/DNS_rndc.conf')
     remove_local_file('rndc.conf')
 
-    fabric_send_file('fwd.db', world.f_cfg.dns_data_path + 'namedb/fwd.db')
+    fabric_send_file('fwd.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/fwd.db'))
     copy_configuration_file('fwd.db', 'dns/DNS_fwd.db')
     remove_local_file('fwd.db')
 
-    fabric_send_file('rev.db', world.f_cfg.dns_data_path + 'namedb/rev.db')
+    fabric_send_file('rev.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/rev.db'))
     copy_configuration_file('rev.db', 'dns/DNS_rev.db')
     remove_local_file('rev.db')
 
-    fabric_send_file('bind.keys', world.f_cfg.dns_data_path + 'managed-keys.bind')
+    fabric_send_file('bind.keys', os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'))
     copy_configuration_file('bind.keys', 'dns/DNS_managed-keys.bind')
     remove_local_file('bind.keys')
 
@@ -135,8 +143,8 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 
 def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
-    fabric_sudo_command('(' + world.f_cfg.dns_server_install_path + 'named -c ' +
-                        world.f_cfg.dns_data_path + 'named.conf & ); sleep ' + str(world.f_cfg.sleep_time_1),
+    fabric_sudo_command('(' + os.path.join(world.f_cfg.dns_server_install_path, 'named') + ' -c ' +
+                        os.path.join(world.f_cfg.dns_data_path, 'named.conf') + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
                         destination_host=destination_address)
 
 
@@ -161,6 +169,6 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
 def clear_all(destination_address=world.f_cfg.mgmt_address):
     stop_srv(value=True, destination_address=destination_address)
     fabric_remove_file_command('/tmp/dns.log', destination_host=destination_address)
-    fabric_remove_file_command(world.f_cfg.dns_data_path + 'namedb/*', destination_host=destination_address)
-    fabric_remove_file_command(world.f_cfg.dns_data_path + '/*.conf', destination_host=destination_address)
-    fabric_remove_file_command(world.f_cfg.dns_data_path + '/managed-keys.bind', destination_host=destination_address)
+    fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, 'namedb/*'), destination_host=destination_address)
+    fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, '*.conf'), destination_host=destination_address)
+    fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'), destination_host=destination_address)
