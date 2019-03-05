@@ -63,7 +63,7 @@ def test_ddns4_notsig_forw_and_rev_release():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
     srv_msg.response_check_include_option('Response', None, '81')
-    srv_msg.response_check_option_content('Response', '81', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '81', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '81', None, 'fqdn', 'aa.four.example.com.')
 
     misc.test_procedure()
@@ -166,7 +166,7 @@ def test_ddns4_notsig_forw_and_rev_release_notenabled():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
     srv_msg.response_check_include_option('Response', None, '81')
-    srv_msg.response_check_option_content('Response', '81', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '81', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '81', None, 'fqdn', 'aa.four.example.com.')
 
     misc.test_procedure()
@@ -396,7 +396,7 @@ def test_ddns4_notsig_expire():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
     srv_msg.response_check_include_option('Response', None, '81')
-    srv_msg.response_check_option_content('Response', '81', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '81', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '81', None, 'fqdn', 'aa.four.example.com.')
 
     misc.test_procedure()

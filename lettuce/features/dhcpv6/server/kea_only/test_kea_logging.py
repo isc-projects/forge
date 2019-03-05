@@ -901,7 +901,7 @@ def test_ddns6_logging_all_types_debug():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1.')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
 
     misc.test_procedure()
