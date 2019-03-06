@@ -1,6 +1,8 @@
 """Common functions for cb-cmds testing."""
 
-from features import srv_msg, srv_control, misc
+import srv_msg
+import srv_control
+import misc
 
 
 def setup_server_for_config_backend_cmds():

@@ -16,7 +16,7 @@
 # Author: Maciek Fijalkowski
 
 
-from features.softwaresupport.core import *
+from softwaresupport.core import *
 
 
 def prepare_default_command():

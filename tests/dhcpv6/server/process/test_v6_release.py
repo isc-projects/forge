@@ -4,10 +4,10 @@
 
 import pytest
 
-from features import misc
-from features import references
-from features import srv_control
-from features import srv_msg
+import misc
+import references
+import srv_control
+import srv_msg
 
 
 @pytest.mark.v6

@@ -1,18 +1,13 @@
 import pytest
 
-# import logging
-# log = logging.getLogger('forge')
-
 
 def pytest_runtest_setup(item):
-    from features import terrain
-    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.initialize(%s) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" % item)
+    import terrain
     terrain.initialize(item)
 
 
 def pytest_runtest_teardown(item, nextitem):
-    from features import terrain
-    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.cleanup(%s) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" % item)
+    import terrain
     item.failed = None
     terrain.cleanup(item)
 
@@ -44,14 +39,12 @@ def pytest_generate_tests(metafunc):
 
 
 def pytest_configure(config):
-    from features import terrain
-    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.test_start() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    import terrain
     terrain.test_start()
 
 
 def pytest_unconfigure(config):
-    from features import terrain
-    # log.info("~~~~~~~~~~~~~~~~~~~~~ terrain.say_goodbye() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    import terrain
     terrain.say_goodbye()
 
 

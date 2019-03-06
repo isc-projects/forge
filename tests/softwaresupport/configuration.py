@@ -18,7 +18,7 @@ import os
 import sys
 
 from forge import world
-from features.softwaresupport.multi_server_functions import (fabric_run_command, fabric_send_file,
+from softwaresupport.multi_server_functions import (fabric_run_command, fabric_send_file,
     remove_local_file, copy_configuration_file, fabric_sudo_command, json_file_layout,
     fabric_download_file, fabric_remove_file_command, locate_entry)
 

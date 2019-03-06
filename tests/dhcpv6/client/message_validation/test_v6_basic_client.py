@@ -4,10 +4,10 @@
 
 import pytest
 
-from features import clnt_control
-from features import misc
-from features import references
-from features import clnt_msg
+import clnt_control
+import misc
+import references
+import clnt_msg
 
 
 @pytest.mark.v6

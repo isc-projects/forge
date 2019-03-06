@@ -29,7 +29,7 @@ from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
 
 from forge import world
-from features.protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
+from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
 
 
 log = logging.getLogger('forge')

@@ -22,9 +22,9 @@ import logging
 
 from forge import world
 
-from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
     copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
-from features.softwaresupport.kea6_server.functions import start_kea, stop_kea, stop_srv, restart_srv, reconfigure_srv, \
+from softwaresupport.kea6_server.functions import start_kea, stop_kea, stop_srv, restart_srv, reconfigure_srv, \
     set_logger, cfg_write, set_time, \
     add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config,\
     check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\

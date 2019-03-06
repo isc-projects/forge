@@ -175,11 +175,3 @@ def test_subnet_set_and_del_and_set(del_cmd):
 #     assert len(msgs) == 1
 #     # with address from tested server
 #     assert msgs[0].yiaddr == '192.168.51.1'
-
-
-# globals:
-# - valid-lifetime
-# - renew-timer
-# - rebind-timer
-# - server-tag
-# - interfaces-config

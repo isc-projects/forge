@@ -20,8 +20,8 @@ import os
 import string
 
 from forge import world
-from features.softwaresupport.bind9_server.bind_configs import config_file_set, keys
-from features.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, \
+from softwaresupport.bind9_server.bind_configs import config_file_set, keys
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, \
     copy_configuration_file, fabric_sudo_command, fabric_download_file, fabric_remove_file_command,\
     check_local_path_for_downloaded_files
 

@@ -29,10 +29,10 @@ from scapy.layers.dhcp6 import DUID_LLT
 
 #from init_all import ForgeConfiguration
 from forge import world, step
-from features.softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
+from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
-from features import logging_facility
-from features.srv_control import start_srv
+import logging_facility
+from srv_control import start_srv
 
 log = logging.getLogger('forge')
 
@@ -121,7 +121,7 @@ values_v4 = {"ciaddr": "0.0.0.0",
 # we should consider transfer most of functions to separate v4 and v6 files
 # TODO: make separate files after branch merge
 
-def set_values():
+def _set_values():
     # this function is called after each message send.
     if world.f_cfg.proto == "v6":
         world.cfg["values"] = values_v6.copy()
@@ -137,11 +137,7 @@ def set_values():
         world.cfg["values"] = values_v4.copy()
         world.cfg["server_times"] = server_times_v4.copy()
 
-world.set_values = set_values
-
-
-def add_result_to_report(info):
-    world.result.append(info)
+world.set_values = _set_values
 
 
 def client_id(mac):
@@ -162,11 +158,7 @@ def ia_pd():
         world.cfg["values"]["ia_pd"] = world.cfg["ia_pd"]
 
 
-def multiprotocol_initialize():
-    pass
-
-
-def v4_initialize():
+def _v4_initialize():
     # Setup scapy for v4
     # conf.iface = IFACE
     conf.checkIPaddr = False  # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
@@ -182,7 +174,7 @@ def v4_initialize():
     world.dhcp_enable = True
 
 
-def v6_initialize():
+def _v6_initialize():
     world.dhcp_enable = True
     # RFC 3315 define two addresess:
     # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
@@ -207,14 +199,14 @@ def v6_initialize():
     ia_pd()
 
 
-def dns_initialize():
+def _dns_initialize():
     world.cfg["dns_iface"] = world.f_cfg.dns_iface
     world.cfg["dns_addr"] = world.f_cfg.dns_addr
     world.cfg["dns_port"] = world.f_cfg.dns_port
     world.dns_enable = True
 
 
-def define_software(dhcp_version):
+def _define_software(dhcp_version):
     # unfortunately we have to do this every single time
     world.cfg["dhcp_under_test"] = ""
     world.cfg["dns_under_test"] = ""
@@ -304,11 +296,11 @@ def test_start():
     if not world.f_cfg.no_server_management:
         for each in world.f_cfg.software_under_test:
             if "client" in each:
-                clnt = importlib.import_module("features.softwaresupport.%s.functions" % each)
+                clnt = importlib.import_module("softwaresupport.%s.functions" % each)
                 clnt.stop_clnt()
 
             else:
-                stop = importlib.import_module("features.softwaresupport.%s.functions" % each)
+                stop = importlib.import_module("softwaresupport.%s.functions" % each)
                 # True passed to stop_srv is to hide output in console.
                 stop.stop_srv(True)
                 #  that is pointless, we should use same name for stop_srv and stop_clnt functions,
@@ -331,11 +323,11 @@ def initialize(scenario):
 
     # Declare all default values
     declare_all(dhcp_version)
-    define_software(dhcp_version)
+    _define_software(dhcp_version)
 
     world.cfg["iface"] = world.f_cfg.iface
     # world.cfg["server_type"] = SOFTWARE_UNDER_TEST for now I'll leave it here,
-    # now we use world.cfg["dhcp_under_test"] and world.cfg["dns_under_test"] (in function define_software)
+    # now we use world.cfg["dhcp_under_test"] and world.cfg["dns_under_test"] (in function _define_software)
     # it is being filled with values in srv_control and clnt_control
     world.cfg["wait_interval"] = world.f_cfg.packet_wait_interval
     world.cfg["cfg_file"] = "server.cfg"
@@ -382,13 +374,13 @@ def initialize(scenario):
     if "dhcp_under_test" in world.cfg:
         # IPv6:
         if world.proto == "v6":
-            v6_initialize()
+            _v6_initialize()
         # IPv4:
         if world.proto == "v4":
-            v4_initialize()
+            _v4_initialize()
 
     if "dns_under_test" in world.cfg:
-        dns_initialize()
+        _dns_initialize()
 
     world.set_values()
     world.cfg["values"]["tr_id"] = world.cfg["tr_id"]
@@ -418,49 +410,7 @@ def initialize(scenario):
                          "-s", str(65535), "-i", world.cfg["dns_iface"]]
 
                 subprocess.Popen(args2)
-    remove_all()
-
-
-#@before.outline
-def outline_before(scenario, number, step, failed):
-    """
-    For Outline Scenarios,
-        scenario - name
-        number - number of scenario
-        step - which 'example' from test
-        failed - reason of failure
-    For more info please read UserHelp - Outline Scenarios
-    """
-    initialize(scenario)  # we need to initialize all
-
-
-#@after.outline
-def outline_result(scenario, number, step, failed):
-    """
-    For Outline Scenarios,
-        scenario - name
-        number - number of scenario
-        step - which 'example' from test
-        failed - reason of failure
-    For more info please read UserHelp - Outline Scenarios
-    """
-    if len(failed) == 0:
-        result = 'False'
-    else:
-        result = 'True'
-    info = str(scenario.name) + str(step) + '\n' + result
-    add_result_to_report(info)
-
-
-#@after.each_step
-def cleanup_option(step):
-    cfg_file = open(world.cfg["dir_name"]+'/test_steps', 'a')
-    # assert False, step.__dict__
-    if str(step.proposed_sentence) in ["Test Procedure:", "Pass Criteria:", "Test Setup:"]:
-        cfg_file.write("\n\n"+str(step.proposed_sentence)+"\n")
-    else:
-        cfg_file.write("\n  "+str(step.proposed_sentence))
-    cfg_file.close()
+    _remove_all()
 
 
 #@after.each_scenario
@@ -470,7 +420,7 @@ def cleanup(scenario):
     """
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
-        add_result_to_report(info)
+        world.result.append(info)
 
     # stop dhcp server
     start_srv('DHCP', 'stopped')
@@ -480,14 +430,14 @@ def cleanup(scenario):
         args = ["killall tcpdump"]
         subprocess.call(args, shell=True)
         # TODO: log output in debug mode
-    remove_all()
+    _remove_all()
 
 
-def remove_all():
+def _remove_all():
     if not world.f_cfg.no_server_management:
         for each_remote_server in world.f_cfg.multiple_tested_servers:
             for each in world.f_cfg.software_under_test:
-                functions = importlib.import_module("features.softwaresupport.%s.functions" % each)
+                functions = importlib.import_module("softwaresupport.%s.functions" % each)
                 # try:
                 if world.f_cfg.save_leases:
                     # save leases, if there is none leases in your software, just put "pass" in this function.
@@ -524,11 +474,11 @@ def say_goodbye():
                 if "client" in each:
                     kill_msg = "kill the " + each[:each.find("_client")]
                     log.debug(kill_msg)
-                    clnt = importlib.import_module("features.softwaresupport.%s.functions" % each)
+                    clnt = importlib.import_module("softwaresupport.%s.functions" % each)
                     clnt.stop_clnt(destination_address=each_remote_server)
 
                 else:
-                    stop = importlib.import_module("features.softwaresupport.%s.functions" % each)
+                    stop = importlib.import_module("softwaresupport.%s.functions" % each)
                     # True passed to stop_srv is to hide output in console.
                     try:
                         stop.stop_srv(value=True, destination_address=each_remote_server)
@@ -547,9 +497,3 @@ def say_goodbye():
         archive_name = world.f_cfg.proto + '_' + name + '_' + time.strftime("%Y-%m-%d-%H:%M")
         archive_name = archive_file_name(1, 'tests_results_archive/' + archive_name)
         make_tarfile(archive_name + '.tar.gz', 'tests_results')
-
-    log.info("Goodbye.")
-
-
-if __name__ == "__main__":
-    pass

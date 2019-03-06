@@ -4,9 +4,9 @@
 
 import pytest
 
-from features import srv_control
-from features import misc
-from features import srv_msg
+import srv_control
+import misc
+import srv_msg
 
 
 @pytest.mark.v6
@@ -38,7 +38,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user():
     # an unknown user should get last subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('features/dhcpv6/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv6/server/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::5')
@@ -61,7 +61,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user():
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('features/dhcpv6/server/kea_only/user_chk/outcome_1.txt')
+    srv_msg.compare_file('tests/dhcpv6/server/kea_only/user_chk/outcome_1.txt')
 
 
 @pytest.mark.v6
@@ -74,7 +74,7 @@ def test_user_check_hook_IA_NA_with_registry_known_user():
     # an known user should get first subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('features/dhcpv6/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv6/server/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::5')
@@ -97,4 +97,4 @@ def test_user_check_hook_IA_NA_with_registry_known_user():
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('features/dhcpv6/server/kea_only/user_chk/outcome_2.txt')
+    srv_msg.compare_file('tests/dhcpv6/server/kea_only/user_chk/outcome_2.txt')

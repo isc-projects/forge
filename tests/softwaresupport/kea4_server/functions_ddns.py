@@ -15,6 +15,6 @@
 
 # Author: Wlodzimierz Wencel
 
-from features.softwaresupport.kea6_server.functions_ddns import *
+from softwaresupport.kea6_server.functions_ddns import *
 
 # no changes here - all the same as for Kea6_server

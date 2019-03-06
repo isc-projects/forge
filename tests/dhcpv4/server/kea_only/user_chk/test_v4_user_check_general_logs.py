@@ -4,9 +4,9 @@
 
 import pytest
 
-from features import srv_msg
-from features import misc
-from features import srv_control
+import srv_msg
+import misc
+import srv_control
 
 
 @pytest.mark.v4
@@ -63,7 +63,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
     # an unknown user should get last subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('features/dhcpv4/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv4/server/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -87,7 +87,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
 
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('features/dhcpv4/server/kea_only/user_chk/outcome_1.txt')
+    srv_msg.compare_file('tests/dhcpv4/server/kea_only/user_chk/outcome_1.txt')
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp4.hooks')
@@ -105,7 +105,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     # an unknown user should get last subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('features/dhcpv4/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv4/server/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -129,12 +129,12 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
 
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('features/dhcpv4/server/kea_only/user_chk/outcome_1.txt')
+    srv_msg.compare_file('tests/dhcpv4/server/kea_only/user_chk/outcome_1.txt')
     # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
     # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts
 
     misc.test_setup()
-    srv_msg.send_file_to_server('features/dhcpv4/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv4/server/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -158,6 +158,6 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
 
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('features/dhcpv4/server/kea_only/user_chk/outcome_1.txt')
+    srv_msg.compare_file('tests/dhcpv4/server/kea_only/user_chk/outcome_1.txt')
     # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
     # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts

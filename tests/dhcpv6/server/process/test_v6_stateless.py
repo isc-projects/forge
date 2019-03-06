@@ -4,9 +4,9 @@
 
 import pytest
 
-from features import srv_control
-from features import misc
-from features import srv_msg
+import srv_control
+import misc
+import srv_msg
 
 
 @pytest.mark.v6

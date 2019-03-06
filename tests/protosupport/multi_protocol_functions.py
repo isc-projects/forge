@@ -29,7 +29,7 @@ from _pyio import open
 import requests
 
 from forge import world
-from features.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
+from softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
         save_local_file, fabric_run_command
 
@@ -165,7 +165,7 @@ def add_variable(variable_name, variable_val, val_type):
         try:
             imported = getattr(__import__('init_all', fromlist=[variable_name]), variable_name)
         except:
-            init_all = open("features/init_all.py", "a")
+            init_all = open("init_all.py", "a")  # TODO: this should be removed
             init_all.write("\n# USER VARIABLE:\n" + variable_name + " = " +
                            (variable_val if variable_val.isdigit() else '\"' + variable_val + '\"'))
             init_all.close()

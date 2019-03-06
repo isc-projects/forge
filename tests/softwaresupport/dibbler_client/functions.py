@@ -21,7 +21,7 @@ import logging
 
 from forge import world
 
-from features.softwaresupport.multi_server_functions import fabric_sudo_command, \
+from softwaresupport.multi_server_functions import fabric_sudo_command, \
     fabric_send_file, fabric_run_command, fabric_remove_file_command, fabric_download_file, \
     remove_local_file
 

@@ -2,9 +2,10 @@
 
 import json
 import pytest
-import features.srv_msg as srv_msg
-import features.srv_control as srv_control
-import features.misc as misc
+
+import srv_msg
+import srv_control
+import misc
 
 pytestmark = [pytest.mark.py_test,
               pytest.mark.v4,

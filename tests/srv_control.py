@@ -20,7 +20,7 @@ import importlib
 
 from forge import world, step
 
-import features.softwaresupport.bind9_server.functions as dns
+import softwaresupport.bind9_server.functions as dns
 
 class Dispatcher(object):
     def __init__(self, mod_name):
@@ -38,7 +38,7 @@ class Dispatcher(object):
             else:
                 server_name = 'kea6_server'
 
-        full_mod_name = "features.softwaresupport.%s.%s" % (server_name, self.mod_name)
+        full_mod_name = "softwaresupport.%s.%s" % (server_name, self.mod_name)
         mod = importlib.import_module(full_mod_name)
 
         return getattr(mod, attr_name)

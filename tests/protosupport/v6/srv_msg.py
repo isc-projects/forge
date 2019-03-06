@@ -27,6 +27,7 @@ from cookielib import debug
 from scapy.layers.dhcp6 import *  # TODO
 
 from forge import world
+from terrain import client_id, ia_id, ia_pd
 
 log = logging.getLogger('forge')
 
@@ -366,17 +367,13 @@ def generate_new(opt):
     Generate new client id with random MAC address.
     """
     if opt == 'client':
-        from features.terrain import client_id, ia_id
         client_id(RandMAC())
         ia_id()
     elif opt == 'Client_ID':
-        from features.terrain import client_id
         client_id(RandMAC())
     elif opt == 'IA':
-        from features.terrain import ia_id
         ia_id()
     elif opt == 'IA_PD':
-        from features.terrain import ia_pd
         ia_pd()
 
     else:
