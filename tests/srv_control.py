@@ -991,12 +991,20 @@ def add_ddns_server_options(option, value):
 
 @step('Add forward DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
 def add_forward_ddns(name, key_name):
-    ddns.add_forward_ddns(name, key_name, world.f_cfg.dns_addr, world.f_cfg.dns_port)
+    if world.f_cfg.proto == 'v4':
+        ip_address = world.f_cfg.dns4_addr
+    else:
+        ip_address = world.f_cfg.dns6_addr
+    ddns.add_forward_ddns(name, key_name, ip_address, world.f_cfg.dns_port)
 
 
 @step('Add reverse DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
 def add_reverse_ddns(name, key_name):
-    ddns.add_reverse_ddns(name, key_name, world.f_cfg.dns_addr, world.f_cfg.dns_port)
+    if world.f_cfg.proto == 'v4':
+        ip_address = world.f_cfg.dns4_addr
+    else:
+        ip_address = world.f_cfg.dns6_addr
+    ddns.add_reverse_ddns(name, key_name, ip_address, world.f_cfg.dns_port)
 
 
 @step('Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')

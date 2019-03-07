@@ -43,10 +43,6 @@ SOFTWARE_UNDER_TEST = "kea6_server",
 # INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = "kea6_server","kea4_server"
 # or SOFTWARE_UNDER_TEST = "kea6_server","dibbler_client"
 
-# This defines protocol family. Currently two are
-# supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
-PROTO = "v6"
-
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ""
 
@@ -212,7 +208,8 @@ ISC_DHCP_LOG_FILE = "/var/log/forge_dhcpd.log"
 DNS_IFACE = ""
 
 # DNS server address:
-DNS_ADDR = ""
+DNS4_ADDR = ""
+DNS6_ADDR = ""
 
 # DNS port number, default value is 53
 DNS_PORT = 53

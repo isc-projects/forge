@@ -166,9 +166,9 @@ def dns_question_record(addr, my_qtype, my_qclass):
 
 def build_msg():
     if world.proto == "v6":
-        msg = IPv6(dst=world.cfg["dns_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
+        msg = IPv6(dst=world.cfg["dns6_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
     else:
-        msg = IP(dst=world.cfg["dns_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
+        msg = IP(dst=world.cfg["dns4_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
     msg.trid = random.randint(0, 256*256*256)
     world.climsg.append(msg/world.dns_query)
 

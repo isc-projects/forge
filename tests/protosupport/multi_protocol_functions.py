@@ -289,12 +289,6 @@ def change_network_variables(value_name, value):
         # world.cfg["address_v6"] = value
     elif value_name == "destination_address":
         world.cfg["destination_IP"] = value
-    elif value_name == "dns_iface":
-        world.cfg["dns_iface"] = value
-    elif value_name == "dns_address":
-        world.cfg["dns_addr"] = value
-    elif value_name == "dns_port":
-        world.cfg["dns_port"] = int(value)
     else:
         assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
 

@@ -22,20 +22,23 @@ import optparse
 import os
 import sys
 import threading
+import fcntl
+import socket
+import struct
+import sys
 
 
-from init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, PROTO, SOFTWARE_UNDER_TEST, DB_TYPE, SHOW_PACKETS_FROM, \
+from init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, SOFTWARE_UNDER_TEST, DB_TYPE, SHOW_PACKETS_FROM, \
     SRV4_ADDR, REL4_ADDR, GIADDR4, IFACE, CLI_LINK_LOCAL, SERVER_IFACE, OUTPUT_WAIT_INTERVAL, \
     OUTPUT_WAIT_MAX_INTERVALS, PACKET_WAIT_INTERVAL, SRV_IPV6_ADDR_GLOBAL, SRV_IPV6_ADDR_LINK_LOCAL, HISTORY,\
     TCPDUMP, TCPDUMP_PATH, SAVE_CONFIG_FILE, AUTO_ARCHIVE, SLEEP_TIME_1, SLEEP_TIME_2, MGMT_ADDRESS, MGMT_USERNAME,\
-    MGMT_PASSWORD, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SAVE_LEASES, DNS_IFACE, DNS_ADDR, DNS_PORT, \
+    MGMT_PASSWORD, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SAVE_LEASES, DNS_IFACE, DNS4_ADDR, DNS6_ADDR, DNS_PORT, \
     DNS_SERVER_INSTALL_PATH, DNS_DATA_PATH, ISC_DHCP_LOG_FACILITY, ISC_DHCP_LOG_FILE, DB_NAME, DB_USER, DB_PASSWD,\
     DB_HOST, CIADDR, MGMT_ADDRESS_2, MGMT_ADDRESS_3
 
 # Create Forge configuration class
 SOFTWARE_INSTALL_DIR = SOFTWARE_INSTALL_PATH  # for backward compatibility of tests
 LOGLEVEL = os.getenv('LOGLEVEL', LOGLEVEL)
-PROTO = os.getenv('PROTO', PROTO)
 SOFTWARE_UNDER_TEST = os.getenv('SOFTWARE_UNDER_TEST', SOFTWARE_UNDER_TEST)
 DB_TYPE = os.getenv('DB_TYPE', DB_TYPE)
 SOFTWARE_INSTALL_PATH = os.getenv('SOFTWARE_INSTALL_DIR', SOFTWARE_INSTALL_PATH)
@@ -70,7 +73,8 @@ BIND_LOG_LVL = os.getenv('BIND_LOG_LVL', BIND_LOG_LVL)
 BIND_MODULE = os.getenv('BIND_MODULE', BIND_MODULE)
 SAVE_LEASES = os.getenv('SAVE_LEASES', SAVE_LEASES)
 DNS_IFACE = os.getenv('DNS_IFACE', DNS_IFACE)
-DNS_ADDR = os.getenv('DNS_ADDR', DNS_ADDR)
+DNS4_ADDR = os.getenv('DNS4_ADDR', DNS4_ADDR)
+DNS6_ADDR = os.getenv('DNS6_ADDR', DNS6_ADDR)
 DNS_PORT = os.getenv('DNS_PORT', DNS_PORT)
 DNS_SERVER_INSTALL_PATH = os.getenv('DNS_SERVER_INSTALL_PATH', DNS_SERVER_INSTALL_PATH)
 DNS_DATA_PATH = os.getenv('DNS_DATA_PATH', DNS_DATA_PATH)
@@ -116,7 +120,7 @@ class ForgeConfiguration:
         self.packet_wait_interval = PACKET_WAIT_INTERVAL
 
         # DHCP
-        self.proto = PROTO
+        self.proto = 'v4'  # default value but it is overriden by each test in terrain.declare_all()
         self.software_under_test = SOFTWARE_UNDER_TEST
         self.software_install_path = SOFTWARE_INSTALL_PATH
         self.software_install_dir = SOFTWARE_INSTALL_PATH  # that keeps backwards compatibility
@@ -141,7 +145,8 @@ class ForgeConfiguration:
 
         # DNS
         self.dns_iface = DNS_IFACE
-        self.dns_addr = DNS_ADDR
+        self.dns4_addr = DNS4_ADDR
+        self.dns6_addr = DNS6_ADDR
         self.dns_port = DNS_PORT
         self.dns_data_path = DNS_DATA_PATH
         self.dns_server_install_path = DNS_SERVER_INSTALL_PATH
@@ -162,7 +167,6 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def gethwaddr(self, ifname):
-        import fcntl, socket, struct, sys
         if sys.platform != "darwin":
             s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
             info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname))
@@ -172,26 +176,21 @@ class ForgeConfiguration:
             return "0a:00:27:00:00:00"
 
     def basic_validation(self):
-        from sys import exit
-        if self.proto not in ["v4", "v6"]:
-            print "Configuration failure, protocol version not set properly." \
-                  " Please use ./forge.py -T to validate configuration."
-            exit(-1)
         if self.proto == "v4" and self.software_under_test[0] not in ["none_server"]:
             if "4" not in self.software_under_test[0]:
                 print "Miss match of protocol version and DHCP server version"
-                exit(-1)
+                sys.exit(-1)
         if self.proto == "v6" and self.software_under_test[0] not in ["none_server"]:
             if "6" not in self.software_under_test[0]:
                 print "Miss match of protocol version and DHCP server version"
-                exit(-1)
+                sys.exit(-1)
         if self.software_install_path == "":
             print "Configuration failure, software_install_path empty." \
                   " Please use ./forge.py -T to validate configuration."
-            exit(-1)
+            sys.exit(-1)
         if self.mgmt_address == "":
             print "Configuration failure, mgmt_address empty. Please use ./forge.py -T to validate configuration."
-            exit(-1)
+            sys.exit(-1)
 
     def set_env_val(self, env_name, env_val):
         """

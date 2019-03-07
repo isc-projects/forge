@@ -94,8 +94,12 @@ def add_rndc(address, port, alg, value):
 
 def _patch_config(cfg):
     tpl = string.Template(cfg)
+    if world.f_cfg.proto == 'v4':
+        dns_addr = world.f_cfg.dns4_addr
+    else:
+        dns_addr = world.f_cfg.dns6_addr
     return tpl.safe_substitute(data_path=os.path.join(world.f_cfg.dns_data_path, 'namedb'),
-                               dns_addr=world.f_cfg.dns_addr,
+                               dns_addr=dns_addr,
                                dns_port=world.f_cfg.dns_port)
 
 

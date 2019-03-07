@@ -194,7 +194,8 @@ def _v6_initialize():
 
 def _dns_initialize():
     world.cfg["dns_iface"] = world.f_cfg.dns_iface
-    world.cfg["dns_addr"] = world.f_cfg.dns_addr
+    world.cfg["dns4_addr"] = world.f_cfg.dns4_addr
+    world.cfg["dns6_addr"] = world.f_cfg.dns6_addr
     world.cfg["dns_port"] = world.f_cfg.dns_port
     world.dns_enable = True
 

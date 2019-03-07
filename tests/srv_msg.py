@@ -257,19 +257,6 @@ def client_send_dns_query():
     dns.send_query()
 
 
-@step('Through (\S+) interface client sends DNS query.')
-def client_send_dns_query_interface(iface):
-    world.cfg["dns_iface"] = iface
-    dns.send_query()
-
-
-@step('Through (\S+) interface to address (\S+) client sends DNS query.')
-def client_send_dns_query_interface_address(iface, addr):
-    world.cfg["dns_iface"] = iface
-    world.cfg["dns_addr"] = addr
-    dns.send_query()
-
-
 ##checking DNS respond
 @step('DNS server (\S+) (NOT )?respond with DNS query.')
 def send_wait_for_query(type, yes_or_no):
