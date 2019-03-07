@@ -82,11 +82,6 @@ srv_values_v6 = {"T1": 1000,
                  "timer": 10,
                  "dst_addr": ()}
 
-clnt_set_wrong = {"trid": False,
-                  "iaid": False,
-                  "client_id": False,
-                  "server_id": False}
-
 values_dns = {"qname": "",
               "qtype": "",
               "qclass": ""}
@@ -126,8 +121,6 @@ def _set_values():
     if world.f_cfg.proto == "v6":
         world.cfg["values"] = values_v6.copy()
         world.cfg["server_times"] = server_times_v6.copy()
-        world.clntCfg["values"] = srv_values_v6.copy()
-        world.clntCfg["set_wrong"] = clnt_set_wrong.copy()
         # reset values to 'default for scenario'
         world.cfg["values"]["cli_duid"] = world.cfg["cli_duid"]
         world.cfg["values"]["server_id"] = ""
@@ -295,16 +288,9 @@ def test_start():
 
     if not world.f_cfg.no_server_management:
         for each in world.f_cfg.software_under_test:
-            if "client" in each:
-                clnt = importlib.import_module("softwaresupport.%s.functions" % each)
-                clnt.stop_clnt()
-
-            else:
-                stop = importlib.import_module("softwaresupport.%s.functions" % each)
-                # True passed to stop_srv is to hide output in console.
-                stop.stop_srv(True)
-                #  that is pointless, we should use same name for stop_srv and stop_clnt functions,
-                #  and erase that last elif.
+            stop = importlib.import_module("softwaresupport.%s.functions" % each)
+            # True passed to stop_srv is to hide output in console.
+            stop.stop_srv(True)
 
 
 #@before.each_scenario
@@ -328,7 +314,7 @@ def initialize(scenario):
     world.cfg["iface"] = world.f_cfg.iface
     # world.cfg["server_type"] = SOFTWARE_UNDER_TEST for now I'll leave it here,
     # now we use world.cfg["dhcp_under_test"] and world.cfg["dns_under_test"] (in function _define_software)
-    # it is being filled with values in srv_control and clnt_control
+    # it is being filled with values in srv_control
     world.cfg["wait_interval"] = world.f_cfg.packet_wait_interval
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["cfg_file_2"] = "second_server.cfg"
@@ -350,9 +336,6 @@ def initialize(scenario):
     world.cfg["csv-format"] = "true"
     world.cfg["tr_id"] = None
     world.name = scenario.name
-    world.clntCounter = 0
-    world.srvCounter = 0
-    world.clntCfg = {}
     world.srvopts = []
     world.pref = None
     world.time = None
@@ -367,10 +350,6 @@ def initialize(scenario):
     world.notSolicit = 0
     world.saved = []
     world.iaid = []
-    world.clntCfg['timeval'] = int(time.time())
-    world.clntCfg['toSave'] = None
-    world.clntCfg['insist'] = False
-    world.clntCfg['lease_file'] = ""
     if "dhcp_under_test" in world.cfg:
         # IPv6:
         if world.proto == "v6":
@@ -449,8 +428,6 @@ def _remove_all():
                 # every software have something else to clear. Put in clear_all() whatever you need
                 functions.clear_all(destination_address=each_remote_server)
 
-                if '_client' in each:
-                    functions.kill_clnt()
                 # except:  # TODO this should be on multi_server_functions level!
                 #     log.info("Remote location " + each_remote_server + " unreachable!")
 
@@ -460,8 +437,6 @@ def say_goodbye():
     """
     Server stopping after whole work
     """
-    world.clntCounter = 0
-    world.srvCounter = 0
     if world.f_cfg.history:
         result = open('result', 'w')
         for item in world.result:
@@ -471,19 +446,12 @@ def say_goodbye():
     if not world.f_cfg.no_server_management:
         for each_remote_server in world.f_cfg.multiple_tested_servers:
             for each in world.f_cfg.software_under_test:
-                if "client" in each:
-                    kill_msg = "kill the " + each[:each.find("_client")]
-                    log.debug(kill_msg)
-                    clnt = importlib.import_module("softwaresupport.%s.functions" % each)
-                    clnt.stop_clnt(destination_address=each_remote_server)
-
-                else:
-                    stop = importlib.import_module("softwaresupport.%s.functions" % each)
-                    # True passed to stop_srv is to hide output in console.
-                    try:
-                        stop.stop_srv(value=True, destination_address=each_remote_server)
-                    except:
-                        pass
+                stop = importlib.import_module("softwaresupport.%s.functions" % each)
+                # True passed to stop_srv is to hide output in console.
+                try:
+                    stop.stop_srv(value=True, destination_address=each_remote_server)
+                except:
+                    pass
 
     if world.f_cfg.auto_archive:
         name = ""

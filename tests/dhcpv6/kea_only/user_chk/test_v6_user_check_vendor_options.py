@@ -20,7 +20,7 @@ def test_user_check_hook_vendor_options_all():
     # Configure the server with two subnets.  The first subnet will be used
     # for registeted users, the second for unregistered users.
     misc.test_setup()
-    srv_msg.send_file_to_server('tests/dhcpv6/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv6/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::20')

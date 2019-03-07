@@ -59,7 +59,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging():
     # an unknown user should get last subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('tests/dhcpv6/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv6/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::5')
@@ -85,7 +85,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging():
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('tests/dhcpv6/server/kea_only/user_chk/outcome_1.txt')
+    srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_1.txt')
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp6.hooks')
@@ -105,7 +105,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     # an unknown user should get last subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('tests/dhcpv6/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv6/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::5')
@@ -132,7 +132,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('tests/dhcpv6/server/kea_only/user_chk/outcome_1.txt')
+    srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_1.txt')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -164,4 +164,4 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     # That test works, we don't need last step:
     # Client compares downloaded file from server with local file stored in:
-    #  tests/dhcpv6/server/kea_only/user_chk/outcome_1.txt.
+    #  tests/dhcpv6/kea_only/user_chk/outcome_1.txt.

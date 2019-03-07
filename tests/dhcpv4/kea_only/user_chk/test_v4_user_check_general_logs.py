@@ -4,16 +4,16 @@
 
 import pytest
 
-import srv_control
 import srv_msg
 import misc
+import srv_control
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.user_check
-def test_user_check_IA_NA_no_registry():
+def test_user_check_IA_NA_no_registry_logging():
     # Without a user registry and multiple subnets
     # Subnet selection will use subnet interface for subnet selection hint
 
@@ -23,9 +23,12 @@ def test_user_check_IA_NA_no_registry():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    srv_control.configure_loggers('kea-dhcp4.callouts', 'ERROR', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.hooks', 'ERROR', 'None', 'kea.log')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
-
+    # DHCP server is started.
+    #
     # Test Procedure:
     # Client requests option 1.
     # Client sends DISCOVER message.
@@ -46,23 +49,28 @@ def test_user_check_IA_NA_no_registry():
     # Server MUST respond with ACK message.
     # Client download file from server stored in: /tmp/user_chk_outcome.txt.
     # Client download file from server stored in: /tmp/user_chk_registry.txt.
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: ERROR \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.callouts
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.user_check
-def test_user_check_IA_NA_with_registry_unknown_user():
+def test_user_check_IA_NA_with_registry_unknown_user_logging():
     # With a user registry and multiple subnets
     # an unknown user should get last subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('tests/dhcpv4/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv4/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    srv_control.configure_loggers('kea-dhcp4.callouts', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.hooks', 'INFO', 'None', 'kea.log')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -79,38 +87,77 @@ def test_user_check_IA_NA_with_registry_unknown_user():
 
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('tests/dhcpv4/server/kea_only/user_chk/outcome_1.txt')
+    srv_msg.compare_file('tests/dhcpv4/kea_only/user_chk/outcome_1.txt')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                               None,
+                               r'INFO  \[kea-dhcp4.hooks')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                               None,
+                               r'DEBUG \[kea-dhcp4.callouts')
 
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.user_check
-def test_user_check_IA_NA_with_registry_known_user():
+def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     # With a user registry and multiple subnets
-    # an known user should get first subnet
+    # an unknown user should get last subnet
 
     misc.test_setup()
-    srv_msg.send_file_to_server('tests/dhcpv4/server/kea_only/user_chk/registry_1.txt',
+    srv_msg.send_file_to_server('tests/dhcpv4/kea_only/user_chk/registry_1.txt',
                                 '/tmp/user_chk_registry.txt')
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    # Server logging system is configured with logger type kea-dhcp4.callouts, severity DEBUG, severity level 99 and log file kea.log.
+    # Server logging system is configured with logger type kea-dhcp4.hooks, severity INFO, severity level None and log file kea.log.
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
     srv_msg.client_requests_option('1')
-    srv_msg.client_sets_value('Client', 'chaddr', '0c:0e:0a:01:ff:04')
+    srv_msg.client_sets_value('Client', 'chaddr', '0c:0e:0a:01:ff:01')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '10.0.0.5')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
-    srv_msg.compare_file('tests/dhcpv4/server/kea_only/user_chk/outcome_2.txt')
+    srv_msg.compare_file('tests/dhcpv4/kea_only/user_chk/outcome_1.txt')
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts
+
+    misc.test_setup()
+    srv_msg.send_file_to_server('tests/dhcpv4/kea_only/user_chk/registry_1.txt',
+                                '/tmp/user_chk_registry.txt')
+    srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
+    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    # Server logging system is configured with logger type kea-dhcp4.callouts, severity DEBUG, severity level 99 and log file kea.log.
+    # Server logging system is configured with logger type kea-dhcp4.hooks, severity INFO, severity level None and log file kea.log.
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option('1')
+    srv_msg.client_sets_value('Client', 'chaddr', '0c:0e:0a:01:ff:01')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.response_check_include_option('Response', None, '1')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '10.0.0.5')
+    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+
+    # Check the outcome file for correct content
+    srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
+    srv_msg.compare_file('tests/dhcpv4/kea_only/user_chk/outcome_1.txt')
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts

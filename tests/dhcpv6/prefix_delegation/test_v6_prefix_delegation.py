@@ -4,7 +4,6 @@
 
 import pytest
 
-import clnt_msg
 import srv_msg
 import srv_control
 import misc
@@ -825,7 +824,7 @@ def test_prefix_delegation_compare_prefixes_after_client_reboot():
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     # save prefix value
-    clnt_msg.save_value('prefix')
+    # clnt_msg.save_value('prefix') TODO: it should not work, why is it here?
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
