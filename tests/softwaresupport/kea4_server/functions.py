@@ -274,7 +274,7 @@ def disable_client_echo():
         world.cfg["simple_options"] = ''
     else:
         world.cfg["simple_options"] += ','
-    world.cfg["simple_options"] += '"echo-client-id": "False"'.format(**locals())
+    world.cfg["simple_options"] += '"echo-client-id": "False"'
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):

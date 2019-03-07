@@ -67,7 +67,7 @@ def test_subnet_set_and_del_and_set(del_cmd):
     # define one subnet and now response for discover should be received
     set_subnet(pool="192.168.50.100-192.168.50.100")
 
-    # send discover and now offer should be received
+    # check getting address
     get_address(exp_yiaddr='192.168.50.100')
 
     # delete added subnet by id or prefix, now there should be no answer to discover
@@ -79,7 +79,23 @@ def test_subnet_set_and_del_and_set(del_cmd):
     # define similar subnet and now response for discover should be received
     set_subnet(pool="192.168.50.200-192.168.50.200")
 
-    # send discover and now offer should be received
+    # check getting address
+    get_address(exp_yiaddr='192.168.50.200')
+
+
+@pytest.mark.v4
+def test_subnet_modifications():
+    setup_server_for_config_backend_cmds()
+
+    # send discover but no response should come back as there is no subnet defined yet
+    send_discovery_with_no_answer()
+
+    # define one subnet and check getting address
+    set_subnet(pool="192.168.50.100-192.168.50.100")
+    get_address(exp_yiaddr='192.168.50.100')
+
+    # change the pool of the subnet and check getting address
+    set_subnet(pool="192.168.50.200-192.168.50.200")
     get_address(exp_yiaddr='192.168.50.200')
 
 

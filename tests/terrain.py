@@ -329,7 +329,7 @@ def initialize(scenario):
     world.hooks = []
     world.classification = []
     world.reservation_backend = ""
-    dir_name = str(scenario.name).replace(".", "_").replace('[', '_').replace(']', '_')
+    dir_name = str(scenario.name).replace(".", "_").replace('[', '_').replace(']', '_').replace('/', '_')
     world.cfg["dir_name"] = 'tests_results/' + dir_name
     world.f_cfg.dir_name = world.cfg["dir_name"]
     world.cfg["subnet"] = ""

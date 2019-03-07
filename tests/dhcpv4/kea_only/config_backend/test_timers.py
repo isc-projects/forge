@@ -381,3 +381,6 @@ def test_shared_networks_and_valid_lifetime():
     time.sleep(2)
     # now rebinding after lifetime should fail
     rebind_with_nak_answer(yiaddr6)
+
+
+# TODO: calculate_tee_times, t1-percent, t2-percent
