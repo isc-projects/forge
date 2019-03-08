@@ -390,7 +390,8 @@ def initialize(scenario):
                          "-s", str(65535), "-i", world.cfg["dns_iface"]]
 
                 subprocess.Popen(args2)
-    _remove_all()
+
+    _clear_remainings()
 
 
 #@after.each_scenario
@@ -410,10 +411,7 @@ def cleanup(scenario):
         args = ["killall tcpdump"]
         subprocess.call(args, shell=True)
         # TODO: log output in debug mode
-    _remove_all()
 
-
-def _remove_all():
     if not world.f_cfg.no_server_management:
         for each_remote_server in world.f_cfg.multiple_tested_servers:
             for each in world.f_cfg.software_under_test:
@@ -426,6 +424,14 @@ def _remove_all():
                 if world.f_cfg.save_logs:
                     functions.save_logs(destination_address=each_remote_server)
 
+    _clear_remainings()
+
+
+def _clear_remainings():
+    if not world.f_cfg.no_server_management:
+        for each_remote_server in world.f_cfg.multiple_tested_servers:
+            for each in world.f_cfg.software_under_test:
+                functions = importlib.import_module("softwaresupport.%s.functions" % each)
                 # every software have something else to clear. Put in clear_all() whatever you need
                 functions.clear_all(destination_address=each_remote_server)
 

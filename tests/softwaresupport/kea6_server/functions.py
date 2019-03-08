@@ -978,8 +978,8 @@ def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_pa
 
 def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
-        # that is tmp solution - just clearing not saving.
-        clear_leases(destination_address=world.f_cfg.mgmt_address)
+        # TODO
+        pass
     else:
         fabric_download_file(world.cfg['leases'],
                              check_local_path_for_downloaded_files(world.cfg["dir_name"],
