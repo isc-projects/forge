@@ -5,21 +5,18 @@ import srv_control
 import misc
 
 
-def setup_server_for_config_backend_cmds(echo_client_id=None, decline_probation_period=None,
-                                         next_server=None, server_hostname=None, boot_file_name=None):
+def setup_server_for_config_backend_cmds(**kwargs):
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
 
-    if echo_client_id is not None:
-        srv_control.set_conf_parameter_global('echo-client-id', 'true' if echo_client_id else 'false')
-    if decline_probation_period is not None:
-        srv_control.set_conf_parameter_global('decline-probation-period', decline_probation_period)
-    if next_server is not None:
-        srv_control.set_conf_parameter_global('next-server', '"%s"' % next_server)
-    if server_hostname is not None:
-        srv_control.set_conf_parameter_global('server-hostname', '"%s"' % server_hostname)
-    if boot_file_name is not None:
-        srv_control.set_conf_parameter_global('boot-file-name', '"%s"' % boot_file_name)
+    for param, val in kwargs.items():
+        param = param.replace('_', '-')
+        if param in ['echo-client-id', 'match-client-id']:
+            srv_control.set_conf_parameter_global(param, 'true' if val else 'false')
+        elif param in ['next-server', 'server-hostname', 'boot-file-name']:
+            srv_control.set_conf_parameter_global(param, '"%s"' % val)
+        else:
+            srv_control.set_conf_parameter_global(param, val)
 
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_cb_cmds.so')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_mysql_cb.so')

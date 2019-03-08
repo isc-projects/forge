@@ -73,12 +73,12 @@ def test_decline_and_probation_period(initial_decline_probation_period):
         assert addr2 == addr1
     else:
         # If initial value was other than 1 second then server should still keep
-        # the IP in probabtion and no response should be sent by server.
+        # the IP in probation and no response should be sent by server.
         send_discovery_with_no_answer()
 
-    # Delete subnet. This will delete IP in probabation. Ie. start from scratch.
+    # Delete subnet. This will delete IP in probation. Ie. start from scratch.
     del_subnet()
-    # Change decline-probabation-period from initial to 1000 seconds.
+    # Change decline-probation-period from initial to 1000 seconds.
     set_global_parameter(decline_probation_period=1000)
     # Create new subnet with different pool but still with 1 IP address.
     set_subnet(pool='192.168.50.2-192.168.50.2')
@@ -91,7 +91,7 @@ def test_decline_and_probation_period(initial_decline_probation_period):
     send_discovery_with_no_answer()
 
     # Start from scratch again. New pool with 1 IP address.
-    # Probabation period is changed now to 1 second.
+    # Probation period is changed now to 1 second.
     del_subnet()
     set_global_parameter(decline_probation_period=1)
     set_subnet(pool='192.168.50.3-192.168.50.3')
@@ -105,12 +105,12 @@ def test_decline_and_probation_period(initial_decline_probation_period):
     assert addr2 == addr1
 
 
-# TODO
-# @pytest.mark.v4
-# @pytest.mark.kea_only
-# @pytest.mark.parametrize("initial_match_client_id", [None, True, False])
-# def test_match_client_id(initial_echo_client_id):
-#     pass
+@pytest.mark.v4
+@pytest.mark.kea_only
+@pytest.mark.parametrize("initial_match_client_id", [None, True, False])
+def test_match_client_id(initial_match_client_id):
+    setup_server_for_config_backend_cmds(match_client_id=initial_match_client_id)
+    # TODO: complete the test
 
 
 # TODO
