@@ -1,0 +1,45 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # SERVER 1
+  config.vm.define "forge-srv1-u1804" do |srv1|  # TODO: rename kea to src
+    srv1.vm.box = "ubuntu/bionic64"
+    srv1.vm.hostname = "forge-srv1-u1804"
+    srv1.vm.provider "virtualbox" do |v|
+      v.name = "forge-srv1-u1804"
+      v.memory = 8192
+      v.cpus = 8
+    end
+    srv1.vm.synced_folder "${KEA_DIRS}", "/kea-dirs"
+
+    srv1.vm.network "private_network", ip: "${MGMT_ADDRESS}"     # management, enp0s8
+    srv1.vm.network "private_network", ip: "${SRV4_ADDR}"  # test traffic 1, enp0s9
+    srv1.vm.network "private_network", ip: "192.168.51.252"  # test traffic 2, enp0s10
+
+    srv1.vm.provision "file", source: "id_rsa", destination: "$HOME/.ssh/id_rsa"
+    srv1.vm.provision "file", source: "id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    srv1.vm.provision "shell", privileged: false, path: "provision-srv.sh"
+  end
+
+  # CLIENT
+  config.vm.define "forge-client" do |clnt|
+    clnt.vm.box = "ubuntu/bionic64"
+    clnt.vm.hostname = "forge-client"
+    clnt.vm.provider "virtualbox" do |v|
+      v.name = "forge-client"
+      v.memory = 2048
+      v.cpus = 2
+    end
+    clnt.vm.synced_folder "..", "/forge"
+
+    clnt.vm.network "private_network", ip: "172.28.0.20"   # management, enp0s8
+    clnt.vm.network "private_network", ip: "${CLNT4_ADDR}"  # test traffic 1, enp0s9
+    clnt.vm.network "private_network", ip: "${CLNT4_ADDR_2}"  # test traffic 2, enp0s10
+
+    clnt.vm.provision "file", source: "id_rsa", destination: "$HOME/.ssh/id_rsa"
+    clnt.vm.provision "file", source: "id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    clnt.vm.provision "file", source: "${KEA_DIRS}/scapy-old-old", destination: "$HOME/"
+    clnt.vm.provision "shell", privileged: false, path: "provision-clnt.sh"
+  end
+end

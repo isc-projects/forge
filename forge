@@ -1,0 +1,414 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2019 Internet Systems Consortium, Inc. ("ISC")
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""Forge - testing tool for Kea and ISC DHCP."""
+
+from __future__ import print_function
+import os
+import time
+import string
+import logging
+import argparse
+import textwrap
+import functools
+import subprocess
+import configparser
+
+log = logging.getLogger()
+
+FORGE_INI = 'forge.ini'
+
+SRV4_ADDR = "192.168.50.252"
+CLNT4_ADDR = "192.168.50.2"
+CLNT4_ADDR_2 = "192.168.51.2"
+MGMT_ADDRESS = "172.28.0.31"
+MGMT_ADDRESS_2 = "172.28.0.32"
+MGMT_ADDRESS_3 = "172.28.0.33"
+DNS4_ADDR = SRV4_ADDR
+DNS6_ADDR = "2001:db8:0:f101::1"
+
+INIT_ALL = """
+LOGLEVEL = "info"
+IFACE = "enp0s10"
+SERVER_IFACE = "enp0s10"
+DNS4_ADDR = "{DNS4_ADDR}"
+DNS6_ADDR = "{DNS6_ADDR}"
+SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",
+SOFTWARE_INSTALL_PATH = "/usr/local"
+DB_TYPE = "memfile"
+SHOW_PACKETS_FROM = "both"
+SRV4_ADDR = "{SRV4_ADDR}"
+REL4_ADDR = "0.0.0.0"
+GIADDR4 = "192.168.50.3"
+CIADDR = "192.168.50.3"
+CLI_LINK_LOCAL = "fe80::a00:27ff:fef9:dd64"
+copylist = []
+removelist = []
+OUTPUT_WAIT_INTERVAL = 1
+OUTPUT_WAIT_MAX_INTERVALS = 2
+PACKET_WAIT_INTERVAL = 1
+SRV_IPV6_ADDR_GLOBAL = "3000::1000"
+SRV_IPV6_ADDR_LINK_LOCAL = "fe80::a00:27ff:fedf:63bc"
+HISTORY = True
+TCPDUMP = False
+TCPDUMP_PATH = ""
+SAVE_CONFIG_FILE = True
+AUTO_ARCHIVE = False
+SLEEP_TIME_1 = 1  # wait after starting remote server
+SLEEP_TIME_2 = 2  # wait after all others commands
+MGMT_ADDRESS = "{MGMT_ADDRESS}"
+MGMT_ADDRESS_2 = "{MGMT_ADDRESS_2}"
+MGMT_ADDRESS_3 = "{MGMT_ADDRESS_3}"
+MGMT_USERNAME = "vagrant"
+MGMT_PASSWORD = "not-needed"
+SAVE_LOGS = True
+BIND_LOG_TYPE = "ERROR"
+BIND_LOG_LVL = None
+BIND_MODULE = "*"
+SAVE_LEASES = True
+DNS_IFACE = "enp0s3"
+DNS_PORT = 53
+DNS_SERVER_INSTALL_PATH = "/usr/local/sbin/"
+DNS_DATA_PATH = "/home/wlodek/dns/"
+ISC_DHCP_LOG_FACILITY = "local7"
+ISC_DHCP_LOG_FILE = "/var/log/forge_dhcpd.log"
+DB_NAME = "keadb"
+DB_USER = "keauser"
+DB_PASSWD = "keapass"
+DB_HOST = ""
+""".format(**locals())
+
+
+CONFIG_FIELDS = ['kea-dirs']
+
+
+def _load_config():
+    config = configparser.ConfigParser()
+    if os.path.exists(FORGE_INI):
+        config.read(FORGE_INI)
+    if not config.has_section('Forge'):
+        config.add_section('Forge')
+    return config
+
+
+def _save_config(config):
+    with open(FORGE_INI, 'w') as configfile:
+        config.write(configfile)
+
+
+def update_config(name, value):
+    if name not in CONFIG_FIELDS:
+        raise Exception('Unknown config field %s' % name)
+    if name == 'kea-dirs':
+        value = os.path.abspath(value)
+        if not os.path.exists(value):
+            raise Exception('Folder %s does not exists.' % value)
+        if not os.path.isdir(value):
+            raise Exception('%s is not a directory.' % value)
+
+    print('Setting %s to %s' % (name, value))
+    cfg = _load_config()
+    cfg.set('Forge', name, value)
+    _save_config(cfg)
+
+
+def show_config(name):
+    cfg = _load_config()
+    if name:
+        if name not in CONFIG_FIELDS:
+            raise Exception('Unknown config field %s' % name)
+        print('%s = %s' % (name, cfg['Forge'][name]))
+    else:
+        for k, v in cfg['Forge'].items():
+            print('%s = %s' % (k , v))
+
+
+class ExecutionError(Exception):
+    """Exception thrown when execution encountered an error."""
+    pass
+
+
+def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False, log_file_path=None,
+            quiet=False, check_times=False, capture=False, interactive=False, attempts=1,
+            sleep_time_after_attempt=None):
+    """Execute a command in shell.
+
+    :param str cmd: a command to be executed
+    :param int timeout: timeout in number of seconds, after that time the command is terminated
+                        but only if check_times is True
+    :param str cwd: current working directory for the command
+    :param dict env: dictionary with environment variables
+    :param bool raise_error: if False then in case of error exception is not raised,
+                             default: True ie exception is raise
+    :param bool dry_run: if True then the command is not executed
+    :param str log_file_path: if provided then all traces from the command are stored in indicated file
+    :param bool quiet: if True then the command's traces are not printed to stdout
+    :param bool check_times: if True then timeout is taken into account
+    :param bool capture: if True then the command's traces are captured and returned by the function
+    :param bool interactive: if True then stdin and stdout are not redirected, traces handling is disabled,
+                             used for e.g. SSH
+    :param int attemts: number of attempts to run the command if it fails
+    :param int sleep_time_after_attempt: number of seconds to sleep before taking next attempt
+    """
+    log.info('>>>>> Executing %s in %s', cmd, cwd if cwd else os.getcwd())
+    if not check_times:
+        timeout = None
+    if dry_run:
+        return 0
+
+    if 'sudo' in cmd and env:
+        # if sudo is used and env is overridden then to preserve env add -E to sudo
+        cmd = cmd.replace('sudo', 'sudo -E')
+
+    if log_file_path:
+        log_file = open(log_file_path, "wb")
+
+    for attempt in range(attempts):
+        if interactive:
+            p = subprocess.Popen(cmd, cwd=cwd, env=env, shell=True)
+            exitcode = p.wait()
+
+        else:
+            p = subprocess.Popen(cmd, cwd=cwd, env=env, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+            if capture:
+                output = ''
+            t0 = time.time()
+            t1 = time.time()
+            # repeat until process is running or timeout not occured
+            while p.poll() is None and (timeout is None or t1 - t0 < timeout):
+                line = p.stdout.readline()
+                if line:
+                    line_decoded = line.decode(errors='ignore').rstrip() + '\r'
+                    if not quiet:
+                        print(line_decoded)
+                    if capture:
+                        output += line_decoded
+                    if log_file_path:
+                        log_file.write(line)
+                t1 = time.time()
+
+            # If no exitcode yet, ie. process is still running then it means that timeout occured.
+            # In such case terminate the process and raise an exception.
+            if p.poll() is None:
+                # kill using sudo to be able to kill other sudo commands
+                execute('sudo kill -s TERM %s' % p.pid)
+                time.sleep(5)
+                # if still running, kill harder
+                if p.poll() is None:
+                    execute('sudo kill -s KILL %s' % p.pid)
+                msg = "Execution timeout, %d > %d seconds elapsed (start: %d, stop %d), cmd: '%s'"
+                msg = msg % (t1 - t0, timeout, t0, t1, cmd)
+                raise ExecutionError(msg)
+            exitcode = p.returncode
+
+        if exitcode == 0:
+            break
+        elif attempt < attempts - 1:
+            txt = 'command failed, retry, attempt %d/%d' % (attempt, attempts)
+            if log_file_path:
+                txt_to_file = '\n\n[HAMMER] %s\n\n\n' % txt
+                log_file.write(txt_to_file.encode('ascii'))
+            log.info(txt)
+            if sleep_time_after_attempt:
+                time.sleep(sleep_time_after_attempt)
+
+    if log_file_path:
+        log_file.close()
+
+    if exitcode != 0 and raise_error:
+        raise ExecutionError("The command return non-zero exitcode %s, cmd: '%s'" % (exitcode, cmd))
+
+    if capture:
+        return exitcode, output
+    return exitcode
+
+
+def setup(args):
+    # load config
+    cfg = _load_config()
+
+    # generate init_all.py
+    txt = INIT_ALL
+    path = os.path.abspath('tests/init_all.py')
+    with open(path, 'w') as f:
+        f.write(txt)
+    print('Generated %s.' % path)
+
+    # generate Vagrantfile
+    with open('vagrant/Vagrantfile.in', 'r') as f_in:
+        txt = f_in.read()
+    tpl = string.Template(txt)
+    txt = tpl.safe_substitute(KEA_DIRS=cfg['Forge']['kea-dirs'],
+                              MGMT_ADDRESS=MGMT_ADDRESS,
+                              SRV4_ADDR=SRV4_ADDR,
+                              CLNT4_ADDR=CLNT4_ADDR,
+                              CLNT4_ADDR_2=CLNT4_ADDR_2)
+    path = os.path.abspath('vagrant/Vagrantfile')
+    with open(path, 'w') as f_out:
+        f_out.write(txt)
+    print('Generated %s.' % path)
+
+    if args.command == 'setup':
+        # create and start VMs via Vagrant
+        execute('vagrant up', cwd='vagrant')
+    elif args.command == 'refresh':
+        # reload and reprovision VMs via Vagrant if requested
+        reload_ = args.reload
+        provision = args.provision
+        if not reload_ and not provision:
+            reload_ = True
+            provision = True
+        if reload_:
+            execute('vagrant reload', cwd='vagrant')
+        if provision:
+            execute('vagrant provision', cwd='vagrant')
+    elif args.command == 'recreate':
+        # reload and reprovision VMs via Vagrant
+        execute('vagrant destroy -f', cwd='vagrant')
+        execute('vagrant up', cwd='vagrant')
+
+
+def install_kea(path):
+    cmd = 'vagrant ssh forge-srv1-u1804 -c "%s"'
+    cfg = _load_config()
+    kea_dirs = cfg['Forge']['kea-dirs']
+    local_kea_path = os.path.join(kea_dirs, path)
+    if path == '':
+        print('Path to Kea folder is empty. Give one of these:')
+        for d in sorted(os.listdir(kea_dirs)):
+            p = os.path.join(kea_dirs, d)
+            if os.path.isdir(p):
+                print('  %s' % d)
+        exit(1)
+    if not os.path.exists(local_kea_path):
+        raise Exception('Folder %s does not exists.' % local_kea_path)
+    if not os.path.isdir(local_kea_path):
+        raise Exception('Folder %s is not a directory.' % local_kea_path)
+
+    remote_path = os.path.join('/kea-dirs', path)
+    subcmd = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w forge'
+
+    subcmd1 = subcmd % (remote_path, 'prepare-system')
+    cmd1 = cmd % subcmd1
+    execute(cmd1, cwd='vagrant')
+
+    subcmd1 = subcmd % (remote_path, 'build')
+    cmd2 = cmd % subcmd
+    execute(cmd2, cwd='vagrant')
+
+
+def test(params):
+    params = ' '.join(params)
+    print('Test params: %s' % params)
+    cmd = 'vagrant ssh forge-client -c "%s"'
+    subcmd = 'cd /forge/; sudo PYTHONPATH=/home/vagrant/scapy-old-old ~/venv/bin/pytest -r ap -vv ' + params
+    cmd %= subcmd
+    execute(cmd, cwd='vagrant')
+
+
+def clean():
+    execute('vagrant destroy -f', cwd='vagrant')
+    for path in ['tests/init_all.py', 'vagrant/Vagrantfile']:
+        path = os.path.abspath(path)
+        if os.path.exists(path):
+            os.unlink(path)
+            print('Deleted %s.' % path)
+
+
+def parse_args():
+    """Parse arguments."""
+    # used lambda to change args order and able to substitute width
+    fl = functools.partial(lambda w, t: textwrap.fill(t, w), 80)
+    description = [
+        "Forge - testing tool for Kea and ISC DHCP.\n",
+    ]
+    description = "\n".join(description)
+    main_parser = argparse.ArgumentParser(description=description,
+                                          formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    main_parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode.')
+    main_parser.add_argument('-q', '--quiet', action='store_true', help='Enable quiet mode.')
+
+    subparsers = main_parser.add_subparsers(dest='command',
+                                            title="Forge commands",
+                                            description=fl("The following commands are provided by Hammer. "
+                                                           "To get more information about particular command invoke: "
+                                                           "./hammer.py <command> -h."))
+
+    parser = subparsers.add_parser('config',
+                                   help=".")
+    parser.add_argument('name', nargs='?', default=None,
+                        help='.')
+    parser.add_argument('value', nargs='?', default=None,
+                        help='.')
+    parser = subparsers.add_parser('setup',
+                                   help=".")
+    parser = subparsers.add_parser('refresh',
+                                   help=".")
+    parser.add_argument('--reload', action='store_true',
+                        help='.')
+    parser.add_argument('--provision', action='store_true',
+                        help='.')
+    parser = subparsers.add_parser('recreate',
+                                   help=".")
+    parser = subparsers.add_parser('install-kea',
+                                   help=".")
+    parser.add_argument('path', default='', nargs='?',
+                        help='.')
+    parser = subparsers.add_parser('test',
+                                   help=".")
+    parser = subparsers.add_parser('clean',
+                                   help=".")
+
+    #args = main_parser.parse_args()
+    args, rest = main_parser.parse_known_args()
+    return args, rest, main_parser
+
+
+def main():
+    """Main function - parse args and invoke proper command."""
+    args, rest, parser = parse_args()
+
+    # prepare logging
+    level = logging.INFO
+    if args.verbose:
+        level = logging.DEBUG
+    fmt = '[FORGE]  %(asctime)-15s  %(message)s'
+    logging.basicConfig(format=fmt, level=level)
+
+    # dispatch command
+    if args.command == 'config':
+        if args.value is not None:
+            update_config(args.name, args.value)
+        else:
+            show_config(args.name)
+
+    elif args.command == 'setup':
+        setup(args)
+
+    elif args.command == "refresh":
+        setup(args)
+
+    elif args.command == "recreate":
+        setup(args)
+
+    elif args.command == "install-kea":
+        install_kea(args.path)
+
+    elif args.command == "test":
+        test(rest)
+
+    elif args.command == "clean":
+        clean()
+
+    else:
+        parser.print_help()
+
+
+if __name__ == '__main__':
+    main()

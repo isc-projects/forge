@@ -42,3 +42,8 @@ output/*
 /.idea/*
 /temp
 /server.cfg
+
+/vagrant/.vagrant/
+/vagrant/Vagrantfile
+/forge.ini
+/result

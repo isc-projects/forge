@@ -346,7 +346,7 @@ def send_through_socket_server_site(socket_path, command, destination_address=wo
         log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
         world.cmd_resp = result
     except:
-        log.exception('Problem with parsing json: ', str(world.control_channel))
+        log.exception('Problem with parsing json: %s', str(world.control_channel))
         world.cmd_resp = world.control_channel
     return world.cmd_resp
 
