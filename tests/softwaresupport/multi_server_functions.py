@@ -51,12 +51,12 @@ def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
         if hide_all:
             with hide('running', 'stdout', 'stderr'):
                 try:
-                    result = sudo(cmd, pty=False)
+                    result = sudo(cmd, pty=world.f_cfg.fabric_pty)
                 except NetworkError:
                     assert False, "Network connection failed"
         else:
             try:
-                result = sudo(cmd, pty=False)
+                result = sudo(cmd, pty=world.f_cfg.fabric_pty)
             except NetworkError:
                 assert False, "Network connection failed"
     return result

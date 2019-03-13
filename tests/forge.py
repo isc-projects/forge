@@ -33,8 +33,8 @@ from init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, SOFTWARE_UNDER_TEST, DB_TY
     OUTPUT_WAIT_MAX_INTERVALS, PACKET_WAIT_INTERVAL, SRV_IPV6_ADDR_GLOBAL, SRV_IPV6_ADDR_LINK_LOCAL, HISTORY,\
     TCPDUMP, TCPDUMP_PATH, SAVE_CONFIG_FILE, AUTO_ARCHIVE, SLEEP_TIME_1, SLEEP_TIME_2, MGMT_ADDRESS, MGMT_USERNAME,\
     MGMT_PASSWORD, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SAVE_LEASES, DNS_IFACE, DNS4_ADDR, DNS6_ADDR, DNS_PORT, \
-    DNS_SERVER_INSTALL_PATH, DNS_DATA_PATH, ISC_DHCP_LOG_FACILITY, ISC_DHCP_LOG_FILE, DB_NAME, DB_USER, DB_PASSWD,\
-    DB_HOST, CIADDR, MGMT_ADDRESS_2, MGMT_ADDRESS_3
+    DNS_SERVER_INSTALL_PATH, DNS_DATA_PATH, ISC_DHCP_LOG_FACILITY, ISC_DHCP_LOG_FILE, DB_NAME, DB_USER, DB_PASSWD, \
+    DB_HOST, CIADDR, MGMT_ADDRESS_2, MGMT_ADDRESS_3, FABRIC_PTY
 
 # Create Forge configuration class
 SOFTWARE_INSTALL_DIR = SOFTWARE_INSTALL_PATH  # for backward compatibility of tests
@@ -84,6 +84,7 @@ DB_NAME = os.getenv('DB_NAME', DB_NAME)
 DB_USER = os.getenv('DB_USER', DB_USER)
 DB_PASSWD = os.getenv('DB_PASSWD', DB_PASSWD)
 DB_HOST = os.getenv('DB_HOST', DB_HOST)
+FABRIC_PTY = os.getenv('FABRIC_PTY', FABRIC_PTY)
 
 
 class ForgeConfiguration:
@@ -91,8 +92,8 @@ class ForgeConfiguration:
         # default
         self.dns_used = ["bind9_server"]
         self.dhcp_used = ["dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server",
-                         "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server",
-                         "none_server"]
+                          "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server",
+                          "none_server"]
 
         # no_server_management value can be set by -N option on startup to turn off remote server management
         self.no_server_management = False
@@ -118,7 +119,8 @@ class ForgeConfiguration:
         self.save_leases = SAVE_LEASES
         self.save_logs = SAVE_LOGS
         self.packet_wait_interval = PACKET_WAIT_INTERVAL
-
+        self.fabric_pty = FABRIC_PTY  # default is False
+        # value_when_true if condition else value_when_false
         # DHCP
         self.proto = 'v4'  # default value but it is overriden by each test in terrain.declare_all()
         self.software_under_test = SOFTWARE_UNDER_TEST
@@ -218,8 +220,6 @@ class ForgeConfiguration:
         """
         # TODO develop this one
         pass
-
-
 
 
 # global object that stores all needed data: configs, etc.
