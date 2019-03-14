@@ -704,6 +704,9 @@ def test_remote_network4_get_all_values(channel):
                                                              "client-class": "abc",
                                                              "rebind-timer": 200,
                                                              "renew-timer": 100,
+                                                             "calculate-tee-times": True,
+                                                             "t1-percent": 0.5,
+                                                             "t2-percent": 0.8,
                                                              "valid-lifetime": 300,
                                                              "reservation-mode": "global",
                                                              "user-context": "some weird network",
@@ -733,6 +736,9 @@ def test_remote_network4_get_all_values(channel):
                                                            "rebind-timer": 200, "renew-timer": 100,
                                                            "valid-lifetime": 300, "reservation-mode": "global",
                                                            "interface": srv_msg.get_interface(),
+                                                           "calculate-tee-times": True,
+                                                           "t1-percent": 0.5,
+                                                           "t2-percent": 0.8,
                                                            "match-client-id": True,
                                                            "name": "net1",
                                                            "option-data": [{"always-send": True, "code": 6,
@@ -751,6 +757,58 @@ def test_remote_network4_get_all_values(channel):
                                                                                    "option-data": []}]}],
                                                            "user-context": "some weird network"}]},
                         "result": 0, "text": "IPv4 shared network 'net1' found."}
+
+
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_remote_network4_set_t1_t2(channel):
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "net1",
+                                                             "calculate-tee-times": True,
+                                                             "t1-percent": 0.5,
+                                                             "t2-percent": 10,
+                                                             "interface": "$(SERVER_IFACE)",
+                                                             "subnet4": [{"subnet": "192.8.0.0/24",
+                                                                          "interface": "$(SERVER_IFACE)"}]}]})
+    response = _send_request(cmd, channel=channel)
+    if channel == 'http':
+        assert response == {"result": 1, "text": "invalid type specified for parameter 't2-percent' (<wire>:0:266)"}
+    else:
+        assert response == {"result": 1, "text": "invalid type specified for parameter 't2-percent' (<wire>:0:137)"}
+
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "net1",
+                                                             "calculate-tee-times": True,
+                                                             "t1-percent": 10,
+                                                             "t2-percent": 0.5,
+                                                             "interface": "$(SERVER_IFACE)",
+                                                             "subnet4": [{"subnet": "192.8.0.0/24",
+                                                                          "interface": "$(SERVER_IFACE)"}]}]})
+    response = _send_request(cmd, channel=channel)
+    if channel == 'http':
+        assert response == {"result": 1, "text": "invalid type specified for parameter 't1-percent' (<wire>:0:247)"}
+    else:
+        assert response == {"result": 1, "text": "invalid type specified for parameter 't1-percent' (<wire>:0:236)"}
+
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "net1",
+                                                             "calculate-tee-times": True,
+                                                             "t1-percent": 0.5,
+                                                             "t2-percent": 0.1,
+                                                             "interface": "$(SERVER_IFACE)",
+                                                             "subnet4": [{"subnet": "192.8.0.0/24",
+                                                                          "interface": "$(SERVER_IFACE)"}]}]})
+    response = _send_request(cmd, channel=channel)
+    assert False, "bug reported"  # https://gitlab.isc.org/isc-projects/kea/issues/535
+    if channel == 'http':
+        assert response == {"result": 1, "text": "invalid type specified for parameter 't1-percent' (<wire>:0:247)"}
+    else:
+        assert response == {"result": 1, "text": "invalid type specified for parameter 't1-percent' (<wire>:0:236)"}
 
 
 @pytest.mark.parametrize("channel", ['http', 'socket'])
