@@ -61,7 +61,7 @@ def test_v6_client_classification_member():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response', '23', None, 'addresses', '2001:db8::888')
@@ -116,7 +116,7 @@ def test_v6_client_classification_known_subnet_hw_address():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -169,7 +169,7 @@ def test_v6_client_classification_known_subnet_duid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -221,7 +221,7 @@ def test_v6_client_classification_known_pool():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::100')
 
 
@@ -259,7 +259,7 @@ def test_v6_client_classification_unknown_pool():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::10')
 
     misc.test_procedure()
@@ -314,7 +314,7 @@ def test_v6_client_classification_unknown_known_pool():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::10')
 
     misc.test_procedure()
@@ -333,7 +333,7 @@ def test_v6_client_classification_unknown_known_pool():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::100')
 
 
@@ -381,7 +381,7 @@ def test_v6_client_classification_option_hex():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -430,7 +430,7 @@ def test_v6_client_classification_option_exists():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -457,7 +457,7 @@ def test_v6_client_classification_relay_option_exists():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -484,7 +484,7 @@ def test_v6_client_classification_relay_option_exists():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-class')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -499,7 +499,7 @@ def test_v6_client_classification_relay_option_exists():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -527,7 +527,7 @@ def test_v6_client_classification_relay_peer():
     srv_msg.client_sets_value('RelayAgent', 'peeraddr', '3000::1001')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -555,7 +555,7 @@ def test_v6_client_classification_relay_peer():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-class')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -570,7 +570,7 @@ def test_v6_client_classification_relay_peer():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -598,7 +598,7 @@ def test_v6_client_classification_relay_linkaddr():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1001')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -626,7 +626,7 @@ def test_v6_client_classification_relay_linkaddr():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-class')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -641,7 +641,7 @@ def test_v6_client_classification_relay_linkaddr():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -685,7 +685,7 @@ def test_v6_client_classification_msgtype():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-class')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -743,7 +743,7 @@ def test_v6_client_classification_transid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -792,7 +792,7 @@ def test_v6_client_classification_vendor():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -844,7 +844,7 @@ def test_v6_client_classification_specific_vendor():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -896,7 +896,7 @@ def test_v6_client_classification_specific_vendor_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -949,7 +949,7 @@ def test_v6_client_classification_vendor_suboption_exists():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1004,7 +1004,7 @@ def test_v6_client_classification_vendor_suboption_value():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1054,7 +1054,7 @@ def test_v6_client_classification_vendor_class_exists():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1106,7 +1106,7 @@ def test_v6_client_classification_specific_vendor_class():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1158,7 +1158,7 @@ def test_v6_client_classification_specific_vendor_class_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1210,7 +1210,7 @@ def test_v6_client_classification_expressions_not_equal():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -1231,7 +1231,7 @@ def test_v6_client_classification_expressions_not_equal():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1303,7 +1303,7 @@ def test_v6_client_classification_expressions_and():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1375,7 +1375,7 @@ def test_v6_client_classification_expressions_or():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -1397,7 +1397,7 @@ def test_v6_client_classification_expressions_or():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1445,7 +1445,7 @@ def test_v6_client_classification_expressions_substring():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1495,7 +1495,7 @@ def test_v6_client_classification_expressions_concat():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -1552,5 +1552,5 @@ def test_v6_client_classification_expressions_ifelse():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')

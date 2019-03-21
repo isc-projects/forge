@@ -40,7 +40,7 @@ def test_prefix_delegation_IA_and_PD_confirm():
                                              '2001:db8:1::')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -90,7 +90,7 @@ def test_prefix_delegation_IA_and_PD_decline():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::5')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::5')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')

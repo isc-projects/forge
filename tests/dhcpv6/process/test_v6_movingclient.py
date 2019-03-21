@@ -46,7 +46,7 @@ def test_v6_movingclient_0():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -76,7 +76,7 @@ def test_v6_movingclient_0():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::1000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -106,7 +106,7 @@ def test_v6_movingclient_0():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abcd')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:3::1000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -149,7 +149,7 @@ def test_v6_movingclient_1():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -166,7 +166,7 @@ def test_v6_movingclient_1():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::2000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -215,7 +215,7 @@ def test_v6_movingclient_2():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -232,7 +232,7 @@ def test_v6_movingclient_2():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::2000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -282,7 +282,7 @@ def test_v6_movingclient_3():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -299,7 +299,7 @@ def test_v6_movingclient_3():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::2000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -352,7 +352,7 @@ def test_v6_movingclient_4():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -369,7 +369,7 @@ def test_v6_movingclient_4():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::2000')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')

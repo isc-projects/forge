@@ -78,6 +78,10 @@ def test_v6_options_user_defined_option_code_zero():
     srv_control.config_srv_custom_opt('foo', '0', 'uint8', '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configure')
+    # TODO: this test passes but in background there is and error:
+    #   ERROR option code must not be zero
+    # Here are missing some asserts and checks.
+    assert False
 
 
 @pytest.mark.v6
@@ -102,6 +106,11 @@ def test_v6_options_user_defined_option_standard_code():
     srv_control.config_srv_custom_opt('foo', '12', 'uint8', '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configure')
+    # TODO: this test passes but in background there is and error:
+    #   ERROR [kea-dhcp6.dhcp6/5600] DHCP6_PARSER_FAIL failed to create or run parser for configuration element :
+    #      unable to override definition of option '12' in standard option space 'dhcp6'
+    # Here are missing some asserts and checks.
+    assert False
 
 
 @pytest.mark.v6
@@ -182,7 +191,7 @@ def test_v6_options_all():
                                           '21',
                                           None,
                                           'addresses',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '22')
     srv_msg.response_check_option_content('Response',
                                           '22',
@@ -209,9 +218,9 @@ def test_v6_options_all():
                                           'addresses',
                                           '2001:db8::abc,3000::1,2000::1234')
     srv_msg.response_check_include_option('Response', None, '29')
-    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com.')
     srv_msg.response_check_include_option('Response', None, '30')
-    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com.')
     srv_msg.response_check_include_option('Response', None, '31')
     srv_msg.response_check_option_content('Response',
                                           '31',
@@ -225,7 +234,7 @@ def test_v6_options_all():
                                           '33',
                                           None,
                                           'bcmcsdomains',
-                                          'very.good.domain.name.com')
+                                          'very.good.domain.name.com.')
     srv_msg.response_check_include_option('Response', None, '34')
     srv_msg.response_check_option_content('Response',
                                           '34',
@@ -249,7 +258,7 @@ def test_v6_options_all():
                                           '65',
                                           None,
                                           'erpdomain',
-                                          'erp-domain.isc.org')
+                                          'erp-domain.isc.org.')
 
     misc.test_procedure()
     srv_msg.client_requests_option('7')
@@ -302,7 +311,7 @@ def test_v6_options_all():
                                           '21',
                                           None,
                                           'addresses',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '22')
     srv_msg.response_check_option_content('Response',
                                           '22',
@@ -316,7 +325,7 @@ def test_v6_options_all():
                                           'addresses',
                                           '2001:db8::1,2001:db8::2')
     srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com')
+    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com.')
     srv_msg.response_check_include_option('Response', None, '27')
     srv_msg.response_check_option_content('Response',
                                           '27',
@@ -330,9 +339,9 @@ def test_v6_options_all():
                                           'addresses',
                                           '2001:db8::abc,3000::1,2000::1234')
     srv_msg.response_check_include_option('Response', None, '29')
-    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com.')
     srv_msg.response_check_include_option('Response', None, '30')
-    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com.')
     srv_msg.response_check_include_option('Response', None, '31')
     srv_msg.response_check_option_content('Response',
                                           '31',
@@ -346,7 +355,7 @@ def test_v6_options_all():
                                           '33',
                                           None,
                                           'bcmcsdomains',
-                                          'very.good.domain.name.com')
+                                          'very.good.domain.name.com.')
     srv_msg.response_check_include_option('Response', None, '34')
     srv_msg.response_check_option_content('Response',
                                           '34',
@@ -370,4 +379,4 @@ def test_v6_options_all():
                                           '65',
                                           None,
                                           'erpdomain',
-                                          'erp-domain.isc.org')
+                                          'erp-domain.isc.org.')

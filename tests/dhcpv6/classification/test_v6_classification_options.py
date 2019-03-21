@@ -67,7 +67,7 @@ def test_v6_client_classification_multiple_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -86,7 +86,7 @@ def test_v6_client_classification_multiple_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
 
     misc.test_procedure()
@@ -105,7 +105,7 @@ def test_v6_client_classification_multiple_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:c::1')
 
 
@@ -155,7 +155,7 @@ def test_v6_client_classification_multiple_subnets_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:d::1')
 
     misc.test_procedure()
@@ -174,7 +174,7 @@ def test_v6_client_classification_multiple_subnets_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -193,7 +193,7 @@ def test_v6_client_classification_multiple_subnets_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
 
     misc.test_procedure()
@@ -212,7 +212,7 @@ def test_v6_client_classification_multiple_subnets_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:c::1')
 
 
@@ -251,7 +251,7 @@ def test_v6_client_classification_class_with_option():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -271,7 +271,7 @@ def test_v6_client_classification_class_with_option():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -325,7 +325,7 @@ def test_v6_client_classification_multiple_subnets_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:d::1')
 
     misc.test_procedure()
@@ -347,7 +347,7 @@ def test_v6_client_classification_multiple_subnets_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -369,7 +369,7 @@ def test_v6_client_classification_multiple_subnets_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
 
     misc.test_procedure()
@@ -391,7 +391,7 @@ def test_v6_client_classification_multiple_subnets_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:c::1')
 
 
@@ -452,7 +452,7 @@ def test_v6_client_classification_multiple_subnets_options_override_global():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:d::1')
 
     misc.test_procedure()
@@ -476,7 +476,7 @@ def test_v6_client_classification_multiple_subnets_options_override_global():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -500,7 +500,7 @@ def test_v6_client_classification_multiple_subnets_options_override_global():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
 
     misc.test_procedure()
@@ -524,7 +524,7 @@ def test_v6_client_classification_multiple_subnets_options_override_global():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:c::1')
 
 
@@ -576,7 +576,7 @@ def test_v6_client_classification_shared_subnet_options_override():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
 
     misc.test_procedure()
@@ -599,7 +599,7 @@ def test_v6_client_classification_shared_subnet_options_override():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -653,7 +653,7 @@ def test_v6_client_classification_shared_subnet_options_override_francis():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
 
     misc.test_procedure()
@@ -676,7 +676,7 @@ def test_v6_client_classification_shared_subnet_options_override_francis():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -721,7 +721,7 @@ def test_v6_client_classification_shared_subnet_options_override_global():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
 
@@ -766,5 +766,5 @@ def test_v6_client_classification_shared_subnet_options_override_subnet():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')

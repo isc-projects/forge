@@ -82,7 +82,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '1000::5')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_1.txt')
@@ -129,7 +129,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '1000::5')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_1.txt')
@@ -159,7 +159,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '1000::5')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     # That test works, we don't need last step:

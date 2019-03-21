@@ -69,7 +69,7 @@ def test_v6_host_reservation_pgsql_all_values_mac():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_suboption_content('Response', '26', '25', None, 'prefix', '3001::')
@@ -78,7 +78,7 @@ def test_v6_host_reservation_pgsql_all_values_mac():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'reserved-hostname.my.domain.com')
+                                          'reserved-hostname.my.domain.com.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'ia_id', '777')
@@ -109,7 +109,7 @@ def test_v6_host_reservation_pgsql_all_values_mac():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::100')
 
 
 @pytest.mark.v6
@@ -138,7 +138,7 @@ def test_v6_host_reservation_pgsql_duid_ll_matching():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
 
 
 @pytest.mark.v6
@@ -167,7 +167,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_not_matching():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::100')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:11')
@@ -179,7 +179,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_not_matching():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::100')
 
 
 @pytest.mark.v6
@@ -208,7 +208,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -220,7 +220,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
 
 
 @pytest.mark.v6
@@ -254,7 +254,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_dual_backend():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
@@ -266,4 +266,4 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_dual_backend():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::fff')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::fff')

@@ -82,9 +82,9 @@ def test_v6_multipleIA_addresses():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::3')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::3')
 
 
 @pytest.mark.v6
@@ -163,9 +163,9 @@ def test_v6_multipleIA_addresses_multiple_pools():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::3')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::3')
 
 
 @pytest.mark.v6
@@ -591,7 +591,7 @@ def test_v6_multipleIA_addresses_noaddravail():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')

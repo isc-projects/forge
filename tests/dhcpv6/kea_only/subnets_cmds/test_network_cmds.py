@@ -189,7 +189,7 @@ def test_hook_v6_network_cmds_add_on_interface_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -247,7 +247,7 @@ def test_hook_v6_network_cmds_add_on_relay_addr():
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -555,7 +555,7 @@ def test_hook_v6_network_cmds_add_and_del():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',

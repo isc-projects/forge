@@ -47,7 +47,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '10')
 
@@ -103,7 +103,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_1():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '10')
 
@@ -159,7 +159,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_2():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '10')
 
@@ -333,7 +333,7 @@ def test_v6_host_reservation_mysql_option_multiple():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '10')
     srv_msg.response_check_include_option('Response', None, '59')
@@ -346,13 +346,13 @@ def test_v6_host_reservation_mysql_option_multiple():
     srv_msg.response_check_option_content('Response',
                                           '21',
                                           None,
-                                          'address',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'addr',
+                                          'srv1.example.com.,srv2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
-                                          'address',
+                                          'addr',
                                           '2001:db8::1,2001:db8::2')
     srv_msg.response_check_include_option('Response', None, '42')
     srv_msg.response_check_option_content('Response', '42', None, 'optdata', 'Europe/Zurich')
@@ -384,13 +384,13 @@ def test_v6_host_reservation_mysql_option_multiple():
     srv_msg.response_check_option_content('Response',
                                           '21',
                                           None,
-                                          'address',
-                                          'srv4.example.com,srv5.isc.org')
+                                          'addr',
+                                          'srv4.example.com.,srv5.isc.org.')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
-                                          'address',
+                                          'addr',
                                           '2001:db8::4,2001:db8::5')
     srv_msg.response_check_include_option('Response', None, '42')
     srv_msg.response_check_option_content('Response', '42', None, 'optdata', 'Europe/Zurich')
@@ -630,7 +630,7 @@ def test_v6_host_reservation_pgsql_option_multiple():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '10')
     srv_msg.response_check_include_option('Response', None, '59')
@@ -643,13 +643,13 @@ def test_v6_host_reservation_pgsql_option_multiple():
     srv_msg.response_check_option_content('Response',
                                           '21',
                                           None,
-                                          'address',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'addr',
+                                          'srv1.example.com.,srv2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
-                                          'address',
+                                          'addr',
                                           '2001:db8::1,2001:db8::2')
     srv_msg.response_check_include_option('Response', None, '42')
     srv_msg.response_check_option_content('Response', '42', None, 'optdata', 'Europe/Zurich')
@@ -681,13 +681,13 @@ def test_v6_host_reservation_pgsql_option_multiple():
     srv_msg.response_check_option_content('Response',
                                           '21',
                                           None,
-                                          'address',
-                                          'srv4.example.com,srv5.isc.org')
+                                          'addr',
+                                          'srv4.example.com.,srv5.isc.org.')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
-                                          'address',
+                                          'addr',
                                           '2001:db8::4,2001:db8::5')
     srv_msg.response_check_include_option('Response', None, '42')
     srv_msg.response_check_option_content('Response', '42', None, 'optdata', 'Europe/Zurich')

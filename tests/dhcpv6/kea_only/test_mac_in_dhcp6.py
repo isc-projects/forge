@@ -183,7 +183,7 @@ def test_v6_mac_in_dhcp6_client_link_addr_1():
     srv_msg.client_does_include('RelayAgent', None, 'client-link-layer-addr')
     srv_msg.client_sets_value('RelayAgent', 'peeraddr', '$(CLI_LINK_LOCAL)')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -225,7 +225,7 @@ def test_v6_mac_in_dhcp6_client_link_addr_2():
     srv_msg.client_does_include('RelayAgent', None, 'client-link-layer-addr')
     srv_msg.client_sets_value('RelayAgent', 'peeraddr', '$(CLI_LINK_LOCAL)')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -268,7 +268,7 @@ def test_v6_mac_in_dhcp6_remote_id_1():
     srv_msg.client_does_include('RelayAgent', None, 'remote-id')
     srv_msg.client_sets_value('RelayAgent', 'peeraddr', 'fe80::800:27ff:fe00:2')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -311,7 +311,7 @@ def test_v6_mac_in_dhcp6_remote_id_2():
     srv_msg.client_does_include('RelayAgent', None, 'remote-id')
     srv_msg.client_sets_value('RelayAgent', 'peeraddr', 'fe80::800:27ff:fe00:2')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -355,7 +355,7 @@ def test_v6_mac_in_dhcp6_subscriber_id_1():
     srv_msg.client_does_include('RelayAgent', None, 'subscriber-id')
     srv_msg.client_sets_value('RelayAgent', 'peeraddr', 'fe80::800:27ff:fe00:2')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -399,7 +399,7 @@ def test_v6_mac_in_dhcp6_subscriber_id_2():
     srv_msg.client_does_include('RelayAgent', None, 'subscriber-id')
     srv_msg.client_sets_value('RelayAgent', 'peeraddr', 'fe80::800:27ff:fe00:2')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -482,7 +482,7 @@ def test_v6_mac_in_dhcp6_docsic_cmts():
     srv_msg.add_vendor_suboption('RelayAgent', '1026', '00:f5:f4:00:f2:01')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-specific-info')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')

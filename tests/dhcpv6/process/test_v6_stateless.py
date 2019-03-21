@@ -42,7 +42,7 @@ def test_v6_stateless_with_subnet_empty_pool():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'prefval', '123')
     srv_msg.response_check_include_option('Response', None, '3')
@@ -82,7 +82,7 @@ def test_v6_stateless_with_subnet_empty_pool_inforequest():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'prefval', '123')
 
@@ -120,7 +120,7 @@ def test_v6_stateless_without_subnet():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'prefval', '123')
     srv_msg.response_check_include_option('Response', None, '3')
@@ -160,6 +160,6 @@ def test_v6_stateless_without_subnet_inforequest():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'prefval', '123')

@@ -33,7 +33,7 @@ def test_control_channel_socket_dhcp_disable_timer():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                             '{"command": "dhcp-disable", "arguments": {"max-period": 5}}')
@@ -89,7 +89,7 @@ def test_control_channel_socket_dhcp_disable():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                             '{"command": "dhcp-disable" }')
 
@@ -128,7 +128,7 @@ def test_control_channel_socket_dhcp_disable_and_enable():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                             '{"command": "dhcp-disable" }')
@@ -184,7 +184,7 @@ def test_control_channel_socket_config_set_basic():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -210,7 +210,7 @@ def test_control_channel_socket_config_set_basic():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -236,7 +236,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -262,7 +262,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
     # this should fail
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -296,7 +296,7 @@ def test_control_channel_socket_after_restart_load_config_file():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -322,7 +322,7 @@ def test_control_channel_socket_after_restart_load_config_file():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -339,7 +339,7 @@ def test_control_channel_socket_after_restart_load_config_file():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
 
 @pytest.mark.v6
@@ -365,7 +365,7 @@ def test_control_channel_socket_big_config_file():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1:1::/64', '2001:db8:1:1::1-2001:db8:1:1::1')
@@ -1158,7 +1158,7 @@ def test_control_channel_socket_big_config_file():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1:1::1')
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -1175,4 +1175,4 @@ def test_control_channel_socket_big_config_file():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')

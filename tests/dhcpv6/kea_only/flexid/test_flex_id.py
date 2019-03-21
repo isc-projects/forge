@@ -36,7 +36,7 @@ def test_v6_hooks_flexid_1():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -52,7 +52,7 @@ def test_v6_hooks_flexid_1():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
 
@@ -84,7 +84,7 @@ def test_v6_hooks_flexid_libreload():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -100,7 +100,7 @@ def test_v6_hooks_flexid_libreload():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -114,7 +114,7 @@ def test_v6_hooks_flexid_libreload():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -130,7 +130,7 @@ def test_v6_hooks_flexid_libreload():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
 
@@ -162,7 +162,7 @@ def test_v6_hooks_flexid_reconfigure_1():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -178,7 +178,7 @@ def test_v6_hooks_flexid_reconfigure_1():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
     misc.test_setup()
@@ -206,7 +206,7 @@ def test_v6_hooks_flexid_reconfigure_1():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -222,7 +222,7 @@ def test_v6_hooks_flexid_reconfigure_1():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
 
@@ -254,7 +254,7 @@ def test_v6_hooks_flexid_reconfigure_2():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -270,7 +270,7 @@ def test_v6_hooks_flexid_reconfigure_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
     misc.test_setup()
@@ -298,7 +298,7 @@ def test_v6_hooks_flexid_reconfigure_2():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -313,7 +313,7 @@ def test_v6_hooks_flexid_reconfigure_2():
                                              '5',
                                              '3',
                                              'NOT ',
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
     misc.test_procedure()
@@ -323,7 +323,7 @@ def test_v6_hooks_flexid_reconfigure_2():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port4321')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -338,7 +338,7 @@ def test_v6_hooks_flexid_reconfigure_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
 
@@ -368,7 +368,7 @@ def test_v6_hooks_flexid_2():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -384,7 +384,7 @@ def test_v6_hooks_flexid_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
 
@@ -422,7 +422,7 @@ def test_v6_hooks_flexid_3():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
 
 @pytest.mark.v6
@@ -453,7 +453,7 @@ def test_v6_hooks_flexid_mysql_1():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -468,7 +468,7 @@ def test_v6_hooks_flexid_mysql_1():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
 
@@ -508,7 +508,7 @@ def test_v6_hooks_flexid_mysql_2():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
 
 @pytest.mark.v6
@@ -539,7 +539,7 @@ def test_v6_hooks_flexid_pgsql_1():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -555,7 +555,7 @@ def test_v6_hooks_flexid_pgsql_1():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '3000::f')
 
 
@@ -595,7 +595,7 @@ def test_v6_hooks_flexid_pgsql_2():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
 
 @pytest.mark.v6
@@ -634,7 +634,7 @@ def test_v6_hooks_flexid_replace_duid():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -653,7 +653,7 @@ def test_v6_hooks_flexid_replace_duid():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
 
 @pytest.mark.v6
@@ -693,7 +693,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -712,7 +712,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     # Client with different duid try to renew
     misc.test_procedure()
@@ -732,7 +732,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
     srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'validlft', '0')
 
 
@@ -771,7 +771,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -790,7 +790,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     # Client with the same DUID and different flex-id try to renew
     misc.test_procedure()
@@ -810,7 +810,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '0')
 
 
@@ -850,7 +850,7 @@ def test_v6_hooks_flexid_replace_duid_release():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -869,7 +869,7 @@ def test_v6_hooks_flexid_replace_duid_release():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     # Client with different duid try to release
     misc.test_procedure()
@@ -927,7 +927,7 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -946,7 +946,7 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     # Client with the same duid but different flex-id try to release (result should be nobiding)
     misc.test_procedure()
@@ -1016,7 +1016,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -1032,7 +1032,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -1051,7 +1051,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     # Client with different duid try to release
     misc.test_procedure()
@@ -1117,7 +1117,7 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -1136,7 +1136,7 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     # Client with different duid try to release
     misc.test_procedure()

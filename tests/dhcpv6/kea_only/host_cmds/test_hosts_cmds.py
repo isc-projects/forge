@@ -36,7 +36,7 @@ def test_v6_hosts_cmds_librelaod():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -57,7 +57,7 @@ def test_v6_hosts_cmds_librelaod():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -82,7 +82,7 @@ def test_v6_hosts_cmds_librelaod():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
 
@@ -113,7 +113,7 @@ def test_v6_hosts_cmds_reconfigure():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -134,7 +134,7 @@ def test_v6_hosts_cmds_reconfigure():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
     misc.test_setup()
@@ -164,7 +164,7 @@ def test_v6_hosts_cmds_reconfigure():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
 
@@ -195,7 +195,7 @@ def test_v6_hosts_cmds_add_reservation_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -216,7 +216,7 @@ def test_v6_hosts_cmds_add_reservation_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
 
@@ -247,7 +247,7 @@ def test_v6_hosts_cmds_del_reservation_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -268,7 +268,7 @@ def test_v6_hosts_cmds_del_reservation_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -289,7 +289,7 @@ def test_v6_hosts_cmds_del_reservation_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
 
@@ -320,7 +320,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -341,7 +341,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -362,7 +362,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
 
@@ -393,7 +393,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -414,7 +414,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
 
@@ -445,7 +445,7 @@ def test_v6_hosts_cmds_get_reservation_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -466,7 +466,7 @@ def test_v6_hosts_cmds_get_reservation_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -500,7 +500,7 @@ def test_v6_hosts_cmds_get_reservation_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -521,7 +521,7 @@ def test_v6_hosts_cmds_get_reservation_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -553,7 +553,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -568,7 +568,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -583,7 +583,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -598,7 +598,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
 
@@ -627,7 +627,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -642,7 +642,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -657,7 +657,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -672,7 +672,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::100')
 
 
@@ -704,7 +704,7 @@ def test_v6_hosts_cmds_add_reservation_complex_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
@@ -728,7 +728,7 @@ def test_v6_hosts_cmds_add_reservation_complex_pgsql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1:0:cafe::1')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_suboption_content('Response',
@@ -767,7 +767,7 @@ def test_v6_hosts_cmds_add_reservation_complex_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::50')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
@@ -791,7 +791,7 @@ def test_v6_hosts_cmds_add_reservation_complex_mysql():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1:0:cafe::1')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_suboption_content('Response',

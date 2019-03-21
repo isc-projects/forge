@@ -48,7 +48,7 @@ def test_control_channel_socket_config_test():
                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.host_reservation_in_subnet('address',
                                            '3000::1',
                                            '0',
@@ -68,7 +68,7 @@ def test_control_channel_socket_config_test():
                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     # WRONG ADDRESS RESERVATION
     srv_control.host_reservation_in_subnet('address',
                                            '192.168.0.5',
@@ -105,7 +105,7 @@ def test_control_channel_socket_config_write():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -133,7 +133,7 @@ def test_control_channel_socket_config_write():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "list-commands","arguments": {}}
@@ -159,7 +159,7 @@ def test_control_channel_socket_config_write():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -186,7 +186,7 @@ def test_control_channel_socket_config_reload():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                             '{"command": "list-commands","arguments": {}}')
@@ -216,7 +216,7 @@ def test_control_channel_socket_config_reload():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -237,5 +237,5 @@ def test_control_channel_socket_config_reload():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')

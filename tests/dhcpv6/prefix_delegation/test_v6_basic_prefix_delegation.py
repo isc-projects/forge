@@ -54,7 +54,7 @@ def test_prefix_delegation_IA_and_PD():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
 
     references.references_check('RFC')
 
@@ -105,7 +105,7 @@ def test_prefix_delegation_without_server_configuration():
                                              'prefix',
                                              '2001:db8:1::')
     srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::3')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::3')
 
     references.references_check('RFC')
 

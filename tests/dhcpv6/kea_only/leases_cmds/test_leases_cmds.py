@@ -61,7 +61,7 @@ def test_hook_v6_lease_cmds_add_notvalid_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -83,7 +83,7 @@ def test_hook_v6_lease_cmds_add_notvalid_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -119,7 +119,7 @@ def test_hook_v6_lease_cmds_add_address_from_different_subnet():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -141,7 +141,7 @@ def test_hook_v6_lease_cmds_add_address_from_different_subnet():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -177,7 +177,7 @@ def test_hook_v6_lease_cmds_add_valid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -230,7 +230,7 @@ def test_hook_v6_lease_cmds_add_expired_with_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -253,7 +253,7 @@ def test_hook_v6_lease_cmds_add_expired_with_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
@@ -303,7 +303,7 @@ def test_hook_v6_lease_cmds_add_valid_with_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -377,7 +377,7 @@ def test_hook_v6_lease_cmds_del_using_address():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -413,7 +413,7 @@ def test_hook_v6_lease_cmds_del_using_address():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -460,7 +460,7 @@ def test_hook_v6_lease_cmds_del_using_duid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -497,7 +497,7 @@ def test_hook_v6_lease_cmds_del_using_duid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -543,7 +543,7 @@ def test_hook_v6_lease_cmds_get_using_address():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -607,7 +607,7 @@ def test_hook_v6_lease_cmds_get_using_duid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',

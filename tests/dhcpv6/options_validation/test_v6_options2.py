@@ -76,7 +76,7 @@ def test_v6_options_inforequest_sip_domains():
                                           '21',
                                           None,
                                           'domains',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
 
     references.references_check('RFC331')
 
@@ -253,7 +253,7 @@ def test_v6_options_inforequest_domains():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('RFC364')
 
@@ -370,7 +370,7 @@ def test_v6_options_inforequest_nisdomain():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '29')
-    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com.')
 
     references.references_check('RFC389')
 
@@ -403,7 +403,7 @@ def test_v6_options_inforequest_nispdomain():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '30')
-    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com.')
 
     references.references_check('RFC389')
 
@@ -525,7 +525,7 @@ def test_v6_options_inforequest_multiple():
                                           '21',
                                           None,
                                           'addresses',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
     srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
@@ -535,7 +535,7 @@ def test_v6_options_inforequest_multiple():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('RFC3315')
 

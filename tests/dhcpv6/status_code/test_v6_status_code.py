@@ -131,7 +131,7 @@ def test_v6_statuscode_nobinding_renew():
     # Response option 3 MUST contain sub-option 13.
     # Response sub-option 13 from option 3 MUST contain statuscode 3.
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     references.references_check('RFC3315')
 

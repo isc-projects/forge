@@ -96,7 +96,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_iface()
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
 
     misc.test_procedure()
@@ -152,7 +152,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -174,7 +174,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -195,7 +195,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -250,7 +250,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -271,7 +271,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -291,7 +291,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -540,7 +540,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_id_o
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -564,7 +564,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_id_o
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -587,7 +587,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_id_o
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -611,7 +611,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_id_o
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -669,7 +669,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -690,7 +690,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -710,7 +710,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -731,7 +731,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -807,7 +807,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -832,7 +832,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -856,7 +856,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -881,7 +881,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -940,7 +940,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -962,7 +962,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -983,7 +983,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1005,7 +1005,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1083,7 +1083,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1105,7 +1105,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1126,7 +1126,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1148,7 +1148,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1175,7 +1175,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1196,7 +1196,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1216,7 +1216,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1237,7 +1237,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1391,7 +1391,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1419,7 +1419,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1446,7 +1446,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1474,7 +1474,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abcde')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1500,7 +1500,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1528,7 +1528,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1555,7 +1555,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1583,7 +1583,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1733,7 +1733,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1755,7 +1755,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1776,7 +1776,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1798,7 +1798,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::abcd')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1826,7 +1826,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1848,7 +1848,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1869,7 +1869,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1891,7 +1891,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1919,7 +1919,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1234')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1940,7 +1940,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2008,7 +2008,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2029,7 +2029,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2049,7 +2049,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2070,7 +2070,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2097,7 +2097,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2118,7 +2118,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2138,7 +2138,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2159,7 +2159,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2186,7 +2186,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2207,7 +2207,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'interface-abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -2276,7 +2276,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response', '23', None, 'addresses', '2001:db8::666')
@@ -2299,7 +2299,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:b::1')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response', '23', None, 'addresses', '2001:db8::666')
@@ -2321,7 +2321,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:c::1')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response', '23', None, 'addresses', '2001:db8::1')
@@ -2344,7 +2344,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:c::1')
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response', '23', None, 'addresses', '2001:db8::1')
@@ -2435,7 +2435,7 @@ def test_v6_sharednetworks_host_reservation_all_values_duid():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_suboption_content('Response', '26', '25', None, 'prefix', '3001::')
@@ -2444,7 +2444,7 @@ def test_v6_sharednetworks_host_reservation_all_values_duid():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'reserved-hostname.my.domain.com')
+                                          'reserved-hostname.my.domain.com.')
 
 
 @pytest.mark.v6
@@ -2496,7 +2496,7 @@ def test_v6_sharednetworks_host_reservation_options_override_1():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '5')
@@ -2520,7 +2520,7 @@ def test_v6_sharednetworks_host_reservation_options_override_1():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::100')
 
 
@@ -2576,7 +2576,7 @@ def test_v6_sharednetworks_host_reservation_options_override_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::1')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '5')
@@ -2600,5 +2600,5 @@ def test_v6_sharednetworks_host_reservation_options_override_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:a::100')

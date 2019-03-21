@@ -808,7 +808,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts():
     srv_msg.add_vendor_suboption('RelayAgent', '1026', '00:f5:f4:00:f2:01')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-specific-info')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -865,7 +865,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_pgsql():
     srv_msg.add_vendor_suboption('RelayAgent', '1026', '00:f5:f4:00:f2:01')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-specific-info')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -923,7 +923,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_mysql():
     srv_msg.add_vendor_suboption('RelayAgent', '1026', '00:f5:f4:00:f2:01')
     srv_msg.client_does_include('RelayAgent', None, 'vendor-specific-info')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -981,7 +981,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('5', None)
+    srv_msg.create_relay_forward(5)
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1048,7 +1048,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_pgsql():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('5', None)
+    srv_msg.create_relay_forward(5)
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1115,7 +1115,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_mysql():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('5', None)
+    srv_msg.create_relay_forward(5)
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -1181,7 +1181,7 @@ def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_mysql():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
@@ -1253,7 +1253,7 @@ def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_pgsql():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::f')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')

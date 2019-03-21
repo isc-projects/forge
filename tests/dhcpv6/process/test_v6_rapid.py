@@ -130,6 +130,6 @@ def test_v6_rapid_commit_basic_two_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
     srv_msg.response_check_include_option('Response', 'NOT ', '14')

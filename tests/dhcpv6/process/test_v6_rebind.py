@@ -80,10 +80,10 @@ def test_v6_message_rebind_reply_zerotime():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '4000')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '0')
 
     references.references_check('RFC3315')

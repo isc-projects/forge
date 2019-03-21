@@ -37,7 +37,7 @@ def test_control_channel_keashell_dhcp_disable_timer():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     srv_msg.execute_shell_with_args('python',
                                     '$(SOFTWARE_INSTALL_DIR)/sbin/kea-shell',
@@ -98,7 +98,7 @@ def test_control_channel_keashell_dhcp_disable():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     srv_msg.execute_shell_with_args('python',
                                     '$(SOFTWARE_INSTALL_DIR)/sbin/kea-shell',
@@ -143,7 +143,7 @@ def test_control_channel_keashell_dhcp_disable_and_enable():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     srv_msg.execute_shell_with_args('python',
                                     '$(SOFTWARE_INSTALL_DIR)/sbin/kea-shell',
@@ -206,7 +206,7 @@ def test_control_channel_keashell_set_config_basic():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     # this command is with new configuration
     srv_msg.execute_shell_with_args('python',
@@ -230,7 +230,7 @@ def test_control_channel_keashell_set_config_basic():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -263,7 +263,7 @@ def test_control_channel_keashell_after_restart_load_config_file():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     srv_msg.execute_shell_with_args('python',
                                     '$(SOFTWARE_INSTALL_DIR)/sbin/kea-shell',
@@ -286,7 +286,7 @@ def test_control_channel_keashell_after_restart_load_config_file():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -304,7 +304,7 @@ def test_control_channel_keashell_after_restart_load_config_file():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
 
 @pytest.mark.v6
@@ -356,7 +356,7 @@ def test_control_channel_keashell_test_config():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
@@ -367,7 +367,7 @@ def test_control_channel_keashell_test_config():
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.host_reservation_in_subnet('address',
                                            '3000::1',
                                            '0',
@@ -392,7 +392,7 @@ def test_control_channel_keashell_test_config():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
@@ -403,7 +403,7 @@ def test_control_channel_keashell_test_config():
                                       '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     # WRONG ADDRESS RESERVATION
     srv_control.host_reservation_in_subnet('address',
                                            '192.168.0.5',
@@ -430,7 +430,7 @@ def test_control_channel_keashell_test_config():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
 
 @pytest.mark.v6
@@ -461,7 +461,7 @@ def test_control_channel_keashell_write_config():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -493,7 +493,7 @@ def test_control_channel_keashell_write_config():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.execute_shell_with_args('python',
@@ -521,7 +521,7 @@ def test_control_channel_keashell_write_config():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -553,7 +553,7 @@ def test_control_channel_socket_reload_config():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -586,7 +586,7 @@ def test_control_channel_socket_reload_config():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -608,5 +608,5 @@ def test_control_channel_socket_reload_config():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')

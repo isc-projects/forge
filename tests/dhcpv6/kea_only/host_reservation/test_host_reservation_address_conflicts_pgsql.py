@@ -102,7 +102,7 @@ def test_v6_host_reservation_pgsql_conflicts_two_entries_for_one_host_different_
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'ia_id', '667')
@@ -127,7 +127,7 @@ def test_v6_host_reservation_pgsql_conflicts_two_entries_for_one_host_different_
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::3')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::3')
 
 
 @pytest.mark.v6
@@ -211,7 +211,7 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::1')
 
 
 @pytest.mark.v6
@@ -309,7 +309,7 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::1')
 
 
 @pytest.mark.v6
@@ -406,9 +406,9 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '0')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '107')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::3')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::3')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -430,7 +430,7 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
 
 
 @pytest.mark.v6
@@ -530,9 +530,9 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '0')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '8')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -554,4 +554,4 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')

@@ -31,7 +31,7 @@ def test_v6_relay_invalid_with_client_id():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'client-id')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -42,7 +42,7 @@ def test_v6_relay_invalid_with_client_id():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -76,7 +76,7 @@ def test_v6_relay_invalid_with_server_id():
                               '00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_msg.client_does_include('RelayAgent', None, 'server-id')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -87,7 +87,7 @@ def test_v6_relay_invalid_with_server_id():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -119,7 +119,7 @@ def test_v6_relay_invalid_options_preference():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'preference')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -130,7 +130,7 @@ def test_v6_relay_invalid_options_preference():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -162,7 +162,7 @@ def test_v6_relay_invalid_options_time():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'time')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -173,7 +173,7 @@ def test_v6_relay_invalid_options_time():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -206,7 +206,7 @@ def test_v6_relay_invalid_options_option_request():
     # add options to relay message
     srv_msg.client_requests_option('7')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -218,7 +218,7 @@ def test_v6_relay_invalid_options_option_request():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -251,7 +251,7 @@ def test_v6_relay_invalid_options_server_unicast():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'server-unicast')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -263,7 +263,7 @@ def test_v6_relay_invalid_options_server_unicast():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -295,7 +295,7 @@ def test_v6_relay_invalid_options_status_code():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'status-code')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -307,7 +307,7 @@ def test_v6_relay_invalid_options_status_code():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -339,7 +339,7 @@ def test_v6_relay_invalid_options_rapid_commit():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'rapid-commit')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -351,7 +351,7 @@ def test_v6_relay_invalid_options_rapid_commit():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -383,7 +383,7 @@ def test_v6_relay_invalid_options_reconfigure():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'reconfigure')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -394,7 +394,7 @@ def test_v6_relay_invalid_options_reconfigure():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -426,7 +426,7 @@ def test_v6_relay_invalid_options_reconfigure_accept():
     # add options to relay message
     srv_msg.client_does_include('RelayAgent', None, 'reconfigure-accept')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -437,7 +437,7 @@ def test_v6_relay_invalid_options_reconfigure_accept():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')

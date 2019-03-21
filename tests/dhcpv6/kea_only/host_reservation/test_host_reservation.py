@@ -53,7 +53,7 @@ def test_v6_host_reservation_all_values_mac():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_suboption_content('Response', '26', '25', None, 'prefix', '3001::')
@@ -62,7 +62,7 @@ def test_v6_host_reservation_all_values_mac():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'reserved-hostname.my.domain.com')
+                                          'reserved-hostname.my.domain.com.')
 
 
 @pytest.mark.v6
@@ -109,7 +109,7 @@ def test_v6_host_reservation_all_values_duid():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_suboption_content('Response', '26', '25', None, 'prefix', '3001::')
@@ -118,7 +118,7 @@ def test_v6_host_reservation_all_values_duid():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'reserved-hostname.my.domain.com')
+                                          'reserved-hostname.my.domain.com.')
 
 
 @pytest.mark.v6
@@ -167,7 +167,7 @@ def test_v6_host_reservation_all_values_duid_2():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::100')
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_suboption_content('Response',
@@ -181,7 +181,7 @@ def test_v6_host_reservation_all_values_duid_2():
                                           '39',
                                           'NOT ',
                                           'fqdn',
-                                          'reserved-hostname.my.domain.com')
+                                          'reserved-hostname.my.domain.com.')
 
 
 @pytest.mark.v6

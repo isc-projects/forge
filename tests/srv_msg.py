@@ -157,7 +157,7 @@ def generate_new(opt):
 
 
 @step('RelayAgent forwards message encapsulated in (\d+) level(s)?.')
-def create_relay_forward(level, s):
+def create_relay_forward(level=1):
     """
     This step is strictly related to step: Client sends message.
     You can put only after that step. They can be seperated with other steps
@@ -241,6 +241,10 @@ def response_check_suboption_content(resp_rel, subopt_code, opt_code, expect, da
     dhcpmsg.response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected)
 
 
+def get_suboption(opt_code, subopt_code):
+    return dhcpmsg.get_suboption(opt_code, subopt_code)
+
+
 ##building DNS messages
 @step('Client for DNS Question Record uses address: (\S+) type (\S+) class (\S+).')
 def dns_question_record(addr, qtype, qclass):
@@ -254,7 +258,7 @@ def dns_query_set_value(variable_name, value):
 
 @step('Client sends DNS query.')
 def client_send_dns_query():
-    dns.send_query()
+    dns.prepare_query()
 
 
 ##checking DNS respond

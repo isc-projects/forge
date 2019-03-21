@@ -353,7 +353,7 @@ def send_wait_for_message(msgtype, presence, exp_message):
                               % (len(ans), len(unans)))
     if exp_message != "None":
         for x in unans:
-            log.error(("Unmatched packet type = %s" % get_msg_type(x)))
+            log.error(("Unanswered packet type = %s" % get_msg_type(x)))
 
         if presence:
             assert len(world.srvmsg) != 0, "No response received."

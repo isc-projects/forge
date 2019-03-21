@@ -70,7 +70,7 @@ def test_prefix_delegation_IA_and_PD_request():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -85,7 +85,7 @@ def test_prefix_delegation_IA_and_PD_request():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     references.references_check('RFC')
 
@@ -685,7 +685,7 @@ def test_prefix_delegation_onlyPD_relay():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -824,7 +824,7 @@ def test_prefix_delegation_compare_prefixes_after_client_reboot():
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     # save prefix value
-    # clnt_msg.save_value('prefix') TODO: it should not work, why is it here?
+    prefix1 = srv_msg.get_suboption('IA_PD', 'IA-Prefix')[0]
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
@@ -847,7 +847,8 @@ def test_prefix_delegation_compare_prefixes_after_client_reboot():
     srv_msg.response_check_include_option('Response', None, '25')
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
     # compare assigned prefix with the saved one
-    srv_msg.compare_values('prefix', '26')
+    prefix2 = srv_msg.get_suboption('IA_PD', 'IA-Prefix')[0]
+    assert prefix1.prefix == prefix2.prefix
 
     references.references_check('RFC')
 

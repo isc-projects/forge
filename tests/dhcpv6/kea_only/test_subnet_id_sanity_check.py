@@ -51,7 +51,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -103,7 +103,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
 
 @pytest.mark.v6
@@ -148,7 +148,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -213,7 +213,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     # Pause the Test.
 
@@ -260,7 +260,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -310,7 +310,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
 
 @pytest.mark.v6
@@ -355,7 +355,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -421,7 +421,7 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -483,7 +483,7 @@ def test_v6_sanity_check_subnet_id_warn():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -566,7 +566,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -607,7 +607,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
@@ -688,7 +688,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -729,7 +729,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
@@ -744,7 +744,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                             '{"command":"lease6-get","arguments":{"ip-address": "2001:db8::1"}}')
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -803,7 +803,7 @@ def test_v6_sanity_check_subnet_id_none():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -863,7 +863,7 @@ def test_v6_sanitydsasdasd():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -939,7 +939,7 @@ def test_v6_sanity_check_subnet_id():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
                                None,
@@ -1001,7 +1001,7 @@ def test_v6_sanity_check_subnet_id():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '2001:db8::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::2')
     srv_msg.forge_sleep('10', 'seconds')
 
     # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-get","arguments":  {} }

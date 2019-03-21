@@ -32,7 +32,7 @@ def test_v6_client_classification_onesubnet_advertise_success():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
 
 @pytest.mark.v6
@@ -83,7 +83,7 @@ def test_v6_client_classification_onesubnet_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'vendor_class_data', 'firstclass')
@@ -97,7 +97,7 @@ def test_v6_client_classification_onesubnet_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
 
 @pytest.mark.v6
@@ -124,7 +124,7 @@ def test_v6_client_classification_twosubnets_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'vendor_class_data', 'firstclass')
@@ -138,7 +138,7 @@ def test_v6_client_classification_twosubnets_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -149,7 +149,7 @@ def test_v6_client_classification_twosubnets_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3001::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3001::100')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -161,7 +161,7 @@ def test_v6_client_classification_twosubnets_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3001::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3001::100')
 
 
 @pytest.mark.v6
@@ -189,7 +189,7 @@ def test_v6_client_classification_twosubnets_request_fail():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '000300010a0027ffff02')
@@ -204,7 +204,7 @@ def test_v6_client_classification_twosubnets_request_fail():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '000300010a0027ffff02')
@@ -216,7 +216,7 @@ def test_v6_client_classification_twosubnets_request_fail():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3001::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3001::100')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '000300010a0027ffff02')
@@ -229,7 +229,7 @@ def test_v6_client_classification_twosubnets_request_fail():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3001::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3001::100')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '000300010a0027ffff03')
@@ -295,7 +295,7 @@ def test_v6_client_classification_twoclasses_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'vendor_class_data', 'firstclass')
@@ -309,7 +309,7 @@ def test_v6_client_classification_twoclasses_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'vendor_class_data', 'secondclass')
@@ -322,7 +322,7 @@ def test_v6_client_classification_twoclasses_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3001::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3001::100')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'vendor_class_data', 'secondclass')
@@ -336,4 +336,4 @@ def test_v6_client_classification_twoclasses_request_success():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3001::100')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3001::100')

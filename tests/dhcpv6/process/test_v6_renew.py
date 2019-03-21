@@ -157,9 +157,9 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '0')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '80')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
     references.references_check('RFC')
 
 
@@ -248,9 +248,9 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_2():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     # Response sub-option 5 from option 3 MUST contain validlft 0.
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '80')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::1')
     references.references_check('RFC')
 
 
@@ -342,8 +342,8 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_expired():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
     references.references_check('RFC')
 
 
@@ -433,9 +433,9 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_expired_2():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     # Response sub-option 5 from option 3 MUST contain validlft 0.
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::2')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '8')
-    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'address', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::1')
     references.references_check('RFC')
 
 
@@ -527,7 +527,7 @@ def test_v6_message_renew_reply_time_zero():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'address', '3000::66')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::66')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '0')
 
     references.references_check('RFC')

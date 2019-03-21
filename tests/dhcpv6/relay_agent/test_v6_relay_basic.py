@@ -26,7 +26,7 @@ def test_v6_relay_message_solicit_advertise():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -60,7 +60,7 @@ def test_v6_relay_message_unicast_global():
 
     srv_msg.unicast_addres('GLOBAL', None)
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -93,7 +93,7 @@ def test_v6_relay_message_unicast_local():
 
     srv_msg.unicast_addres(None, 'LINK_LOCAL')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
@@ -105,7 +105,7 @@ def test_v6_relay_message_unicast_local():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -132,7 +132,7 @@ def test_v6_relay_message_solicit_reply():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -169,7 +169,7 @@ def test_v6_relay_message_request_reply():
     srv_msg.client_send_msg('REQUEST')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -215,7 +215,7 @@ def test_v6_relay_message_confirm_reply():
     srv_msg.client_send_msg('CONFIRM')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -262,7 +262,7 @@ def test_v6_relay_message_renew_reply():
     srv_msg.client_send_msg('RENEW')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -306,7 +306,7 @@ def test_v6_relay_message_rebind_reply():
     srv_msg.client_send_msg('REBIND')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -351,7 +351,7 @@ def test_v6_relay_message_release_reply():
     srv_msg.client_send_msg('RELEASE')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -388,7 +388,7 @@ def test_v6_relay_message_decline_reply():
     srv_msg.client_send_msg('DECLINE')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -422,7 +422,7 @@ def test_v6_relay_message_information_request_reply():
     srv_msg.client_send_msg('INFOREQUEST')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')

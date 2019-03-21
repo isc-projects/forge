@@ -122,7 +122,7 @@ def test_hook_v6_subnet_cmds_add():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -197,7 +197,7 @@ def test_hook_v6_subnet_cmds_add_with_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '55')
@@ -241,7 +241,7 @@ def test_hook_v6_subnet_cmds_add_conflict():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -267,7 +267,7 @@ def test_hook_v6_subnet_cmds_add_conflict():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -301,7 +301,7 @@ def test_hook_v6_subnet_cmds_del():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -357,7 +357,7 @@ def test_hook_v6_subnet_cmds_del_non_existing():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -384,7 +384,7 @@ def test_hook_v6_subnet_cmds_del_non_existing():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -421,7 +421,7 @@ def test_hook_v6_subnet_cmds_del_global_options():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
     srv_msg.response_check_include_option('Response', None, '7')
     srv_msg.response_check_option_content('Response', '7', None, 'value', '123')
@@ -511,7 +511,7 @@ def test_hook_v6_subnet_cmds_add_and_del():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',

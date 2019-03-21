@@ -33,7 +33,7 @@ def test_v6_options_rsoo_default_option():
     srv_msg.client_does_include('Relay-Supplied-Option', None, 'erp-local-domain-name')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'rsoo')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -49,7 +49,7 @@ def test_v6_options_rsoo_default_option():
                                           '65',
                                           None,
                                           'erpdomain',
-                                          'relay-supplied.domain.com')
+                                          'relay-supplied.domain.com.')
 
     references.references_check('RFC642')
 
@@ -79,7 +79,7 @@ def test_v6_options_rsoo_custom_option_list():
     srv_msg.client_does_include('Relay-Supplied-Option', None, 'server-unicast')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'rsoo')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -120,7 +120,7 @@ def test_v6_options_rsoo_custom_option_list_default_option_65():
     srv_msg.client_does_include('Relay-Supplied-Option', None, 'erp-local-domain-name')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'rsoo')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -136,7 +136,7 @@ def test_v6_options_rsoo_custom_option_list_default_option_65():
                                           '65',
                                           None,
                                           'erpdomain',
-                                          'relay-supplied.domain.com')
+                                          'relay-supplied.domain.com.')
 
     references.references_check('RFC642')
 
@@ -167,7 +167,7 @@ def test_v6_options_rsoo_custom_option_list_server_has_option_configured_also():
     srv_msg.client_does_include('Relay-Supplied-Option', None, 'server-unicast')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.client_does_include('RelayAgent', None, 'rsoo')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')

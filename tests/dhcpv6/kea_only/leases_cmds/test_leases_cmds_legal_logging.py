@@ -46,7 +46,7 @@ def test_hook_v6_lease_cmds_legal_logging_add():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
@@ -119,7 +119,7 @@ def test_hook_v6_lease_cmds_legal_logging_del_using_address():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -155,7 +155,7 @@ def test_hook_v6_lease_cmds_legal_logging_del_using_address():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')
@@ -212,7 +212,7 @@ def test_hook_v6_lease_cmds_legal_logging_del_using_duid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -248,7 +248,7 @@ def test_hook_v6_lease_cmds_legal_logging_del_using_duid():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-legal*.txt')

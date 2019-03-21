@@ -53,7 +53,7 @@ def test_v6_host_reservation_mac_hostname_with_ddns():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'reserved-hostname.my.domain.com')
+                                          'reserved-hostname.my.domain.com.')
 
 
 @pytest.mark.v6
@@ -94,7 +94,7 @@ def test_v6_host_reservation_mac_hostname_without_ddns():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'reserved-hostname')
+    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'reserved-hostname.')
 
 
 @pytest.mark.v6
@@ -141,7 +141,7 @@ def test_v6_host_reservation_duid_hostname_with_ddns():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'reserved-hostname.my.domain.com')
+                                          'reserved-hostname.my.domain.com.')
 
 
 @pytest.mark.v6
@@ -181,4 +181,4 @@ def test_v6_host_reservation_duid_hostname_without_ddns():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'reserved-hostname')
+    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'reserved-hostname.')

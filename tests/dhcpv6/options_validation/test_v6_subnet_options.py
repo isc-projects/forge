@@ -156,7 +156,7 @@ def test_v6_options_subnet_domains():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -172,7 +172,7 @@ def test_v6_options_subnet_domains():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('v6.options,')
 
@@ -215,7 +215,7 @@ def test_v6_options_subnet_override():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com')
+    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -227,6 +227,6 @@ def test_v6_options_subnet_override():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com')
+    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com.')
 
     references.references_check('v6.options,')

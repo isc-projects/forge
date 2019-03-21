@@ -17,9 +17,10 @@
 
 import sys
 from locale import str
+import random
 
 from scapy.all import sr
-from scapy.layers.dns import *  # TODO
+from scapy.layers import dns
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
 
@@ -73,7 +74,7 @@ r_codes = {"OK": 0,
            "REFUSED": 5}
 
 
-def send_query():
+def prepare_query():
     world.climsg = []
     build_query()
     build_msg()
@@ -134,19 +135,19 @@ def send_wait_for_query(choose_must, presence):
 
 def build_query():
     # TODO all those should have ability to be set from test level
-    msg = DNS(id=1,
-              qr=0,
-              opcode="QUERY",
-              aa=0,
-              tc=0,
-              rd=0,
-              ra=0,
-              z=0,
-              rcode="ok",
-              qdcount=1,
-              ancount=0,
-              nscount=0,
-              arcount=0)
+    msg = dns.DNS(id=1,
+                  qr=0,
+                  opcode="QUERY",
+                  aa=0,
+                  tc=0,
+                  rd=0,
+                  ra=0,
+                  z=0,
+                  rcode="ok",
+                  qdcount=1,
+                  ancount=0,
+                  nscount=0,
+                  arcount=0)
     # if there will be need we could build here answers, authoritative_nameservers and additional_records.
     if hasattr(world, 'question_record'):
         msg.qd = world.question_record
@@ -161,7 +162,7 @@ def dns_question_record(addr, my_qtype, my_qclass):
     assert my_qclass in dnsclasses, "Unsupported question type " + my_qclass
     dnsclass_code = dnsclasses.get(my_qclass)
 
-    world.question_record = DNSQR(qname=addr, qtype=dnstype_code, qclass=dnsclass_code)
+    world.question_record = dns.DNSQR(qname=addr, qtype=dnstype_code, qclass=dnsclass_code)
 
 
 def build_msg():

@@ -49,7 +49,7 @@ def test_v6_relay_interface_two_subnets():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -64,7 +64,7 @@ def test_v6_relay_interface_two_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -74,7 +74,7 @@ def test_v6_relay_interface_two_subnets():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -89,7 +89,7 @@ def test_v6_relay_interface_two_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:2::1')
 
     references.references_check('Kea')
@@ -118,7 +118,7 @@ def test_v6_relay_relayaddress_two_subnets():
 
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -133,7 +133,7 @@ def test_v6_relay_relayaddress_two_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -143,7 +143,7 @@ def test_v6_relay_relayaddress_two_subnets():
 
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::2005')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -158,7 +158,7 @@ def test_v6_relay_relayaddress_two_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:2::1')
 
     references.references_check('Kea')
@@ -186,7 +186,7 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::3005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -228,7 +228,7 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching_2():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -270,7 +270,7 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching_3():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -315,7 +315,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -330,7 +330,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -341,7 +341,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -356,7 +356,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:2::1')
 
     references.references_check('Kea')
@@ -387,7 +387,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets_2():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::2005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -402,7 +402,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -413,7 +413,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets_2():
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -428,7 +428,7 @@ def test_v6_relay_relayaddress_interface_id_two_subnets_2():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:2::1')
 
     references.references_check('Kea')
@@ -453,7 +453,7 @@ def test_v6_relay_relayaddress_not_matching():
 
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::100')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -491,7 +491,7 @@ def test_v6_relay_relayaddress_within_subnet():
 
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::100')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -506,7 +506,7 @@ def test_v6_relay_relayaddress_within_subnet():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
 
@@ -529,7 +529,7 @@ def test_v6_relay_interface_one_subnet_not_matching_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -571,7 +571,7 @@ def test_v6_relay_interface_two_subnets_direct_client():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'xyz')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -604,7 +604,7 @@ def test_v6_relay_interface_two_subnets_direct_client():
                                              '5',
                                              '3',
                                              'NOT ',
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     references.references_check('Kea')
@@ -647,7 +647,7 @@ def test_v6_relay_interface_two_subnets_same_interface_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -662,7 +662,7 @@ def test_v6_relay_interface_two_subnets_same_interface_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -676,7 +676,7 @@ def test_v6_relay_interface_two_subnets_same_interface_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -691,7 +691,7 @@ def test_v6_relay_interface_two_subnets_same_interface_id():
                                              '5',
                                              '3',
                                              None,
-                                             'address',
+                                             'addr',
                                              '2001:db8:1::1')
 
     misc.test_procedure()
@@ -702,7 +702,7 @@ def test_v6_relay_interface_two_subnets_same_interface_id():
 
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward('1', None)
+    srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')

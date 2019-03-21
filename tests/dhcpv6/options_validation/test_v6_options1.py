@@ -146,7 +146,7 @@ def test_v6_options_sip_domains():
                                           '21',
                                           None,
                                           'sipdomains',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -163,7 +163,7 @@ def test_v6_options_sip_domains():
                                           '21',
                                           None,
                                           'domains',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
 
     references.references_check('v6.options')
 
@@ -326,7 +326,7 @@ def test_v6_options_domains():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -342,7 +342,7 @@ def test_v6_options_domains():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('v6.options,')
 
@@ -482,7 +482,7 @@ def test_v6_options_nisdomain():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '29')
-    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -494,7 +494,7 @@ def test_v6_options_nisdomain():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '29')
-    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com.')
 
     references.references_check('v6.options,')
 
@@ -531,7 +531,7 @@ def test_v6_options_nispdomain():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', None, '30')
-    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -543,7 +543,7 @@ def test_v6_options_nispdomain():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, '30')
-    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com')
+    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com.')
     references.references_check('v6.options,')
 
 
@@ -704,7 +704,7 @@ def test_v6_options_multiple():
                                           '21',
                                           None,
                                           'addresses',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
     srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
@@ -714,7 +714,7 @@ def test_v6_options_multiple():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -737,7 +737,7 @@ def test_v6_options_multiple():
                                           '21',
                                           None,
                                           'addresses',
-                                          'srv1.example.com,srv2.isc.org')
+                                          'srv1.example.com.,srv2.isc.org.')
     srv_msg.response_check_option_content('Response',
                                           '23',
                                           None,
@@ -747,7 +747,7 @@ def test_v6_options_multiple():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('v6.options,')
 
@@ -905,7 +905,7 @@ def test_v6_options_bcmcs_server_dns():
                                           '33',
                                           None,
                                           'bcmcsdomains',
-                                          'very.good.domain.name.com')
+                                          'very.good.domain.name.com.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -921,7 +921,7 @@ def test_v6_options_bcmcs_server_dns():
                                           '33',
                                           None,
                                           'bcmcsdomains',
-                                          'very.good.domain.name.com')
+                                          'very.good.domain.name.com.')
 
 
 @pytest.mark.v6
@@ -1044,7 +1044,7 @@ def test_v6_options_new_posix_timezone():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -1061,7 +1061,7 @@ def test_v6_options_new_posix_timezone():
                                           '41',
                                           None,
                                           'optdata',
-                                          'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
+                                          r'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -1077,7 +1077,7 @@ def test_v6_options_new_posix_timezone():
                                           '41',
                                           None,
                                           'optdata',
-                                          'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
+                                          r'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
 
 
 @pytest.mark.v6
@@ -1319,7 +1319,7 @@ def test_v6_options_erp_local_domain_name():
                                           '65',
                                           None,
                                           'erpdomain',
-                                          'erp-domain.isc.org')
+                                          'erp-domain.isc.org.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -1335,4 +1335,4 @@ def test_v6_options_erp_local_domain_name():
                                           '65',
                                           None,
                                           'erpdomain',
-                                          'erp-domain.isc.org')
+                                          'erp-domain.isc.org.')
