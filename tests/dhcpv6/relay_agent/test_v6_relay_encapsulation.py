@@ -41,7 +41,8 @@ def test_v6_relay_message_interfaceid():
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.relay
-def test_v6_relay_encapsulate_31lvl():
+@pytest.mark.disabled
+def test_v6_relay_encapsulate_12lvl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -55,7 +56,7 @@ def test_v6_relay_encapsulate_31lvl():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward(31)
+    srv_msg.create_relay_forward(12)
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -63,7 +64,8 @@ def test_v6_relay_encapsulate_31lvl():
     srv_msg.response_check_include_option('Response', None, '9')
     # Response MUST include ADVERTISE message.
 
-    # TODO: we should check these 31 levels in RELAYREPLY
+    # TODO: we should check these 12 levels in RELAYREPLY
+    # kea probably should rejected this msg as RFC says 8 levels are allowed
 
     references.references_check('RFC3315')
 
@@ -71,7 +73,7 @@ def test_v6_relay_encapsulate_31lvl():
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.relay
-def test_v6_relay_encapsulate_15lvl():
+def test_v6_relay_encapsulate_8lvl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -84,7 +86,7 @@ def test_v6_relay_encapsulate_15lvl():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
-    srv_msg.create_relay_forward(15)
+    srv_msg.create_relay_forward(8)
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
@@ -92,6 +94,7 @@ def test_v6_relay_encapsulate_15lvl():
     srv_msg.response_check_include_option('Response', None, '9')
     # Response MUST include ADVERTISE message.
 
-    # TODO: we should check these 15 levels in RELAYREPLY
+    # TODO: we should check these 8 levels in RELAYREPLY
+    # RFC allows up to 8 levels of nesting
 
     references.references_check('RFC3315')
