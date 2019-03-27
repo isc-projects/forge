@@ -1262,7 +1262,7 @@ def test_v6_options_lq_client_link():
     srv_msg.response_check_option_content('Response',
                                           '48',
                                           None,
-                                          'link-address',
+                                          'linkaddress',
                                           '3000::66,3000::77')
 
     misc.test_procedure()
@@ -1278,7 +1278,7 @@ def test_v6_options_lq_client_link():
     srv_msg.response_check_option_content('Response',
                                           '48',
                                           None,
-                                          'link-address',
+                                          'linkaddress',
                                           '3000::66,3000::77')
 
     references.references_check('RFC500')
