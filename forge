@@ -306,7 +306,7 @@ def test(params):
     params = ' '.join(params)
     print('Test params: %s' % params)
     cmd = 'vagrant ssh forge-client -c "%s"'
-    subcmd = 'cd /forge/; sudo PYTHONPATH=/home/vagrant/scapy-old-old ~/venv/bin/pytest -r ap -vv ' + params
+    subcmd = 'cd /forge/; sudo ~/venv/bin/pytest -r ap -vv ' + params
     cmd %= subcmd
     execute(cmd, cwd='vagrant', raise_error=False)
 
