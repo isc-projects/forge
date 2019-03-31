@@ -291,7 +291,7 @@ def install_kea(path):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', path)
-    subcmd = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w forge'
+    subcmd = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w forge mysql pgsql cql radius shell'
 
     subcmd1 = subcmd % (remote_path, 'prepare-system')
     cmd1 = cmd % subcmd1
@@ -308,7 +308,7 @@ def test(params):
     cmd = 'vagrant ssh forge-client -c "%s"'
     subcmd = 'cd /forge/; sudo PYTHONPATH=/home/vagrant/scapy-old-old ~/venv/bin/pytest -r ap -vv ' + params
     cmd %= subcmd
-    execute(cmd, cwd='vagrant')
+    execute(cmd, cwd='vagrant', raise_error=False)
 
 
 def clean():
