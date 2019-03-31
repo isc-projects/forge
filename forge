@@ -80,6 +80,7 @@ DB_NAME = "keadb"
 DB_USER = "keauser"
 DB_PASSWD = "keapass"
 DB_HOST = ""
+FABRIC_PTY = ""
 """.format(**locals())
 
 
@@ -297,8 +298,8 @@ def install_kea(path):
     cmd1 = cmd % subcmd1
     execute(cmd1, cwd='vagrant')
 
-    subcmd1 = subcmd % (remote_path, 'build')
-    cmd2 = cmd % subcmd
+    subcmd2 = subcmd % (remote_path, 'build')
+    cmd2 = cmd % subcmd2
     execute(cmd2, cwd='vagrant')
 
 

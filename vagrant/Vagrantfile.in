@@ -39,7 +39,6 @@ Vagrant.configure("2") do |config|
 
     clnt.vm.provision "file", source: "id_rsa", destination: "$HOME/.ssh/id_rsa"
     clnt.vm.provision "file", source: "id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
-    clnt.vm.provision "file", source: "${KEA_DIRS}/scapy-old-old", destination: "$HOME/"
     clnt.vm.provision "shell", privileged: false, path: "provision-clnt.sh"
   end
 end
