@@ -27,8 +27,7 @@ from Crypto.Random.random import randint
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 
-#from init_all import ForgeConfiguration
-from forge import world, step
+from forge_cfg import world, step
 from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
 import logging_facility

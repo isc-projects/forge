@@ -31,7 +31,7 @@ from scapy.config import conf
 from scapy.volatile import RandMAC
 import scapy
 
-from forge import world
+from forge_cfg import world
 from terrain import client_id, ia_id, ia_pd
 
 log = logging.getLogger('forge')

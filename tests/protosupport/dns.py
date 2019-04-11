@@ -24,7 +24,7 @@ from scapy.layers import dns
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
 
-from forge import world
+from forge_cfg import world
 
 
 dnstypes = {"ANY": 0,

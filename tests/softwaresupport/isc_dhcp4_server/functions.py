@@ -19,7 +19,7 @@ import os
 import sys
 import logging
 
-from forge import world
+from forge_cfg import world
 
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
     fabric_remove_file_command, clear_all, add_line_in_global, check_process_result, clear_leases, add_parameter_to_hook

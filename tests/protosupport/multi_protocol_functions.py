@@ -28,7 +28,7 @@ import logging
 from _pyio import open
 import requests
 
-from forge import world
+from forge_cfg import world
 from softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
         save_local_file, fabric_run_command

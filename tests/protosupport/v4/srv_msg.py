@@ -28,7 +28,7 @@ from scapy.layers.inet import IP, UDP
 from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
 
-from forge import world
+from forge_cfg import world
 from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
 
 

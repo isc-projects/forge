@@ -212,7 +212,7 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
         elif attempt < attempts - 1:
             txt = 'command failed, retry, attempt %d/%d' % (attempt, attempts)
             if log_file_path:
-                txt_to_file = '\n\n[HAMMER] %s\n\n\n' % txt
+                txt_to_file = '\n\n[FORGE] %s\n\n\n' % txt
                 log_file.write(txt_to_file.encode('ascii'))
             log.info(txt)
             if sleep_time_after_attempt:
@@ -327,6 +327,15 @@ def parse_args():
     fl = functools.partial(lambda w, t: textwrap.fill(t, w), 80)
     description = [
         "Forge - testing tool for Kea and ISC DHCP.\n",
+        "Basic steps for running Forge are as follows:\n"
+        "1) first configure forge itself\n\n"
+        "   ./forge config kea-dirs /path/to/kea/repos\n\n"
+        "2) create VMs\n\n"
+        "   ./forge setup\n\n"
+        "3) install Kea in one of VMs\n\n"
+        "   ./forge install-kea kea-subdir\n\n"
+        "4) run indicated tests, parameters are directly passed to pytest\n\n"
+        "   ./forge test -m v4\n"
     ]
     description = "\n".join(description)
     main_parser = argparse.ArgumentParser(description=description,
@@ -335,36 +344,37 @@ def parse_args():
     main_parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode.')
     main_parser.add_argument('-q', '--quiet', action='store_true', help='Enable quiet mode.')
 
-    subparsers = main_parser.add_subparsers(dest='command',
-                                            title="Forge commands",
-                                            description=fl("The following commands are provided by Hammer. "
-                                                           "To get more information about particular command invoke: "
-                                                           "./hammer.py <command> -h."))
+    subparsers = main_parser.add_subparsers(
+        dest='command',
+        title="Forge commands",
+        description=fl("The following commands are provided by Forge. "
+                       "To get more information about particular command invoke: "
+                       "./forge <command> -h.\n"))
 
     parser = subparsers.add_parser('config',
-                                   help=".")
+                                   help="Set config parameter in config file ie. forge.ini.")
     parser.add_argument('name', nargs='?', default=None,
-                        help='.')
+                        help='Name of parameter.')
     parser.add_argument('value', nargs='?', default=None,
-                        help='.')
+                        help='Value for indicated parameter.')
     parser = subparsers.add_parser('setup',
-                                   help=".")
+                                   help="Create VMs where testing happens.")
     parser = subparsers.add_parser('refresh',
-                                   help=".")
+                                   help="Refresh VMs ie. restart and re-provision")
     parser.add_argument('--reload', action='store_true',
-                        help='.')
+                        help='Reload only.')
     parser.add_argument('--provision', action='store_true',
-                        help='.')
+                        help='Re-provision only.')
     parser = subparsers.add_parser('recreate',
-                                   help=".")
+                                   help="Destroy VMs and create them from scratch.")
     parser = subparsers.add_parser('install-kea',
-                                   help=".")
+                                   help="Install Kea into VM from indicated repository.")
     parser.add_argument('path', default='', nargs='?',
-                        help='.')
+                        help='Sub-path to the repository.')
     parser = subparsers.add_parser('test',
-                                   help=".")
+                                   help="Run tests. Parameters are passed directly to pytest.")
     parser = subparsers.add_parser('clean',
-                                   help=".")
+                                   help="Destroy VMs")
 
     #args = main_parser.parse_args()
     args, rest = main_parser.parse_known_args()

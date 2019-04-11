@@ -18,7 +18,7 @@
 import sys
 import importlib
 
-from forge import world, step
+from forge_cfg import world, step
 
 import softwaresupport.bind9_server.functions as dns
 

@@ -20,7 +20,7 @@ import json
 import importlib
 import pprint
 
-from forge import world, step
+from forge_cfg import world, step
 from srv_control import test_define_value
 from protosupport import dns
 import protosupport.multi_protocol_functions as other

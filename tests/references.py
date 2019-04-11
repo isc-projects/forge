@@ -16,7 +16,7 @@
 # Author: Wlodzimierz Wencel
 import sys
 
-from forge import world, step
+from forge_cfg import world, step
 
 #
 # This file contains a number of common steps that are general and may be used

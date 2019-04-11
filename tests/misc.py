@@ -23,7 +23,7 @@ import sys
 
 from scapy.layers.dhcp6 import DHCP6OptOptReq
 
-from forge import world, step
+from forge_cfg import world, step
 from softwaresupport.configuration import KeaConfiguration
 
 

@@ -21,7 +21,7 @@
 import os
 import sys
 
-from forge import world, step
+from forge_cfg import world, step
 
 
 @step('stop process (\w+)')

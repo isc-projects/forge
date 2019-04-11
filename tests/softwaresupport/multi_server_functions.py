@@ -24,7 +24,7 @@ from shutil import copy
 from fabric.api import get, settings, put, sudo, run, hide
 from fabric.exceptions import NetworkError
 
-from forge import world
+from forge_cfg import world
 
 
 log = logging.getLogger('forge')

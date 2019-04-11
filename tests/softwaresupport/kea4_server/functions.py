@@ -20,7 +20,7 @@ import sys
 from time import sleep
 import logging
 
-from forge import world
+from forge_cfg import world
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
     copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry

@@ -17,7 +17,7 @@
 
 import sys
 
-from forge import world
+from forge_cfg import world
 
 
 def add_ddns_server(address, port):
