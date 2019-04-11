@@ -9,7 +9,7 @@ import misc
 import srv_control
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_duplicate_reservations():
@@ -28,7 +28,7 @@ def test_v4_host_reservation_conflicts_duplicate_reservations():
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets():
@@ -49,7 +49,7 @@ def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets(
     srv_control.start_srv('DHCP', 'started')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation_of_used_address():
@@ -108,7 +108,7 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
     srv_msg.response_check_content('Response', 'NOT ', 'yiaddr', '192.168.50.2')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation_of_used_address_2():
@@ -173,7 +173,7 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
     srv_msg.response_check_content('Response', 'NOT ', 'yiaddr', '192.168.50.2')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_used_address_3():
@@ -231,7 +231,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.30')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reservations_in_pool():
@@ -279,7 +279,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
     srv_msg.response_check_content('Response', 'NOT ', 'yiaddr', '192.168.50.10')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reservations_out_of_pool():
@@ -327,7 +327,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
     srv_msg.response_check_content('Response', 'NOT ', 'yiaddr', '192.168.50.50')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_host_that_has_leases():
@@ -402,7 +402,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_ho
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_renew_address_that_has_been_reserved_during_reconfiguration():
@@ -482,7 +482,7 @@ def test_v4_host_reservation_conflicts_renew_address_that_has_been_reserved_duri
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_has_been_reserved_during_reconfiguration():
@@ -553,7 +553,7 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
     srv_msg.send_wait_for_message('MUST', None, 'NAK')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_during_reconfigure():
@@ -638,7 +638,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_during_reconfigure_2():
@@ -715,7 +715,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_during_reconfigure():
@@ -800,7 +800,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_during_reconfigure_2():

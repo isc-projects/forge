@@ -9,7 +9,7 @@ import misc
 import srv_control
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_mysql_one_address_inside_pool():
@@ -44,7 +44,7 @@ def test_v4_host_reservation_mysql_one_address_inside_pool():
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_mysql_one_address_inside_pool_option():
@@ -97,7 +97,7 @@ def test_v4_host_reservation_mysql_one_address_inside_pool_option():
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_mysql_one_address_outside_pool_dual_backend():
@@ -159,7 +159,7 @@ def test_v4_host_reservation_mysql_one_address_outside_pool_dual_backend():
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_pgsql_one_address_outside_pool_dual_backend():
@@ -221,7 +221,7 @@ def test_v4_host_reservation_pgsql_one_address_outside_pool_dual_backend():
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_one_address_inside_pool_different_mac():
@@ -255,7 +255,7 @@ def test_v4_host_reservation_one_address_inside_pool_different_mac():
     srv_msg.response_check_content('Response', None, 'yiaddr', '0.0.0.0')
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_one_address_empty_pool():
@@ -277,7 +277,7 @@ def test_v4_host_reservation_one_address_empty_pool():
     srv_msg.send_dont_wait_for_message()
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_mysql_multiple_address_reservation_empty_pool():
@@ -306,7 +306,7 @@ def test_v4_host_reservation_mysql_multiple_address_reservation_empty_pool():
     srv_msg.send_dont_wait_for_message()
 
 
-@pytest.mark.v4
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v4_host_reservation_multiple_mysql_address_reservation_empty_pool_2():

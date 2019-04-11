@@ -10,7 +10,7 @@ import misc
 import srv_control
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_1():
     misc.test_setup()
@@ -57,7 +57,7 @@ def test_v6_rfc7550_1():
     references.references_check('RFC')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_2():
     misc.test_setup()
@@ -113,7 +113,7 @@ def test_v6_rfc7550_2():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_3():
     misc.test_setup()
@@ -163,7 +163,7 @@ def test_v6_rfc7550_3():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_4():
     misc.test_setup()
@@ -212,7 +212,7 @@ def test_v6_rfc7550_4():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_5():
     misc.test_setup()
@@ -265,7 +265,7 @@ def test_v6_rfc7550_5():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_6():
     misc.test_setup()
@@ -324,7 +324,7 @@ def test_v6_rfc7550_6():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_7():
     misc.test_setup()
@@ -396,7 +396,7 @@ def test_v6_rfc7550_7():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_8():
     misc.test_setup()
@@ -456,7 +456,7 @@ def test_v6_rfc7550_8():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_9():
     misc.test_setup()
@@ -515,7 +515,7 @@ def test_v6_rfc7550_9():
     srv_msg.response_check_include_option('Response', None, '25')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_10():
     misc.test_setup()
@@ -564,7 +564,7 @@ def test_v6_rfc7550_10():
     srv_msg.response_check_include_option('Response', None, '25')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_11():
     misc.test_setup()
@@ -614,7 +614,7 @@ def test_v6_rfc7550_11():
     srv_msg.response_check_include_option('Response', None, '25')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 @pytest.mark.dhcp6
 @pytest.mark.PD
@@ -679,7 +679,7 @@ def test_prefix():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_12():
     misc.test_setup()
@@ -747,7 +747,7 @@ def test_v6_rfc7550_12():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_13():
     misc.test_setup()
@@ -804,7 +804,7 @@ def test_v6_rfc7550_13():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '26')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.rfc7550
 def test_v6_rfc7550_14():
     misc.test_setup()

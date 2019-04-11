@@ -60,7 +60,6 @@ def test_v6_options_user_defined_option():
 @pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.user
-
 def test_v6_options_user_defined_option_code_zero():
     #  Testing server ability to configure it with user custom option
     #  in this case: option code 100, value unit8 123.
