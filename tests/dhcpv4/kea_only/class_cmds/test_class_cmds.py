@@ -52,7 +52,7 @@ def _send_request(dhcp_version, cmd, channel='http'):
         response = srv_msg.send_through_http('$(SRV4_ADDR)',
                                              '8000',
                                              cmd_str)
-        response = response[0]
+        # response = response[0]
     elif channel == 'socket':
         response = srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                                            cmd_str)

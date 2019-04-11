@@ -70,7 +70,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_replace_1():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -263,8 +263,8 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
-    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
+    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
@@ -395,7 +395,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -461,7 +461,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
     srv_msg.response_check_option_content('Response',
                                           '39',
                                           None,
@@ -592,7 +592,7 @@ def test_ddns6_notsig_expired_fqdn_sanitization():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', '1')
+    srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth.six.example.com')
 
     misc.test_procedure()

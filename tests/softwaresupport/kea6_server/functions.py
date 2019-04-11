@@ -633,6 +633,7 @@ def cfg_write():
         for each_subnet in world.subcfg:
             if counter in world.shared_subnets_tmp:
                 # subnets that suppose to go to shared-networks should be omitted here
+                checker = 1
                 counter += 1
                 continue
             if counter > 0 and comma == 1:

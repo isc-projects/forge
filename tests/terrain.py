@@ -370,10 +370,6 @@ def initialize(scenario):
     if not os.path.exists(world.cfg["dir_name"] + '/dns') and world.dns_enable:
         os.makedirs(world.cfg["dir_name"] + '/dns')
 
-    cfg_file = open(world.cfg["dir_name"]+'/test_steps', 'w')
-    cfg_file.write(str(scenario.name))
-    cfg_file.close()
-
     if world.f_cfg.tcpdump:
         cmd = world.f_cfg.tcpdump_path + 'tcpdump'
         args = [cmd, "-U", "-w", world.cfg["dir_name"] + "/capture.pcap",

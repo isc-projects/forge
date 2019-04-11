@@ -60,6 +60,7 @@ def test_v6_options_user_defined_option():
 @pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.user
+
 def test_v6_options_user_defined_option_code_zero():
     #  Testing server ability to configure it with user custom option
     #  in this case: option code 100, value unit8 123.
@@ -77,11 +78,7 @@ def test_v6_options_user_defined_option_code_zero():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_custom_opt('foo', '0', 'uint8', '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv_during_process('DHCP', 'configure')
-    # TODO: this test passes but in background there is and error:
-    #   ERROR option code must not be zero
-    # Here are missing some asserts and checks.
-    assert False
+    srv_control.start_srv_during_process('DHCP', 'configuration')
 
 
 @pytest.mark.v6
@@ -105,12 +102,7 @@ def test_v6_options_user_defined_option_standard_code():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_custom_opt('foo', '12', 'uint8', '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv_during_process('DHCP', 'configure')
-    # TODO: this test passes but in background there is and error:
-    #   ERROR [kea-dhcp6.dhcp6/5600] DHCP6_PARSER_FAIL failed to create or run parser for configuration element :
-    #      unable to override definition of option '12' in standard option space 'dhcp6'
-    # Here are missing some asserts and checks.
-    assert False
+    srv_control.start_srv_during_process('DHCP', 'configuration')
 
 
 @pytest.mark.v6
