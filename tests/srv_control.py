@@ -825,6 +825,10 @@ def build_and_send_config_files(connection_type, configuration_type):
     dhcp.build_and_send_config_files(connection_type, configuration_type)
 
 
+def build_and_send_config_files2(cfg, connection_type, configuration_type):
+    dhcp.build_and_send_config_files2(cfg, connection_type, configuration_type)
+
+
 @step('Send server configuration using (\S+) and (\S+) and destination address (\S+).')
 def build_and_send_config_files_dest_addr(connection_type, configuration_type, destination_address):
     """

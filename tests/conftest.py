@@ -20,7 +20,6 @@ def pytest_generate_tests(metafunc):
         return
     dhcp_versions = []
     # check if v4 and v6 markers are present in function
-    #import pudb; pudb.set_trace()
     if metafunc.definition.get_closest_marker('v4') and metafunc.definition.get_closest_marker('v6'):
         # if tests are filtered by markers then generate test versions
         # only if given marker was selected
@@ -57,3 +56,9 @@ def pytest_addoption(parser):
 @pytest.fixture
 def iters_factor(request):
     return int(request.config.getoption("--iters-factor"))
+
+
+# enable pytest assert introspection in the helper modules
+pytest.register_assert_rewrite('protosupport.v4.srv_msg')
+pytest.register_assert_rewrite('cb_model')
+pytest.register_assert_rewrite('dhcp4_scen')

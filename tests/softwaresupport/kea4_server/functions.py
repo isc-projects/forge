@@ -19,6 +19,7 @@ import os
 import sys
 from time import sleep
 import logging
+import json
 
 from forge_cfg import world
 
@@ -352,6 +353,41 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
+        log.info((os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf")))
+        fabric_send_file(world.cfg["cfg_file"],
+                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
+                         destination_host=destination_address)
+        fabric_send_file(world.cfg["cfg_file_2"],
+                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
+                         destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
+        remove_local_file(world.cfg["cfg_file"])
+        remove_local_file(world.cfg["cfg_file_2"])
+    elif configuration_type == "config-file" and connection_type is None:
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
+        add_defaults()
+        set_kea_ctrl_config()
+        cfg_write()
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        remove_local_file(world.cfg["cfg_file"])
+
+
+def write_cfg2(cfg):
+    with open(world.cfg["cfg_file"], 'w') as cfg_file:
+        json.dump(cfg, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
+
+    cfg_file = open(world.cfg["cfg_file_2"], 'w')
+    cfg_file.write(world.cfg["keactrl"])
+    cfg_file.close()
+
+
+def build_and_send_config_files2(cfg, connection_type, configuration_type="config-file",
+                                 destination_address=world.f_cfg.mgmt_address):
+    if configuration_type == "config-file" and connection_type == "SSH":
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
+        set_kea_ctrl_config()
+        write_cfg2(cfg)
         log.info((os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf")))
         fabric_send_file(world.cfg["cfg_file"],
                          os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),

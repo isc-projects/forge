@@ -363,7 +363,7 @@ def send_wait_for_message(msgtype, presence, exp_message):
         assert presence == bool(world.srvmsg), "No response received."
     else:
         assert len(world.srvmsg) == 0, "Response message " + received_names + "received but none message expected."
-        # make assertion for receiving message that not suppose to come!
+        # TODO: make assertion for receiving message that not suppose to come!
 
     return world.srvmsg
 
@@ -416,13 +416,25 @@ def test_option(opt_code, received, expected):
     return False, tmp
 
 
+def _get_opt_descr(opt_code):
+    opt = DHCPOptions[int(opt_code)]
+    if isinstance(opt, str):
+        opt_descr = "%s[%s]" % (opt, opt_code)
+    else:
+        opt_descr = "%s[%s]" % (opt.name, opt_code)
+    return opt_descr
+
+
 def response_check_include_option(expected, opt_code):
     assert len(world.srvmsg) != 0, "No response received."
     opt = get_option(world.srvmsg[0], opt_code)
+
+    opt_descr = _get_opt_descr(opt_code)
+
     if expected:
-        assert opt, "Expected option " + opt_code + " not present in the message."
+        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals())
     else:
-        assert opt is None, "Expected option " + opt_code + " present in the message. But not expected!"
+        assert opt is None, "Expected option {opt_descr} present in the message. But not expected!".format(**locals())
 
 
 def response_check_option_content(opt_code, expect, data_type, expected):
@@ -446,8 +458,10 @@ def response_check_option_content(opt_code, expect, data_type, expected):
 
     outcome, received = test_option(opt_code, received, expected)
 
+    opt_descr = _get_opt_descr(opt_code)
+
     if expect is None:
-        assert outcome, "Invalid {opt_code} option received: {received} but expected {expected}".format(**locals())
+        assert outcome, "Invalid {opt_descr} option received: {received} but expected {expected}".format(**locals())
     else:
-        assert not outcome, "Invalid {opt_code} option received: {received}" \
+        assert not outcome, "Invalid {opt_descr} option received: {received}" \
                             " that value has been excluded from correct values".format(**locals())

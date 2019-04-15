@@ -1,12 +1,13 @@
-"""Kea config backend testing subnets. TODO """
+"""Kea config backend testing subnets."""
 
 import time
 
 import pytest
 
-from .cb_cmds import setup_server_for_config_backend_cmds
-from .cb_cmds import send_discovery_with_no_answer, send_decline
-from .cb_cmds import get_address, set_subnet, del_subnet, set_global_parameter
+from dhcp4_scen import send_discover_with_no_answer, send_decline, rebind_with_nak_answer
+from dhcp4_scen import send_request_and_check_ack
+from dhcp4_scen import get_address
+from cb_model import setup_server_for_config_backend_cmds
 
 
 pytestmark = [pytest.mark.kea_only,
@@ -23,24 +24,24 @@ def test_echo_client_id(initial_echo_client_id):
     # using cb-cmds. Observe if client-id is included in responses according to settings.
 
     # Different initial settings for echo-client-id: default (=True), True and False.
-    setup_server_for_config_backend_cmds(echo_client_id=initial_echo_client_id)
+    cfg = setup_server_for_config_backend_cmds(echo_client_id=initial_echo_client_id)
 
-    set_subnet()
+    cfg.add_subnet()
 
     # Request address and check if client-id is returned according to initial setting.
     get_address(client_id='00010203040506',
                 exp_client_id='00010203040506' if initial_echo_client_id in [None, True] else 'missing')
 
     # Change setting to NOT return client-id. It should be missing in responses.
-    set_global_parameter(echo_client_id=False)
+    cfg.set_global_parameter(echo_client_id=False)
     get_address(client_id='10010203040506', exp_client_id='missing')
 
     # Change again setting to return client-id. It should be missing in responses.
-    set_global_parameter(echo_client_id=True)
+    cfg.set_global_parameter(echo_client_id=True)
     get_address(client_id='20010203040506', exp_client_id='20010203040506')
 
     # Change setting to NOT return client-id. It should be missing in responses.
-    set_global_parameter(echo_client_id=False)
+    cfg.set_global_parameter(echo_client_id=False)
     get_address(client_id='30010203040506', exp_client_id='missing')
 
 
@@ -52,11 +53,11 @@ def test_decline_and_probation_period(initial_decline_probation_period):
     # using cb-cmds. Observe if the setting is honored in case of sending DECLINE messages.
 
     # Different initial settings for decline-probation-period: default (=24h), 1 second and 1000 seconds.
-    setup_server_for_config_backend_cmds(decline_probation_period=initial_decline_probation_period)
+    cfg = setup_server_for_config_backend_cmds(decline_probation_period=initial_decline_probation_period)
 
     # Prepare subnet with only 1 IP address in a pool. This way when the second DISCOVER is send
     # no response should be expected from server.
-    set_subnet(pool='192.168.50.1-192.168.50.1')
+    cfg.add_subnet(pool='192.168.50.1/32')
 
     # Get address and decline it.
     addr1 = get_address(exp_yiaddr='192.168.50.1')
@@ -74,27 +75,27 @@ def test_decline_and_probation_period(initial_decline_probation_period):
     else:
         # If initial value was other than 1 second then server should still keep
         # the IP in probation and no response should be sent by server.
-        send_discovery_with_no_answer()
+        send_discover_with_no_answer()
 
     # Delete subnet. This will delete IP in probation. Ie. start from scratch.
-    del_subnet()
+    cfg.del_subnet()
     # Change decline-probation-period from initial to 1000 seconds.
-    set_global_parameter(decline_probation_period=1000)
+    cfg.set_global_parameter(decline_probation_period=1000)
     # Create new subnet with different pool but still with 1 IP address.
-    set_subnet(pool='192.168.50.2-192.168.50.2')
+    cfg.add_subnet(pool='192.168.50.2/32')
 
     # Now after decline and sleeping 2 seconds the declined address still should
     # be in probation and server should not send any response for discover.
     addr = get_address(exp_yiaddr='192.168.50.2')
     send_decline(addr)
     time.sleep(2)
-    send_discovery_with_no_answer()
+    send_discover_with_no_answer()
 
     # Start from scratch again. New pool with 1 IP address.
     # Probation period is changed now to 1 second.
-    del_subnet()
-    set_global_parameter(decline_probation_period=1)
-    set_subnet(pool='192.168.50.3-192.168.50.3')
+    cfg.del_subnet()
+    cfg.set_global_parameter(decline_probation_period=1)
+    cfg.add_subnet(pool='192.168.50.3/32')
 
     # This time after decline and sleeping the address should be available
     # for the following request.
@@ -105,17 +106,138 @@ def test_decline_and_probation_period(initial_decline_probation_period):
     assert addr2 == addr1
 
 
+def _check_matching_client_id_when_false():
+    rcvd_addr = get_address(chaddr='11:11:11:11:11:11', client_id='11111111111111')
+
+    # HW addr and client ID are equal to original ones so the request is accepted
+    send_request_and_check_ack(chaddr='11:11:11:11:11:11', client_id='11111111111111', ciaddr=rcvd_addr)
+
+    # HW addr is different than original one so the request is rejected.
+    # Client ID is equal to original one but it is ignored as match_client_id is False.
+    rebind_with_nak_answer(chaddr='12:12:12:12:12:12', client_id='11111111111111', ciaddr=rcvd_addr)
+
+    # HW addr and client ID are different than original ones so the request is rejected
+    rebind_with_nak_answer(chaddr='12:12:12:12:12:12', client_id='12121212121212', ciaddr=rcvd_addr)
+
+    # HW addr is equal to original one so the request is accepted.
+    # Client ID is different but it is ignored as match_client_id is False
+    send_request_and_check_ack(chaddr='11:11:11:11:11:11', client_id='12121212121212', ciaddr=rcvd_addr)
+
+
+def _check_matching_client_id_when_true():
+    rcvd_addr = get_address(chaddr='11:11:11:11:11:11', client_id='11111111111111')
+
+    # HW addr and client ID are equal to original ones so the request is accepted
+    send_request_and_check_ack(chaddr='11:11:11:11:11:11', client_id='11111111111111', ciaddr=rcvd_addr)
+
+    # Client ID is equal to original one so the request is accepted.
+    # HW addr is different but it is ignored as match_client_id is True.
+    send_request_and_check_ack(chaddr='12:12:12:12:12:12', client_id='11111111111111', ciaddr=rcvd_addr)
+
+    # HW addr and client ID are different than original ones so the request is rejected
+    rebind_with_nak_answer(chaddr='12:12:12:12:12:12', client_id='12121212121212', ciaddr=rcvd_addr)
+
+    # client ID is different than original one so the request is rejected
+    rebind_with_nak_answer(chaddr='11:11:11:11:11:11', client_id='12121212121212', ciaddr=rcvd_addr)
+
+
 @pytest.mark.v4
 @pytest.mark.kea_only
 @pytest.mark.parametrize("initial_match_client_id", [None, True, False])
-def test_match_client_id(initial_match_client_id):
-    setup_server_for_config_backend_cmds(match_client_id=initial_match_client_id)
-    # TODO: complete the test
+def test_match_client_id_override_init(initial_match_client_id):
+    cfg, _ = setup_server_for_config_backend_cmds(match_client_id=initial_match_client_id,
+                                                  check_config=True)
+
+    cfg.add_subnet()
+
+    # check initial situation
+    if initial_match_client_id in [None, True]:
+        _check_matching_client_id_when_true()
+    else:
+        _check_matching_client_id_when_false()
+
+    # client id is used on global level
+    cfg.set_global_parameter(match_client_id=True)
+    _check_matching_client_id_when_true()
 
 
-# TODO
-# @pytest.mark.v4
-# @pytest.mark.kea_only
-# @pytest.mark.parametrize("initial_dhcp4o6_port", [None, True, False])
-# def test_dhcp4o6_port(initial_echo_client_id):
-#     pass
+@pytest.mark.v4
+@pytest.mark.kea_only
+def test_subnet_and_match_client_id():
+    cfg, _ = setup_server_for_config_backend_cmds(check_config=True)
+
+    cfg.add_subnet()
+    _check_matching_client_id_when_true()
+
+    # client id is used on global level
+    cfg.set_global_parameter(match_client_id=True)
+    _check_matching_client_id_when_true()
+
+    # client id is ignored on global level
+    cfg.set_global_parameter(match_client_id=False)
+    _check_matching_client_id_when_false()
+
+    # client id is used on subnet level
+    cfg.update_subnet(match_client_id=True)
+    _check_matching_client_id_when_true()
+
+    # client id is ignored on subnet level
+    cfg.update_subnet(match_client_id=False)
+    _check_matching_client_id_when_false()
+
+
+@pytest.mark.v4
+@pytest.mark.kea_only
+def test_network_and_match_client_id():
+    cfg, _ = setup_server_for_config_backend_cmds(check_config=True)
+
+    network_cfg, _ = cfg.add_network()
+    _check_matching_client_id_when_true()
+
+    # client id is ignored on global level
+    cfg.set_global_parameter(match_client_id=False)
+    _check_matching_client_id_when_false()
+
+    # client id is used on network level
+    network_cfg.update(match_client_id=True)
+    _check_matching_client_id_when_true()
+
+    # client id is ignored on network level
+    network_cfg.update(match_client_id=False)
+    _check_matching_client_id_when_false()
+
+    # client id is used on subnet level
+    network_cfg.update_subnet(match_client_id=True)
+    _check_matching_client_id_when_true()
+
+    # client id is ignored on subnet level
+    network_cfg.update_subnet(match_client_id=False)
+    _check_matching_client_id_when_false()
+
+    # client id is still ignored on subnet level but used on network level
+    network_cfg.update(match_client_id=True)
+    _check_matching_client_id_when_false()
+
+    # client id is used on subnet level
+    network_cfg.update_subnet(match_client_id=True)
+    _check_matching_client_id_when_true()
+
+    # match-client-id is reset on subnet level
+    # and should be used due to network leve setting
+    network_cfg.update_subnet(match_client_id=None)
+    _check_matching_client_id_when_true()
+
+
+@pytest.mark.v4
+@pytest.mark.kea_only
+@pytest.mark.parametrize("initial_dhcp4o6_port", [None, 1234])
+def test_dhcp4o6_port(initial_dhcp4o6_port):
+    cfg, config = setup_server_for_config_backend_cmds(dhcp4o6_port=initial_dhcp4o6_port,
+                                                       check_config=True)
+
+    if initial_dhcp4o6_port is None:
+        assert config['Dhcp4']['dhcp4o6-port'] == 0
+    else:
+        assert config['Dhcp4']['dhcp4o6-port'] == 1234
+
+    cfg.set_global_parameter(dhcp4o6_port=4321)

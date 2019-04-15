@@ -1,12 +1,15 @@
 """Kea config backend testing timers in global params, subnets and shared networks."""
 
 import time
+import logging
 
 import pytest
 
-from .cb_cmds import setup_server_for_config_backend_cmds
-from .cb_cmds import rebind_with_ack_answer, rebind_with_nak_answer
-from .cb_cmds import get_address, set_global_parameter, set_subnet, set_network
+from cb_model import setup_server_for_config_backend_cmds, CONFIG_DEFAULTS
+from dhcp4_scen import send_discover_with_no_answer, get_address
+
+
+log = logging.getLogger('forge')
 
 
 pytestmark = [pytest.mark.v4,
@@ -20,33 +23,34 @@ def test_subnet_and_renew_timer():
     # change renew timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define one, default subnet
-    set_subnet()
+    _, config = cfg.add_subnet()
+    assert 'renew-timer' not in config['Dhcp4']['subnet4'][0]
 
     # check getting address from this subnet
     get_address()
 
     # change global renew_timer to 1sec and now check
     # if received lease has renew_timer accordingly set
-    set_global_parameter(renew_timer=1)
+    cfg.set_global_parameter(renew_timer=1)
     get_address(exp_renew_timer=1)
 
     # change renew_timer on subnet level to 1000sec
     # and now check if received lease has renew_timer accordingly set
-    set_subnet(renew_timer=1000)
+    cfg.update_subnet(renew_timer=1000)
     get_address(exp_renew_timer=1000)
 
     # change again renew_timer on subnet level to 1sec
     # and now check if received lease has renew_timer accordingly set
-    set_subnet(renew_timer=1)
+    cfg.update_subnet(renew_timer=1)
     get_address(exp_renew_timer=1)
 
     # change again renew_timer on global level to 500sec
     # and now check if it is ignored ans it still should be taken
     # from subnet level
-    set_global_parameter(renew_timer=500)
+    cfg.set_global_parameter(renew_timer=500)
     get_address(exp_renew_timer=1)
 
 
@@ -54,68 +58,69 @@ def test_subnet_and_rebind_timer():
     # change rebind timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define one, default subnet
-    set_subnet()
+    cfg.add_subnet()
 
     # check getting address from this subnet
     get_address()
 
     # change global renew_timer to 1sec and now check
     # if received lease has renew_timer accordingly set
-    set_global_parameter(rebind_timer=1)
+    cfg.set_global_parameter(rebind_timer=1)
     get_address(exp_rebind_timer=1)
 
     # change rebind_timer on subnet level to 1000sec
     # and now check if received lease has rebind_timer accordingly set
-    set_subnet(rebind_timer=1000)
+    cfg.update_subnet(rebind_timer=1000)
     get_address(exp_rebind_timer=1000)
 
     # change again rebind_timer on subnet level to 1sec
     # and now check if received lease has rebind_timer accordingly set
-    set_subnet(rebind_timer=1)
+    cfg.update_subnet(rebind_timer=1)
     get_address(exp_rebind_timer=1)
 
     # change again rebind_timer on global level to 500sec
     # and now check if it is ignored ans it still should be taken
     # from subnet level
-    set_global_parameter(rebind_timer=500)
+    cfg.set_global_parameter(rebind_timer=500)
     get_address(exp_rebind_timer=1)
 
 
 def test_subnet_and_timers_renew_less():
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
-    # in this case renew is always less than rebind time
+    # in this case renew is always less than rebind time so both should
+    # be present in responses
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define one, default subnet
-    set_subnet()
+    cfg.add_subnet()
 
     # check getting address from this subnet
     get_address()
 
     # set renew and rebind timers on global level
     # and check if they are present in ACK packet
-    set_global_parameter(renew_timer=100, rebind_timer=1000)
+    cfg.set_global_parameter(renew_timer=100, rebind_timer=1000)
     get_address(exp_renew_timer=100, exp_rebind_timer=1000)
 
     # set renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    set_subnet(renew_timer=200, rebind_timer=2000)
+    cfg.update_subnet(renew_timer=200, rebind_timer=2000)
     get_address(exp_renew_timer=200, exp_rebind_timer=2000)
 
     # change renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    set_subnet(renew_timer=300, rebind_timer=3000)
+    cfg.update_subnet(renew_timer=300, rebind_timer=3000)
     get_address(exp_renew_timer=300, exp_rebind_timer=3000)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    set_global_parameter(renew_timer=400, rebind_timer=4000)
+    cfg.set_global_parameter(renew_timer=400, rebind_timer=4000)
     get_address(exp_renew_timer=300, exp_rebind_timer=3000)
 
 
@@ -123,12 +128,12 @@ def test_subnet_and_timers_renew_greater():
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
     # in this case renew is always greater than rebind time,
-    # ie. renew should be ignored
+    # ie. renew should be ignored and not present in responses
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define one, default subnet
-    set_subnet()
+    cfg.add_subnet()
 
     # check getting address from this subnet
     get_address()
@@ -137,23 +142,23 @@ def test_subnet_and_timers_renew_greater():
 
     # set renew and rebind timers on global level
     # and as renew is greater rebind check if only rebind is present in ACK packet
-    set_global_parameter(renew_timer=100, rebind_timer=10)
+    cfg.set_global_parameter(renew_timer=100, rebind_timer=10)
     get_address(exp_renew_timer='missing', exp_rebind_timer=10)
 
     # set renew and rebind timers on subnet level
     # and as renew is greater rebind check if only rebind is present in ACK packet
-    set_subnet(renew_timer=100, rebind_timer=10)
+    cfg.update_subnet(renew_timer=100, rebind_timer=10)
     get_address(exp_renew_timer='missing', exp_rebind_timer=10)
 
     # change renew and rebind timers on subnet level
     # and as renew is greater rebind check if only rebind is present in ACK packet
-    set_subnet(renew_timer=200, rebind_timer=20)
+    cfg.update_subnet(renew_timer=200, rebind_timer=20)
     get_address(exp_renew_timer='missing', exp_rebind_timer=20)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    set_global_parameter(renew_timer=300, rebind_timer=30)
+    cfg.set_global_parameter(renew_timer=300, rebind_timer=30)
     get_address(exp_renew_timer='missing', exp_rebind_timer=20)
 
 
@@ -161,35 +166,35 @@ def test_subnet_and_timers_equal():
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
     # in this case renew is always equal to rebind time,
-    # ie. renew should be ignored
+    # ie. renew should be ignored and not present in responses
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define one, default subnet
-    set_subnet()
+    cfg.add_subnet()
 
     # check getting address from this subnet
     get_address()
 
     # set renew and rebind timers on global level
     # and as renew equals rebind check if only rebind is present in ACK packet
-    set_global_parameter(renew_timer=1, rebind_timer=1)
+    cfg.set_global_parameter(renew_timer=1, rebind_timer=1)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1)
 
     # set renew and rebind timers on subnet level
     # and as renew equals rebind check if only rebind is present in ACK packet
-    set_subnet(renew_timer=1000, rebind_timer=1000)
+    cfg.update_subnet(renew_timer=1000, rebind_timer=1000)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1000)
 
     # change renew and rebind timers on subnet level
     # and as renew equals rebind check if only rebind is present in ACK packet
-    set_subnet(renew_timer=2, rebind_timer=2)
+    cfg.update_subnet(renew_timer=2, rebind_timer=2)
     get_address(exp_renew_timer='missing', exp_rebind_timer=2)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    set_global_parameter(renew_timer=5, rebind_timer=5)
+    cfg.set_global_parameter(renew_timer=5, rebind_timer=5)
     get_address(exp_renew_timer='missing', exp_rebind_timer=2)
 
 
@@ -198,138 +203,147 @@ def test_subnet_and_timers_mix():
     # and check if these changes are properly reflected in received ACKs
     # in this case they are in different relations to each other
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define one, default subnet
-    set_subnet()
+    cfg.add_subnet()
 
     # check getting address from this subnet
     get_address()
 
     # change renew and rebind timers that they are either greater
     # less or equal to each other, do it on global level
-    set_global_parameter(renew_timer=1500, rebind_timer=1000)
+    cfg.set_global_parameter(renew_timer=1500, rebind_timer=1000)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1000)
 
-    set_global_parameter(renew_timer=1500, rebind_timer=1500)
+    cfg.set_global_parameter(renew_timer=1500, rebind_timer=1500)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1500)
 
-    set_global_parameter(renew_timer=1000, rebind_timer=1500)
+    cfg.set_global_parameter(renew_timer=1000, rebind_timer=1500)
     get_address(exp_renew_timer=1000, exp_rebind_timer=1500)
 
-    set_global_parameter(renew_timer=1000, rebind_timer=1000)
+    cfg.set_global_parameter(renew_timer=1000, rebind_timer=1000)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1000)
 
     # now change on subnet level in all directions
-    set_subnet(renew_timer=1500, rebind_timer=1000)
+    cfg.update_subnet(renew_timer=1500, rebind_timer=1000)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1000)
 
-    set_subnet(renew_timer=1500, rebind_timer=1500)
+    cfg.update_subnet(renew_timer=1500, rebind_timer=1500)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1500)
 
-    set_subnet(renew_timer=1000, rebind_timer=1500)
+    cfg.update_subnet(renew_timer=1000, rebind_timer=1500)
     get_address(exp_renew_timer=1000, exp_rebind_timer=1500)
 
-    set_subnet(renew_timer=1000, rebind_timer=1000)
+    cfg.update_subnet(renew_timer=1000, rebind_timer=1000)
     get_address(exp_renew_timer='missing', exp_rebind_timer=1000)
 
 
 def test_shared_networks_and_timers_renew_less():
     # change both renew and rebind timers on different levels (global, shared network and subnet)
     # and check if these changes are properly reflected in received ACKs
-    # in this case renew is always less than rebind time
+    # in this case renew is always less than rebind time so both should be present in responses
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define a shared network with one subnet
-    set_network()
+    network_cfg, _ = cfg.add_network()
 
     # check getting address from this subnet
     get_address()
 
     # set renew and rebind timers on global level
     # and check if they are present in ACK packet
-    set_global_parameter(renew_timer=100, rebind_timer=1000)
-    get_address(exp_renew_timer=100, exp_rebind_timer=1000)
+    cfg.set_global_parameter(renew_timer=10, rebind_timer=100)
+    get_address(exp_renew_timer=10, exp_rebind_timer=100)
 
     # set renew and rebind timers on network level
     # and check if they are present in ACK packet
-    set_network(network_renew_timer=200, network_rebind_timer=2000)
-    get_address(exp_renew_timer=200, exp_rebind_timer=2000)
+    network_cfg.update(renew_timer=20, rebind_timer=200)
+    get_address(exp_renew_timer=20, exp_rebind_timer=200)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    set_global_parameter(renew_timer=300, rebind_timer=3000)
-    get_address(exp_renew_timer=200, exp_rebind_timer=2000)
+    cfg.set_global_parameter(renew_timer=30, rebind_timer=300)
+    get_address(exp_renew_timer=20, exp_rebind_timer=200)
 
     # change renew and rebind timers on network level
     # and check if they are present in ACK packet
-    set_network(network_renew_timer=400, network_rebind_timer=4000)
-    get_address(exp_renew_timer=400, exp_rebind_timer=4000)
+    network_cfg.update(renew_timer=40, rebind_timer=400)
+    get_address(exp_renew_timer=40, exp_rebind_timer=400)
 
     # set renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    set_network(subnet_renew_timer=500, subnet_rebind_timer=5000)
-    get_address(exp_renew_timer=500, exp_rebind_timer=5000)
+    network_cfg.update_subnet(renew_timer=50, rebind_timer=500)
+    get_address(exp_renew_timer=50, exp_rebind_timer=500)
 
     # change renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    set_network(subnet_renew_timer=600, subnet_rebind_timer=6000)
-    get_address(exp_renew_timer=600, exp_rebind_timer=6000)
+    network_cfg.update_subnet(renew_timer=60, rebind_timer=600)
+    get_address(exp_renew_timer=60, exp_rebind_timer=600)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    set_network(network_renew_timer=700, network_rebind_timer=7000)
-    get_address(exp_renew_timer=600, exp_rebind_timer=6000)
+    network_cfg.update(renew_timer=70, rebind_timer=700)
+    get_address(exp_renew_timer=60, exp_rebind_timer=600)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    set_global_parameter(renew_timer=800, rebind_timer=8000)
-    get_address(exp_renew_timer=600, exp_rebind_timer=6000)
+    cfg.set_global_parameter(renew_timer=80, rebind_timer=800)
+    get_address(exp_renew_timer=60, exp_rebind_timer=600)
 
 
 def test_subnet_and_valid_lifetime():
     # change valid-lifetime on different levels (global and subnet)
     # and check if behavior is as expected ie leases after lifetime
-    # are not available for rebinding
+    # are available for other clients
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
-    # define one, default subnet
-    set_subnet()
+    # define one, default subnet with 1 IP address
+    cfg.add_subnet(pool="192.168.50.2/32")
 
     # check getting address from this subnet by client 1
-    yiaddr1 = get_address(chaddr='00:00:00:00:00:01')
+    get_address(chaddr='00:00:00:00:00:01', exp_yiaddr='192.168.50.2')
+    # after 2 seconds check if another client 2 can get address - as default lifetime is big
+    # it should fail because there is no more IP addresses (there is only 1 taken)
     time.sleep(2)
-    # check rebinding after 2 seconds, as default lifetime is big it should succeed
-    rebind_with_ack_answer(yiaddr1)
+    send_discover_with_no_answer(chaddr='00:00:00:00:00:02')
 
     # change lease lifetime on global level to be small ie. 1sec
-    # and check getting address by client 2
-    set_global_parameter(valid_lifetime=1)
-    yiaddr2 = get_address(chaddr='00:00:00:00:00:02', exp_lease_time=1)
-    # now rebinding after lifetime should fail
+    # and 1) extend address pool by 1 IP for new client 3 as previous IP address is taken for long time
+    # and 2) check getting address by this new client 3
+    cfg.set_global_parameter(valid_lifetime=1)
+    cfg.update_subnet(pool="192.168.50.2/31")
+    get_address(chaddr='00:00:00:00:00:03', exp_lease_time=1, exp_yiaddr='192.168.50.3')
+    # as lease time is 1 sec after 2secs this just taken IP address should
+    # be available for other clients ie. client 4
     time.sleep(2)
-    rebind_with_nak_answer(yiaddr2)
+    get_address(chaddr='00:00:00:00:00:04', exp_yiaddr='192.168.50.3')
+    # wait for lease expiration for next test steps
+    time.sleep(2)
 
     # change lease lifetime on subnet level to be big ie. 1000sec
-    # and check getting address by client 3
-    set_subnet(valid_lifetime=1000)
-    yiaddr3 = get_address(chaddr='00:00:00:00:00:03', exp_lease_time=1000)
+    # and check getting address by client 5
+    cfg.update_subnet(valid_lifetime=1000)
+    get_address(chaddr='00:00:00:00:00:05', exp_lease_time=1000, exp_yiaddr='192.168.50.3')
+    # after 2 seconds check if another client 6 can get address - as new lifetime is big
+    # it should fail because there is no more IP addresses (there is only 2 taken)
     time.sleep(2)
-    # now rebinding after a few seconds, before lifetime should succeed
-    rebind_with_ack_answer(yiaddr3)
+    send_discover_with_no_answer(chaddr='00:00:00:00:00:06')
 
     # change lease lifetime on subnet level to be small ie. 1sec
-    # and check getting address by client 4
-    set_subnet(valid_lifetime=1)
-    yiaddr4 = get_address(chaddr='00:00:00:00:00:04', exp_lease_time=1)
+    # and check getting address by client 7 but first extent pool by one address
+    # as previous IP addresses are taken for long time
+    cfg.update_subnet(valid_lifetime=1, pool="192.168.50.2-192.168.50.4")
+    get_address(chaddr='00:00:00:00:00:07', exp_lease_time=1, exp_yiaddr='192.168.50.4')
+    # as lease time is 1 sec after 2secs this just taken IP address should
+    # be available for other clients ie. client 8
     time.sleep(2)
-    # now rebinding after lifetime should fail again
-    rebind_with_nak_answer(yiaddr4)
+    get_address(chaddr='00:00:00:00:00:08', exp_yiaddr='192.168.50.4')
 
 
 def test_shared_networks_and_valid_lifetime():
@@ -337,50 +351,143 @@ def test_shared_networks_and_valid_lifetime():
     # and check if behavior is as expected ie leases after lifetime
     # are not available for rebinding
 
-    setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds()
 
     # define a shared network with one subnet
-    set_network()
+    network_cfg, _ = cfg.add_network(subnet_pool="192.168.50.2/32")
+
+    # check getting address from this subnet by client 1
+    get_address(chaddr='00:00:00:00:00:01', exp_yiaddr='192.168.50.2')
+    # after 2 seconds check if another client 2 can get address - as default lifetime is big
+    # it should fail because there is no more IP addresses (there is only 1 that is taken)
+    time.sleep(2)
+    send_discover_with_no_answer(chaddr='00:00:00:00:00:02')
 
     # change lease lifetime on global level to be small ie. 1sec
-    # and check getting address by client 2
-    set_global_parameter(valid_lifetime=1)
-    yiaddr2 = get_address(chaddr='00:00:00:00:00:02', exp_lease_time=1)
+    # and 1) extend address pool by 1 IP for new client 3 as previous IP address is taken for long time
+    # and 2) check getting address by this new client 3
+    cfg.set_global_parameter(valid_lifetime=1)
+    network_cfg.update_subnet(pool="192.168.50.2/31")
+    get_address(chaddr='00:00:00:00:00:03', exp_lease_time=1, exp_yiaddr='192.168.50.3')
+    # as lease time is 1 sec after 2secs this just taken IP address should
+    # be available for other clients ie. client 4
     time.sleep(2)
-    # now rebinding after lifetime should fail
-    rebind_with_nak_answer(yiaddr2)
+    get_address(chaddr='00:00:00:00:00:04', exp_yiaddr='192.168.50.3')
+    # wait for lease expiration for next test steps
+    time.sleep(2)
 
     # change lease lifetime on network level to be big ie. 1000sec
-    # and check getting address by client 3
-    set_network(network_valid_lifetime=1000)
-    yiaddr3 = get_address(chaddr='00:00:00:00:00:03', exp_lease_time=1000)
+    # and check getting address by client 5
+    network_cfg.update(valid_lifetime=1000)
+    get_address(chaddr='00:00:00:00:00:05', exp_lease_time=1000, exp_yiaddr='192.168.50.3')
+    # after 2 seconds check if another client 6 can get address - as new lifetime is big
+    # it should fail because there is no more IP addresses (there are only 2 that are taken)
     time.sleep(2)
-    # now rebinding after a few seconds, before lifetime should succeed
-    rebind_with_ack_answer(yiaddr3)
+    send_discover_with_no_answer(chaddr='00:00:00:00:00:06')
 
     # change lease lifetime on network level to be small ie. 1sec
-    # and check getting address by client 4
-    set_network(network_valid_lifetime=1)
-    yiaddr4 = get_address(chaddr='00:00:00:00:00:04', exp_lease_time=1)
+    # and check getting address by client 7 but first extent pool by one address
+    # as previous IP addresses are taken for long time
+    network_cfg.update(valid_lifetime=1)
+    network_cfg.update_subnet(pool="192.168.50.2-192.168.50.4")
+    get_address(chaddr='00:00:00:00:00:07', exp_lease_time=1, exp_yiaddr='192.168.50.4')
+    # as lease time is 1 sec after 2secs this just taken IP address should
+    # be available for other clients ie. client 8
     time.sleep(2)
-    # now rebinding after lifetime should fail
-    rebind_with_nak_answer(yiaddr4)
+    get_address(chaddr='00:00:00:00:00:08', exp_yiaddr='192.168.50.4')
+    # wait for lease expiration for next test steps
+    time.sleep(2)
 
     # change lease lifetime on subnet level to be big ie. 1000sec
-    # and check getting address by client 5
-    set_network(subnet_valid_lifetime=1000)
-    yiaddr5 = get_address(chaddr='00:00:00:00:00:05', exp_lease_time=1000)
+    # and check getting address by client 9
+    network_cfg.update_subnet(valid_lifetime=1000)
+    get_address(chaddr='00:00:00:00:00:09', exp_lease_time=1000, exp_yiaddr='192.168.50.4')
+    # after 2 seconds check if another client 10 can get address - as new lifetime is big
+    # it should fail because there is no more IP addresses (there are only 4 that are taken)
     time.sleep(2)
-    # now rebinding after a few seconds, before lifetime should succeed
-    rebind_with_ack_answer(yiaddr5)
+    send_discover_with_no_answer(chaddr='00:00:00:00:00:10')
 
     # change lease lifetime on subnet level to be small ie. 1sec
-    # and check getting address by client 6
-    set_network(subnet_valid_lifetime=1)
-    yiaddr6 = get_address(chaddr='00:00:00:00:00:06', exp_lease_time=1)
+    # and check getting address by client 11 but first extent pool by one address
+    # as previous IP addresses are taken for long time
+    network_cfg.update_subnet(valid_lifetime=1, pool="192.168.50.2-192.168.50.5")
+    get_address(chaddr='00:00:00:00:00:11', exp_lease_time=1, exp_yiaddr='192.168.50.5')
+    # as lease time is 1 sec after 2secs this just taken IP address should
+    # be available for other clients ie. client 12
     time.sleep(2)
-    # now rebinding after lifetime should fail
-    rebind_with_nak_answer(yiaddr6)
+    get_address(chaddr='00:00:00:00:00:12', exp_yiaddr='192.168.50.5')
 
 
-# TODO: calculate_tee_times, t1-percent, t2-percent
+@pytest.mark.parametrize("initial_calculate_tee_times,initial_t1_percent,initial_t2_percent,initial_valid_lifetime",
+                         [(None, None, None, None),
+                          (False, 0.2, 0.6, 5000),
+                          (True, None, None, None),
+                          (True, 0.1, 0.9, None),
+                          (True, None, None, 5000),
+                          (True, 0.3, 0.7, 5000)])
+def test_calculate_timers_init(initial_calculate_tee_times,
+                               initial_t1_percent,
+                               initial_t2_percent,
+                               initial_valid_lifetime):
+    # change renew timer on different levels (global and subnet)
+    # and check if these changes are properly reflected in received ACKs
+
+    cfg = setup_server_for_config_backend_cmds(calculate_tee_times=initial_calculate_tee_times,
+                                               t1_percent=initial_t1_percent,
+                                               t2_percent=initial_t2_percent,
+                                               valid_lifetime=initial_valid_lifetime)
+
+    # define one, default subnet
+    cfg.add_subnet()
+
+    calculate_tee_times = initial_calculate_tee_times if initial_calculate_tee_times is not None else False
+    valid_lifetime = initial_valid_lifetime if initial_valid_lifetime is not None else CONFIG_DEFAULTS['valid-lifetime']
+
+    if calculate_tee_times:
+        t1_percent = initial_t1_percent if initial_t1_percent is not None else CONFIG_DEFAULTS['t1-percent']
+        t2_percent = initial_t2_percent if initial_t2_percent is not None else CONFIG_DEFAULTS['t2-percent']
+        renew_timer = int(t1_percent * valid_lifetime)
+        rebind_timer = int(t2_percent * valid_lifetime)
+    else:
+        renew_timer = None
+        rebind_timer = None
+
+    # check getting address from this subnet
+    get_address(exp_renew_timer=renew_timer, exp_rebind_timer=rebind_timer, exp_lease_time=valid_lifetime)
+
+
+def test_subnet_and_calculate_timers():
+    # change renew timer on different levels (global and subnet)
+    # and check if these changes are properly reflected in received ACKs
+
+    cfg = setup_server_for_config_backend_cmds()
+
+    # define one, default subnet
+    cfg.add_subnet()
+
+    # change global renew_timer to 1sec and now check
+    # if received lease has renew_timer accordingly set
+    cfg.set_global_parameter(calculate_tee_times=True)
+
+    t1_percent = CONFIG_DEFAULTS['t1-percent']
+    t2_percent = CONFIG_DEFAULTS['t2-percent']
+    get_address(exp_renew_timer=int(t1_percent * CONFIG_DEFAULTS['valid-lifetime']),
+                exp_rebind_timer=int(t2_percent * CONFIG_DEFAULTS['valid-lifetime']))
+
+    # change t1 and t2 and check new renew/rebind-timers
+    t1_percent = 0.1
+    t2_percent = 0.9
+    cfg.set_global_parameter(t1_percent=t1_percent, t2_percent=t2_percent)
+    get_address(exp_renew_timer=int(t1_percent * CONFIG_DEFAULTS['valid-lifetime']),
+                exp_rebind_timer=int(t2_percent * CONFIG_DEFAULTS['valid-lifetime']))
+
+    # change again but only t1 and check new renew/rebind-timers
+    t1_percent = 0.3
+    cfg.set_global_parameter(t1_percent=t1_percent)
+    get_address(exp_renew_timer=int(t1_percent * CONFIG_DEFAULTS['valid-lifetime']),
+                exp_rebind_timer=int(t2_percent * CONFIG_DEFAULTS['valid-lifetime']))
+
+    # switch off calculate_tee_times and check if renew/rebind-timers
+    # are not present in responses anymore
+    cfg.set_global_parameter(calculate_tee_times=False)
+    get_address(exp_renew_timer=None, exp_rebind_timer=None)
