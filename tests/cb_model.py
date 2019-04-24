@@ -239,7 +239,7 @@ class ConfigModel(ConfigElem):
                                  "control-sockets": {"dhcp4": {"socket-type": 'unix',
                                                                "socket-name": '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}},
                "Logging": {"loggers": [{"name":"kea-dhcp4",
-                                        "output_options":[{"output":"/usr/local/var/kea/kea.log"}],
+                                        "output_options":[{"output": "$(SOFTWARE_INSTALL_PATH)/var/kea/kea.log"}],
                                         "debuglevel":99,
                                         "severity":"DEBUG"}]}}
 
@@ -478,7 +478,7 @@ def setup_server_for_config_backend_cmds(**kwargs):
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
 
     config_model_args = {}
-    init_cfg = {"interfaces-config": {"interfaces":["enp0s10"]},
+    init_cfg = {"interfaces-config": {"interfaces": ["$(SERVER_IFACE)"]},
                 "hooks-libraries": [{"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_cb_cmds.so"},
                                     {"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_mysql_cb.so"}],
                 "lease-database": {"type": "memfile"},
