@@ -159,8 +159,8 @@ def test_v4_options_ieee802_3_encapsulation():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_include_option('Response', None, '36')
-    srv_msg.response_check_option_content('Response', '36', None, 'value', '1')
-    srv_msg.response_check_option_content('Response', '36', 'NOT ', 'value', '0')
+    srv_msg.response_check_option_content('Response', '36', None, 'value', '\x01')
+    srv_msg.response_check_option_content('Response', '36', 'NOT ', 'value', '\x00')
 
 
 @pytest.mark.v4

@@ -75,7 +75,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_replace_1():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'xsth6x.six.example.com')
+                                          'xsth6x.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('xsth6x.six.example.com', 'AAAA', 'IN')
@@ -400,7 +400,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
                                           '39',
                                           None,
                                           'fqdn',
-                                          'client.six.example.com')
+                                          'client.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('client.six.example.com', 'AAAA', 'IN')
@@ -466,7 +466,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
                                           '39',
                                           None,
                                           'fqdn',
-                                          'client.six.example.com')
+                                          'client.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('client2.six.example.com', 'AAAA', 'IN')

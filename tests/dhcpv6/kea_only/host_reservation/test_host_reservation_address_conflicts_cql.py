@@ -9,7 +9,7 @@ import srv_control
 import misc
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v6_host_reservation_cql_duplicate_reservation_duid():
@@ -32,7 +32,7 @@ def test_v6_host_reservation_cql_duplicate_reservation_duid():
     srv_control.start_srv('DHCP', 'started')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v6_host_reservation_cql_duplicate_reservation_address():
@@ -55,7 +55,7 @@ def test_v6_host_reservation_cql_duplicate_reservation_address():
     srv_control.start_srv('DHCP', 'started')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v6_host_reservation_cql_conflicts_two_entries_for_one_host_different_subnets():
@@ -127,7 +127,7 @@ def test_v6_host_reservation_cql_conflicts_two_entries_for_one_host_different_su
     srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::3')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_of_used_address():
@@ -210,7 +210,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
     srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::1')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_of_used_address_2():
@@ -307,7 +307,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
     srv_msg.response_check_suboption_content('Response', '5', '3', 'NOT ', 'addr', '3000::1')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_of_used_address_renew_before_expire():
@@ -427,7 +427,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
 
 
-@pytest.mark.v6
+@pytest.mark.disabled
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_of_used_address_renew_after_expire():

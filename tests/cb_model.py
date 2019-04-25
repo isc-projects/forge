@@ -352,6 +352,7 @@ class ConfigModel(ConfigElem):
         subnet = {
             "subnet": "192.168.50.0/24",
             "interface": "$(SERVER_IFACE)",
+            "shared-network-name": "",
             "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else "192.168.50.1-192.168.50.100"}]}
 
         for param, val in kwargs.items():

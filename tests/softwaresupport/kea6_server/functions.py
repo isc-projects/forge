@@ -659,6 +659,7 @@ def cfg_write():
 
     if "options" in world.cfg:
         cfg_file.write(world.cfg["options"])
+        checker = 1
         cfg_file.write("]")
         del world.cfg["options"]
 
