@@ -691,9 +691,9 @@ def test_remote_network4_get_basic(channel):
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)",
                                                              "subnet": [{"subnet": "192.8.0.0/24",
-                                                                          "interface": "$(SERVER_IFACE)",
-                                                                          "pools": [{
-                                                                              "pool": "192.8.0.1-192.8.0.1"}]}]}]})
+                                                                         "interface": "$(SERVER_IFACE)",
+                                                                         "pools": [{
+                                                                             "pool": "192.8.0.1-192.8.0.1"}]}]}]})
     _send_request(cmd, channel=channel)
 
     cmd = dict(command="remote-network4-get", arguments={"remote": {"type": "mysql"},
