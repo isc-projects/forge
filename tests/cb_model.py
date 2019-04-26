@@ -474,37 +474,26 @@ def _normalize_keys(kwargs):
             del kwargs[k]
 
 
-def setup_server_for_config_backend_cmds(**kwargs):
+def setup_server(**kwargs):
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
 
     config_model_args = {}
     init_cfg = {"interfaces-config": {"interfaces": ["$(SERVER_IFACE)"]},
-                "hooks-libraries": [{"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_cb_cmds.so"},
-                                    {"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_mysql_cb.so"}],
                 "lease-database": {"type": "memfile"},
-                "server-tag": "abc",
                 "control-socket": {"socket-type": 'unix',
-                                   "socket-name":'$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'},
-                "config-control": {"config-databases":[{"user":"$(DB_USER)",
-                                                        "password":"$(DB_PASSWD)",
-                                                        "name":"$(DB_NAME)",
-                                                        "type":"mysql"}]}}
+                                   "socket-name":'$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}
 
     for param, val in kwargs.items():
-        if val is None or param == 'check_config':
+        if val is None or param == 'check-config':
             continue
-        if param in ['force_reload']:
+        if param in ['force-reload']:
             # these fields are passed to ConfigModel
-            config_model_args[param] = val
+            config_model_args['force_reload'] = val
             continue
 
         param = param.replace('_', '-')
-
-        if param == 'config-control':
-            init_cfg[param] = _merge_configs(init_cfg[param], kwargs['config_control'])
-        else:
-            init_cfg[param] = val
+        init_cfg[param] = val
 
 
     cfg = ConfigModel(init_cfg, **config_model_args)
@@ -514,8 +503,64 @@ def setup_server_for_config_backend_cmds(**kwargs):
     srv_control.start_srv('DHCP', 'started')
 
     # check actual configuration if requested
-    if 'check_config' in kwargs and kwargs['check_config']:
+    if 'check-config' in kwargs and kwargs['check-config']:
         srv_config = cfg.compare_local_with_server()
         return cfg, srv_config
 
     return cfg
+
+
+def setup_server_for_config_backend_cmds(**kwargs):
+    default_cfg = {"hooks-libraries": [{"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_cb_cmds.so"},
+                                       {"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_mysql_cb.so"}],
+                   "server-tag": "abc",
+                   "config-control": {"config-databases":[{"user":"$(DB_USER)",
+                                                           "password":"$(DB_PASSWD)",
+                                                           "name":"$(DB_NAME)",
+                                                           "type":"mysql"}]}}
+
+    _normalize_keys(kwargs)
+    init_cfg = _merge_configs(default_cfg, kwargs)
+    result = setup_server(**init_cfg)
+
+    return result
+
+
+def setup_server_with_radius(**kwargs):
+    default_cfg = {"hooks-libraries": [{
+        # Load the host cache hook library. It is needed by the RADIUS
+        # library to keep the attributes from authorization to later user
+        # for accounting.
+        "library": "/usr/local/lib/kea/hooks/libdhcp_host_cache.so"
+    }, {
+        # Load the RADIUS hook library.
+        "library": "/usr/local/lib/kea/hooks/libdhcp_radius.so",
+        "parameters": {
+            "client-id-printable": True,
+            # Configure an access (aka authentication/authorization) server.
+            "access": {
+                # This starts the list of access servers
+                "servers": [{
+                    # These are parameters for the first (and only) access server
+                    "name": "172.28.0.31",
+                    "port": 1812,
+                    "secret": "testing123"}],
+                "attributes": [{
+                        "name": "password",
+                    "expr": "hexstring(pkt4.mac, ':')"}]},
+            "accounting": {
+                "servers": [{
+                    # These are parameters for the first (and only) access server
+                    "name": "172.28.0.31",
+                    "port": 1813,
+                    "secret": "testing123"
+                }]
+            }
+        }
+    }]}
+
+    _normalize_keys(kwargs)
+    init_cfg = _merge_configs(default_cfg, kwargs)
+    result = setup_server(**init_cfg)
+
+    return result

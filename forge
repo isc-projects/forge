@@ -33,8 +33,8 @@ DNS6_ADDR = "2001:db8:0:f101::1"
 
 INIT_ALL = """
 LOGLEVEL = "info"
-IFACE = "enp0s10"
-SERVER_IFACE = "enp0s10"
+IFACE = "enp0s9"
+SERVER_IFACE = "enp0s9"
 DNS4_ADDR = "{DNS4_ADDR}"
 DNS6_ADDR = "{DNS6_ADDR}"
 SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",
@@ -229,16 +229,20 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
     return exitcode
 
 
-def setup(args):
-    # load config
-    cfg = _load_config()
-
+def set_init_all():
     # generate init_all.py
     txt = INIT_ALL
     path = os.path.abspath('tests/init_all.py')
     with open(path, 'w') as f:
         f.write(txt)
     print('Generated %s.' % path)
+
+
+def setup(args):
+    # load config
+    cfg = _load_config()
+
+    set_init_all()
 
     # generate Vagrantfile
     with open('vagrant/Vagrantfile.in', 'r') as f_in:
@@ -304,6 +308,10 @@ def install_kea(path):
 
 
 def test(params):
+    set_init_all()
+
+    execute('vagrant up', cwd='vagrant', raise_error=False)
+
     params = ' '.join(params)
     print('Test params: %s' % params)
     cmd = 'vagrant ssh forge-client -c "%s"'
