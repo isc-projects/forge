@@ -1,3 +1,51 @@
+
+33.	[func]		godfryd
+	Implemented tests for class_cmds hook in Kea.
+	(gitlab !9, commit 4a0b0f8d6306c03f6f3a6b1bcb50bc759dde9d19)
+
+32.	[func]		godfryd
+	Implemented better logging.
+	(gitlab !2, commit 5f0b7db718347601438cd2bc38af50411e651755)
+
+31.	[func]		godfryd
+	Added support for pytest. Many cleanups.
+	(gitlab !5, commit 5b9328e18e5643e73f0be2d3cff46494758628a4)
+
+30.	[func]		wlodek
+	Implemented new tests for reservation-get-all and reservation-get-page
+	commands.
+	(gitlab !7, commit bb4954a9926d1842d1abc7c3f33985f974fefc67)
+
+29.	[bug]		wlodek
+	Fixes for multiple tests.
+	(gitlab !8, commit 9c01446f4f8c8bbcbcfc5d789e571cd1bff60214)
+
+28.	[func]		godfryd
+	Preparation for pytest support, as an intended replacement for lettuce
+	that is no longer being developed.
+	(gitlab !1, commit 1cb9ed114c120aec04bed84a8e56b8ec547e4d0c)
+
+27.	[func]		wlodek
+	Imlemented new tests for lease retrieval page by page.
+	(gitlab !3, commit a80c2a94f2ee73b325c4a8864a5d01e81e50279c)
+
+Code migrated from github (http://github.com/isc-projects/forge)
+            to gitlab (http://gitlab.isc.org/isc-projects/forge)
+
+26.	[func]		Maciej Fijalkowski
+	Experimental DHCP client tests.
+	(github, 70 commits)
+
+25.	[func]		thomas
+	user_chk hook library tests, improved support for isc-dhcp v6,
+	several smaller improvements.
+	(github, 14 commits)
+
+24.	[build]		marcin
+	Several improvements: logging, scapy patch, v6 option tests,
+	better results reporting.
+	(github, 16 commits)
+
 23. 	[func]	wlodek
 	Support for DNS and DDNS added.
 	(no backwards compatibility)
