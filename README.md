@@ -9,30 +9,40 @@ The goal of this project is to develop open source validation framework that
 will be able to validate DHCPv4 and DHCPv6 implementations. Its primary focus
 is on RFC compliance, but other validation aspects will be covered as well.
 
+In principle the framework can be extended to cover any RFC compliant DHCP
+software, but we're focusing on Kea. In various times, there was some partial
+support added also for [ISC DHCP](https://gitlab.isc.org/isc-projects/dhcp) and
+[Dibbler](https://klub.com.pl/dhcpv6/). Support for implementations other than
+Kea is experimental at best.
+
 The framework is written in Python and uses the following libraries:
 - Scapy (for packet generation/parsing)
-- Lettuce (for test definitions/management)
+- Pytest (for test management)
 - Fabric (for remote server configuration)
 
 Participants
 ============
-- Włodzimierz Wencel (Gdansk University, DHCPv6 validation)
-- Maciek Fijałkowski (Gdansk University, DHCPv6 validation)
-- Tomek Mrugalski (ISC, technical consultant)
-- Marcin Siodelski (ISC, technical consultant)
-- Stephen Morris (ISC, engineering manager)
+- Włodzimierz Wencel (ISC)
+- Michał Nowikowski (ISC)
+- Tomek Mrugalski (ISC, engineering manager)
 
 Former participants
 ===================
+- Stephen Morris (ISC, engineering manager)
+- Marcin Siodelski (ISC)
+- Thomas Markwalder (ISC)
 - Rafał Jankowski (Gdansk University, DHCPv4 validation)
+- Maciek Fijałkowski (Gdansk University, DHCPv6 validation)
 
 Project homepage
 ================
-http://kea.isc.org/wiki/IscForge
-[Note: project homepage has changed in April 2014]
+http://gitlab.isc.org/isc-projects/forge
 
-Project source code
-===================
-https://github.com/isc-projects/forge
+How to get the source code
+==========================
+
+git clone https://gitlab.isc.org/isc-projects/forge
+
+
 
 
