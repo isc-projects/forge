@@ -11,15 +11,20 @@ For questions, ideas bug reports please contact us via kea-dev@lists.isc.org
 Forge requires python 2.7.x, the latest Scapy (from git) and pytest (?.?.? or newer).
 Please see [requirements.txt](../requirements.txt) for details.
 
+You basically only need to do this:
+
+```
+python -m virtualenv venv 
+ source ./venv/bin/activate
+ ./venv/bin/pip install -r requirements.txt 
+```
+
 Also you may want to install tcpdump for saving captures of every test.
 This step is optional and tcpdump usage is controlled via init_all.py
 
 ```
 $ sudo apt-get install tcpdump
-$ sudo pip install fabric
-$ sudo apt-get install python-crypto
-$ sudo pip install ecdsa
-$ sudo pip install requests
+
 ```
 
  DUT dependencies requirements and configuration
