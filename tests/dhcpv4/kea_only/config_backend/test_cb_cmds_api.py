@@ -772,7 +772,7 @@ def test_remote_network4_set_t1_t2(channel):
                                                              "t2-percent": 10,
                                                              "interface": "$(SERVER_IFACE)",
                                                              "subnet": [{"subnet": "192.8.0.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}]}]})
+                                                                         "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
     if channel == 'http':
         assert response == {"result": 1, "text": "invalid type specified for parameter 't2-percent' (<wire>:0:265)"}
@@ -788,7 +788,7 @@ def test_remote_network4_set_t1_t2(channel):
                                                              "t2-percent": 0.5,
                                                              "interface": "$(SERVER_IFACE)",
                                                              "subnet": [{"subnet": "192.8.0.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}]}]})
+                                                                         "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
     if channel == 'http':
         assert response == {"result": 1, "text": "invalid type specified for parameter 't1-percent' (<wire>:0:246)"}
@@ -804,7 +804,7 @@ def test_remote_network4_set_t1_t2(channel):
                                                              "t2-percent": 0.1,
                                                              "interface": "$(SERVER_IFACE)",
                                                              "subnet": [{"subnet": "192.8.0.0/24",
-                                                                          "interface": "$(SERVER_IFACE)"}]}]})
+                                                                         "interface": "$(SERVER_IFACE)"}]}]})
     response = _send_request(cmd, channel=channel)
     assert False, "bug reported"  # https://gitlab.isc.org/isc-projects/kea/issues/535
     if channel == 'http':
@@ -1149,7 +1149,8 @@ def _set_global_parameter(channel):
                                                                   "server-tags": ["abc"],
                                                                   "parameters": {
                                                                       "boot-file-name": "/dev/null"}})
-    response = _send_request(cmd, channel=channel)
+    _send_request(cmd, channel=channel)
+    # response = _send_request(cmd, channel=channel)
 
     # assert response == {"result": 0, #TODO this will require change, message should be different
     #                     "text": "DHCPv4 global parameter successfully set."}
