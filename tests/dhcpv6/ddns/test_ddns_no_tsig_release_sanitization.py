@@ -252,7 +252,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_msg.client_add_saved_option_count('1', 'DONT ')
     srv_msg.client_sets_value('Client',
                               'FQDN_domain_name',
-                              '$(WHITE_SPACE)*sth6*.si^x.exa(mple.c)om(')
+                              '$(WHITE_SPACE)*sth6*.si^x(')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', None, 'fqdn')
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -593,7 +593,7 @@ def test_ddns6_notsig_expired_fqdn_sanitization():
     srv_msg.response_check_include_option('Response', None, '2')
     srv_msg.response_check_include_option('Response', None, '39')
     srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
-    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth.six.example.com')
+    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth.six.example.com', 'AAAA', 'IN')

@@ -578,7 +578,7 @@ def test_ddns6_notsig_forw_and_rev_two_dhci_Sflag():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'client2.six.example.com')
+                                          'client2.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('client2.six.example.com', 'AAAA', 'IN')
@@ -745,7 +745,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'client2.six.example.com')
+                                          'client2.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('client2.six.example.com', 'AAAA', 'IN')
@@ -903,7 +903,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
                                           '39',
                                           None,
                                           'fqdn',
-                                          'client2.six.example.com')
+                                          'client2.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('client1.six.example.com', 'AAAA', 'IN')

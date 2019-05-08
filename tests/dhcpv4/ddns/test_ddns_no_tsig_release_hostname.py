@@ -281,15 +281,6 @@ def test_ddns4_notsig_rev_release_hostname():
     srv_msg.response_check_option_content('Response', '12', None, 'value', 'aa.four.example.com')
 
     misc.test_procedure()
-    srv_msg.client_save_option('server_id')
-    srv_msg.dns_question_record('aa.four.example.com', 'A', 'IN')
-    srv_msg.client_send_dns_query()
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
-
-    misc.test_procedure()
     srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
     srv_msg.client_send_dns_query()
 
@@ -306,7 +297,6 @@ def test_ddns4_notsig_rev_release_hostname():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
-
     misc.test_procedure()
     srv_msg.dns_question_record('aa.four.example.com', 'A', 'IN')
     srv_msg.client_send_dns_query()

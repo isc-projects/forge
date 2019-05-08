@@ -170,7 +170,7 @@ def test_hook_v6_subnet_cmds_add_with_options():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
                                             '{"command":"subnet6-list","arguments":{}}')
@@ -206,7 +206,7 @@ def test_hook_v6_subnet_cmds_add_with_options():
                                           '24',
                                           None,
                                           'domains',
-                                          'domain1.example.com,domain2.isc.org')
+                                          'domain1.example.com.,domain2.isc.org.')
 
 
 @pytest.mark.v6

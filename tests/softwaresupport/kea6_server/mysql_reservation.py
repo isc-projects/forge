@@ -83,7 +83,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         #  "space": "dhcp4", "persistent": 1, "scope": }
         self.options = []
 
-        self.configuration_script = "START TRANSACTION;"
+        self.configuration_script = "START TRANSACTION; \n SET @disable_audit=1;"
 
     def add_reserved_option(self, single_option):
         self.options += single_option

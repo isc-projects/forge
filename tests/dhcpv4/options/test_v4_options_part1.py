@@ -166,7 +166,7 @@ def test_v4_options_domain_name_servers_csv_correct():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '199.0.2.1')
+    srv_msg.response_check_option_content('Response', '6', None, 'value', '192.0.2.1')
 
 
 @pytest.mark.v4

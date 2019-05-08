@@ -520,7 +520,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_sets_value('Client',
                               'FQDN_domain_name',
-                              '$(WHITE_SPACE)*aa*.fo^ur.exa(mple.c)om.^')
+                              '$(WHITE_SPACE)*(a^)a*^')
     # Client sets FQDN_domain_name value to aa.four.example.com.
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', None, 'fqdn')

@@ -831,68 +831,6 @@ def test_v6_sanity_check_subnet_id_none():
 
 
 @pytest.mark.v6
-@pytest.mark.kea_only
-def test_v6_sanitydsasdasd():
-
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-get","arguments":  {} }
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "list-commands","arguments":  {} }
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_sets_value('Client', 'ia_id', '1234567')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
-
-    misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
-    srv_control.set_conf_parameter_subnet('id', '888', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
-
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-
-    srv_control.start_srv('DHCP', 'started')
-
-    srv_msg.forge_sleep('5', 'seconds')
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_sets_value('Client', 'ia_id', '1234567')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-
-
-@pytest.mark.v6
 @pytest.mark.sharednetworks
 @pytest.mark.sharedsubnets
 @pytest.mark.kea_only
