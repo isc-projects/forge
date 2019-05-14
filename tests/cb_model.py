@@ -7,6 +7,7 @@ import srv_msg
 import srv_control
 import misc
 from cb_api import global_parameter4_set, subnet4_set, network4_set, subnet4_del_by_prefix
+from forge_cfg import world
 
 
 log = logging.getLogger('forge')
@@ -531,10 +532,10 @@ def setup_server_with_radius(**kwargs):
         # Load the host cache hook library. It is needed by the RADIUS
         # library to keep the attributes from authorization to later user
         # for accounting.
-        "library": "/usr/local/lib/kea/hooks/libdhcp_host_cache.so"
+        "library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cache.so"
     }, {
         # Load the RADIUS hook library.
-        "library": "/usr/local/lib/kea/hooks/libdhcp_radius.so",
+        "library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_radius.so",
         "parameters": {
             "client-id-printable": True,
             # Configure an access (aka authentication/authorization) server.
@@ -542,7 +543,7 @@ def setup_server_with_radius(**kwargs):
                 # This starts the list of access servers
                 "servers": [{
                     # These are parameters for the first (and only) access server
-                    "name": "172.28.0.31",
+                    "name": world.f_cfg.mgmt_address,
                     "port": 1812,
                     "secret": "testing123"}],
                 "attributes": [{
@@ -551,7 +552,7 @@ def setup_server_with_radius(**kwargs):
             "accounting": {
                 "servers": [{
                     # These are parameters for the first (and only) access server
-                    "name": "172.28.0.31",
+                    "name": world.f_cfg.mgmt_address,
                     "port": 1813,
                     "secret": "testing123"
                 }]

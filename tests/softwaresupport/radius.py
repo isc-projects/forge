@@ -1,6 +1,7 @@
 import os
 
 from .multi_server_functions import fabric_sudo_command, fabric_send_file
+from forge_cfg import world
 
 
 def _init_radius():
@@ -59,18 +60,19 @@ def _init_radius():
 
     # clients.conf file
     clients_conf_content = '''
-client 172.28.0.31 {
-   ipaddr = 172.28.0.31
+client {mgmt_address} {{
+   ipaddr = {mgmt_address}
    require_message_authenticator = no
    secret = testing123
    proto = *
    nas_type = other
-   limit {
+   limit {{
       max_connections = 16
       lifetime = 0
       idle_timeout = 30
-   }
-}'''
+   }}
+}}'''
+    clients_conf_content = clients_conf_content.format(mgmt_address=world.f_cfg.mgmt_address)
     clients_conf_file = 'clients.conf'
     with open(clients_conf_file, 'w') as f:
         f.write(clients_conf_content)
