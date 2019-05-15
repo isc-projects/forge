@@ -192,6 +192,7 @@ def test_network_and_match_client_id():
     cfg, _ = setup_server_for_config_backend_cmds(check_config=True)
 
     network_cfg, _ = cfg.add_network()
+    subnet_cfg, _ = cfg.add_subnet(network=network_cfg)
     _check_matching_client_id_when_true()
 
     # client id is ignored on global level
@@ -207,11 +208,11 @@ def test_network_and_match_client_id():
     _check_matching_client_id_when_false()
 
     # client id is used on subnet level
-    network_cfg.update_subnet(match_client_id=True)
+    subnet_cfg.update(match_client_id=True)
     _check_matching_client_id_when_true()
 
     # client id is ignored on subnet level
-    network_cfg.update_subnet(match_client_id=False)
+    subnet_cfg.update(match_client_id=False)
     _check_matching_client_id_when_false()
 
     # client id is still ignored on subnet level but used on network level
@@ -219,12 +220,12 @@ def test_network_and_match_client_id():
     _check_matching_client_id_when_false()
 
     # client id is used on subnet level
-    network_cfg.update_subnet(match_client_id=True)
+    subnet_cfg.update(match_client_id=True)
     _check_matching_client_id_when_true()
 
     # match-client-id is reset on subnet level
     # and should be used due to network leve setting
-    network_cfg.update_subnet(match_client_id=None)
+    subnet_cfg.update(match_client_id=None)
     _check_matching_client_id_when_true()
 
 

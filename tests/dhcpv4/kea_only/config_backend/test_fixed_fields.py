@@ -111,24 +111,27 @@ def test_network_change_params():
     network_cfg, _ = cfg.add_network(next_server='3.3.3.3',
                                      server_hostname='ccc.example.com',
                                      boot_file_name='/boot/ccc')
+
+    subnet2_cfg, _ = cfg.add_subnet(network=network_cfg)
+
     get_address(exp_next_server='3.3.3.3',
                 exp_server_hostname='ccc.example.com',
                 exp_boot_file_name='/boot/ccc')
 
     # change params in network's subnet
     # and check received lease if it takes params from subnet now
-    network_cfg.update_subnet(next_server='4.4.4.4',
-                              server_hostname='ddd.example.com',
-                              boot_file_name='/boot/ddd')
+    subnet2_cfg.update(next_server='4.4.4.4',
+                       server_hostname='ddd.example.com',
+                       boot_file_name='/boot/ddd')
     get_address(exp_next_server='4.4.4.4',
                 exp_server_hostname='ddd.example.com',
                 exp_boot_file_name='/boot/ddd')
 
     # reset params in subnet
     # and check received lease if it takes params from network scope
-    network_cfg.update_subnet(next_server='',
-                              server_hostname='',
-                              boot_file_name='')
+    subnet2_cfg.update(next_server='',
+                       server_hostname='',
+                       boot_file_name='')
     get_address(exp_next_server='3.3.3.3',
                 exp_server_hostname='ccc.example.com',
                 exp_boot_file_name='/boot/ccc')

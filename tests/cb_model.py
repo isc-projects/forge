@@ -45,17 +45,14 @@ class ConfigNetworkModel(ConfigElem):
     def __init__(self, parent_cfg, network_cfg):
         ConfigElem.__init__(self, parent_cfg)
         self.cfg = network_cfg
-        self.subnet4 = {}
-        for sn in self.cfg['subnet4']:
-            self.subnet4[sn['subnet']] = ConfigSubnetModel(self, sn)
-        del self.cfg['subnet4']
 
     def get_dict(self):
         cfg = copy.deepcopy(self.cfg)
 
-        if self.subnet4:
+        subnets = self.parent_cfg.get_subnets(network=self.cfg['name'])
+        if subnets:
             cfg['subnet4'] = []
-            for sn in self.subnet4.values():
+            for sn in subnets:
                 cfg['subnet4'].append(sn.get_dict())
 
         return cfg
@@ -78,72 +75,18 @@ class ConfigNetworkModel(ConfigElem):
 
         return config
 
-    def update_with_childs(self):
-        # prepare command data
-        cfg = copy.deepcopy(self.cfg)
-        subnets = self.subnet4.values()
-        if subnets:
-            cfg['subnet4'] = []
-            for sn in subnets:
-                cfg['subnet4'].append(sn.cfg)
-
-        # send command
-        response = network4_set(cfg)
-        assert response["result"] == 0
-
-        # request config reloading and check result
-        config = self.get_root().reload_and_check()
-
-        return config
-
-    def add_subnet(self, **kwargs):
-        # prepare command
-        subnet = {
-            "subnet": "192.168.50.0/24",
-            "interface": "$(SERVER_IFACE)",
-            "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else "192.168.50.1-192.168.50.100"}]}
-
-        for param, val in kwargs.items():
-            if val is None:
-                continue
-            subnet[param.replace('_', '-')] = val
-
-        # send command
-        response = subnet4_set(subnet)
-        assert response["result"] == 0
-
-        subnet_cfg = ConfigSubnetModel(self, subnet)
-        self.subnet4[subnet['subnet']] = subnet_cfg
-
-        # request config reloading and check result
-        config = self.get_root().reload_and_check()
-
-        return subnet_cfg, config
-
-    def update_subnet(self, **kwargs):
-        # find subnet
-        if 'subnet' not in kwargs:
-            assert len(self.subnet4) == 1
-            subnet = self.subnet4.values()[0]
-        else:
-            subnet = None
-            for sn in self.subnet4.values():
-                if sn['subnet'] == kwargs['subnet']:
-                    subnet = sn
-            if subnet is None:
-                raise Exception('Cannot find subnet %s for update' % kwargs['subnet'])
-
-        config = subnet.update(**kwargs)
-        return config
-
 
 class ConfigSubnetModel(ConfigElem):
     def __init__(self, parent_cfg, subnet_cfg):
         ConfigElem.__init__(self, parent_cfg)
         self.cfg = subnet_cfg
+        if 'shared-network-name' not in self.cfg:
+            self.cfg['shared-network-name'] = ''
 
     def get_dict(self):
-        return copy.deepcopy(self.cfg)
+        cfg = copy.deepcopy(self.cfg)
+        del cfg['shared-network-name']
+        return cfg
 
     def update(self, **kwargs):
         # prepare arguments
@@ -159,15 +102,12 @@ class ConfigSubnetModel(ConfigElem):
             else:
                 self.cfg[param] = val
 
-        if isinstance(self.get_parent(), ConfigNetworkModel):
-            config = self.get_parent().update_with_childs()
-        else:
-            # send command
-            response = subnet4_set(self.cfg)
-            assert response["result"] == 0
+        # send command
+        response = subnet4_set(self.cfg)
+        assert response["result"] == 0
 
-            # request config reloading and check result
-            config = self.get_root().reload_and_check()
+        # request config reloading and check result
+        config = self.get_root().reload_and_check()
 
         return config
 
@@ -227,7 +167,8 @@ class ConfigModel(ConfigElem):
         if self.subnet4:
             cfg['subnet4'] = []
             for sn in self.subnet4.values():
-                cfg['subnet4'].append(sn.get_dict())
+                if sn.cfg['shared-network-name'] is '':
+                    cfg['subnet4'].append(sn.get_dict())
 
         if self.shared_networks:
             cfg['shared-networks'] = []
@@ -260,26 +201,25 @@ class ConfigModel(ConfigElem):
         # get config seen by server and compare it with our configuration
         srv_config = get_config()
         my_cfg = self.get_dict()
-        # log.info('CFG\n%s', pprint.pformat(my_cfg))
+        # log.info('MY CFG\n%s', pprint.pformat(my_cfg))
+        # log.info('KEA CFG\n%s', pprint.pformat(srv_config['Dhcp4']))
         _compare(srv_config['Dhcp4'], my_cfg['Dhcp4'])
         return srv_config
 
     def set_global_parameter(self, **kwargs):
         # prepare command
-        parameters = []
+        parameters = {}
         for param, val in kwargs.items():
             param = param.replace('_', '-')
             if val is None:
                 if param in self.cfg:
                     del self.cfg[param]
             else:
-                parameters.append({'name': param, 'value': val})
+                parameters[param] = val
                 self.cfg[param] = val
 
-        # TODO: later should be possible to set list of params in one shot
-        for param in parameters:
-            response = global_parameter4_set(param)
-            assert response["result"] == 0
+        response = global_parameter4_set(parameters)
+        assert response["result"] == 0
 
         # request config reloading and check result
         config = self.reload_and_check()
@@ -291,34 +231,15 @@ class ConfigModel(ConfigElem):
         # prepare command
         network = {
             "name": "floor13",
-            "interface": "$(SERVER_IFACE)",
-            "subnet4": []}
+            "interface": "$(SERVER_IFACE)"}
 
-        if 'subnet4' in kwargs:
-            subnet4 = kwargs.pop(subnet4)
-            if subnet4:
-                if not isinstance(subnet4, list):
-                    if 'subnet' not in subnet4:
-                        subnet4['subnet'] = "192.168.50.0/24"
-                    subnet4 = [subnet4]
-                network["subnet4"] = subnet4
-        else:
-            network["subnet4"].append({
-                "subnet": "192.168.50.0/24",
-                "pools": [{"pool": "192.168.50.1-192.168.50.100"}]})
+        assert 'subnet4' not in kwargs
 
         for param, val in kwargs.items():
             if val is None:
                 continue
             param = param.replace('_', '-')
-            if param.startswith('subnet-'):
-                param = param[7:]
-                if param == 'pool':
-                    param = 'pools'
-                    val = [{'pool': val}]
-                network['subnet4'][0][param] = val
-            else:
-                network[param] = val
+            network[param] = val
 
         # send command
         response = network4_set(network)
@@ -359,6 +280,9 @@ class ConfigModel(ConfigElem):
         for param, val in kwargs.items():
             if val is None:
                 continue
+            if param == 'network':
+                param = 'shared-network-name'
+                val = val.cfg['name']
             subnet[param.replace('_', '-')] = val
 
         # send command
@@ -406,6 +330,13 @@ class ConfigModel(ConfigElem):
 
         config = subnet.delete()
         return config
+
+    def get_subnets(self, network=None):
+        subnets = []
+        for sn in self.subnet4.values():
+            if (network is not None and sn.cfg['shared-network-name'] == network) or network is None:
+                subnets.append(sn)
+        return subnets
 
 
 def _merge_configs(a, b, path=None):

@@ -248,6 +248,7 @@ def test_shared_networks_and_timers_renew_less():
 
     # define a shared network with one subnet
     network_cfg, _ = cfg.add_network()
+    subnet_cfg, _ = cfg.add_subnet(network=network_cfg)
 
     # check getting address from this subnet
     get_address()
@@ -275,12 +276,12 @@ def test_shared_networks_and_timers_renew_less():
 
     # set renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    network_cfg.update_subnet(renew_timer=50, rebind_timer=500)
+    subnet_cfg.update(renew_timer=50, rebind_timer=500)
     get_address(exp_renew_timer=50, exp_rebind_timer=500)
 
     # change renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    network_cfg.update_subnet(renew_timer=60, rebind_timer=600)
+    subnet_cfg.update(renew_timer=60, rebind_timer=600)
     get_address(exp_renew_timer=60, exp_rebind_timer=600)
 
     # change renew and rebind timers on global level
@@ -354,7 +355,8 @@ def test_shared_networks_and_valid_lifetime():
     cfg = setup_server_for_config_backend_cmds()
 
     # define a shared network with one subnet
-    network_cfg, _ = cfg.add_network(subnet_pool="192.168.50.2/32")
+    network_cfg, _ = cfg.add_network()
+    subnet_cfg, _ = cfg.add_subnet(network=network_cfg, pool="192.168.50.2/32")
 
     # check getting address from this subnet by client 1
     get_address(chaddr='00:00:00:00:00:01', exp_yiaddr='192.168.50.2')
@@ -367,7 +369,7 @@ def test_shared_networks_and_valid_lifetime():
     # and 1) extend address pool by 1 IP for new client 3 as previous IP address is taken for long time
     # and 2) check getting address by this new client 3
     cfg.set_global_parameter(valid_lifetime=1)
-    network_cfg.update_subnet(pool="192.168.50.2/31")
+    subnet_cfg.update(pool="192.168.50.2/31")
     get_address(chaddr='00:00:00:00:00:03', exp_lease_time=1, exp_yiaddr='192.168.50.3')
     # as lease time is 1 sec after 2secs this just taken IP address should
     # be available for other clients ie. client 4
@@ -389,7 +391,7 @@ def test_shared_networks_and_valid_lifetime():
     # and check getting address by client 7 but first extent pool by one address
     # as previous IP addresses are taken for long time
     network_cfg.update(valid_lifetime=1)
-    network_cfg.update_subnet(pool="192.168.50.2-192.168.50.4")
+    subnet_cfg.update(pool="192.168.50.2-192.168.50.4")
     get_address(chaddr='00:00:00:00:00:07', exp_lease_time=1, exp_yiaddr='192.168.50.4')
     # as lease time is 1 sec after 2secs this just taken IP address should
     # be available for other clients ie. client 8
@@ -400,7 +402,7 @@ def test_shared_networks_and_valid_lifetime():
 
     # change lease lifetime on subnet level to be big ie. 1000sec
     # and check getting address by client 9
-    network_cfg.update_subnet(valid_lifetime=1000)
+    subnet_cfg.update(valid_lifetime=1000)
     get_address(chaddr='00:00:00:00:00:09', exp_lease_time=1000, exp_yiaddr='192.168.50.4')
     # after 2 seconds check if another client 10 can get address - as new lifetime is big
     # it should fail because there is no more IP addresses (there are only 4 that are taken)
@@ -410,7 +412,7 @@ def test_shared_networks_and_valid_lifetime():
     # change lease lifetime on subnet level to be small ie. 1sec
     # and check getting address by client 11 but first extent pool by one address
     # as previous IP addresses are taken for long time
-    network_cfg.update_subnet(valid_lifetime=1, pool="192.168.50.2-192.168.50.5")
+    subnet_cfg.update(valid_lifetime=1, pool="192.168.50.2-192.168.50.5")
     get_address(chaddr='00:00:00:00:00:11', exp_lease_time=1, exp_yiaddr='192.168.50.5')
     # as lease time is 1 sec after 2secs this just taken IP address should
     # be available for other clients ie. client 12

@@ -12,8 +12,6 @@ def send_cmd(cmd, db_type='mysql', server_tags=None, **kwargs):
 
 
 def global_parameter4_set(parameters, db_type='mysql', server_tags=None):
-    if not isinstance(parameters, list):
-        parameters = [parameters]
     response = send_cmd('global-parameter4-set', db_type, server_tags, parameters=parameters)
     return response
 
