@@ -7,7 +7,6 @@ from softwaresupport import radius
 
 @pytest.mark.v4
 @pytest.mark.radius
-@pytest.mark.disabled
 @pytest.mark.parametrize("scope", ['subnet', 'network'])
 def test_static_out_of_pool(scope):
     # select IP returned from RADIUS that is NOT within defined subnet in Kea
@@ -42,7 +41,6 @@ def test_static_out_of_pool(scope):
 
 @pytest.mark.v4
 @pytest.mark.radius
-@pytest.mark.disabled
 @pytest.mark.parametrize("scope", ['subnet', 'network'])
 def test_static_in_pool(scope):
     # select IP returned from RADIUS that is within defined subnet in Kea
@@ -77,7 +75,6 @@ def test_static_in_pool(scope):
 
 @pytest.mark.v4
 @pytest.mark.radius
-@pytest.mark.disabled
 def test_class_and_subnet_assign_complex():
     # select IP from subnets based on classes indicated in pools
     # ref: https://gitlab.isc.org/isc-private/qa-dhcp/issues/151
@@ -161,7 +158,6 @@ def test_class_and_subnet_assign_complex():
 
 @pytest.mark.v4
 @pytest.mark.radius
-@pytest.mark.disabled
 def test_select_from_radius_and_ignore_complex_subnets_with_classes():
     # select IP returned by RADIUS and do not use any of defined subnets
     radius.init_and_start_radius()
@@ -202,7 +198,6 @@ def test_select_from_radius_and_ignore_complex_subnets_with_classes():
 
 @pytest.mark.v4
 @pytest.mark.radius
-@pytest.mark.disabled
 def test_select_by_class_in_subnet():
     # select IP from subnet based on class indicated in subnet, not in pool
     radius.init_and_start_radius()
