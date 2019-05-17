@@ -1131,6 +1131,7 @@ def test_v4_loggers_all_different_levels_different_file():
                                'NOT ',
                                r'DEBUG \[kea-dhcp4.options')
 
+
 @pytest.mark.v4
 @pytest.mark.kea_only
 @pytest.mark.logging
