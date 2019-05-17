@@ -1,11 +1,7 @@
 """Kea database config backend commands hook testing"""
 
-import json
 import pytest
-
 import srv_msg
-import srv_control
-import misc
 
 from cb_model import setup_server_for_config_backend_cmds
 
@@ -53,8 +49,8 @@ def test_availability():
 
 
 # subnet tests
-@pytest.mark.terazz
-def test_remote_subnet6_set_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_subnet6_set_basic(channel):
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "2001:db8:1::/64",
@@ -63,13 +59,12 @@ def test_remote_subnet6_set_basic():
                                                                      "shared-network-name": "",
                                                                      "pools": [
                                                                          {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
-@pytest.mark.terazz
 def test_remote_subnet6_set_empty_subnet():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
@@ -562,11 +557,12 @@ def test_remote_subnet6_list():
 
 
 # network tests
-def test_remote_network6_set_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_network6_set_basic(channel):
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{"name": "floor13"}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"shared-networks": [{"name": "floor13"}]},
                         "result": 0, "text": "IPv6 shared network successfully set."}
@@ -591,13 +587,14 @@ def test_remote_network6_set_empty_name():
     assert response == {"result": 1, "text": "'name' parameter must not be empty"}
 
 
-def test_remote_network6_get_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_network6_get_basic(channel):
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
-    srv_msg.send_request('v6', cmd)
+    srv_msg.send_request('v6', cmd, channel=channel)
 
     cmd = dict(command="remote-network6-get", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
@@ -697,20 +694,21 @@ def test_remote_network6_set_t1_t2():
     assert "invalid type specified for parameter 't1-percent" in response["text"]
 
 
-def test_remote_network6_list_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_network6_list_basic(channel):
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
-    srv_msg.send_request('v6', cmd)
+    srv_msg.send_request('v6', cmd, channel=channel)
 
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net2",
                                                              "interface": "$(SERVER_IFACE)"}]})
-    srv_msg.send_request('v6', cmd)
+    srv_msg.send_request('v6', cmd, channel=channel)
 
     cmd = dict(command="remote-network6-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
     response = srv_msg.send_request('v6', cmd)
@@ -733,23 +731,24 @@ def test_remote_network6_list_no_networks():
                         "text": "0 IPv6 shared network(s) found."}
 
 
-def test_remote_network6_del_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_network6_del_basic(channel):
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
-    srv_msg.send_request('v6', cmd)
+    srv_msg.send_request('v6', cmd, channel=channel)
 
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net2",
                                                              "interface": "$(SERVER_IFACE)"}]})
-    srv_msg.send_request('v6', cmd)
+    srv_msg.send_request('v6', cmd, channel=channel)
 
     cmd = dict(command="remote-network6-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"count": 2,
                                       "shared-networks": [{"metadata": {"server-tag": "all"}, "name": "net1"},
@@ -761,12 +760,12 @@ def test_remote_network6_del_basic():
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{"name": "net1"}]})
 
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv6 shared network(s) deleted."}
 
     cmd = dict(command="remote-network6-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"count": 1,
                                       "shared-networks": [{"metadata": {"server-tag": "all"}, "name": "net2"}]},
@@ -776,12 +775,12 @@ def test_remote_network6_del_basic():
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{"name": "net2"}]})
 
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv6 shared network(s) deleted."}
 
     cmd = dict(command="remote-network6-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"count": 0,
                                       "shared-networks": []},
@@ -821,8 +820,8 @@ def test_remote_network6_del_subnet_keep():
                                                         "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "net1",
-                                                                     "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"
-                                                                                }]}]})
+                                                                     "pools": [{
+                                                                         "pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
     response = srv_msg.send_request('v6', cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1:/64"}]},
@@ -833,8 +832,8 @@ def test_remote_network6_del_subnet_keep():
                                                         "subnets": [{"subnet": "2001:db8:2:/64", "id": 2,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "net2",
-                                                                     "pools": [{"pool": "2001:db8:2::1-2001:db8:2::10"
-                                                                                }]}]})
+                                                                     "pools": [{
+                                                                         "pool": "2001:db8:2::1-2001:db8:2::10"}]}]})
     response = srv_msg.send_request('v6', cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "2001:db8:2:/64"}]},
@@ -941,8 +940,8 @@ def test_remote_network6_del_subnet_delete():
                                                         "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "net1",
-                                                                     "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"
-                                                                                }]}]})
+                                                                     "pools": [{
+                                                                         "pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
     response = srv_msg.send_request('v6', cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
@@ -953,8 +952,8 @@ def test_remote_network6_del_subnet_delete():
                                                         "subnets": [{"subnet": "2001:db8:2::/64", "id": 2,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "net2",
-                                                                     "pools": [{"pool": "2001:db8:2::1-2001:db8:2::10"
-                                                                                }]}]})
+                                                                     "pools": [{
+                                                                         "pool": "2001:db8:2::1-2001:db8:2::10"}]}]})
     response = srv_msg.send_request('v6', cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "2001:db8:1::/64"}]},
@@ -1140,21 +1139,22 @@ def test_remote_global_parameter6_get_all_zero():
                         "result": 3, "text": "0 DHCPv6 global parameter(s) found."}
 
 
-def _set_option_def():
+def _set_option_def(channel='http'):
     cmd = dict(command="remote-option-def6-set", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo",
                                                                 "code": 222,
                                                                 "type": "uint32"}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"arguments": {"option-defs": [{"code": 222, "space": "dhcp6"}]},
                         "result": 0, "text": "DHCPv6 option definition successfully set."}
 
 
-def test_remote_option_def6_set_basic():
-    _set_option_def()
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def6_set_basic(channel):
+    _set_option_def(channel)
 
 
 def test_remote_option_def6_set_using_zero_as_code():
@@ -1230,14 +1230,15 @@ def test_remote_option_def6_set_missing_parameters():
     assert "missing parameter 'type'" in response["text"]
 
 
-def test_remote_option_def6_get_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def6_get_basic(channel):
     _set_option_def()
 
     cmd = dict(command="remote-option-def6-get", arguments={"remote": {"type": "mysql"},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "code": 222}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
     assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
                                                                    "name": "foo", "record-types": "", "space": "dhcp6",
                                                                    "metadata": {"server-tag": "all"},
@@ -1322,12 +1323,13 @@ def test_remote_option_def6_get_all_multiple_defs():
                         "result": 0, "text": "2 DHCPv6 option definition(s) found."}
 
 
-def test_remote_option_def6_get_all_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def6_get_all_basic(channel):
     _set_option_def()
 
     cmd = dict(command="remote-option-def6-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
 
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
     assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
                                                                    "metadata": {"server-tag": "all"},
                                                                    "name": "foo", "record-types": "", "space": "dhcp6",
@@ -1335,13 +1337,14 @@ def test_remote_option_def6_get_all_basic():
                         "result": 0, "text": "1 DHCPv6 option definition(s) found."}
 
 
-def test_remote_option_def6_del_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def6_del_basic(channel):
     _set_option_def()
 
     cmd = dict(command="remote-option-def6-del", arguments={"remote": {"type": "mysql"},
                                                             "option-defs": [{"code": 222}]})
 
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 option definition(s) deleted."}
 
 
@@ -1412,20 +1415,21 @@ def test_remote_option_def6_del_multiple_options():
                         "result": 0, "text": "1 DHCPv6 option definition(s) found."}
 
 
-def _set_global_option():
+def _set_global_option(channel='http'):
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "code": 7,
                                                                    "data": 123}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"result": 0, "text": "DHCPv6 option successfully set.",
                         "arguments": {"options": [{"code": 7, "space": "dhcp6"}]}}
 
 
-def test_remote_global_option4_global_set_basic():
-    _set_global_option()
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_global_option4_global_set_basic(channel):
+    _set_global_option(channel)
 
 
 def test_remote_global_option4_global_set_missing_data():
@@ -1502,13 +1506,14 @@ def test_remote_global_option4_global_set_incorrect_name():
     assert response == {"bug, shouldn't be accepted?"}
 
 
-def test_remote_global_option4_global_get_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_global_option4_global_get_basic(channel):
     _set_global_option()
 
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
     assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 7, "csv-format": True,
                                                                "data": 123,
                                                                "metadata": {"server-tag": "all"},
@@ -1556,13 +1561,14 @@ def test_remote_global_option4_global_set_csv_false_incorrect_hex():
     assert "option data is not a valid string of hexadecimal digits: C0000201Z" in response["text"]
 
 
-def test_remote_global_option4_global_del_basic():
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_global_option4_global_del_basic(channel):
     _set_global_option()
 
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_request('v6', cmd, channel=channel)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 option(s) deleted."}
 
 
