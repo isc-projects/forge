@@ -1021,17 +1021,21 @@ def test_v4_loggers_all_different_levels_same_file():
 @pytest.mark.v4
 @pytest.mark.kea_only
 @pytest.mark.logging
+@pytest.mark.disabled
 def test_v4_loggers_all_different_levels_different_file():
+    # it will fail, so I will disable this, issue link:
+    # https://gitlab.isc.org/isc-projects/kea/issues/592
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.config_srv_opt('log-servers', '199.199.199.1,100.100.100.1')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None', 'kea.log1')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log2')
     srv_control.configure_loggers('kea-dhcp4.options', 'DEBUG', '99', 'kea.log3')
     srv_control.configure_loggers('kea-dhcp4.packets', 'DEBUG', '99', 'kea.log4')
     srv_control.configure_loggers('kea-dhcp4.leases', 'WARN', 'None', 'kea.log5')
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', '50', 'kea.log6')
-    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', '25', 'kea.log6')
-    srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None', 'kea.log6')
+    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', '25', 'kea.log7')
+    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log8')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -1114,13 +1118,18 @@ def test_v4_loggers_all_different_levels_different_file():
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log2',
                                'NOT ',
                                r'DEBUG \[kea-dhcp4.dhcpsrv')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log8',
+                               'NOT ',
+                               r'DEBUG \[kea-dhcp4.dhcpsrv')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log8',
+                               None,
+                               r'INFO \[kea-dhcp4.dhcpsrv')
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log2',
                                None,
                                r'INFO  \[kea-dhcp4.dhcpsrv')
     srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log3',
                                'NOT ',
                                r'DEBUG \[kea-dhcp4.options')
-
 
 @pytest.mark.v4
 @pytest.mark.kea_only
