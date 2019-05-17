@@ -175,12 +175,14 @@ class ConfigModel(ConfigElem):
             for net in self.shared_networks.values():
                 cfg['shared-networks'].append(net.get_dict())
 
-        cfg = {"Dhcp4": cfg,
+        cfg = {"Dhcp4" if world.f_cfg.proto == "v4" else "Dhcp6": cfg,
                "Control-agent": {"http-host": '$(SRV4_ADDR)',
                                  "http-port": 8000,
-                                 "control-sockets": {"dhcp4": {"socket-type": 'unix',
-                                                               "socket-name": '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}},
-               "Logging": {"loggers": [{"name":"kea-dhcp4",
+                                 "control-sockets": {"dhcp4" if world.f_cfg.proto == "v4" else "dhcp6":
+                                                         {"socket-type": 'unix',
+                                                          "socket-name":
+                                                              '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}},
+               "Logging": {"loggers": [{"name": "kea-dhcp4" if world.f_cfg.proto == "v4" else "kea-dhcp6",
                                         "output_options":[{"output": "$(SOFTWARE_INSTALL_PATH)/var/kea/kea.log"}],
                                         "debuglevel":99,
                                         "severity":"DEBUG"}]}}

@@ -17,6 +17,8 @@
 
 import os
 import sys
+import json
+import logging
 from time import sleep
 
 from forge_cfg import world
@@ -26,6 +28,7 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
 from protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
+log = logging.getLogger('forge')
 
 world.kea_options6 = {
     "client-id": 1,
@@ -833,6 +836,45 @@ def cfg_write():
 # =============================================================
 # ================ REMOTE SERVER BLOCK START ==================
 
+def write_cfg2(cfg):
+    with open(world.cfg["cfg_file"], 'w') as cfg_file:
+        json.dump(cfg, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
+
+    cfg_file = open(world.cfg["cfg_file_2"], 'w')
+    cfg_file.write(world.cfg["keactrl"])
+    cfg_file.close()
+
+
+def build_and_send_config_files2(cfg, connection_type, configuration_type="config-file",
+                                 destination_address=world.f_cfg.mgmt_address):
+    if world.f_cfg.proto == "v6":
+        lease = 'var/kea/kea-leases6.csv'
+    else:
+        lease = 'var/kea/kea-leases4.csv'
+    if configuration_type == "config-file" and connection_type == "SSH":
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, lease)
+        set_kea_ctrl_config()
+        write_cfg2(cfg)
+        log.info((os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf")))
+        fabric_send_file(world.cfg["cfg_file"],
+                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
+                         destination_host=destination_address)
+        fabric_send_file(world.cfg["cfg_file_2"],
+                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
+                         destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
+        remove_local_file(world.cfg["cfg_file"])
+        remove_local_file(world.cfg["cfg_file_2"])
+    elif configuration_type == "config-file" and connection_type is None:
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, lease)
+        add_defaults()
+        set_kea_ctrl_config()
+        cfg_write()
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        remove_local_file(world.cfg["cfg_file"])
+
+
 def check_kea_process_result(succeed, result, process):
     errors = ["Failed to apply configuration", "Failed to initialize server",
               "Service failed", "failed to initialize Kea"]
@@ -962,7 +1004,8 @@ def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_pa
     if world.f_cfg.db_type == "mysql":
         # that is tmp solution - just clearing not saving.
         command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs; ' \
-                  'do mysql -u {db_user} -p{db_passwd} -e "delete from $table_name" {db_name}; done'.format(**locals())
+                  'do mysql -u {db_user} -p{db_passwd} -e' \
+                  ' "SET foreign_key_checks = 0; delete from $table_name" {db_name}; done'.format(**locals())
         fabric_run_command(command, destination_host=destination_address)
     elif world.f_cfg.db_type == "postgresql":
         command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs;' \
@@ -1007,9 +1050,12 @@ def clear_db_config(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db
                     destination_address=world.f_cfg.mgmt_address):
     command = 'for table_name in dhcp4_audit_revision dhcp4_audit dhcp4_global_parameter dhcp4_global_parameter_server \
              dhcp4_option_def dhcp4_option_def_server dhcp4_options dhcp4_options_server dhcp4_pool \
-             dhcp4_shared_network dhcp4_shared_network_server dhcp4_subnet dhcp4_subnet_server; ' \
-              'do mysql -u {db_user} -p{db_passwd} -e "SET foreign_key_checks = 0; truncate $table_name" {db_name}; done'.format(
-        **locals())
+             dhcp4_shared_network dhcp4_shared_network_server dhcp4_subnet dhcp4_subnet_server dhcp6_audit_revision ' \
+              'dhcp6_audit dhcp6_global_parameter dhcp6_global_parameter_server \
+             dhcp6_option_def dhcp6_option_def_server dhcp6_options dhcp6_options_server dhcp6_pool \
+             dhcp6_shared_network dhcp6_shared_network_server dhcp6_subnet dhcp6_subnet_server; ' \
+              'do mysql -u {db_user} -p{db_passwd} -e ' \
+              '"SET foreign_key_checks = 0; truncate $table_name" {db_name}; done'.format(**locals())
     fabric_run_command(command, destination_host=destination_address, hide_all=True)
 
 
