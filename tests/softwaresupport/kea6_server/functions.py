@@ -28,7 +28,8 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
 from protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
-log = logging.getLogger('forge')
+from softwaresupport.kea import build_and_send_config_files, build_and_send_config_files2, clear_all, clear_logs
+
 
 world.kea_options6 = {
     "client-id": 1,
@@ -433,44 +434,6 @@ def add_option_to_defined_class(class_no, option_name, option_value):
             "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
-def set_kea_ctrl_config():
-    if world.f_cfg.software_install_path.endswith('/'):
-        path = world.f_cfg.software_install_path[:-1]
-    else:
-        path = world.f_cfg.software_install_path
-
-    kea6 = 'no'
-    kea4 = 'no'
-    ddns = 'no'
-    ctrl_agent = 'no'
-    if "kea6" in world.cfg["dhcp_under_test"]:
-        kea6 = 'yes'
-    elif "kea4" in world.cfg["dhcp_under_test"]:
-        kea4 = 'yes'
-    if world.ddns_enable:
-        ddns = 'yes'
-    if world.ctrl_enable:
-        ctrl_agent = 'yes'
-    world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
-    dhcp4_srv={path}/sbin/kea-dhcp4
-    dhcp6_srv={path}/sbin/kea-dhcp6
-    dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
-    ctrl_agent_srv={path}/sbin/kea-ctrl-agent
-    netconf_srv={path}/sbin/kea-netconf
-    kea_dhcp4_config_file={path}/etc/kea/kea.conf
-    kea_dhcp6_config_file={path}/etc/kea/kea.conf
-    kea_dhcp_ddns_config_file={path}/etc/kea/kea.conf
-    kea_ctrl_agent_config_file={path}/etc/kea/kea.conf
-    kea_netconf_config_file={path}/etc/kea/kea.conf
-    dhcp4={kea4}
-    dhcp6={kea6}
-    dhcp_ddns={ddns}
-    kea_verbose=no
-    netconf=no
-    ctrl_agent={ctrl_agent}
-    '''.format(**locals())
-
-
 def add_simple_opt(passed_option):
     if "simple_options" not in world.cfg:
         world.cfg["simple_options"] = ''
@@ -836,45 +799,6 @@ def cfg_write():
 # =============================================================
 # ================ REMOTE SERVER BLOCK START ==================
 
-def write_cfg2(cfg):
-    with open(world.cfg["cfg_file"], 'w') as cfg_file:
-        json.dump(cfg, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
-
-    cfg_file = open(world.cfg["cfg_file_2"], 'w')
-    cfg_file.write(world.cfg["keactrl"])
-    cfg_file.close()
-
-
-def build_and_send_config_files2(cfg, connection_type, configuration_type="config-file",
-                                 destination_address=world.f_cfg.mgmt_address):
-    if world.f_cfg.proto == "v6":
-        lease = 'var/kea/kea-leases6.csv'
-    else:
-        lease = 'var/kea/kea-leases4.csv'
-    if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, lease)
-        set_kea_ctrl_config()
-        write_cfg2(cfg)
-        log.info((os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf")))
-        fabric_send_file(world.cfg["cfg_file"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
-                         destination_host=destination_address)
-        fabric_send_file(world.cfg["cfg_file_2"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
-                         destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-        remove_local_file(world.cfg["cfg_file_2"])
-    elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, lease)
-        add_defaults()
-        set_kea_ctrl_config()
-        cfg_write()
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-
-
 def check_kea_process_result(succeed, result, process):
     errors = ["Failed to apply configuration", "Failed to initialize server",
               "Service failed", "failed to initialize Kea"]
@@ -885,41 +809,6 @@ def check_kea_process_result(succeed, result, process):
     if not succeed:
         if not any(error_message in result for error_message in errors):
             assert False, 'Server operation: ' + process + ' NOT failed!'
-
-
-def build_and_send_config_files(connection_type, configuration_type="config-file",
-                                destination_address=world.f_cfg.mgmt_address):
-    """
-    Generate final config file, save it to test result directory
-    and send it to remote system unless testing step will define differently.
-    :param connection_type: for now two values expected: SSH and None for stating if files should be send
-    :param configuration_type: for now supported just config-file, generate file and save to results dir
-    :param destination_address: address of remote system to which conf file will be send,
-    default it's world.f_cfg.mgmt_address
-    """
-
-    if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases6.csv')
-        add_defaults()
-        set_kea_ctrl_config()
-        cfg_write()
-        fabric_send_file(world.cfg["cfg_file"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
-                         destination_host=destination_address)
-        fabric_send_file(world.cfg["cfg_file_2"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
-                         destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-        remove_local_file(world.cfg["cfg_file_2"])
-    elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases6.csv')
-        add_defaults()
-        set_kea_ctrl_config()
-        cfg_write()
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
 
 
 def start_kea(destination_host):
@@ -1040,37 +929,6 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                                                                destination_address),
                          destination_host=destination_address, warn_only=True)
 
-
-def clear_logs(destination_address=world.f_cfg.mgmt_address):
-    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'var/kea/kea.log*'),
-                               destination_host=destination_address)
-
-
-def clear_db_config(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                    destination_address=world.f_cfg.mgmt_address):
-    command = 'for table_name in dhcp4_audit_revision dhcp4_audit dhcp4_global_parameter dhcp4_global_parameter_server \
-             dhcp4_option_def dhcp4_option_def_server dhcp4_options dhcp4_options_server dhcp4_pool \
-             dhcp4_shared_network dhcp4_shared_network_server dhcp4_subnet dhcp4_subnet_server dhcp6_audit_revision ' \
-              'dhcp6_audit dhcp6_global_parameter dhcp6_global_parameter_server \
-             dhcp6_option_def dhcp6_option_def_server dhcp6_options dhcp6_options_server dhcp6_pool \
-             dhcp6_shared_network dhcp6_shared_network_server dhcp6_subnet dhcp6_subnet_server; ' \
-              'do mysql -u {db_user} -p{db_passwd} -e ' \
-              '"SET foreign_key_checks = 0; truncate $table_name" {db_name}; done'.format(**locals())
-    fabric_run_command(command, destination_host=destination_address, hide_all=True)
-
-
-def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
-    clear_logs(destination_address)
-
-    if world.f_cfg.db_type in ["memfile", ""]:
-        fabric_remove_file_command(world.cfg['leases']+"*",
-                                   destination_host=destination_address)
-    elif world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
-        # that is tmp solution - just clearing not saving.
-        clear_leases(destination_address=world.f_cfg.mgmt_address)
-    else:
-        assert False, "If you see that error, something went very wrong."
-    clear_db_config(destination_address=world.f_cfg.mgmt_address)
 
 # =============================================================
 # ================ REMOTE SERVER BLOCK END ====================

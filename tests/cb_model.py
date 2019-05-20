@@ -6,7 +6,7 @@ import pprint
 import srv_msg
 import srv_control
 import misc
-from cb_api import global_parameter4_set, subnet4_set, network4_set, subnet4_del_by_prefix
+from cb_api import global_parameter_set, subnet_set, network_set, subnet_del_by_prefix
 from forge_cfg import world
 
 
@@ -15,7 +15,7 @@ log = logging.getLogger('forge')
 
 def get_config():
     cmd = {"command": "config-get", "arguments": {}}
-    response = srv_msg.send_request('v4', cmd)
+    response = srv_msg.send_request(world.proto, cmd)
     assert response['result'] == 0
     return response['arguments']
 
@@ -23,7 +23,7 @@ def get_config():
 def _reload():
     # request config reloading
     cmd = {"command": "config-reload", "arguments": {}}
-    response = srv_msg.send_request('v4', cmd)
+    response = srv_msg.send_request(world.proto, cmd)
     assert response == {'result': 0, 'text': 'Configuration successful.'}
 
 
@@ -51,9 +51,11 @@ class ConfigNetworkModel(ConfigElem):
 
         subnets = self.parent_cfg.get_subnets(network=self.cfg['name'])
         if subnets:
-            cfg['subnet4'] = []
+            proto = world.proto[1]
+            subnets_key = 'subnet' + proto
+            cfg[subnets_key] = []
             for sn in subnets:
-                cfg['subnet4'].append(sn.get_dict())
+                cfg[subnets_key].append(sn.get_dict())
 
         return cfg
 
@@ -67,7 +69,7 @@ class ConfigNetworkModel(ConfigElem):
                 self.cfg[param] = val
 
         # send command
-        response = network4_set(self.cfg)
+        response = network_set(self.cfg)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -103,7 +105,7 @@ class ConfigSubnetModel(ConfigElem):
                 self.cfg[param] = val
 
         # send command
-        response = subnet4_set(self.cfg)
+        response = subnet_set(self.cfg)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -112,7 +114,7 @@ class ConfigSubnetModel(ConfigElem):
         return config
 
     def delete(self):
-        response = subnet4_del_by_prefix(self.cfg['subnet'])
+        response = subnet_del_by_prefix(self.cfg['subnet'])
         assert response["result"] == 0
 
         config = self.get_root().reload_and_check()
@@ -136,8 +138,8 @@ def _substitute_vars(cfg):
                     new_list.append(lv)
             cfg[k] = new_list
 
-
-CONFIG_DEFAULTS = {
+CONFIG_DEFAULTS = {}
+CONFIG_DEFAULTS['v4'] = {
     'decline-probation-period': 86400,
     'echo-client-id': True,
     'match-client-id': True,
@@ -147,42 +149,69 @@ CONFIG_DEFAULTS = {
     't2-percent': 0.875,
     'valid-lifetime': 7200,
     }
+CONFIG_DEFAULTS['v6'] = {
+    'calculate-tee-times': True,
+    'decline-probation-period': 86400,
+    "mac-sources": ["any"],
+    'preferred-lifetime': 3600,
+    'relay-supplied-options': ["65"],
+    "reservation-mode": "all",
+    "server-id": {
+        "enterprise-id": 0,
+        "htype": 0,
+        "identifier": "",
+        "persist": True,
+        "time": 0,
+        "type": "LLT"
+    },
+    't1-percent': 0.5,
+    't2-percent': 0.8,
+    'valid-lifetime': 7200,
+}
+
+
+def get_cfg_default(name):
+    return CONFIG_DEFAULTS[world.proto][name]
+
 
 class ConfigModel(ConfigElem):
     def __init__(self, init_cfg, force_reload=True):
         ConfigElem.__init__(self, None)
         self.cfg = init_cfg
-        self.subnet4 = {}
+        self.subnets = {}
+        self.subnet_id = 0
         self.shared_networks = {}
 
-        if 'subnet4' in init_cfg:
-            for sn in init_cfg['subnet4']:
+        if 'subnets' in init_cfg:
+            for sn in init_cfg['subnets']:
                 subnet_cfg = ConfigSubnetModel(self, sn)
-                self.subnet4[sn['subnet']] = subnet_cfg
+                self.subnets[sn['subnet']] = subnet_cfg
 
         self.force_reload = force_reload
 
     def get_dict(self):
+        proto = world.proto[1]
+
         cfg = copy.deepcopy(self.cfg)
-        if self.subnet4:
-            cfg['subnet4'] = []
-            for sn in self.subnet4.values():
+        if self.subnets:
+            subnets_key = 'subnet' + proto
+            cfg[subnets_key] = []
+            for sn in self.subnets.values():
                 if sn.cfg['shared-network-name'] is '':
-                    cfg['subnet4'].append(sn.get_dict())
+                    cfg[subnets_key].append(sn.get_dict())
 
         if self.shared_networks:
             cfg['shared-networks'] = []
             for net in self.shared_networks.values():
                 cfg['shared-networks'].append(net.get_dict())
 
-        cfg = {"Dhcp4" if world.proto == "v4" else "Dhcp6": cfg,
-               "Control-agent": {"http-host": '$(SRV4_ADDR)',
+        dhcp_key = 'Dhcp' + proto
+        cfg = {dhcp_key: cfg,
+               "Control-agent": {"http-host": '$(MGMT_ADDRESS)',
                                  "http-port": 8000,
-                                 "control-sockets": {"dhcp4" if world.proto == "v4" else "dhcp6":
-                                                         {"socket-type": 'unix',
-                                                          "socket-name":
-                                                              '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}},
-               "Logging": {"loggers": [{"name": "kea-dhcp4" if world.proto == "v4" else "kea-dhcp6",
+                                 "control-sockets": {"dhcp" + proto: {"socket-type": 'unix',
+                                                               "socket-name": '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}},
+               "Logging": {"loggers": [{"name":"kea-dhcp" + proto,
                                         "output_options":[{"output": "$(SOFTWARE_INSTALL_PATH)/var/kea/kea.log"}],
                                         "debuglevel":99,
                                         "severity":"DEBUG"}]}}
@@ -200,12 +229,14 @@ class ConfigModel(ConfigElem):
         return config
 
     def compare_local_with_server(self):
+        proto = world.proto[1]
+        dhcp_key = 'Dhcp' + proto
         # get config seen by server and compare it with our configuration
         srv_config = get_config()
         my_cfg = self.get_dict()
         # log.info('MY CFG\n%s', pprint.pformat(my_cfg))
         # log.info('KEA CFG\n%s', pprint.pformat(srv_config['Dhcp4']))
-        _compare(srv_config['Dhcp4'], my_cfg['Dhcp4'])
+        _compare(srv_config[dhcp_key], my_cfg[dhcp_key])
         return srv_config
 
     def set_global_parameter(self, **kwargs):
@@ -220,7 +251,7 @@ class ConfigModel(ConfigElem):
                 parameters[param] = val
                 self.cfg[param] = val
 
-        response = global_parameter4_set(parameters)
+        response = global_parameter_set(parameters)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -235,7 +266,8 @@ class ConfigModel(ConfigElem):
             "name": "floor13",
             "interface": "$(SERVER_IFACE)"}
 
-        assert 'subnet4' not in kwargs
+        if world.proto == 'v6':
+            network['rapid-commit'] = False  # presence required - set False by default
 
         for param, val in kwargs.items():
             if val is None:
@@ -244,7 +276,7 @@ class ConfigModel(ConfigElem):
             network[param] = val
 
         # send command
-        response = network4_set(network)
+        response = network_set(network)
         assert response["result"] == 0
 
         network_cfg = ConfigNetworkModel(self, network)
@@ -271,13 +303,22 @@ class ConfigModel(ConfigElem):
         config = network.update(**kwargs)
         return config
 
+    def gen_subnet_id(self):
+        self.subnet_id += 1
+        return self.subnet_id
+
     def add_subnet(self, **kwargs):
         # prepare command
+        default_pool_range = "192.168.50.1-192.168.50.100" if world.proto == 'v4' else '2001:db8:1::1-2001:db8:1::100'
         subnet = {
-            "subnet": "192.168.50.0/24",
+            "id": self.gen_subnet_id(),
+            "subnet": "192.168.50.0/24" if world.proto == 'v4' else '2001:db8:1::/64',
             "interface": "$(SERVER_IFACE)",
             "shared-network-name": "",
-            "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else "192.168.50.1-192.168.50.100"}]}
+            "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else default_pool_range}]}
+
+        if world.proto == 'v6':
+            subnet['rapid-commit'] = False  # presence required - set False by default
 
         for param, val in kwargs.items():
             if val is None:
@@ -288,11 +329,11 @@ class ConfigModel(ConfigElem):
             subnet[param.replace('_', '-')] = val
 
         # send command
-        response = subnet4_set(subnet)
+        response = subnet_set(subnet)
         assert response["result"] == 0
 
         subnet_cfg = ConfigSubnetModel(self, subnet)
-        self.subnet4[subnet['subnet']] = subnet_cfg
+        self.subnets[subnet['subnet']] = subnet_cfg
 
         # request config reloading and check result
         config = self.get_root().reload_and_check()
@@ -302,11 +343,11 @@ class ConfigModel(ConfigElem):
     def update_subnet(self, **kwargs):
         # find subnet
         if 'subnet' not in kwargs:
-            assert len(self.subnet4) == 1
-            subnet = self.subnet4.values()[0]
+            assert len(self.subnets) == 1
+            subnet = self.subnets.values()[0]
         else:
             subnet = None
-            for sn in self.subnet4.values():
+            for sn in self.subnets.values():
                 if sn['subnet'] == kwargs['subnet']:
                     subnet = sn
             if subnet is None:
@@ -318,24 +359,24 @@ class ConfigModel(ConfigElem):
     def del_subnet(self, **kwargs):
         # find subnet
         if 'subnet' not in kwargs:
-            assert len(self.subnet4) == 1
-            subnet = self.subnet4.values()[0]
+            assert len(self.subnets) == 1
+            subnet = self.subnets.values()[0]
         else:
             subnet = None
-            for sn in self.subnet4.values():
+            for sn in self.subnets.values():
                 if sn['subnet'] == kwargs['subnet']:
                     subnet = sn
             if subnet is None:
                 raise Exception('Cannot find subnet %s for update' % kwargs['subnet'])
 
-        del self.subnet4[subnet.cfg['subnet']]
+        del self.subnets[subnet.cfg['subnet']]
 
         config = subnet.delete()
         return config
 
     def get_subnets(self, network=None):
         subnets = []
-        for sn in self.subnet4.values():
+        for sn in self.subnets.values():
             if (network is not None and sn.cfg['shared-network-name'] == network) or network is None:
                 subnets.append(sn)
         return subnets
@@ -386,8 +427,8 @@ def _compare_dicts(rcvd_dict, exp_dict):
                 assert k not in rcvd_dict or rcvd_dict[k] == exp_dict[k]
         if k in rcvd_dict and rcvd_dict[k]:
             if k not in exp_dict:
-                if k in CONFIG_DEFAULTS:
-                    assert rcvd_dict[k] == CONFIG_DEFAULTS[k]
+                if k in CONFIG_DEFAULTS[world.proto]:
+                    assert rcvd_dict[k] == CONFIG_DEFAULTS[world.proto][k]
                 else:
                     assert k in exp_dict
             else:

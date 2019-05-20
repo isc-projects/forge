@@ -27,14 +27,14 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
     copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
 from softwaresupport.kea6_server.functions import start_kea, stop_kea, stop_srv, restart_srv, reconfigure_srv, \
     set_logger, cfg_write, set_time, \
-    add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option, set_kea_ctrl_config,\
-    check_kea_status, check_kea_process_result, save_logs, clear_all, add_interface, add_pool_to_subnet, clear_leases,\
+    add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option,\
+    check_kea_status, check_kea_process_result, save_logs, add_interface, add_pool_to_subnet, clear_leases,\
     add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
     set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
-    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class, \
-    ha_add_parameter_to_hook, clear_logs, prepare_cfg_subnet_specific_interface, write_cfg2, \
-    build_and_send_config_files2
+    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class,\
+    ha_add_parameter_to_hook, prepare_cfg_subnet_specific_interface
 
+from softwaresupport.kea import build_and_send_config_files, build_and_send_config_files2, clear_all, clear_logs
 
 log = logging.getLogger('forge')
 
@@ -345,33 +345,6 @@ def add_option_to_defined_class(class_no, option_name, option_value):
 
 # =============================================================
 # ================ REMOTE SERVER BLOCK START ==================
-
-
-def build_and_send_config_files(connection_type, configuration_type="config-file",
-                                destination_address=world.f_cfg.mgmt_address):
-    if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
-        add_defaults()
-        set_kea_ctrl_config()
-        cfg_write()
-        log.info((os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf")))
-        fabric_send_file(world.cfg["cfg_file"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
-                         destination_host=destination_address)
-        fabric_send_file(world.cfg["cfg_file_2"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
-                         destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-        remove_local_file(world.cfg["cfg_file_2"])
-    elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
-        add_defaults()
-        set_kea_ctrl_config()
-        cfg_write()
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
 
 
 def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):

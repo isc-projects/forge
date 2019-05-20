@@ -4,9 +4,10 @@ import time
 
 import pytest
 
-from dhcp4_scen import send_discover_with_no_answer, send_decline, rebind_with_nak_answer
+from dhcp4_scen import send_discover_with_no_answer, send_decline4, rebind_with_nak_answer
 from dhcp4_scen import send_request_and_check_ack
-from dhcp4_scen import get_address
+from dhcp4_scen import get_address, get_address4
+from dhcp4_scen import get_address6, send_decline6, send_solicit_and_check_advertise
 from cb_model import setup_server_for_config_backend_cmds
 
 
@@ -46,9 +47,10 @@ def test_echo_client_id(initial_echo_client_id):
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.parametrize("initial_decline_probation_period", [None, 1, 1000])
-def test_decline_and_probation_period(initial_decline_probation_period):
+def test_decline_and_probation_period(initial_decline_probation_period, dhcp_version):
     # Set initial value of decline-probation-period in config file and then change it
     # using cb-cmds. Observe if the setting is honored in case of sending DECLINE messages.
 
@@ -57,11 +59,15 @@ def test_decline_and_probation_period(initial_decline_probation_period):
 
     # Prepare subnet with only 1 IP address in a pool. This way when the second DISCOVER is send
     # no response should be expected from server.
-    cfg.add_subnet(pool='192.168.50.1/32')
+    cfg.add_subnet(pool='192.168.50.1/32' if dhcp_version == 'v4' else '2001:db8:1::1/128')
 
     # Get address and decline it.
-    addr1 = get_address(exp_yiaddr='192.168.50.1')
-    send_decline(addr1)
+    if dhcp_version == 'v4':
+        addr = get_address4(exp_yiaddr='192.168.50.1')
+        send_decline4(addr)
+    else:
+        get_address6(exp_ia_na_iaaddr_addr='2001:db8:1::1')
+        send_decline6()
 
     # Wait a moment.
     time.sleep(2)
@@ -70,40 +76,54 @@ def test_decline_and_probation_period(initial_decline_probation_period):
     # be possible to acquire the same IP again, ie. after 1 second it should have been
     # returned to pool from probation space.
     if initial_decline_probation_period == 1:
-        addr2 = get_address()
-        assert addr2 == addr1
+        get_address(exp_addr='192.168.50.1' if dhcp_version == 'v4' else '2001:db8:1::1')
     else:
         # If initial value was other than 1 second then server should still keep
         # the IP in probation and no response should be sent by server.
-        send_discover_with_no_answer()
+        if dhcp_version == 'v4':
+            send_discover_with_no_answer()
+        else:
+            send_solicit_and_check_advertise(exp_ia_na_status_code='NoAddrsAvail')
 
     # Delete subnet. This will delete IP in probation. Ie. start from scratch.
     cfg.del_subnet()
     # Change decline-probation-period from initial to 1000 seconds.
     cfg.set_global_parameter(decline_probation_period=1000)
     # Create new subnet with different pool but still with 1 IP address.
-    cfg.add_subnet(pool='192.168.50.2/32')
+    cfg.add_subnet(pool='192.168.50.2/32' if dhcp_version == 'v4' else '2001:db8:1::2/128')
 
     # Now after decline and sleeping 2 seconds the declined address still should
     # be in probation and server should not send any response for discover.
-    addr = get_address(exp_yiaddr='192.168.50.2')
-    send_decline(addr)
-    time.sleep(2)
-    send_discover_with_no_answer()
+    if dhcp_version == 'v4':
+        addr = get_address4(exp_yiaddr='192.168.50.2')
+        send_decline4(addr)
+        time.sleep(2)
+        send_discover_with_no_answer()
+    else:
+        get_address6(exp_ia_na_iaaddr_addr='2001:db8:1::2')
+        send_decline6()
+        time.sleep(2)
+        send_solicit_and_check_advertise(exp_ia_na_status_code='NoAddrsAvail')
 
     # Start from scratch again. New pool with 1 IP address.
     # Probation period is changed now to 1 second.
     cfg.del_subnet()
     cfg.set_global_parameter(decline_probation_period=1)
-    cfg.add_subnet(pool='192.168.50.3/32')
+    cfg.add_subnet(pool='192.168.50.3/32' if dhcp_version == 'v4' else '2001:db8:1::3/128')
 
     # This time after decline and sleeping the address should be available
     # for the following request.
-    addr1 = get_address(exp_yiaddr='192.168.50.3')
-    send_decline(addr1)
-    time.sleep(2)
-    addr2 = get_address()
-    assert addr2 == addr1
+    if dhcp_version == 'v4':
+        addr1 = get_address4(exp_yiaddr='192.168.50.3')
+        send_decline4(addr1)
+        time.sleep(2)
+        addr2 = get_address4()
+        assert addr2 == addr1
+    else:
+        get_address6(exp_ia_na_iaaddr_addr='2001:db8:1::3')
+        send_decline6()
+        time.sleep(2)
+        get_address6(exp_ia_na_iaaddr_addr='2001:db8:1::3')
 
 
 def _check_matching_client_id_when_false():
@@ -242,3 +262,6 @@ def test_dhcp4o6_port(initial_dhcp4o6_port):
         assert config['Dhcp4']['dhcp4o6-port'] == 1234
 
     cfg.set_global_parameter(dhcp4o6_port=4321)
+
+
+# TODO: find dhcpv6 global params that should be tested

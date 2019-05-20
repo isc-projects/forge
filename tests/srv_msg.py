@@ -637,7 +637,7 @@ def send_request(dhcp_version, cmd, channel='http'):
     cmd_str = json.dumps(cmd)
 
     if channel == 'http':
-        response = send_through_http('$(SRV4_ADDR)',
+        response = send_through_http('$(MGMT_ADDRESS)',
                                      8000,
                                      cmd_str)
         response = response[0]

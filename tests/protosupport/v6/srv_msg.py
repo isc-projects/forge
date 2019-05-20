@@ -496,17 +496,17 @@ def build_msg(msg):
     # get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"
 
-    #transaction id
+    # transaction id
     if world.cfg["values"]["tr_id"] is None:
         msg.trid = random.randint(0, 256*256*256)
     else:
         msg.trid = int(world.cfg["values"]["tr_id"])
     world.cfg["values"]["tr_id"] = msg.trid
 
-    #add option request if any
+    # add option request if any
     try:
         if len(world.oro.reqopts) > 0:
-                msg = add_option_to_msg(msg, world.oro)
+            msg = add_option_to_msg(msg, world.oro)
     except:
         pass
 
@@ -677,7 +677,7 @@ def client_save_option(option_name, count=0):
     assert opt, "Received message does not contain option " + option_name
     opt.payload = scapy.packet.NoPayload()
 
-    if not count in world.savedmsg:
+    if count not in world.savedmsg:
         world.savedmsg[count] = [opt]
     else:
         world.savedmsg[count].append(opt)

@@ -8,10 +8,10 @@ from cb_model import setup_server_for_config_backend_cmds
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.mark.config_backend]
+              pytest.mark.config_backend,
+              pytest.mark.v4]
 
 
-@pytest.mark.v4
 @pytest.mark.parametrize("initial_next_server,initial_server_hostname,initial_boot_file_name",
                          [(None, None, None),                              # pick defaults
                           ('1.1.1.1', 'aaa.example.com', '/boot/aaa')])    # some specific initial values
@@ -33,15 +33,16 @@ def test_subnet_override_init(initial_next_server, initial_server_hostname, init
                 exp_boot_file_name='/boot/bbb')
 
 
-@pytest.mark.v4
 def test_subnet_change_params():
     cfg = setup_server_for_config_backend_cmds()
 
+    # create one subnet with defaults
     cfg.add_subnet()
     get_address(exp_next_server='0.0.0.0',
                 exp_server_hostname='',
                 exp_boot_file_name='')
 
+    # set global params and check if they are in returned lease
     cfg.set_global_parameter(next_server='2.2.2.2',
                              server_hostname='bbb.example.com',
                              boot_file_name='/boot/bbb')
@@ -49,6 +50,8 @@ def test_subnet_change_params():
                 exp_server_hostname='bbb.example.com',
                 exp_boot_file_name='/boot/bbb')
 
+    # delete subnet and create new one with explicit params
+    # and check if they are in returned lease
     cfg.del_subnet()
     cfg.add_subnet(next_server='3.3.3.3',
                    server_hostname='ccc.example.com',
@@ -57,15 +60,15 @@ def test_subnet_change_params():
                 exp_server_hostname='ccc.example.com',
                 exp_boot_file_name='/boot/ccc')
 
-    cfg.add_subnet(next_server='4.4.4.4',
-                   server_hostname='ddd.example.com',
-                   boot_file_name='/boot/ddd')
+    # update subnet and check if new params are in returned lease
+    cfg.update_subnet(next_server='4.4.4.4',
+                      server_hostname='ddd.example.com',
+                      boot_file_name='/boot/ddd')
     get_address(exp_next_server='4.4.4.4',
                 exp_server_hostname='ddd.example.com',
                 exp_boot_file_name='/boot/ddd')
 
 
-@pytest.mark.v4
 @pytest.mark.parametrize("initial_next_server,initial_server_hostname,initial_boot_file_name",
                          [(None, None, None),                              # pick defaults
                           ('1.1.1.1', 'aaa.example.com', '/boot/aaa')])    # some specific initial values
@@ -87,7 +90,6 @@ def test_network_override_init(initial_next_server, initial_server_hostname, ini
                 exp_boot_file_name='/boot/bbb')
 
 
-@pytest.mark.v4
 def test_network_change_params():
     cfg = setup_server_for_config_backend_cmds()
 
