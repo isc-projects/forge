@@ -4,10 +4,10 @@ import time
 
 import pytest
 
-from dhcp4_scen import send_discover_with_no_answer, send_decline4, rebind_with_nak_answer
-from dhcp4_scen import send_request_and_check_ack
-from dhcp4_scen import get_address, get_address4
-from dhcp4_scen import get_address6, send_decline6, send_solicit_and_check_advertise
+from dhcp4_scen import get_address, get_rejected
+from dhcp4_scen import get_address4, get_address6
+from dhcp4_scen import send_decline4, send_decline6
+from dhcp4_scen import send_request_and_check_ack, rebind_with_nak_answer
 from cb_model import setup_server_for_config_backend_cmds
 
 
@@ -18,7 +18,6 @@ pytestmark = [pytest.mark.kea_only,
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
 @pytest.mark.parametrize("initial_echo_client_id", [None, True, False])
 def test_echo_client_id(initial_echo_client_id):
     # Set initial value of echo-client-id in config file and then change it
@@ -48,7 +47,6 @@ def test_echo_client_id(initial_echo_client_id):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.kea_only
 @pytest.mark.parametrize("initial_decline_probation_period", [None, 1, 1000])
 def test_decline_and_probation_period(initial_decline_probation_period, dhcp_version):
     # Set initial value of decline-probation-period in config file and then change it
@@ -80,10 +78,7 @@ def test_decline_and_probation_period(initial_decline_probation_period, dhcp_ver
     else:
         # If initial value was other than 1 second then server should still keep
         # the IP in probation and no response should be sent by server.
-        if dhcp_version == 'v4':
-            send_discover_with_no_answer()
-        else:
-            send_solicit_and_check_advertise(exp_ia_na_status_code='NoAddrsAvail')
+        get_rejected()
 
     # Delete subnet. This will delete IP in probation. Ie. start from scratch.
     cfg.del_subnet()
@@ -97,13 +92,11 @@ def test_decline_and_probation_period(initial_decline_probation_period, dhcp_ver
     if dhcp_version == 'v4':
         addr = get_address4(exp_yiaddr='192.168.50.2')
         send_decline4(addr)
-        time.sleep(2)
-        send_discover_with_no_answer()
     else:
         get_address6(exp_ia_na_iaaddr_addr='2001:db8:1::2')
         send_decline6()
-        time.sleep(2)
-        send_solicit_and_check_advertise(exp_ia_na_status_code='NoAddrsAvail')
+    time.sleep(2)
+    get_rejected()
 
     # Start from scratch again. New pool with 1 IP address.
     # Probation period is changed now to 1 second.
@@ -162,7 +155,6 @@ def _check_matching_client_id_when_true():
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
 @pytest.mark.parametrize("initial_match_client_id", [None, True, False])
 def test_match_client_id_override_init(initial_match_client_id):
     cfg, _ = setup_server_for_config_backend_cmds(match_client_id=initial_match_client_id,
@@ -182,7 +174,6 @@ def test_match_client_id_override_init(initial_match_client_id):
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
 def test_subnet_and_match_client_id():
     cfg, _ = setup_server_for_config_backend_cmds(check_config=True)
 
@@ -207,7 +198,6 @@ def test_subnet_and_match_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
 def test_network_and_match_client_id():
     cfg, _ = setup_server_for_config_backend_cmds(check_config=True)
 
@@ -250,15 +240,17 @@ def test_network_and_match_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
+@pytest.mark.v6
 @pytest.mark.parametrize("initial_dhcp4o6_port", [None, 1234])
-def test_dhcp4o6_port(initial_dhcp4o6_port):
+def test_dhcp4o6_port(initial_dhcp4o6_port, dhcp_version):  # pylint: disable=unused-argument
     cfg, config = setup_server_for_config_backend_cmds(dhcp4o6_port=initial_dhcp4o6_port,
                                                        check_config=True)
 
+    dhcp_key = 'Dhcp%s' % dhcp_version[1]
+
     if initial_dhcp4o6_port is None:
-        assert config['Dhcp4']['dhcp4o6-port'] == 0
+        assert config[dhcp_key]['dhcp4o6-port'] == 0
     else:
-        assert config['Dhcp4']['dhcp4o6-port'] == 1234
+        assert config[dhcp_key]['dhcp4o6-port'] == 1234
 
     cfg.set_global_parameter(dhcp4o6_port=4321)

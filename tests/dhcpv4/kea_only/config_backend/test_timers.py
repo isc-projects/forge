@@ -6,8 +6,7 @@ import logging
 import pytest
 
 from cb_model import setup_server_for_config_backend_cmds, get_cfg_default
-from dhcp4_scen import send_discover_with_no_answer, get_address
-from dhcp4_scen import send_solicit_and_check_advertise
+from dhcp4_scen import get_address, get_rejected
 
 
 log = logging.getLogger('forge')
@@ -331,10 +330,7 @@ def test_subnet_and_valid_lifetime(dhcp_version):
     # after 2 seconds check if another client 2 can get address - as default lifetime is big
     # it should fail because there is no more IP addresses (there is only 1 taken)
     time.sleep(2)
-    if dhcp_version == 'v4':
-        send_discover_with_no_answer(chaddr='00:00:00:00:00:02')
-    else:
-        send_solicit_and_check_advertise(duid='00:03:00:01:00:00:00:00:00:02', exp_ia_na_status_code='NoAddrsAvail')
+    get_rejected(mac_addr='00:00:00:00:00:02')
 
     # change lease lifetime on global level to be small ie. 1sec
     # and 1) extend address pool by 1 IP for new client 3 as previous IP address is taken for long time
@@ -359,10 +355,7 @@ def test_subnet_and_valid_lifetime(dhcp_version):
     # after 2 seconds check if another client 6 can get address - as new lifetime is big
     # it should fail because there is no more IP addresses (there is only 2 taken)
     time.sleep(2)
-    if dhcp_version == 'v4':
-        send_discover_with_no_answer(chaddr='00:00:00:00:00:06')
-    else:
-        send_solicit_and_check_advertise(duid='00:03:00:01:00:00:00:00:00:06', exp_ia_na_status_code='NoAddrsAvail')
+    get_rejected(mac_addr='00:00:00:00:00:06')
 
     # change lease lifetime on subnet level to be small ie. 1sec
     # and check getting address by client 7 but first extent pool by one address
@@ -396,10 +389,7 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
     # after 2 seconds check if another client 2 can get address - as default lifetime is big
     # it should fail because there is no more IP addresses (there is only 1 that is taken)
     time.sleep(2)
-    if dhcp_version == 'v4':
-        send_discover_with_no_answer(chaddr='00:00:00:00:00:02')
-    else:
-        send_solicit_and_check_advertise(duid='00:03:00:01:00:00:00:00:00:02', exp_ia_na_status_code='NoAddrsAvail')
+    get_rejected(mac_addr='00:00:00:00:00:02')
 
     # change lease lifetime on global level to be small ie. 1sec
     # and 1) extend address pool by 1 IP for new client 3 as previous IP address is taken for long time
@@ -423,11 +413,7 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
     # after 2 seconds check if another client 6 can get address - as new lifetime is big
     # it should fail because there is no more IP addresses (there are only 2 that are taken)
     time.sleep(2)
-    if dhcp_version == 'v4':
-        send_discover_with_no_answer(chaddr='00:00:00:00:00:06')
-    else:
-        send_solicit_and_check_advertise(duid='00:03:00:01:00:00:00:00:00:06',
-                                         exp_ia_na_status_code='NoAddrsAvail')
+    get_rejected(mac_addr='00:00:00:00:00:06')
 
     # change lease lifetime on network level to be small ie. 1sec
     # and check getting address by client 7 but first extent pool by one address
@@ -451,10 +437,7 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
     # after 2 seconds check if another client 10 can get address - as new lifetime is big
     # it should fail because there is no more IP addresses (there are only 4 that are taken)
     time.sleep(2)
-    if dhcp_version == 'v4':
-        send_discover_with_no_answer(chaddr='00:00:00:00:00:10')
-    else:
-        send_solicit_and_check_advertise(duid='00:03:00:01:00:00:00:00:00:06', exp_ia_na_status_code='NoAddrsAvail')
+    get_rejected(mac_addr='00:00:00:00:00:10')
 
     # change lease lifetime on subnet level to be small ie. 1sec
     # and check getting address by client 11 but first extent pool by one address

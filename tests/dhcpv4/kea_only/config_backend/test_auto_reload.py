@@ -2,8 +2,7 @@ import time
 import pytest
 
 from cb_model import setup_server_for_config_backend_cmds, get_config
-from dhcp4_scen import get_address, send_discover_with_no_answer
-from dhcp4_scen import send_solicit_and_check_advertise
+from dhcp4_scen import get_address, get_rejected
 
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.controlchannel,
@@ -60,7 +59,4 @@ def test_auto_reload_100seconds(dhcp_version):
     assert len(new_cfg[dhcp_key][subnet_key]) == 0
 
     # there is NO subnet so getting address should fail
-    if dhcp_version == 'v4':
-        send_discover_with_no_answer()
-    else:
-        send_solicit_and_check_advertise(exp_ia_na_status_code='NoAddrsAvail')
+    get_rejected()

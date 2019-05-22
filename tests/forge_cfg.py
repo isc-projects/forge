@@ -26,6 +26,7 @@ import fcntl
 import socket
 import struct
 import sys
+import cgitb
 
 
 from init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, SOFTWARE_UNDER_TEST, DB_TYPE, SHOW_PACKETS_FROM, \
@@ -228,8 +229,37 @@ world = threading.local()
 world.f_cfg = ForgeConfiguration()
 
 
+def _conv_arg_to_txt(arg):
+    if isinstance(arg, basestring):
+        return "'%s'" % arg
+    else:
+        return str(arg)
+
 # stub that replaces lettuce step decorator
 def step(pattern):
     def wrap(func):
-        return func
+        def wrapped_func(*args, **kwargs):
+            txt = func.__name__ + '('
+            txt_args = ", ".join([_conv_arg_to_txt(a) for a in args])
+            txt_kwargs = ", ".join(['%s=%s' % (str(k), _conv_arg_to_txt(v)) for k, v in kwargs.items()])
+            if txt_args:
+                txt += txt_args
+                if txt_kwargs:
+                    txt += ', '
+            if txt_kwargs:
+                txt += txt_kwargs
+            txt += ')\n'
+
+            fout = os.path.join(world.cfg["dir_name"], 'test-steps.txt')
+            with open(fout, 'a') as f:
+                f.write(txt)
+
+            try:
+                return func(*args, **kwargs)
+            except:
+                txt = cgitb.text(sys.exc_info())
+                with open(fout, 'a') as f:
+                    f.write(txt)
+                raise
+        return wrapped_func
     return wrap

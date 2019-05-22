@@ -267,9 +267,6 @@ class ConfigModel(ConfigElem):
             "name": "floor13",
             "interface": "$(SERVER_IFACE)"}
 
-        if world.proto == 'v6':
-            network['rapid-commit'] = False  # presence required - set False by default
-
         for param, val in kwargs.items():
             if val is None:
                 continue
@@ -318,16 +315,17 @@ class ConfigModel(ConfigElem):
             "shared-network-name": "",
             "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else default_pool_range}]}
 
-        if world.proto == 'v6':
-            subnet['rapid-commit'] = False  # presence required - set False by default
-
         for param, val in kwargs.items():
             if val is None:
                 continue
             if param == 'network':
                 param = 'shared-network-name'
                 val = val.cfg['name']
-            subnet[param.replace('_', '-')] = val
+            param = param.replace('_', '-')
+            subnet[param] = val
+
+            if param == 'interface-id':
+                del subnet['interface']
 
         # send command
         response = subnet_set(subnet)

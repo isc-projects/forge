@@ -7,13 +7,23 @@ from forge_cfg import world
 #########################################################################
 # DHCPv4
 
-def send_discover_with_no_answer(chaddr=None, client_id=None):
-    misc.test_procedure()
+def _send_discover(chaddr=None, client_id=None, giaddr=None):
+    srv_msg.client_requests_option('1')
     if chaddr is not None:
         srv_msg.client_sets_value('Client', 'chaddr', chaddr)
     if client_id is not None:
         srv_msg.client_does_include_with_value('client_id', client_id)
+    if giaddr is not None:
+        srv_msg.network_variable('source_port', '67')
+        srv_msg.network_variable('source_address', giaddr)
+        srv_msg.network_variable('destination_address', '$(SRV4_ADDR)')
+        srv_msg.client_sets_value('Client', 'giaddr', giaddr)
     srv_msg.client_send_msg('DISCOVER')
+
+
+def send_discover_with_no_answer(chaddr=None, client_id=None, giaddr=None):
+    misc.test_procedure()
+    _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr)
     srv_msg.send_wait_for_message("MUST", False, "None")
 
 
@@ -57,17 +67,12 @@ def send_decline4(requested_addr):
 
 
 def send_discover_and_check_offer(
-        chaddr=None, client_id=None,
+        chaddr=None, client_id=None, giaddr=None,
         exp_yiaddr=None, exp_client_id=None,
         exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None):
     # send DISCOVER
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
-    if chaddr is not None:
-        srv_msg.client_sets_value('Client', 'chaddr', chaddr)
-    if client_id is not None:
-        srv_msg.client_does_include_with_value('client_id', client_id)
-    srv_msg.client_send_msg('DISCOVER')
+    _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr)
 
     # check OFFER
     msgs = srv_msg.send_wait_for_message('MUST', None, 'OFFER')
@@ -159,13 +164,13 @@ def send_request_and_check_ack(
         srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
 
 
-def get_address4(chaddr=None, client_id=None,
+def get_address4(chaddr=None, client_id=None, giaddr=None,
                  exp_yiaddr=None, exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
                  exp_client_id=None,
                  exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None):
     # send DISCOVER and check OFFER
     rcvd_yiaddr = send_discover_and_check_offer(
-        chaddr=chaddr, client_id=client_id,
+        chaddr=chaddr, client_id=client_id, giaddr=giaddr,
         exp_yiaddr=exp_yiaddr, exp_client_id=exp_client_id,
         exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name)
 
@@ -190,8 +195,99 @@ DHCPv6_STATUS_CODES = {
     'UseMulticast': '5'
 }
 
-def send_solicit_and_check_advertise(duid=None, exp_ia_na_iaaddr_addr=None, exp_ia_na_status_code=None,
-                                     exp_ia_na_t1=None, exp_ia_na_t2=None):
+def _check_ia_na_options(exp_ia_na_t1,
+                         exp_ia_na_t2,
+                         exp_ia_na_status_code,
+                         exp_ia_na_iaaddr_addr,
+                         exp_ia_na_iaaddr_preflft,
+                         exp_ia_na_iaaddr_validlft):
+    srv_msg.response_check_include_option('Response', None, 'IA_NA')
+
+    # check IA_NA
+    if exp_ia_na_t1 is not None:
+        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'T1', exp_ia_na_t1)
+
+    if exp_ia_na_t2 is not None:
+        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'T2', exp_ia_na_t2)
+
+    # check IA_NA/status_code
+    if exp_ia_na_status_code is not None:
+        if exp_ia_na_status_code in DHCPv6_STATUS_CODES:
+            exp_ia_na_status_code = DHCPv6_STATUS_CODES[exp_ia_na_status_code]
+        elif not exp_ia_na_status_code.isdigit():
+            raise Exception("exp_ia_na_status_code value '%s' should be a digit or status code name" % exp_ia_na_status_code)
+
+        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'sub-option', 'status-code')
+        srv_msg.response_check_suboption_content('Response', 'status-code', 'IA_NA', None, 'statuscode', exp_ia_na_status_code)
+
+    # check IA_NA/IA_address
+    if exp_ia_na_iaaddr_addr is not None or exp_ia_na_iaaddr_validlft is not None or exp_ia_na_iaaddr_preflft is not None:
+        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'sub-option', 'IA_address')
+
+    if exp_ia_na_iaaddr_addr is not None:
+        srv_msg.response_check_suboption_content('Response', 'IA_address', 'IA_NA', None, 'addr', exp_ia_na_iaaddr_addr)
+    if exp_ia_na_iaaddr_preflft is not None:
+        srv_msg.response_check_suboption_content('Response', 'IA_address', 'IA_NA', None, 'preflft', exp_ia_na_iaaddr_preflft)
+    if exp_ia_na_iaaddr_validlft is not None:
+        srv_msg.response_check_suboption_content('Response', 'IA_address', 'IA_NA', None, 'validlft', exp_ia_na_iaaddr_validlft)
+
+
+def _check_ia_pd_options(exp_ia_pd_iaprefix_prefix=None,
+                         exp_ia_pd_iaprefix_plen=None):
+    # IA-PD checks
+    srv_msg.response_check_include_option('Response', None, 'IA_PD')
+
+    if exp_ia_pd_iaprefix_prefix is not None:
+        srv_msg.response_check_option_content('Response', 'IA_PD', None, 'sub-option', 'IA-Prefix')
+        srv_msg.response_check_suboption_content('Response', 'IA-Prefix', 'IA_PD', None, 'prefix', exp_ia_pd_iaprefix_prefix)
+
+    if exp_ia_pd_iaprefix_plen is not None:
+        srv_msg.response_check_option_content('Response', 'IA_PD', None, 'sub-option', 'IA-Prefix')
+        srv_msg.response_check_suboption_content('Response', 'IA-Prefix', 'IA_PD', None, 'plen', exp_ia_pd_iaprefix_plen)
+
+
+def _send_and_check_response(req_ia,
+                             exp_msg_type,
+                             exp_ia_na_t1,
+                             exp_ia_na_t2,
+                             exp_ia_na_status_code,
+                             exp_ia_na_iaaddr_addr,
+                             exp_ia_na_iaaddr_preflft,
+                             exp_ia_na_iaaddr_validlft,
+                             exp_ia_pd_iaprefix_prefix,
+                             exp_ia_pd_iaprefix_plen,
+                             exp_rapid_commit):
+    msgs = srv_msg.send_wait_for_message('MUST', None, exp_msg_type)
+
+    if exp_msg_type == 'RELAYREPLY':
+        srv_msg.response_check_include_option('Response', None, 'relay-msg')
+        srv_msg.response_check_option_content('Response', 'relay-msg', None, 'Relayed', 'Message')
+
+    if req_ia == 'IA-NA':
+        _check_ia_na_options(exp_ia_na_t1,
+                             exp_ia_na_t2,
+                             exp_ia_na_status_code,
+                             exp_ia_na_iaaddr_addr,
+                             exp_ia_na_iaaddr_preflft,
+                             exp_ia_na_iaaddr_validlft)
+
+    if req_ia == 'IA-PD':
+        _check_ia_pd_options(exp_ia_pd_iaprefix_prefix,
+                             exp_ia_pd_iaprefix_plen)
+
+    if exp_rapid_commit:
+        srv_msg.response_check_include_option('Response', None, 'rapid_commit')
+
+def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
+                                    interface_id=None,
+                                    exp_ia_na_t1=None,
+                                    exp_ia_na_t2=None,
+                                    exp_ia_na_status_code=None,
+                                    exp_ia_na_iaaddr_addr=None,
+                                    exp_ia_na_iaaddr_preflft=None,
+                                    exp_ia_na_iaaddr_validlft=None,
+                                    exp_ia_pd_iaprefix_prefix=None,
+                                    exp_ia_pd_iaprefix_plen=None):
     # send SOLICIT
     misc.test_procedure()
     srv_msg.client_requests_option('1')
@@ -200,11 +296,45 @@ def send_solicit_and_check_advertise(duid=None, exp_ia_na_iaaddr_addr=None, exp_
     #if client_id is not None:
     #    srv_msg.client_does_include_with_value('client_id', client_id)
     srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    if req_ia is not None:
+        srv_msg.client_does_include('Client', None, req_ia)
+
+    if rapid_commit:
+        srv_msg.client_does_include('Client', None, 'rapid-commit')
+
     srv_msg.client_send_msg('SOLICIT')
 
-    # check ADVERTISE
-    msgs = srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    # add relay agent stuff
+    if relay_addr is not None:
+        srv_msg.client_sets_value('RelayAgent', 'linkaddr', relay_addr)
+
+    if interface_id is not None:
+        srv_msg.client_sets_value('RelayAgent', 'ifaceid', interface_id)
+        #srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+
+    if relay_addr is not None or interface_id is not None:
+        srv_msg.create_relay_forward()
+
+    # check response
+    if relay_addr is not None:
+        exp_msg_type = 'RELAYREPLY'
+    elif rapid_commit:
+        exp_msg_type = 'REPLY'
+    else:
+        exp_msg_type = 'ADVERTISE'
+
+    _send_and_check_response(req_ia,
+                             exp_msg_type,
+                             exp_ia_na_t1,
+                             exp_ia_na_t2,
+                             exp_ia_na_status_code,
+                             exp_ia_na_iaaddr_addr,
+                             exp_ia_na_iaaddr_preflft,
+                             exp_ia_na_iaaddr_validlft,
+                             exp_ia_pd_iaprefix_prefix,
+                             exp_ia_pd_iaprefix_plen,
+                             rapid_commit)
+
     # srv_msg.response_check_include_option('Response', None, '1')
     # srv_msg.response_check_include_option('Response', None, '54')
     # srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
@@ -216,40 +346,22 @@ def send_solicit_and_check_advertise(duid=None, exp_ia_na_iaaddr_addr=None, exp_
     #     else:
     #         srv_msg.response_check_include_option('Response', None, '61')
     #         srv_msg.response_check_option_content('Response', '61', None, 'value', exp_client_id)
-    # if exp_next_server is not None:
-    #     srv_msg.response_check_content('Response', None, 'siaddr', exp_next_server)
-    # if exp_server_hostname is not None:
-    #     srv_msg.response_check_content('Response', None, 'sname', exp_server_hostname)
-    # if exp_boot_file_name is not None:
-    #     srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
-    srv_msg.response_check_include_option('Response', None, '3')
-    if exp_ia_na_status_code is not None:
-        if exp_ia_na_status_code in DHCPv6_STATUS_CODES:
-            exp_ia_na_status_code = DHCPv6_STATUS_CODES[exp_ia_na_status_code]
-        elif not exp_ia_na_status_code.isdigit():
-            raise Exception("exp_ia_na_status_code value '%s' should be a digit or status code name" % exp_ia_na_status_code)
-
-        srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
-        srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', exp_ia_na_status_code)
-
-    if exp_ia_na_iaaddr_addr is not None:
-        srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-        srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', exp_ia_na_iaaddr_addr)
-
-    if exp_ia_na_t1 is not None:
-        srv_msg.response_check_option_content('Response', '3', None, 'T1', exp_ia_na_t1)
-
-    if exp_ia_na_t2 is not None:
-        srv_msg.response_check_option_content('Response', '3', None, 'T2', exp_ia_na_t2)
 
     #return rcvd_yiaddr
     return None
 
 
 def send_request_and_check_reply(duid=None,
-                                 exp_ia_na_t1=None, exp_ia_na_t2=None,
+                                 req_ia=None,
+                                 interface_id=None,
+                                 exp_ia_na_t1=None,
+                                 exp_ia_na_t2=None,
+                                 exp_ia_na_status_code=None,
                                  exp_ia_na_iaaddr_addr=None,
-                                 exp_ia_na_iaaddr_preflft=None, exp_ia_na_iaaddr_validlft=None):
+                                 exp_ia_na_iaaddr_preflft=None,
+                                 exp_ia_na_iaaddr_validlft=None,
+                                 exp_ia_pd_iaprefix_prefix=None,
+                                 exp_ia_pd_iaprefix_plen=None):
     # send REQUEST
     misc.test_procedure()
     if duid is not None:
@@ -263,7 +375,10 @@ def send_request_and_check_reply(duid=None,
     # if ciaddr is not None:
     #     srv_msg.client_sets_value('Client', 'ciaddr', ciaddr)
     # srv_msg.client_requests_option('1')
-    srv_msg.client_copy_option('IA_NA')
+    if req_ia == 'IA-NA':
+        srv_msg.client_copy_option('IA_NA')
+    if req_ia == 'IA-PD':
+        srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('server-id')
     #srv_msg.client_save_option('server-id')
     #srv_msg.client_add_saved_option('DONT ')
@@ -271,26 +386,11 @@ def send_request_and_check_reply(duid=None,
 
     srv_msg.client_send_msg('REQUEST')
 
-    # check REPLY
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    exp_addr = exp_ia_na_iaaddr_addr
-    # if exp_yiaddr is not None:
-    #     exp_addr = exp_yiaddr
-    # elif requested_addr is not None:
-    #     exp_addr = requested_addr
-    # elif ciaddr is not None:
-    #     exp_addr = ciaddr
-    # else:
-    #     exp_addr = None
-    # if exp_addr is not None:
-    if exp_addr is not None or exp_ia_na_iaaddr_validlft is not None or exp_ia_na_iaaddr_preflft is not None:
-        srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    if exp_addr is not None:
-        srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', exp_addr)
-    if exp_ia_na_iaaddr_preflft is not None:
-        srv_msg.response_check_suboption_content('Response', '5', '3', None, 'preflft', exp_ia_na_iaaddr_preflft)
-    if exp_ia_na_iaaddr_validlft is not None:
-        srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', exp_ia_na_iaaddr_validlft)
+    if interface_id is not None:
+        srv_msg.client_sets_value('RelayAgent', 'ifaceid', interface_id)
+        #srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+        srv_msg.create_relay_forward()
+
 
     # srv_msg.response_check_include_option('Response', None, '1')
     # srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
@@ -308,12 +408,6 @@ def send_request_and_check_reply(duid=None,
     #     if not missing:
     #         srv_msg.response_check_option_content('Response', '59', None, 'value', exp_rebind_timer)
 
-    if exp_ia_na_t1 is not None:
-        srv_msg.response_check_option_content('Response', '3', None, 'T1', exp_ia_na_t1)
-
-    if exp_ia_na_t2 is not None:
-        srv_msg.response_check_option_content('Response', '3', None, 'T2', exp_ia_na_t2)
-
     # if exp_client_id is not None:
     #     if exp_client_id == 'missing':
     #         srv_msg.response_check_include_option('Response', 'NOT ', '61')
@@ -328,26 +422,51 @@ def send_request_and_check_reply(duid=None,
     # if exp_boot_file_name is not None:
     #     srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
 
+    _send_and_check_response(req_ia,
+                             'REPLY',
+                             exp_ia_na_t1,
+                             exp_ia_na_t2,
+                             exp_ia_na_status_code,
+                             exp_ia_na_iaaddr_addr,
+                             exp_ia_na_iaaddr_preflft,
+                             exp_ia_na_iaaddr_validlft,
+                             exp_ia_pd_iaprefix_prefix,
+                             exp_ia_pd_iaprefix_plen,
+                             False)  # exp_rapid_commit=False
 
-def get_address6(duid=None,
-                 exp_ia_na_t1=None, exp_ia_na_t2=None,
+
+def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
+                 interface_id=None,
+                 exp_ia_na_t1=None,
+                 exp_ia_na_t2=None,
                  exp_ia_na_iaaddr_addr=None,
-                 exp_ia_na_iaaddr_preflft=None, exp_ia_na_iaaddr_validlft=None):
-    # send SOLICIT and check ADVERTISE
-    rcvd_ia_na_iaaddr = send_solicit_and_check_advertise(duid=duid,
-                                                         exp_ia_na_t1=exp_ia_na_t1,
-                                                         exp_ia_na_t2=exp_ia_na_t2,
-                                                         exp_ia_na_iaaddr_addr=exp_ia_na_iaaddr_addr)
+                 exp_ia_na_iaaddr_preflft=None,
+                 exp_ia_na_iaaddr_validlft=None,
+                 exp_ia_pd_iaprefix_prefix=None,
+                 exp_ia_pd_iaprefix_plen=None):
 
-    # send REQUEST and check REPLY
-    send_request_and_check_reply(duid=duid,
-                                 exp_ia_na_t1=exp_ia_na_t1,
-                                 exp_ia_na_t2=exp_ia_na_t2,
-                                 exp_ia_na_iaaddr_addr=exp_ia_na_iaaddr_addr,
-                                 exp_ia_na_iaaddr_preflft=exp_ia_na_iaaddr_preflft,
-                                 exp_ia_na_iaaddr_validlft=exp_ia_na_iaaddr_validlft)
+    send_solicit_and_check_response(duid=duid,
+                                    relay_addr=relay_addr,
+                                    req_ia=req_ia,
+                                    rapid_commit=rapid_commit,
+                                    interface_id=interface_id,
+                                    exp_ia_na_t1=exp_ia_na_t1,
+                                    exp_ia_na_t2=exp_ia_na_t2,
+                                    exp_ia_na_iaaddr_addr=exp_ia_na_iaaddr_addr,
+                                    exp_ia_pd_iaprefix_prefix=exp_ia_pd_iaprefix_prefix,
+                                    exp_ia_pd_iaprefix_plen=exp_ia_pd_iaprefix_plen)
 
-    return rcvd_ia_na_iaaddr
+    if not rapid_commit:
+        send_request_and_check_reply(duid=duid,
+                                     req_ia=req_ia,
+                                     interface_id=interface_id,
+                                     exp_ia_na_t1=exp_ia_na_t1,
+                                     exp_ia_na_t2=exp_ia_na_t2,
+                                     exp_ia_na_iaaddr_addr=exp_ia_na_iaaddr_addr,
+                                     exp_ia_na_iaaddr_preflft=exp_ia_na_iaaddr_preflft,
+                                     exp_ia_na_iaaddr_validlft=exp_ia_na_iaaddr_validlft,
+                                     exp_ia_pd_iaprefix_prefix=exp_ia_pd_iaprefix_prefix,
+                                     exp_ia_pd_iaprefix_plen=exp_ia_pd_iaprefix_plen)
 
 
 def send_decline6():
@@ -361,33 +480,49 @@ def send_decline6():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
 
-def get_address(**kwargs):
+#########################################################################
+# common functions
+
+def _common_keys_to_specific(kwargs):
     new_kwargs = {}
+    key_map = {
+        'exp_addr': {'v4': 'exp_yiaddr', 'v6': 'exp_ia_na_iaaddr_addr'},
+        'exp_renew_timer': {'v4': 'exp_renew_timer', 'v6': 'exp_ia_na_t1'},
+        'exp_rebind_timer': {'v4': 'exp_rebind_timer', 'v6': 'exp_ia_na_t2'},
+        'exp_lease_time': {'v4': 'exp_lease_time', 'v6': 'exp_ia_na_iaaddr_validlft'},
+        'relay_addr': {'v4': 'giaddr', 'v6': 'relay_addr'},
+    }
 
     for k, v in kwargs.items():
-        if k == 'exp_addr':
-            if world.proto == 'v4':
-                new_kwargs['exp_yiaddr'] = v
-            else:
-                new_kwargs['exp_ia_na_iaaddr_addr'] = v
+        if k in key_map:
+            new_key = key_map[k][world.proto]
+            new_kwargs[new_key] = v
         elif k == 'mac_addr':
             if world.proto == 'v4':
                 new_kwargs['chaddr'] = v
             else:
                 new_kwargs['duid'] = '00:03:00:01:' + v
-        elif k == 'exp_renew_timer':
-            if world.proto == 'v6':
-                new_kwargs['exp_ia_na_t1'] = v
-        elif k == 'exp_rebind_timer':
-            if world.proto == 'v6':
-                new_kwargs['exp_ia_na_t2'] = v
-        elif k == 'exp_lease_time':
-            if world.proto == 'v6':
-                new_kwargs['exp_ia_na_iaaddr_validlft'] = v
         else:
             new_kwargs[k] = v
+
+    return new_kwargs
+
+
+def get_address(**kwargs):
+    new_kwargs = _common_keys_to_specific(kwargs)
 
     if world.proto == 'v4':
         return get_address4(**new_kwargs)
     else:
         return get_address6(**new_kwargs)
+
+
+def get_rejected(**kwargs):
+    new_kwargs = _common_keys_to_specific(kwargs)
+
+    if world.proto == 'v4':
+        return send_discover_with_no_answer(**new_kwargs)
+    else:
+        if 'exp_ia_na_status_code' not in new_kwargs:
+            new_kwargs['exp_ia_na_status_code'] = 'NoAddrsAvail'
+        return send_solicit_and_check_response(**new_kwargs)

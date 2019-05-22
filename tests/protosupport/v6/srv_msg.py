@@ -38,7 +38,7 @@ log = logging.getLogger('forge')
 
 
 # option codes for options and sub-options for dhcp v6
-options = {"client-id": 1,
+OPTIONS = {"client-id": 1,
            "server-id": 2,
            "IA_NA": 3,
            "IN_TA": 4,
@@ -670,8 +670,8 @@ def get_msg_type(msg):
 
 
 def client_save_option(option_name, count=0):
-    assert option_name in options, "Unsupported option name " + option_name
-    opt_code = options.get(option_name)
+    assert option_name in OPTIONS, "Unsupported option name " + option_name
+    opt_code = OPTIONS.get(option_name)
     opt = get_option(get_last_response(), opt_code)
 
     assert opt, "Received message does not contain option " + option_name
@@ -689,8 +689,8 @@ def client_copy_option(option_name):
     """
     assert world.srvmsg
 
-    assert option_name in options, "Unsupported option name " + option_name
-    opt_code = options.get(option_name)
+    assert option_name in OPTIONS, "Unsupported option name " + option_name
+    opt_code = OPTIONS.get(option_name)
 
     # find and copy option
     opt = get_option(world.srvmsg[0], opt_code)
@@ -774,6 +774,10 @@ def response_check_include_option(must_include, opt_code):
     """
     assert len(world.srvmsg) != 0, "No response received."
 
+    # if opt_code is actually a opt name then convert it to code
+    if isinstance(opt_code, str) and not opt_code.isdigit():
+        opt_code = OPTIONS[opt_code]
+
     opt = get_option(world.srvmsg[0], opt_code)
 
     opt_descr = _get_opt_descr(opt_code)
@@ -817,10 +821,11 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
     return result, received
 
 def get_suboption(opt_code, subopt_code):
+    # if opt_code is actually a opt name then convert it to code
     if isinstance(opt_code, str) and not opt_code.isdigit():
-        opt_code = options[opt_code]
+        opt_code = OPTIONS[opt_code]
     if isinstance(subopt_code, str) and not subopt_code.isdigit():
-        subopt_code = options[subopt_code]
+        subopt_code = OPTIONS[subopt_code]
 
     opt, _ = get_subopt_from_option(opt_code, subopt_code)
     return opt
@@ -839,6 +844,12 @@ def extract_duid(option):
 
 
 def response_check_include_suboption(opt_code, expect, expected_value):
+    # if opt_code is actually a opt name then convert it to code
+    if isinstance(opt_code, str) and not opt_code.isdigit():
+        opt_code = OPTIONS[opt_code]
+    if isinstance(expected_value, str) and not expected_value.isdigit():
+        expected_value = OPTIONS[expected_value]
+
     x, receive_tmp = get_subopt_from_option(int(opt_code), int(expected_value))
     opt_descr = _get_opt_descr(opt_code)
     subopt_descr = _get_opt_descr(expected_value)
@@ -855,6 +866,12 @@ values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sips
 
 
 def response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected_value):
+    # if opt_code is actually a opt name then convert it to code
+    if isinstance(opt_code, str) and not opt_code.isdigit():
+        opt_code = OPTIONS[opt_code]
+    if isinstance(subopt_code, str) and not subopt_code.isdigit():
+        subopt_code = OPTIONS[subopt_code]
+
     #first check if subotion exists and get suboption
     opt_code = int(opt_code)
     if opt_code == 17:
@@ -862,10 +879,10 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
     data_type = str(data_type)
     expected_value = str(expected_value)
     received = []
-    options, receive_tmp = response_check_include_suboption(opt_code, None, subopt_code)
-    assert subopt_code == receive_tmp, "You should never see this error, if so, please report that bug a"
+    opts, receive_tmp = response_check_include_suboption(opt_code, None, subopt_code)
+    assert int(subopt_code) == int(receive_tmp), "You should never see this error, if so, please report that bug a"
     # that is duplicated code but lets leave it for now
-    for opt in options:
+    for opt in opts:
         tmp_field = opt.fields.get(data_type)
         if tmp_field is None:
             if opt_code not in [17]:
@@ -893,6 +910,9 @@ def convert_relayed_message(relayed_option):
 
 
 def response_check_option_content(opt_code, expect, data_type, expected_value):
+    # if opt_code is actually a opt name then convert it to code
+    if isinstance(opt_code, str) and not opt_code.isdigit():
+        opt_code = OPTIONS[opt_code]
     opt_code = int(opt_code)
     data_type = str(data_type)
     expected_value = str(expected_value)
