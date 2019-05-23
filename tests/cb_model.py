@@ -205,16 +205,17 @@ class ConfigModel(ConfigElem):
             for net in self.shared_networks.values():
                 cfg['shared-networks'].append(net.get_dict())
 
+        cfg["loggers"] = [{"name": "kea-dhcp" + proto,
+                           "output_options": [{"output": "$(SOFTWARE_INSTALL_PATH)/var/kea/kea.log"}],
+                           "debuglevel": 99,
+                           "severity": "DEBUG"}]
+
         dhcp_key = 'Dhcp' + proto
         cfg = {dhcp_key: cfg,
                "Control-agent": {"http-host": '$(MGMT_ADDRESS)',
                                  "http-port": 8000,
                                  "control-sockets": {"dhcp" + proto: {"socket-type": 'unix',
-                                                               "socket-name": '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}},
-               "Logging": {"loggers": [{"name":"kea-dhcp" + proto,
-                                        "output_options":[{"output": "$(SOFTWARE_INSTALL_PATH)/var/kea/kea.log"}],
-                                        "debuglevel":99,
-                                        "severity":"DEBUG"}]}}
+                                                               "socket-name": '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}}}
 
         _substitute_vars(cfg)
 

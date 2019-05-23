@@ -262,6 +262,3 @@ def test_dhcp4o6_port(initial_dhcp4o6_port):
         assert config['Dhcp4']['dhcp4o6-port'] == 1234
 
     cfg.set_global_parameter(dhcp4o6_port=4321)
-
-
-# TODO: find dhcpv6 global params that should be tested
