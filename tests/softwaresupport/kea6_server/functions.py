@@ -28,7 +28,8 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
 from protosupport.multi_protocol_functions import add_variable
 from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
-from softwaresupport.kea import build_and_send_config_files, build_and_send_config_files2, clear_all, clear_logs
+from softwaresupport.kea import build_and_send_config_files2, clear_all, clear_logs
+from softwaresupport.kea import set_kea_ctrl_config
 
 
 world.kea_options6 = {
@@ -141,6 +142,41 @@ def add_defaults():
 
     if eth is not None and eth not in world.cfg["interfaces"]:
         add_interface(eth)
+
+
+def build_and_send_config_files(connection_type, configuration_type="config-file",
+                                destination_address=world.f_cfg.mgmt_address):
+    """
+    Generate final config file, save it to test result directory
+    and send it to remote system unless testing step will define differently.
+    :param connection_type: for now two values expected: SSH and None for stating if files should be send
+    :param configuration_type: for now supported just config-file, generate file and save to results dir
+    :param destination_address: address of remote system to which conf file will be send,
+    default it's world.f_cfg.mgmt_address
+    """
+
+    if configuration_type == "config-file" and connection_type == "SSH":
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
+        add_defaults()
+        set_kea_ctrl_config()
+        cfg_write()
+        fabric_send_file(world.cfg["cfg_file"],
+                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
+                         destination_host=destination_address)
+        fabric_send_file(world.cfg["cfg_file_2"],
+                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
+                         destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
+        remove_local_file(world.cfg["cfg_file"])
+        remove_local_file(world.cfg["cfg_file_2"])
+    elif configuration_type == "config-file" and connection_type is None:
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
+        add_defaults()
+        set_kea_ctrl_config()
+        cfg_write()
+        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
+        remove_local_file(world.cfg["cfg_file"])
 
 
 def set_conf_parameter_global(parameter_name, value):

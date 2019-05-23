@@ -26,7 +26,7 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
 log = logging.getLogger('forge')
 
 
-def _set_kea_ctrl_config():
+def set_kea_ctrl_config():
     if world.f_cfg.software_install_path.endswith('/'):
         path = world.f_cfg.software_install_path[:-1]
     else:
@@ -64,41 +64,6 @@ def _set_kea_ctrl_config():
     '''.format(**locals())
 
 
-def build_and_send_config_files(connection_type, configuration_type="config-file",
-                                destination_address=world.f_cfg.mgmt_address):
-    """
-    Generate final config file, save it to test result directory
-    and send it to remote system unless testing step will define differently.
-    :param connection_type: for now two values expected: SSH and None for stating if files should be send
-    :param configuration_type: for now supported just config-file, generate file and save to results dir
-    :param destination_address: address of remote system to which conf file will be send,
-    default it's world.f_cfg.mgmt_address
-    """
-
-    if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
-        add_defaults()
-        _set_kea_ctrl_config()
-        cfg_write()
-        fabric_send_file(world.cfg["cfg_file"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
-                         destination_host=destination_address)
-        fabric_send_file(world.cfg["cfg_file_2"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
-                         destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-        remove_local_file(world.cfg["cfg_file_2"])
-    elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
-        add_defaults()
-        _set_kea_ctrl_config()
-        cfg_write()
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-
-
 def _write_cfg2(cfg):
     # log.info('provisioned cfg:\n%s', cfg)
     with open(world.cfg["cfg_file"], 'w') as cfg_file:
@@ -113,7 +78,7 @@ def build_and_send_config_files2(cfg, connection_type, configuration_type="confi
                                  destination_address=world.f_cfg.mgmt_address):
     if configuration_type == "config-file" and connection_type == "SSH":
         world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
-        _set_kea_ctrl_config()
+        set_kea_ctrl_config()
         _write_cfg2(cfg)
         fabric_send_file(world.cfg["cfg_file"],
                          os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
@@ -127,8 +92,7 @@ def build_and_send_config_files2(cfg, connection_type, configuration_type="confi
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
         world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
-        add_defaults()
-        _set_kea_ctrl_config()
+        set_kea_ctrl_config()
         cfg_write()
         copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file"])
@@ -163,6 +127,7 @@ def _clear_db_config(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, d
               'dhcp6_option_def_server',
               'dhcp6_options',
               'dhcp6_options_server',
+              'dhcp6_pd_pool',
               'dhcp6_pool',
               'dhcp6_shared_network',
               'dhcp6_shared_network_server',
