@@ -273,6 +273,9 @@ class ConfigModel(ConfigElem):
             param = param.replace('_', '-')
             network[param] = val
 
+        if param == 'interface-id':
+            del network['interface']
+
         # send command
         response = network_set(network)
         assert response["result"] == 0

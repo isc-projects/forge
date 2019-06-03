@@ -278,6 +278,7 @@ def _send_and_check_response(req_ia,
     if exp_rapid_commit:
         srv_msg.response_check_include_option('Response', None, 'rapid_commit')
 
+
 def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                                     interface_id=None,
                                     exp_ia_na_t1=None,
@@ -310,13 +311,13 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
 
     if interface_id is not None:
         srv_msg.client_sets_value('RelayAgent', 'ifaceid', interface_id)
-        #srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+        srv_msg.client_does_include('RelayAgent', None, 'interface-id')
 
     if relay_addr is not None or interface_id is not None:
         srv_msg.create_relay_forward()
 
     # check response
-    if relay_addr is not None:
+    if relay_addr is not None or interface_id is not None:
         exp_msg_type = 'RELAYREPLY'
     elif rapid_commit:
         exp_msg_type = 'REPLY'
@@ -364,6 +365,7 @@ def send_request_and_check_reply(duid=None,
                                  exp_ia_pd_iaprefix_plen=None):
     # send REQUEST
     misc.test_procedure()
+    world.sender_type = "Client"
     if duid is not None:
         srv_msg.client_sets_value('Client', 'DUID', duid)
     # if client_id is not None:
@@ -388,9 +390,8 @@ def send_request_and_check_reply(duid=None,
 
     if interface_id is not None:
         srv_msg.client_sets_value('RelayAgent', 'ifaceid', interface_id)
-        #srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+        srv_msg.client_does_include('RelayAgent', None, 'interface-id')
         srv_msg.create_relay_forward()
-
 
     # srv_msg.response_check_include_option('Response', None, '1')
     # srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
@@ -422,8 +423,13 @@ def send_request_and_check_reply(duid=None,
     # if exp_boot_file_name is not None:
     #     srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
 
+    if interface_id is not None:
+        exp_msg_type = 'RELAYREPLY'
+    else:
+        exp_msg_type = 'REPLY'
+
     _send_and_check_response(req_ia,
-                             'REPLY',
+                             exp_msg_type,
                              exp_ia_na_t1,
                              exp_ia_na_t2,
                              exp_ia_na_status_code,
