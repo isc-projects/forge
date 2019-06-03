@@ -54,8 +54,12 @@ def _init_radius():
     with open(authorize_file, 'w') as f:
         f.write(authorize_content)
 
+    # freeradius 3.x
     fabric_send_file(authorize_file,
                      "/etc/freeradius/3.0/mods-config/files/authorize")
+    # freeradius 2.x
+    fabric_send_file(authorize_file,
+                     "/etc/freeradius/users")
     os.unlink(authorize_file)
 
     # clients.conf file
@@ -77,8 +81,12 @@ client {mgmt_address} {{
     with open(clients_conf_file, 'w') as f:
         f.write(clients_conf_content)
 
+    # freeradius 3.x
     fabric_send_file(clients_conf_file,
                      "/etc/freeradius/3.0/clients.conf")
+    # freeradius 2.x
+    fabric_send_file(clients_conf_file,
+                     "/etc/freeradius/clients.conf")
     os.unlink(clients_conf_file)
 
 def _start_radius():
