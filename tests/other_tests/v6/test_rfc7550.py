@@ -20,7 +20,7 @@ def test_v6_rfc7550_1():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '64', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -67,7 +67,7 @@ def test_v6_rfc7550_2():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
 
     # start server:
     srv_control.start_srv('DHCP', 'started')
@@ -123,7 +123,7 @@ def test_v6_rfc7550_3():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -172,7 +172,7 @@ def test_v6_rfc7550_4():
     srv_control.set_time('renew-timer', '100')
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -221,7 +221,7 @@ def test_v6_rfc7550_5():
     srv_control.set_time('renew-timer', '100')
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -274,7 +274,7 @@ def test_v6_rfc7550_6():
     srv_control.set_time('renew-timer', '100')
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -334,7 +334,7 @@ def test_v6_rfc7550_7():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -405,7 +405,7 @@ def test_v6_rfc7550_8():
     srv_control.set_time('renew-timer', '100')
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -466,7 +466,7 @@ def test_v6_rfc7550_9():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -525,7 +525,7 @@ def test_v6_rfc7550_10():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -574,7 +574,7 @@ def test_v6_rfc7550_11():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     # start server:
     srv_control.start_srv('DHCP', 'started')
 
@@ -689,7 +689,7 @@ def test_v6_rfc7550_12():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
 
     # start server:
     srv_control.start_srv('DHCP', 'started')
@@ -757,7 +757,7 @@ def test_v6_rfc7550_13():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -814,7 +814,7 @@ def test_v6_rfc7550_14():
     srv_control.set_time('rebind-timer', '200')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('3001::', '0', '90', '96')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

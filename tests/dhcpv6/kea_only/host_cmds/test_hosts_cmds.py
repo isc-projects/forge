@@ -14,9 +14,9 @@ import srv_control
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_librelaod():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -39,8 +39,7 @@ def test_v6_hosts_cmds_librelaod():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -60,12 +59,10 @@ def test_v6_hosts_cmds_librelaod():
                                              'addr',
                                              '2001:db8:1::100')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "libreload","arguments": {}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "libreload","arguments": {}}')
     # TODO This is cool, but we need to actually check that reload is happening.
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"2001:db8:1::100"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"2001:db8:1::100"}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -91,9 +88,9 @@ def test_v6_hosts_cmds_librelaod():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_reconfigure():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -116,8 +113,7 @@ def test_v6_hosts_cmds_reconfigure():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -138,16 +134,15 @@ def test_v6_hosts_cmds_reconfigure():
                                              '2001:db8:1::100')
 
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -173,9 +168,9 @@ def test_v6_hosts_cmds_reconfigure():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -198,8 +193,7 @@ def test_v6_hosts_cmds_add_reservation_mysql():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -225,9 +219,9 @@ def test_v6_hosts_cmds_add_reservation_mysql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_del_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -250,8 +244,7 @@ def test_v6_hosts_cmds_del_reservation_mysql():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -271,8 +264,7 @@ def test_v6_hosts_cmds_del_reservation_mysql():
                                              'addr',
                                              '2001:db8:1::100')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"2001:db8:1::100"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"2001:db8:1::100"}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -298,9 +290,9 @@ def test_v6_hosts_cmds_del_reservation_mysql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_del_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -323,8 +315,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -344,8 +335,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql():
                                              'addr',
                                              '2001:db8:1::100')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"2001:db8:1::100"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"2001:db8:1::100"}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -371,9 +361,9 @@ def test_v6_hosts_cmds_del_reservation_pgsql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -396,8 +386,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -423,9 +412,9 @@ def test_v6_hosts_cmds_add_reservation_pgsql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_get_reservation_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -448,8 +437,7 @@ def test_v6_hosts_cmds_get_reservation_mysql():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -469,8 +457,7 @@ def test_v6_hosts_cmds_get_reservation_mysql():
                                              'addr',
                                              '2001:db8:1::100')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "duid","identifier":"00:03:00:01:f6:f5:f4:f3:f2:01"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "duid","identifier":"00:03:00:01:f6:f5:f4:f3:f2:01"}}')
 
 
 @pytest.mark.v6
@@ -478,9 +465,9 @@ def test_v6_hosts_cmds_get_reservation_mysql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_get_reservation_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -503,8 +490,7 @@ def test_v6_hosts_cmds_get_reservation_pgsql():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -524,8 +510,7 @@ def test_v6_hosts_cmds_get_reservation_pgsql():
                                              'addr',
                                              '2001:db8:1::100')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "duid","identifier":"00:03:00:01:f6:f5:f4:f3:f2:01"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "duid","identifier":"00:03:00:01:f6:f5:f4:f3:f2:01"}}')
 
 
 @pytest.mark.v6
@@ -534,12 +519,12 @@ def test_v6_hosts_cmds_get_reservation_pgsql():
 def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
 
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -571,8 +556,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'port1234\'","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'port1234\'","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -607,12 +591,12 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -645,8 +629,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
                                              'addr',
                                              '2001:db8:1::50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'port1234\'","ip-addresses":["2001:db8:1::100"]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'port1234\'","ip-addresses":["2001:db8:1::100"]}}}')
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -681,9 +664,9 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_complex_pgsql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -710,8 +693,7 @@ def test_v6_hosts_cmds_add_reservation_complex_pgsql():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '25', None, 'statuscode', '6')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:0:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:0:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}')
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -744,9 +726,9 @@ def test_v6_hosts_cmds_add_reservation_complex_pgsql():
 @pytest.mark.kea_only
 def test_v6_hosts_cmds_add_reservation_complex_mysql():
     misc.test_setup()
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -773,8 +755,7 @@ def test_v6_hosts_cmds_add_reservation_complex_mysql():
     srv_msg.response_check_option_content('Response', '25', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '25', None, 'statuscode', '6')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:0:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"duid":"00:03:00:01:f6:f5:f4:f3:f2:01","ip-addresses":["2001:db8:1:0:cafe::1"],"prefixes":["2001:db8:2:abcd::/64"],"hostname":"foo.example.com","option-data":[{"name":"vendor-opts","data":"4491"},{"name":"tftp-servers","space":"vendor-4491","data":"3000:1::234"}]}}}')
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -809,8 +790,8 @@ def test_v6_hosts_cmds_reservation_get_all():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname1',
                                            '0',
@@ -839,8 +820,7 @@ def test_v6_hosts_cmds_reservation_get_all():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -856,8 +836,8 @@ def test_v6_hosts_cmds_reservation_get_all_mysql():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'MySQL', '1')
@@ -878,8 +858,7 @@ def test_v6_hosts_cmds_reservation_get_all_mysql():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -895,8 +874,8 @@ def test_v6_hosts_cmds_reservation_get_all_pgsql():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'PostgreSQL', '1')
@@ -917,8 +896,7 @@ def test_v6_hosts_cmds_reservation_get_all_pgsql():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
 
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
@@ -935,8 +913,8 @@ def test_v6_hosts_cmds_reservation_get_page():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname1',
                                            '0',
@@ -975,8 +953,7 @@ def test_v6_hosts_cmds_reservation_get_page():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -986,8 +963,7 @@ def test_v6_hosts_cmds_reservation_get_page():
     srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname7')
     srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
     srv_msg.json_response_parsing('text', None, '2 IPv6 host(s) found.')
@@ -1000,8 +976,8 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'MySQL', '1')
@@ -1030,8 +1006,7 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -1049,8 +1024,8 @@ def test_v6_hosts_cmds_reservation_get_all_page_pgsql():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'PostgreSQL', '1')
@@ -1079,8 +1054,7 @@ def test_v6_hosts_cmds_reservation_get_all_page_pgsql():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')

@@ -22,7 +22,7 @@ def test_user_check_IA_NA_no_registry():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
@@ -62,7 +62,7 @@ def test_user_check_IA_NA_with_registry_unknown_user():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -96,7 +96,7 @@ def test_user_check_IA_NA_with_registry_known_user():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

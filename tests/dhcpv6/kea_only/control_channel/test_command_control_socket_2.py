@@ -7,6 +7,7 @@ import pytest
 import misc
 import srv_msg
 import srv_control
+from forge_cfg import world
 
 
 @pytest.mark.v6
@@ -15,15 +16,14 @@ import srv_control
 def test_control_channel_socket_config_get():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-get","arguments": {}}')
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "list-commands","arguments": {}}
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-get","arguments": {}}')
+    # Using UNIX socket on server in path control_socket send {"command": "list-commands","arguments": {}}
     # compare json result with config file
 
 
@@ -33,7 +33,7 @@ def test_control_channel_socket_config_get():
 def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
 
@@ -44,8 +44,7 @@ def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.config_srv_prefix('2001:db8:1::', '0', '90', '96')
-    srv_control.open_control_channel('unix',
-                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket_ANOTHER_ONE')
+    srv_control.open_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
@@ -57,15 +56,13 @@ def test_control_channel_socket_config_test():
     srv_control.generate_config_files()
 
     # Sleep for 10 seconds.
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-test","arguments": $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-test","arguments": $(SERVER_CONFIG) }')
     # should be ok
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.config_srv_prefix('2001:db8:1::', '0', '90', '96')
-    srv_control.open_control_channel('unix',
-                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket_ANOTHER_ONE')
+    srv_control.open_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
@@ -77,8 +74,7 @@ def test_control_channel_socket_config_test():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
     #
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-test","arguments": $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-test","arguments": $(SERVER_CONFIG) }', exp_result=1)
     # should NOT be ok
 
 
@@ -89,7 +85,7 @@ def test_control_channel_socket_config_write():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -109,13 +105,12 @@ def test_control_channel_socket_config_write():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-write","arguments":  { "filename": "$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.conf"} }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket({"command": "config-write",
+                                      "arguments": {"filename": world.f_cfg.get_dhcp_conf_path()}})
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
@@ -136,10 +131,10 @@ def test_control_channel_socket_config_write():
                                              'addr',
                                              '2001:db8:1::1')
 
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "list-commands","arguments": {}}
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "config-write","parameters":  { "filename": "abc"} }
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "config-write","arguments":  { "filename": "whatever"} }
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "config-write","arguments":  { "filename": "installed/git/etc/kea/kea.conf"} }
+    # Using UNIX socket on server in path control_socket send {"command": "list-commands","arguments": {}}
+    # Using UNIX socket on server in path control_socket send {"command": "config-write","parameters":  { "filename": "abc"} }
+    # Using UNIX socket on server in path control_socket send {"command": "config-write","arguments":  { "filename": "whatever"} }
+    # Using UNIX socket on server in path control_socket send {"command": "config-write","arguments":  { "filename": "installed/git/etc/kea/kea.conf"} }
     # Pause the Test.
     srv_control.start_srv('DHCP', 'restarted')
 
@@ -170,7 +165,7 @@ def test_control_channel_socket_config_reload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -188,17 +183,15 @@ def test_control_channel_socket_config_reload():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "list-commands","arguments": {}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     # Generate server configuration file.
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-reload","arguments":  {} }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-reload","arguments":  {} }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')

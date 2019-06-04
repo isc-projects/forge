@@ -580,15 +580,15 @@ def start_srv(start, process):
 
 
 def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+    fabric_download_file(world.cfg['leases'], world.cfg["test_result_dir"] + '/dhcpd6.leases')
 
 
 def save_logs():
-    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["test_result_dir"] + '/forge_dhcpd.log')
 
 
 def clear_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+    fabric_download_file(world.cfg['leases'], world.cfg["test_result_dir"] + '/dhcpd6.leases')
     fabric_remove_file_command(world.cfg["leases"])
     fabric_run_command('echo y |rm ' + world.cfg['leases'])
 
@@ -608,7 +608,7 @@ def clear_all():
         # not all implementations will re-create it.
         # fabric_remove_file_command(world.cfg["dhcp_log_file"])
         fabric_remove_file_command(world.cfg["leases"])
-        fabric_remove_file_command(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+        fabric_remove_file_command(world.cfg['leases'], world.cfg["test_result_dir"] + '/dhcpd6.leases')
     except:
         pass
 

@@ -499,11 +499,11 @@ def start_srv(start, process):
 
 
 def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd.leases')
+    fabric_download_file(world.cfg['leases'], world.cfg["test_result_dir"] + '/dhcpd.leases')
 
 
 def save_logs():
-    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["test_result_dir"] + '/forge_dhcpd.log')
 
 
 def config_client_classification(subnet, option_value):

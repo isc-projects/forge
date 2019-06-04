@@ -33,6 +33,9 @@ def pytest_generate_tests(metafunc):
         elif 'not v6' not in markexpr and 'v6' in markexpr:
             # v6 is not filtered out or explicitly selected then take v6 only
             dhcp_versions = ['v6']
+        else:
+            # filtering present but it does not look into proto version, then pick both versions
+            dhcp_versions = ['v4', 'v6']
     if dhcp_versions:
         metafunc.parametrize('dhcp_version', dhcp_versions)
 
@@ -60,5 +63,6 @@ def iters_factor(request):
 
 # enable pytest assert introspection in the helper modules
 pytest.register_assert_rewrite('protosupport.v4.srv_msg')
+pytest.register_assert_rewrite('protosupport.multi_protocol_functions')
 pytest.register_assert_rewrite('cb_model')
 pytest.register_assert_rewrite('dhcp4_scen')

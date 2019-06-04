@@ -8,7 +8,7 @@ def send_cmd(cmd, db_type='mysql', server_tags=None, **kwargs):
            "arguments": {"remote": {"type": db_type},
                          "server-tags": server_tags}}
     cmd['arguments'].update(kwargs)
-    response = srv_msg.send_request(world.proto, cmd)
+    response = srv_msg.send_ctrl_cmd(cmd)
     return response
 
 

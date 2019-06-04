@@ -18,12 +18,10 @@
 import sys
 import json
 import importlib
-import pprint
 
 from forge_cfg import world, step
-from srv_control import test_define_value
-from protosupport import dns
-import protosupport.multi_protocol_functions as other
+from protosupport import dns, multi_protocol_functions
+from protosupport.multi_protocol_functions import test_define_value, substitute_vars
 
 
 class Dispatcher(object):
@@ -364,17 +362,7 @@ def compare_values(value_name, option_name):
 @step('Set network variable (\S+) with value (\S+).')
 def network_variable(value_name, value):
     value_name, value = test_define_value(value_name, value)
-    other.change_network_variables(value_name, value)
-
-
-@step('(\S+) log MUST (NOT )?contain line: (.+)')
-def log_contains_line(server_type, condition, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    line = test_define_value(line)[0]
-    other.log_contains(server_type, condition, line)
+    multi_protocol_functions.change_network_variables(value_name, value)
 
 
 @step('File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
@@ -384,7 +372,37 @@ def file_contains_line(file_path, condition, line):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     file_path, line = test_define_value(file_path, line)
-    other.regular_file_contain(file_path, condition, line)
+    multi_protocol_functions.regular_file_contain(file_path, condition, line)
+
+
+@step('DNS log MUST (NOT )?contain line: (.+)')
+def dns_log_contains(condition, line):
+    """
+    Check if DNS log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    line = test_define_value(line)[0]
+    multi_protocol_functions.regular_file_contain(world.cfg["dns_log_file"], condition, line)
+
+
+def log_contains(line, log_file=None):
+    line = test_define_value(line)[0]
+    multi_protocol_functions.log_contains(line, None, log_file)
+
+
+def log_doesnt_contain(line, log_file=None):
+    line = test_define_value(line)[0]
+    multi_protocol_functions.log_contains(line, 'NOT', log_file)
+
+
+def lease_file_contains(line):
+    line = test_define_value(line)[0]
+    multi_protocol_functions.regular_file_contain(world.f_cfg.get_leases_path(), None, line)
+
+
+def lease_file_doesnt_contain(line):
+    line = test_define_value(line)[0]
+    multi_protocol_functions.regular_file_contain(world.f_cfg.get_leases_path(), True, line)
 
 
 @step('Remote (\S+) file stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
@@ -394,7 +412,7 @@ def remote_log_includes_line(destination, file_path, condition, line):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     destination, file_path, line = test_define_value(destination, file_path, line)
-    other.regular_file_contain(file_path, condition, line, destination=destination)
+    multi_protocol_functions.regular_file_contain(file_path, condition, line, destination=destination)
 
 
 @step('Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
@@ -404,13 +422,13 @@ def table_contains_line(table_name, db_type, condition, line):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     table_name, db_type, line = test_define_value(table_name, db_type, line)
-    other.db_table_contain(table_name, db_type, condition, line)
+    multi_protocol_functions.db_table_contain(table_name, db_type, condition, line)
 
 
 @step('Remove all records from table (\S+) in (\S+) database.')
 def remove_from_db_table(table_name, db_type):
     table_name, db_type = test_define_value(table_name, db_type)
-    other.remove_from_db_table(table_name, db_type)
+    multi_protocol_functions.remove_from_db_table(table_name, db_type)
 
 
 @step('(\S+) log contains (\d+) of line: (.+)')
@@ -420,7 +438,7 @@ def log_includes_count(server_type, count, line):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     count, line = test_define_value(count, line)
-    other.log_contains_count(server_type, count, line)
+    multi_protocol_functions.log_contains_count(server_type, count, line)
 
 
 @step('Sleep for (\S+) (seconds|second|milliseconds|millisecond).')
@@ -429,7 +447,7 @@ def forge_sleep(time_val, time_units):
     Pause the test for selected amount of time counted in seconds or milliseconds.
     """
     time_val, time_units = test_define_value(time_val, time_units)
-    other.forge_sleep(int(time_val), str(time_units))
+    multi_protocol_functions.forge_sleep(int(time_val), str(time_units))
 
 
 @step('Pause the Test.')
@@ -439,7 +457,7 @@ def test_pause():
     and so on.... Do NOT put it in automatic tests, it blocks test until user will:
         Press any key to continue.
     """
-    other.test_pause()
+    multi_protocol_functions.test_pause()
 
 
 @step('End test.')
@@ -459,7 +477,7 @@ def copy_remote(remote_path):
     And named "downloaded_file"
     """
     remote_path = test_define_value(remote_path)[0]
-    other.copy_file_from_server(remote_path)
+    multi_protocol_functions.copy_file_from_server(remote_path)
 
 
 @step('Client compares downloaded file from server with local file stored in: (\S+).')
@@ -468,7 +486,7 @@ def compare_file(remote_path):
     Compare two files, our local and "downloaded_file".
     """
     remote_path = test_define_value(remote_path)[0]
-    other.compare_file(remote_path)
+    multi_protocol_functions.compare_file(remote_path)
 
 
 @step('Downloaded file MUST (NOT )?contain line: (.+)')
@@ -478,7 +496,7 @@ def file_includes_line(condition, line):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     line = test_define_value(line)[0]
-    other.file_includes_line(condition, line)
+    multi_protocol_functions.file_includes_line(condition, line)
 
 
 @step('Client sends local file stored in: (\S+) to server, to location: (\S+).')
@@ -487,7 +505,7 @@ def send_file_to_server(local_path, remote_path):
     If you need send some file to server, use that step.
     """
     local_path, remote_path = test_define_value(local_path, remote_path)
-    other.send_file_to_server(local_path, remote_path)
+    multi_protocol_functions.send_file_to_server(local_path, remote_path)
 
 
 @step('Client removes file from server located in: (\S+).')
@@ -496,17 +514,17 @@ def remove_file_from_server(remote_path):
     If you need to remove file from a server, please do so.
     """
     remote_path = test_define_value(remote_path)[0]
-    other.remove_file_from_server(remote_path)
+    multi_protocol_functions.remove_file_from_server(remote_path)
 
 
 @step('Temporary change environment variable named (\S+) to value (.+)')
 def temporary_setenv(env_name, env_value):
-    other.temp_set_value(env_name, env_value)
+    multi_protocol_functions.temp_set_value(env_name, env_value)
 
 
 @step('Add environment variable named (\S+) to value (.+)')
 def set_env(env_name, env_value):
-    other.set_value(env_name, env_value)
+    multi_protocol_functions.set_value(env_name, env_value)
 
 
 @step('User define temporary variable: (\S+) with value (.+)')
@@ -517,7 +535,7 @@ def add_variable_temporary(variable_name, variable_val):
 
     Temporary variable will be stored in world.define and cleared at the end of scenario.
     """
-    other.add_variable(variable_name, variable_val, 0)
+    multi_protocol_functions.add_variable(variable_name, variable_val, 0)
 
 
 @step('User define permanent variable: (\S+) with value (\S+).')
@@ -529,7 +547,7 @@ def add_variable_permanent(variable_name, variable_val):
     Permanent variable will be placed at the end of the init_all.py file. It won't be removed.
     User can do so by removing it from file.
     """
-    other.add_variable(variable_name, variable_val, 1)
+    multi_protocol_functions.add_variable(variable_name, variable_val, 1)
 
 
 @step('Let us celebrate this SUCCESS!')
@@ -537,25 +555,22 @@ def test_victory():
     """
     Use your imagination.
     """
-    other.user_victory()
+    multi_protocol_functions.user_victory()
 
 
-@step('Execute (\S+) script in path: (\S+) with arguments: (.+)')
-def execute_shell_with_args(script_type, path, arg):
+@step('Execute command (\S+) with arguments: (.+)')
+def execute_shell_cmd(path, arg):
     path, arg = test_define_value(path, arg)
-    other.execute_shell_script(path, arg)
+    result = multi_protocol_functions.execute_shell_cmd(path, arg)
+    assert result.succeeded
+    return result
 
 
-@step('Execute shell script in path: (\S+) with no arguments.')
-def execute_shell(path):
-    path = test_define_value(path)[0]
-    other.execute_shell_script(path, '')
-
-
-@step('Execute shell command: (.+)')
-def execute_shell_command(command):
-    command = test_define_value(command)[0]
-    other.execute_shell_command(command)
+@step('Execute command (\S+) with arguments: (.+)')
+def execute_kea_shell(args):
+    args = test_define_value(args)[0]
+    path = world.f_cfg.sbin_join('kea-shell')
+    return multi_protocol_functions.execute_shell_cmd(path, args)
 
 
 @step('Check socket connectivity on address (\S+) and port (\S+).')
@@ -568,28 +583,52 @@ def check_socket_server_site(socket_path):
     pass
 
 
-@step('Using UNIX socket on remote server (\S+) in path (\S+) send (.+)')
-def send_through_socket_given_server_site(destination_address, socket_path, command):
-    destination_address, socket_path, command = test_define_value(destination_address, socket_path, command)
-    return other.send_through_socket_server_site(socket_path, command, destination_address=destination_address)
+@step('Send ctrl cmd (.+) using UNIX socket (\S+) to server (.+).')
+def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=world.f_cfg.mgmt_address,
+                             exp_result=0, exp_failed=False):
+    if isinstance(command, dict):
+        substitute_vars(command)
+        destination_address = test_define_value(destination_address)[0]
+    else:
+        destination_address, command = test_define_value(destination_address, command)
+    return multi_protocol_functions.send_ctrl_cmd_via_socket(command, socket_name, destination_address,
+                                                             exp_result, exp_failed)
 
 
-@step('Using UNIX socket on server in path (\S+) send (.+)')
-def send_through_socket_server_site(socket_path, command):
-    socket_path, command = test_define_value(socket_path, command)
-    return other.send_through_socket_server_site(socket_path, command)
+@step('Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
+def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port='8000', exp_result=0):
+    if isinstance(command, dict):
+        substitute_vars(command)
+        address, port = test_define_value(address, port)
+    else:
+        address, port, command = test_define_value(address, port, command)
+    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result)
 
 
-@step('Using existing HTTP (\S+):(\S+) connection send: (.+)')
-def send_through_http(http_address, http_port, command):
-    http_address, http_port, command = test_define_value(http_address, http_port, command)
-    return other.send_through_http(http_address, int(http_port), command)
+def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0):
+    """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
+
+    if channel == 'http':
+        if service != 'agent':
+            if world.proto == 'v4':
+                cmd["service"] = ['dhcp4']
+            else:
+                cmd["service"] = ['dhcp6']
+
+    if channel == 'http':
+        response = send_ctrl_cmd_via_http(cmd, '$(MGMT_ADDRESS)', 8000, exp_result=exp_result)
+        response = response[0]
+    elif channel == 'socket':
+        response = send_ctrl_cmd_via_socket(cmd, exp_result=exp_result)
+    else:
+        raise ValueError('unsupported channel type: %s' % str(channel))
+    return response
 
 
 @step('JSON response in (\S+) MUST (NOT )?include value: (.+)')
 def json_response_parsing(parameter_name, condition, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
-    other.parse_json_file(condition, str(parameter_name), str(parameter_value))
+    multi_protocol_functions.parse_json_file(condition, str(parameter_name), str(parameter_value))
 
 
 ## loops
@@ -621,30 +660,3 @@ def loops(message_type_1, message_type_2, repeat):
     world.f_cfg.show_packets_from = ""
     dhcpmsg.loops(message_type_1, message_type_2, repeat)
     world.f_cfg.show_packets_from = tmp
-
-
-def send_request(dhcp_version, cmd, channel='http'):
-    """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
-
-    if channel == 'http':
-        if dhcp_version == 'v4':
-            cmd["service"] = ['dhcp4']
-        else:
-            cmd["service"] = ['dhcp6']
-
-    pprint.pprint(cmd)
-
-    cmd_str = json.dumps(cmd)
-
-    if channel == 'http':
-        response = send_through_http('$(MGMT_ADDRESS)',
-                                     8000,
-                                     cmd_str)
-        response = response[0]
-    elif channel == 'socket':
-        response = send_through_socket_server_site(
-            '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-            cmd_str)
-    else:
-        raise ValueError('unsupported channel type: %s' % str(channel))
-    return response

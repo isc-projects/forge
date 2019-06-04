@@ -46,8 +46,10 @@ def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
 
 def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
                         user_loc=world.f_cfg.mgmt_username,
-                        password_loc=world.f_cfg.mgmt_password, hide_all=False):
-    with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+                        password_loc=world.f_cfg.mgmt_password, hide_all=False,
+                        sudo_user=None):
+    with settings(host_string=destination_host, user=user_loc, password=password_loc,
+                  sudo_user=sudo_user, warn_only=True):
         if hide_all:
             with hide('running', 'stdout', 'stderr'):
                 try:
@@ -68,7 +70,7 @@ def fabric_send_file(file_local, file_remote,
                      password_loc=world.f_cfg.mgmt_password):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore",category=DeprecationWarning)
-        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
             with hide('running', 'stdout', 'stderr'):
                 result = put(file_local, file_remote, use_sudo=True)
     return result
@@ -110,7 +112,7 @@ def remove_local_file(file_local):
 
 
 def save_local_file(value, value_type="string", local_file_name=None, local_location=None):
-    local_location = world.cfg["dir_name"]
+    local_location = world.cfg["test_result_dir"]
     if local_file_name is None:
         local_file_name = "saved_file"
         # TODO: make check here for existing files with the same name
@@ -124,7 +126,7 @@ def save_local_file(value, value_type="string", local_file_name=None, local_loca
 
 
 def generate_file_name(counter, file_name):
-    if os.path.isfile(os.path.join(world.cfg["dir_name"], file_name)):
+    if os.path.isfile(os.path.join(world.cfg["test_result_dir"], file_name)):
         if counter == 1:
             file_name += str(counter)
         else:
@@ -162,9 +164,9 @@ def check_local_path_for_downloaded_files(local_file_path, local_file_name, remo
 def copy_configuration_file(local_file, file_name='configuration_file', destination_host=world.f_cfg.mgmt_address):
     if world.f_cfg.save_config_file:
         file_name = generate_file_name(1, file_name)
-        if not os.path.exists(world.cfg["dir_name"]):
-            os.makedirs(world.cfg["dir_name"])
-        copy(local_file, check_local_path_for_downloaded_files(world.cfg["dir_name"], file_name, destination_host))
+        if not os.path.exists(world.cfg["test_result_dir"]):
+            os.makedirs(world.cfg["test_result_dir"])
+        copy(local_file, check_local_path_for_downloaded_files(world.cfg["test_result_dir"], file_name, destination_host))
 
 
 def simple_file_layout():

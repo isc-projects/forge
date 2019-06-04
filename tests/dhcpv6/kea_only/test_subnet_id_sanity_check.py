@@ -18,7 +18,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -53,12 +53,8 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
     srv_control.clear_leases('logs')
@@ -67,14 +63,12 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               'DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
@@ -115,7 +109,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -150,12 +144,8 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
     srv_control.clear_leases('logs')
@@ -164,14 +154,12 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               'DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
 
     srv_msg.forge_sleep('13', 'seconds')
 
@@ -181,7 +169,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -227,7 +215,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -262,12 +250,8 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -277,7 +261,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -322,7 +306,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -357,12 +341,8 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -372,7 +352,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -388,7 +368,7 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -423,18 +403,14 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -450,7 +426,7 @@ def test_v6_sanity_check_subnet_id_warn():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"warn"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -485,18 +461,14 @@ def test_v6_sanity_check_subnet_id_warn():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"warn"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -504,9 +476,7 @@ def test_v6_sanity_check_subnet_id_warn():
 
     srv_msg.forge_sleep('2', 'seconds')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               'DHCPSRV_LEASE_SANITY_FAIL The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')
@@ -533,7 +503,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -568,12 +538,8 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -583,16 +549,14 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep('2', 'seconds')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               'DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -624,26 +588,14 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               'NOT ',
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               'NOT ',
-                               '999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22')
+    srv_msg.lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
+    srv_msg.lease_file_doesnt_contain('999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22')
 
 
 @pytest.mark.v6
@@ -655,8 +607,8 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -690,12 +642,8 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -705,16 +653,14 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep('2', 'seconds')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               'DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
@@ -745,20 +691,14 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"lease6-get","arguments":{"ip-address": "2001:db8::1"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"lease6-get","arguments":{"subnet-id":666,"identifier-type":"duid", "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01"}}')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-get","arguments":{"ip-address": "2001:db8::1"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-get","arguments":{"subnet-id":666,"identifier-type":"duid", "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01"}}')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
     # Pause the Test.
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv MUST contain line or phrase: 999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22
+    # File stored in kea-leases6.csv MUST contain line or phrase: 2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22
+    # File stored in kea-leases6.csv MUST contain line or phrase: 999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22
 
 
 @pytest.mark.v6
@@ -770,7 +710,7 @@ def test_v6_sanity_check_subnet_id_none():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"none"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -805,29 +745,21 @@ def test_v6_sanity_check_subnet_id_none():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"none"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'reconfigured')
     srv_msg.forge_sleep('2', 'seconds')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
 
 @pytest.mark.v6
@@ -839,16 +771,14 @@ def test_v6_sanity_check_subnet_id():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-get","arguments":  {} }')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "list-commands","arguments":  {} }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-get","arguments":  {} }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments":  {} }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -879,12 +809,8 @@ def test_v6_sanity_check_subnet_id():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -892,7 +818,7 @@ def test_v6_sanity_check_subnet_id():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::2')
     srv_control.set_conf_parameter_subnet('id', '888', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -904,14 +830,14 @@ def test_v6_sanity_check_subnet_id():
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::2')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'reconfigured')
     srv_msg.forge_sleep('12', 'seconds')
 
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "config-get","arguments":  {} }
+    # Using UNIX socket on server in path control_socket send {"command": "config-get","arguments":  {} }
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -942,7 +868,7 @@ def test_v6_sanity_check_subnet_id():
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::2')
     srv_msg.forge_sleep('10', 'seconds')
 
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "config-get","arguments":  {} }
+    # Using UNIX socket on server in path control_socket send {"command": "config-get","arguments":  {} }
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -979,13 +905,12 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-get","arguments":  {} }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-get","arguments":  {} }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -1044,18 +969,10 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
-                               None,
-                               '777,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:02')
+    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    srv_msg.lease_file_contains('777,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:02')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
@@ -1068,7 +985,7 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'reconfigured')

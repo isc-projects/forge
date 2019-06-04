@@ -27,7 +27,7 @@ def _subnet_set(server_tags, subnet_id, pool, subnet="2001:db8:1::/64"):
                                                                      "shared-network-name": "",
                                                                      "pools": [
                                                                          {"pool": pool}]}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"subnets": [{"id": subnet_id, "subnet": subnet}]},
                         "result": 0, "text": "IPv6 subnet successfully set."}
@@ -39,7 +39,7 @@ def _subnet_get(command, server_tags, subnet_parameter=None):
     if subnet_parameter:
         cmd["arguments"]["subnets"] = [subnet_parameter]
 
-    return srv_msg.send_request('v6', cmd)
+    return srv_msg.send_ctrl_cmd(cmd)
 
 
 def _subnet_del(server_tags, subnet_parameter=None):
@@ -149,7 +149,7 @@ def test_remote_subnet6_del_server_tags():
 def _network_set(server_tags, network_name="florX"):
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"}, "server-tags": server_tags,
                                                          "shared-networks": [{"name": network_name}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"shared-networks": [{"name": network_name}]},
                         "result": 0, "text": "IPv6 shared network successfully set."}
@@ -160,7 +160,7 @@ def _network_get(command, server_tags, network_parameter=None):
     if network_parameter:
         cmd["arguments"]["shared-networks"] = [network_parameter]
 
-    return srv_msg.send_request('v6', cmd)
+    return srv_msg.send_ctrl_cmd(cmd)
 
 
 def _network_del(server_tags, network_parameter=None):
@@ -254,7 +254,7 @@ def _option_set(server_tags, code=22, opt_data="2001::1"):
                                                                "options": [{
                                                                    "code": code,
                                                                    "data": opt_data}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"result": 0, "text": "DHCPv6 option successfully set.",
                         "arguments": {"options": [{"code": code, "space": "dhcp6"}]}}
@@ -267,7 +267,7 @@ def _option_get(command, server_tags, opt_code=None):
     if opt_code:
         cmd["arguments"]["options"] = [{"code": opt_code}]
 
-    return srv_msg.send_request('v6', cmd)
+    return srv_msg.send_ctrl_cmd(cmd)
 
 
 def _option_del(server_tags, opt_code=None):
@@ -370,7 +370,7 @@ def _optdef_set(server_tags, opt_code=222, opt_name="foo", opt_type="uint32"):
                                                                 "name": opt_name,
                                                                 "code": opt_code,
                                                                 "type": opt_type}]})
-    response = srv_msg.send_request('v6', cmd)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"option-defs": [{"code": opt_code, "space": "dhcp6"}]},
                         "result": 0, "text": "DHCPv6 option definition successfully set."}
@@ -382,7 +382,7 @@ def _optdef_get(command, server_tags, option_def_parameter=None):
     if option_def_parameter:
         cmd["arguments"]["option-defs"] = [option_def_parameter]
 
-    return srv_msg.send_request('v6', cmd)
+    return srv_msg.send_ctrl_cmd(cmd)
 
 
 def _optdef_del(server_tags, option_def_parameter=None):

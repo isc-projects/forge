@@ -5,6 +5,7 @@ import pprint
 
 import srv_msg
 import srv_control
+from protosupport.multi_protocol_functions import substitute_vars
 import misc
 from cb_api import global_parameter_set, subnet_set, network_set, subnet_del_by_prefix, global_option_set, \
     global_option_del
@@ -18,7 +19,7 @@ world.check_on_reload = True
 
 def get_config():
     cmd = {"command": "config-get", "arguments": {}}
-    response = srv_msg.send_request(world.proto, cmd)
+    response = srv_msg.send_ctrl_cmd(cmd)
     assert response['result'] == 0
     return response['arguments']
 
@@ -26,7 +27,7 @@ def get_config():
 def _reload():
     # request config reloading
     cmd = {"command": "config-reload", "arguments": {}}
-    response = srv_msg.send_request(world.proto, cmd)
+    response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {'result': 0, 'text': 'Configuration successful.'}
 
 
@@ -123,23 +124,6 @@ class ConfigSubnetModel(ConfigElem):
         config = self.get_root().reload_and_check()
         return config
 
-def _substitute_vars(cfg):
-    for k, v in cfg.items():
-        if isinstance(v, basestring):
-            cfg[k] = srv_control.test_define_value(v)[0]
-        elif isinstance(v, dict):
-            _substitute_vars(v)
-        elif isinstance(v, list):
-            new_list = []
-            for lv in v:
-                if isinstance(lv, dict):
-                    _substitute_vars(lv)
-                    new_list.append(lv)
-                elif isinstance(lv, basestring):
-                    new_list.append(srv_control.test_define_value(lv)[0])
-                else:
-                    new_list.append(lv)
-            cfg[k] = new_list
 
 CONFIG_DEFAULTS = {}
 CONFIG_DEFAULTS['v4'] = {
@@ -215,8 +199,13 @@ class ConfigModel(ConfigElem):
             for net in self.shared_networks.values():
                 cfg['shared-networks'].append(net.get_dict())
 
+        if world.f_cfg.install_method == 'make':
+            log_file = world.f_cfg.log_join('kea.log')
+        else:
+            log_file = 'stdout'
+
         cfg["loggers"] = [{"name": "kea-dhcp" + proto,
-                           "output_options": [{"output": "$(SOFTWARE_INSTALL_PATH)/var/log/kea.log"}],
+                           "output_options": [{"output": log_file}],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
 
@@ -225,9 +214,9 @@ class ConfigModel(ConfigElem):
                "Control-agent": {"http-host": '$(MGMT_ADDRESS)',
                                  "http-port": 8000,
                                  "control-sockets": {"dhcp" + proto: {"socket-type": 'unix',
-                                                                      "socket-name": '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket'}}}}
+                                                                      "socket-name": world.f_cfg.run_join('control_socket')}}}}
 
-        _substitute_vars(cfg)
+        substitute_vars(cfg)
 
         return cfg
 
@@ -543,7 +532,7 @@ def setup_server(**kwargs):
     init_cfg = {"interfaces-config": {"interfaces": ["$(SERVER_IFACE)"]},
                 "lease-database": {"type": "memfile"},
                 "control-socket": {"socket-type": 'unix',
-                                   "socket-name": '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket'}}
+                                   "socket-name": world.f_cfg.run_join('control_socket')}}
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':
@@ -559,8 +548,8 @@ def setup_server(**kwargs):
 
     cfg = ConfigModel(init_cfg, **config_model_args)
 
-    srv_control.agent_control_channel('host_address', 'host_port', 'socket_type', 'socket_name')  # TODO: to force enablic ctrl-agent
-    srv_control.build_and_send_config_files2(cfg.get_dict(), 'SSH', 'config-file')
+    srv_control.agent_control_channel('host_address', 'host_port', 'socket_name')  # TODO: to force enabling ctrl-agent
+    srv_control.build_and_send_config_files('SSH', 'config-file', cfg=cfg.get_dict())
     srv_control.start_srv('DHCP', 'started')
 
     # check actual configuration if requested
@@ -572,8 +561,8 @@ def setup_server(**kwargs):
 
 
 def setup_server_for_config_backend_cmds(**kwargs):
-    default_cfg = {"hooks-libraries": [{"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_cb_cmds.so"},
-                                       {"library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_mysql_cb.so"}],
+    default_cfg = {"hooks-libraries": [{"library": world.f_cfg.hooks_join("libdhcp_cb_cmds.so")},
+                                       {"library": world.f_cfg.hooks_join("libdhcp_mysql_cb.so")}],
                    "server-tag": "abc",
                    "config-control": {"config-databases":[{"user":"$(DB_USER)",
                                                            "password":"$(DB_PASSWD)",
@@ -595,10 +584,10 @@ def setup_server_with_radius(**kwargs):
         # Load the host cache hook library. It is needed by the RADIUS
         # library to keep the attributes from authorization to later user
         # for accounting.
-        "library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cache.so"
+        "library": world.f_cfg.hooks_join("libdhcp_host_cache.so")
     }, {
         # Load the RADIUS hook library.
-        "library": "$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_radius.so",
+        "library": world.f_cfg.hooks_join("libdhcp_radius.so"),
         "parameters": {
             "client-id-printable": True,
             # Configure an access (aka authentication/authorization) server.

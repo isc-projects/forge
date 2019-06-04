@@ -15,27 +15,25 @@
 
 # Author: Wlodzimierz Wencel
 
-import os
-import sys
-from time import sleep
 import logging
-import json
 
 from forge_cfg import world
 
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
-    copy_configuration_file, fabric_sudo_command, fabric_download_file, locate_entry
-from softwaresupport.kea6_server.functions import start_kea, stop_kea, stop_srv, restart_srv, reconfigure_srv, \
-    set_logger, cfg_write, set_time, \
-    add_line_in_global, config_srv_another_subnet, prepare_cfg_add_custom_option,\
-    check_kea_status, check_kea_process_result, save_logs, add_interface, add_pool_to_subnet, clear_leases,\
-    add_hooks, save_leases, add_logger, open_control_channel_socket, set_conf_parameter_global, \
-    set_conf_parameter_subnet, add_line_in_subnet, add_line_to_shared_subnet, add_to_shared_subnet,\
-    set_conf_parameter_shared_subnet, add_parameter_to_hook, create_new_class, add_test_to_class,\
-    ha_add_parameter_to_hook, prepare_cfg_subnet_specific_interface
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_sudo_command, locate_entry
 
-from softwaresupport.kea import build_and_send_config_files2, clear_all, clear_logs
-from softwaresupport.kea import set_kea_ctrl_config
+from softwaresupport.kea import build_and_send_config_files
+from softwaresupport.kea import clear_all, clear_logs, clear_leases, start_srv
+from softwaresupport.kea import start_srv, stop_srv, restart_srv, reconfigure_srv
+from softwaresupport.kea import agent_control_channel, save_logs, save_leases
+from softwaresupport.kea import ha_add_parameter_to_hook, add_hooks, add_parameter_to_hook, add_logger
+from softwaresupport.kea import open_control_channel_socket, create_new_class, add_test_to_class
+from softwaresupport.kea import set_logger, set_time, add_line_in_global, config_srv_another_subnet
+from softwaresupport.kea import prepare_cfg_add_custom_option, add_interface, add_pool_to_subnet
+from softwaresupport.kea import set_conf_parameter_global, set_conf_parameter_subnet, add_line_in_subnet
+from softwaresupport.kea import add_line_to_shared_subnet, add_to_shared_subnet, set_conf_parameter_shared_subnet
+from softwaresupport.kea import prepare_cfg_subnet_specific_interface, prepare_cfg_subnet
+from softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_option_subnet
+from softwaresupport.kea import prepare_cfg_add_option_shared_subnet
 
 log = logging.getLogger('forge')
 
@@ -126,167 +124,11 @@ world.kea_options4 = {
 }
 
 
-def check_empty_value(val):
-    return ("false", "") if val == "<empty>" else ("true", val)
-
-
-def add_defaults():
-    eth = world.f_cfg.server_iface
-    t1 = world.cfg["server_times"]["renew-timer"]
-    t2 = world.cfg["server_times"]["rebind-timer"]
-    t3 = world.cfg["server_times"]["valid-lifetime"]
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    world.cfg["main"] = '{"Dhcp4" :{'
-    if t1 != "":
-        world.cfg["main"] += '"renew-timer": {t1},'.format(**locals())
-    if t2 != "":
-        world.cfg["main"] += '"rebind-timer": {t2},'.format(**locals())
-    if t3 != "":
-        world.cfg["main"] += '"valid-lifetime": {t3},'.format(**locals())
-
-    if "global_parameters" in world.cfg:
-        world.cfg["main"] += world.cfg["global_parameters"]
-
-    if eth is not None and eth not in world.cfg["interfaces"]:
-        add_interface(eth)
-
-    # world.cfg["conf"] += dedent(subnetcfg)
-    # world.dhcp["subnet_cnt"] += 1
-
-
-def build_and_send_config_files(connection_type, configuration_type="config-file",
-                                destination_address=world.f_cfg.mgmt_address):
-    """
-    Generate final config file, save it to test result directory
-    and send it to remote system unless testing step will define differently.
-    :param connection_type: for now two values expected: SSH and None for stating if files should be send
-    :param configuration_type: for now supported just config-file, generate file and save to results dir
-    :param destination_address: address of remote system to which conf file will be send,
-    default it's world.f_cfg.mgmt_address
-    """
-
-    if configuration_type == "config-file" and connection_type == "SSH":
-        add_defaults()
-        set_kea_ctrl_config()
-        cfg_write()
-        fabric_send_file(world.cfg["cfg_file"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.conf"),
-                         destination_host=destination_address)
-        fabric_send_file(world.cfg["cfg_file_2"],
-                         os.path.join(world.f_cfg.software_install_path, "etc/kea/keactrl.conf"),
-                         destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-        remove_local_file(world.cfg["cfg_file_2"])
-    elif configuration_type == "config-file" and connection_type is None:
-        add_defaults()
-        set_kea_ctrl_config()
-        cfg_write()
-        copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-        remove_local_file(world.cfg["cfg_file"])
-
-
-def prepare_cfg_subnet(subnet, pool, eth=None):
-    # world.subcfg[0] = [subnet, client class/simple options, options, pools, host reservation]
-    if subnet == "default":
-        subnet = "192.168.0.0/24"
-    if pool == "default":
-        pool = "192.168.0.1 - 192.168.0.254"
-    if eth is None:
-        eth = world.f_cfg.server_iface
-
-    if "interfaces" not in world.cfg:
-        world.cfg["interfaces"] = ''
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    if subnet is not "":
-        world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"
-             '''.format(**locals())
-    else:
-        world.subnet_add = False
-    if pool is not "":
-        world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
-
-        # if eth is not None:
-        #     # world.subcfg[world.dhcp["subnet_cnt"]][0] += ', "interface": "{eth}" '.format(**locals())
-        #
-        #     log.info("\n")
-        #     log.info("\n\n\n\nabc\n1\n")
-        #     log.info("\n")
-
-    if eth not in world.cfg["interfaces"]:
-        add_interface(eth)
-
-
 def config_client_classification(subnet, option_value):
     subnet = int(subnet)
     if len(world.subcfg[subnet][1]) > 2:
         world.subcfg[subnet][1] += ', '
     world.subcfg[subnet][1] += '"client-class": "{option_value}"\n'.format(**locals())
-
-
-def prepare_cfg_add_option(option_name, option_value, space,
-                           option_code=None, opt_type='default', where='options'):
-    if where not in world.cfg:
-        world.cfg[where] = '"option-data": ['
-    else:
-        world.cfg[where] += ","
-
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
-    if opt_type == 'default':
-        option_code = world.kea_options4.get(option_name)
-
-    pointer_start = "{"
-    pointer_end = "}"
-    csv_format, option_value = check_empty_value(option_value)
-
-    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
-
-    world.cfg[where] += '''
-            \t{pointer_start}"csv-format": {csv_format}, "code": {option_code}, "data": "{option_value}",
-            \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
-
-
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
-    space = world.cfg["space"]
-    subnet = int(subnet)
-    option_code = world.kea_options4.get(option_name)
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
-    if len(world.subcfg[subnet][2]) > 10:
-        world.subcfg[subnet][2] += ','
-
-    world.subcfg[subnet][2] += '''
-            \t{pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
-            \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
-
-
-def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_value):
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
-    space = world.cfg["space"]
-    shared_subnet = int(shared_subnet)
-    option_code = world.kea_options4.get(option_name)
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
-    if len(world.shared_subcfg[shared_subnet][0]) > 10:
-        world.shared_subcfg[shared_subnet][0] += ','
-
-    world.shared_subcfg[shared_subnet][0] += '''
-            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
-            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
 def add_siaddr(addr, subnet_number):
@@ -344,15 +186,6 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
     world.subcfg[subnet][5] = tmp
 
 
-def agent_control_channel(host_address, host_port, socket_type, socket_name):
-    world.ctrl_enable = True
-    world.cfg["agent"] = '"Control-agent":{"http-host": "' + host_address
-    world.cfg["agent"] += '","http-port":' + host_port
-    world.cfg["agent"] += ',"control-sockets":{"dhcp4":{"socket-type": "' + socket_type
-    world.cfg["agent"] += '","socket-name": "' + socket_name
-    world.cfg["agent"] += '"}}}'
-
-
 def config_srv_id(id_type, id_value):
     assert False, "Not yet available for Kea4"
 
@@ -381,24 +214,53 @@ def add_option_to_defined_class(class_no, option_name, option_value):
 # ================ REMOTE SERVER BLOCK START ==================
 
 
-def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
-    """
-    Start kea with generated config
-    """
-    v6, v4 = check_kea_status(destination_address)
-
-    if process is None:
-        process = "starting"
-    # check process - if None add some.
-
-    if not v4:
-        result = start_kea(destination_address)
-        check_kea_process_result(start, result, process)
-    else:
-        result = stop_kea(destination_address)  # TODO: check result
-        result = start_kea(destination_address)
-        check_kea_process_result(start, result, process)
-
-
 def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"
+
+
+def db_setup():
+    db_name = world.f_cfg.db_name
+    db_user = world.f_cfg.db_user
+    db_passwd = world.f_cfg.db_passwd
+
+    # MYSQL
+    # cmd = "mysql -u root -N -B -e \"DROP DATABASE IF EXISTS '{db_name}';\"".format(**locals())
+    # result = fabric_sudo_command(cmd)
+    cmd = "mysql -u root -N -B -e \"SHOW DATABASES LIKE '{db_name}';\"".format(**locals())
+    result = fabric_sudo_command(cmd)
+    if result == db_name:
+        # db exsists, so try migration
+        cmd = "kea-admin lease-upgrade mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        fabric_run_command(cmd)
+    else:
+        # no db, create from scratch
+        cmd = "mysql -u root -e 'CREATE DATABASE {db_name};'".format(**locals())
+        fabric_sudo_command(cmd)
+        cmd = "mysql -u root -e \"CREATE USER IF NOT EXISTS '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
+        fabric_sudo_command(cmd)
+        cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
+        fabric_sudo_command(cmd)
+        cmd = "kea-admin lease-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        fabric_run_command(cmd)
+
+    # POSTGRESQL
+    # cmd = "psql -U postgres -t -c \"DROP DATABASE IF EXISTS {db_name}\"".format(**locals())
+    # result = fabric_sudo_command(cmd, sudo_user='postgres')
+    cmd = "psql -U postgres -t -c \"SELECT datname FROM pg_database WHERE datname = '{db_name}'\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres')
+    if result.strip() == db_name:
+        # db exsists, so try migration
+        cmd = "kea-admin lease-upgrade pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        fabric_run_command(cmd)
+    else:
+        # no db, create from scratch
+        cmd = "psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
+        fabric_sudo_command(cmd, sudo_user='postgres')
+        cmd = "psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
+        fabric_sudo_command(cmd, sudo_user='postgres')
+        cmd = "psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
+        fabric_sudo_command(cmd, sudo_user='postgres')
+        cmd = "psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
+        fabric_sudo_command(cmd, sudo_user='postgres')
+        cmd = "kea-admin lease-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        fabric_run_command(cmd)

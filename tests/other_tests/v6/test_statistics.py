@@ -14,7 +14,7 @@ def test_stats_6():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_prefix('3001::', '0', '90', '92')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -34,15 +34,12 @@ def test_stats_6():
 
     srv_msg.loops('SOLICIT', 'ADVERTISE', '50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "list-commands","arguments": {}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"statistic-get-all","arguments":{}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
 
     srv_msg.loops('SOLICIT', 'ADVERTISE', '50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"statistic-get-all","arguments":{}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
 
     srv_msg.loops('SOLICIT', 'ADVERTISE', '50')
 
@@ -73,22 +70,14 @@ def test_stats_6():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-receive-drop"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-parse-failed"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-solicit-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-confirm-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-advertise-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-reply-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-receive-drop"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-parse-failed"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-solicit-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-confirm-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-advertise-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-reply-received"}}')
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -122,8 +111,7 @@ def test_stats_6():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-renew-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-renew-received"}}')
 
     misc.test_procedure()
     srv_msg.client_requests_option('7')
@@ -153,12 +141,9 @@ def test_stats_6():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-rebind-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-release-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-rebind-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-release-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}')
 
     misc.test_procedure()
     srv_msg.client_requests_option('7')
@@ -166,24 +151,15 @@ def test_stats_6():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-infrequest-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-unknown-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-sent"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-infrequest-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-unknown-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-sent"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}')
 
     srv_msg.loops('REQUEST', 'REPLY', '50')
 
@@ -213,57 +189,39 @@ def test_stats_6():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-advertise-sent"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-reply-sent"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].total-pds"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-pds"}}')
 
     srv_msg.loops('REQUEST', 'REPLY', '50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get-all","arguments":{}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-reset","arguments": {"name": "pkt6-request-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get-all","arguments":{}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].total-nas"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "subnet[1].assigned-nas"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-reset","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
 
     srv_msg.loops('SOLICIT', 'ADVERTISE', '50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
 
     srv_msg.loops('REQUEST', 'REPLY', '50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-remove","arguments": {"name": "pkt6-request-received"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-remove","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
 
     srv_msg.loops('SOLICIT', 'ADVERTISE', '50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
 
     srv_msg.loops('REQUEST', 'REPLY', '50')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-request-received"}}')
 
     misc.test_procedure()
     srv_msg.client_requests_option('7')
@@ -293,38 +251,36 @@ def test_stats_6():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-decline-received"}}')
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3000:100::/64',
                                                        '3000:100::5-3000:100::ff')
     srv_control.config_srv_prefix('2001:db8:1::', '0', '90', '92')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2')
+    srv_control.open_control_channel('control_socket2')
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2',
-                                            '{"command":"statistic-get-all","arguments":{}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
+                                     socket_name='control_socket2')
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_prefix('2001:db8:1::', '0', '90', '92')
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command":"statistic-get-all","arguments":{}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_prefix('2001:db8:1::', '0', '90', '92')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2')
+    srv_control.open_control_channel('control_socket2')
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2',
-                                            '{"command":"statistic-get-all","arguments":{}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
+                                     socket_name='control_socket2')
 
     srv_control.start_srv('DHCP', 'restarted')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2',
-                                            '{"command":"statistic-get-all","arguments":{}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
+                                     socket_name='control_socket2')

@@ -15,7 +15,7 @@ import srv_control
 def test_control_channel_socket_dhcp_disable_timer():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -35,8 +35,7 @@ def test_control_channel_socket_dhcp_disable_timer():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "dhcp-disable", "arguments": {"max-period": 5}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "dhcp-disable", "arguments": {"max-period": 5}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -71,7 +70,7 @@ def test_control_channel_socket_dhcp_disable_timer():
 def test_control_channel_socket_dhcp_disable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -90,8 +89,7 @@ def test_control_channel_socket_dhcp_disable():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "dhcp-disable" }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "dhcp-disable" }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -110,7 +108,7 @@ def test_control_channel_socket_dhcp_disable():
 def test_control_channel_socket_dhcp_disable_and_enable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -130,8 +128,7 @@ def test_control_channel_socket_dhcp_disable_and_enable():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "dhcp-disable" }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "dhcp-disable" }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -143,8 +140,7 @@ def test_control_channel_socket_dhcp_disable_and_enable():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "dhcp-enable" }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "dhcp-enable" }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -167,7 +163,7 @@ def test_control_channel_socket_dhcp_disable_and_enable():
 def test_control_channel_socket_config_set_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -188,11 +184,10 @@ def test_control_channel_socket_config_set_basic():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -220,7 +215,7 @@ def test_control_channel_socket_config_set_basic():
 def test_control_channel_socket_change_socket_during_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -240,11 +235,10 @@ def test_control_channel_socket_change_socket_during_reconfigure():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2')
+    srv_control.open_control_channel('control_socket2')
     srv_control.generate_config_files()
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -264,12 +258,11 @@ def test_control_channel_socket_change_socket_during_reconfigure():
                                              None,
                                              'addr',
                                              '2001:db8:1::1')
-    # this should fail
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "list-commands","arguments": {}}')
-    #
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2',
-                                            '{"command": "list-commands","arguments": {}}')
+    # this should fail as socket has been changed
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}', exp_failed=True)
+    # this should pass (with new socket)
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}',
+                                     socket_name='control_socket2')
     srv_msg.json_response_parsing('arguments', None, 'leases-reclaim')
 
 
@@ -280,7 +273,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -300,11 +293,10 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -349,7 +341,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 def test_control_channel_socket_big_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -1127,20 +1119,19 @@ def test_control_channel_socket_big_config_file():
                                      'time-servers',
                                      '2001:558:ff18:16:10:253:175:76')
     srv_control.config_srv_opt_space('vendor-4491', 'time-offset', '-10000')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
 
-    srv_control.configure_loggers('kea-dhcp6.dhcp6', 'INFO', 'None', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'INFO', 'None', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp6.options', 'DEBUG', '99', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp6.packets', 'DEBUG', '99', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp6.leases', 'WARN', 'None', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', '50', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', '25', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp6.options', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp6.dhcp6', 'INFO', 'None')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'INFO', 'None')
+    srv_control.configure_loggers('kea-dhcp6.options', 'DEBUG', '99')
+    srv_control.configure_loggers('kea-dhcp6.packets', 'DEBUG', '99')
+    srv_control.configure_loggers('kea-dhcp6.leases', 'WARN', 'None')
+    srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', '50')
+    srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', '25')
+    srv_control.configure_loggers('kea-dhcp6.options', 'INFO', 'None')
     srv_control.generate_config_files()
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')

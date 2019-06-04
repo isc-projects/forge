@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # SERVER 1
+  config.vm.define "${SERVER1_NAME}" do |srv1|  # TODO: rename kea to src
+    srv1.vm.box = "godfryd/lxc-ubuntu-18.04"
+    srv1.vm.hostname = "${SERVER1_NAME}"
+    srv1.vm.provider "lxc" do |v|
+      v.container_name = "${SERVER1_NAME}"
+      v.customize 'rootfs.path', "/var/lib/lxc/${SERVER1_NAME}/rootfs"  # fix for issues in vagrant-lxc
+
+      v.customize 'net.1.type', 'veth'
+      v.customize 'net.1.flags', 'up'
+      v.customize 'net.1.link', '${MGMT_BRG}'
+      v.customize 'net.1.ipv4.address', '${MGMT_ADDRESS}/24'
+
+      v.customize 'net.2.type', 'veth'
+      v.customize 'net.2.flags', 'up'
+      v.customize 'net.2.link', '${TRAFFIC1_BRG}'
+      v.customize 'net.2.ipv4.address', '${SRV4_ADDR}/24'
+      v.customize 'net.2.type', '${SERVER_IFACE}'
+    end
+    srv1.vm.synced_folder "${KEA_DIRS}", "/kea-dirs"
+
+    srv1.vm.provision "file", source: "id_rsa", destination: "$HOME/.ssh/id_rsa"
+    srv1.vm.provision "file", source: "id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    srv1.vm.provision "shell", privileged: false, path: "provision-srv.sh"
+  end
+
+  # CLIENT
+  config.vm.define "${CLIENT_NAME}" do |clnt|
+    clnt.vm.box = "godfryd/lxc-ubuntu-18.04"
+    clnt.vm.hostname = "${CLIENT_NAME}"
+    clnt.vm.provider "lxc" do |v|
+      v.container_name = "${CLIENT_NAME}"
+      v.customize 'rootfs.path', "/var/lib/lxc/${CLIENT_NAME}/rootfs"
+
+      v.customize 'net.1.type', 'veth'
+      v.customize 'net.1.flags', 'up'
+      v.customize 'net.1.link', '${MGMT_BRG}'
+      v.customize 'net.1.ipv4.address', '172.28.0.20/24'
+
+      v.customize 'net.2.type', 'veth'
+      v.customize 'net.2.flags', 'up'
+      v.customize 'net.2.link', '${TRAFFIC1_BRG}'
+      v.customize 'net.2.ipv4.address', '${CLNT4_ADDR}/24'
+      v.customize 'net.2.type', '${IFACE}'
+    end
+    clnt.vm.synced_folder "..", "/forge"
+
+    clnt.vm.provision "file", source: "id_rsa", destination: "$HOME/.ssh/id_rsa"
+    clnt.vm.provision "file", source: "id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    clnt.vm.provision "shell", privileged: false, path: "provision-clnt.sh"
+  end
+end

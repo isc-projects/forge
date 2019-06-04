@@ -25,7 +25,7 @@ def test_user_check_hook_vendor_options_all():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::20')
     srv_control.config_srv_another_subnet_no_interface('1000:1::/64', '1000:1::5-1000:1::5')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_user_chk.so')
+    srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.config_srv_opt_space('vendor-4491', 'tftp-servers', '7000::1')
     srv_control.config_srv_opt_space('vendor-4491', 'config-file', 'bootfile.from.server')
     srv_control.build_and_send_config_files('SSH', 'config-file')

@@ -7,6 +7,7 @@ import pytest
 import srv_msg
 import misc
 import srv_control
+from forge_cfg import world
 
 
 @pytest.mark.v4
@@ -15,14 +16,14 @@ import srv_control
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -58,11 +59,11 @@ def test_v4_legal_log_assigned_address():
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
     srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040506')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06')
 
@@ -80,7 +81,7 @@ def test_v4_legal_log_assigned_address_pgsql():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
@@ -143,7 +144,7 @@ def test_v4_legal_log_assigned_address_mysql():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'mysql')
@@ -199,14 +200,14 @@ def test_v4_legal_log_assigned_address_mysql():
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_without_client_id():
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -236,14 +237,14 @@ def test_v4_legal_log_assigned_address_without_client_id():
     srv_msg.response_check_include_option('Response', None, '54')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                'NOT ',
                                'client-id:')
 
@@ -261,7 +262,7 @@ def test_v4_legal_log_assigned_address_without_client_id_pgsql():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
@@ -319,7 +320,7 @@ def test_v4_legal_log_assigned_address_without_client_id_mysql():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'mysql')
@@ -370,14 +371,14 @@ def test_v4_legal_log_assigned_address_without_client_id_mysql():
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_via_relay_pgsql_1():
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.2-192.168.50.2')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -414,12 +415,12 @@ def test_v4_legal_log_assigned_address_via_relay_pgsql_1():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs to a device with hardware address: hwtype=1 00:00:00:00:00:00,')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'client-id: 00:01:02:03:04:05:77 connected via relay at address: $(GIADDR4)')
 
@@ -437,7 +438,7 @@ def test_v4_legal_log_assigned_address_via_relay_pgsql_2():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.2-192.168.50.2')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
@@ -501,7 +502,7 @@ def test_v4_legal_log_assigned_address_via_relay_mysql():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.2-192.168.50.2')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'mysql')
@@ -558,13 +559,13 @@ def test_v4_legal_log_assigned_address_via_relay_mysql():
 @pytest.mark.legal_logging
 def test_v4_legal_log_renewed_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -620,11 +621,11 @@ def test_v4_legal_log_renewed_address():
     srv_msg.response_check_include_option('Response', None, '54')
     srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)')
 
@@ -641,7 +642,7 @@ def test_v4_legal_log_renewed_address_pgsql():
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
@@ -723,7 +724,7 @@ def test_v4_legal_log_renewed_address_mysql():
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'mysql')
@@ -799,13 +800,13 @@ def test_v4_legal_log_renewed_address_mysql():
 @pytest.mark.legal_logging
 def test_v4_legal_log_rebind_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '600')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -861,11 +862,11 @@ def test_v4_legal_log_rebind_address():
     srv_msg.response_check_include_option('Response', None, '54')
     srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
+    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)')
 
@@ -882,7 +883,7 @@ def test_v4_legal_log_rebind_address_mysql():
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '600')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'mysql')
@@ -964,7 +965,7 @@ def test_v4_legal_log_rebind_address_pgsql():
     srv_control.set_time('renew-timer', '3')
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '600')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
     srv_control.add_parameter_to_hook('1', 'type', 'postgresql')

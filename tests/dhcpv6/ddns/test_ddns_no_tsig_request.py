@@ -1141,9 +1141,8 @@ def test_ddns6_notsig_rev_success_withoutflag():
     srv_msg.response_check_option_content('Response', '39', "NOT", 'flags', 'N')
     srv_msg.response_check_option_content('Response', '39', "NOT", 'flags', 'O')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com.')
-    srv_msg.log_contains_line('DNS',
-                              None,
-                              'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
+    srv_msg.dns_log_contains(None,
+                             'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
@@ -1225,9 +1224,8 @@ def test_ddns6_notsig_rev_withoutflag_notenabled():
     srv_msg.response_check_include_option('Response', None, '39')
     srv_msg.response_check_option_content('Response', '39', None, 'flags', 'N')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com.')
-    srv_msg.log_contains_line('DNS',
-                              'NOT ',
-                              'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
+    srv_msg.dns_log_contains('NOT ',
+                             'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
@@ -1306,9 +1304,8 @@ def test_ddns6_notsig_rev_Nflag_override_no_update():
     srv_msg.response_check_include_option('Response', None, '39')
     srv_msg.response_check_option_content('Response', '39', None, 'flags', 'SO')
     srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com.')
-    srv_msg.log_contains_line('DNS',
-                              None,
-                              'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
+    srv_msg.dns_log_contains(None,
+                             'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')

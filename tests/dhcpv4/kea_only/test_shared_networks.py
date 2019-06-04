@@ -240,12 +240,8 @@ def test_v4_sharednetworks_single_shared_subnet_with_two_subnets_based_on_iface(
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.1,00:00:00:00:00:22')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.51.1,00:00:00:00:00:33')
+    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:22')
+    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:33')
 
 
 @pytest.mark.v4
@@ -310,9 +306,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.200')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.1,00:00:00:00:00:22')
+    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:22')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
@@ -350,9 +344,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.200')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.51.1,00:00:00:00:00:33')
+    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:33')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:44')
@@ -390,9 +382,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.100')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.52.1,00:00:00:00:00:44')
+    srv_msg.lease_file_contains('192.168.52.1,00:00:00:00:00:44')
 
 
 @pytest.mark.v4
@@ -466,9 +456,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.200')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.1,00:00:00:00:00:11')
+    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:11')
 
     # 2
     misc.test_procedure()
@@ -514,9 +502,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.200')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.51.1,00:00:00:00:00:22')
+    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:22')
 
     # 3
     misc.test_procedure()
@@ -562,9 +548,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.100')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.52.1,00:00:00:00:00:33')
+    srv_msg.lease_file_contains('192.168.52.1,00:00:00:00:00:33')
 
     # 4
     misc.test_procedure()
@@ -662,12 +646,8 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.1,00:00:00:00:00:aa')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.51.1,00:00:00:00:00:bb')
+    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:aa')
+    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:bb')
 
     misc.test_procedure()
     srv_msg.network_variable('source_port', '67')
@@ -712,9 +692,7 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.200')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.52.1,00:00:00:00:00:22')
+    srv_msg.lease_file_contains('192.168.52.1,00:00:00:00:00:22')
 
     # 3
     misc.test_procedure()
@@ -760,9 +738,7 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.100')
     srv_msg.response_check_option_content('Response', '4', 'NOT ', 'value', '199.199.199.1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.53.1,00:00:00:00:00:33')
+    srv_msg.lease_file_contains('192.168.53.1,00:00:00:00:00:33')
 
 
 @pytest.mark.v4
@@ -832,7 +808,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f2:f2')
@@ -861,7 +837,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
 
 @pytest.mark.v4
@@ -935,7 +911,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_option_content('Response', '54', 'NOT ', 'value', '44.44.44.222')
     srv_msg.response_check_option_content('Response', '54', None, 'value', '11.22.33.123')
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f2:f2')
@@ -1005,7 +981,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_option_content('Response', '54', 'NOT ', 'value', '11.22.33.123')
     srv_msg.response_check_option_content('Response', '54', 'NOT ', 'value', '44.44.44.222')
     srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
 
 @pytest.mark.v4
@@ -1081,7 +1057,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_option_content('Response', '54', 'NOT ', 'value', '44.44.44.222')
     srv_msg.response_check_option_content('Response', '54', None, 'value', '11.22.33.123')
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f2:f2')
@@ -1151,5 +1127,5 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_option_content('Response', '54', 'NOT ', 'value', '11.22.33.123')
     srv_msg.response_check_option_content('Response', '54', 'NOT ', 'value', '44.44.44.222')
     srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv MUST contain line or phrase:
+    # File stored in kea-leases4.csv MUST contain line or phrase:
     #  192.168.51.1,00:00:00:00:00:33

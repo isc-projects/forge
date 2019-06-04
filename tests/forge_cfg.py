@@ -29,13 +29,13 @@ import sys
 import cgitb
 
 
-from init_all import SOFTWARE_INSTALL_PATH, LOGLEVEL, SOFTWARE_UNDER_TEST, DB_TYPE, SHOW_PACKETS_FROM, \
+from init_all import SOFTWARE_INSTALL_PATH, INSTALL_METHOD, LOGLEVEL, SOFTWARE_UNDER_TEST, DB_TYPE, SHOW_PACKETS_FROM, \
     SRV4_ADDR, REL4_ADDR, GIADDR4, IFACE, CLI_LINK_LOCAL, SERVER_IFACE, OUTPUT_WAIT_INTERVAL, \
     OUTPUT_WAIT_MAX_INTERVALS, PACKET_WAIT_INTERVAL, SRV_IPV6_ADDR_GLOBAL, SRV_IPV6_ADDR_LINK_LOCAL, HISTORY,\
     TCPDUMP, TCPDUMP_PATH, SAVE_CONFIG_FILE, AUTO_ARCHIVE, SLEEP_TIME_1, SLEEP_TIME_2, MGMT_ADDRESS, MGMT_USERNAME,\
     MGMT_PASSWORD, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SAVE_LEASES, DNS_IFACE, DNS4_ADDR, DNS6_ADDR, DNS_PORT, \
     DNS_SERVER_INSTALL_PATH, DNS_DATA_PATH, ISC_DHCP_LOG_FACILITY, ISC_DHCP_LOG_FILE, DB_NAME, DB_USER, DB_PASSWD, \
-    DB_HOST, CIADDR, MGMT_ADDRESS_2, MGMT_ADDRESS_3, FABRIC_PTY
+    DB_HOST, CIADDR, MGMT_ADDRESS_2, MGMT_ADDRESS_3, FABRIC_PTY, INSTALL_METHOD
 
 # Create Forge configuration class
 SOFTWARE_INSTALL_DIR = SOFTWARE_INSTALL_PATH  # for backward compatibility of tests
@@ -125,8 +125,13 @@ class ForgeConfiguration:
         # DHCP
         self.proto = 'v4'  # default value but it is overriden by each test in terrain.declare_all()
         self.software_under_test = SOFTWARE_UNDER_TEST
-        self.software_install_path = SOFTWARE_INSTALL_PATH
-        self.software_install_dir = SOFTWARE_INSTALL_PATH  # that keeps backwards compatibility
+        self.install_method = INSTALL_METHOD
+        if self.install_method == 'make':
+            self.software_install_path = SOFTWARE_INSTALL_PATH
+            self.software_install_dir = SOFTWARE_INSTALL_PATH  # that keeps backwards compatibility
+        else:
+            self.software_install_path = '/usr'
+            self.software_install_dir = '/usr'  # that keeps backwards compatibility
         self.db_type = DB_TYPE
         self.db_host = DB_HOST
         self.db_name = DB_NAME
@@ -223,6 +228,59 @@ class ForgeConfiguration:
         # TODO develop this one
         pass
 
+    def data_join(self, sub_path):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'var/lib/kea', sub_path)
+        else:
+            return os.path.join('/var/lib/kea', sub_path)
+
+    def log_join(self, sub_path):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'var/log', sub_path)
+        else:
+            return os.path.join('/var/log/kea', sub_path)
+
+    def etc_join(self, sub_path):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'etc/kea', sub_path)
+        else:
+            return os.path.join('/etc/kea', sub_path)
+
+    def get_dhcp_conf_path(self):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'etc/kea/kea.conf')
+        else:
+            return '/etc/kea/kea-dhcp%s.conf' % world.proto[1]
+
+    def sbin_join(self, sub_path):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'sbin', sub_path)
+        else:
+            return os.path.join('/usr/sbin', sub_path)
+
+    def hooks_join(self, sub_path):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'lib/kea/hooks', sub_path)
+        else:
+            return os.path.join('/usr/lib/x86_64-linux-gnu/kea/hooks', sub_path)
+
+    def run_join(self, sub_path):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'var/run/kea', sub_path)
+        else:
+            return os.path.join('/run/kea', sub_path)
+
+    def tmp_join(self, sub_path):
+        return os.path.join('/tmp', sub_path)
+
+    def get_leases_path(self, proto=None):
+        if not proto:
+            proto = world.proto
+
+        return self.data_join('kea-leases%s.csv' % proto[1])
+
+
+
 
 # global object that stores all needed data: configs, etc.
 world = threading.local()
@@ -250,7 +308,7 @@ def step(pattern):
                 txt += txt_kwargs
             txt += ')\n'
 
-            fout = os.path.join(world.cfg["dir_name"], 'test-steps.txt')
+            fout = os.path.join(world.cfg["test_result_dir"], 'test-steps.txt')
             with open(fout, 'a') as f:
                 f.write(txt)
 

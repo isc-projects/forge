@@ -21,6 +21,8 @@ import importlib
 from forge_cfg import world, step
 
 import softwaresupport.bind9_server.functions as dns
+from protosupport.multi_protocol_functions import test_define_value
+
 
 class Dispatcher(object):
     def __init__(self, mod_name):
@@ -49,69 +51,6 @@ ddns = Dispatcher('functions_ddns')
 mysql_reservation = Dispatcher('mysql_reservation')
 pgsql_reservation = Dispatcher('pgsql_reservation')
 cql_reservation = Dispatcher('cql_reservation')
-
-
-def test_define_value(*args):
-    """
-    Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
-    Bash like define variables: $(variable_name)
-    You can use steps like:
-        Client download file from server stored in: $(SERVER_SETUP_DIR)/other_dir/my_file
-    or
-        Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/my_file
-
-    $ sign is very important without it Forge wont find variable in init_all.
-
-    You can use any variable form init_all in that way. Also you can add them using step:
-    "Client defines new variable: (\S+) with value (\S+)."
-
-    """
-    tested_args = []
-    for i in range(len(args)):
-        try:
-            tmp = str(args[i])
-        except UnicodeEncodeError:
-            tmp = unicode(args[i])
-        tmp_loop = ""
-        while True:
-            imported = None
-            front = None
-            # if "$" in args[i]:
-            if "$" in tmp:
-                index = tmp.find('$')
-                front = tmp[:index]
-                tmp = tmp[index:]
-
-            if tmp[:2] == "$(":
-                index = tmp.find(')')
-                assert index > 2, "Defined variable not complete. Missing ')'. "
-
-                for each in world.define:
-                    if str(each[0]) == tmp[2: index]:
-                        imported = int(each[1]) if each[1].isdigit() else str(each[1])
-                if imported is None:
-                    imported = getattr(world.f_cfg, tmp[2: index].lower())
-                # TODO: WTF?
-                #if imported is None:
-                #    try:
-                #        imported = getattr(__import__('init_all', fromlist=[tmp[2: index]]), tmp[2: index])
-                #    except ImportError:
-                #        assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
-                if front is None:
-                    # tested_args.append(imported + tmp[index + 1:])
-                    tmp_loop = str(imported) + tmp[index + 1:]
-                else:
-                    # tested_args.append(front + imported + tmp[index + 1:])
-                    tmp_loop = front + str(imported) + tmp[index + 1:]
-            else:
-                # tested_args.append(args[i])
-                tmp_loop = tmp
-            if "$(" not in tmp_loop:
-                tested_args.append(tmp_loop)
-                break
-            else:
-                tmp = tmp_loop
-    return tested_args
 
 
 ##DHCP server configurations
@@ -401,8 +340,8 @@ def add_hooks(library_path):
     """
     Add hooks library to configuration. Only Kea.
     """
-    library_path = test_define_value(library_path)[0]
-    dhcp.add_hooks(library_path)
+    full_library_path = world.f_cfg.hooks_join(library_path)
+    dhcp.add_hooks(full_library_path)
 
     # new configuration system: Not yet supported
     # TODO implement this
@@ -418,9 +357,9 @@ def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
 
 
 @step('Add High-Availability hook library located (\S+).')
-def add_ha_hook(lib_location):
-    lib_location = test_define_value(lib_location)[0]
-    dhcp.ha_add_parameter_to_hook("lib", lib_location)
+def add_ha_hook(library_path):
+    full_library_path = world.f_cfg.hooks_join(library_path)
+    dhcp.ha_add_parameter_to_hook("lib", full_library_path)
 
     # new configuration system: Not yet supported
     # TODO implement this
@@ -762,22 +701,15 @@ def add_option_to_defined_class(class_no, option, option_value):
 # @step('To class no (\d+) add custom option (\S+) with value (\S+).')
 
 
-@step('Server has control channel on (\S+) socket with name (\S+).')
-def open_control_channel(socket_type, socket_name):
-    """
-    """
-    socket_type, socket_name = test_define_value(socket_type, socket_name)
-    dhcp.open_control_channel_socket(socket_type, socket_name)
-    #world.configClass.updatevalueglobalparam("socket_name", socket_name)
-    #world.configClass.updatevalueglobalparam("socket_type", socket_type)
+@step('Server has control channel (\S+).')
+def open_control_channel(socket_name=None):
+    dhcp.open_control_channel_socket(socket_name)
 
 
 @step('Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
-def agent_control_channel(host_address, host_port, socket_type, socket_name):
-    """
-    """
-    host_address, host_port, socket_type, socket_name = test_define_value(host_address, host_port, socket_type, socket_name)
-    dhcp.agent_control_channel(host_address, host_port, socket_type, socket_name)
+def agent_control_channel(host_address='$(MGMT_ADDRESS)', host_port='8000', socket_name='control_socket'):
+    host_address, host_port = test_define_value(host_address, host_port)
+    dhcp.agent_control_channel(host_address, host_port, socket_name)
 
 
 ##DNS server configuration
@@ -806,15 +738,14 @@ def dns_rest(address, port, alg, value):
 
 
 @step('Server logging system is configured with logger type (\S+), severity (\S+), severity level (\S+) and log file (\S+).')
-def configure_loggers(log_type, severity, severity_level, logging_file):
-    log_type, severity, severity_level, logging_file = test_define_value(log_type, severity,
-                                                                         severity_level, logging_file)
+def configure_loggers(log_type, severity, severity_level, logging_file=None):
+    log_type, severity, severity_level = test_define_value(log_type, severity, severity_level)
     dhcp.add_logger(log_type, severity, severity_level, logging_file)
 
 
 ##servers management
 @step('Send server configuration using (\S+) and (\S+).')
-def build_and_send_config_files(connection_type, configuration_type):
+def build_and_send_config_files(connection_type, configuration_type, cfg=None):
     """
     Step used to choosing configuration type and channel to send it.
     :param step:
@@ -822,11 +753,7 @@ def build_and_send_config_files(connection_type, configuration_type):
     :param configuration_type:
     """
     connection_type, configuration_type = test_define_value(connection_type, configuration_type)
-    dhcp.build_and_send_config_files(connection_type, configuration_type)
-
-
-def build_and_send_config_files2(cfg, connection_type, configuration_type):
-    dhcp.build_and_send_config_files2(cfg, connection_type, configuration_type)
+    dhcp.build_and_send_config_files(connection_type, configuration_type, cfg=cfg)
 
 
 @step('Send server configuration using (\S+) and (\S+) and destination address (\S+).')

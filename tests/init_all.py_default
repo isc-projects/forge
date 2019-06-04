@@ -85,6 +85,11 @@ SERVER_IFACE = ""
 # point to root directory of server installation and must end with /.
 SOFTWARE_INSTALL_PATH = "/usr/local/"
 
+# Kea install method, it can be:
+# - 'make' - make install straight from sources or
+# - 'native' - from native deb/rpm packages using rpm or dpkg
+INSTALL_METHOD = 'make'
+
 # When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
 # as the interval in which to check again if it has not been found yet.
 # If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an

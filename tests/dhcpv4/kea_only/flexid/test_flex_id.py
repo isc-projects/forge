@@ -22,9 +22,9 @@ def test_v4_hooks_flexid_libreload():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -37,8 +37,7 @@ def test_v4_hooks_flexid_libreload():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
-                                            '{"command": "libreload","arguments": {}}')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "libreload","arguments": {}}')
     # if reload works - classification should work without changes
 
     misc.test_procedure()
@@ -64,9 +63,9 @@ def test_v4_hooks_flexid_reconfigure():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -88,9 +87,9 @@ def test_v4_hooks_flexid_reconfigure():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -117,7 +116,7 @@ def test_v4_hooks_flexid_inside_pool():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -159,7 +158,7 @@ def test_v4_hooks_flexid_inside_pool_negative():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -198,7 +197,7 @@ def test_v4_hooks_flexid_outside_pool():
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -238,7 +237,7 @@ def test_v4_hooks_flexid_replace_mac_addr_inside_pool():
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     srv_control.set_conf_parameter_global('match-client-id', 'false')
@@ -278,12 +277,8 @@ def test_v4_hooks_flexid_replace_mac_addr_inside_pool():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.10,ff:01:02:03:ff:04,,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.10,ff:01:02:03:ff:04,,0')
+    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,,4000')
+    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,,0')
 
 
 @pytest.mark.v4
@@ -298,7 +293,7 @@ def test_v4_hooks_flexid_replace_client_id_release_fail():
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -341,7 +336,7 @@ def test_v4_hooks_flexid_replace_client_id_release_1():
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -396,15 +391,9 @@ def test_v4_hooks_flexid_replace_client_id_release_1():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               'NOT ',
-                               'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               'NOT ',
-                               '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
+    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    srv_msg.lease_file_doesnt_contain('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
 
 @pytest.mark.v4
@@ -419,7 +408,7 @@ def test_v4_hooks_flexid_replace_client_id_release_2():
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -473,15 +462,9 @@ def test_v4_hooks_flexid_replace_client_id_release_2():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               'NOT ',
-                               'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
+    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
 
 @pytest.mark.v4
@@ -496,7 +479,7 @@ def test_v4_hooks_flexid_replace_client_id_renew_1():
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -541,12 +524,8 @@ def test_v4_hooks_flexid_replace_client_id_renew_1():
     srv_msg.response_check_include_option('Response', None, '61')
     srv_msg.response_check_include_option('Response', None, '54')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               'NOT ',
-                               'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 
 
 @pytest.mark.v4
@@ -561,7 +540,7 @@ def test_v4_hooks_flexid_replace_client_id_renew_2():
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -606,12 +585,8 @@ def test_v4_hooks_flexid_replace_client_id_renew_2():
     srv_msg.response_check_include_option('Response', None, '61')
     srv_msg.response_check_include_option('Response', None, '54')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               'NOT ',
-                               'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
-                               None,
-                               '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 
 
 @pytest.mark.v4
@@ -621,7 +596,7 @@ def test_v4_hooks_flexid_mysql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -669,7 +644,7 @@ def test_v4_hooks_flexid_mysql_negative():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -712,7 +687,7 @@ def test_v4_hooks_flexid_pgsql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id
@@ -759,7 +734,7 @@ def test_v4_hooks_flexid_pgsql_negative():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
     srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
-    srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
     # enable matching client id

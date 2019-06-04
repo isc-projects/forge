@@ -16,16 +16,17 @@
 # Author: Wlodzimierz Wencel
 import sys
 import os
-from time import sleep
-import json
-import locale
 import re
 import tty
+import time
+import json
+import locale
+import pprint
 import termios
-from shutil import copy
+import shutil
 import logging
 
-from _pyio import open
+#from _pyio import open  # TODO: why this way? WTF?
 import requests
 
 from forge_cfg import world
@@ -37,11 +38,11 @@ from softwaresupport.multi_server_functions import fabric_send_file, fabric_down
 log = logging.getLogger('forge')
 
 
-def forge_sleep(time, time_units):
+def forge_sleep(duration, time_units):
     divide = 1.0
     if time_units == 'milliseconds' or time_units == 'millisecond':
         divide = 1000.0
-    sleep(time * 1.0 / divide)
+    time.sleep(duration * 1.0 / divide)
 
 
 def test_pause():
@@ -64,7 +65,7 @@ def copy_file_from_server(remote_path):
     Copy file from remote server via ssh. Address/login/password from init_all.py
     Path required.
     """
-    fabric_download_file(remote_path, world.cfg["dir_name"] + '/downloaded_file')
+    fabric_download_file(remote_path, world.cfg["test_result_dir"] + '/downloaded_file')
 
 
 def send_file_to_server(local_path, remote_path):
@@ -106,10 +107,10 @@ def compare_file(local_path):
     if not os.path.exists(local_path):
         assert False, 'No local file %s' % local_path
 
-    outcome = open(world.cfg["dir_name"] + '/file_compare', 'w')
+    outcome = open(world.cfg["test_result_dir"] + '/file_compare', 'w')
 
     # first remove all commented and blank lines of both files
-    downloaded_stripped = strip_file(world.cfg["dir_name"] + '/downloaded_file')
+    downloaded_stripped = strip_file(world.cfg["test_result_dir"] + '/downloaded_file')
     local_stripped = strip_file(local_path)
 
     line_number = 1
@@ -121,10 +122,10 @@ def compare_file(local_path):
             error_flag = False
         line_number += 1
     if error_flag:
-        remove_local_file(world.cfg["dir_name"] + '/file_compare')
+        remove_local_file(world.cfg["test_result_dir"] + '/file_compare')
 
     assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details'\
-                       % world.cfg["dir_name"]
+                       % world.cfg["test_result_dir"]
 
     if len(downloaded_stripped) != len(local_stripped):
         assert len(downloaded_stripped) > len(local_stripped), 'Downloaded file is part of a local file.'
@@ -135,7 +136,7 @@ def file_includes_line(condition, line):
     """
     Check if downloaded file contain line.
     """
-    downloaded_stripped = strip_file(world.cfg["dir_name"] + '/downloaded_file')
+    downloaded_stripped = strip_file(world.cfg["test_result_dir"] + '/downloaded_file')
     if condition is not None:
         if line in downloaded_stripped:
             assert False, 'Downloaded file does contain line: "%s" But it should NOT.' % line
@@ -172,20 +173,26 @@ def add_variable(variable_name, variable_val, val_type):
 
 
 def user_victory():
-    if not os.path.exists(world.cfg["dir_name"]):
-        os.makedirs(world.cfg["dir_name"])
-    copy('../doc/.victory.jpg', world.cfg["dir_name"] + '/celebrate_success.jpg')
+    if not os.path.exists(world.cfg["test_result_dir"]):
+        os.makedirs(world.cfg["test_result_dir"])
+    shutil.copy('../doc/.victory.jpg', world.cfg["test_result_dir"] + '/celebrate_success.jpg')
 
 
-def log_contains(server_type, condition, line):
-    if server_type == "DHCP":
-        log_file = world.cfg["dhcp_log_file"]
-    elif server_type == "DNS":
-        log_file = world.cfg["dns_log_file"]
+def log_contains(line, condition, log_file=None):
+    if world.f_cfg.install_method == 'make':
+        if log_file is None:
+            log_file = 'kea.log'
+        log_file = world.f_cfg.log_join(log_file)
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
     else:
-        assert False, "No such name as: {server_type}".format(**locals())
-
-    result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
+        if log_file is None:
+            cmd = 'ts=`systemctl show -p ActiveEnterTimestamp isc-kea-dhcp%s-server.service | awk \'{{print $2 $3}}\'`;' % world.proto[1]
+            cmd += ' journalctl -u isc-kea-dhcp%s-server.service --since $ts |' % world.proto[1]
+            cmd += 'grep -c "%s"' % line
+            result = fabric_sudo_command(cmd)
+        else:
+            log_file = world.f_cfg.log_join(log_file)
+            result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
 
     if condition is not None:
         if result.succeeded:
@@ -293,17 +300,17 @@ def change_network_variables(value_name, value):
         assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
 
 
-def execute_shell_script(path, arguments):
+def execute_shell_cmd(path, arguments=''):
     result = fabric_sudo_command(path + ' ' + arguments, hide_all=False)
 
     file_name = path.split("/")[-1] + '_output'
     file_name = generate_file_name(1, file_name)
 
     # assert False, type(result.stdout)
-    if not os.path.exists(world.cfg["dir_name"]):
-        os.makedirs(world.cfg["dir_name"])
+    if not os.path.exists(world.cfg["test_result_dir"]):
+        os.makedirs(world.cfg["test_result_dir"])
 
-    myfile = open(world.cfg["dir_name"] + '/' + file_name, 'w')
+    myfile = open(world.cfg["test_result_dir"] + '/' + file_name, 'w')
     myfile.write(unicode('Script: ' + path))
     if arguments == '':
         arguments = "no arguments used!"
@@ -315,48 +322,162 @@ def execute_shell_script(path, arguments):
 
     myfile.write(unicode('\nScript stdout:\n' + result.stdout))
     myfile.close()
-    forge_sleep(3, "seconds")
+
+    return result
 
 
-def execute_shell_command(command):
-    fabric_sudo_command(command, hide_all=False)
+def test_define_value(*args):
+    """
+    Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
+    Bash like define variables: $(variable_name)
+    You can use steps like:
+        Client download file from server stored in: $(SERVER_SETUP_DIR)/other_dir/my_file
+    or
+        Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/my_file
+
+    $ sign is very important without it Forge wont find variable in init_all.
+
+    You can use any variable form init_all in that way. Also you can add them using step:
+    "Client defines new variable: (\S+) with value (\S+)."
+
+    """
+    tested_args = []
+    for i in range(len(args)):
+        try:
+            tmp = str(args[i])
+        except UnicodeEncodeError:
+            tmp = unicode(args[i])
+        tmp_loop = ""
+        while True:
+            imported = None
+            front = None
+            # if "$" in args[i]:
+            if "$" in tmp:
+                index = tmp.find('$')
+                front = tmp[:index]
+                tmp = tmp[index:]
+
+            if tmp[:2] == "$(":
+                index = tmp.find(')')
+                assert index > 2, "Defined variable not complete. Missing ')'. "
+
+                for each in world.define:
+                    if str(each[0]) == tmp[2: index]:
+                        imported = int(each[1]) if each[1].isdigit() else str(each[1])
+                if imported is None:
+                    imported = getattr(world.f_cfg, tmp[2: index].lower())
+                # TODO: WTF?
+                #if imported is None:
+                #    try:
+                #        imported = getattr(__import__('init_all', fromlist=[tmp[2: index]]), tmp[2: index])
+                #    except ImportError:
+                #        assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
+                if front is None:
+                    # tested_args.append(imported + tmp[index + 1:])
+                    tmp_loop = str(imported) + tmp[index + 1:]
+                else:
+                    # tested_args.append(front + imported + tmp[index + 1:])
+                    tmp_loop = front + str(imported) + tmp[index + 1:]
+            else:
+                # tested_args.append(args[i])
+                tmp_loop = tmp
+            if "$(" not in tmp_loop:
+                tested_args.append(tmp_loop)
+                break
+            else:
+                tmp = tmp_loop
+    return tested_args
 
 
-def connect_socket(command):
-    fabric_sudo_command(command, hide_all=False)
+def substitute_vars(cfg):
+    for k, v in cfg.items():
+        if isinstance(v, basestring):
+            cfg[k] = test_define_value(v)[0]
+        elif isinstance(v, dict):
+            substitute_vars(v)
+        elif isinstance(v, list):
+            new_list = []
+            for lv in v:
+                if isinstance(lv, dict):
+                    substitute_vars(lv)
+                    new_list.append(lv)
+                elif isinstance(lv, basestring):
+                    new_list.append(test_define_value(lv)[0])
+                else:
+                    new_list.append(lv)
+            cfg[k] = new_list
 
 
-def send_through_socket_server_site(socket_path, command, destination_address=world.f_cfg.mgmt_address):
-    if type(command) is unicode:
-        command = command.encode('ascii', 'ignore')
-    command_file = open(world.cfg["dir_name"] + '/command_file', 'w')
+def _process_ctrl_response(response, exp_result):
+    world.control_channel = response
+    try:
+        result = json.loads(response)
+        log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
+    except:
+        log.exception('Problem with parsing json: %s', str(response))
+        result = response
+
+    if exp_result is not None:
+        if isinstance(result, dict):
+            res = result
+        elif isinstance(result, list):
+            res = result[0]
+        else:
+            raise Exception('unexpected type of result: %s' % str(type(result)))
+        assert 'result' in res and res['result'] == exp_result
+        if res['result'] == 1:
+            assert len(res) == 2 and 'text' in res
+
+    return result
+
+
+def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=world.f_cfg.mgmt_address, exp_result=0, exp_failed=False):
+    # if command is expected to fail it does not make sense to check response details
+    if exp_failed:
+        # expected result should be default (0) or None
+        assert exp_result in [0, None]
+        # force expected result to None so it is not checked
+        exp_result = None
+
+    log.info(pprint.pformat(command))
+    if isinstance(command, dict):
+        command = json.dumps(command)
+    command_file = open(world.cfg["test_result_dir"] + '/command_file', 'w')
     try:
         command_file.write(command)
     except:
         command_file.close()
-        command_file = open(world.cfg["dir_name"] + '/command_file', 'wb')  # TODO: why 'w' / 'wb'
+        command_file = open(world.cfg["test_result_dir"] + '/command_file', 'wb')  # TODO: why 'w' / 'wb'
         command_file.write(command)
     command_file.close()
-    fabric_send_file(world.cfg["dir_name"] + '/command_file', 'command_file', destination_host=destination_address)
-    world.control_channel = fabric_sudo_command('socat UNIX:' + socket_path + ' - <command_file', hide_all=True,
-                                                destination_host=destination_address)
+    fabric_send_file(world.cfg["test_result_dir"] + '/command_file', 'command_file', destination_host=destination_address)
+
+    if socket_name is not None:
+        socket_path = world.f_cfg.run_join(socket_name)
+    else:
+        socket_path = world.f_cfg.run_join('control_socket')
+    cmd = 'socat UNIX:' + socket_path + ' - <command_file'
+    response = fabric_sudo_command(cmd, hide_all=True, destination_host=destination_address)
+    if exp_failed:
+        assert response.failed
+    else:
+        assert response.succeeded
     fabric_remove_file_command('command_file')
-    try:
-        result = json.loads(world.control_channel)
-        log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
-        world.cmd_resp = result
-    except:
-        log.exception('Problem with parsing json: %s', str(world.control_channel))
-        world.cmd_resp = world.control_channel
-    return world.cmd_resp
+
+    result = _process_ctrl_response(response, exp_result)
+    return result
 
 
-def send_through_http(host_address, host_port, command):
-    world.control_channel = requests.post("http://" + host_address + ":" + locale.str(host_port),
-                                          headers={"Content-Type": "application/json"}, data=command).text
+def send_ctrl_cmd_via_http(command, address, port, exp_result=0):
+    log.info(pprint.pformat(command))
+    if isinstance(command, dict):
+        command = json.dumps(command)
+    response = requests.post("http://" + address + ":" + locale.str(port),
+                             headers={"Content-Type": "application/json"},
+                             data=command)
+    response = response.text
 
-    result = json.loads(world.control_channel)
-    log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
+    result = _process_ctrl_response(response, exp_result)
     return result
 
 

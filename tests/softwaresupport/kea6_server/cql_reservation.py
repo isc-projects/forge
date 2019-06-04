@@ -280,12 +280,12 @@ def upload_db_reservation():
         db_reservation = open("db_reservation", 'w')
         db_reservation.write(each_record.configuration_script)
         db_reservation.close()
-        fabric_send_file("db_reservation", os.path.join(world.f_cfg.software_install_path, "etc/kea/db_reservation"))
+        remote_db_path = world.f_cfg.tmp_join("db_reservation")
+        fabric_send_file("db_reservation", remote_db_path)
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
-        result = fabric_sudo_command('cqlsh --keyspace=keatest --user=keatest --password=keatest -f ' + os.path.join(world.f_cfg.software_install_path, "etc/kea/db_reservation"))
-        #result = fabric_sudo_command('cat ' + world.f_cfg.software_install_path + 'etc/kea/db_reservation | mysql -u {db_user} -p{db_passwd} {db_name}'.format(**locals()))
-        # TODO check result of uploading, fail the test if necessary
+        result = fabric_sudo_command('cqlsh --keyspace=keatest --user=keatest --password=keatest -f ' + remote_db_path))
+        assert result.succeeded
 
 
 def clear_all_reservations():

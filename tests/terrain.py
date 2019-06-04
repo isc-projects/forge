@@ -291,9 +291,12 @@ def test_start():
 
     if not world.f_cfg.no_server_management:
         for each in world.f_cfg.software_under_test:
-            stop = importlib.import_module("softwaresupport.%s.functions" % each)
+            sut = importlib.import_module("softwaresupport.%s.functions" % each)
             # True passed to stop_srv is to hide output in console.
-            stop.stop_srv(True)
+            sut.stop_srv(True)
+
+            if hasattr(sut, 'db_setup'):
+                sut.db_setup()
 
 
 #@before.each_scenario
@@ -331,9 +334,8 @@ def initialize(scenario):
     world.hooks = []
     world.classification = []
     world.reservation_backend = ""
-    dir_name = str(scenario.name).replace(".", "_").replace('[', '_').replace(']', '_').replace('/', '_')
-    world.cfg["dir_name"] = 'tests_results/' + dir_name
-    world.f_cfg.dir_name = world.cfg["dir_name"]
+    test_result_dir = str(scenario.name).replace(".", "_").replace('[', '_').replace(']', '_').replace('/', '_')
+    world.cfg["test_result_dir"] = os.path.join('tests_results', test_result_dir)
     world.cfg["subnet"] = ""
     world.cfg["server-id"] = ""
     world.cfg["csv-format"] = "true"
@@ -368,14 +370,14 @@ def initialize(scenario):
     world.cfg["values"]["tr_id"] = world.cfg["tr_id"]
     # to create separate files for each test we need:
     # create new directory for that test:
-    if not os.path.exists(world.cfg["dir_name"]):
-        os.makedirs(world.cfg["dir_name"])
-    if not os.path.exists(world.cfg["dir_name"] + '/dns') and world.dns_enable:
-        os.makedirs(world.cfg["dir_name"] + '/dns')
+    if not os.path.exists(world.cfg["test_result_dir"]):
+        os.makedirs(world.cfg["test_result_dir"])
+    if not os.path.exists(world.cfg["test_result_dir"] + '/dns') and world.dns_enable:
+        os.makedirs(world.cfg["test_result_dir"] + '/dns')
 
     if world.f_cfg.tcpdump:
         cmd = world.f_cfg.tcpdump_path + 'tcpdump'
-        args = [cmd, "-U", "-w", world.cfg["dir_name"] + "/capture.pcap",
+        args = [cmd, "-U", "-w", world.cfg["test_result_dir"] + "/capture.pcap",
                 "-s", str(65535), "-i", world.cfg["iface"]]
 
         subprocess.Popen(args)
@@ -384,7 +386,7 @@ def initialize(scenario):
         if world.dhcp_enable and world.dns_enable:
             if world.cfg["dns_iface"] != world.cfg["iface"]:
                 cmd2 = world.f_cfg.tcpdump_path + 'tcpdump'
-                args2 = [cmd2, "-U", "-w", world.cfg["dir_name"] + "/capture_dns.pcap",
+                args2 = [cmd2, "-U", "-w", world.cfg["test_result_dir"] + "/capture_dns.pcap",
                          "-s", str(65535), "-i", world.cfg["dns_iface"]]
 
                 subprocess.Popen(args2)

@@ -72,7 +72,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         self.dhcp6_client_classes = ""
         self.server_hostname = ""
         self.boot_file_name = ""
-        self.next_server = ""
+        self.next_server = "0.0.0.0"
         # to ipv6_reservations list please add just dicts:
         #     {"ipv6_address_reservation": "2001::1"}
         #  or {"ipv6_prefix_reservation": "2220::", "ipv6_prefix_len_reservation": 3}
@@ -258,12 +258,12 @@ def upload_db_reservation():
         db_reservation = open("db_reservation", 'w')
         db_reservation.write(each_record.configuration_script)
         db_reservation.close()
-        fabric_send_file("db_reservation", os.path.join(world.f_cfg.software_install_path, "etc/kea/db_reservation"))
+        remote_db_path = world.f_cfg.tmp_join("db_reservation")
+        fabric_send_file("db_reservation", remote_db_path)
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
-        result = fabric_sudo_command('cat ' + os.path.join(world.f_cfg.software_install_path, 'etc/kea/db_reservation')
-                                     + ' | mysql -u {db_user} -p{db_passwd} {db_name}'.format(**locals()))
-        # TODO check result of uploading, fail the test if necessary
+        result = fabric_sudo_command('mysql -u {db_user} -p{db_passwd} {db_name} < {remote_db_path}'.format(**locals()))
+        assert result.succeeded
 
 
 def clear_all_reservations():

@@ -16,7 +16,7 @@ def test_v4_loggers_options_debug():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.options', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.options', 'DEBUG', '99')
     srv_control.config_srv_opt('time-offset', '50')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -60,9 +60,7 @@ def test_v4_loggers_options_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.options')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.options')
 
 
 @pytest.mark.v4
@@ -72,7 +70,7 @@ def test_v4_loggers_options_info():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None')
     srv_control.config_srv_opt('time-offset', '50')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -116,9 +114,7 @@ def test_v4_loggers_options_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.options')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.options')
 
 
 @pytest.mark.v4
@@ -127,7 +123,7 @@ def test_v4_loggers_options_info():
 def test_v4_loggers_bad_packets_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -151,9 +147,7 @@ def test_v4_loggers_bad_packets_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'NAK')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.bad-packets')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.bad-packets')
 
 
 @pytest.mark.v4
@@ -162,7 +156,7 @@ def test_v4_loggers_bad_packets_debug():
 def test_v4_loggers_bad_packets_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'INFO', 'None')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -186,9 +180,7 @@ def test_v4_loggers_bad_packets_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'NAK')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.bad-packets')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.bad-packets')
 
 
 @pytest.mark.v4
@@ -197,7 +189,7 @@ def test_v4_loggers_bad_packets_info():
 def test_v4_loggers_dhcp4():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.dhcp4', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.dhcp4', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -240,12 +232,8 @@ def test_v4_loggers_dhcp4():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcp4')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcp4')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4')
 
 
 @pytest.mark.v4
@@ -254,7 +242,7 @@ def test_v4_loggers_dhcp4():
 def test_v4_loggers_dhcp4_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -297,12 +285,8 @@ def test_v4_loggers_dhcp4_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcp4')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4')
 
 
 @pytest.mark.v4
@@ -311,7 +295,7 @@ def test_v4_loggers_dhcp4_info():
 def test_v4_loggers_alloc_engine():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -354,9 +338,7 @@ def test_v4_loggers_alloc_engine():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.alloc-engine')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
 
 
 @pytest.mark.v4
@@ -365,7 +347,7 @@ def test_v4_loggers_alloc_engine():
 def test_v4_loggers_dhcpsrv_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -409,12 +391,8 @@ def test_v4_loggers_dhcpsrv_debug():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcpsrv')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
 
 
 @pytest.mark.v4
@@ -423,7 +401,7 @@ def test_v4_loggers_dhcpsrv_debug():
 def test_v4_loggers_dhcpsrv_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -467,12 +445,8 @@ def test_v4_loggers_dhcpsrv_info():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcpsrv')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
 
 
 @pytest.mark.v4
@@ -481,7 +455,7 @@ def test_v4_loggers_dhcpsrv_info():
 def test_v4_loggers_leases_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.leases', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.leases', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -519,12 +493,8 @@ def test_v4_loggers_leases_debug():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.leases')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.leases')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.leases')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.leases')
 
 
 @pytest.mark.v4
@@ -533,7 +503,7 @@ def test_v4_loggers_leases_debug():
 def test_v4_loggers_leases_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.leases', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.leases', 'INFO', 'None')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -576,9 +546,7 @@ def test_v4_loggers_leases_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.leases')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases')
 
 
 @pytest.mark.v4
@@ -587,7 +555,7 @@ def test_v4_loggers_leases_info():
 def test_v4_loggers_packets_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.packets', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.packets', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -630,9 +598,7 @@ def test_v4_loggers_packets_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.packets')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets')
 
 
 @pytest.mark.v4
@@ -641,7 +607,7 @@ def test_v4_loggers_packets_debug():
 def test_v4_loggers_packets_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.packets', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.packets', 'INFO', 'None')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -684,9 +650,7 @@ def test_v4_loggers_packets_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.packets')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.packets')
 
 
 @pytest.mark.v4
@@ -695,7 +659,7 @@ def test_v4_loggers_packets_info():
 def test_v4_loggers_hosts_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.hosts', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.hosts', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -738,9 +702,7 @@ def test_v4_loggers_hosts_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.hosts')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.hosts')
 
 
 @pytest.mark.v4
@@ -749,7 +711,7 @@ def test_v4_loggers_hosts_debug():
 def test_v4_loggers_hosts_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.hosts', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.hosts', 'INFO', 'None')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -792,9 +754,7 @@ def test_v4_loggers_hosts_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.hosts')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.hosts')
 
 
 @pytest.mark.v4
@@ -803,7 +763,7 @@ def test_v4_loggers_hosts_info():
 def test_v4_loggers_all():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -891,27 +851,13 @@ def test_v4_loggers_all():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.packets')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.alloc-engine')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.options')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.leases')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.leases')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcp4')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.options')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.leases')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.leases')
 
 
 @pytest.mark.v4
@@ -920,14 +866,14 @@ def test_v4_loggers_all():
 def test_v4_loggers_all_different_levels_same_file():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp4.options', 'DEBUG', '99', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp4.packets', 'DEBUG', '99', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp4.leases', 'WARN', 'None', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', '50', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', '25', 'kea.log')
-    srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None')
+    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None')
+    srv_control.configure_loggers('kea-dhcp4.options', 'DEBUG', '99')
+    srv_control.configure_loggers('kea-dhcp4.packets', 'DEBUG', '99')
+    srv_control.configure_loggers('kea-dhcp4.leases', 'WARN', 'None')
+    srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', '50')
+    srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', '25')
+    srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -992,30 +938,14 @@ def test_v4_loggers_all_different_levels_same_file():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'NAK')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.packets')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.leases')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp4.alloc-engine')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcp4')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.options')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.options')
 
 
 @pytest.mark.v4
@@ -1100,36 +1030,16 @@ def test_v4_loggers_all_different_levels_different_file():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'NAK')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log4',
-                               None,
-                               r'DEBUG \[kea-dhcp4.packets')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log5',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.leases')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log6',
-                               None,
-                               r'DEBUG \[kea-dhcp4.alloc-engine')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log1',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log1',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcp4')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log2',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log8',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log8',
-                               None,
-                               r'INFO \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log2',
-                               None,
-                               r'INFO  \[kea-dhcp4.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log3',
-                               'NOT ',
-                               r'DEBUG \[kea-dhcp4.options')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets', 'kea.log4')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases', 'kea.log5')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine', 'kea.log6')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4', 'kea.log1')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4', 'kea.log1')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log2')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log8')
+    srv_msg.log_contains(r'INFO \[kea-dhcp4.dhcpsrv', 'kea.log8')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log2')
+    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.options', 'kea.log3')
 
 
 @pytest.mark.v4
@@ -1145,7 +1055,7 @@ def test_ddns4_logging_all_types_debug():
     srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
-    srv_control.configure_loggers('kea-dhcp-ddns', 'DEBUG', '99', 'kea.log')
+    srv_control.configure_loggers('kea-dhcp-ddns', 'DEBUG', '99')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -1185,21 +1095,9 @@ def test_ddns4_logging_all_types_debug():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'INFO  \[kea-dhcp-ddns.dhcpddns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp-ddns.dhcpddns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp-ddns.d2-to-dns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'ERROR \[kea-dhcp-ddns.d2-to-dns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-                               None,
-                               r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns')
+    srv_msg.log_contains(r'ERROR \[kea-dhcp-ddns.d2-to-dns')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2')
