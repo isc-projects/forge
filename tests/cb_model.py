@@ -251,7 +251,7 @@ class ConfigModel(ConfigElem):
 
     def set_global_parameter(self, **kwargs):
         # prepare command
-        default_server_tags = None
+        server_tags = None
         parameters = {}
         for param, val in kwargs.items():
             param = param.replace('_', '-')
@@ -259,14 +259,14 @@ class ConfigModel(ConfigElem):
                 if param in self.cfg:
                     del self.cfg[param]
             if param == "server_tags":
-                default_server_tags = val
+                server_tags = val
                 del kwargs["server_tags"]
-                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
             else:
                 parameters[param] = val
                 self.cfg[param] = val
 
-        response = global_parameter_set(parameters, server_tags=default_server_tags)
+        response = global_parameter_set(parameters, server_tags=server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -277,7 +277,7 @@ class ConfigModel(ConfigElem):
 
     def add_network(self, **kwargs):
         # prepare command
-        default_server_tags = None
+        server_tags = None
         network = {
             "name": "floor13",
             "interface": "$(SERVER_IFACE)"}
@@ -291,9 +291,9 @@ class ConfigModel(ConfigElem):
                 del kwargs["network_options"]
                 continue
             if param == "server_tags":
-                default_server_tags = val
+                server_tags = val
                 del kwargs["server_tags"]
-                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
 
             param = param.replace('_', '-')
             network[param] = val
@@ -302,7 +302,7 @@ class ConfigModel(ConfigElem):
             del network['interface']
 
         # send command
-        response = network_set(network, server_tags=default_server_tags)
+        response = network_set(network, server_tags=server_tags)
         assert response["result"] == 0
 
         network_cfg = ConfigNetworkModel(self, network)
@@ -334,7 +334,7 @@ class ConfigModel(ConfigElem):
         return self.subnet_id
 
     def add_option(self, **kwargs):
-        default_server_tags = None
+        server_tags = None
         option = {"code": 0,
                   "data": None,
                   "csv-format": None,
@@ -344,16 +344,16 @@ class ConfigModel(ConfigElem):
             if val is None:
                 continue
             if param == "server_tags":
-                default_server_tags = val
+                server_tags = val
                 del kwargs["server_tags"]
-                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
 
             param = param.replace('_', '-')
             option[param] = val
         self.cfg["option-data"] = [option]
 
         # send command
-        response = global_option_set([option], server_tags=default_server_tags)
+        response = global_option_set([option], server_tags=server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -381,7 +381,7 @@ class ConfigModel(ConfigElem):
 
     def add_subnet(self, **kwargs):
         # prepare command
-        default_server_tags = None
+        server_tags = None
         default_pool_range = "192.168.50.1-192.168.50.100" if world.proto == 'v4' else '2001:db8:1::1-2001:db8:1::100'
         subnet = {
             "id": self.gen_subnet_id(),
@@ -403,9 +403,9 @@ class ConfigModel(ConfigElem):
                 del kwargs["subnet_options"]
                 continue
             if param == "server_tags":
-                default_server_tags = val
+                server_tags = val
                 del kwargs["server_tags"]
-                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
             param = param.replace('_', '-')
             subnet[param] = val
 
@@ -413,7 +413,7 @@ class ConfigModel(ConfigElem):
                 del subnet['interface']
 
         # send command
-        response = subnet_set(subnet, server_tags=default_server_tags)
+        response = subnet_set(subnet, server_tags=server_tags)
         assert response["result"] == 0
 
         subnet_cfg = ConfigSubnetModel(self, subnet)

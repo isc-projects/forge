@@ -262,6 +262,7 @@ def test_remote_subnet6_get_all_values():
             "subnet": "2001:db8:1::/64",
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv6 subnet 2001:db8:1::/64 found."}
 
+
 # reservation-mode is integer in db, so we need to check if it's converted correctly
 def test_remote_subnet6_set_reservation_mode_all():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},

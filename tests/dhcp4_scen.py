@@ -14,7 +14,7 @@ def _to_list(val):
 #########################################################################
 # DHCPv4
 
-def _send_discover(chaddr=None, client_id=None, giaddr=None, req_opt=None):
+def _send_discover(chaddr=None, client_id=None, giaddr=None, req_opts=None):
     if chaddr is not None:
         srv_msg.client_sets_value('Client', 'chaddr', chaddr)
     if client_id is not None:
@@ -24,9 +24,9 @@ def _send_discover(chaddr=None, client_id=None, giaddr=None, req_opt=None):
         srv_msg.network_variable('source_address', giaddr)
         srv_msg.network_variable('destination_address', '$(SRV4_ADDR)')
         srv_msg.client_sets_value('Client', 'giaddr', giaddr)
-    if req_opt:
-        for each_opt in req_opt:
-            srv_msg.client_requests_option(each_opt)
+    if req_opts:
+        for opt in req_opts:
+            srv_msg.client_requests_option(opt)
     srv_msg.client_send_msg('DISCOVER')
 
 
@@ -76,12 +76,12 @@ def send_decline4(requested_addr):
 
 
 def send_discover_and_check_offer(
-        chaddr=None, client_id=None, giaddr=None, req_opt=None,
+        chaddr=None, client_id=None, giaddr=None, req_opts=None,
         exp_yiaddr=None, exp_client_id=None,
         exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None, exp_option=None, no_exp_option=None):
     # send DISCOVER
     misc.test_procedure()
-    _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opt=req_opt)
+    _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opts=req_opts)
 
     # check OFFER
     msgs = srv_msg.send_wait_for_message('MUST', None, 'OFFER')
@@ -94,12 +94,12 @@ def send_discover_and_check_offer(
     srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
 
     if exp_option:
-        for each_opt in exp_option:
-            srv_msg.response_check_option_content('Response', each_opt.get("code"), None, 'value', each_opt.get("data"))
+        for opt in exp_option:
+            srv_msg.response_check_option_content('Response', opt.get("code"), None, 'value', opt.get("data"))
 
     if no_exp_option:
-        for each_opt in no_exp_option:
-            srv_msg.response_check_include_option('Response', 'NOT ', each_opt.get("code"))
+        for opt in no_exp_option:
+            srv_msg.response_check_include_option('Response', 'NOT ', opt.get("code"))
 
     if exp_client_id is not None:
         if exp_client_id == 'missing':
@@ -118,7 +118,7 @@ def send_discover_and_check_offer(
 
 
 def send_request_and_check_ack(
-        chaddr=None, client_id=None, requested_addr=None, ciaddr=None, server_id=None, req_opt=None,
+        chaddr=None, client_id=None, requested_addr=None, ciaddr=None, server_id=None, req_opts=None,
         exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
         exp_yiaddr=None, exp_client_id=None,
         exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None,
@@ -135,9 +135,9 @@ def send_request_and_check_ack(
         srv_msg.client_does_include_with_value('requested_addr', requested_addr)
     if ciaddr is not None:
         srv_msg.client_sets_value('Client', 'ciaddr', ciaddr)
-    if req_opt:
-        for each_opt in req_opt:
-            srv_msg.client_requests_option(each_opt)
+    if req_opts:
+        for opt in req_opts:
+            srv_msg.client_requests_option(opt)
     srv_msg.client_send_msg('REQUEST')
 
     # check ACK
@@ -183,28 +183,28 @@ def send_request_and_check_ack(
     if exp_boot_file_name is not None:
         srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
     if exp_option:
-        for each_opt in exp_option:
-            srv_msg.response_check_option_content('Response', each_opt.get("code"), None, 'value', each_opt.get("data"))
+        for opt in exp_option:
+            srv_msg.response_check_option_content('Response', opt.get("code"), None, 'value', opt.get("data"))
     if no_exp_option:
-        for each_opt in no_exp_option:
-            srv_msg.response_check_include_option('Response', 'NOT ', each_opt.get("code"))
+        for opt in no_exp_option:
+            srv_msg.response_check_include_option('Response', 'NOT ', opt.get("code"))
 
 
-def get_address4(chaddr=None, client_id=None, giaddr=None, req_opt=None,
+def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
                  exp_yiaddr=None, exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
                  exp_client_id=None,
                  exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None, exp_option=None,
                  no_exp_option=None):
     # send DISCOVER and check OFFER
     rcvd_yiaddr = send_discover_and_check_offer(
-        chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opt=_to_list(req_opt),
+        chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opts=_to_list(req_opts),
         exp_yiaddr=exp_yiaddr, exp_client_id=exp_client_id,
         exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name,
         exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option))
 
     # send REQUEST and check ACK
     send_request_and_check_ack(
-        chaddr=chaddr, client_id=client_id, requested_addr=rcvd_yiaddr, server_id=True, req_opt=_to_list(req_opt),
+        chaddr=chaddr, client_id=client_id, requested_addr=rcvd_yiaddr, server_id=True, req_opts=_to_list(req_opts),
         exp_lease_time=exp_lease_time, exp_renew_timer=exp_renew_timer, exp_rebind_timer=exp_rebind_timer,
         exp_client_id=exp_client_id,
         exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name,
@@ -310,12 +310,12 @@ def _send_and_check_response(req_ia,
         srv_msg.response_check_include_option('Response', None, 'rapid_commit')
 
     if exp_option:
-        for each_opt in exp_option:
-            srv_msg.response_check_option_content('Response', each_opt.get("code"), None, 'value', each_opt.get("data"))
+        for opt in exp_option:
+            srv_msg.response_check_option_content('Response', opt.get("code"), None, 'value', opt.get("data"))
 
     if no_exp_option:
-        for each_opt in no_exp_option:
-            srv_msg.response_check_include_option('Response', 'NOT ', each_opt.get("code"))
+        for opt in no_exp_option:
+            srv_msg.response_check_include_option('Response', 'NOT ', opt.get("code"))
 
 
 def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
@@ -328,7 +328,7 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
                                     exp_ia_na_iaaddr_validlft=None,
                                     exp_ia_pd_iaprefix_prefix=None,
                                     exp_ia_pd_iaprefix_plen=None,
-                                    req_opt=None,
+                                    req_opts=None,
                                     exp_option=None,
                                     no_exp_option=None):
     # send SOLICIT
@@ -341,9 +341,9 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
     srv_msg.client_does_include('Client', None, 'client-id')
     if req_ia is not None:
         srv_msg.client_does_include('Client', None, req_ia)
-    if req_opt is not None:
-        for each_opt in req_opt:
-            srv_msg.client_requests_option(each_opt)
+    if req_opts is not None:
+        for opt in req_opts:
+            srv_msg.client_requests_option(opt)
 
     if rapid_commit:
         srv_msg.client_does_include('Client', None, 'rapid-commit')
@@ -410,7 +410,7 @@ def send_request_and_check_reply(duid=None,
                                  exp_ia_na_iaaddr_validlft=None,
                                  exp_ia_pd_iaprefix_prefix=None,
                                  exp_ia_pd_iaprefix_plen=None,
-                                 req_opt=None,
+                                 req_opts=None,
                                  exp_option=None,
                                  no_exp_option=None):
     # send REQUEST
@@ -435,9 +435,9 @@ def send_request_and_check_reply(duid=None,
     #srv_msg.client_save_option('server-id')
     #srv_msg.client_add_saved_option('DONT ')
     srv_msg.client_does_include('Client', None, 'client-id')
-    if req_opt is not None:
-        for each_opt in req_opt:
-            srv_msg.client_requests_option(each_opt)
+    if req_opts is not None:
+        for opt in req_opts:
+            srv_msg.client_requests_option(opt)
 
     srv_msg.client_send_msg('REQUEST')
 
@@ -491,9 +491,9 @@ def send_request_and_check_reply(duid=None,
                              exp_ia_na_iaaddr_validlft,
                              exp_ia_pd_iaprefix_prefix,
                              exp_ia_pd_iaprefix_plen,
-                             False,
+                             False,  # exp_rapid_commit=False
                              exp_option,
-                             no_exp_option)  # exp_rapid_commit=False
+                             no_exp_option)
 
 
 def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
@@ -505,7 +505,7 @@ def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                  exp_ia_na_iaaddr_validlft=None,
                  exp_ia_pd_iaprefix_prefix=None,
                  exp_ia_pd_iaprefix_plen=None,
-                 req_opt=None,
+                 req_opts=None,
                  exp_option=None,
                  no_exp_option=None):
 
@@ -519,7 +519,7 @@ def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                                     exp_ia_na_iaaddr_addr=exp_ia_na_iaaddr_addr,
                                     exp_ia_pd_iaprefix_prefix=exp_ia_pd_iaprefix_prefix,
                                     exp_ia_pd_iaprefix_plen=exp_ia_pd_iaprefix_plen,
-                                    req_opt=_to_list(req_opt),
+                                    req_opts=_to_list(req_opts),
                                     exp_option=_to_list(exp_option),
                                     no_exp_option=_to_list(no_exp_option))
 
@@ -534,7 +534,7 @@ def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                                      exp_ia_na_iaaddr_validlft=exp_ia_na_iaaddr_validlft,
                                      exp_ia_pd_iaprefix_prefix=exp_ia_pd_iaprefix_prefix,
                                      exp_ia_pd_iaprefix_plen=exp_ia_pd_iaprefix_plen,
-                                     req_opt=_to_list(req_opt),
+                                     req_opts=_to_list(req_opts),
                                      exp_option=_to_list(exp_option),
                                      no_exp_option=_to_list(no_exp_option))
 
