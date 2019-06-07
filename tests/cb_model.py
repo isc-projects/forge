@@ -285,11 +285,8 @@ class ConfigModel(ConfigElem):
         for param, val in kwargs.items():
             if val is None:
                 continue
-            if param == 'network_options':
+            if param == 'option_data':
                 val = _to_list(val)
-                network["option-data"] = val
-                del kwargs["network_options"]
-                continue
             if param == "server_tags":
                 server_tags = val
                 del kwargs["server_tags"]
@@ -389,7 +386,8 @@ class ConfigModel(ConfigElem):
             "interface": "$(SERVER_IFACE)",
             "shared-network-name": "",
             "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else default_pool_range,
-                       "option-data": _to_list(kwargs.pop('pool_options')) if 'pool_options' in kwargs else []}]}
+                       "option-data": _to_list(kwargs.pop('pool_option_data'))
+                       if 'pool_option_data' in kwargs else []}]}
 
         for param, val in kwargs.items():
             if val is None:
@@ -397,11 +395,8 @@ class ConfigModel(ConfigElem):
             if param == 'network':
                 param = 'shared-network-name'
                 val = val.cfg['name']
-            if param == 'subnet_options':
+            if param == 'option_data':
                 val = _to_list(val)
-                subnet["option-data"] = val
-                del kwargs["subnet_options"]
-                continue
             if param == "server_tags":
                 server_tags = val
                 del kwargs["server_tags"]
