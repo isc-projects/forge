@@ -6,7 +6,9 @@ import pprint
 import srv_msg
 import srv_control
 import misc
-from cb_api import global_parameter_set, subnet_set, network_set, subnet_del_by_prefix
+from cb_api import global_parameter_set, subnet_set, network_set, subnet_del_by_prefix, global_option_set, \
+    global_option_del
+
 from forge_cfg import world
 
 
@@ -174,6 +176,12 @@ def get_cfg_default(name):
     return CONFIG_DEFAULTS[world.proto][name]
 
 
+def _to_list(val):
+    if not isinstance(val, list):
+        return [val]
+    return val
+
+
 class ConfigModel(ConfigElem):
     def __init__(self, init_cfg, force_reload=True):
         ConfigElem.__init__(self, None)
@@ -181,6 +189,7 @@ class ConfigModel(ConfigElem):
         self.subnets = {}
         self.subnet_id = 0
         self.shared_networks = {}
+        self.options = {}
 
         if 'subnets' in init_cfg:
             for sn in init_cfg['subnets']:
@@ -242,17 +251,22 @@ class ConfigModel(ConfigElem):
 
     def set_global_parameter(self, **kwargs):
         # prepare command
+        default_server_tags = None
         parameters = {}
         for param, val in kwargs.items():
             param = param.replace('_', '-')
             if val is None:
                 if param in self.cfg:
                     del self.cfg[param]
+            if param == "server_tags":
+                default_server_tags = val
+                del kwargs["server_tags"]
+                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
             else:
                 parameters[param] = val
                 self.cfg[param] = val
 
-        response = global_parameter_set(parameters)
+        response = global_parameter_set(parameters, server_tags=default_server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -263,6 +277,7 @@ class ConfigModel(ConfigElem):
 
     def add_network(self, **kwargs):
         # prepare command
+        default_server_tags = None
         network = {
             "name": "floor13",
             "interface": "$(SERVER_IFACE)"}
@@ -270,6 +285,16 @@ class ConfigModel(ConfigElem):
         for param, val in kwargs.items():
             if val is None:
                 continue
+            if param == 'network_options':
+                val = _to_list(val)
+                network["option-data"] = val
+                del kwargs["network_options"]
+                continue
+            if param == "server_tags":
+                default_server_tags = val
+                del kwargs["server_tags"]
+                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+
             param = param.replace('_', '-')
             network[param] = val
 
@@ -277,7 +302,7 @@ class ConfigModel(ConfigElem):
             del network['interface']
 
         # send command
-        response = network_set(network)
+        response = network_set(network, server_tags=default_server_tags)
         assert response["result"] == 0
 
         network_cfg = ConfigNetworkModel(self, network)
@@ -308,15 +333,63 @@ class ConfigModel(ConfigElem):
         self.subnet_id += 1
         return self.subnet_id
 
+    def add_option(self, **kwargs):
+        default_server_tags = None
+        option = {"code": 0,
+                  "data": None,
+                  "csv-format": None,
+                  "name": None,
+                  "space": None}
+        for param, val in kwargs.items():
+            if val is None:
+                continue
+            if param == "server_tags":
+                default_server_tags = val
+                del kwargs["server_tags"]
+                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+
+            param = param.replace('_', '-')
+            option[param] = val
+        self.cfg["option-data"] = [option]
+
+        # send command
+        response = global_option_set([option], server_tags=default_server_tags)
+        assert response["result"] == 0
+
+        # request config reloading and check result
+        config = self.reload_and_check()
+
+        return config
+
+    def del_option(self, **kwargs):
+        option = {"code": 0}
+        for param, val in kwargs.items():
+            if val is None:
+                continue
+            param = param.replace('_', '-')
+            option[param] = val
+        self.cfg["option-data"] = []
+
+        # send command
+        response = global_option_del([option])
+        assert response["result"] == 0
+
+        # request config reloading and check result
+        config = self.reload_and_check()
+
+        return config
+
     def add_subnet(self, **kwargs):
         # prepare command
+        default_server_tags = None
         default_pool_range = "192.168.50.1-192.168.50.100" if world.proto == 'v4' else '2001:db8:1::1-2001:db8:1::100'
         subnet = {
             "id": self.gen_subnet_id(),
             "subnet": "192.168.50.0/24" if world.proto == 'v4' else '2001:db8:1::/64',
             "interface": "$(SERVER_IFACE)",
             "shared-network-name": "",
-            "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else default_pool_range}]}
+            "pools": [{"pool": kwargs.pop('pool') if 'pool' in kwargs else default_pool_range,
+                       "option-data": _to_list(kwargs.pop('pool_options')) if 'pool_options' in kwargs else []}]}
 
         for param, val in kwargs.items():
             if val is None:
@@ -324,6 +397,15 @@ class ConfigModel(ConfigElem):
             if param == 'network':
                 param = 'shared-network-name'
                 val = val.cfg['name']
+            if param == 'subnet_options':
+                val = _to_list(val)
+                subnet["option-data"] = val
+                del kwargs["subnet_options"]
+                continue
+            if param == "server_tags":
+                default_server_tags = val
+                del kwargs["server_tags"]
+                # default_server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
             param = param.replace('_', '-')
             subnet[param] = val
 
@@ -331,7 +413,7 @@ class ConfigModel(ConfigElem):
                 del subnet['interface']
 
         # send command
-        response = subnet_set(subnet)
+        response = subnet_set(subnet, server_tags=default_server_tags)
         assert response["result"] == 0
 
         subnet_cfg = ConfigSubnetModel(self, subnet)
@@ -397,7 +479,8 @@ def _merge_configs(a, b, path=None):
             elif a[k] == b[k]:
                 pass
             else:
-                raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+                # pudb.set_trace()
+                raise Exception('Conflict at %s' % '.'.join(path + [str(k)]))
         else:
             a[k] = b[k]
     return a
@@ -415,7 +498,7 @@ def _compare(recv_any, exp_any):
 def _compare_dicts(rcvd_dict, exp_dict):
     all_keys = set(rcvd_dict.keys()).union(set(exp_dict.keys()))
     for k in all_keys:
-        if k in ['id', 'config-control', 'lease-database', 'server-tag',
+        if k in ['id', 'config-control', 'lease-database', 'server-tag', 'server-tags',
                  'interfaces-config', 'dhcp-queue-control', 'dhcp-ddns',
                  'hooks-libraries', 'sanity-checks', 'expired-leases-processing',
                  'control-socket', 'host-reservation-identifiers', 'relay']:
@@ -495,8 +578,11 @@ def setup_server_for_config_backend_cmds(**kwargs):
                                                            "password":"$(DB_PASSWD)",
                                                            "name":"$(DB_NAME)",
                                                            "type":"mysql"}]}}
-
     _normalize_keys(kwargs)
+    if "server-tag" in kwargs:
+        default_cfg["server-tag"] = kwargs["server-tag"]
+        del kwargs["server-tag"]
+
     init_cfg = _merge_configs(default_cfg, kwargs)
     result = setup_server(**init_cfg)
 

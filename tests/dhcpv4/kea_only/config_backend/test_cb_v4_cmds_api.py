@@ -54,6 +54,7 @@ def test_remote_subnet4_set_basic(channel):
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
+                                                                     "id": 1,
                                                                      "shared-network-name": "",
                                                                      "pools": [
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
@@ -68,6 +69,7 @@ def test_remote_subnet4_set_empty_subnet():
                                                         "server-tags": ["abc"],
                                                         "shared-network-name": "",
                                                         "subnets": [{"subnet": "",
+                                                                     "id": 1,
                                                                      "interface": "$(SERVER_IFACE)"}]})
     response = srv_msg.send_request('v4', cmd)
 
@@ -79,7 +81,7 @@ def test_remote_subnet4_set_missing_subnet():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "shared-network-name": "",
-                                                        "subnets": [{"interface": "$(SERVER_IFACE)"}]})
+                                                        "subnets": [{"interface": "$(SERVER_IFACE)", "id": 1}]})
     response = srv_msg.send_request('v4', cmd)
 
     assert response["result"] == 1
@@ -92,7 +94,7 @@ def test_remote_subnet4_set_stateless():
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "shared-network-name": "",
-                                                                     "interface": "$(SERVER_IFACE)"}]})
+                                                                     "interface": "$(SERVER_IFACE)", "id": 1}]})
     response = srv_msg.send_request('v4', cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
@@ -214,6 +216,7 @@ def test_remote_subnet4_set_reservation_mode_all():
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
+                                                                     "id": 1,
                                                                      "reservation-mode": "disabled",
                                                                      "pools": [
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
@@ -236,6 +239,7 @@ def test_remote_subnet4_set_reservation_mode_global():
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
+                                                                     "id": 1,
                                                                      "reservation-mode": "global",
                                                                      "pools": [
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
@@ -258,6 +262,7 @@ def test_remote_subnet4_set_reservation_mode_out_pool():
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
+                                                                     "id": 1,
                                                                      "reservation-mode": "out-of-pool",
                                                                      "pools": [
                                                                          {"pool": "192.168.50.1-192.168.50.100"}]}]})
@@ -279,6 +284,7 @@ def test_remote_subnet4_set_reservation_mode_disabled():
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "shared-network-name": "",
+                                                                     "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "reservation-mode": "disabled"}]})
     response = srv_msg.send_request('v4', cmd)
@@ -379,6 +385,7 @@ def test_remote_subnet4_get_by_id():
                                                         "subnets": [{"4o6-interface": "eth9",
                                                                      "shared-network-name": "",
                                                                      "4o6-interface-id": "interf-id",
+                                                                     "require-client-classes": ["XYZ"],
                                                                      "4o6-subnet": "2000::/64",
                                                                      "authoritative": False,
                                                                      "boot-file-name": "file-name",
@@ -415,6 +422,7 @@ def test_remote_subnet4_get_by_id():
                                                    "metadata": {"server-tag": "all"},
                                                    "shared-network-name": None,
                                                    "4o6-interface-id": "interf-id",
+                                                   "require-client-classes": ["XYZ"],
                                                    "4o6-subnet": "2000::/64", "authoritative": False,
                                                    "boot-file-name": "file-name", "id": 2,
                                                    "interface": srv_msg.get_interface(),
@@ -465,6 +473,7 @@ def test_remote_subnet4_get_by_prefix():
                                                                      "shared-network-name": "",
                                                                      "4o6-interface-id": "interf-id",
                                                                      "4o6-subnet": "2000::/64",
+                                                                     "id": 1,
                                                                      "authoritative": False,
                                                                      "boot-file-name": "file-name",
                                                                      "interface": "$(SERVER_IFACE)",
@@ -650,6 +659,7 @@ def test_remote_network4_get_all_values():
                                                              "rebind-timer": 200,
                                                              "renew-timer": 100,
                                                              "calculate-tee-times": True,
+                                                             "require-client-classes": ["XYZ"],
                                                              "t1-percent": 0.5,
                                                              "t2-percent": 0.8,
                                                              "valid-lifetime": 300,
@@ -674,6 +684,7 @@ def test_remote_network4_get_all_values():
                                                            "valid-lifetime": 300, "reservation-mode": "global",
                                                            "interface": srv_msg.get_interface(),
                                                            "metadata": {"server-tag": "all"},
+                                                           "require-client-classes": ["XYZ"],
                                                            "calculate-tee-times": True,
                                                            "t1-percent": 0.5,
                                                            "t2-percent": 0.8,
@@ -688,7 +699,6 @@ def test_remote_network4_get_all_values():
                         "result": 0, "text": "IPv4 shared network 'net1' found."}
 
 
-@pytest.mark.terazz
 def test_remote_network4_set_t1_t2():
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
@@ -859,6 +869,7 @@ def test_remote_network4_del_subnet_keep():
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.8.0.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
+                                                                     "id": 1,
                                                                      "shared-network-name": "net1",
                                                                      "pools": [
                                                                          {"pool": "192.8.0.1-192.8.0.100"}]}]})
@@ -871,6 +882,7 @@ def test_remote_network4_del_subnet_keep():
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.9.0.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
+                                                                     "id": 2,
                                                                      "shared-network-name": "net2",
                                                                      "pools": [
                                                                          {"pool": "192.9.0.1-192.9.0.100"}]}]})
@@ -978,6 +990,7 @@ def test_remote_network4_del_subnet_delete():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.8.0.0/24",
+                                                                     "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "net1",
                                                                      "pools": [
@@ -991,6 +1004,7 @@ def test_remote_network4_del_subnet_delete():
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.9.0.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
+                                                                     "id": 2,
                                                                      "shared-network-name": "net2",
                                                                      "pools": [
                                                                          {"pool": "192.9.0.1-192.9.0.100"}]}]})

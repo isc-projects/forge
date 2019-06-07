@@ -70,6 +70,7 @@ def test_remote_subnet6_set_empty_subnet():
                                                         "server-tags": ["abc"],
                                                         "shared-network-name": "",
                                                         "subnets": [{"subnet": "",
+                                                                     "id": 1,
                                                                      "interface": "$(SERVER_IFACE)"}]})
     response = srv_msg.send_request('v6', cmd)
 
@@ -81,7 +82,7 @@ def test_remote_subnet6_set_missing_subnet():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "shared-network-name": "",
-                                                        "subnets": [{"interface": "$(SERVER_IFACE)"}]})
+                                                        "subnets": [{"interface": "$(SERVER_IFACE)", "id": 1}]})
     response = srv_msg.send_request('v6', cmd)
 
     assert response["result"] == 1
@@ -182,12 +183,17 @@ def test_remote_subnet6_set_all_values():
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"authoritative": False,
                                                                      "shared-network-name": "",
+                                                                     "require-client-classes": ["XYZ"],
                                                                      "id": 2, "interface": "$(SERVER_IFACE)",
                                                                      "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10",
                                                                                 "option-data": [{"code": 7,
                                                                                                  "data": 12,
                                                                                                  "always-send": True,
                                                                                                  "csv-format": True}]}],
+                                                                     "pd-pools": [{
+                                                                         "delegated-len": 91,
+                                                                         "prefix": "2001:db8:1::",
+                                                                         "prefix-len": 90}],
                                                                      "reservation-mode": "all",
                                                                      "subnet": "2001:db8:1::/64",
                                                                      "valid-lifetime": 1000,
@@ -202,6 +208,59 @@ def test_remote_subnet6_set_all_values():
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "2001:db8:1::/64"}]},
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
+
+def test_remote_subnet6_get_all_values():
+    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"authoritative": False,
+                                                                     "shared-network-name": "",
+                                                                     "require-client-classes": ["XYZ"],
+                                                                     "id": 2, "interface": "$(SERVER_IFACE)",
+                                                                     "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10",
+                                                                                "option-data": [{"code": 7,
+                                                                                                 "data": 12,
+                                                                                                 "always-send": True,
+                                                                                                 "csv-format": True}]}],
+                                                                     "pd-pools": [{
+                                                                         "delegated-len": 91,
+                                                                         "prefix": "2001:db8:1::",
+                                                                         "prefix-len": 90}],
+                                                                     "reservation-mode": "all",
+                                                                     "subnet": "2001:db8:1::/64",
+                                                                     "valid-lifetime": 1000,
+                                                                     "rebind-timer": 500,
+                                                                     "renew-timer": 200,
+                                                                     "option-data": [{"code": 7,
+                                                                                      "data": 123,
+                                                                                      "always-send": True,
+                                                                                      "csv-format": True}]}]})
+    response = srv_msg.send_request('v6', cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "2001:db8:1::/64"}]},
+                        "result": 0, "text": "IPv6 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet6-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "server-tags": ["abc"],
+                                                                  "subnets": [{"subnet": "2001:db8:1::/64"}]})
+    response = srv_msg.send_request('v6', cmd)
+
+    assert response == {"arguments": {
+        "count": 1,
+        "subnets": [{
+            "authoritative": False,
+            "metadata": {"server-tag": "all"},
+            "require-client-classes": ["XYZ"],
+            "shared-network-name": None,
+            "id": 1,
+            "interface": srv_msg.get_interface(),
+            "option-data": [],
+            "pools": [{
+                "option-data": [],
+                "pool": "2001:db8:1::1-2001:db8:1::10"}],
+            "reservation-mode": "all",
+            "server-hostname": "name-xyz",
+            "subnet": "2001:db8:1::/64",
+            "valid-lifetime": 1000}]}, "result": 0, "text": "IPv6 subnet 2001:db8:1::/64 found."}
 
 # reservation-mode is integer in db, so we need to check if it's converted correctly
 def test_remote_subnet6_set_reservation_mode_all():
@@ -450,6 +509,7 @@ def test_remote_subnet6_get_by_prefix():
                                                                      "pools": [
                                                                          {"pool": "2001:db8:1::1-2001:db8:1::10"}],
                                                                      "reservation-mode": "all",
+                                                                     "require-client-classes": ["XYZ"],
                                                                      "server-hostname": "name-xyz",
                                                                      "subnet": "2001:db8:1::/64", "id": 1,
                                                                      "valid-lifetime": 1000}]})
@@ -468,6 +528,7 @@ def test_remote_subnet6_get_by_prefix():
         "subnets": [{
             "authoritative": False,
             "metadata": {"server-tag": "all"},
+            "require-client-classes": ["XYZ"],
             "shared-network-name": None,
             "id": 1,
             "interface": srv_msg.get_interface(),
@@ -615,6 +676,7 @@ def test_remote_network6_get_all_values():
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "client-class": "abc",
+                                                             "require-client-classes": ["XYZ"],
                                                              "authoritative": False,
                                                              "rebind-timer": 200,
                                                              "renew-timer": 100,
@@ -642,6 +704,7 @@ def test_remote_network6_get_all_values():
                                                            "valid-lifetime": 300, "reservation-mode": "global",
                                                            "interface": srv_msg.get_interface(),
                                                            "metadata": {"server-tag": "all"},
+                                                           "require-client-classes": ["XYZ"],
                                                            "calculate-tee-times": True,
                                                            "t1-percent": 0.5,
                                                            "t2-percent": 0.8,
