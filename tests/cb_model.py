@@ -261,7 +261,8 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = val
                 del kwargs["server_tags"]
-                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                server_tags = _to_list(val)
+                continue
             else:
                 parameters[param] = val
                 self.cfg[param] = val
@@ -273,7 +274,6 @@ class ConfigModel(ConfigElem):
         config = self.reload_and_check()
 
         return config
-
 
     def add_network(self, **kwargs):
         # prepare command
@@ -290,13 +290,14 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = val
                 del kwargs["server_tags"]
-                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                server_tags = _to_list(val)
+                continue
 
             param = param.replace('_', '-')
             network[param] = val
 
-        if param == 'interface-id':
-            del network['interface']
+            if param == 'interface-id':
+                del network['interface']
 
         # send command
         response = network_set(network, server_tags=server_tags)
@@ -343,7 +344,8 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = val
                 del kwargs["server_tags"]
-                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                server_tags = _to_list(val)
+                continue
 
             param = param.replace('_', '-')
             option[param] = val
@@ -400,7 +402,8 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = val
                 del kwargs["server_tags"]
-                # server_tags = _to_list(val) #TODO soon server-tag in message will be acceptable just as list!
+                server_tags = _to_list(val)
+                continue
             param = param.replace('_', '-')
             subnet[param] = val
 
