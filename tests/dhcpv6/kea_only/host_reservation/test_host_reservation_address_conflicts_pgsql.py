@@ -448,27 +448,11 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-
-    misc.test_procedure()
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-
-    misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
     srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_sets_value('Client', 'ia_id', '11')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_sets_value('Client', 'ia_id', '22')
     srv_msg.client_does_include('Client', None, 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
@@ -476,7 +460,10 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
 
     misc.test_procedure()
-    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'ia_id', '11')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_sets_value('Client', 'ia_id', '22')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -521,7 +508,11 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_sets_value('Client', 'IA_Address', '3000::1')
+    srv_msg.client_does_include('Client', None, 'IA_Address')
+    srv_msg.client_sets_value('Client', 'IA_Address', '3000::2')
+    srv_msg.client_does_include('Client', None, 'IA_Address')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
     srv_msg.client_does_include('Client', None, 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -533,6 +524,7 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::2')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'validlft', '8')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
+    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::3')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')

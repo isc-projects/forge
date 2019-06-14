@@ -1484,7 +1484,7 @@ def _set_global_option(channel='http'):
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "code": 7,
-                                                                   "data": 123}]})
+                                                                   "data": "123"}]})
     response = srv_msg.send_request('v6', cmd, channel=channel)
 
     assert response == {"result": 0, "text": "DHCPv6 option successfully set.",
@@ -1492,11 +1492,11 @@ def _set_global_option(channel='http'):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_global_option4_global_set_basic(channel):
+def test_remote_global_option6_global_set_basic(channel):
     _set_global_option(channel)
 
 
-def test_remote_global_option4_global_set_missing_data():
+def test_remote_global_option6_global_set_missing_data():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{
@@ -1506,7 +1506,7 @@ def test_remote_global_option4_global_set_missing_data():
     assert response == {"result": 3, "text": "Missing data parameter"}
 
 
-def test_remote_global_option4_global_set_name():
+def test_remote_global_option6_global_set_name():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{
@@ -1517,7 +1517,7 @@ def test_remote_global_option4_global_set_name():
                         "result": 0, "text": "DHCPv6 option successfully set."}
 
 
-def test_remote_global_option4_global_set_incorrect_code_missing_name():
+def test_remote_global_option6_global_set_incorrect_code_missing_name():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{
@@ -1527,7 +1527,7 @@ def test_remote_global_option4_global_set_incorrect_code_missing_name():
     assert "option data configuration requires one of 'code' or 'name' parameters to be specified" in response["text"]
 
 
-def test_remote_global_option4_global_set_incorrect_name_missing_code():
+def test_remote_global_option6_global_set_incorrect_name_missing_code():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{
@@ -1538,7 +1538,7 @@ def test_remote_global_option4_global_set_incorrect_name_missing_code():
     assert "option data configuration requires one of 'code' or 'name' parameters to be specified" in response["text"]
 
 
-def test_remote_global_option4_global_set_missing_code_and_name():
+def test_remote_global_option6_global_set_missing_code_and_name():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{}]})
@@ -1548,7 +1548,7 @@ def test_remote_global_option4_global_set_missing_code_and_name():
     assert "option data configuration requires one of 'code' or 'name' parameters to be specified" in response["text"]
 
 
-def test_remote_global_option4_global_set_incorrect_code():
+def test_remote_global_option6_global_set_incorrect_code():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": "aa",
@@ -1559,7 +1559,7 @@ def test_remote_global_option4_global_set_incorrect_code():
     assert "definition for the option 'dhcp6.cc' having code '0' does not exist" in response["text"]
 
 
-def test_remote_global_option4_global_set_incorrect_name():
+def test_remote_global_option6_global_set_incorrect_name():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7,
@@ -1571,7 +1571,7 @@ def test_remote_global_option4_global_set_incorrect_name():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_global_option4_global_get_basic(channel):
+def test_remote_global_option6_global_get_basic(channel):
     _set_global_option()
 
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": "mysql"},
@@ -1585,7 +1585,7 @@ def test_remote_global_option4_global_get_basic(channel):
                         "result": 0, "text": "DHCPv6 option 6 in 'dhcp4' found."}
 
 
-def test_remote_global_option4_global_set_different_space():
+def test_remote_global_option6_global_set_different_space():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7,
@@ -1599,7 +1599,7 @@ def test_remote_global_option4_global_set_different_space():
     assert "definition for the option 'xyz.' having code '6' does not exist" in response["text"]
 
 
-def test_remote_global_option4_global_set_csv_false_incorrect():
+def test_remote_global_option6_global_set_csv_false_incorrect():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7,
@@ -1612,7 +1612,7 @@ def test_remote_global_option4_global_set_csv_false_incorrect():
     assert "option data is not a valid string of hexadecimal digits: 123" in response["text"]
 
 
-def test_remote_global_option4_global_set_csv_false_incorrect_hex():
+def test_remote_global_option6_global_set_csv_false_incorrect_hex():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7,
@@ -1626,7 +1626,7 @@ def test_remote_global_option4_global_set_csv_false_incorrect_hex():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_global_option4_global_del_basic(channel):
+def test_remote_global_option6_global_del_basic(channel):
     _set_global_option()
 
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": "mysql"},
@@ -1636,7 +1636,7 @@ def test_remote_global_option4_global_del_basic(channel):
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 option(s) deleted."}
 
 
-def test_remote_global_option4_global_del_missing_code():
+def test_remote_global_option6_global_del_missing_code():
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"ab": 7}]})
@@ -1644,7 +1644,7 @@ def test_remote_global_option4_global_del_missing_code():
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-def test_remote_global_option4_global_del_incorrect_code():
+def test_remote_global_option6_global_del_incorrect_code():
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": "7"}]})
@@ -1652,7 +1652,7 @@ def test_remote_global_option4_global_del_incorrect_code():
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-def test_remote_global_option4_global_del_missing_option():
+def test_remote_global_option6_global_del_missing_option():
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7}]})
@@ -1660,7 +1660,7 @@ def test_remote_global_option4_global_del_missing_option():
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv6 option(s) deleted."}
 
 
-def test_remote_global_option4_global_get_missing_code():
+def test_remote_global_option6_global_get_missing_code():
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"ab": 6}]})
@@ -1668,7 +1668,7 @@ def test_remote_global_option4_global_get_missing_code():
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-def test_remote_global_option4_global_get_incorrect_code():
+def test_remote_global_option6_global_get_incorrect_code():
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": "7"}]})
@@ -1676,7 +1676,7 @@ def test_remote_global_option4_global_get_incorrect_code():
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-def test_remote_global_option4_global_get_missing_option():
+def test_remote_global_option6_global_get_missing_option():
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6}]})
@@ -1685,7 +1685,7 @@ def test_remote_global_option4_global_get_missing_option():
                         "result": 3, "text": "DHCPv6 option 6 in 'dhcp4' not found."}
 
 
-def test_remote_global_option4_global_get_csv_false():
+def test_remote_global_option6_global_get_csv_false():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 22,
@@ -1708,7 +1708,7 @@ def test_remote_global_option4_global_get_csv_false():
                         "result": 0, "text": "DHCPv6 option 6 in 'dhcp4' found."}
 
 
-def test_remote_global_option4_global_get_all():
+def test_remote_global_option6_global_get_all():
     _set_global_option()
 
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
@@ -1738,7 +1738,7 @@ def test_remote_global_option4_global_get_all():
 
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
-                                                               "options": [{"code": 6}]})
+                                                               "options": [{"code": 7}]})
     response = srv_msg.send_request('v6', cmd)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 option(s) deleted."}
 
@@ -1753,7 +1753,7 @@ def test_remote_global_option4_global_get_all():
 
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
-                                                               "options": [{"code": 16}]})
+                                                               "options": [{"code": 22}]})
     response = srv_msg.send_request('v6', cmd)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 option(s) deleted."}
 

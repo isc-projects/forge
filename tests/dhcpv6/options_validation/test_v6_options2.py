@@ -128,7 +128,7 @@ def test_v6_options_inforequest_sip_servers():
 def test_v6_options_inforequest_sip_servers_csv():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"option-data": [{"code": 6, "data": "2001 0DB8 0001 0000 0000 0000 0000 CAFE",'
+    srv_control.add_line('"option-data": [{"code": 22, "data": "2001 0DB8 0001 0000 0000 0000 0000 CAFE",'
                          '"always-send": false, "csv-format": false}]')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')

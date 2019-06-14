@@ -300,9 +300,9 @@ def test_remote_subnet4_set_reservation_mode_disabled():
     assert response["arguments"]["subnets"][0]["reservation-mode"] == "disabled"
 
 
-def _subnet_set():
+def _subnet_set(server_tag=["abc"]):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
-                                                        "server-tags": ["abc"],
+                                                        "server-tags": server_tag,
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
