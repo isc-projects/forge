@@ -19,17 +19,17 @@ def run_around_tests():
     setup_server_for_config_backend_cmds()
 
 
-def _subnet_set(server_tags, id, pool, subnet="192.168.50.0/24"):
+def _subnet_set(server_tags, subnet_id, pool, subnet="192.168.50.0/24"):
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": server_tags,
-                                                        "subnets": [{"subnet": subnet, "id": id,
+                                                        "subnets": [{"subnet": subnet, "id": subnet_id,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
                                                                      "pools": [
                                                                          {"pool": pool}]}]})
     response = srv_msg.send_request('v4', cmd)
 
-    assert response == {"arguments": {"subnets": [{"id": id, "subnet": subnet}]},
+    assert response == {"arguments": {"subnets": [{"id": subnet_id, "subnet": subnet}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
@@ -46,43 +46,43 @@ def _subnet_del(server_tags, subnet_parameter=None):
     return _subnet_get("remote-subnet4-del", server_tags, subnet_parameter)
 
 
-def _check_subnet_result(resp, server_tags, count=1, id=5, subnet="192.168.50.0/24"):
+def _check_subnet_result(resp, server_tags, count=1, subnet_id=5, subnet="192.168.50.0/24"):
     assert resp["result"] == 0
     assert resp["arguments"]["count"] == count
     assert resp["arguments"]["subnets"][0]["metadata"] == {"server-tag": server_tags}
     assert resp["arguments"]["subnets"][0]["subnet"] == subnet
-    assert resp["arguments"]["subnets"][0]["id"] == id
+    assert resp["arguments"]["subnets"][0]["id"] == subnet_id
 
 
 def test_remote_subnet4_get_server_tags():
-    _subnet_set(server_tags=["abc"], id=5, pool="192.168.50.1-192.168.50.100")
-    _subnet_set(server_tags=["xzy"], id=6, pool="192.168.50.1-192.168.50.10")
-    _subnet_set(server_tags=["all"], id=7, pool="192.168.51.1-192.168.51.10", subnet="192.168.51.0/24")
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(server_tags=["xzy"], subnet_id=6, pool="192.168.50.1-192.168.50.10")
+    _subnet_set(server_tags=["all"], subnet_id=7, pool="192.168.51.1-192.168.51.10", subnet="192.168.51.0/24")
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["abc"], subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=["abc"], id=5)
+    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["xyz"], subnet_parameter={"id": 6})
-    _check_subnet_result(resp, server_tags=["xyz"], id=6)
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6)
 
     resp = _subnet_get(command="remote-subnet4-get-by-prefix", server_tags=["xyz"],
                        subnet_parameter={"subnet": "192.168.50.0/24"})
-    _check_subnet_result(resp, server_tags=["xyz"], id=6)
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6)
 
     resp = _subnet_get(command="remote-subnet4-get-by-prefix", server_tags=["abc"],
                        subnet_parameter={"subnet": "192.168.50.0/24"})
-    _check_subnet_result(resp, server_tags=["abc"], id=5)
+    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
     resp = _subnet_get(command="remote-subnet4-list", server_tags=["abc"])
     # not sure if this is how it suppose to work
-    _check_subnet_result(resp, server_tags=["abc"], count=2, id=5)
+    _check_subnet_result(resp, server_tags=["abc"], count=2, subnet_id=5)
     assert resp["arguments"]["subnets"][1]["metadata"] == {"server-tag": "all"}
     # TODO not sure if that will be on the list
     assert resp["arguments"]["subnets"][1]["subnet"] == "192.168.51.0/24"
     assert resp["arguments"]["subnets"][1]["id"] == 7
 
     resp = _subnet_get(command="remote-subnet4-list", server_tags=["xyz"])
-    _check_subnet_result(resp, server_tags=["xyz"], count=2, id=6)
+    _check_subnet_result(resp, server_tags=["xyz"], count=2, subnet_id=6)
     assert resp["arguments"]["subnets"][1]["metadata"] == {"server-tag": "all"}
     # TODO not sure if that will be on the list
     assert resp["arguments"]["subnets"][1]["subnet"] == "192.168.51.0/24"
@@ -90,31 +90,32 @@ def test_remote_subnet4_get_server_tags():
 
 
 def test_remote_subnet4_get_server_tags_all_incorrect_setup():
-    # this will cause subnet to be override!
-    _subnet_set(server_tags=["abc"], id=5, pool="192.168.50.1-192.168.50.100")
-    _subnet_set(server_tags=["xyz"], id=5, pool="192.168.50.1-192.168.50.10")
+    # Configure 2 subnet with the same id but different tags will result with just one subnet in configuration
+    # the first one will be overwritten
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(server_tags=["xyz"], subnet_id=5, pool="192.168.50.1-192.168.50.10")
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["abc"], subnet_parameter={"id": 5})
     assert resp["result"] == 3
     assert resp["arguments"]["count"] == 0
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["xyz"], subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=["xyz"], id=5)
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=5)
 
 
 def test_remote_subnet4_del_server_tags():
-    _subnet_set(server_tags=["abc"], id=5, pool="192.168.50.1-192.168.50.100")
-    _subnet_set(server_tags=["xzy"], id=6, pool="192.168.50.1-192.168.50.10")
-    _subnet_set(server_tags=["all"], id=7, pool="192.168.51.1-192.168.51.10", subnet="192.168.51.0/24")
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(server_tags=["xzy"], subnet_id=6, pool="192.168.50.1-192.168.50.10")
+    _subnet_set(server_tags=["all"], subnet_id=7, pool="192.168.51.1-192.168.51.10", subnet="192.168.51.0/24")
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["abc"], subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=["abc"], id=5)
+    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["xyz"], subnet_parameter={"id": 6})
-    _check_subnet_result(resp, server_tags=["xyz"], id=6)
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6)
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["all"], subnet_parameter={"id": 7})
-    _check_subnet_result(resp, server_tags=["all"], id=7, subnet="192.168.51.0/24")
+    _check_subnet_result(resp, server_tags=["all"], subnet_id=7, subnet="192.168.51.0/24")
 
     # we should delete just one
     resp = _subnet_del(server_tags=["xyz"], subnet_parameter={"id": 6})
@@ -128,29 +129,29 @@ def test_remote_subnet4_del_server_tags():
 
     # those two should still be configured
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["abc"], subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=["abc"], id=5)
+    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["all"], subnet_parameter={"id": 7})
-    _check_subnet_result(resp, server_tags=["all"], id=7, subnet="192.168.51.0/24")
+    _check_subnet_result(resp, server_tags=["all"], subnet_id=7, subnet="192.168.51.0/24")
 
     resp = _subnet_del(server_tags=["all"], subnet_parameter={"id": 7})
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["abc"], subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=["abc"], id=5)
+    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
     resp = _subnet_get(command="remote-subnet4-get-by-id", server_tags=["all"], subnet_parameter={"id": 7})
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
 
-def _network_set(server_tags, net_name="florX"):
+def _network_set(server_tags, network_name="florX"):
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"}, "server-tags": server_tags,
-                                                         "shared-networks": [{"name": net_name}]})
+                                                         "shared-networks": [{"name": network_name}]})
     response = srv_msg.send_request('v4', cmd)
 
-    assert response == {"arguments": {"shared-networks": [{"name": net_name}]},
+    assert response == {"arguments": {"shared-networks": [{"name": network_name}]},
                         "result": 0, "text": "IPv4 shared network successfully set."}
 
 
@@ -166,38 +167,39 @@ def _network_del(server_tags, network_parameter=None):
     return _network_get("remote-network4-del", server_tags, network_parameter)
 
 
-def _network_check_res(resp, server_tags, count=1, net_name="florX"):
+def _network_check_res(resp, server_tags, count=1, network_name="florX"):
     assert resp["result"] == 0
     assert resp["arguments"]["count"] == count
     assert resp["arguments"]["shared-networks"][0]["metadata"] == {"server-tag": server_tags}
-    assert resp["arguments"]["shared-networks"][0]["name"] == net_name
+    assert resp["arguments"]["shared-networks"][0]["name"] == network_name
 
 
 def test_remote_network4_get_server_tags():
     _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xzy"], net_name="flor1")
-    _network_set(server_tags=["all"], net_name="top_flor")
+    _network_set(server_tags=["xzy"], network_name="flor1")
+    _network_set(server_tags=["all"], network_name="top_flor")
 
     resp = _network_get(command="remote-network4-get", server_tags=["abc"], network_parameter={"name": "florX"})
-    _network_check_res(resp, server_tags=["abc"], net_name="florX")
+    _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
     resp = _network_get(command="remote-network4-get", server_tags=["xyz"], network_parameter={"name": "flor1"})
-    _network_check_res(resp, server_tags=["xyz"], net_name="flor1")
+    _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
     resp = _network_get(command="remote-network4-list", server_tags=["xyz"])
     _network_check_res(resp, server_tags=["xyz"], count=2)
-    # not sure if that will work this way
+
     assert resp["arguments"]["shared-networks"][1]["metadata"] == {"server-tag": "all"}
     assert resp["arguments"]["shared-networks"][1]["name"] == "top_flor"
 
 
 def test_remote_network4_get_server_tags_all_incorrect_setup():
-    # this will cause network to be override!
+    # Configure 2 networks with the same name but different tags will result with just one network in configuration
+    # the first one will be overwritten
     _network_set(server_tags=["abc"])
     _network_set(server_tags=["xzy"])
 
     resp = _network_get(command="remote-network4-get", server_tags=["xyz"], network_parameter={"name": "florX"})
-    _network_check_res(resp, server_tags=["xyz"], net_name="florX")
+    _network_check_res(resp, server_tags=["xyz"], network_name="florX")
 
     resp = _network_get(command="remote-network4-get", server_tags=["abc"], network_parameter={"name": "florX"})
     assert resp["result"] == 3
@@ -206,24 +208,24 @@ def test_remote_network4_get_server_tags_all_incorrect_setup():
 
 def test_remote_network4_del_server_tags():
     _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xzy"], net_name="flor1")
-    _network_set(server_tags=["all"], net_name="top_flor")
+    _network_set(server_tags=["xzy"], network_name="flor1")
+    _network_set(server_tags=["all"], network_name="top_flor")
 
     resp = _network_get(command="remote-network4-get", server_tags=["abc"], network_parameter={"name": "florX"})
-    _network_check_res(resp, server_tags=["abc"], net_name="florX")
+    _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
     resp = _network_get(command="remote-network4-get", server_tags=["xyz"], network_parameter={"name": "flor1"})
-    _network_check_res(resp, server_tags=["xyz"], net_name="flor1")
+    _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
     resp = _network_get(command="remote-network4-get", server_tags=["all"], network_parameter={"name": "top_flor"})
-    _network_check_res(resp, server_tags=["all"], net_name="top_flor")
+    _network_check_res(resp, server_tags=["all"], network_name="top_flor")
 
     _network_del(server_tags=["xyz"], network_parameter={"name": "flor1"})
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
     resp = _network_get(command="remote-network4-get", server_tags=["abc"], network_parameter={"name": "florX"})
-    _network_check_res(resp, server_tags=["abc"], net_name="florX")
+    _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
     # removed, so it should not be returned
     resp = _network_get(command="remote-network4-get", server_tags=["xyz"], network_parameter={"name": "flor1"})
@@ -231,14 +233,14 @@ def test_remote_network4_del_server_tags():
     assert resp["arguments"]["count"] == 0
 
     resp = _network_get(command="remote-network4-get", server_tags=["all"], network_parameter={"name": "top_flor"})
-    _network_check_res(resp, server_tags=["all"], net_name="top_flor")
+    _network_check_res(resp, server_tags=["all"], network_name="top_flor")
 
     _network_del(server_tags=["all"], network_parameter={"name": "top_flor"})
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
     resp = _network_get(command="remote-network4-get", server_tags=["abc"], network_parameter={"name": "florX"})
-    _network_check_res(resp, server_tags=["abc"], net_name="florX")
+    _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
     # removed, so it should not be returned
     resp = _network_get(command="remote-network4-get", server_tags=["all"], network_parameter={"name": "top_flor"})
