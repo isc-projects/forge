@@ -156,7 +156,8 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     """
 
     if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
+                                           'etc/kea/kea-leases%s.csv' % world.proto[1])
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -171,7 +172,8 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
+                                           'etc/kea/kea-leases%s.csv' % world.proto[1])
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -552,7 +554,7 @@ def add_logger(log_type, severity, severity_level, logging_file):
     else:
         if len(world.cfg["logger"]) > 20:
             world.cfg["logger"] += ','
-    logging_file_path = os.path.join(world.f_cfg.software_install_path, 'var/kea', logging_file)
+    logging_file_path = os.path.join(world.f_cfg.software_install_path, 'etc/kea', logging_file)
     if severity_level != "None":
         world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '"' \
                                '}],"debuglevel": ' + severity_level + ',"severity": ' \
@@ -796,7 +798,7 @@ def cfg_write():
         cfg_file.write(',' + world.cfg["agent"])
         del world.cfg["agent"]
 
-    logging_file = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea.log')
+    logging_file = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea.log')
 
     log_type = ''
     if "kea6" in world.cfg["dhcp_under_test"]:
@@ -856,7 +858,7 @@ def start_kea(destination_host):
     # - display these logs to screen using cat so forge can catch errors in the logs
     start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
     start_cmd += " start  < /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
-    start_cmd += " do tail /usr/local/var/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;"
+    start_cmd += " do tail /usr/local/etc/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;"
     start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
     start_cmd += " sync; cat /tmp/keactrl.log"
     return fabric_sudo_command(start_cmd, destination_host=destination_host)
@@ -878,7 +880,7 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     # build_and_send_config_files() it's now separate step
     v6, v4 = check_kea_status(destination_address)
-    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases6.csv')
+    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea-leases6.csv')
 
     if process is None:
         process = "starting"
@@ -959,7 +961,7 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
-    fabric_download_file(os.path.join(world.f_cfg.software_install_path, 'var/kea/kea.log*'),
+    fabric_download_file(os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea.log*'),
                          check_local_path_for_downloaded_files(world.cfg["dir_name"],
                                                                '.',
                                                                destination_address),

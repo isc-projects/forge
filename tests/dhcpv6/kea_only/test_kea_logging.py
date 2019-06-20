@@ -48,7 +48,7 @@ def test_v6_loggers_options_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.options')
 
@@ -93,7 +93,7 @@ def test_v6_loggers_options_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.options')
 
@@ -114,7 +114,7 @@ def test_v6_loggers_bad_packets_debug():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.send_dont_wait_for_message()
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.bad-packets')
 
@@ -135,7 +135,7 @@ def test_v6_loggers_bad_packets_info():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.send_dont_wait_for_message()
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.bad-packets')
 
@@ -181,7 +181,7 @@ def test_v6_loggers_dhcp6():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.dhcp6')
 
@@ -228,10 +228,10 @@ def test_v6_loggers_dhcp6_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.dhcp6')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp6.dhcp6')
 
@@ -275,7 +275,7 @@ def test_v6_loggers_alloc_engine():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.alloc-engine')
 
@@ -319,7 +319,7 @@ def test_v6_loggers_dhcpsrv_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.dhcpsrv')
 
@@ -363,10 +363,10 @@ def test_v6_loggers_dhcpsrv_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp6.dhcpsrv')
 
@@ -410,7 +410,7 @@ def test_v6_loggers_leases_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.leases')
 
@@ -454,7 +454,7 @@ def test_v6_loggers_leases_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.leases')
 
@@ -498,7 +498,7 @@ def test_v6_loggers_packets_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.packets')
 
@@ -542,7 +542,7 @@ def test_v6_loggers_packets_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.packets')
 
@@ -586,7 +586,7 @@ def test_v6_loggers_hosts_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.hosts')
 
@@ -630,7 +630,7 @@ def test_v6_loggers_hosts_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.hosts')
 
@@ -674,22 +674,22 @@ def test_v6_loggers_all():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.packets')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.leases')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.alloc-engine')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.dhcp6')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.options')
 
@@ -749,28 +749,28 @@ def test_v6_loggers_all_different_levels_same_file():
 
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.packets')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.leases')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.alloc-engine')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.dhcp6')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp6.dhcp6')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp6.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.options')
 
@@ -829,28 +829,28 @@ def test_v6_loggers_all_different_levels_different_file():
 
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log4',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log4',
                                None,
                                r'DEBUG \[kea-dhcp6.packets')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log5',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log5',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.leases')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log6',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log6',
                                None,
                                r'DEBUG \[kea-dhcp6.alloc-engine')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log1',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log1',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.dhcp6')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log1',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log1',
                                None,
                                r'INFO  \[kea-dhcp6.dhcp6')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log2',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log2',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log2',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log2',
                                None,
                                r'INFO  \[kea-dhcp6.dhcpsrv')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log3',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log3',
                                'NOT ',
                                r'DEBUG \[kea-dhcp6.options')
 
@@ -912,21 +912,21 @@ def test_ddns6_logging_all_types_debug():
     srv_msg.response_check_include_option('Response', None, '1')
     srv_msg.response_check_include_option('Response', None, '2')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp-ddns.dhcpddns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp-ddns.dhcpddns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp-ddns.d2-to-dns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'ERROR \[kea-dhcp-ddns.d2-to-dns')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2')

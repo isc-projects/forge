@@ -37,10 +37,10 @@ def test_v6_mac_in_dhcp6_duid_type3():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',f6:f5:f4:f3:f2:01,0')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: f6:f5:f4:f3:f2:01')
 
@@ -74,10 +74,10 @@ def test_v6_mac_in_dhcp6_duid_type1():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',08:00:27:58:f1:e8')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: 08:00:27:58:f1:e8')
 
@@ -110,10 +110,10 @@ def test_v6_mac_in_dhcp6_any():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: f6:f5:f4:f3:f2:01')
 
@@ -146,10 +146,10 @@ def test_v6_mac_in_dhcp6_ipv6_link_local():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',$(CLI_MAC)')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: $(CLI_MAC)')
 
@@ -189,10 +189,10 @@ def test_v6_mac_in_dhcp6_client_link_addr_1():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',$(CLI_MAC)')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: $(CLI_MAC)')
 
@@ -231,10 +231,10 @@ def test_v6_mac_in_dhcp6_client_link_addr_2():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',$(CLI_MAC)')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: $(CLI_MAC)')
 
@@ -274,10 +274,10 @@ def test_v6_mac_in_dhcp6_remote_id_1():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',0a:00:27:00:00:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: 0a:00:27:00:00:01')
 
@@ -317,10 +317,10 @@ def test_v6_mac_in_dhcp6_remote_id_2():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',0a:00:27:00:00:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: 0a:00:27:00:00:01')
 
@@ -361,10 +361,10 @@ def test_v6_mac_in_dhcp6_subscriber_id_1():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',0a:00:27:00:00:02')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: 0a:00:27:00:00:02')
 
@@ -405,10 +405,10 @@ def test_v6_mac_in_dhcp6_subscriber_id_2():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',0a:00:27:00:00:02')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: 0a:00:27:00:00:02')
 
@@ -444,10 +444,10 @@ def test_v6_mac_in_dhcp6_docsis_modem():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: f6:f5:f4:f3:f2:01')
 
@@ -488,9 +488,9 @@ def test_v6_mac_in_dhcp6_docsic_cmts():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
                                None,
                                ',00:f5:f4:00:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'Hardware addr: 00:f5:f4:00:f2:01')

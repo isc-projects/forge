@@ -19,11 +19,11 @@ def test_v6_hooks_HA_page_size_sync():
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
@@ -52,11 +52,11 @@ def test_v6_hooks_HA_page_size_sync():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
@@ -90,15 +90,15 @@ def test_v6_hooks_HA_page_size_sync():
     srv_msg.forge_sleep('10', 'seconds')
 
     misc.pass_criteria()
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv6 leases starting from address 2001:db8:1::5b')
     srv_msg.remote_log_includes_line('$(MGMT_ADDRESS_2)',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                      None,
                                      'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from server1')
     srv_msg.remote_log_includes_line('$(MGMT_ADDRESS_2)',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                      None,
                                      'DHCPSRV_MEMFILE_GET_ADDR6 obtaining IPv6 lease for address 2001:db8:1::65 and lease type IA_NA')
 
@@ -113,11 +113,11 @@ def test_v6_hooks_HA_page_size_sync_2():
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
@@ -146,11 +146,11 @@ def test_v6_hooks_HA_page_size_sync_2():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
@@ -185,27 +185,27 @@ def test_v6_hooks_HA_page_size_sync_2():
     srv_msg.forge_sleep('10', 'seconds')
 
     misc.pass_criteria()
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 15 IPv6 leases starting from address 2001:db8:1::5')
     srv_msg.remote_log_includes_line('$(MGMT_ADDRESS_2)',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                      None,
                                      'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 15 leases from server1')
     srv_msg.remote_log_includes_line('$(MGMT_ADDRESS_2)',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                      None,
                                      'DHCPSRV_MEMFILE_GET_ADDR6 obtaining IPv6 lease for address 2001:db8:1::65 and lease type IA_NA')
 
     srv_msg.remote_log_includes_line('$(MGMT_ADDRESS_2)',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                      'NOT ',
                                      'DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv6 leases starting from address 2001:')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                'NOT ',
                                'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from')
     srv_msg.remote_log_includes_line('$(MGMT_ADDRESS_2)',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                      None,
                                      'HA_SYNC_SUCCESSFUL lease database synchronization with server1 completed successfully')
 
@@ -224,7 +224,7 @@ def test_v6_hooks_HA_page_size_sync_2():
     srv_msg.forge_sleep('10', 'seconds')
 
     misc.pass_criteria()
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                'DHCPSRV_MEMFILE_ADD_ADDR6 adding IPv6 lease with address 2001:db8:1::c9')
 
@@ -240,11 +240,11 @@ def test_v6_hooks_HA_page_size_sync_large():
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
@@ -271,11 +271,11 @@ def test_v6_hooks_HA_page_size_sync_large():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
 

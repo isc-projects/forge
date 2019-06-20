@@ -27,11 +27,11 @@ def _setup_server_for_class_cmds(dhcp_version):
     srv_control.config_client_classification('0', 'Client_Class_1')
 
     srv_control.open_control_channel('unix',
-                                     '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                     '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
 
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_class_cmds.so')
 
@@ -54,7 +54,7 @@ def _send_request(dhcp_version, cmd, channel='http'):
                                              cmd_str)
         response = response[0]
     elif channel == 'socket':
-        response = srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+        response = srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                                            cmd_str)
     else:
         raise ValueError('unsupported channel type: %s' % str(channel))
@@ -68,7 +68,7 @@ def run_around_tests(dhcp_version):
 
 
 def test_availability(dhcp_version):  # pylint: disable=unused-argument
-    response = srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    response = srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                                        '{"command":"list-commands","arguments":{}}')
 
     for cmd in ['class-list', 'class-add', 'class-update', 'class-get', 'class-del']:

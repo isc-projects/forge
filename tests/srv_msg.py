@@ -643,7 +643,7 @@ def send_request(dhcp_version, cmd, channel='http'):
         response = response[0]
     elif channel == 'socket':
         response = send_through_socket_server_site(
-            '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+            '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
             cmd_str)
     else:
         raise ValueError('unsupported channel type: %s' % str(channel))

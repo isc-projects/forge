@@ -73,7 +73,7 @@ def test_v6_hooks_flexid_libreload():
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -103,7 +103,7 @@ def test_v6_hooks_flexid_libreload():
                                              'addr',
                                              '3000::f')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "libreload","arguments": {}}')
     # if reload works - classification should work without changes
 
@@ -151,7 +151,7 @@ def test_v6_hooks_flexid_reconfigure_1():
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -194,7 +194,7 @@ def test_v6_hooks_flexid_reconfigure_1():
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'reconfigured')
@@ -243,7 +243,7 @@ def test_v6_hooks_flexid_reconfigure_2():
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -286,7 +286,7 @@ def test_v6_hooks_flexid_reconfigure_2():
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'reconfigured')
@@ -360,7 +360,7 @@ def test_v6_hooks_flexid_2():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "config-reload","arguments":  {} }
+    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "config-reload","arguments":  {} }
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'client-id')
     srv_msg.client_does_include('Client', None, 'IA-NA')
@@ -968,8 +968,8 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '3')
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST contain line or phrase: 3000::f,01:02:03:04:05:06,4000,
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases6.csv MUST NOT contain line or phrase: 3000::f,01:02:03:04:05:06,0,
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv MUST contain line or phrase: 3000::f,01:02:03:04:05:06,4000,
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv MUST NOT contain line or phrase: 3000::f,01:02:03:04:05:06,0,
 
 
 @pytest.mark.v6

@@ -24,7 +24,7 @@ def test_v4_hooks_flexid_libreload():
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -37,7 +37,7 @@ def test_v4_hooks_flexid_libreload():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "libreload","arguments": {}}')
     # if reload works - classification should work without changes
 
@@ -66,7 +66,7 @@ def test_v4_hooks_flexid_reconfigure():
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -90,7 +90,7 @@ def test_v4_hooks_flexid_reconfigure():
     srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -278,10 +278,10 @@ def test_v4_hooks_flexid_replace_mac_addr_inside_pool():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,,0')
 
@@ -396,13 +396,13 @@ def test_v4_hooks_flexid_replace_client_id_release_1():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                'NOT ',
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
@@ -473,13 +473,13 @@ def test_v4_hooks_flexid_replace_client_id_release_2():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
@@ -541,10 +541,10 @@ def test_v4_hooks_flexid_replace_client_id_renew_1():
     srv_msg.response_check_include_option('Response', None, '61')
     srv_msg.response_check_include_option('Response', None, '54')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 
@@ -606,10 +606,10 @@ def test_v4_hooks_flexid_replace_client_id_renew_2():
     srv_msg.response_check_include_option('Response', None, '61')
     srv_msg.response_check_include_option('Response', None, '54')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 

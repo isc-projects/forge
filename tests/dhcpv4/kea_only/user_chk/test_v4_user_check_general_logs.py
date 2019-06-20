@@ -49,9 +49,9 @@ def test_user_check_IA_NA_no_registry_logging():
     # Server MUST respond with ACK message.
     # Client download file from server stored in: /tmp/user_chk_outcome.txt.
     # Client download file from server stored in: /tmp/user_chk_registry.txt.
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.hooks
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: ERROR \[kea-dhcp4.hooks
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.callouts
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST contain line or phrase: ERROR \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.callouts
 
 
 @pytest.mark.v4
@@ -88,10 +88,10 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv4/kea_only/user_chk/outcome_1.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'INFO  \[kea-dhcp4.hooks')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp4.callouts')
 
@@ -130,8 +130,8 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv4/kea_only/user_chk/outcome_1.txt')
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts
 
     misc.test_setup()
     srv_msg.send_file_to_server('tests/dhcpv4/kea_only/user_chk/registry_1.txt',
@@ -159,5 +159,5 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv4/kea_only/user_chk/outcome_1.txt')
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
-    # File stored in $(SOFTWARE_INSTALL_DIR)/var/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts

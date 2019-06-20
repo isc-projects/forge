@@ -17,11 +17,11 @@ def test_v4_hooks_HA_state_hold_lb_always():
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
@@ -52,11 +52,11 @@ def test_v4_hooks_HA_state_hold_lb_always():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
@@ -421,11 +421,11 @@ def test_v4_hooks_HA_state_hold_lb_once():
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
@@ -456,11 +456,11 @@ def test_v4_hooks_HA_state_hold_lb_once():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_lease_cmds.so')
@@ -761,16 +761,17 @@ def test_v4_hooks_HA_state_hold_lb_once():
 @pytest.mark.v4
 @pytest.mark.hook
 @pytest.mark.HA
+@pytest.mark.wtf
 def test_v4_hooks_HA_state_hold_hs_once():
 
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
 
@@ -802,11 +803,11 @@ def test_v4_hooks_HA_state_hold_hs_once():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
 
@@ -1114,11 +1115,11 @@ def test_v4_hooks_HA_state_hold_hs_always():
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
 
@@ -1150,11 +1151,11 @@ def test_v4_hooks_HA_state_hold_hs_always():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)',
                                       '8080',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', '99', 'kea.log')
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
 

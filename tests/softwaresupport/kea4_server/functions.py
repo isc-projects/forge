@@ -169,7 +169,8 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     """
 
     if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
+                                           'etc/kea/kea-leases%s.csv' % world.proto[1])
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -184,7 +185,8 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases%s.csv' % world.proto[1])
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
+                                           'etc/kea/kea-leases%s.csv' % world.proto[1])
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -387,7 +389,7 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start kea with generated config
     """
-    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'var/kea/kea-leases4.csv')
+    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea-leases4.csv')
     v6, v4 = check_kea_status(destination_address)
 
     if process is None:

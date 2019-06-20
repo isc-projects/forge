@@ -215,7 +215,7 @@ class ConfigModel(ConfigElem):
                 cfg['shared-networks'].append(net.get_dict())
 
         cfg["loggers"] = [{"name": "kea-dhcp" + proto,
-                           "output_options": [{"output": "$(SOFTWARE_INSTALL_PATH)/var/kea/kea.log"}],
+                           "output_options": [{"output": "$(SOFTWARE_INSTALL_PATH)/etc/kea/kea.log"}],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
 
@@ -224,7 +224,7 @@ class ConfigModel(ConfigElem):
                "Control-agent": {"http-host": '$(MGMT_ADDRESS)',
                                  "http-port": 8000,
                                  "control-sockets": {"dhcp" + proto: {"socket-type": 'unix',
-                                                               "socket-name": '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}}}
+                                                                      "socket-name": '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket'}}}}
 
         _substitute_vars(cfg)
 
@@ -540,7 +540,7 @@ def setup_server(**kwargs):
     init_cfg = {"interfaces-config": {"interfaces": ["$(SERVER_IFACE)"]},
                 "lease-database": {"type": "memfile"},
                 "control-socket": {"socket-type": 'unix',
-                                   "socket-name":'$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket'}}
+                                   "socket-name": '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket'}}
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':

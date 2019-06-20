@@ -43,12 +43,12 @@ def test_hook_v6_network_cmds_list():
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', '2')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', '2')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
 
 
@@ -86,12 +86,12 @@ def test_hook_v6_network_cmds_get_by_name():
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', '2')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', '2')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-get","arguments":{"name":"name-xyz"}}')
 
 
@@ -105,7 +105,7 @@ def test_hook_v6_network_cmds_add_on_interface():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('preference', '123')
     # Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -125,10 +125,10 @@ def test_hook_v6_network_cmds_add_on_interface():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "network6-add","arguments": {"shared-networks": [{"name": "name-abc","preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"valid-lifetime": 4000,"subnet6":[{"subnet":"2001:db8:a::/64","interface": "$(SERVER_IFACE)","pools":[{"pool":"2001:db8:a::1-2001:db8:a::1"}]}]}]}}')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-get","arguments":{"name": "name-abc"}}')
     srv_msg.forge_sleep('5', 'seconds')
     misc.test_procedure()
@@ -155,7 +155,7 @@ def test_hook_v6_network_cmds_add_on_interface_id():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -175,9 +175,9 @@ def test_hook_v6_network_cmds_add_on_interface_id():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-add","arguments":{"shared-networks":[{"name": "name-abc","interface-id": "interface-abc","preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"valid-lifetime": 4000,"subnet6":[{"id":1,"pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],"preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:1::/64","valid-lifetime": 4000}]}]}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-get","arguments":{"name": "name-abc"}}')
     srv_msg.forge_sleep('5', 'seconds')
 
@@ -212,7 +212,7 @@ def test_hook_v6_network_cmds_add_on_relay_addr():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -232,9 +232,9 @@ def test_hook_v6_network_cmds_add_on_relay_addr():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-add","arguments":{"shared-networks":[{"name": "name-abc","relay":{"ip-address":"2001:db8::abcd"},"preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"valid-lifetime": 4000,"subnet6":[{"id":1,"pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],"preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:1::/64","valid-lifetime": 4000}]}]}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-get","arguments":{"name": "name-abc"}}')
     srv_msg.forge_sleep('5', 'seconds')
 
@@ -275,15 +275,15 @@ def test_hook_v6_network_cmds_add_conflict():
     srv_control.shared_subnet('1', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-add","arguments":{"shared-networks": [{"interface": "$(SERVER_IFACE)","name": "name-xyz","option-data": [],"preferred-lifetime": 0,"rapid-commit": false,"rebind-timer": 0,"relay": {"ip-address": "::"},"renew-timer": 0,"reservation-mode": "all","subnet6": [{"id": 3,"interface": "$(SERVER_IFACE)","option-data": [],"pd-pools": [],"pools": [{"option-data": [],"pool": "2001:db8:c::1/128"}],"preferred-lifetime": 3000,"rapid-commit": false,"rebind-timer": 2000,"relay": {"ip-address": "::"},"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:c::/64","valid-lifetime": 4000},{"id": 4,"interface": "$(SERVER_IFACE)","option-data": [],"pd-pools": [],"pools": [{"option-data": [],"pool": "2001:db8:d::1/128"}],"preferred-lifetime": 3000,"rapid-commit": false,"rebind-timer": 2000,"relay": {"ip-address": "::"},"renew-timer": 1000,"reservation-mode": "all","subnet": "2001:db8:d::/64","valid-lifetime": 4000}],"valid-lifetime": 0}]}}')
 
     misc.test_procedure()
@@ -390,17 +390,17 @@ def test_hook_v6_network_cmds_del():
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', '2')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', '2')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "network6-del","arguments":{"name":"name-xyz","subnets-action": "delete"}}')
-    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/var/kea/control_socket send {"command": "network6-add","arguments":{"subnet6":[{"id": 234,"interface":"$(SERVER_IFACE)","subnet": "2001:db8:1::/64","pools":[{"pool":"2001:db8:1::1-2001:db8:1::2"}]}]}}
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    # Using UNIX socket on server in path $(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket send {"command": "network6-add","arguments":{"subnet6":[{"id": 234,"interface":"$(SERVER_IFACE)","subnet": "2001:db8:1::/64","pools":[{"pool":"2001:db8:1::1-2001:db8:1::2"}]}]}}
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
 
 
@@ -416,7 +416,7 @@ def test_hook_v6_network_cmds_del_2():
     srv_control.shared_subnet('0', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -435,11 +435,11 @@ def test_hook_v6_network_cmds_del_2():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "network6-del","arguments":{"name":"name-abc","subnets-action": "delete"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
 
     srv_msg.forge_sleep('5', 'seconds')
@@ -492,16 +492,16 @@ def test_hook_v6_network_cmds_del_non_existing():
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', '2')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', '2')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "network6-del","arguments":{"name":"name-xyzc"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
 
 
@@ -515,7 +515,7 @@ def test_hook_v6_network_cmds_add_and_del():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -535,7 +535,7 @@ def test_hook_v6_network_cmds_add_and_del():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "network6-add","arguments": {"shared-networks": [{"name": "name-abc","preferred-lifetime": 3000,"rebind-timer": 2000,"renew-timer": 1000,"valid-lifetime": 4000,"subnet6":[{"subnet":"2001:db8:a::/64","interface": "$(SERVER_IFACE)","pools":[{"pool":"2001:db8:a::1-2001:db8:a::1"}]}]}]}}')
 
     srv_msg.forge_sleep('5', 'seconds')
@@ -558,9 +558,9 @@ def test_hook_v6_network_cmds_add_and_del():
                                              'addr',
                                              '2001:db8:a::1')
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "network6-del","arguments":{"name":"name-abc","subnets-action": "delete"}}')
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"network6-list","arguments":{}}')
 
     misc.test_procedure()

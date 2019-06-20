@@ -15,11 +15,11 @@ import srv_control
 def test_control_channel_http_dhcp_disable_timer():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -64,11 +64,11 @@ def test_control_channel_http_dhcp_disable_timer():
 def test_control_channel_http_dhcp_disable():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -101,11 +101,11 @@ def test_control_channel_http_dhcp_disable():
 def test_control_channel_http_dhcp_disable_and_enable():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -152,11 +152,11 @@ def test_control_channel_http_dhcp_disable_and_enable():
 def test_control_channel_http_config_set_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -173,11 +173,11 @@ def test_control_channel_http_config_set_basic():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.generate_config_files()
 
     srv_msg.send_through_http('$(SRV4_ADDR)',
@@ -208,11 +208,11 @@ def test_control_channel_http_change_socket_during_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.add_hooks('$(SOFTWARE_INSTALL_DIR)/lib/kea/hooks/libdhcp_host_cmds.so')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -228,11 +228,11 @@ def test_control_channel_http_change_socket_during_reconfigure():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket2')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket2')
     srv_control.generate_config_files()
 
     srv_msg.send_through_http('$(SRV4_ADDR)',
@@ -261,11 +261,11 @@ def test_control_channel_http_after_restart_load_config_file():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -284,7 +284,7 @@ def test_control_channel_http_after_restart_load_config_file():
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.generate_config_files()
 
     srv_msg.send_through_http('$(SRV4_ADDR)',
@@ -320,11 +320,11 @@ def test_control_channel_http_after_restart_load_config_file():
 def test_control_channel_http_get_config():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -341,11 +341,11 @@ def test_control_channel_http_get_config():
 def test_control_channel_http_test_config():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_control.start_srv('DHCP', 'started')
@@ -365,7 +365,7 @@ def test_control_channel_http_test_config():
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket_ANOTHER_ONE')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket_ANOTHER_ONE')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
@@ -396,7 +396,7 @@ def test_control_channel_http_test_config():
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket_ANOTHER_ONE')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket_ANOTHER_ONE')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
@@ -430,11 +430,11 @@ def test_control_channel_http_config_write():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -460,10 +460,10 @@ def test_control_channel_http_config_write():
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.generate_config_files()
 
-    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket',
+    srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command": "config-set", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }')
 
     misc.test_procedure()
@@ -496,11 +496,11 @@ def test_control_channel_http_reload_config():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -516,11 +516,11 @@ def test_control_channel_http_reload_config():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
-    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+    srv_control.open_control_channel('unix', '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       '8000',
                                       'unix',
-                                      '$(SOFTWARE_INSTALL_DIR)/var/kea/control_socket')
+                                      '$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     srv_msg.send_through_http('$(SRV4_ADDR)',
