@@ -362,5 +362,135 @@ def test_remote_option6_del_server_tags():
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
-# def test_remote_option_def_del_server_tags():
-#     pass
+
+def _optdef_set(server_tags, opt_code=222, opt_name="foo", opt_type="uint32"):
+    cmd = dict(command="remote-option-def6-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": server_tags,
+                                                            "option-defs": [{
+                                                                "name": opt_name,
+                                                                "code": opt_code,
+                                                                "type": opt_type}]})
+    response = srv_msg.send_request('v6', cmd)
+
+    assert response == {"arguments": {"option-defs": [{"code": opt_code, "space": "dhcp6"}]},
+                        "result": 0, "text": "DHCPv6 option definition successfully set."}
+
+
+def _optdef_get(command, server_tags, option_def_parameter=None):
+    cmd = dict(command=command, arguments={"remote": {"type": "mysql"},
+                                           "server-tags": server_tags})
+    if option_def_parameter:
+        cmd["arguments"]["option-defs"] = [option_def_parameter]
+
+    return srv_msg.send_request('v6', cmd)
+
+
+def _optdef_del(server_tags, option_def_parameter=None):
+    return _optdef_get("remote-option-def6-del", server_tags, option_def_parameter)
+
+
+def _check_optdef_result(resp, server_tags, count=1, opt_type="uint32", opt_name="foo", opt_code=222):
+    assert resp["result"] == 0
+    assert resp["arguments"]["count"] == count
+    assert resp["arguments"]["option-defs"][0]["metadata"] == {"server-tag": server_tags}
+    assert resp["arguments"]["option-defs"][0]["name"] == opt_name
+    assert resp["arguments"]["option-defs"][0]["code"] == opt_code
+    assert resp["arguments"]["option-defs"][0]["type"] == opt_type
+
+
+def test_remote_option_def_get_server_tags():
+    # let's make two definitions with the same name but different type and server tag, plus one different with
+    # server tag "all"
+    _optdef_set(server_tags=["abc"])
+    _optdef_set(server_tags=["xyz"], opt_type="string")
+    _optdef_set(server_tags=["all"], opt_code=233, opt_name="bar")
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["abc"])
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")
+
+    # this one should fail
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+                       option_def_parameter={"code": 222})
+    assert resp["arguments"]["count"] == 0
+    assert resp["result"] == 3
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+                       option_def_parameter={"code": 233})
+    _check_optdef_result(resp, server_tags=["all"], opt_code=233, opt_name="bar")
+
+    # let's check if -all will return list of two options for each tag and one option for "all"
+    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["abc"])
+    _check_optdef_result(resp, server_tags=["abc"], count=2)
+    assert resp["arguments"]["option-defs"][1]["metadata"] == {"server-tag": ["all"]}
+    assert resp["arguments"]["option-defs"][1]["name"] == "bar"
+    assert resp["arguments"]["option-defs"][1]["code"] == 233
+
+    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["xyz"])
+    _check_optdef_result(resp, server_tags=["xyz"], count=2)
+    assert resp["arguments"]["option-defs"][1]["metadata"] == {"server-tag": ["all"]}
+    assert resp["arguments"]["option-defs"][1]["name"] == "bar"
+    assert resp["arguments"]["option-defs"][1]["code"] == 233
+
+    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["all"])
+    _check_optdef_result(resp, server_tags=["all"], opt_code=233, opt_name="bar")
+
+
+def test_remote_option_def_del_server_tags():
+    # we should be able to configure the same option for each tag, different type is for distinguish returns
+    # options from "all" should be overwritten by specific tags on kea configuration level, not in db!
+    _optdef_set(server_tags=["abc"])
+    _optdef_set(server_tags=["xyz"], opt_type="string")
+    _optdef_set(server_tags=["all"], opt_type="uint8")
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+                       option_def_parameter={"code": 222})
+    # count = 2, we should get one from "abc" and one from "all"
+    _check_optdef_result(resp, server_tags=["abc"], count=2)
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["xyz"], opt_type="string", count=2)
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["all"], opt_type="uint8")
+
+    # let's remove one option and see if all other stays
+    _optdef_del(["all"], option_def_parameter={"code": 222})
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+                       option_def_parameter={"code": 222})
+    # now we expect just one option
+    _check_optdef_result(resp, server_tags=["abc"])
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+                       option_def_parameter={"code": 222})
+    assert resp["arguments"]["count"] == 0
+    assert resp["result"] == 3
+
+    # same with -all command, we expect just one
+    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["xyz"])
+    _check_optdef_result(resp, server_tags=["xyz"])
+
+    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["xyz"])
+    _check_optdef_result(resp, server_tags=["xyz"])
+
+    _optdef_del(["abc"], option_def_parameter={"code": 222})
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+                       option_def_parameter={"code": 222})
+    assert resp["arguments"]["count"] == 0
+    assert resp["result"] == 3
+
+    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")
