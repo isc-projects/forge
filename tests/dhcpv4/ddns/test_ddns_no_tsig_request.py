@@ -310,7 +310,7 @@ def test_ddns4_notsig_forw_and_rev_update_success_Sflag():
 
     misc.test_setup()
     srv_control.start_srv('DHCP', 'stopped')
-    srv_control.clear_leases('leases')
+    srv_control.clear_some_data('leases')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.11-192.168.50.11')

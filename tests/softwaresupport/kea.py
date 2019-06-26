@@ -103,53 +103,20 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address):
                                destination_host=destination_address)
 
 
-def _clear_db_config(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                    destination_address=world.f_cfg.mgmt_address):
-
-    tables = ['dhcp4_audit_revision',
-              'dhcp4_audit',
-              'dhcp4_global_parameter',
-              'dhcp4_global_parameter_server',
-              'dhcp4_option_def',
-              'dhcp4_option_def_server',
-              'dhcp4_options',
-              'dhcp4_options_server',
-              'dhcp4_pool',
-              'dhcp4_shared_network',
-              'dhcp4_shared_network_server',
-              'dhcp4_subnet',
-              'dhcp4_subnet_server',
-              'dhcp6_audit_revision',
-              'dhcp6_audit',
-              'dhcp6_global_parameter',
-              'dhcp6_global_parameter_server',
-              'dhcp6_option_def',
-              'dhcp6_option_def_server',
-              'dhcp6_options',
-              'dhcp6_options_server',
-              'dhcp6_pd_pool',
-              'dhcp6_pool',
-              'dhcp6_shared_network',
-              'dhcp6_shared_network_server',
-              'dhcp6_subnet',
-              'dhcp6_subnet_server']
-    tables = ' '.join(tables)
-
-    command = 'for table_name in {tables}; do mysql -u {db_user} -p{db_passwd} -e '
-    command += '"SET foreign_key_checks = 0; truncate $table_name" {db_name}; done'
-    command = command.format(**locals())
-    fabric_run_command(command, destination_host=destination_address, hide_all=True)
-
-
 def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     clear_logs(destination_address)
 
-    if world.f_cfg.db_type in ["memfile", ""]:
-        fabric_remove_file_command(world.cfg['leases']+"*",
-                                   destination_host=destination_address)
-    elif world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
-        # that is tmp solution - just clearing not saving.
-        clear_leases(destination_address=world.f_cfg.mgmt_address)
-    else:
-        assert False, "If you see that error, something went very wrong."
-    _clear_db_config(destination_address=world.f_cfg.mgmt_address)
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'var/lib/kea/*'),
+                               destination_host=world.f_cfg.mgmt_address)
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'var/run/kea/*'),
+                               destination_host=world.f_cfg.mgmt_address)
+
+    # use kea script for cleaning DB
+    cmd = 'bash {software_install_path}/share/kea/scripts/mysql/wipe_data.sh `mysql -u{db_user} -p{db_passwd} {db_name} -N -B'
+    cmd += ' -e "SELECT CONCAT_WS(\'.\', version, minor) FROM schema_version;" 2>/dev/null` -N -B'
+    cmd += ' -u{db_user} -p{db_passwd} {db_name}'
+    cmd = cmd.format(software_install_path=world.f_cfg.software_install_path,
+                     db_user=world.f_cfg.db_user,
+                     db_passwd=world.f_cfg.db_passwd,
+                     db_name=world.f_cfg.db_name)
+    fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address)
