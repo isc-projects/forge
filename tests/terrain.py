@@ -30,6 +30,7 @@ from scapy.layers.dhcp6 import DUID_LLT
 from forge_cfg import world, step
 from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
+from softwaresupport import kea
 import logging_facility
 from srv_control import start_srv
 
@@ -289,14 +290,18 @@ def test_start():
     # Initialize the common logger.
     logging_facility.logger_initialize(world.f_cfg.loglevel)
 
+    kea_under_test = False
     if not world.f_cfg.no_server_management:
-        for each in world.f_cfg.software_under_test:
-            sut = importlib.import_module("softwaresupport.%s.functions" % each)
+        for sut_name in world.f_cfg.software_under_test:
+            sut_module = importlib.import_module("softwaresupport.%s.functions" % sut_name)
             # True passed to stop_srv is to hide output in console.
-            sut.stop_srv(True)
+            sut_module.stop_srv(True)
 
-            if hasattr(sut, 'db_setup'):
-                sut.db_setup()
+            if 'kea' in sut_name:
+                kea_under_test = True
+
+    if kea_under_test:
+        kea.db_setup()
 
 
 #@before.each_scenario
@@ -413,30 +418,30 @@ def cleanup(scenario):
         # TODO: log output in debug mode
 
     if not world.f_cfg.no_server_management:
-        for each_remote_server in world.f_cfg.multiple_tested_servers:
-            for each in world.f_cfg.software_under_test:
-                functions = importlib.import_module("softwaresupport.%s.functions" % each)
+        for remote_server in world.f_cfg.multiple_tested_servers:
+            for sut in world.f_cfg.software_under_test:
+                functions = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # try:
                 if world.f_cfg.save_leases:
                     # save leases, if there is none leases in your software, just put "pass" in this function.
-                    functions.save_leases(destination_address=each_remote_server)
+                    functions.save_leases(destination_address=remote_server)
 
                 if world.f_cfg.save_logs:
-                    functions.save_logs(destination_address=each_remote_server)
+                    functions.save_logs(destination_address=remote_server)
 
     _clear_remainings()
 
 
 def _clear_remainings():
     if not world.f_cfg.no_server_management:
-        for each_remote_server in world.f_cfg.multiple_tested_servers:
-            for each in world.f_cfg.software_under_test:
-                functions = importlib.import_module("softwaresupport.%s.functions" % each)
+        for remote_server in world.f_cfg.multiple_tested_servers:
+            for sut in world.f_cfg.software_under_test:
+                functions = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # every software have something else to clear. Put in clear_all() whatever you need
-                functions.clear_all(destination_address=each_remote_server)
+                functions.clear_all(destination_address=remote_server)
 
                 # except:  # TODO this should be on multi_server_functions level!
-                #     log.info("Remote location " + each_remote_server + " unreachable!")
+                #     log.info("Remote location " + remote_server + " unreachable!")
 
 
 #@after.all
@@ -451,12 +456,12 @@ def say_goodbye():
         result.close()
 
     if not world.f_cfg.no_server_management:
-        for each_remote_server in world.f_cfg.multiple_tested_servers:
-            for each in world.f_cfg.software_under_test:
-                stop = importlib.import_module("softwaresupport.%s.functions" % each)
+        for remote_server in world.f_cfg.multiple_tested_servers:
+            for sut in world.f_cfg.software_under_test:
+                stop = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # True passed to stop_srv is to hide output in console.
                 try:
-                    stop.stop_srv(value=True, destination_address=each_remote_server)
+                    stop.stop_srv(value=True, destination_address=remote_server)
                 except:
                     pass
 

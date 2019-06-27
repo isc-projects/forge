@@ -147,15 +147,6 @@ class ForgeConfiguration:
             return "0a:00:27:00:00:00"
 
     def basic_validation(self):
-        # TODO we need new basic validation or just dump it...
-        # if self.proto == "v4" and self.software_under_test[0] not in ["none_server"]:
-        #     if "4" not in self.software_under_test[0]:
-        #         print "Miss match of protocol version and DHCP server version"
-        #         sys.exit(-1)
-        # if self.proto == "v6" and self.software_under_test[0] not in ["none_server"]:
-        #     if "6" not in self.software_under_test[0]:
-        #         print "Miss match of protocol version and DHCP server version"
-        #         sys.exit(-1)
         if self.software_install_path == "":
             print "Configuration failure, software_install_path empty." \
                   " Please use ./forge.py -T to validate configuration."
