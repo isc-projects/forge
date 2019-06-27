@@ -361,7 +361,7 @@ def test_ddns6_notsig_forw_and_rev_update_success_Sflag():
 
     misc.test_setup()
     srv_control.start_srv('DHCP', 'stopped')
-    srv_control.clear_some_data('leases')
+    srv_control.clear_leases('leases')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::51-2001:db8:1::51')

@@ -61,7 +61,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
-    srv_control.clear_some_data('logs')
+    srv_control.clear_leases('logs')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -158,7 +158,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
-    srv_control.clear_some_data('logs')
+    srv_control.clear_leases('logs')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -271,7 +271,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
 
     srv_control.start_srv('DHCP', 'stopped')
 
-    srv_control.clear_some_data('logs')
+    srv_control.clear_leases('logs')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -366,7 +366,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
 
     srv_control.start_srv('DHCP', 'stopped')
 
-    srv_control.clear_some_data('logs')
+    srv_control.clear_leases('logs')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -577,7 +577,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
 
     srv_control.start_srv('DHCP', 'stopped')
 
-    srv_control.clear_some_data('logs')
+    srv_control.clear_leases('logs')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -699,7 +699,7 @@ def test_v6_sanity_check_subnet_id_del():
 
     srv_control.start_srv('DHCP', 'stopped')
 
-    srv_control.clear_some_data('logs')
+    srv_control.clear_leases('logs')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')

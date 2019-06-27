@@ -971,12 +971,12 @@ def add_remote_server(remote_address):
 
 
 @step('Clear (\S+).')
-def clear_some_data(data_type):
-    if data_type == "leases":
+def clear_leases(action):
+    if action == "leases":
         dhcp.clear_leases()
-    elif data_type == "logs":
+    elif action == "logs":
         dhcp.clear_logs()
-    elif data_type == "all":
+    elif action == "all":
         dhcp.clear_all()
 
 

@@ -217,7 +217,7 @@ def test_v6_hooks_HA_page_size_sync_2():
 
     # create leases in HA 2
     srv_msg.loops('SOLICIT', 'REPLY', '100')
-    srv_control.clear_some_data('logs')
+    srv_control.clear_leases('logs')
 
     srv_control.start_srv('DHCP', 'started')
 
