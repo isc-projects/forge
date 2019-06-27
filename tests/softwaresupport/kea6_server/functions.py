@@ -156,8 +156,6 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     """
 
     if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
-                                           'etc/kea/kea-leases%s.csv' % world.proto[1])
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -172,8 +170,6 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
-                                           'etc/kea/kea-leases%s.csv' % world.proto[1])
         add_defaults()
         set_kea_ctrl_config()
         cfg_write()
@@ -798,7 +794,7 @@ def cfg_write():
         cfg_file.write(',' + world.cfg["agent"])
         del world.cfg["agent"]
 
-    logging_file = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea.log')
+    logging_file = world.cfg['kea_logs']
 
     log_type = ''
     if "kea6" in world.cfg["dhcp_under_test"]:
@@ -880,7 +876,6 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     # build_and_send_config_files() it's now separate step
     v6, v4 = check_kea_status(destination_address)
-    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea-leases6.csv')
 
     if process is None:
         process = "starting"
@@ -961,7 +956,7 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
-    fabric_download_file(os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea.log*'),
+    fabric_download_file(world.cfg['kea_logs'] + '*',
                          check_local_path_for_downloaded_files(world.cfg["dir_name"],
                                                                '.',
                                                                destination_address),

@@ -16,7 +16,7 @@ import srv_msg
 def test_v6_loggers_legal_log_hook_address_assigned_duid():
 
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '100')
@@ -170,7 +170,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid_pgsql():
 def test_v6_loggers_legal_log_hook_address_renewed_duid():
 
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '100')
@@ -222,11 +222,11 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -384,7 +384,7 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid_pgsql():
 def test_v6_loggers_legal_log_hook_address_rebind_duid():
 
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '100')
@@ -435,12 +435,12 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
     # Spec says that when we are rebinding address it will be logged 'renewed', misleading :/
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -598,7 +598,7 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid_mysql():
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem():
 
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '100')
@@ -641,8 +641,8 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
 
@@ -774,7 +774,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_mysql():
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts():
 
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '100')
@@ -814,8 +814,8 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
 
@@ -943,7 +943,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_mysql():
 def test_v6_loggers_legal_log_hook_address_assigned_relay():
 
     misc.test_procedure()
-    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
+    srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
 
     misc.test_setup()
     srv_control.set_time('renew-timer', '100')
@@ -987,14 +987,14 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay():
     srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
     srv_msg.response_check_include_option('Response', None, '18')
     srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.copy_remote('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt')
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) connected via relay')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'connected via relay at address:')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-legal*.txt',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-legal*.txt',
                                None,
                                'for client on link address: 3000::1005, hop count: 5')
 
