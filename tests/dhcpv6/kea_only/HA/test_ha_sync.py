@@ -270,7 +270,6 @@ def test_v6_hooks_HA_page_size_sync():
 
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
 
-
     misc.test_procedure()
     srv_msg.forge_sleep('3', 'seconds')
 
@@ -364,7 +363,6 @@ def test_v6_hooks_HA_page_size_sync_2():
                                          '{"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role": "standby","auto-failover":true}')
 
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
-
 
     misc.test_procedure()
     srv_msg.forge_sleep('3', 'seconds')
