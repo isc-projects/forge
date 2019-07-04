@@ -550,7 +550,7 @@ def add_logger(log_type, severity, severity_level, logging_file):
     else:
         if len(world.cfg["logger"]) > 20:
             world.cfg["logger"] += ','
-    logging_file_path = os.path.join(world.f_cfg.software_install_path, 'etc/kea', logging_file)
+    logging_file_path = os.path.join(world.f_cfg.software_install_path, 'var/log', logging_file)
     if severity_level != "None":
         world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '"' \
                                '}],"debuglevel": ' + severity_level + ',"severity": ' \

@@ -1018,7 +1018,7 @@ def loops(message_type_1, message_type_2, repeat):
     testsetup = importlib.import_module("misc")
     repeat = int(repeat)
     testsetup.set_world()
-    testsetup.test_procedure(None)
+    testsetup.test_procedure()
 
     if repeat < 1000:
         x_range = 10

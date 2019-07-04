@@ -75,8 +75,8 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role": "secondary","auto-failover":true}')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('5', 'seconds')
 
@@ -202,7 +202,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -257,7 +257,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -319,7 +319,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                               '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
     srv_msg.send_through_http('$(MGMT_ADDRESS)',
                               '8080',
@@ -359,7 +359,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                               '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -503,8 +503,8 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role": "secondary","auto-failover":true}')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
     srv_msg.forge_sleep('5', 'seconds')
 
     misc.test_procedure()
@@ -629,7 +629,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -684,7 +684,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -733,7 +733,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
                               '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
     srv_msg.forge_sleep('10', 'seconds')
 
     # this time - no paused states!
@@ -767,20 +767,18 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
     srv_msg.forge_sleep('5', 'seconds')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.send_through_http('$(MGMT_ADDRESS_2)',
-                              '8080',
-                              '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
-    srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.send_through_http('$(MGMT_ADDRESS)',
-                              '8080',
-                              '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
-    srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
     srv_msg.send_through_http('$(MGMT_ADDRESS)',
                               '8080',
                               '{"command": "ha-continue","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
+
+    srv_msg.send_through_http('$(MGMT_ADDRESS_2)',
+                              '8080',
+                              '{"command": "ha-continue","service":["dhcp6"],"arguments": {} }')
+    srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
+
     srv_msg.forge_sleep('10', 'seconds')
 
     srv_msg.send_through_http('$(MGMT_ADDRESS)',
@@ -876,8 +874,8 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role": "standby","auto-failover":true}')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
     srv_msg.forge_sleep('5', 'seconds')
 
     misc.test_procedure()
@@ -1002,7 +1000,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -1057,7 +1055,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -1106,7 +1104,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
                               '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
     srv_msg.forge_sleep('10', 'seconds')
 
     # this time - no paused states!
@@ -1140,21 +1138,13 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
     srv_msg.forge_sleep('5', 'seconds')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.send_through_http('$(MGMT_ADDRESS_2)',
-                              '8080',
-                              '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
-    srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.send_through_http('$(MGMT_ADDRESS)',
-                              '8080',
-                              '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
-    srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
     srv_msg.send_through_http('$(MGMT_ADDRESS)',
                               '8080',
                               '{"command": "ha-continue","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep('5', 'seconds')
 
     srv_msg.send_through_http('$(MGMT_ADDRESS)',
                               '8080',
@@ -1249,8 +1239,8 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role": "standby","auto-failover":true}')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('5', 'seconds')
 
@@ -1376,7 +1366,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -1431,7 +1421,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 
@@ -1493,7 +1483,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                               '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
     srv_msg.send_through_http('$(MGMT_ADDRESS)',
                               '8080',
@@ -1533,7 +1523,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                               '{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     srv_msg.forge_sleep('10', 'seconds')
 

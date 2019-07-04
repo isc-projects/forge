@@ -99,7 +99,7 @@ def build_and_send_config_files2(cfg, connection_type, configuration_type="confi
 
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
-    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea.log*'),
+    fabric_remove_file_command(os.path.join(world.f_cfg.software_install_path, 'var/log/kea.log*'),
                                destination_host=destination_address)
 
 
