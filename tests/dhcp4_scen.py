@@ -78,7 +78,8 @@ def send_decline4(requested_addr):
 def send_discover_and_check_offer(
         chaddr=None, client_id=None, giaddr=None, req_opts=None,
         exp_yiaddr=None, exp_client_id=None,
-        exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None, exp_option=None, no_exp_option=None):
+        exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None, exp_option=None, no_exp_option=None,
+        no_exp_boot_file_name=None):
     # send DISCOVER
     misc.test_procedure()
     _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opts=req_opts)
@@ -113,7 +114,8 @@ def send_discover_and_check_offer(
         srv_msg.response_check_content('Response', None, 'sname', exp_server_hostname)
     if exp_boot_file_name is not None:
         srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
-
+    if no_exp_boot_file_name is not None:
+        srv_msg.response_check_content('Response', 'NOT ', 'file', no_exp_boot_file_name)
     return rcvd_yiaddr
 
 
@@ -122,7 +124,7 @@ def send_request_and_check_ack(
         exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
         exp_yiaddr=None, exp_client_id=None,
         exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None,
-        exp_option=None, no_exp_option=None):
+        exp_option=None, no_exp_option=None, no_exp_boot_file_name=None):
     # send REQUEST
     misc.test_procedure()
     if chaddr is not None:
@@ -176,6 +178,8 @@ def send_request_and_check_ack(
             srv_msg.response_check_include_option('Response', None, '61')
             srv_msg.response_check_option_content('Response', '61', None, 'value', exp_client_id)
 
+    if no_exp_boot_file_name is not None:
+        srv_msg.response_check_content('Response', 'NOT ', 'file', no_exp_boot_file_name)
     if exp_next_server is not None:
         srv_msg.response_check_content('Response', None, 'siaddr', exp_next_server)
     if exp_server_hostname is not None:
@@ -194,13 +198,14 @@ def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
                  exp_yiaddr=None, exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
                  exp_client_id=None,
                  exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None, exp_option=None,
-                 no_exp_option=None):
+                 no_exp_option=None, no_exp_boot_file_name=None):
     # send DISCOVER and check OFFER
     rcvd_yiaddr = send_discover_and_check_offer(
         chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opts=_to_list(req_opts),
         exp_yiaddr=exp_yiaddr, exp_client_id=exp_client_id,
         exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name,
-        exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option))
+        exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option),
+        no_exp_boot_file_name=no_exp_boot_file_name)
 
     # send REQUEST and check ACK
     send_request_and_check_ack(
@@ -208,7 +213,8 @@ def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
         exp_lease_time=exp_lease_time, exp_renew_timer=exp_renew_timer, exp_rebind_timer=exp_rebind_timer,
         exp_client_id=exp_client_id,
         exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name,
-        exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option))
+        exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option),
+        no_exp_boot_file_name=no_exp_boot_file_name)
 
     return rcvd_yiaddr
 

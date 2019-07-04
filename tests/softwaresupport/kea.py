@@ -77,7 +77,6 @@ def _write_cfg2(cfg):
 def build_and_send_config_files2(cfg, connection_type, configuration_type="config-file",
                                  destination_address=world.f_cfg.mgmt_address):
     if configuration_type == "config-file" and connection_type == "SSH":
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea-leases4.csv')
         set_kea_ctrl_config()
         _write_cfg2(cfg)
         fabric_send_file(world.cfg["cfg_file"],
@@ -91,7 +90,6 @@ def build_and_send_config_files2(cfg, connection_type, configuration_type="confi
         remove_local_file(world.cfg["cfg_file"])
         remove_local_file(world.cfg["cfg_file_2"])
     elif configuration_type == "config-file" and connection_type is None:
-        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea-leases4.csv')
         set_kea_ctrl_config()
         cfg_write()
         copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)

@@ -190,6 +190,7 @@ class ConfigModel(ConfigElem):
         self.subnet_id = 0
         self.shared_networks = {}
         self.options = {}
+        self.check_on_reload = True
 
         if 'subnets' in init_cfg:
             for sn in init_cfg['subnets']:
@@ -235,8 +236,12 @@ class ConfigModel(ConfigElem):
             return {}
 
         _reload()
-        config = self.compare_local_with_server()
-        return config
+        if self.check_on_reload:
+            config = self.compare_local_with_server()
+            return config
+        else:
+            self.check_on_reload = True
+            return {}
 
     def compare_local_with_server(self):
         proto = world.proto[1]
@@ -254,16 +259,19 @@ class ConfigModel(ConfigElem):
         server_tags = None
         parameters = {}
         for param, val in kwargs.items():
-            param = param.replace('_', '-')
             if val is None:
                 if param in self.cfg:
                     del self.cfg[param]
             if param == "server_tags":
-                server_tags = val
                 del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
+            if param == "check_on_reload":
+                self.check_on_reload = val
+                del kwargs["check_on_reload"]
+                continue
             else:
+                param = param.replace('_', '-')
                 parameters[param] = val
                 self.cfg[param] = val
 
@@ -292,6 +300,9 @@ class ConfigModel(ConfigElem):
                 del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
+            if param == "check_on_reload":
+                self.check_on_reload = val
+                del kwargs["check_on_reload"]
 
             param = param.replace('_', '-')
             network[param] = val
@@ -346,7 +357,10 @@ class ConfigModel(ConfigElem):
                 del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
-
+            if param == "check_on_reload":
+                self.check_on_reload = val
+                del kwargs["check_on_reload"]
+                continue
             param = param.replace('_', '-')
             option[param] = val
         self.cfg["option-data"] = [option]
@@ -363,6 +377,10 @@ class ConfigModel(ConfigElem):
     def del_option(self, **kwargs):
         option = {"code": 0}
         for param, val in kwargs.items():
+            if param == "check_on_reload":
+                self.check_on_reload = val
+                del kwargs["check_on_reload"]
+                continue
             if val is None:
                 continue
             param = param.replace('_', '-')
@@ -404,6 +422,9 @@ class ConfigModel(ConfigElem):
                 del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
+            if param == "check_on_reload":
+                self.check_on_reload = val
+                del kwargs["check_on_reload"]
             param = param.replace('_', '-')
             subnet[param] = val
 
