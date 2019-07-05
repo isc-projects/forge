@@ -5,6 +5,7 @@ import srv_control
 
 from dhcp4_scen import get_address, get_rejected
 from cb_model import setup_server_for_config_backend_cmds
+from forge_cfg import world
 
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.hook,
