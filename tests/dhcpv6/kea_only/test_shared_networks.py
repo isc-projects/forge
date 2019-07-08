@@ -207,7 +207,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '13')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
 
@@ -303,7 +303,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_id():
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '13')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
 
@@ -380,10 +380,10 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_iface(
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -743,10 +743,10 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -1017,10 +1017,10 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -1160,10 +1160,10 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:e::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:f::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -1249,10 +1249,10 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -1311,10 +1311,10 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -1810,10 +1810,10 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -1903,10 +1903,10 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -2082,10 +2082,10 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -2171,10 +2171,10 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
     srv_msg.response_check_include_option('Relayed Message', None, '3')
     srv_msg.response_check_option_content('Relayed Message', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
@@ -2349,10 +2349,10 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_msg.response_check_include_option('Response', None, '23')
     srv_msg.response_check_option_content('Response', '23', None, 'addresses', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2')
 

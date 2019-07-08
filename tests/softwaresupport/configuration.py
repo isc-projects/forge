@@ -376,7 +376,7 @@ class KeaConfiguration:
         from kea6_server.functions import set_kea_ctrl_config, start_srv
 
         # set_kea_ctrl_config()
-        # cfg4 = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'etc/kea/control_socket"}},"Logging":{"loggers":[{"name":"kea-dhcp4","output_options":[{"output":"'+world.f_cfg.software_install_path+'etc/kea/kea.log"}],"debuglevel":99,"severity":"DEBUG"}]}}'
+        # cfg4 = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'etc/kea/control_socket"}},"Logging":{"loggers":[{"name":"kea-dhcp4","output_options":[{"output":"'+world.f_cfg.software_install_path+'var/log/kea.log"}],"debuglevel":99,"severity":"DEBUG"}]}}'
         # netconfdaemoncfg = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'etc/kea/control_socket"}}}'
         # config = open(world.cfg["cfg_file"], 'w')
         # config.write(cfg4)
@@ -580,7 +580,7 @@ class ConfigurationGlobalParameters:
         # leases:
         self.db_leases_type = "memfile"
         self.lfc_interval = 0
-        self.file_name = os.path.join(world.f_cfg.software_install_path, 'etc/kea/kea-leases4.csv')
+        self.file_name = os.path.join(world.f_cfg.software_install_path, 'var/lib/kea/kea-leases4.csv')
         self.persist = ""
         self.db_name = ""
         self.db_host = ""
@@ -632,7 +632,7 @@ class ConfigurationLogging:
         self.flush = "true"
         self.maxsize = ""
         self.maxver = ""
-        self.output = os.path.join(world.f_cfg.software_install_path, "etc/kea/kea.log")
+        self.output = os.path.join(world.f_cfg.software_install_path, "var/log/kea.log")
 
     def __getitem__(self, item):
         return getattr(self, item)

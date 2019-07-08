@@ -278,10 +278,10 @@ def test_v4_hooks_flexid_replace_mac_addr_inside_pool():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,,0')
 
@@ -396,13 +396,13 @@ def test_v4_hooks_flexid_replace_client_id_release_1():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                'NOT ',
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
@@ -473,13 +473,13 @@ def test_v4_hooks_flexid_replace_client_id_release_2():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
@@ -541,10 +541,10 @@ def test_v4_hooks_flexid_replace_client_id_renew_1():
     srv_msg.response_check_include_option('Response', None, '61')
     srv_msg.response_check_include_option('Response', None, '54')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 
@@ -606,10 +606,10 @@ def test_v4_hooks_flexid_replace_client_id_renew_2():
     srv_msg.response_check_include_option('Response', None, '61')
     srv_msg.response_check_include_option('Response', None, '54')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                'NOT ',
                                'ff:01:02:03:ff:04:11:22:33')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases4.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases4.csv',
                                None,
                                '192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 

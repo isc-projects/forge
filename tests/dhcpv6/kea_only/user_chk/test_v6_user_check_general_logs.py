@@ -43,9 +43,9 @@ def test_user_check_hook_IA_NA_no_registry_logging():
     # Response MUST include option 3.
     # Response option 3 MUST contain sub-option 5.
     # Response sub-option 5 from option 3 MUST contain address 3000::5.
-    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.hooks
-    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST contain line or phrase: ERROR \[kea-dhcp6.hooks
-    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.callouts
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/log/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/log/kea.log MUST contain line or phrase: ERROR \[kea-dhcp6.hooks
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/log/kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp6.callouts
 
 
 @pytest.mark.v6
@@ -86,10 +86,10 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_1.txt')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
                                None,
                                r'INFO  \[kea-dhcp6.hooks')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
                                None,
                                r'DEBUG \[kea-dhcp6.callouts')
 

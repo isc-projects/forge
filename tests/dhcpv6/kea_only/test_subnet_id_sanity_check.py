@@ -53,10 +53,10 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -72,7 +72,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
                                None,
                                'DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
 
@@ -150,10 +150,10 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -169,7 +169,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
                                None,
                                'DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
 
@@ -262,10 +262,10 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -357,10 +357,10 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -423,10 +423,10 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -485,10 +485,10 @@ def test_v6_sanity_check_subnet_id_warn():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -504,7 +504,7 @@ def test_v6_sanity_check_subnet_id_warn():
 
     srv_msg.forge_sleep('2', 'seconds')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
                                None,
                                'DHCPSRV_LEASE_SANITY_FAIL The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks.')
 
@@ -568,10 +568,10 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -590,7 +590,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep('2', 'seconds')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
                                None,
                                'DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
 
@@ -624,24 +624,24 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                'NOT ',
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                'NOT ',
                                '999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22')
 
@@ -690,10 +690,10 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -712,7 +712,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep('2', 'seconds')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea.log',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
                                None,
                                'DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
 
@@ -749,16 +749,16 @@ def test_v6_sanity_check_subnet_id_del():
                                             '{"command":"lease6-get","arguments":{"ip-address": "2001:db8::1"}}')
     srv_msg.send_through_socket_server_site('$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket',
                                             '{"command":"lease6-get","arguments":{"subnet-id":666,"identifier-type":"duid", "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01"}}')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
     # Pause the Test.
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22
-    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv MUST contain line or phrase: 999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv MUST contain line or phrase: 2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv MUST contain line or phrase: 999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22
 
 
 @pytest.mark.v6
@@ -805,10 +805,10 @@ def test_v6_sanity_check_subnet_id_none():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -822,10 +822,10 @@ def test_v6_sanity_check_subnet_id_none():
 
     srv_control.start_srv('DHCP', 'reconfigured')
     srv_msg.forge_sleep('2', 'seconds')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -879,10 +879,10 @@ def test_v6_sanity_check_subnet_id():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
     srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8::1')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -1044,16 +1044,16 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_msg.response_check_include_option('Response', None, '3')
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
 
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
-    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv',
+    srv_msg.file_contains_line('$(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv',
                                None,
                                '777,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:02')
 

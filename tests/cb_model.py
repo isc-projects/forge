@@ -216,7 +216,7 @@ class ConfigModel(ConfigElem):
                 cfg['shared-networks'].append(net.get_dict())
 
         cfg["loggers"] = [{"name": "kea-dhcp" + proto,
-                           "output_options": [{"output": "$(SOFTWARE_INSTALL_PATH)/etc/kea/kea.log"}],
+                           "output_options": [{"output": "$(SOFTWARE_INSTALL_PATH)/var/log/kea.log"}],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
 

@@ -968,8 +968,8 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
     srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
     srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '3')
 
-    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv MUST contain line or phrase: 3000::f,01:02:03:04:05:06,4000,
-    # File stored in $(SOFTWARE_INSTALL_DIR)/etc/kea/kea-leases6.csv MUST NOT contain line or phrase: 3000::f,01:02:03:04:05:06,0,
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv MUST contain line or phrase: 3000::f,01:02:03:04:05:06,4000,
+    # File stored in $(SOFTWARE_INSTALL_DIR)/var/lib/kea/kea-leases6.csv MUST NOT contain line or phrase: 3000::f,01:02:03:04:05:06,0,
 
 
 @pytest.mark.v6
