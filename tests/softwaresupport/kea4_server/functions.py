@@ -230,7 +230,7 @@ def db_setup():
     result = fabric_sudo_command(cmd)
     if result == db_name:
         # db exsists, so try migration
-        cmd = "kea-admin lease-upgrade mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        cmd = "kea-admin db-upgrade mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
         fabric_run_command(cmd)
     else:
         # no db, create from scratch
@@ -240,7 +240,7 @@ def db_setup():
         fabric_sudo_command(cmd)
         cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
         fabric_sudo_command(cmd)
-        cmd = "kea-admin lease-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        cmd = "kea-admin db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
         fabric_run_command(cmd)
 
     # POSTGRESQL
@@ -250,7 +250,7 @@ def db_setup():
     result = fabric_sudo_command(cmd, sudo_user='postgres')
     if result.strip() == db_name:
         # db exsists, so try migration
-        cmd = "kea-admin lease-upgrade pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        cmd = "kea-admin db-upgrade pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
         fabric_run_command(cmd)
     else:
         # no db, create from scratch
@@ -262,5 +262,5 @@ def db_setup():
         fabric_sudo_command(cmd, sudo_user='postgres')
         cmd = "psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
         fabric_sudo_command(cmd, sudo_user='postgres')
-        cmd = "kea-admin lease-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        cmd = "kea-admin db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
         fabric_run_command(cmd)
