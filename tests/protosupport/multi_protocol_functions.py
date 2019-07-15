@@ -327,7 +327,8 @@ def execute_shell_cmd(path, arguments=''):
 
 
 def test_define_value(*args):
-    """
+    """Substitute variable references in a string.
+
     Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
     Bash like define variables: $(variable_name)
     You can use steps like:
@@ -338,9 +339,7 @@ def test_define_value(*args):
     $ sign is very important without it Forge wont find variable in init_all.
 
     You can use any variable form init_all in that way. Also you can add them using step:
-    "Client defines new variable: (\S+) with value (\S+)."
-
-    """
+    "Client defines new variable: (\S+) with value (\S+)." """
     tested_args = []
     for i in range(len(args)):
         try:
@@ -390,6 +389,11 @@ def test_define_value(*args):
 
 
 def substitute_vars(cfg):
+    """Substitute variable references in any string occurance in dictionary.
+
+    It goes through all fields, arrays etc in dictionary and in any string it substitutes vars.
+    It works as test_define_value but it takes dict as argument that contains whole configuration
+    fields instead of one big string."""
     for k, v in cfg.items():
         if isinstance(v, basestring):
             cfg[k] = test_define_value(v)[0]
