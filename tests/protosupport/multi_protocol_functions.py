@@ -547,7 +547,3 @@ def parse_socket_received_data():
 
 def set_value(env_name, env_value):
     world.f_cfg.set_env_val(env_name, env_value)
-
-
-def temp_set_value(env_name, env_value):
-    world.f_cfg.set_temporaty_value(env_name, env_value)

@@ -517,11 +517,6 @@ def remove_file_from_server(remote_path):
     multi_protocol_functions.remove_file_from_server(remote_path)
 
 
-@step('Temporary change environment variable named (\S+) to value (.+)')
-def temporary_setenv(env_name, env_value):
-    multi_protocol_functions.temp_set_value(env_name, env_value)
-
-
 @step('Add environment variable named (\S+) to value (.+)')
 def set_env(env_name, env_value):
     multi_protocol_functions.set_value(env_name, env_value)

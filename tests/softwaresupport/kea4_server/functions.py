@@ -219,6 +219,9 @@ def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
 
 
 def db_setup():
+    if world.f_cfg.disable_db_setup:
+        return
+
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user
     db_passwd = world.f_cfg.db_passwd

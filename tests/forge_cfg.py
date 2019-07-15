@@ -28,64 +28,60 @@ import struct
 import sys
 import cgitb
 
+import init_all
 
-from init_all import SOFTWARE_INSTALL_PATH, INSTALL_METHOD, LOGLEVEL, SOFTWARE_UNDER_TEST, DB_TYPE, SHOW_PACKETS_FROM, \
-    SRV4_ADDR, REL4_ADDR, GIADDR4, IFACE, CLI_LINK_LOCAL, SERVER_IFACE, OUTPUT_WAIT_INTERVAL, \
-    OUTPUT_WAIT_MAX_INTERVALS, PACKET_WAIT_INTERVAL, SRV_IPV6_ADDR_GLOBAL, SRV_IPV6_ADDR_LINK_LOCAL, HISTORY,\
-    TCPDUMP, TCPDUMP_PATH, SAVE_CONFIG_FILE, AUTO_ARCHIVE, SLEEP_TIME_1, SLEEP_TIME_2, MGMT_ADDRESS, MGMT_USERNAME,\
-    MGMT_PASSWORD, SAVE_LOGS, BIND_LOG_TYPE, BIND_LOG_LVL, BIND_MODULE, SAVE_LEASES, DNS_IFACE, DNS4_ADDR, DNS6_ADDR, DNS_PORT, \
-    DNS_SERVER_INSTALL_PATH, DNS_DATA_PATH, ISC_DHCP_LOG_FACILITY, ISC_DHCP_LOG_FILE, DB_NAME, DB_USER, DB_PASSWD, \
-    DB_HOST, CIADDR, MGMT_ADDRESS_2, MGMT_ADDRESS_3, FABRIC_PTY, INSTALL_METHOD
-
-# Create Forge configuration class
-SOFTWARE_INSTALL_DIR = SOFTWARE_INSTALL_PATH  # for backward compatibility of tests
-LOGLEVEL = os.getenv('LOGLEVEL', LOGLEVEL)
-SOFTWARE_UNDER_TEST = os.getenv('SOFTWARE_UNDER_TEST', SOFTWARE_UNDER_TEST)
-DB_TYPE = os.getenv('DB_TYPE', DB_TYPE)
-SOFTWARE_INSTALL_PATH = os.getenv('SOFTWARE_INSTALL_DIR', SOFTWARE_INSTALL_PATH)
-SHOW_PACKETS_FROM = os.getenv('SHOW_PACKETS_FROM', SHOW_PACKETS_FROM)
-SRV4_ADDR = os.getenv('SRV4_ADDR', SRV4_ADDR)
-REL4_ADDR = os.getenv('REL4_ADDR', REL4_ADDR)
-GIADDR4 = os.getenv('GIADDR4', GIADDR4)
-CIADDR = os.getenv('CIADDR', CIADDR)
-IFACE = os.getenv('IFACE', IFACE)
-CLI_LINK_LOCAL = os.getenv('CLI_LINK_LOCAL', CLI_LINK_LOCAL)
-SERVER_IFACE = os.getenv('SERVER_IFACE', SERVER_IFACE)
-OUTPUT_WAIT_INTERVAL = os.getenv('OUTPUT_WAIT_INTERVAL', OUTPUT_WAIT_INTERVAL)
-OUTPUT_WAIT_MAX_INTERVALS = os.getenv('OUTPUT_WAIT_MAX_INTERVALS', OUTPUT_WAIT_MAX_INTERVALS)
-PACKET_WAIT_INTERVAL = os.getenv('PACKET_WAIT_INTERVAL', PACKET_WAIT_INTERVAL)
-SRV_IPV6_ADDR_GLOBAL = os.getenv('SRV_IPV6_ADDR_GLOBAL', SRV_IPV6_ADDR_GLOBAL)
-SRV_IPV6_ADDR_LINK_LOCAL = os.getenv('SRV_IPV6_ADDR_LINK_LOCAL', SRV_IPV6_ADDR_LINK_LOCAL)
-HISTORY = os.getenv('HISTORY', HISTORY)
-TCPDUMP = os.getenv('TCPDUMP', TCPDUMP)
-TCPDUMP_PATH = os.getenv('TCPDUMP_INSTALL_DIR', TCPDUMP_PATH)
-SAVE_CONFIG_FILE = os.getenv('SAVE_CONFIG_FILE', SAVE_CONFIG_FILE)
-AUTO_ARCHIVE = os.getenv('AUTO_ARCHIVE', AUTO_ARCHIVE)
-SLEEP_TIME_1 = os.getenv('SLEEP_TIME_1', SLEEP_TIME_1)
-SLEEP_TIME_2 = os.getenv('SLEEP_TIME_2', SLEEP_TIME_2)
-MGMT_ADDRESS = os.getenv('MGMT_ADDRESS', MGMT_ADDRESS)
-MGMT_ADDRESS_2 = os.getenv('MGMT_ADDRESS', MGMT_ADDRESS_2)
-MGMT_ADDRESS_3 = os.getenv('MGMT_ADDRESS', MGMT_ADDRESS_3)
-MGMT_USERNAME = os.getenv('MGMT_USERNAME', MGMT_USERNAME)
-MGMT_PASSWORD = os.getenv('MGMT_PASSWORD', MGMT_PASSWORD)
-SAVE_LOGS = os.getenv('SAVE_LOGS', SAVE_LOGS)
-BIND_LOG_TYPE = os.getenv('BIND_LOG_TYPE', BIND_LOG_TYPE)
-BIND_LOG_LVL = os.getenv('BIND_LOG_LVL', BIND_LOG_LVL)
-BIND_MODULE = os.getenv('BIND_MODULE', BIND_MODULE)
-SAVE_LEASES = os.getenv('SAVE_LEASES', SAVE_LEASES)
-DNS_IFACE = os.getenv('DNS_IFACE', DNS_IFACE)
-DNS4_ADDR = os.getenv('DNS4_ADDR', DNS4_ADDR)
-DNS6_ADDR = os.getenv('DNS6_ADDR', DNS6_ADDR)
-DNS_PORT = os.getenv('DNS_PORT', DNS_PORT)
-DNS_SERVER_INSTALL_PATH = os.getenv('DNS_SERVER_INSTALL_PATH', DNS_SERVER_INSTALL_PATH)
-DNS_DATA_PATH = os.getenv('DNS_DATA_PATH', DNS_DATA_PATH)
-ISC_DHCP_LOG_FACILITY = os.getenv('ISC_DHCP_LOG_FACILITY', ISC_DHCP_LOG_FACILITY)
-ISC_DHCP_LOG_FILE = os.getenv('ISC_DHCP_LOG_FILE', ISC_DHCP_LOG_FILE)
-DB_NAME = os.getenv('DB_NAME', DB_NAME)
-DB_USER = os.getenv('DB_USER', DB_USER)
-DB_PASSWD = os.getenv('DB_PASSWD', DB_PASSWD)
-DB_HOST = os.getenv('DB_HOST', DB_HOST)
-FABRIC_PTY = os.getenv('FABRIC_PTY', FABRIC_PTY)
+# all settings and their default values, if value is None then it is required
+SETTINGS = {
+    'SOFTWARE_INSTALL_PATH': '/usr/local',
+    'INSTALL_METHOD': 'make',
+    'LOGLEVEL': 'info',
+    'SOFTWARE_UNDER_TEST': ('kea4_server', 'bind9_server'),
+    'SHOW_PACKETS_FROM': 'both',
+    'SRV4_ADDR': None,
+    'REL4_ADDR': "0.0.0.0",
+    'GIADDR4': None,
+    'IFACE': None,
+    'CLI_LINK_LOCAL': 'fe80::a00:27ff:fef9:dd64',
+    'SERVER_IFACE': None,
+    'OUTPUT_WAIT_INTERVAL': 1,
+    'OUTPUT_WAIT_MAX_INTERVALS': 2,
+    'PACKET_WAIT_INTERVAL': 1,
+    'SRV_IPV6_ADDR_GLOBAL': '3000::1000',
+    'SRV_IPV6_ADDR_LINK_LOCAL': 'fe80::a00:27ff:fedf:63bc',
+    'HISTORY': True,
+    'TCPDUMP': True,
+    'TCPDUMP_PATH': '',
+    'SAVE_CONFIG_FILE': True,
+    'AUTO_ARCHIVE': False,
+    'SLEEP_TIME_1': 1,
+    'SLEEP_TIME_2': 2,
+    'MGMT_ADDRESS': None,
+    'MGMT_ADDRESS_2': '',
+    'MGMT_ADDRESS_3': '',
+    'MGMT_USERNAME': None,
+    'MGMT_PASSWORD': None,
+    'SAVE_LOGS': True,
+    'BIND_LOG_TYPE': 'INFO',
+    'BIND_LOG_LVL': 0,
+    'BIND_MODULE': '',
+    'SAVE_LEASES': True,
+    'DNS_IFACE': None,
+    'DNS4_ADDR': None,
+    'DNS6_ADDR': None,
+    'DNS_PORT': 53,
+    'DNS_SERVER_INSTALL_PATH': '/opt/bind/sbin',
+    'DNS_DATA_PATH': '/opt/bind/data',
+    'ISC_DHCP_LOG_FACILITY': 'local7',
+    'ISC_DHCP_LOG_FILE': '/var/log/forge_dhcpd.log',
+    'DB_TYPE': 'memfile',
+    'DB_NAME': 'keadb',
+    'DB_USER': 'keauser',
+    'DB_PASSWD': 'keapass',
+    'DB_HOST': '',
+    'CIADDR': None,
+    'FABRIC_PTY': False,
+    'DISABLE_DB_SETUP': False,
+}
 
 
 class ForgeConfiguration:
@@ -96,83 +92,50 @@ class ForgeConfiguration:
                           "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server",
                           "none_server"]
 
+        self._load_settings()
+
         # no_server_management value can be set by -N option on startup to turn off remote server management
         self.no_server_management = False
         self.empty = ""
         self.white_space = " "
         self.none = None
-        # FORGE
-        self.mgmt_address = MGMT_ADDRESS
-        self.mgmt_address_2 = MGMT_ADDRESS_2  # for additional vm, exact copy of main vm
-        self.mgmt_address_3 = MGMT_ADDRESS_3  # for additional vm, exact copy of main vm
-        self.mgmt_username = MGMT_USERNAME
-        self.mgmt_password = MGMT_PASSWORD
+
         self.multiple_tested_servers = [self.mgmt_address]
-        self.loglevel = LOGLEVEL
-        self.history = HISTORY
-        self.tcpdump = TCPDUMP
-        self.tcpdump_path = TCPDUMP_PATH
-        self.save_config_file = SAVE_CONFIG_FILE
-        self.auto_archive = AUTO_ARCHIVE
-        self.sleep_time_1 = SLEEP_TIME_1
-        self.sleep_time_2 = SLEEP_TIME_2
-        self.show_packets_from = SHOW_PACKETS_FROM
-        self.save_leases = SAVE_LEASES
-        self.save_logs = SAVE_LOGS
-        self.packet_wait_interval = PACKET_WAIT_INTERVAL
-        self.fabric_pty = FABRIC_PTY  # default is False
-        # value_when_true if condition else value_when_false
-        # DHCP
+
         self.proto = 'v4'  # default value but it is overriden by each test in terrain.declare_all()
-        self.software_under_test = SOFTWARE_UNDER_TEST
-        self.install_method = INSTALL_METHOD
-        if self.install_method == 'make':
-            self.software_install_path = SOFTWARE_INSTALL_PATH
-            self.software_install_dir = SOFTWARE_INSTALL_PATH  # that keeps backwards compatibility
-        else:
+
+        if self.install_method == 'native':
             self.software_install_path = '/usr'
-            self.software_install_dir = '/usr'  # that keeps backwards compatibility
-        self.db_type = DB_TYPE
-        self.db_host = DB_HOST
-        self.db_name = DB_NAME
-        self.db_passwd = DB_PASSWD
-        self.db_user = DB_USER
-        self.db_type_bk = DB_TYPE
-        self.db_host_bk = DB_HOST
-        self.db_name_bk = DB_NAME
-        self.db_passwd_bk = DB_PASSWD
-        self.db_user_bk = DB_USER
-        self.srv4_addr = SRV4_ADDR
-        self.rel4_addr = REL4_ADDR
-        self.gia4_addr = GIADDR4
-        self.giaddr4 = GIADDR4  # it's for backwards compatibility
-        self.ciaddr = CIADDR
-        self.iface = IFACE
-        self.server_iface = SERVER_IFACE
+
+        # fields for restoring that can be overwritten by tests (TODO: WTF?)
+        self.db_type_bk = self.db_type
+        self.db_host_bk = self.db_host
+        self.db_name_bk = self.db_name
+        self.db_passwd_bk = self.db_passwd
+        self.db_user_bk = self.db_user
+
+        # backward compatibility
+        self.gia4_addr = self.giaddr4
+        self.software_install_dir = self.software_install_path
+
         self.cli_mac = self.gethwaddr(self.iface)
-
-        # DNS
-        self.dns_iface = DNS_IFACE
-        self.dns4_addr = DNS4_ADDR
-        self.dns6_addr = DNS6_ADDR
-        self.dns_port = DNS_PORT
-        self.dns_data_path = DNS_DATA_PATH
-        self.dns_server_install_path = DNS_SERVER_INSTALL_PATH
-
-        # ISC-DHCP specific
-        self.isc_dhcp_log_file = ISC_DHCP_LOG_FILE
-        self.isc_dhcp_log_facility = ISC_DHCP_LOG_FACILITY
-
-        # NETWORK
-        self.srv_ipv6_addr_global = SRV_IPV6_ADDR_GLOBAL
-        self.srv_ipv6_addr_link_local = SRV_IPV6_ADDR_LINK_LOCAL
-        self.cli_link_local = CLI_LINK_LOCAL
 
         # used defined variables
         self.user_variables_temp = []
 
         # basic validation of configuration
         self.basic_validation()
+
+    def _load_settings(self):
+        for key, default_value in SETTINGS.items():
+            if hasattr(init_all, key):
+                value = getattr(init_all, key)
+            else:
+                if default_value is None:
+                    raise Exception('Cannot find %s in init_all.py' % key)
+                value = default_value
+            value = os.getenv(key, value)
+            setattr(self, key.lower(), value)
 
     def gethwaddr(self, ifname):
         if sys.platform != "darwin":
@@ -209,24 +172,6 @@ class ForgeConfiguration:
         :return:
         """
         os.putenv(env_name, env_val)
-
-    def set_temporaty_value(self, env_name, env_val):
-        """
-        Will set temporary value of existing variable for the purpose of one test,
-        should be removed in section @after_each
-        :return:
-        """
-        # TODO develop this one
-        pass
-
-    def remove_temporary_value(self, env_name):
-        """
-        Will remove all temporary changed values bringin back previously set values
-        Have to be called in terrazin.py @after_each
-        :return:
-        """
-        # TODO develop this one
-        pass
 
     def data_join(self, sub_path):
         if self.install_method == 'make':
