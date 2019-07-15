@@ -41,7 +41,7 @@ SETTINGS = {
     'REL4_ADDR': "0.0.0.0",
     'GIADDR4': None,
     'IFACE': None,
-    'CLI_LINK_LOCAL': 'fe80::a00:27ff:fef9:dd64',
+    'CLI_LINK_LOCAL': None,
     'SERVER_IFACE': None,
     'OUTPUT_WAIT_INTERVAL': 1,
     'OUTPUT_WAIT_MAX_INTERVALS': 2,
