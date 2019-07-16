@@ -7,6 +7,7 @@ import pytest
 import srv_msg
 import srv_control
 import misc
+from forge_cfg import world
 
 
 @pytest.mark.v4
@@ -152,8 +153,7 @@ def test_control_channel_keashell_set_config_basic():
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
     # this command is with new configuration
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket"}}\'')
-    assert False, "tu trzeba zmienic"
+    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"%s"}}\'' % world.f_cfg.run_join('control_socket'))
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
@@ -190,7 +190,7 @@ def test_control_channel_keashell_after_restart_load_config_file():
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
 
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket"}}\'')
+    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"%s"}}\'' % world.f_cfg.run_join('control_socket'))
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
@@ -334,7 +334,7 @@ def test_control_channel_keashell_write_config():
     srv_control.agent_control_channel('localhost')
     srv_control.generate_config_files()
 
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"$(SOFTWARE_INSTALL_DIR)/etc/kea/control_socket"}}\'')
+    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"%s"}}\'' % world.f_cfg.run_join('control_socket'))
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     misc.test_procedure()

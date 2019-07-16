@@ -512,13 +512,13 @@ def dump_db_reservation(db_type):
 
 
 @step('Upload hosts reservation to (\S+) database.')
-def upload_db_reservation(db_type):
+def upload_db_reservation(db_type, exp_failed=False):
     if db_type == 'MySQL':
-        mysql_reservation.upload_db_reservation()
+        mysql_reservation.upload_db_reservation(exp_failed)
     elif db_type == 'PostgreSQL':
-        pgsql_reservation.upload_db_reservation()
+        pgsql_reservation.upload_db_reservation(exp_failed)
     elif db_type == 'Cassandra':
-        cql_reservation.upload_db_reservation()
+        cql_reservation.upload_db_reservation(exp_failed)
     else:
         assert False, "Database type not recognised."
 # END Reservation backend section

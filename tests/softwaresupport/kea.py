@@ -30,6 +30,18 @@ from kea6_server.functions_ddns import build_ddns_config
 log = logging.getLogger('forge')
 
 
+# kea_otheroptions was originally designed for vendor options
+# because codes sometime overlap with basic options
+kea_otheroptions = {
+    "tftp-servers": 32,
+    "config-file": 33,
+    "syslog-servers": 34,
+    "device-id": 36,
+    "time-servers": 37,
+    "time-offset": 38
+}
+
+
 def add_defaults4():
     eth = world.f_cfg.server_iface
     t1 = world.cfg["server_times"]["renew-timer"]

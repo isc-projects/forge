@@ -248,10 +248,11 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
                                         "scope": reserved_option_scope}) #TODO client class
 
 
-def upload_db_reservation():
+def upload_db_reservation(exp_failed=False):
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user
     db_passwd = world.f_cfg.db_passwd
+    fail_spotted = False
     while list_of_all_reservations:
         each_record = list_of_all_reservations.pop()
         each_record.build_script()
@@ -263,7 +264,14 @@ def upload_db_reservation():
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
         result = fabric_sudo_command('mysql -u {db_user} -p{db_passwd} {db_name} < {remote_db_path}'.format(**locals()))
-        assert result.succeeded
+        if exp_failed:
+            if result.failed:
+                fail_spotted = True
+        else:
+            assert result.succeeded
+
+    if exp_failed:
+        assert fail_spotted
 
 
 def clear_all_reservations():

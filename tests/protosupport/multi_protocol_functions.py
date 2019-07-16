@@ -323,6 +323,8 @@ def execute_shell_cmd(path, arguments=''):
     myfile.write(unicode('\nScript stdout:\n' + result.stdout))
     myfile.close()
 
+    assert result.succeeded
+
     return result
 
 
