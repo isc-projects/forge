@@ -860,6 +860,7 @@ def test_remote_subnet4_get_server_tags():
     assert resp["arguments"]["subnets"][2]["subnet"] == "192.168.51.0/24"
     assert resp["arguments"]["subnets"][2]["id"] == 7
 
+
 def test_remote_subnet4_get_server_tags_all_incorrect_setup():
     # Configure 2 subnet with the same id but different tags will result with just one subnet in configuration
     # the first one will be overwritten

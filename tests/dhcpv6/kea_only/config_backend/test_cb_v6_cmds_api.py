@@ -994,7 +994,7 @@ def test_remote_network6_del_subnet_delete():
     assert response == {"arguments": {"count": 2, "subnets": [{"id": 1, "subnet": "2001:db8:1::/64",
                                                                "shared-network-name": "net1",
                                                                "metadata": {"server-tags": ["abc"]}},
-                                                              {"id": 2, "subnet": "2001:db8:2::/644",
+                                                              {"id": 2, "subnet": "2001:db8:2::/64",
                                                                "shared-network-name": "net2",
                                                                "metadata": {"server-tags": ["abc"]}}]},
                         "result": 0, "text": "2 IPv6 subnet(s) found."}

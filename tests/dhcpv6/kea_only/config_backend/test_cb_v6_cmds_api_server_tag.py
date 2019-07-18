@@ -678,7 +678,6 @@ def test_remote_option_def_get_server_tags():
     _check_optdef_result(resp, server_tags=["all"], opt_code=233, opt_name="bar")
 
 
-@pytest.mark.teraz
 def test_remote_option_def_del_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
