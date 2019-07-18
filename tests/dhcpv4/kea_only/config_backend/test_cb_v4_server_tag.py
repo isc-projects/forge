@@ -2,6 +2,7 @@
 
 import pytest
 import srv_control
+import srv_msg
 
 from dhcp4_scen import get_address, get_rejected
 from cb_model import setup_server_for_config_backend_cmds
@@ -23,26 +24,50 @@ def run_around_each_test(request):
     request.addfinalizer(unset)
 
 
-def test_server_tag_subnet():
+def _set_server_tag(tag="abc"):
+    cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
+                                                        "servers": [{"server-tag": tag}]})
+    return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+
+def _get_server_config(reload_kea=False):
+    if reload_kea:
+        cmd = dict(command="config-reload", arguments={})
+        srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    cmd = dict(command="config-get", arguments={})
+    return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+
+def test_server_tag_subnet4():
     # create first configuration
-    cfg_xys = setup_server_for_config_backend_cmds(server_tag="xys")
+    cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz")
+    _set_server_tag("xyz")
+    _set_server_tag("abc")
     get_rejected()
     # add configuration for abc, don't check reconfigure result
-    cfg_xys.add_subnet(server_tags=["abc"], subnet="192.168.50.0/24", id=1,
+    cfg_xyz.add_subnet(server_tags=["abc"], subnet="192.168.50.0/24", id=1,
                        pools=[{'pool': "192.168.50.1-192.168.50.1"}])
 
     get_rejected()
 
-    cfg_xys.add_subnet(server_tags=["unassigned"], subnet="192.168.50.0/24", id=3,
-                       pools=[{'pool': "192.168.50.10-192.168.50.10"}])
+    # unassigned is not supported yet
+    # cfg_xyz.add_subnet(server_tags=["unassigned"], subnet="192.168.50.0/24", id=3,
+    #                    pools=[{'pool': "192.168.50.10-192.168.50.10"}])
+    #
+    # get_rejected()
 
-    get_rejected()
+    # add configuration for xyz
+    cfg_xyz.add_subnet(server_tags=["xyz"], subnet="192.168.51.0/24", id=2,
+                       pools=[{'pool': "192.168.51.50-192.168.51.50"}])
 
-    # add configuration for xys, check result
-    cfg_xys.add_subnet(server_tags=["xys"], subnet="192.168.50.0/24", id=2,
-                       pools=[{'pool': "192.168.50.50-192.168.50.50"}])
+    get_address(mac_addr='00:00:00:00:00:01', exp_addr='192.168.51.50')
 
-    get_address(mac_addr='00:00:00:00:00:01', exp_addr='192.168.50.50')
+    xyz = _get_server_config()
+    # check if it's configured with just one subnet
+    assert len(xyz["arguments"]["Dhcp4"]["subnet4"]) == 1
+    # and this subnet is as expected
+    assert xyz["arguments"]["Dhcp4"]["subnet4"][0]["id"] == 2
+    assert xyz["arguments"]["Dhcp4"]["subnet4"][0]["subnet"] == "192.168.51.0/24"
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -50,93 +75,182 @@ def test_server_tag_subnet():
     setup_server_for_config_backend_cmds(server_tag="abc")
 
     get_address(mac_addr='00:00:00:00:00:02', exp_addr='192.168.50.1')
+    abc = _get_server_config()
+    # check if it's configured with just one subnet
+    assert len(abc["arguments"]["Dhcp4"]["subnet4"]) == 1
+    # and this subnet is as expected
+    assert abc["arguments"]["Dhcp4"]["subnet4"][0]["id"] == 1
+    assert abc["arguments"]["Dhcp4"]["subnet4"][0]["subnet"] == "192.168.50.0/24"
 
     srv_control.start_srv('DHCP', 'stopped')
 
     # create third subnet that will use "all" tag
-    cfg_qwe = setup_server_for_config_backend_cmds(server_tag=["qwe"])
+    cfg_qwe = setup_server_for_config_backend_cmds(server_tag="qwe")
 
     get_rejected()
 
-    cfg_qwe.add_subnet(server_tags=["all"], subnet="192.168.50.0/24", id=2,
-                       pools=[{'pool': "192.168.50.20-192.168.50.20"}])
+    cfg_qwe.add_subnet(server_tags=["all"], subnet="192.168.52.0/24", id=3,
+                       pools=[{'pool': "192.168.52.20-192.168.52.21"}])
 
-    get_address(mac_addr='00:00:00:00:00:03', exp_addr='192.168.50.20')
+    abc = _get_server_config()
+    # check if it's configured with just one subnet
+    assert len(abc["arguments"]["Dhcp4"]["subnet4"]) == 1
+    # and this subnet is as expected
+    assert abc["arguments"]["Dhcp4"]["subnet4"][0]["id"] == 3
+    assert abc["arguments"]["Dhcp4"]["subnet4"][0]["subnet"] == "192.168.52.0/24"
+
+    get_address(mac_addr='00:00:00:00:00:03', exp_addr='192.168.52.20')
+
+    srv_control.start_srv('DHCP', 'stopped')
+    setup_server_for_config_backend_cmds(server_tag="abc")
+    abc = _get_server_config()
+
+    # two subnets without classification on the same interface doesn't make sense so we will just check config
+    # check if it's configured with just two subnets, all and abc configured at the beginning of a test
+    assert len(abc["arguments"]["Dhcp4"]["subnet4"]) == 2
+    # and this subnet is as expected
+    assert abc["arguments"]["Dhcp4"]["subnet4"][0]["id"] == 1
+    assert abc["arguments"]["Dhcp4"]["subnet4"][1]["id"] == 3
+    assert abc["arguments"]["Dhcp4"]["subnet4"][0]["subnet"] == "192.168.50.0/24"
+    assert abc["arguments"]["Dhcp4"]["subnet4"][1]["subnet"] == "192.168.52.0/24"
 
 
-def test_server_tag_global_option():
+def test_server_tag_global_option4():
     cfg = setup_server_for_config_backend_cmds(server_tag="abc")
-    cfg.add_subnet(server_tags=["abc"])
+    _set_server_tag("xyz")
+    _set_server_tag("abc")
+    cfg.add_subnet(server_tags="abc")
+    cfg.add_option(server_tags=["all"], code=3, csv_format=True, data="10.0.0.1", name="routers", space="dhcp4")
 
-    cfg.add_option(server_tags=["all"], code=10, csv_format=True, data="1.1.1.1", name="impress-servers", space="dhcp4")
-    get_address(req_opts=[10], exp_option={"code": 10, "data": "1.1.1.1"})
+    abc = _get_server_config()
+    # server should have just one option now, from "all"
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.1"
 
-    cfg.add_option(server_tags=["abc"], code=10, csv_format=True, data="2.2.2.2", name="impress-servers", space="dhcp4")
-    get_address(req_opts=[10], exp_option={"code": 10, "data": "2.2.2.2"})
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.1"})
 
-    cfg.add_option(server_tags=["xyz"], code=10, csv_format=True, data="3.3.3.3", name="impress-servers", space="dhcp4")
-    get_address(req_opts=[10], exp_option={"code": 10, "data": "2.2.2.2"})
+    cfg.add_option(server_tags=["abc"], code=3, csv_format=True, data="10.0.0.2", name="routers", space="dhcp4")
+    abc = _get_server_config()
+    # now, despite the fact that two tags are for server "abc" ("abc" and "all") option "all" should be overwritten
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.2"
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.2"})
+
+    cfg.add_option(server_tags=["xyz"], code=3, csv_format=True, data="10.0.0.3", name="routers", space="dhcp4")
+    abc = _get_server_config()
+    # after adding "xyz" option, there should not be any change in running kea
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.2"
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.2"})
 
     srv_control.start_srv('DHCP', 'stopped')
 
     cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz")
-    cfg_xyz.add_subnet()
-    get_address(req_opts=[10], exp_option={"code": 10, "data": "3.3.3.3"})
+    cfg_xyz.add_subnet(server_tags="xyz")
+    abc = _get_server_config()
+    # new kea is started with tag "xyz"
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.3"
 
-    cfg_xyz.del_option(server_tags=["xyz"], code=10)
-    get_address(req_opts=[10], exp_option={"code": 10, "data": "1.1.1.1"})
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.3"})
+
+    # delete option with tag "xyz", kea should download tag "all"
+    cfg_xyz.del_option(server_tags=["xyz"], code=3)
+    xyz = _get_server_config()
+    assert len(xyz["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert xyz["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.1"
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.1"})
 
 
-def test_server_tag_network_different_tags_in_subnet_and_sharednetwork():
+def test_server_tag_network4():
     cfg = setup_server_for_config_backend_cmds(server_tag="abc")
-    cfg.add_network(server_tags=["xyz"], name="flor1")
-
-    cfg.add_subnet(shared_network_name="flor1", server_tags=["abc"],
-                   subnet="192.168.50.0/24", id=1, pools=[{'pool': "192.168.50.1-192.168.50.1"}])
-
-    get_rejected()
-
-
-def test_server_tag_network():
-    cfg = setup_server_for_config_backend_cmds(server_tag="abc")
+    _set_server_tag("xyz")
+    _set_server_tag("abc")
     cfg.add_network(server_tags=["abc"], name="flor1")
 
     cfg.add_subnet(shared_network_name="flor1", server_tags=["abc"],
                    subnet="192.168.50.0/24", id=1, pools=[{'pool': "192.168.50.1-192.168.50.1"}])
+
+    xyz = _get_server_config()
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"]) == 1
+    assert xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"][0]["subnet"] == "192.168.50.0/24"
 
     get_address(mac_addr='00:00:00:00:00:03', exp_addr='192.168.50.1')
 
     cfg.add_network(server_tags=["xyz"], name="flor2")
 
     cfg.add_subnet(shared_network_name="flor2", server_tags=["xyz"],
-                   subnet="192.168.50.0/24", id=1, pools=[{'pool': "192.168.50.5-192.168.50.5"}])
+                   subnet="192.168.51.0/24", id=2, pools=[{'pool': "192.168.51.5-192.168.51.5"}])
 
-    get_rejected()
+    # we still want just one network with one subnet
+    xyz = _get_server_config()
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"]) == 1
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"]) == 1
+    assert xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"][0]["subnet"] == "192.168.50.0/24"
+
+    get_rejected(mac_addr='00:00:00:00:00:10')
     srv_control.start_srv('DHCP', 'stopped')
 
     setup_server_for_config_backend_cmds(server_tag="xyz")
-    get_address(mac_addr='00:00:00:00:00:03', exp_addr='192.168.50.5')
+    get_address(mac_addr='00:00:00:00:00:04', exp_addr='192.168.51.5')
+
+    # we still want just one network with one subnet but different subnet, from xyz
+    xyz = _get_server_config()
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"]) == 1
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"]) == 1
+    assert xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"][0]["subnet"] == "192.168.51.0/24"
+
+    cfg.add_subnet(shared_network_name="flor2", server_tags=["all"],
+                   subnet="192.168.52.0/24", id=3, pools=[{'pool': "192.168.52.5-192.168.52.5"}])
+
+    # model was incomplete on previous step so I can't use del_subnet method because it's again
+    # forcing checking
+    cmd = dict(command="remote-subnet4-del-by-prefix",
+               arguments={"remote": {"type": "mysql"},
+                          "subnets": [{"subnet": "192.168.51.0/24"}]})
+    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    xyz = _get_server_config(reload_kea=True)
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"]) == 1
+    assert xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"][0]["subnet"] == "192.168.52.0/24"
+
+    # this time we expect address from "all"
+    get_address(mac_addr='00:00:00:00:00:05', exp_addr='192.168.52.5')
 
 
-def test_server_tag_global_parameter():
-    cfg = setup_server_for_config_backend_cmds(server_tag="aaa")
+def test_server_tag_global_parameter4():
+    cfg = setup_server_for_config_backend_cmds(server_tag="abc")
+    _set_server_tag("xyz")
+    _set_server_tag("abc")
 
     cfg.add_subnet(server_tags=["abc"], subnet="192.168.50.0/24", id=1,
                    pools=[{'pool': "192.168.50.1-192.168.50.100"}])
 
-    cfg.set_global_parameter(server_tags=["unassigned"], boot_file_name="/dev/null_un")
-    get_address(no_exp_boot_file_name="/dev/null_un")
-    cfg.set_global_parameter(server_tags=["xyz"], boot_file_name="/dev/null_xyz")
     cfg.set_global_parameter(server_tags=["all"], boot_file_name="/dev/null_all")
-
     get_address(exp_boot_file_name="/dev/null_all")
-    get_address(no_exp_boot_file_name="/dev/null_xyz")
-    get_address(no_exp_boot_file_name="/dev/null_un")
+    xyz = _get_server_config()
+    assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == "/dev/null_all"
+
+    cfg.set_global_parameter(server_tags=["xyz"], boot_file_name="/dev/null_xyz")
+    get_address(exp_boot_file_name="/dev/null_all")
+
+    xyz = _get_server_config()
+    assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == "/dev/null_all"
+
+    # now despite the fact that there still is "all" tag in db, we should have "abc"
+    cfg.set_global_parameter(server_tags=["abc"], boot_file_name="/dev/null_abc")
+    get_address(exp_boot_file_name="/dev/null_abc")
+
+    xyz = _get_server_config()
+    assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == "/dev/null_abc"
 
     srv_control.start_srv('DHCP', 'stopped')
     cfg = setup_server_for_config_backend_cmds(server_tag="xyz")
 
-    cfg.add_subnet(server_tags=["abc"], subnet="192.168.50.0/24", id=1,
-                   pools=[{'pool': "192.168.50.1-192.168.50.100"}])
+    cfg.add_subnet(server_tags=["xyz"], subnet="192.168.52.0/24", id=3,
+                   pools=[{'pool': "192.168.52.1-192.168.52.100"}])
 
+    # new servers should start with "xyz"
+    xyz = _get_server_config()
+    assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == "/dev/null_xyz"
     get_address(exp_boot_file_name="/dev/null_xyz")
