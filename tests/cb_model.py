@@ -229,7 +229,6 @@ class ConfigModel(ConfigElem):
             config = self.compare_local_with_server()
             return config
         else:
-            world.check_on_reload = True
             return {}
 
     def compare_local_with_server(self):
@@ -281,9 +280,8 @@ class ConfigModel(ConfigElem):
             if param == 'option_data':
                 val = _to_list(val)
             if param == "server_tags":
-                server_tags = val
-                del kwargs["server_tags"]
                 server_tags = _to_list(val)
+                del kwargs["server_tags"]
                 continue
 
             param = param.replace('_', '-')
@@ -337,7 +335,7 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = val
                 del kwargs["server_tags"]
-                server_tags = _to_list(val)
+                server_tags = _to_list(server_tags)
                 continue
             param = param.replace('_', '-')
             option[param] = val
@@ -357,12 +355,16 @@ class ConfigModel(ConfigElem):
         for param, val in kwargs.items():
             if val is None:
                 continue
+            if param == "server_tags":
+                server_tags = _to_list(val)
+                del kwargs["server_tags"]
+                continue
             param = param.replace('_', '-')
             option[param] = val
         self.cfg["option-data"] = []
 
         # send command
-        response = global_option_del([option])
+        response = global_option_del([option], server_tags=server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result

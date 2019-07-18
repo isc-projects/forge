@@ -3,7 +3,7 @@ from forge_cfg import world
 
 def send_cmd(cmd, db_type='mysql', server_tags=None, **kwargs):
     if server_tags is None:
-        server_tags = ["default"]
+        server_tags = ["all"]
     cmd = {"command": cmd,
            "arguments": {"remote": {"type": db_type},
                          "server-tags": server_tags}}
