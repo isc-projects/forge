@@ -215,10 +215,11 @@ def new_db_backend_reservation(reservation_identifier, reservation_identifier_va
     reservation_record.identifier_value = reservation_identifier_value
 
 
-def upload_db_reservation():
+def upload_db_reservation(exp_failed=False):
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user
     db_passwd = world.f_cfg.db_passwd
+    fail_spotted = False
     while list_of_all_reservations:
         each_record = list_of_all_reservations.pop()
         each_record.build_script()
@@ -230,7 +231,14 @@ def upload_db_reservation():
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
         result = fabric_sudo_command('psql -U {db_user} -d {db_name} < {remote_db_path}'.format(**locals()))
-        assert result.succeeded
+        if exp_failed:
+            if result.failed:
+                fail_spotted = True
+        else:
+            assert result.succeeded
+
+    if exp_failed:
+        assert fail_spotted
 
 
 def clear_all_reservations():

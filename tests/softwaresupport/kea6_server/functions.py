@@ -32,7 +32,7 @@ from softwaresupport.kea import add_line_to_shared_subnet, add_to_shared_subnet,
 from softwaresupport.kea import prepare_cfg_subnet_specific_interface, prepare_cfg_subnet
 from softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_option_subnet
 from softwaresupport.kea import prepare_cfg_add_option_shared_subnet
-
+from softwaresupport.kea import kea_otheroptions
 
 world.kea_options6 = {
     "client-id": 1,
@@ -67,16 +67,6 @@ world.kea_options6 = {
     "bootfile-url": 59,
     "bootfile-param": 60,
     "erp-local-domain-name": 65
-}
-# kea_otheroptions was originally designed for vendor options
-# because codes sometime overlap with basic options
-kea_otheroptions = {
-    "tftp-servers": 32,
-    "config-file": 33,
-    "syslog-servers": 34,
-    "device-id": 36,
-    "time-servers": 37,
-    "time-offset": 38
 }
 
 
