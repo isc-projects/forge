@@ -1182,3 +1182,568 @@ def test_remote_global_parameter4_get_all_zero():
 
     assert response == {"arguments": {"count": 0, "parameters": []},
                         "result": 3, "text": "0 DHCPv4 global parameter(s) found."}
+
+
+def _set_option_def(channel='http'):
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "foo",
+                                                                "code": 222,
+                                                                "type": "uint32"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+
+    assert response == {"arguments": {"option-defs": [{"code": 222, "space": "dhcp4"}]},
+                        "result": 0, "text": "DHCPv4 option definition successfully set."}
+
+
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def4_set_basic(channel):
+    _set_option_def(channel=channel)
+
+
+def test_remote_option_def4_set_using_zero_as_code():
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "foo",
+                                                                "code": 0,
+                                                                "type": "uint32"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "invalid option code '0': reserved for PAD" in response["text"]
+
+
+def test_remote_option_def4_set_using_standard_code():
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "foo",
+                                                                "code": 24,
+                                                                "type": "uint32"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"option-defs": [{"code": 1, "space": "dhcp4"}]},
+                        "result": 0, "text": "DHCPv4 option definition successfully set."}
+
+
+def test_remote_option_def4_set_missing_parameters():
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "code": 222,
+                                                                "type": "uint32",
+                                                                "array": False,
+                                                                "record-types": "",
+                                                                "space": "dhcp4",
+                                                                "encapsulate": ""}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "missing parameter 'name'" in response["text"]
+
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "aa",
+                                                                "type": "uint32",
+                                                                "array": False,
+                                                                "record-types": "",
+                                                                "space": "dhcp4",
+                                                                "encapsulate": ""}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "missing parameter 'code'" in response["text"]
+
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "aa",
+                                                                "code": 234,
+                                                                "array": False,
+                                                                "record-types": "",
+                                                                "space": "dhcp4",
+                                                                "encapsulate": ""}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "missing parameter 'type'" in response["text"]
+
+
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def4_get_basic(channel):
+    _set_option_def()
+
+    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "code": 222}]})
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+    assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
+                                                                   "name": "foo", "record-types": "", "space": "dhcp4",
+                                                                   "metadata": {"server-tag": "all"},
+                                                                   "type": "uint32"}]},
+                        "result": 0, "text": "DHCPv4 option definition 222 in 'dhcp4' found."}
+
+
+def test_remote_option_def4_get_multiple_defs():
+    _set_option_def()
+
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "foo",
+                                                                "code": 222,
+                                                                "type": "uint32",
+                                                                "space": "abc"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"option-defs": [{"code": 222, "space": "abc"}]},
+                        "result": 0, "text": "DHCPv4 option definition successfully set."}
+
+    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "code": 222,
+                                                                "space": "abc"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
+                                                                   "name": "foo", "record-types": "", "space": "abc",
+                                                                   "metadata": {"server-tag": "all"},
+                                                                   "type": "uint32"}]},
+                        "result": 0, "text": "DHCPv4 option definition 222 in 'abc' found."}
+
+
+def test_remote_option_def4_get_missing_code():
+    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "foo"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert response == {"result": 1, "text": "missing 'code' parameter"}
+
+
+def test_remote_option_def4_get_all_option_not_defined():
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+
+    assert response == {"arguments": {"count": 0, "option-defs": []},
+                        "result": 3, "text": "0 DHCPv4 option definition(s) found."}
+
+
+def test_remote_option_def4_get_all_multiple_defs():
+    _set_option_def()
+
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "foo",
+                                                                "code": 222,
+                                                                "type": "uint32",
+                                                                "space": "abc"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"option-defs": [{"code": 222, "space": "abc"}]},
+                        "result": 0, "text": "DHCPv4 option definition successfully set."}
+
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 2, "option-defs": [{"array": False, "code": 222,
+                                                                   "encapsulate": "", "name": "foo",
+                                                                   "record-types": "", "space": "abc",
+                                                                   "metadata": {"server-tag": "all"},
+                                                                   "type": "uint32"},
+                                                                  {"array": False, "code": 222,
+                                                                   "encapsulate": "", "name": "foo",
+                                                                   "record-types": "", "space": "dhcp4",
+                                                                   "metadata": {"server-tag": "all"},
+                                                                   "type": "uint32"}]},
+                        "result": 0, "text": "2 DHCPv4 option definition(s) found."}
+
+
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def4_get_all_basic(channel):
+    _set_option_def()
+
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+    assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
+                                                                   "metadata": {"server-tag": "all"},
+                                                                   "name": "foo", "record-types": "", "space": "dhcp4",
+                                                                   "type": "uint32"}]},
+                        "result": 0, "text": "1 DHCPv4 option definition(s) found."}
+
+
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_option_def4_del_basic(channel):
+    _set_option_def()
+
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"},
+                                                            "option-defs": [{"code": 222}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+    assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option definition(s) deleted."}
+
+
+def test_remote_option_def4_del_different_space():
+    _set_option_def()
+
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"},
+                                                            "option-defs": [{"code": 222, "space": "abc"}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv4 option definition(s) deleted."}
+
+
+def test_remote_option_def4_del_incorrect_code():
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "option-defs": [{"name": 22}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert response == {"result": 1, "text": "missing 'code' parameter"}
+
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "option-defs": [{}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert response == {"result": 1, "text": "missing 'code' parameter"}
+
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"},
+                                                            "option-defs": [{"code": "abc"}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert response == {"result": 1, "text": "'code' parameter is not an integer"}
+
+
+def test_remote_option_def4_del_missing_option():
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"},
+                                                            "option-defs": [{"code": 212}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv4 option definition(s) deleted."}
+
+
+def test_remote_option_def4_del_multiple_options():
+    _set_option_def()
+
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+                                                            "server-tags": ["abc"],
+                                                            "option-defs": [{
+                                                                "name": "foo",
+                                                                "code": 222,
+                                                                "type": "uint32",
+                                                                "space": "abc"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"option-defs": [{"code": 222, "space": "abc"}]},
+                        "result": 0, "text": "DHCPv4 option definition successfully set."}
+
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"},
+                                                            "option-defs": [{"code": 222}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option definition(s) deleted."}
+
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
+                                                                   "metadata": {"server-tag": "all"},
+                                                                   "name": "foo", "record-types": "", "space": "abc",
+                                                                   "type": "uint32"}]},
+                        "result": 0, "text": "1 DHCPv4 option definition(s) found."}
+
+
+def _set_global_option():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{
+                                                                   "code": 6,
+                                                                   "data": "192.0.2.1, 192.0.2.2"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
+                        "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
+
+
+def test_remote_global_option4_global_set_basic():
+    _set_global_option()
+
+
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_global_option4_global_set_missing_data(channel):
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{
+                                                                   "code": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=3)
+    # bug #501
+    assert response == {"result": 3, "text": "Missing data parameter"}
+
+
+def test_remote_global_option4_global_set_name():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{
+                                                                   "name": "host-name",
+                                                                   "data": "isc.example.com"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"options": [{"code": 12, "space": "dhcp4"}]},
+                        "result": 0, "text": "DHCPv4 option successfully set."}
+
+
+def test_remote_global_option4_global_set_incorrect_code_missing_name():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{
+                                                                   "code": "aaa"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "option data configuration requires one of " \
+           "'code' or 'name' parameters to be specified" in response["text"]
+
+
+def test_remote_global_option4_global_set_incorrect_name_missing_code():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{
+                                                                   "name": 123}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "option data configuration requires one of " \
+           "'code' or 'name' parameters to be specified" in response["text"]
+
+
+def test_remote_global_option4_global_set_missing_code_and_name():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "option data configuration requires one of " \
+           "'code' or 'name' parameters to be specified" in response["text"]
+
+
+def test_remote_global_option4_global_set_incorrect_code():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": "aa",
+                                                                            "name": "cc"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "definition for the option 'dhcp4.cc' having code '0' does not exist" in response["text"]
+
+    assert False, "looks like incorrect message"
+    # bug/not implemented feature
+
+
+def test_remote_global_option4_global_set_incorrect_name():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 12,
+                                                                            "name": 12,
+                                                                            "data": 'isc.example.com'}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"bug, shouldn't be accepted?"}
+
+
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_global_option4_global_get_basic(channel):
+    _set_global_option()
+
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+    assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 6, "csv-format": True,
+                                                               "data": "192.0.2.1, 192.0.2.2",
+                                                               "metadata": {"server-tag": "all"},
+                                                               "name": "domain-name-servers", "space": "dhcp4"}]},
+                        "result": 0, "text": "DHCPv4 option 6 in 'dhcp4' found."}
+
+
+def test_remote_global_option4_global_set_different_space():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6,
+                                                                            "data": '192.0.2.1, 192.0.2.2',
+                                                                            "always-send": True,
+                                                                            "csv-format": True,
+                                                                            "space": "xyz"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "definition for the option 'xyz.' having code '6' does not exist" in response["text"]
+
+
+def test_remote_global_option4_global_set_csv_false_incorrect():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6,
+                                                                            "data": '192.0.2.1',
+                                                                            "always-send": True,
+                                                                            "csv-format": False}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "option data is not a valid string of hexadecimal digits: 192.0.2.1" in response["text"]
+
+
+def test_remote_global_option4_global_set_csv_false_correct():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6,
+                                                                            "data": "C0000201",  # 192.0.2.1
+                                                                            "always-send": True,
+                                                                            "csv-format": False}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
+                        "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
+
+
+def test_remote_global_option4_global_set_csv_false_incorrect_hex():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6,
+                                                                            "data": "C0000201Z",
+                                                                            "always-send": True,
+                                                                            "csv-format": False}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert "option data is not a valid string of hexadecimal digits: C0000201Z" in response["text"]
+
+
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_remote_global_option4_global_del_basic(channel):
+    _set_global_option()
+
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+    assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option(s) deleted."}
+
+
+def test_remote_global_option4_global_del_missing_code():
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"ab": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert response == {"result": 1, "text": "missing 'code' parameter"}
+
+
+def test_remote_global_option4_global_del_incorrect_code():
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": "6"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert response == {"result": 1, "text": "'code' parameter is not an integer"}
+
+
+def test_remote_global_option4_global_del_missing_option():
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv4 option(s) deleted."}
+
+
+def test_remote_global_option4_global_get_missing_code():
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"ab": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert response == {"result": 1, "text": "missing 'code' parameter"}
+
+
+def test_remote_global_option4_global_get_incorrect_code():
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": "6"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert response == {"result": 1, "text": "'code' parameter is not an integer"}
+
+
+def test_remote_global_option4_global_get_missing_option():
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert response == {"arguments": {"count": 0, "options": []},
+                        "result": 3, "text": "DHCPv4 option 6 in 'dhcp4' not found."}
+
+
+def test_remote_global_option4_global_get_csv_false():
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6,
+                                                                            "data": "C0000301C0000302",
+                                                                            "always-send": True,
+                                                                            "csv-format": False}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
+                        "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
+
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 1, "options": [{"always-send": True, "code": 6, "csv-format": False,
+                                                               "data": "C0000301C0000302",
+                                                               "metadata": {"server-tag": "all"},
+                                                               "name": "domain-name-servers", "space": "dhcp4"}]},
+                        "result": 0, "text": "DHCPv4 option 6 in 'dhcp4' found."}
+
+
+def test_remote_global_option4_global_get_all():
+    _set_global_option()
+
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{
+                                                                   "code": 16,
+                                                                   "data": "199.199.199.1"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
+                        "arguments": {"options": [{"code": 16, "space": "dhcp4"}]}}
+
+    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"count": 2,
+                                      "options": [{"always-send": False, "code": 6, "csv-format": True,
+                                                   "metadata": {"server-tag": "all"},
+                                                   "data": "192.0.2.1, 192.0.2.2", "name": "domain-name-servers",
+                                                   "space": "dhcp4"},
+                                                  {"always-send": False, "code": 16, "csv-format": True,
+                                                   "metadata": {"server-tag": "all"},
+                                                   "data": "199.199.199.1", "name": "swap-server", "space": "dhcp4"}]},
+                        "result": 0, "text": "2 DHCPv4 option(s) found."}
+
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 6}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option(s) deleted."}
+
+    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 16, "csv-format": True,
+                                                               "data": "199.199.199.1", "name": "swap-server",
+                                                               "metadata": {"server-tag": "all"},
+                                                               "space": "dhcp4"}]},
+                        "result": 0, "text": "1 DHCPv4 option(s) found."}
+
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 16}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option(s) deleted."}
+
+    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert response == {"arguments": {"count": 0, "options": []}, "result": 3, "text": "0 DHCPv4 option(s) found."}
