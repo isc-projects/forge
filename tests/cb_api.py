@@ -7,7 +7,7 @@ def send_cmd(cmd, db_type='mysql', server_tags=None, **kwargs):
         server_tags = ["all"]
     cmd = {"command": cmd,
            "arguments": {"remote": {"type": db_type}}}
-    if server_tags is not "forbidden":
+    if server_tags != "forbidden":
         cmd['arguments']['server-tags'] = server_tags
     cmd['arguments'].update(kwargs)
     response = srv_msg.send_ctrl_cmd(cmd)
