@@ -250,3 +250,37 @@ def test_server_tag_global_parameter():
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp6"]["valid-lifetime"] == 5001
     get_address(mac_addr='00:00:00:00:00:06', exp_ia_na_iaaddr_validlft=5001)
+
+
+def test_server_tag_kea_without_tag():
+    # create first configuration, kea has no assigned tag, so it should get config just from "all"
+    cfg = setup_server_for_config_backend_cmds(server_tag="")
+    _set_server_tag("abc")
+
+    cfg.add_subnet(server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
+                   pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])
+    get_rejected()
+    xyz = _get_server_config()
+    # check that we don't have anything configured except default value
+    assert len(xyz["arguments"]["Dhcp6"]["subnet6"]) == 0
+    assert len(xyz["arguments"]["Dhcp6"]["shared-networks"]) == 0
+    assert xyz["arguments"]["Dhcp6"]["valid-lifetime"] == 7200
+    assert len(xyz["arguments"]["Dhcp6"]["option-data"]) == 0
+
+    # set network, subnet, option and parameter for "all"
+    cfg.add_network(server_tags=["all"], name="flor1")
+    cfg.add_subnet(server_tags=["all"], shared_network_name="flor1",
+                   subnet="2001:db8:2::/64", id=2,
+                   pools=[{'pool': "2001:db8:2::1-2001:db8:2::100"}])
+    cfg.set_global_parameter(server_tags=["all"], valid_lifetime=7700)
+    cfg.add_option(server_tags=["all"], code=22, csv_format=True, data="2001::1", name="sip-server-addr", space="dhcp6")
+
+    xyz = _get_server_config()
+    assert len(xyz["arguments"]["Dhcp6"]["subnet6"]) == 0
+    assert len(xyz["arguments"]["Dhcp6"]["shared-networks"]) == 1
+    assert len(xyz["arguments"]["Dhcp6"]["shared-networks"][0]["subnet6"]) == 1
+    assert xyz["arguments"]["Dhcp6"]["valid-lifetime"] == 7700
+    assert len(xyz["arguments"]["Dhcp6"]["option-data"]) == 1
+
+    get_address(mac_addr='00:00:00:00:00:06', exp_ia_na_iaaddr_validlft=7700,
+                req_opts=[22], exp_option={"code": 22, "data": "2001::1"})

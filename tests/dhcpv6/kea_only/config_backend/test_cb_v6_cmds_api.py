@@ -192,7 +192,7 @@ def test_remote_subnet6_set_all_values():
                                                                                                  "csv-format": True}]}],
                                                                      "pd-pools": [{
                                                                          "delegated-len": 91,
-                                                                         "prefix": "2001:db8:1::",
+                                                                         "prefix": "2001:db8:2::",
                                                                          "prefix-len": 90}],
                                                                      "reservation-mode": "all",
                                                                      "subnet": "2001:db8:1::/64",
@@ -222,7 +222,7 @@ def test_remote_subnet6_get_all_values():
                                                                                                  "csv-format": True}]}],
                                                                      "pd-pools": [{
                                                                          "delegated-len": 91,
-                                                                         "prefix": "2001:db8:1::",
+                                                                         "prefix": "2001:db8:2::",
                                                                          "prefix-len": 90}],
                                                                      "reservation-mode": "all",
                                                                      "subnet": "2001:db8:1::/64",
@@ -248,14 +248,32 @@ def test_remote_subnet6_get_all_values():
             "metadata": {"server-tags": ["abc"]},
             "require-client-classes": ["XYZ"],
             "shared-network-name": None,
-            "id": 1,
+            "id": 2,
             "interface": srv_msg.get_interface(),
-            "option-data": [],
+            "option-data": [{"always-send": True,
+                             "code": 7,
+                             "csv-format": True,
+                             "name": "preference",
+                             "space": "dhcp6",
+                             "data": "123"}],
             "pools": [{
-                "option-data": [],
+                "option-data": [{"code": 7,
+                                 "data": "12",
+                                 "name": "preference",
+                                 "always-send": True,
+                                 "csv-format": True,
+                                 "space": "dhcp6"}],
                 "pool": "2001:db8:1::1-2001:db8:1::10"}],
+            "pd-pools": [{
+                "option-data": [],
+                "delegated-len": 91,
+                "prefix": "2001:db8:2::",
+                "prefix-len": 90}],
             "reservation-mode": "all",
             "subnet": "2001:db8:1::/64",
+            "rebind-timer": 500,
+            "renew-timer": 200,
+            "relay": {"ip-addresses": []},
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv6 subnet 2001:db8:1::/64 found."}
 
 
@@ -448,7 +466,7 @@ def test_remote_subnet6_get_by_id():
                                                    "shared-network-name": None,
                                                    "id": 2, "interface": srv_msg.get_interface(),
                                                    "option-data": [{"always-send": True, "code": 7, "csv-format": True,
-                                                                    "data": "123", "name": "preference",
+                                                                    "data": "12", "name": "preference",
                                                                     "space": "dhcp6"}],
                                                    "pools": [{"option-data": [{"always-send": True, "code": 7,
                                                                                "csv-format": True, "data": "123",
@@ -457,6 +475,8 @@ def test_remote_subnet6_get_by_id():
                                                               "pool": "2001:db8:1::1-2001:db8:1::10"}],
                                                    "rebind-timer": 500, "renew-timer": 200,
                                                    "reservation-mode": "global",
+                                                   "pd-pools": [],
+                                                   "relay": {"ip-addresses": []},
                                                    "subnet": "2001:db8:1::/64", "valid-lifetime": 1000}]},
                         "result": 0, "text": "IPv6 subnet 2 found."}
 
@@ -516,6 +536,8 @@ def test_remote_subnet6_get_by_prefix():
                 "option-data": [],
                 "pool": "2001:db8:1::1-2001:db8:1::10"}],
             "reservation-mode": "all",
+            "pd-pools": [],
+            "relay": {"ip-addresses": []},
             "subnet": "2001:db8:1::/64",
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv6 subnet 2001:db8:1::/64 found."}
 
@@ -655,6 +677,7 @@ def test_remote_network6_get_all_values():
                                                              "calculate-tee-times": True,
                                                              "t1-percent": 0.5,
                                                              "t2-percent": 0.8,
+                                                             "rapid-commit": True,
                                                              "valid-lifetime": 300,
                                                              "reservation-mode": "global",
                                                              "user-context": {"some weird network": 55},
@@ -679,7 +702,7 @@ def test_remote_network6_get_all_values():
                                                            "calculate-tee-times": True,
                                                            "t1-percent": 0.5,
                                                            "t2-percent": 0.8,
-                                                           "rapid-commit": False,
+                                                           "rapid-commit": True,
                                                            "name": "net1",
                                                            "option-data": [{"always-send": True, "code": 7,
                                                                             "csv-format": True, "data": "123",
@@ -858,14 +881,14 @@ def test_remote_network6_del_subnet_keep():
 
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "2001:db8:2:/64", "id": 2,
+                                                        "subnets": [{"subnet": "2001:db8:2::/64", "id": 2,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "net2",
                                                                      "pools": [{
                                                                          "pool": "2001:db8:2::1-2001:db8:2::10"}]}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "2001:db8:2:/64"}]},
+    assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "2001:db8:2::/64"}]},
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
     # we want to have 2 subnets
@@ -873,10 +896,10 @@ def test_remote_network6_del_subnet_keep():
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response == {"arguments": {"count": 2, "subnets": [{"id": 1, "subnet": "2001:db8:1:/64",
+    assert response == {"arguments": {"count": 2, "subnets": [{"id": 1, "subnet": "2001:db8:1::/64",
                                                                "shared-network-name": "net1",
                                                                "metadata": {"server-tags": ["abc"]}},
-                                                              {"id": 2, "subnet": "2001:db8:2:/64",
+                                                              {"id": 2, "subnet": "2001:db8:2::/64",
                                                                "shared-network-name": "net2",
                                                                "metadata": {"server-tags": ["abc"]}}]},
                         "result": 0, "text": "2 IPv6 subnet(s) found."}
@@ -902,9 +925,9 @@ def test_remote_network6_del_subnet_keep():
 
     assert response == {"arguments": {"count": 2,
                                       "subnets": [{"id": 1, "metadata": {"server-tags": ["abc"]},
-                                                   "shared-network-name": None, "subnet": "2001:db8:1:/64"},
+                                                   "shared-network-name": None, "subnet": "2001:db8:1::/64"},
                                                   {"id": 2, "metadata": {"server-tags": ["abc"]},
-                                                   "shared-network-name": "net2", "subnet": "2001:db8:2:/64"}]},
+                                                   "shared-network-name": "net2", "subnet": "2001:db8:2::/64"}]},
                         "result": 0, "text": "2 IPv6 subnet(s) found."}
 
     cmd = dict(command="remote-network6-del", arguments={"remote": {"type": "mysql"}, "subnets-action": "keep",
@@ -929,9 +952,9 @@ def test_remote_network6_del_subnet_keep():
 
     assert response == {"arguments": {"count": 2,
                                       "subnets": [{"id": 1, "metadata": {"server-tags": ["abc"]},
-                                                   "shared-network-name": None, "subnet": "2001:db8:1:/64"},
+                                                   "shared-network-name": None, "subnet": "2001:db8:1::/64"},
                                                   {"id": 2, "metadata": {"server-tags": ["abc"]},
-                                                   "shared-network-name": None, "subnet": "2001:db8:2:/64"}]},
+                                                   "shared-network-name": None, "subnet": "2001:db8:2::/64"}]},
                         "result": 0, "text": "2 IPv6 subnet(s) found."}
 
 
@@ -1111,9 +1134,9 @@ def test_remote_global_parameter6_get():
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1,
-                                      "parameters": {"decline-probation-period": 1234556,
+                                      "parameters": {"decline-probation-period": 123456,
                                                      "metadata": {"server-tags": ["abc"]}}},
-                        "result": 0, "text": "'boot-file-name' DHCPv6 global parameter found."}
+                        "result": 0, "text": "'decline-probation-period' DHCPv6 global parameter found."}
 
 
 def test_remote_global_parameter6_get_all_one():
@@ -1511,9 +1534,9 @@ def test_remote_global_option6_global_set_incorrect_name():
                                                                "options": [{"code": 7,
                                                                             "name": 7,
                                                                             "data": "123"}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert response == {"bug, shouldn't be accepted?"}
+    assert "'name' parameter is not a string" in response["text"]
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
@@ -1541,19 +1564,19 @@ def test_remote_global_option6_global_set_different_space():
                                                                             "space": "xyz"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert "definition for the option 'xyz.' having code '6' does not exist" in response["text"]
+    assert "definition for the option 'xyz.' having code '7' does not exist" in response["text"]
 
 
 def test_remote_global_option6_global_set_csv_false_incorrect():
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 7,
-                                                                            "data": "123",
+                                                                            "data": "12Z3",
                                                                             "always-send": True,
                                                                             "csv-format": False}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert "option data is not a valid string of hexadecimal digits: 123" in response["text"]
+    assert "option data is not a valid string of hexadecimal digits: 12Z3" in response["text"]
 
 
 def test_remote_global_option6_global_set_csv_false_incorrect_hex():

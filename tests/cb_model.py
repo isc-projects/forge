@@ -351,6 +351,7 @@ class ConfigModel(ConfigElem):
         return config
 
     def del_option(self, **kwargs):
+        server_tags = None
         option = {"code": 0}
         for param, val in kwargs.items():
             if val is None:

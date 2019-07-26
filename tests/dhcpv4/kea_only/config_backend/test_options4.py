@@ -44,7 +44,7 @@ def test_options_global():
 
     get_address(req_opts=[6, 10], exp_option={"code": 10, "data": "1.1.1.1"})
 
-    cfg.del_option(code=10)
+    cfg.del_option(code=10, server_tags=['all'])
 
     get_address(req_opts=[6, 10], no_exp_option={"code": 10})
 

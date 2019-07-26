@@ -33,6 +33,14 @@ def test_remote_server_tag_set():
     _set_server_tag()
 
 
+def test_remote_server_tag_set_any():
+    cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
+                                                        "servers": [{"server-tag": "any"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert response == {"result": 1, "text": "'any' is reserved and must not be used as a server-tag"}
+
+
 @pytest.mark.parametrize('channel', ['socket', 'http'])
 def test_remote_server_tag_set_missing_tag(channel):
     cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
@@ -263,6 +271,33 @@ def _check_subnet_result(resp, server_tags, count=1, subnet_id=5, subnet="192.16
     assert resp["arguments"]["subnets"][0]["id"] == subnet_id
 
 
+def test_remote_subnet4_server_tags_delete_server_tag_keep_data():
+    _add_server_tag("abc")
+    _add_server_tag("xyz")
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="192.168.53.1-192.168.53.10", subnet="192.168.53.0/24")
+
+    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
+
+    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 6})
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="192.168.53.0/24")
+
+    cmd = dict(command="remote-server4-del", arguments={"remote": {"type": "mysql"},
+                                                        "servers": [{"server-tag": "abc"}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="192.168.50.0/24")
+
+    _add_server_tag("abc")
+    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="192.168.50.0/24")
+
+    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 6})
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="192.168.53.0/24")
+
+
 def test_remote_subnet4_get_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
@@ -387,6 +422,37 @@ def _network_check_res(resp, server_tags, count=1, network_name="florX"):
     assert resp["arguments"]["shared-networks"][0]["name"] == network_name
 
 
+def test_remote_network4_server_tags_remove_server_tag_keep_data():
+    _add_server_tag("abc")
+    _add_server_tag("xyz")
+    _network_set(server_tags=["abc"])
+    _network_set(server_tags=["xyz"], network_name="flor1")
+    _network_set(server_tags=["all"], network_name="top_flor")
+
+    resp = _network_get(command="remote-network4-get", network_parameter={"name": "florX"})
+    _network_check_res(resp, server_tags=["abc"], network_name="florX")
+
+    resp = _network_get(command="remote-network4-get", network_parameter={"name": "flor1"})
+    _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
+
+    cmd = dict(command="remote-server4-del", arguments={"remote": {"type": "mysql"},
+                                                        "servers": [{"server-tag": "abc"}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    # Tag removed but network should exist
+    resp = _network_get(command="remote-network4-get", network_parameter={"name": "florX"})
+    _network_check_res(resp, server_tags=[], network_name="florX")
+
+    # add back the same tag, make sure that network is still unassigned
+    _add_server_tag("abc")
+    resp = _network_get(command="remote-network4-get", network_parameter={"name": "florX"})
+    _network_check_res(resp, server_tags=[], network_name="florX")
+
+    # rest should be intact
+    resp = _network_get(command="remote-network4-get", network_parameter={"name": "flor1"})
+    _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
+
+
 def test_remote_network4_get_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
@@ -503,6 +569,31 @@ def test_remote_option4_get_server_tags_all():
     _option_set(server_tags=["all"], opt_data='3.3.3.3')
     resp = _option_get(command="remote-option4-global-get-all", server_tags=["abc"], opt_code=3)
     _check_option_result(resp, count=1, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
+
+
+def test_remote_option_get_server_tags_get_non_existing_tag():
+    # we will request option 3 from tag "abc" but it's was just configured for "all" which should be returned instead
+    _add_server_tag("abc")
+    _option_set(server_tags=["all"])
+
+    resp = _option_get(command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+    _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="1.1.1.1")
+
+
+def test_remote_option_remove_server_tag_and_data():
+    _add_server_tag("abc")
+    _option_set(server_tags=["abc"])
+
+    resp = _option_get(command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+
+    _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
+
+    cmd = dict(command="remote-server4-del", arguments={"remote": {"type": "mysql"},
+                                                        "servers": [{"server-tag": "abc"}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    # after removing tag all options should be removed with it
+    _option_get(command="remote-option4-global-get", server_tags=["abc"], opt_code=3, exp_result=3)
 
 
 def test_remote_option4_get_server_tags():
@@ -637,6 +728,34 @@ def test_remote_option_def_get_server_tags_tmp():
     _optdef_set(server_tags=["all"])
     resp = _optdef_get(command="remote-option-def4-get-all", server_tags=["abc"])
     _check_optdef_result(resp, server_tags=["all"], count=1)
+
+
+def test_remote_option_def_get_server_tags_get_non_existing_tag():
+    _add_server_tag("abc")
+    # let's make two definitions with the same name but different type and server tag, plus one different with
+    # server tag "all"
+    _optdef_set(server_tags=["all"])
+
+    resp = _optdef_get(command="remote-option-def4-get", server_tags=["abc"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["all"])
+
+
+def test_remote_option_def_remove_server_tag_and_data():
+    _add_server_tag("abc")
+    _optdef_set(server_tags=["abc"])
+
+    resp = _optdef_get(command="remote-option-def4-get", server_tags=["abc"],
+                       option_def_parameter={"code": 222})
+    _check_optdef_result(resp, server_tags=["abc"])
+
+    cmd = dict(command="remote-server4-del", arguments={"remote": {"type": "mysql"},
+                                                        "servers": [{"server-tag": "abc"}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    # after removing tag all option definition should be removed with it
+    _optdef_get(command="remote-option-def4-get", server_tags=["abc"], option_def_parameter={"code": 222},
+                exp_result=3)
 
 
 def test_remote_option_def_get_server_tags():

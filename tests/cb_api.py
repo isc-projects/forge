@@ -1,12 +1,14 @@
 import srv_msg
 from forge_cfg import world
 
+
 def send_cmd(cmd, db_type='mysql', server_tags=None, **kwargs):
     if server_tags is None:
         server_tags = ["all"]
     cmd = {"command": cmd,
-           "arguments": {"remote": {"type": db_type},
-                         "server-tags": server_tags}}
+           "arguments": {"remote": {"type": db_type}}}
+    if server_tags is not "forbidden":
+        cmd['arguments']['server-tags'] = server_tags
     cmd['arguments'].update(kwargs)
     response = srv_msg.send_ctrl_cmd(cmd)
     return response
@@ -48,6 +50,7 @@ def network_set(networks, db_type='mysql', server_tags=None):
 
 
 def subnet_del_by_id(subnet_id, db_type='mysql', server_tags=None):
+    server_tags = "forbidden"
     kwargs = {"subnets": [{"id": subnet_id}]}
     cmd = 'remote-subnet%s-del-by-id' % world.proto[1]
     response = send_cmd(cmd, db_type, server_tags, **kwargs)
@@ -55,6 +58,7 @@ def subnet_del_by_id(subnet_id, db_type='mysql', server_tags=None):
 
 
 def subnet_del_by_prefix(subnet_prefix, db_type='mysql', server_tags=None):
+    server_tags = "forbidden"
     kwargs = {"subnets": [{"subnet": subnet_prefix}]}
     cmd = 'remote-subnet%s-del-by-prefix' % world.proto[1]
     response = send_cmd(cmd, db_type, server_tags, **kwargs)

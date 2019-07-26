@@ -254,3 +254,38 @@ def test_server_tag_global_parameter4():
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == "/dev/null_xyz"
     get_address(exp_boot_file_name="/dev/null_xyz")
+
+
+def test_server_tag_kea_without_tag():
+    # create first configuration, kea has no assigned tag, so it should get config just from "all"
+    cfg = setup_server_for_config_backend_cmds(server_tag="")
+    _set_server_tag("abc")
+
+    cfg.add_subnet(server_tags=["abc"], subnet="192.168.52.0/24", id=1,
+                   pools=[{'pool': "192.168.52.1-192.168.52.100"}])
+    get_rejected()
+    xyz = _get_server_config()
+    # check that we don't have anything configured except default value
+    assert len(xyz["arguments"]["Dhcp4"]["subnet4"]) == 0
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"]) == 0
+    assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == ""
+    assert len(xyz["arguments"]["Dhcp4"]["option-data"]) == 0
+
+    # set network, subnet, option and parameter for "all"
+    cfg.add_network(server_tags=["all"], name="flor1")
+    cfg.add_subnet(server_tags=["all"], shared_network_name="flor1",
+                   subnet="192.168.50.0/24", id=2,
+                   pools=[{'pool': "192.168.50.1-192.168.50.100"}])
+    cfg.set_global_parameter(server_tags=["all"], valid_lifetime=7700)
+    cfg.set_global_parameter(server_tags=["all"], boot_file_name="/dev/null_all")
+    cfg.add_option(server_tags=["all"], code=3, csv_format=True, data="10.0.0.1", name="routers", space="dhcp4")
+
+    xyz = _get_server_config()
+    assert len(xyz["arguments"]["Dhcp4"]["subnet4"]) == 0
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"]) == 1
+    assert len(xyz["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"]) == 1
+    assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == "/dev/null_all"
+    assert len(xyz["arguments"]["Dhcp4"]["option-data"]) == 1
+
+    get_address(mac_addr='00:00:00:00:00:06', exp_boot_file_name="/dev/null_all",
+                req_opts=[3], exp_option={"code": 3, "data": "10.0.0.1"})
