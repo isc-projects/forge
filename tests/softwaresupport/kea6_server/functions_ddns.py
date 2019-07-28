@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Internet Systems Consortium.
+# Copyright (C) 2013-2019 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -16,112 +16,94 @@
 # Author: Wlodzimierz Wencel
 
 import sys
+import json
 
 from forge_cfg import world
 
 
 def add_ddns_server(address, port):
     world.ddns_enable = True  # flag for ddns
-    world.ddns_add = ""  # part of the config which is added to dhcp config section
-    world.ddns_main = ""
-    world.ddns_forw = []
-    world.ddns_rev = []
-    world.ddns_keys = []
-
-    pointer_start = "{"
-    pointer_end = "}"
+    world.ddns_add = {}  # part of the config which is added to dhcp config section
 
     if address == "default":
         address = "127.0.0.1"
     if port == "default":
-        port = "53001"
+        port = 53001
 
-    world.ddns_main += ',\n"DhcpDdns": {pointer_start} "ip-address": "{address}","dns-server-timeout": 100,' \
-                       ' "port": {port},'.format(**locals())
+    world.ddns_main = {"ip-address": address,
+                       "port": int(port),  # this value is passed as string
+                       "dns-server-timeout": 100,
+                       "reverse-ddns": {'ddns-domains': []},
+                       "forward-ddns": {'ddns-domains': []},
+                       "tsig-keys": [],
+                       "ncr-format": "JSON",  # default value
+                       "ncr-protocol": "UDP",  # default value
+                       }
 
     add_ddns_server_options("server-ip", address)
+    add_ddns_server_options("enable-updates", False)
 
 
 def add_ddns_server_options(option, value):
-    pointer_start = "{"
-    pointer_end = "}"
-    if world.ddns_add == "":
-        world.ddns_add += '"dhcp-ddns":{'
-    else:
-        world.ddns_add += ","
-    if value in ["true", "false", "True", "False", "TRUE", "FALSE"]:
-        world.ddns_add += '"{option}": {value}'.format(**locals())
-    else:
-        world.ddns_add += '"{option}": "{value}"'.format(**locals())
+    # function test_define_value return everything as string, until this function will be rewritten
+    # we will have to have such combinations as below
+    if value in ["true", "True", "TRUE"]:
+        value = True
+    if value in ["false", "False", "FALSE"]:
+        value = False
+    world.ddns_add[option] = value
 
 
-def add_forward_ddns(name, key_name, ip_address, port):
-    pointer_start = "{"
-    pointer_end = "}"
-
-    if key_name == "EMPTY_KEY":
-        world.ddns_forw.append('''{pointer_start} "name": "{name}",
-                                "dns-servers": [ {pointer_start}
-                                    "ip-address": "{ip_address}",
-                                    "port": {port} {pointer_end}
-                                    ]
-                                {pointer_end} '''.format(**locals()))
-    else:
-        world.ddns_forw.append('''{pointer_start} "name": "{name}", "key-name": "{key_name}",
-                                "dns-servers": [ {pointer_start}
-                                    "ip-address": "{ip_address}",
-                                    "port": {port} {pointer_end}
-                                    ]
-                                {pointer_end} '''.format(**locals()))
-
-
-def add_reverse_ddns(name, key_name, ip_address, port):
-    pointer_start = "{"
-    pointer_end = "}"
+def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
+    world.ddns_main["forward-ddns"] = {"ddns-domains": [{
+        "name": name,
+        "key-name": key_name,
+        "dns-servers": [{
+            "hostname": hostname,
+            "ip-address": ip_address,
+            "port": port
+        }]
+    }]
+    }
 
     if key_name == "EMPTY_KEY":
-        world.ddns_rev.append('''{pointer_start} "name": "{name}",
-                                "dns-servers": [ {pointer_start}
-                                    "ip-address": "{ip_address}",
-                                    "port": {port} {pointer_end}
-                                    ]
-                                {pointer_end} '''.format(**locals()))
-    else:
-        world.ddns_rev.append('''{pointer_start} "name": "{name}", "key-name": "{key_name}",
-                                "dns-servers": [ {pointer_start}
-                                    "ip-address": "{ip_address}",
-                                    "port": {port} {pointer_end}
-                                    ]
-                                {pointer_end} '''.format(**locals()))
+        del world.ddns_main["forward-ddns"]["ddns-domains"][0]["key-name"]
+
+
+def add_reverse_ddns(name, key_name, ip_address, port, hostname=""):
+    world.ddns_main["reverse-ddns"] = {"ddns-domains": [{
+        "name": name,
+        "key-name": key_name,
+        "dns-servers": [{
+            "hostname": hostname,
+            "ip-address": ip_address,
+            "port": port
+        }]
+    }]
+    }
+
+    if key_name == "EMPTY_KEY":
+        del world.ddns_main["reverse-ddns"]["ddns-domains"][0]["key-name"]
 
 
 def add_keys(secret, name, algorithm):
-    pointer_start = "{"
-    pointer_end = "}"
+    world.ddns_main["tsig-keys"].append({
+        "secret": secret,
+        "name": name,
+        "algorithm": algorithm,
+        "digest-bits": 0  # default value
+    })
 
-    world.ddns_keys.append('''
-    {pointer_start}
-        "secret": "{secret}",
-        "name": "{name}",
-        "algorithm": "{algorithm}"
-      {pointer_end}'''.format(**locals()))
+
+def ddns_open_control_channel_socket(socket_name=None):
+    if socket_name is not None:
+        socket_path = world.f_cfg.run_join(socket_name)
+    else:
+        socket_path = world.f_cfg.run_join('ddns_control_socket')
+
+    world.ddns_main["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
 
 
 def build_ddns_config():
-    # TODO multiple domains - now that configuration allow to make one of each
-    world.ddns = world.ddns_main
-    world.ddns += ' "reverse-ddns": {'
-    for each in world.ddns_rev:
-        world.ddns += '"ddns-domains": [' + each + ']'
-    world.ddns += '}'
-    world.ddns += ' ,"forward-ddns": {'
-    for each in world.ddns_forw:
-        world.ddns += '"ddns-domains": [' + each + ']'
-    world.ddns += '}'
-    world.ddns += ',"tsig-keys": ['
-    if len(world.ddns_keys) > 0:
-        world.ddns += world.ddns_keys[0]
-        for each in world.ddns_keys[1:]:
-            world.ddns += ',' + each
-    world.ddns += ']'
-    world.ddns += '}'
+    # let's for now don't change how config is saved to the file
+    world.ddns = ',"DhcpDdns":' + json.dumps(world.ddns_main)

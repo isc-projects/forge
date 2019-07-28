@@ -908,6 +908,11 @@ def clear_leases(action):
 
 
 ##DDNS server
+@step('DDNS server has control channel (\S+).')
+def ddns_open_control_channel(socket_name=None):
+    ddns.ddns_open_control_channel_socket(socket_name)
+
+
 @step('DDNS server is configured on (\S+) address and (\S+) port.')
 def add_ddns_server(address, port):
     address, port = test_define_value(address, port)

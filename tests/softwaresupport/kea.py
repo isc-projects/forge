@@ -326,7 +326,7 @@ def _cfg_write():
         del world.cfg["simple_options"]
 
     if world.ddns_enable:
-        cfg_file.write(',' + world.ddns_add + '}')
+        cfg_file.write(',"dhcp-ddns":' + json.dumps(world.ddns_add))
 
     if "custom_lines" in world.cfg:
         cfg_file.write(',' + world.cfg["custom_lines"])

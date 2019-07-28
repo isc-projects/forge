@@ -18,7 +18,7 @@ def test_ddns6_tsig_sha1_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', 'true')
+    srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
