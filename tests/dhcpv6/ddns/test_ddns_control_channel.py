@@ -2,6 +2,8 @@
 
 # pylint: disable=invalid-name,line-too-long
 
+import os
+import json
 import pytest
 
 import misc
@@ -164,6 +166,7 @@ def test_ddns6_control_channel_config_set_all_values():
     del cfg["DhcpDdns"]["loggers"]
     assert cfg["DhcpDdns"] == world.ddns_main
 
+    tmp_cfg = world.ddns_main
     # now let's try to set configuration we received
     # first let's stop everything and start empty DDNS server with just control channel:
     # (DHCP and DDNS are combined for now)
@@ -175,13 +178,163 @@ def test_ddns6_control_channel_config_set_all_values():
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.ddns_open_control_channel()
+    # new socket name
+    srv_control.ddns_open_control_channel(socket_name="different_ddns_control_socket")
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-set', arguments=cfg)
+    # send to the new socket
+    _send_through_ddns_socket(cmd, socket_name="different_ddns_control_socket")
+
+    srv_control.use_dns_set_number('3')
+    srv_control.start_srv('DNS', 'started')
+
+    _check_if_ddns_is_working_correctly()
+
+    # send to old socket, it should fail:
+    cmd = dict(command='config-get', arguments={})
+    _send_through_ddns_socket(cmd, socket_name="different_ddns_control_socket", exp_failed=True)
+
+    # send to the new socket, should work, and it should be the same configuration as previously
+    cmd = dict(command='config-get', arguments={})
+    response = _send_through_ddns_socket(cmd)
+    cfg = response["arguments"]
+
+    assert cfg["DhcpDdns"] == tmp_cfg
+
+
+@pytest.mark.v6
+@pytest.mark.ddns
+@pytest.mark.kea_only
+@pytest.mark.control_channel
+def test_ddns6_control_channel_config_test():
+    # let's check minimal configuration
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    # minimal ddns
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_options('generated-prefix', 'six')
+    srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
+    srv_control.ddns_open_control_channel()
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    cmd = dict(command='config-get', arguments={})
+    response = _send_through_ddns_socket(cmd)
+    cfg = response["arguments"]
+    cmd = dict(command='config-test', arguments=cfg)
     _send_through_ddns_socket(cmd)
 
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # let's check if returned configuration is correct
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_options('generated-prefix', 'six')
+    srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
+    srv_control.ddns_open_control_channel()
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
+    srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    cmd = dict(command='config-get', arguments={})
+    response = _send_through_ddns_socket(cmd)
+    cfg = response["arguments"]
+    cmd = dict(command='config-test', arguments=cfg)
+    _send_through_ddns_socket(cmd)
+
+    # and now let's make couple incorrect configs
+    cfg = {
+        "DhcpDdns": {
+            "dns-server-timeout": 100,
+            "forward-ddns": {
+                "ddns-domains": [
+                    {
+                        "dns-servers": [
+                            {
+                                "hostname": "",
+                                "ip-address": "2001:db8:1::1000",
+                                "port": "an"
+                            }
+                        ],
+                        "key-name": "forge.sha1.key",
+                        "name": "six.example.com."
+                    }
+                ]
+            },
+            "ip-address": "127.0.0.1",
+            "ncr-format": "JSON",
+            "ncr-protocol": "UDP",
+            "port": 53001,
+            "reverse-ddns": {
+                "ddns-domains": [
+                    {
+                        "dns-servers": [
+                            {
+                                "hostname": "",
+                                "ip-address": "2001:db8:1::1000",
+                                "port": 53
+                            }
+                        ],
+                        "key-name": "forge.sha1.key",
+                        "name": "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa."
+                    }
+                ]
+            },
+            "tsig-keys": [
+                {
+                    "algorithm": "HMAC-SHA1",
+                    "digest-bits": 0,
+                    "name": "forge.sha1.key",
+                    "secret": "PN4xKZ/jDobCMlo4rpr70w=="
+                }
+            ]
+        }
+    }
+    cmd = dict(command='config-test', arguments=cfg)
+    _send_through_ddns_socket(cmd, exp_result=1)
+
+    cfg = {
+        "DhcpDdns": {
+            "dns-server-timeout": 100,
+            "forward-ddns": {
+                "ddns-domains": [
+                    {
+                        "dns-servers": [],
+                        "key-name": "forge.sha1.key",
+                        "name": "six.example.com."
+                    }
+                ]
+            },
+            "ip-address": "127.0.0.1",
+            "ncr-protocol": "UDP",
+            "port": 53001,
+        }
+    }
+    cmd = dict(command='config-test', arguments=cfg)
+    _send_through_ddns_socket(cmd, exp_result=1)
+
+    cfg = {
+        "DhcpDdns": {
+            "dns-server-timeout": 100,
+            "forward-ddns": {},
+            "ip-address": "127.0.0.1",
+            "ncr-format": "ABC",
+            "ncr-protocol": "UDP",
+            "port": 53001,
+            "reverse-ddns": {}
+        }
+    }
+    cmd = dict(command='config-test', arguments=cfg)
+    _send_through_ddns_socket(cmd, exp_result=1)
+
+    # and now check if all those tests didn't change kea running configuration
     srv_control.use_dns_set_number('3')
     srv_control.start_srv('DNS', 'started')
 
@@ -192,65 +345,42 @@ def test_ddns6_control_channel_config_set_all_values():
 @pytest.mark.ddns
 @pytest.mark.kea_only
 @pytest.mark.control_channel
-def test_ddns6_control_channel_config_test():
+def test_ddns6_control_channel_config_reload():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    # minimal ddns
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
-    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
-    srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.ddns_open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
+    cfg = _send_through_ddns_socket(cmd)
+    del cfg["arguments"]["DhcpDdns"]["loggers"]
+    assert cfg["arguments"]["DhcpDdns"] == world.ddns_main
 
-    response = _send_through_ddns_socket(cmd)
-
-    cfg = response["arguments"]
-
-    cmd = dict(command='config-test', arguments=cfg)
-
-    _send_through_ddns_socket(cmd)
-
-    cmd = dict(command='config-test', arguments=cfg)
-
-    _send_through_ddns_socket(cmd, exp_result=1)
-
-
-@pytest.mark.v6
-@pytest.mark.ddns
-@pytest.mark.kea_only
-@pytest.mark.control_channel
-def test_ddns6_control_channel_config_reload():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
-    # minimal ddns
-    srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv('DHCP', 'started')
-
-    misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('generated-prefix', 'six')
-    srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
     cmd = dict(command='config-reload', arguments={})
-
     _send_through_ddns_socket(cmd)
+
+    cmd = dict(command='config-get', arguments={})
+    cfg = _send_through_ddns_socket(cmd)
+    del cfg["arguments"]["DhcpDdns"]["loggers"]
+    assert cfg["arguments"]["DhcpDdns"] == world.ddns_main
 
     srv_control.use_dns_set_number('3')
     srv_control.start_srv('DNS', 'started')
@@ -289,13 +419,27 @@ def test_ddns6_control_channel_config_write():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_options('generated-prefix', 'six')
+    srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
+    srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.ddns_open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    cmd = dict(command='config-write', arguments={})
+    cmd = dict(command='config-write', arguments={"filename": world.f_cfg.data_join("new_kea_config_file")})
 
-    response = _send_through_ddns_socket(cmd)
+    _send_through_ddns_socket(cmd)
+
+    srv_msg.copy_remote(world.f_cfg.data_join("new_kea_config_file"))
+
+    # let's load json from downloaded file and check if it is the same what we configured kea with
+    with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r') as f:
+        downloaded_config = json.load(f)
+    del downloaded_config["DhcpDdns"]["loggers"]
+    assert downloaded_config["DhcpDdns"] == world.ddns_main
 
 
 @pytest.mark.v6
@@ -310,16 +454,22 @@ def test_ddns6_control_channel_shutdown():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    cmd = dict(command='shutdown', arguments={})
-
+    cmd = dict(command='shutdown', arguments={"type": "now"})
     _send_through_ddns_socket(cmd)
-    # TODO this command return "text": "Shutdown initiated, type is: normal" there is no documentation about
-    # normal or not normal type of shutdown, investigate this
-
     cmd = dict(command='config-write', arguments={})
-
     _send_through_ddns_socket(cmd, exp_failed=True)
-    # TODO we might need a step with checking status of the process, for now it's sufficient
+
+    srv_control.start_srv('DHCP', 'started')
+    cmd = dict(command='shutdown', arguments={"type": "normal"})
+    _send_through_ddns_socket(cmd)
+    cmd = dict(command='config-write', arguments={})
+    _send_through_ddns_socket(cmd, exp_failed=True)
+
+    srv_control.start_srv('DHCP', 'started')
+    cmd = dict(command='shutdown', arguments={"type": "drain_first"})
+    _send_through_ddns_socket(cmd)
+    cmd = dict(command='config-write', arguments={})
+    _send_through_ddns_socket(cmd, exp_failed=True)
 
 
 @pytest.mark.v6
@@ -336,6 +486,6 @@ def test_ddns6_control_channel_version_get():
 
     cmd = dict(command='version-get', arguments={})
 
-    _send_through_ddns_socket(cmd)
+    response = _send_through_ddns_socket(cmd)
     assert response["arguments"]["extended"]
     # TODO at least version of kea could be held in forge
