@@ -27,6 +27,7 @@ import socket
 import struct
 import sys
 import cgitb
+import netifaces
 
 import init_all
 
@@ -41,7 +42,7 @@ SETTINGS = {
     'REL4_ADDR': "0.0.0.0",
     'GIADDR4': None,
     'IFACE': None,
-    'CLI_LINK_LOCAL': None,
+    'CLI_LINK_LOCAL': '',
     'SERVER_IFACE': None,
     'OUTPUT_WAIT_INTERVAL': 1,
     'OUTPUT_WAIT_MAX_INTERVALS': 2,
@@ -120,6 +121,18 @@ class ForgeConfiguration:
 
         self.cli_mac = self.gethwaddr(self.iface)
 
+        # get client link-local if empty
+        if self.cli_link_local == '':
+            addrs = netifaces.ifaddresses(self.iface)
+            addrs6 = addrs[netifaces.AF_INET6]
+            for addr in addrs6:
+                addr = addr['addr']
+                if '%' in addr:
+                    addr = addr.split('%')[0]
+                if addr.startswith('fe80'):
+                    self.cli_link_local = addr
+                    break
+
         # used defined variables
         self.user_variables_temp = []
 
@@ -134,6 +147,8 @@ class ForgeConfiguration:
                 if default_value is None:
                     raise Exception('Cannot find %s in init_all.py' % key)
                 value = default_value
+            if value is None:
+                raise Exception('Value for %s in init_all.py is None but should be specified' % key)
             value = os.getenv(key, value)
             setattr(self, key.lower(), value)
 

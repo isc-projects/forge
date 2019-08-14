@@ -3,11 +3,11 @@
 
 Vagrant.configure("2") do |config|
   # SERVER 1
-  config.vm.define "forge-srv1-u1804" do |srv1|  # TODO: rename kea to src
+  config.vm.define "${SERVER1_NAME}" do |srv1|  # TODO: rename kea to src
     srv1.vm.box = "ubuntu/bionic64"
-    srv1.vm.hostname = "forge-srv1-u1804"
+    srv1.vm.hostname = "${SERVER1_NAME}"
     srv1.vm.provider "virtualbox" do |v|
-      v.name = "forge-srv1-u1804"
+      v.name = "${SERVER1_NAME}"
       v.memory = 8192
       v.cpus = 8
     end
@@ -23,11 +23,11 @@ Vagrant.configure("2") do |config|
   end
 
   # CLIENT
-  config.vm.define "forge-client" do |clnt|
+  config.vm.define "${CLIENT_NAME}" do |clnt|
     clnt.vm.box = "ubuntu/bionic64"
-    clnt.vm.hostname = "forge-client"
+    clnt.vm.hostname = "${CLIENT_NAME}"
     clnt.vm.provider "virtualbox" do |v|
-      v.name = "forge-client"
+      v.name = "${CLIENT_NAME}"
       v.memory = 2048
       v.cpus = 2
     end

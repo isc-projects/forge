@@ -17,6 +17,7 @@ import textwrap
 import functools
 import subprocess
 import configparser
+from urllib.parse import urljoin
 
 log = logging.getLogger()
 
@@ -25,16 +26,22 @@ FORGE_INI = 'forge.ini'
 SRV4_ADDR = "192.168.50.252"
 CLNT4_ADDR = "192.168.50.2"
 CLNT4_ADDR_2 = "192.168.51.2"
+SRV_IPV6_ADDR_GLOBAL = "3000::1000"
 MGMT_ADDRESS = "172.28.0.31"
 MGMT_ADDRESS_2 = "172.28.0.32"
 MGMT_ADDRESS_3 = "172.28.0.33"
 DNS4_ADDR = SRV4_ADDR
 DNS6_ADDR = "2001:db8:0:f101::1"
+IFACE = "enp0s9"
+SERVER_IFACE = "enp0s9"
+INSTALL_METHOD = "make"
 
 INIT_ALL = """
 LOGLEVEL = "info"
-IFACE = "enp0s9"
-SERVER_IFACE = "enp0s9"
+IFACE = "{IFACE}"
+#IFACE = "eth2"
+SERVER_IFACE = "{SERVER_IFACE}"
+#SERVER_IFACE = "eth2"
 DNS4_ADDR = "{DNS4_ADDR}"
 DNS6_ADDR = "{DNS6_ADDR}"
 SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",
@@ -45,13 +52,13 @@ SRV4_ADDR = "{SRV4_ADDR}"
 REL4_ADDR = "0.0.0.0"
 GIADDR4 = "192.168.50.3"
 CIADDR = "192.168.50.3"
-CLI_LINK_LOCAL = "fe80::a00:27ff:fef9:dd64"
+CLI_LINK_LOCAL = ""
 copylist = []
 removelist = []
 OUTPUT_WAIT_INTERVAL = 1
 OUTPUT_WAIT_MAX_INTERVALS = 2
 PACKET_WAIT_INTERVAL = 1
-SRV_IPV6_ADDR_GLOBAL = "3000::1000"
+SRV_IPV6_ADDR_GLOBAL = "{SRV_IPV6_ADDR_GLOBAL}"
 SRV_IPV6_ADDR_LINK_LOCAL = "fe80::a00:27ff:fedf:63bc"
 HISTORY = True
 TCPDUMP = False
@@ -64,10 +71,10 @@ MGMT_ADDRESS = "{MGMT_ADDRESS}"
 MGMT_ADDRESS_2 = "{MGMT_ADDRESS_2}"
 MGMT_ADDRESS_3 = "{MGMT_ADDRESS_3}"
 MGMT_USERNAME = "vagrant"
-MGMT_PASSWORD = "not-needed"
+MGMT_PASSWORD = "vagrant"
 SAVE_LOGS = True
 BIND_LOG_TYPE = "ERROR"
-BIND_LOG_LVL = None
+BIND_LOG_LVL = 0
 BIND_MODULE = "*"
 SAVE_LEASES = True
 DNS_IFACE = "enp0s3"
@@ -81,7 +88,8 @@ DB_USER = "keauser"
 DB_PASSWD = "keapass"
 DB_HOST = ""
 FABRIC_PTY = ""
-""".format(**locals())
+INSTALL_METHOD = "{INSTALL_METHOD}"
+"""
 
 
 CONFIG_FIELDS = ['kea-dirs']
@@ -229,38 +237,88 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
     return exitcode
 
 
-def set_init_all():
+def set_init_all(args):
     # generate init_all.py
-    txt = INIT_ALL
+    my_vars = globals()
+    if hasattr(args, 'native') and args.native:
+        my_vars['INSTALL_METHOD'] = 'native'
+    txt = INIT_ALL.format(**my_vars)
+
     path = os.path.abspath('tests/init_all.py')
     with open(path, 'w') as f:
         f.write(txt)
     print('Generated %s.' % path)
 
 
+def get_vagrant_dir(args):
+    vagrant_dir = os.path.join('vagrant',
+                               'lxc' if args.lxc else 'vbox',
+                               args.sid if args.sid else 'default')
+    vagrant_dir = os.path.abspath(vagrant_dir)
+    return vagrant_dir
+
+
+def ensure_lxc_bridges(args):
+    mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
+    traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
+    traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
+
+    for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
+        execute('sudo brctl addbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
+        execute('sudo ip link set dev %s up' % bridge)
+
+
 def setup(args):
     # load config
     cfg = _load_config()
 
-    set_init_all()
+    set_init_all(args)
+
+    if args.lxc:
+        vagrant_tpl = 'vagrant/Vagrantfile.lxc.in'
+    else:
+        vagrant_tpl = 'vagrant/Vagrantfile.in'
+
+    client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
+    server1_name = 'forge-srv1-u1804-' + args.sid if args.sid else 'forge-srv1-u1804'
+    server2_name = 'forge-srv2-u1804-' + args.sid if args.sid else 'forge-srv2-u1804'
+    mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
+    traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
+    traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
 
     # generate Vagrantfile
-    with open('vagrant/Vagrantfile.in', 'r') as f_in:
+    with open(vagrant_tpl, 'r') as f_in:
         txt = f_in.read()
     tpl = string.Template(txt)
     txt = tpl.safe_substitute(KEA_DIRS=cfg['Forge']['kea-dirs'],
                               MGMT_ADDRESS=MGMT_ADDRESS,
                               SRV4_ADDR=SRV4_ADDR,
                               CLNT4_ADDR=CLNT4_ADDR,
-                              CLNT4_ADDR_2=CLNT4_ADDR_2)
-    path = os.path.abspath('vagrant/Vagrantfile')
-    with open(path, 'w') as f_out:
+                              CLNT4_ADDR_2=CLNT4_ADDR_2,
+                              SRV_IPV6_ADDR_GLOBAL=SRV_IPV6_ADDR_GLOBAL,
+                              IFACE=IFACE,
+                              SERVER_IFACE=SERVER_IFACE,
+                              CLIENT_NAME=client_name,
+                              SERVER1_NAME=server1_name,
+                              SERVER2_NAME=server2_name,
+                              MGMT_BRG=mgmt_brg,
+                              TRAFFIC1_BRG=traffic1_brg,
+                              TRAFFIC2_BRG=traffic2_brg)
+    vagrant_dir = get_vagrant_dir(args)
+    if not os.path.exists(vagrant_dir):
+        os.makedirs(vagrant_dir)
+    vagrant_file = os.path.join(vagrant_dir, 'Vagrantfile')
+    with open(vagrant_file, 'w') as f_out:
         f_out.write(txt)
-    print('Generated %s.' % path)
+    print('Generated %s.' % vagrant_file)
 
     if args.command == 'setup':
+        # in case of LXC prepare bridges
+        if args.lxc:
+            ensure_lxc_bridges(args)
+
         # create and start VMs via Vagrant
-        execute('vagrant up', cwd='vagrant')
+        execute('vagrant up', cwd=vagrant_dir)
     elif args.command == 'refresh':
         # reload and reprovision VMs via Vagrant if requested
         reload_ = args.reload
@@ -269,21 +327,83 @@ def setup(args):
             reload_ = True
             provision = True
         if reload_:
-            execute('vagrant reload', cwd='vagrant')
+            execute('vagrant reload', cwd=vagrant_dir)
         if provision:
-            execute('vagrant provision', cwd='vagrant')
+            execute('vagrant provision', cwd=vagrant_dir)
     elif args.command == 'recreate':
         # reload and reprovision VMs via Vagrant
-        execute('vagrant destroy -f', cwd='vagrant')
-        execute('vagrant up', cwd='vagrant')
+        execute('vagrant destroy -f', cwd=vagrant_dir)
+        execute('vagrant up', cwd=vagrant_dir)
 
 
-def install_kea(path):
-    cmd = 'vagrant ssh forge-srv1-u1804 -c "%s"'
+def install_kea(args):
+    ensure_lxc_bridges(args)
+
+    vagrant_dir = get_vagrant_dir(args)
+    execute('vagrant up', cwd=vagrant_dir, raise_error=False)
+
+    if args.version:
+        _install_kea_native(args)
+    else:
+        _install_kea_make(args)
+
+
+def _install_kea_native(args):
+    vagrant_dir = get_vagrant_dir(args)
+    server1_name = 'forge-srv1-u1804-' + args.sid if args.sid else 'forge-srv1-u1804'
+    cmd_tpl = 'vagrant ssh ' + server1_name + ' -c "%s"'
+
+    # copy hammer into vm and prepare system
+    cmd = 'vagrant upload ../../../hammer.py %s' % server1_name
+    execute(cmd, cwd=vagrant_dir)
+
+    cmd = cmd_tpl % './hammer.py prepare-system -p local -w mysql,pgsql,radius,forge'
+    execute(cmd, cwd=vagrant_dir)
+
+    # prepare pkg source repo in vm
+    repository_url = 'https://packages.isc.org'
+    repo_name = 'kea-%s-%s-%s' % ('1.6', 'ubuntu', '18.04')
+    repo_url = urljoin(repository_url, 'repository')
+    repo_url += '/%s-ci/' % repo_name
+
+    subcmd = "echo 'deb %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir)
+    key_url = "%s/repository/repo-keys/repo-key.gpg" % repository_url
+    subcmd = 'wget -qO- %s | sudo apt-key add -' % key_url
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir)
+
+    cmd = cmd_tpl % 'sudo apt update'
+    execute(cmd, cwd=vagrant_dir)
+
+    pkgs = ["isc-kea-admin",
+            "isc-kea-common",
+            "isc-kea-ctrl-agent",
+            "isc-kea-dev",
+            "isc-kea-dhcp4-server",
+            "isc-kea-dhcp6-server",
+            "isc-kea-dhcp-ddns-server",
+            "isc-kea-doc",
+            "python3-isc-kea-connector"]
+
+    sfx = '=' + args.version
+    pkgs = [p + sfx for p in pkgs]
+    pkgs = " ".join(pkgs)
+
+    cmd = cmd_tpl % 'sudo apt install -y %s' % pkgs
+    env = os.environ.copy()
+    env['DEBIAN_FRONTEND'] = 'noninteractive'
+    execute(cmd, cwd=vagrant_dir, env=env)
+
+
+def _install_kea_make(args):
+    server1_name = 'forge-srv1-u1804-' + args.sid if args.sid else 'forge-srv1-u1804'
+    cmd = 'vagrant ssh ' + server1_name + ' -c "%s"'
     cfg = _load_config()
     kea_dirs = cfg['Forge']['kea-dirs']
-    local_kea_path = os.path.join(kea_dirs, path)
-    if path == '':
+    local_kea_path = os.path.join(kea_dirs, args.path)
+    if args.path == '':
         print('Path to Kea folder is empty. Give one of these:')
         for d in sorted(os.listdir(kea_dirs)):
             p = os.path.join(kea_dirs, d)
@@ -295,34 +415,41 @@ def install_kea(path):
     if not os.path.isdir(local_kea_path):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
-    remote_path = os.path.join('/kea-dirs', path)
+    remote_path = os.path.join('/kea-dirs', args.path)
     subcmd = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w forge mysql pgsql cql radius shell'
+
+    vagrant_dir = get_vagrant_dir(args)
 
     subcmd1 = subcmd % (remote_path, 'prepare-system')
     cmd1 = cmd % subcmd1
-    execute(cmd1, cwd='vagrant')
+    execute(cmd1, cwd=vagrant_dir)
 
     subcmd2 = subcmd % (remote_path, 'build')
     cmd2 = cmd % subcmd2
-    execute(cmd2, cwd='vagrant')
+    execute(cmd2, cwd=vagrant_dir)
 
 
-def test(params):
-    set_init_all()
+def test(args, params):
+    set_init_all(args)
 
-    execute('vagrant up', cwd='vagrant', raise_error=False)
+    ensure_lxc_bridges(args)
+
+    vagrant_dir = get_vagrant_dir(args)
+    execute('vagrant up', cwd=vagrant_dir, raise_error=False)
 
     params = ' '.join(params)
     print('Test params: %s' % params)
-    cmd = 'vagrant ssh forge-client -c "%s"'
-    subcmd = 'cd /forge/; sudo ~/venv/bin/pytest -r ap -vv ' + params
+    client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
+    cmd = 'vagrant ssh ' + client_name + ' -c "%s"'
+    subcmd = 'cd /forge/; sudo ~/venv/bin/pytest ' + params
     cmd %= subcmd
-    execute(cmd, cwd='vagrant', raise_error=False)
+    execute(cmd, cwd=vagrant_dir, raise_error=False)
 
 
-def clean():
-    execute('vagrant destroy -f', cwd='vagrant')
-    for path in ['tests/init_all.py', 'vagrant/Vagrantfile']:
+def clean(args):
+    vagrant_dir = get_vagrant_dir(args)
+    execute('vagrant destroy -f', cwd=vagrant_dir)
+    for path in ['tests/init_all.py', os.path.join(vagrant_dir, 'Vagrantfile')]:
         path = os.path.abspath(path)
         if os.path.exists(path):
             os.unlink(path)
@@ -351,6 +478,10 @@ def parse_args():
 
     main_parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode.')
     main_parser.add_argument('-q', '--quiet', action='store_true', help='Enable quiet mode.')
+    main_parser.add_argument('--lxc', action='store_true', default=False,
+                             help='Use LXC instead of VirtualBox.')
+    main_parser.add_argument('--sid', default=None,
+                             help='ID of setup. If more setups needed in parallel then run with specific ID.')
 
     subparsers = main_parser.add_subparsers(
         dest='command',
@@ -377,10 +508,12 @@ def parse_args():
                                    help="Destroy VMs and create them from scratch.")
     parser = subparsers.add_parser('install-kea',
                                    help="Install Kea into VM from indicated repository.")
-    parser.add_argument('path', default='', nargs='?',
-                        help='Sub-path to the repository.')
+    parser.add_argument('path', default='', nargs='?', help='Sub-path to the repository.')
+    parser.add_argument('--version', help='Version of packages.')
     parser = subparsers.add_parser('test',
                                    help="Run tests. Parameters are passed directly to pytest.")
+    parser.add_argument('--native', action='store_true', default=False,
+                        help='Use native packages for testing')
     parser = subparsers.add_parser('clean',
                                    help="Destroy VMs")
 
@@ -417,13 +550,13 @@ def main():
         setup(args)
 
     elif args.command == "install-kea":
-        install_kea(args.path)
+        install_kea(args)
 
     elif args.command == "test":
-        test(rest)
+        test(args, rest)
 
     elif args.command == "clean":
-        clean()
+        clean(args)
 
     else:
         parser.print_help()

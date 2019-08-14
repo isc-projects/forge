@@ -19,13 +19,14 @@ Vagrant.configure("2") do |config|
       v.customize 'net.2.flags', 'up'
       v.customize 'net.2.link', '${TRAFFIC1_BRG}'
       v.customize 'net.2.ipv4.address', '${SRV4_ADDR}/24'
-      v.customize 'net.2.type', '${SERVER_IFACE}'
+      v.customize 'net.2.ipv6.address', '${SRV_IPV6_ADDR_GLOBAL}/64'
+      v.customize 'net.2.name', '${SERVER_IFACE}'
     end
     srv1.vm.synced_folder "${KEA_DIRS}", "/kea-dirs"
 
-    srv1.vm.provision "file", source: "id_rsa", destination: "$HOME/.ssh/id_rsa"
-    srv1.vm.provision "file", source: "id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
-    srv1.vm.provision "shell", privileged: false, path: "provision-srv.sh"
+    srv1.vm.provision "file", source: "../../id_rsa", destination: "$HOME/.ssh/id_rsa"
+    srv1.vm.provision "file", source: "../../id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    srv1.vm.provision "shell", privileged: false, path: "../../provision-srv.sh"
   end
 
   # CLIENT
@@ -45,12 +46,13 @@ Vagrant.configure("2") do |config|
       v.customize 'net.2.flags', 'up'
       v.customize 'net.2.link', '${TRAFFIC1_BRG}'
       v.customize 'net.2.ipv4.address', '${CLNT4_ADDR}/24'
-      v.customize 'net.2.type', '${IFACE}'
+      v.customize 'net.2.ipv6.address', '2001:db8:1::1000/64'
+      v.customize 'net.2.name', '${IFACE}'
     end
-    clnt.vm.synced_folder "..", "/forge"
+    clnt.vm.synced_folder "../../..", "/forge"
 
-    clnt.vm.provision "file", source: "id_rsa", destination: "$HOME/.ssh/id_rsa"
-    clnt.vm.provision "file", source: "id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
-    clnt.vm.provision "shell", privileged: false, path: "provision-clnt.sh"
+    clnt.vm.provision "file", source: "../../id_rsa", destination: "$HOME/.ssh/id_rsa"
+    clnt.vm.provision "file", source: "../../id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    clnt.vm.provision "shell", privileged: false, path: "../../provision-clnt.sh"
   end
 end
