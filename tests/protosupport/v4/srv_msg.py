@@ -41,6 +41,13 @@ def client_requests_option(opt_type):
     world.prl += chr(int(opt_type))  # put a single byte there
 
 
+def build_raw(msg, append):
+    if msg == "":
+        world.climsg.append(build_msg(opts="") / Raw(load=append))
+    else:
+        client_send_msg(msg, None, None)
+        world.climsg[0] = world.climsg[0] / Raw(load=append)
+
 def client_send_msg(msgname, iface, addr):
     """
     Sends specified message with defined options.
@@ -266,6 +273,9 @@ def build_msg(opts):
     msg /= IP(src=world.cfg["source_IP"],
               dst=world.cfg["destination_IP"],)
     msg /= UDP(sport=world.cfg["source_port"], dport=world.cfg["destination_port"])
+    if opts == "":
+        return msg
+
     msg /= BOOTP(chaddr=tmp_hw,
                  giaddr=world.cfg["values"]["giaddr"],
                  flags=msg_flag,
