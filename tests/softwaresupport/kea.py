@@ -563,11 +563,26 @@ def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_pa
         raise Exception('Unsupported db type %s' % world.f_cfg.db_type)
 
 
+def clear_pid_leftovers(destination_address):
+    # we are using rm -f for files so command always succeed, so let's download it first than remove and rise error
+    result = fabric_download_file(world.f_cfg.run_join('kea.kea-dhcp*.pid'),
+                                  check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
+                                                                        'PID_FILE',
+                                                                        destination_address),
+                                  destination_host=destination_address, warn_only=True)
+    if result.succeeded:
+        fabric_remove_file_command(world.f_cfg.run_join('kea.kea-dhcp*.pid'),
+                                   destination_host=destination_address)
+
+        assert False, "KEA PID FILE FOUND! POSSIBLE KEA CRASH"
+
+
 def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     clear_logs(destination_address)
-    clear_leases(destination_address=world.f_cfg.mgmt_address)
-    _clear_db_config(destination_address=world.f_cfg.mgmt_address)
-
+    clear_leases(destination_address=destination_address)
+    _clear_db_config(destination_address=destination_address)
+    # add removing pid files
+    clear_pid_leftovers(destination_address=destination_address)
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
     v4 = False

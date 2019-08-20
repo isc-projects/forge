@@ -98,6 +98,11 @@ def client_send_msg(msgname):
     dhcpmsg.client_send_msg(msgname, None, None)
 
 
+@step('Send (\S+) with raw appending (.+)')
+def send_raw_message(msg_type="", raw_append=None):
+    dhcpmsg.build_raw(msg=msg_type, append=raw_append)
+
+
 @step('Client adds to the message (\S+) with value (\S+).')
 def client_does_include_with_value(opt_type, value):
     """
