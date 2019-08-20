@@ -8,9 +8,6 @@ import srv_msg
 import srv_control
 import misc
 
-from forge_cfg import world
-from scapy.all import Raw
-
 
 def _get_advertise():
     misc.test_procedure()
@@ -73,7 +70,7 @@ def test_2019_6472_client_id():
 
     # let's get one exchange correct to save server-id
     correct_id = "\x00\x19\x00\x0c\x27\xfe\x0c\x00\xff\x6f\x95\x00\x00\x02\x00\x00"
-    world.climsg[0] = world.climsg[0] / Raw(load=correct_id)
+    srv_msg.send_raw_message(raw_append=correct_id)
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.client_save_option('server-id')
@@ -84,7 +81,7 @@ def test_2019_6472_client_id():
     srv_msg.client_send_msg('SOLICIT')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+    srv_msg.send_raw_message(raw_append=invalid_data)
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
     srv_msg.send_wait_for_message('MUST', 'NOT ', None)
@@ -95,7 +92,7 @@ def test_2019_6472_client_id():
     srv_msg.client_send_msg('REQUEST')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+    srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
@@ -105,7 +102,7 @@ def test_2019_6472_client_id():
     srv_msg.client_send_msg('REQUEST')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+    srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
@@ -116,7 +113,7 @@ def test_2019_6472_client_id():
     srv_msg.client_send_msg('REBIND')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+    srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
@@ -125,7 +122,7 @@ def test_2019_6472_client_id():
     srv_msg.client_send_msg('REBIND')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+    srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
@@ -137,7 +134,7 @@ def test_2019_6472_client_id():
     srv_msg.client_send_msg('RENEW')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+    srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
@@ -147,7 +144,7 @@ def test_2019_6472_client_id():
     srv_msg.client_send_msg('RENEW')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+    srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
@@ -165,7 +162,7 @@ def test_2019_6472_server_id():
     for msg in ["SOLICIT", "REQUEST", "RENEW", "RELEASE", "REBIND"]:
         srv_msg.client_send_msg(msg)
         invalid_data = "\x00\x02\x01\x90\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65" + 386 * "\x11"
-        world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+        srv_msg.send_raw_message(raw_append=invalid_data)
 
         srv_msg.send_wait_for_message('MUST', 'NOT ', None)
 
@@ -188,7 +185,7 @@ def test_2019_6472_subscriber_id():
         invalid_data = "\x00\x02\x00\x0e\x00\x01\x00\x02\x52\x7b\xa8\xf0\x08\x00\x27\x58\xf1\xe8"
         # and incorrect subscriber-id
         invalid_data += "\x00\x26\x01\x90\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65" + 386 * "\x11"
-        world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+        srv_msg.send_raw_message(raw_append=invalid_data)
 
         srv_msg.send_wait_for_message('MUST', None, "REPLY")
 
@@ -232,7 +229,7 @@ def test_2019_6473_fqdn():
         invalid_data += "\x79\x74\x65\x6b\x73\x74\x6b\x74\x6f\x72\x65\x67\x6f\x6a\x61\x73\x61\x6d\x6e\x69\x65\x6f\x67\x61\x72\x6e\x69\x61\x6d\x62\x6c\x61\x62\x6c\x61\x62\x6c\x61\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00"
         invalid_data += "\x00"
 
-        world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+        srv_msg.send_raw_message(raw_append=invalid_data)
         misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', "NOT ", None)
         _get_advertise()
@@ -240,6 +237,7 @@ def test_2019_6473_fqdn():
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
+@pytest.mark.teraz
 def test_2019_6473_fqdn_0_length():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -251,8 +249,7 @@ def test_2019_6473_fqdn_0_length():
         invalid_data = "\x00\x01\x00\x0a\x00\x03\x00\x01\xff\xff\xff\xff\xff\x01\x00\x03\x00\x28\x00\x00\x18\xd3\x00\x00\x03\xe8\x00\x00\x07\xd0\x00\x05\x00\x18\x20\x01\x0d\xb8\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x50\x00\x00\x0b\xb8\x00\x00\x0f\xa0\x00\x02\x00\x0e\x00\x01\x00\x01\x24\xed\x1b\xb5\x08\x00\x27\x4a\x04\x65"
         invalid_data += "\x00\x27\x00\x00\x01"
 
-        world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-
+        srv_msg.send_raw_message(raw_append=invalid_data)
         srv_msg.send_wait_for_message('MUST', 'NOT ', None)
 
         _get_advertise()
