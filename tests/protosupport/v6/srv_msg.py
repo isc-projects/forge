@@ -29,6 +29,7 @@ from scapy.layers import dhcp6
 from scapy.layers.inet6 import IPv6, UDP
 from scapy.config import conf
 from scapy.volatile import RandMAC
+from scapy.all import Raw
 import scapy
 
 from forge_cfg import world
@@ -487,6 +488,14 @@ def convert_DUID(duid):
         assert False, "DUID value is not valid! DUID: " + duid
 
 
+def build_raw(msg, append):
+    if msg == "":
+        world.climsg.append(build_msg("") / Raw(load=append))
+    else:
+        client_send_msg(msg, None, None)
+        world.climsg[0] = world.climsg[0] / Raw(load=append)
+
+
 def build_msg(msg):
 
     msg = IPv6(dst=world.cfg["address_v6"],
@@ -623,8 +632,9 @@ def send_wait_for_message(condition_type, presence, exp_message):
         if get_msg_type(b) == exp_message:
             expected_type_found = True
 
-    for x in unans:
-        log.error(("Unanswered packet type=%s" % dhcp6.dhcp6_cls_by_type[x.msgtype]))
+    if exp_message is not None:
+        for x in unans:
+            log.error(("Unanswered packet type=%s" % dhcp6.dhcp6_cls_by_type[x.msgtype]))
 
     if not world.loops["active"]:
         log.debug("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
