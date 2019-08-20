@@ -1,4 +1,7 @@
-import json
+"""cve-2019-6472 and -6473"""
+
+# pylint: disable=invalid-name,line-too-long
+
 import pytest
 
 import srv_msg
@@ -22,7 +25,7 @@ def _get_advertise():
 
 @pytest.mark.v6
 @pytest.mark.dhcp6
-def test_CVE_2019_6472():
+def test_cve_2019_6472():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -40,7 +43,7 @@ def test_CVE_2019_6472():
 @pytest.mark.v6
 @pytest.mark.dhcp6
 @pytest.mark.renew
-def test_CVE_2019_6473():
+def test_cve_2019_6473():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -68,23 +71,23 @@ def test_2019_6472_client_id():
     srv_msg.client_does_include('Client', None, 'client-id')
     srv_msg.client_send_msg('SOLICIT')
 
-    invalid_data = "\x00\x19\x00\x0c\x27\xfe\x0c\x00\xff\x6f\x95\x00\x00\x02\x00\x00"
-    world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
+    # let's get one exchange correct to save server-id
+    correct_id = "\x00\x19\x00\x0c\x27\xfe\x0c\x00\xff\x6f\x95\x00\x00\x02\x00\x00"
+    world.climsg[0] = world.climsg[0] / Raw(load=correct_id)
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.client_save_option('server-id')
 
+    # All messages below are send with too long client-id, and should remain unanswered
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
     srv_msg.client_send_msg('SOLICIT')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
+    srv_msg.send_wait_for_message('MUST', 'NOT ', None)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
@@ -93,9 +96,8 @@ def test_2019_6472_client_id():
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
@@ -104,11 +106,10 @@ def test_2019_6472_client_id():
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
+    srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
@@ -116,9 +117,8 @@ def test_2019_6472_client_id():
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
@@ -126,11 +126,10 @@ def test_2019_6472_client_id():
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
+    srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
     srv_msg.client_add_saved_option('DONT ')
@@ -139,9 +138,8 @@ def test_2019_6472_client_id():
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
     srv_msg.client_add_saved_option('DONT ')
@@ -150,11 +148,10 @@ def test_2019_6472_client_id():
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
-    # world.climsg[0].show()
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', None, 'interface-id')
     srv_msg.create_relay_forward()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
+    srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
 
 @pytest.mark.v6
@@ -180,25 +177,43 @@ def test_2019_6472_server_id():
 def test_2019_6472_subscriber_id():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    for msg in ["SOLICIT", "REQUEST", "RENEW", "RELEASE", "REBIND"]:
+    for msg in ["REQUEST", "RENEW", "RELEASE"]:
+        srv_msg.client_does_include('Client', None, 'client-id')
         srv_msg.client_send_msg(msg)
-        invalid_data = "\x00\x26\x01\x90\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65" + 386 * "\x11"
+        # first let's add server id
+        invalid_data = "\x00\x02\x00\x0e\x00\x01\x00\x02\x52\x7b\xa8\xf0\x08\x00\x27\x58\xf1\xe8"
+        # and incorrect subscriber-id
+        invalid_data += "\x00\x26\x01\x90\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65" + 386 * "\x11"
         world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
 
-        srv_msg.send_wait_for_message('MUST', 'NOT ', None)
+        srv_msg.send_wait_for_message('MUST', None, "REPLY")
 
-        _get_advertise()
 
-    misc.test_procedure()
+@pytest.mark.v6
+@pytest.mark.dhcp6
+@pytest.mark.disable
+def test_2019_6472_subscriber_id_relay():
+    # because of some reason scapy is crashing while parsing response, kea works correctly though.
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
-    killer_message = "\x0c\x01\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x05\xfe\x80\x00\x00\x00\x00\x00\x00\x0a\x00\x27\xff\xfe\x6d\xee\x67\x00\x25\x00\x04\x00\x00\x02\x9a" + "\x00\x26\x01\x90\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65" + 386 * "\x11" + "\x00\x12\x00\x03\x61\x62\x63\x00\x09\x00\x5a\x03\xea\x4b\x95\x00\x06\x00\x02\x00\x07\x00\x03\x00\x28\x00\x01\x2d\xca\x00\x00\x00\x64\x00\x00\x00\xc8\x00\x05\x00\x18\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x01\x90\x00\x00\x02\x58\x00\x02\x00\x0e\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65\x00\x01\x00\x0e\x00\x01\x00\x01\x52\x7b\xa8\xf0\xf6\xf5\xf4\xf3\xf2\x01"
+    # correct relay-forward
+    killer_message = "\x0c\x01\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x05\xfe\x80\x00\x00\x00\x00\x00\x00\x0a\x00\x27\xff\xfe\x6d\xee\x67\x00\x25\x00\x04\x00\x00\x02\x9a"
+    # incorrect subscriber-id
+    killer_message += "\x00\x26\x01\x90\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65" + 386 * "\x11"
+    # correct relayed message
+    killer_message += "\x00\x12\x00\x03\x61\x62\x63\x00\x09\x00\x5a\x03\xea\x4b\x95\x00\x06\x00\x02\x00\x07\x00\x03\x00\x28\x00\x01\x2d\xca\x00\x00\x00\x64\x00\x00\x00\xc8\x00\x05\x00\x18\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x01\x90\x00\x00\x02\x58\x00\x02\x00\x0e\x00\x01\x00\x02\x52\x7b\xa8\xf0\x08\x00\x27\x58\xf1\xe8\x00\x01\x00\x0e\x00\x01\x00\x01\x52\x7b\xa8\xf0\xf6\xf5\xf4\xf3\xf2\x01"
+
+    misc.pass_criteria()
     srv_msg.send_raw_message(raw_append=killer_message)
-    srv_msg.send_wait_for_message('MUST', 'NOT ', None)
-
-    _get_advertise()
+    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
 
 
 @pytest.mark.v6
@@ -218,6 +233,7 @@ def test_2019_6473_fqdn():
         invalid_data += "\x00"
 
         world.climsg[0] = world.climsg[0] / Raw(load=invalid_data)
+        misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', "NOT ", None)
         _get_advertise()
 
