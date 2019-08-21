@@ -526,14 +526,14 @@ def _clear_db_config(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, d
     tables = ' '.join(tables)
 
     command = 'for table_name in {tables}; do mysql -u {db_user} -p{db_passwd} -e '
-    command += '"SET foreign_key_checks = 0; truncate $table_name" {db_name}; done'
+    command += '"SET foreign_key_checks = 0; SET @disable_audit = 1; truncate $table_name" {db_name}; done'
     command = command.format(**locals())
     fabric_run_command(command, destination_host=destination_address, hide_all=True)
 
     tables = ['dhcp6_server', 'dhcp4_server']
     tables = ' '.join(tables)
     command = 'for table_name in {tables}; do mysql -u {db_user} -p{db_passwd} -e '
-    command += '"SET foreign_key_checks = 0; DELETE FROM $table_name WHERE tag != \'all\'" {db_name}; done'
+    command += '"SET foreign_key_checks = 0; SET @disable_audit = 1; DELETE FROM $table_name WHERE tag != \'all\'" {db_name}; done'
     command = command.format(**locals())
     fabric_run_command(command, destination_host=destination_address, hide_all=True)
 
