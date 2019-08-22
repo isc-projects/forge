@@ -128,9 +128,9 @@ def test_option_on_all_levels():
 
     cfg = _get_server_config()
     assert cfg["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"][0]["option-data"] == \
-           cmd_sub["arguments"]["options"]
+        cmd_sub["arguments"]["options"]
     assert cfg["arguments"]["Dhcp4"]["shared-networks"][0]["subnet4"][0]["pools"][0]["option-data"] == \
-           cmd_pool["arguments"]["options"]
+        cmd_pool["arguments"]["options"]
     assert cfg["arguments"]["Dhcp4"]["shared-networks"][0]["option-data"] == cmd_net["arguments"]["options"]
     assert cfg["arguments"]["Dhcp4"]["option-data"] == []
 
