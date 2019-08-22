@@ -83,7 +83,6 @@ def test_cve_2019_6473_hostname():
 
 @pytest.mark.v4
 @pytest.mark.dhcp4
-@pytest.mark.teraz
 def test_cve_2019_6473_hostname_length_0():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
