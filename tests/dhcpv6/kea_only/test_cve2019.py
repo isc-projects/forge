@@ -65,7 +65,6 @@ def test_2019_6472_client_id():
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'IA-PD')
     srv_msg.client_does_include('Client', None, 'client-id')
-    # srv_msg.client_send_msg()
 
     # let's get one exchange correct to save server-id
     correct_id = "\x00\x19\x00\x0c\x27\xfe\x0c\x00\xff\x6f\x95\x00\x00\x02\x00\x00"
