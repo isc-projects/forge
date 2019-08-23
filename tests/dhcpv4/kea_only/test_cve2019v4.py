@@ -212,6 +212,10 @@ def test_cve_2019_wtf():
 @pytest.mark.v4
 @pytest.mark.dhcp4
 def test_cve_2019_6474():
+    # This test verifies two issues uncovered in CVE-2019-6474:
+    # - a broken packet can cause Kea to write invalid lease to disk
+    # - when restarted, memfile backend gives up if there were more than 100
+    #   errors while reading a lease file.
     misc.test_setup()
     srv_control.config_srv_subnet('10.0.0.0/8', '10.0.0.0-10.255.255.255')
     srv_control.build_and_send_config_files('SSH', 'config-file')
