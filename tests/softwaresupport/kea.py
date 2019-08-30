@@ -690,8 +690,11 @@ def _reload_kea_with_keactrl(destination_host):
 
 
 def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
-    result = _reload_kea_with_keactrl(destination_address)
-    _check_kea_process_result(True, result, 'reconfigure')
+    if world.f_cfg.install_method == 'make':
+        result = _reload_kea_with_keactrl(destination_address)
+        _check_kea_process_result(True, result, 'reconfigure')
+    else:
+        _restart_kea_with_systemctl(destination_address)
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
