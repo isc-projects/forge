@@ -45,7 +45,6 @@ def test_pd_pool():
                 exp_ia_pd_iaprefix_prefix='2001:db8:2::',
                 exp_ia_pd_iaprefix_plen=104)
 
-    # TODO: exclude support on 1.6 final
     # add exlusion to PD
     subnet_cfg.update(pd_pools=[{
         "prefix": '2001:db8:2::',
@@ -58,5 +57,5 @@ def test_pd_pool():
     # TODO: make proper check for exclusion
     get_address(mac_addr='00:00:00:00:00:03',
                 req_ia='IA-PD',
-                exp_ia_pd_iaprefix_prefix='2001:db8:2::',
+                exp_ia_pd_iaprefix_prefix='2001:db8:2::100:0',
                 exp_ia_pd_iaprefix_plen=104)
