@@ -1028,8 +1028,7 @@ def db_setup():
     result = fabric_sudo_command(cmd)
     assert result.succeeded
     cmd = "mysql -u root -e \"CREATE USER IF NOT EXISTS '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
-    result = fabric_sudo_command(cmd)
-    assert result.succeeded
+    fabric_sudo_command(cmd)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
     result = fabric_sudo_command(cmd)
     assert result.succeeded
