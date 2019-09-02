@@ -1027,7 +1027,7 @@ def db_setup():
     cmd = "mysql -u root -e 'CREATE DATABASE {db_name};'".format(**locals())
     result = fabric_sudo_command(cmd)
     assert result.succeeded
-    cmd = "mysql -u root -e \"CREATE USER IF NOT EXISTS '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
+    cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
     fabric_sudo_command(cmd)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
     result = fabric_sudo_command(cmd)
@@ -1037,9 +1037,8 @@ def db_setup():
     assert result.succeeded
 
     # POSTGRESQL
-    cmd = "psql -U postgres -t -c \"DROP DATABASE IF EXISTS {db_name}\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
+    cmd = "psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
+    fabric_sudo_command(cmd, sudo_user='postgres')
     cmd = "psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
     result = fabric_sudo_command(cmd, sudo_user='postgres')
     assert result.succeeded
