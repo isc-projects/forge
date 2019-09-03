@@ -654,7 +654,7 @@ def main():
             else:
                 sn = 'u1804'
             lxc_name = 'forge-srv1-%s-%s' % (sn, args.sid)
-        package_box_and_upload(lxc_name, '/home/godfryd/isc/repos/forge-cb-cmds/vagrant/lxc/a1')
+        package_box_and_upload(lxc_name, '/home/godfryd/isc/repos/forge-cb-cmds/vagrant/lxc/' + args.sid)
 
     else:
         parser.print_help()
