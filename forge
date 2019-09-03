@@ -12,12 +12,17 @@ import os
 import time
 import string
 import logging
+import datetime
 import argparse
 import textwrap
 import functools
 import subprocess
 import configparser
 from urllib.parse import urljoin
+try:
+    import urllib.request
+except:
+    pass
 
 log = logging.getLogger()
 
@@ -462,6 +467,77 @@ def clean(args):
             print('Deleted %s.' % path)
 
 
+def _get_latest_cloud_version(image_tpl):
+    url = 'https://app.vagrantup.com/api/v1/box/' + image_tpl
+    try:
+        with urllib.request.urlopen(url) as response:
+            data = response.read()
+    except:
+        log.exception('ignored exception')
+        return 0
+    cloud_meta = json.loads(data)
+
+    if 'versions' not in cloud_meta:
+        return 0
+    latest_version = 0
+    for ver in cloud_meta['versions']:
+        provider_found = False
+        for p in ver['providers']:
+            if p['name'] == self.provider:
+                provider_found = True
+                break
+        if provider_found:
+            try:
+                v = int(ver['number'])
+            except:
+                return ver['number']
+            if v > latest_version:
+                latest_version = v
+    return latest_version
+
+
+def package_box_and_upload(lxc_name, vagrant_dir):
+    lxc_box_dir = os.path.join(vagrant_dir, 'lxc-box')
+    if os.path.exists(lxc_box_dir):
+        execute('sudo rm -rf %s' % lxc_box_dir)
+    os.mkdir(lxc_box_dir)
+    lxc_container_path = os.path.join('/var/lib/lxc', lxc_name)
+    execute('sudo bash -c \'echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8ia'
+            'llvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ'
+            '6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTB'
+            'ckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6k'
+            'ivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmB'
+            'YSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYC'
+            'zRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key"'
+            '> %s/rootfs/home/vagrant/.ssh/authorized_keys\'' % lxc_container_path)
+    cmd = 'sudo bash -c "'
+    cmd += 'cd %s '
+    cmd += '&& tar --numeric-owner --anchored --exclude=./rootfs/dev/log -czf %s/rootfs.tar.gz ./rootfs/*'
+    cmd += '"'
+    execute(cmd % (lxc_container_path, lxc_box_dir))
+    execute('sudo cp %s/config %s/lxc-config' % (lxc_container_path, lxc_box_dir))
+    execute('sudo chown `id -un`:`id -gn` *', cwd=lxc_box_dir)
+    with open(os.path.join(lxc_box_dir, 'metadata.json'), 'w') as f:
+        now = datetime.datetime.now()
+        f.write('{\n')
+        f.write('  "provider": "lxc",\n')
+        f.write('  "version":  "1.0.0",\n')
+        f.write('  "built-on": "%s"\n' % now.strftime('%c'))
+        f.write('}\n')
+
+    box_name = 'forge-%s-%s' % ('ubuntu', '18.04')
+    box_path = os.path.join(vagrant_dir, box_name + '.box')
+    execute('tar -czf %s ./*' % box_path, cwd=lxc_box_dir)
+    execute('sudo rm -rf %s' % lxc_box_dir)
+
+    image_tpl = 'godfryd/' + box_name
+    latest_version = _get_latest_cloud_version(image_tpl)
+    new_version = latest_version + 1
+    cmd = "vagrant cloud publish -f -r %s %s %s %s"
+    cmd = cmd % (image_tpl, new_version, 'lxc', box_path)
+    execute(cmd)
+
+
 def parse_args():
     """Parse arguments."""
     # used lambda to change args order and able to substitute width
@@ -520,6 +596,8 @@ def parse_args():
                         help='Use native packages for testing')
     parser = subparsers.add_parser('clean',
                                    help="Destroy VMs")
+    parser = subparsers.add_parser('box',
+                                   help="Package LXC box and upload to cloud")
 
     #args = main_parser.parse_args()
     args, rest = main_parser.parse_known_args()
@@ -558,6 +636,9 @@ def main():
 
     elif args.command == "clean":
         clean(args)
+
+    elif args.command == "box":
+        package_box_and_upload('forge-srv1-u1804-a1', '/home/godfryd/isc/repos/forge-cb-cmds/vagrant/lxc/a1')
 
     else:
         parser.print_help()
