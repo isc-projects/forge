@@ -10,6 +10,7 @@
 from __future__ import print_function
 import os
 import time
+import json
 import string
 import logging
 import datetime
@@ -483,7 +484,7 @@ def _get_latest_cloud_version(image_tpl):
     for ver in cloud_meta['versions']:
         provider_found = False
         for p in ver['providers']:
-            if p['name'] == self.provider:
+            if p['name'] == 'lxc':
                 provider_found = True
                 break
         if provider_found:
@@ -496,7 +497,7 @@ def _get_latest_cloud_version(image_tpl):
     return latest_version
 
 
-def package_box_and_upload(lxc_name, vagrant_dir):
+def _package_box(lxc_name, vagrant_dir, box_name):
     lxc_box_dir = os.path.join(vagrant_dir, 'lxc-box')
     if os.path.exists(lxc_box_dir):
         execute('sudo rm -rf %s' % lxc_box_dir)
@@ -525,10 +526,15 @@ def package_box_and_upload(lxc_name, vagrant_dir):
         f.write('  "built-on": "%s"\n' % now.strftime('%c'))
         f.write('}\n')
 
-    box_name = 'forge-%s-%s' % ('ubuntu', '18.04')
     box_path = os.path.join(vagrant_dir, box_name + '.box')
     execute('tar -czf %s ./*' % box_path, cwd=lxc_box_dir)
     execute('sudo rm -rf %s' % lxc_box_dir)
+    return box_path
+
+
+def package_box_and_upload(lxc_name, vagrant_dir):
+    box_name = 'forge-%s-%s-%s' % ('srv' if 'srv' in lxc_name else 'clt', 'ubuntu', '18.04')
+    box_path = _package_box(lxc_name, vagrant_dir, box_name)
 
     image_tpl = 'godfryd/' + box_name
     latest_version = _get_latest_cloud_version(image_tpl)
@@ -598,6 +604,8 @@ def parse_args():
                                    help="Destroy VMs")
     parser = subparsers.add_parser('box',
                                    help="Package LXC box and upload to cloud")
+    parser.add_argument('--system',
+                        help="Either 'client' or server system name eg. 'ubuntu-18.04'")
 
     #args = main_parser.parse_args()
     args, rest = main_parser.parse_known_args()
@@ -638,7 +646,15 @@ def main():
         clean(args)
 
     elif args.command == "box":
-        package_box_and_upload('forge-srv1-u1804-a1', '/home/godfryd/isc/repos/forge-cb-cmds/vagrant/lxc/a1')
+        if args.system == 'client':
+            lxc_name = 'forge-client-' + args.sid
+        else:
+            if system == 'ubuntu-18.04':
+                sn = 'u1804'
+            else:
+                sn = 'u1804'
+            lxc_name = 'forge-srv1-%s-%s' % (sn, args.sid)
+        package_box_and_upload(lxc_name, '/home/godfryd/isc/repos/forge-cb-cmds/vagrant/lxc/a1')
 
     else:
         parser.print_help()

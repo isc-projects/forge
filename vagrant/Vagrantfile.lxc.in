@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   # SERVER 1
   config.vm.define "${SERVER1_NAME}" do |srv1|
-    srv1.vm.box = "godfryd/forge-ubuntu-18.04"
+    srv1.vm.box = "godfryd/forge-srv-ubuntu-18.04"
     srv1.vm.hostname = "${SERVER1_NAME}"
     srv1.vm.provider "lxc" do |v|
       v.container_name = "${SERVER1_NAME}"
@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
 
   # CLIENT
   config.vm.define "${CLIENT_NAME}" do |clnt|
-    clnt.vm.box = "godfryd/lxc-ubuntu-18.04"
+    clnt.vm.box = "godfryd/forge-clt-ubuntu-18.04"
     clnt.vm.hostname = "${CLIENT_NAME}"
     clnt.vm.provider "lxc" do |v|
       v.container_name = "${CLIENT_NAME}"
