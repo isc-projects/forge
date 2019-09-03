@@ -353,8 +353,10 @@ def _install_kea_native(args):
     cmd_tpl = 'vagrant ssh ' + server1_name + ' -c "%s"'
 
     # copy hammer into vm and prepare system
-    cmd = 'vagrant upload ../../../hammer.py %s' % server1_name
-    execute(cmd, cwd=vagrant_dir)
+    #cmd = 'vagrant upload ../../../hammer.py %s' % server1_name
+    #execute(cmd, cwd=vagrant_dir)
+    execute('rm -rf hammer.py')
+    execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py')
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -w mysql,pgsql,radius,forge'
     execute(cmd, cwd=vagrant_dir)
