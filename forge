@@ -318,9 +318,9 @@ def setup(args):
 
         # in case of LXC prepare bridges
         if args.lxc:
-            execute('sudo lxc-destroy --name %s' % client_name, raise_error=False)
-            execute('sudo lxc-destroy --name %s' % server1_name, raise_error=False)
-            execute('sudo lxc-destroy --name %s' % server2_name, raise_error=False)
+            for cntr in [client_name, server1_name, server2_name]:
+                execute('sudo lxc-stop --name %s' % cntr, raise_error=False)
+                execute('sudo lxc-destroy --name %s' % cntr, raise_error=False)
             ensure_lxc_bridges(args)
 
         # create and start VMs via Vagrant
