@@ -313,6 +313,9 @@ def setup(args):
     print('Generated %s.' % vagrant_file)
 
     if args.command == 'setup':
+        # destroy VMs via Vagrant
+        execute('vagrant destroy -f', cwd=vagrant_dir)
+
         # in case of LXC prepare bridges
         if args.lxc:
             ensure_lxc_bridges(args)
@@ -330,10 +333,6 @@ def setup(args):
             execute('vagrant reload', cwd=vagrant_dir)
         if provision:
             execute('vagrant provision', cwd=vagrant_dir)
-    elif args.command == 'recreate':
-        # reload and reprovision VMs via Vagrant
-        execute('vagrant destroy -f', cwd=vagrant_dir)
-        execute('vagrant up', cwd=vagrant_dir)
 
 
 def install_kea(args):
@@ -504,8 +503,6 @@ def parse_args():
                         help='Reload only.')
     parser.add_argument('--provision', action='store_true',
                         help='Re-provision only.')
-    parser = subparsers.add_parser('recreate',
-                                   help="Destroy VMs and create them from scratch.")
     parser = subparsers.add_parser('install-kea',
                                    help="Install Kea into VM from indicated repository.")
     parser.add_argument('path', default='', nargs='?', help='Sub-path to the repository.')
@@ -544,9 +541,6 @@ def main():
         setup(args)
 
     elif args.command == "refresh":
-        setup(args)
-
-    elif args.command == "recreate":
         setup(args)
 
     elif args.command == "install-kea":
