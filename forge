@@ -397,6 +397,14 @@ def _install_kea_native(args):
             "isc-kea-dhcp6-server",
             "isc-kea-dhcp-ddns-server",
             "isc-kea-doc",
+            "isc-kea-premium-cb-cmds",
+            "isc-kea-premium-class-cmds",
+            "isc-kea-premium-flex-id",
+            "isc-kea-premium-forensic-log",
+            "isc-kea-premium-host-cache",
+            "isc-kea-premium-host-cmds",
+            "isc-kea-premium-radius",
+            "isc-kea-premium-subnet-cmds",
             "python3-isc-kea-connector"]
 
     sfx = '=' + args.version
