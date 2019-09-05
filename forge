@@ -374,7 +374,7 @@ def _install_kea_native(args):
 
     # prepare pkg source repo in vm
     repository_url = 'https://packages.isc.org'
-    repo_name = 'kea-%s-%s-%s' % ('1.6', 'ubuntu', '18.04')
+    repo_name = 'kea-%s-%s-%s' % ('1.7', 'ubuntu', '18.04')
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
