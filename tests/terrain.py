@@ -28,7 +28,7 @@ from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 
 from forge_cfg import world, step
-from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
+from softwaresupport.multi_server_functions import make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
 from softwaresupport import kea
 import logging_facility

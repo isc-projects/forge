@@ -22,7 +22,7 @@ from forge_cfg import world
 from protosupport.multi_protocol_functions import add_variable
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
-from softwaresupport.multi_server_functions import locate_entry, fabric_remove_file_command, json_file_layout
+from softwaresupport.multi_server_functions import fabric_remove_file_command, json_file_layout
 from softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
 
 from kea6_server.functions_ddns import build_ddns_config
@@ -523,7 +523,7 @@ def clear_pid_leftovers(destination_address):
                                   check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                         'PID_FILE',
                                                                         destination_address),
-                                  destination_host=destination_address, warn_only=True)
+                                  destination_host=destination_address, ignore_errors=True)
     if result.succeeded:
         fabric_remove_file_command(world.f_cfg.run_join('kea.kea-dhcp*.pid'),
                                    destination_host=destination_address)
@@ -687,7 +687,7 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
                              check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                    'leases.csv',
                                                                    destination_address),
-                             destination_host=destination_address, warn_only=True)
+                             destination_host=destination_address, ignore_errors=True)
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
@@ -695,7 +695,7 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                '.',
                                                                destination_address),
-                         destination_host=destination_address, warn_only=True)
+                         destination_host=destination_address, ignore_errors=True)
 
 
 def ha_add_parameter_to_hook(parameter_name, parameter_value):
@@ -1028,7 +1028,7 @@ def db_setup():
     result = fabric_sudo_command(cmd)
     assert result.succeeded
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
-    fabric_sudo_command(cmd)
+    fabric_sudo_command(cmd, ignore_errors=True)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
     result = fabric_sudo_command(cmd)
     assert result.succeeded
@@ -1038,7 +1038,7 @@ def db_setup():
 
     # POSTGRESQL
     cmd = "psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres')
+    fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True)
     cmd = "psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
     result = fabric_sudo_command(cmd, sudo_user='postgres')
     assert result.succeeded

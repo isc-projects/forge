@@ -4,8 +4,7 @@ import pytest
 import srv_msg
 from cb_model import setup_server_for_config_backend_cmds
 
-pytestmark = [pytest.mark.py_test,
-              pytest.mark.v6,
+pytestmark = [pytest.mark.v6,
               pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,

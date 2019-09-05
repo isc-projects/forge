@@ -24,7 +24,7 @@ from forge_cfg import world
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
     fabric_remove_file_command, clear_all, add_line_in_global, check_process_result, clear_leases, add_parameter_to_hook
 from functions_ddns import build_ddns_config
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
+from softwaresupport.multi_server_functions import fabric_send_file, remove_local_file,\
     copy_configuration_file, fabric_sudo_command, fabric_download_file, simple_file_layout
 
 

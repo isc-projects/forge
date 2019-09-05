@@ -463,7 +463,10 @@ def test(args, params):
     cmd = 'vagrant ssh ' + client_name + ' -c "%s"'
     subcmd = 'cd /forge/; sudo ~/venv/bin/pytest ' + params
     cmd %= subcmd
-    execute(cmd, cwd=vagrant_dir, raise_error=False)
+    try:
+        execute(cmd, cwd=vagrant_dir)  # , raise_error=False)
+    except:
+        log.exception('ignored error in testing')
 
 
 def clean(args):

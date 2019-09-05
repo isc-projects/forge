@@ -22,7 +22,9 @@ import warnings
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide
+from fabric.contrib import files
 from fabric.exceptions import NetworkError
+import fabric.state
 
 from forge_cfg import world
 
@@ -47,20 +49,21 @@ def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
 def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
                         user_loc=world.f_cfg.mgmt_username,
                         password_loc=world.f_cfg.mgmt_password, hide_all=False,
-                        sudo_user=None):
+                        sudo_user=None, ignore_errors=False):
     with settings(host_string=destination_host, user=user_loc, password=password_loc,
                   sudo_user=sudo_user, warn_only=True):
-        if hide_all:
-            with hide('running', 'stdout', 'stderr'):
-                try:
+        try:
+            if ignore_errors:
+                fabric.state.output.warnings = False
+            if hide_all:
+                with hide('running', 'stdout', 'stderr'):
                     result = sudo(cmd, pty=world.f_cfg.fabric_pty)
-                except NetworkError:
-                    assert False, "Network connection failed"
-        else:
-            try:
+            else:
                 result = sudo(cmd, pty=world.f_cfg.fabric_pty)
-            except NetworkError:
-                assert False, "Network connection failed"
+        except NetworkError:
+            fabric.state.output.warnings = True
+            assert False, "Network connection failed"
+    fabric.state.output.warnings = True
     return result
 
 
@@ -79,11 +82,14 @@ def fabric_send_file(file_local, file_remote,
 def fabric_download_file(remote_path, local_path,
                          destination_host=world.f_cfg.mgmt_address,
                          user_loc=world.f_cfg.mgmt_username,
-                         password_loc=world.f_cfg.mgmt_password, warn_only=False):
+                         password_loc=world.f_cfg.mgmt_password, ignore_errors=False):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore",category=DeprecationWarning)
-        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=warn_only):
+        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
+            if ignore_errors:
+                fabric.state.output.warnings = False
             result = get(remote_path, local_path)
+            fabric.state.output.warnings = True
     return result
 
 

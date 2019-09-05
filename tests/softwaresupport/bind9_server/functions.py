@@ -21,7 +21,7 @@ import string
 
 from forge_cfg import world
 from softwaresupport.bind9_server.bind_configs import config_file_set, keys
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file, \
+from softwaresupport.multi_server_functions import fabric_send_file, remove_local_file, \
     copy_configuration_file, fabric_sudo_command, fabric_download_file, fabric_remove_file_command,\
     check_local_path_for_downloaded_files
 
@@ -167,7 +167,7 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                'dns/dns_log_file',
                                                                destination_address),
-                         destination_host=destination_address, warn_only=True)
+                         destination_host=destination_address, ignore_errors=True)
 
 
 def clear_all(destination_address=world.f_cfg.mgmt_address):
