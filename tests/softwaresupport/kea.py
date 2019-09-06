@@ -570,10 +570,11 @@ def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
 
 def _restart_kea_with_systemctl(destination_address):
     cmd_tpl = 'systemctl restart {service} &&'
-    cmd_tpl += ' ts=`systemctl show -p ActiveEnterTimestamp {service}.service | awk \'{{print $2 $3}}\'`;'
-    cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'
-    cmd_tpl += ' journalctl -u {service}.service --since $ts |'
-    cmd_tpl += ' grep "server version .* started" 2>/dev/null;'
+    cmd_tpl += ' ts=`systemctl show -p ActiveEnterTimestamp {service}.service | awk \'{{print $2 $3}}\'`;'  # get time of log beginning
+    cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'  # if started for the first time then ts is empty so set to current date
+    cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
+    cmd_tpl += ' journalctl -u {service}.service --since $ts |'  # get logs since last start of kea service
+    cmd_tpl += ' grep "server version .* started" 2>/dev/null;'  # if in the logs there is given sequence then ok
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
     cmd = cmd_tpl.format(service='isc-kea-dhcp%s-server' % world.proto[1])
