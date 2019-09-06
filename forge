@@ -611,6 +611,7 @@ def parse_args():
                                    help="Run tests. Parameters are passed directly to pytest.")
     parser.add_argument('--native', action='store_true', default=False,
                         help='Use native packages for testing')
+    parser.add_argument('--version', help='Install given version of packages.')
     parser = subparsers.add_parser('clean',
                                    help="Destroy VMs")
     parser = subparsers.add_parser('box',
@@ -651,6 +652,8 @@ def main():
         install_kea(args)
 
     elif args.command == "test":
+        if args.version:
+            install_kea(args)
         test(args, rest)
 
     elif args.command == "clean":
