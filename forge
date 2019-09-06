@@ -411,7 +411,7 @@ def _install_kea_native(args):
     pkgs = [p + sfx for p in pkgs]
     pkgs = " ".join(pkgs)
 
-    cmd = cmd_tpl % 'sudo apt install -y %s' % pkgs
+    cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
     env = os.environ.copy()
     env['DEBIAN_FRONTEND'] = 'noninteractive'
     execute(cmd, cwd=vagrant_dir, env=env)
@@ -455,7 +455,8 @@ def test(args, params):
     ensure_lxc_bridges(args)
 
     vagrant_dir = get_vagrant_dir(args)
-    execute('vagrant up', cwd=vagrant_dir, raise_error=False)
+    if not args.version:
+        execute('vagrant up', cwd=vagrant_dir, raise_error=False)
 
     params = ' '.join(params)
     print('Test params: %s' % params)
