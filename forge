@@ -270,18 +270,19 @@ def ensure_lxc_bridges(args):
     traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
     traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
 
-    # ns = 'fg-' + args.sid
-
-    # execute('sudo ip netns add %s' % ns, raise_error=False)
-    # for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
-    #     execute('sudo ip netns exec %s brctl addbr %s' % (ns, bridge), raise_error=False)  # TODO: add detection if already exists
-    #     execute('sudo ip netns exec %s ip link set dev %s up' % (ns, bridge))
-
     for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
         execute('sudo brctl addbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
-        execute('sudo ip link set %s type bridge vlan_filtering 1' % bridge)
-        execute('sudo bridge vlan del dev %s vid 1 self' % bridge)
         execute('sudo ip link set dev %s up' % bridge)
+
+
+def delete_lxc_bridges(args):
+    mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
+    traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
+    traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
+
+    for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
+        execute('sudo ip link set dev %s down' % bridge, raise_error=False)
+        execute('sudo brctl delbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
 
 
 def setup(args):
@@ -489,13 +490,20 @@ def test(args, params):
 
 def clean(args):
     vagrant_dir = get_vagrant_dir(args)
-    execute('vagrant destroy -f', cwd=vagrant_dir)
+
+    # destroy VMs
+    execute('vagrant destroy -f', cwd=vagrant_dir, raise_error=False)
+
+    # clean files
     for path in ['tests/init_all.py', os.path.join(vagrant_dir, 'Vagrantfile')]:
         path = os.path.abspath(path)
         if os.path.exists(path):
             os.unlink(path)
             print('Deleted %s.' % path)
 
+    # delete bridges
+    if args.lxc:
+        delete_lxc_bridges(args)
 
 def _get_latest_cloud_version(image_tpl):
     url = 'https://app.vagrantup.com/api/v1/box/' + image_tpl

@@ -10,10 +10,13 @@ Vagrant.configure("2") do |config|
       v.container_name = "${SERVER1_NAME}"
       v.customize 'rootfs.path', "/var/lib/lxc/${SERVER1_NAME}/rootfs"  # fix for issues in vagrant-lxc
 
+      v.customize 'net.0.name', 'int'
+
       v.customize 'net.1.type', 'veth'
       v.customize 'net.1.flags', 'up'
       v.customize 'net.1.link', '${MGMT_BRG}'
       v.customize 'net.1.ipv4.address', '${MGMT_ADDRESS}/24'
+      v.customize 'net.1.name', 'mgmt'
 
       v.customize 'net.2.type', 'veth'
       v.customize 'net.2.flags', 'up'
@@ -39,10 +42,13 @@ Vagrant.configure("2") do |config|
       v.container_name = "${CLIENT_NAME}"
       v.customize 'rootfs.path', "/var/lib/lxc/${CLIENT_NAME}/rootfs"
 
+      v.customize 'net.0.name', 'int'
+
       v.customize 'net.1.type', 'veth'
       v.customize 'net.1.flags', 'up'
       v.customize 'net.1.link', '${MGMT_BRG}'
       v.customize 'net.1.ipv4.address', '172.28.0.20/24'
+      v.customize 'net.1.name', 'mgmt'
 
       v.customize 'net.2.type', 'veth'
       v.customize 'net.2.flags', 'up'
