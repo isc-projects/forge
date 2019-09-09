@@ -9,6 +9,7 @@
 
 from __future__ import print_function
 import os
+import sys
 import time
 import json
 import string
@@ -467,6 +468,10 @@ def test(args, params):
     try:
         execute(cmd, cwd=vagrant_dir)  # , raise_error=False)
     except:
+        # wait for all traces in executed command
+        sys.stdout.flush()
+        sys.stderr.flush()
+        time.sleep(1)
         log.exception('ignored error in testing')
 
 
