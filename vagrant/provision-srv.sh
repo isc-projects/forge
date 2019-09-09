@@ -9,6 +9,11 @@ cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9k+O9Jzl3906khOTFWJEBoH+NGAf8wTJOPjvgi7XvbI/CRCddyHMkjtcRpB7rQYHXzHoFjVcTZZDdpkDofY4pHYQZEPYKnrPYjlNCV6ps1yrsHYbvEnbwvvscYaBm7JSftn+sAxRZPS2qI4nZsbzeVqCbt91Y6pbruEuhoKBWGvHDbE19PQeRTc/+XpTywdiZgKSawEnUxSVXjwrOP/+wNRu9J6zdQM8LxJBQX2pqtusnHT48+QebO+bP/njmUldWJRow0MCmuaFTKVcOoTknvRz7Oml4qOKt1WLqKpEkVG3GNUCPWdQHF1g90EXRPQhGamuPzM34LNNltUlFcWuP godfryd@u-1810-kea-cli" >> $HOME/.ssh/authorized_keys
 chmod 600 $HOME/.ssh/id_rsa
 
+sudo systemctl stop apt-daily-upgrade.timer apt-daily.timer
+sudo systemctl disable apt-daily-upgrade.timer apt-daily.timer
+sudo systemctl stop apt-daily.service apt-daily-upgrade.service
+sudo systemctl disable apt-daily.service apt-daily-upgrade.service
+
 sudo apt update
-sudo apt install -y socat
-sudo apt install -y gnupg  # LXC
+ps axf
+sudo apt install -y socat gnupg

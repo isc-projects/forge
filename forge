@@ -270,8 +270,17 @@ def ensure_lxc_bridges(args):
     traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
     traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
 
+    # ns = 'fg-' + args.sid
+
+    # execute('sudo ip netns add %s' % ns, raise_error=False)
+    # for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
+    #     execute('sudo ip netns exec %s brctl addbr %s' % (ns, bridge), raise_error=False)  # TODO: add detection if already exists
+    #     execute('sudo ip netns exec %s ip link set dev %s up' % (ns, bridge))
+
     for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
         execute('sudo brctl addbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
+        execute('sudo ip link set %s type bridge vlan_filtering 1' % bridge)
+        execute('sudo bridge vlan del dev %s vid 1 self' % bridge)
         execute('sudo ip link set dev %s up' % bridge)
 
 
@@ -319,16 +328,19 @@ def setup(args):
         f_out.write(txt)
     print('Generated %s.' % vagrant_file)
 
+    # in case of LXC prepare bridges
+    if args.lxc:
+        ensure_lxc_bridges(args)
+
     if args.command == 'setup':
         # destroy VMs via Vagrant
         execute('vagrant destroy -f', cwd=vagrant_dir)
 
-        # in case of LXC prepare bridges
         if args.lxc:
+            # in case of LXC to be sure destroys containers explicitly
             for cntr in [client_name, server1_name, server2_name]:
                 execute('sudo lxc-stop --name %s' % cntr, raise_error=False)
                 execute('sudo lxc-destroy --name %s' % cntr, raise_error=False)
-            ensure_lxc_bridges(args)
 
         # create and start VMs via Vagrant
         execute('vagrant up', cwd=vagrant_dir)
@@ -463,7 +475,7 @@ def test(args, params):
     print('Test params: %s' % params)
     client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
     cmd = 'vagrant ssh ' + client_name + ' -c "%s"'
-    subcmd = 'cd /forge/; sudo ~/venv/bin/pytest ' + params
+    subcmd = 'cd /forge/; ls -al; sudo ~/venv/bin/pytest ' + params
     cmd %= subcmd
     try:
         execute(cmd, cwd=vagrant_dir)  # , raise_error=False)

@@ -1012,6 +1012,8 @@ def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_valu
 
 
 def db_setup():
+    fabric_sudo_command("dpkg -l 'isc-kea*'")
+
     if world.f_cfg.disable_db_setup:
         return
 
