@@ -577,11 +577,20 @@ def _restart_kea_with_systemctl(destination_address):
     cmd_tpl += ' grep "server version .* started" 2>/dev/null;'  # if in the logs there is given sequence then ok
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
-    cmd = cmd_tpl.format(service='isc-kea-dhcp%s-server' % world.proto[1])
+    if world.server_system == 'redhat':
+        service_name = 'kea-dhcp%s' % world.proto[1]
+    else:
+        service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+
+    cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ctrl_enable:
-        cmd = cmd_tpl.format(service='isc-kea-ctrl-agent')
+        if world.server_system == 'redhat':
+            service_name = 'kea-ctrl-agent'
+        else:
+            service_name = 'isc-kea-ctrl-agent'
+        cmd = cmd_tpl.format(service=service_name)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
@@ -609,14 +618,19 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
     else:
-        if hasattr(world, 'proto'):
-            cmd = 'systemctl stop isc-kea-dhcp%s-server' % world.proto[1]
-            fabric_sudo_command(cmd, destination_host=destination_address)
+        if not hasattr(world, 'server_system'):
+            result = fabric_sudo_command('ls -al /etc/redhat-release', destination_host=destination_address)
+            if result.succeeded:
+                world.server_system = 'redhat'
+            else:
+                world.server_system = 'debian'
+
+        if world.server_system == 'redhat':
+            service_names = 'kea-dhcp4 kea-dhcp6 kea-ctrl-agent kea-dhcp-ddns'
         else:
-            for v in [4, 6]:
-                cmd = 'systemctl stop isc-kea-dhcp%s-server' % v
-                fabric_sudo_command(cmd, destination_host=destination_address)
-        cmd = 'systemctl stop isc-kea-ctrl-agent'
+            service_names = 'isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent isc-kea-dhcp-ddns'
+
+        cmd = 'systemctl stop %s' % service_names
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
@@ -1012,7 +1026,10 @@ def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_valu
 
 
 def db_setup():
-    fabric_sudo_command("dpkg -l 'isc-kea*'")
+    if world.server_system == 'redhat':
+        fabric_sudo_command("rpm -qa '*kea*'")
+    else:
+        fabric_sudo_command("dpkg -l '*kea*'")
 
     if world.f_cfg.disable_db_setup:
         return
@@ -1039,21 +1056,21 @@ def db_setup():
     result = fabric_run_command(cmd)
     assert result.succeeded
 
-    # POSTGRESQL
-    cmd = "psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True)
-    cmd = "psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
-    cmd = "psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
-    cmd = "psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
-    cmd = "psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
-    cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-    result = fabric_run_command(cmd)
-    assert result.succeeded
+    # # POSTGRESQL
+    # cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
+    # fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True)
+    # cmd = "cd /; psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
+    # result = fabric_sudo_command(cmd, sudo_user='postgres')
+    # assert result.succeeded
+    # cmd = "cd /; psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
+    # result = fabric_sudo_command(cmd, sudo_user='postgres')
+    # assert result.succeeded
+    # cmd = "cd /; psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
+    # result = fabric_sudo_command(cmd, sudo_user='postgres')
+    # assert result.succeeded
+    # cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
+    # result = fabric_sudo_command(cmd, sudo_user='postgres')
+    # assert result.succeeded
+    # cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+    # result = fabric_run_command(cmd)
+    # assert result.succeeded

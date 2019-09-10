@@ -11,7 +11,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.disabled
@@ -53,7 +52,6 @@ def test_v6_relay_invalid_with_client_id():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.disabled
@@ -98,7 +96,6 @@ def test_v6_relay_invalid_with_server_id():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option
@@ -141,7 +138,6 @@ def test_v6_relay_invalid_options_preference():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option
@@ -184,7 +180,6 @@ def test_v6_relay_invalid_options_time():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option
@@ -229,7 +224,6 @@ def test_v6_relay_invalid_options_option_request():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option
@@ -274,7 +268,6 @@ def test_v6_relay_invalid_options_server_unicast():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option
@@ -318,7 +311,6 @@ def test_v6_relay_invalid_options_status_code():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option
@@ -362,7 +354,6 @@ def test_v6_relay_invalid_options_rapid_commit():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option
@@ -405,7 +396,6 @@ def test_v6_relay_invalid_options_reconfigure():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.relay_invalid
 @pytest.mark.invalid_option

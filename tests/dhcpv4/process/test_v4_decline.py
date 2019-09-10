@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.decline
 def test_v4_decline_success_long_decline_period():
     # address in decline period
@@ -61,7 +60,6 @@ def test_v4_decline_success_long_decline_period():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.decline
 def test_v4_decline_success_short_decline_period():
     # address in decline period
@@ -123,7 +121,6 @@ def test_v4_decline_success_short_decline_period():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.decline
 def test_v4_decline_fail_without_serverid():
 
@@ -221,7 +218,6 @@ def test_v4_decline_fail_without_serverid():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.decline
 def test_v4_decline_fail_without_requested_ip_address():
 
@@ -280,7 +276,6 @@ def test_v4_decline_fail_without_requested_ip_address():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.decline
 def test_v4_decline_fail_client_id_not_included():
 
@@ -343,7 +338,6 @@ def test_v4_decline_fail_client_id_not_included():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.decline
 def test_v4_decline_fail_different_client_id():
 
@@ -393,7 +387,6 @@ def test_v4_decline_fail_different_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.decline
 def test_v4_decline_fail_different_chaddr():
 

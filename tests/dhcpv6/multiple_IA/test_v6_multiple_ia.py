@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.multipleIA
 def test_v6_multipleIA_addresses():
     #  Testing server ability to parse and allocate addresses
@@ -88,7 +87,6 @@ def test_v6_multipleIA_addresses():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.multipleIA
 def test_v6_multipleIA_addresses_multiple_pools():
     #  Testing server ability to parse and allocate addresses
@@ -169,7 +167,6 @@ def test_v6_multipleIA_addresses_multiple_pools():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.multipleIA
 def test_v6_multipleIA_addresses_release_success():
     #  Testing server ability to parse multiple IA's included into message
@@ -272,7 +269,6 @@ def test_v6_multipleIA_addresses_release_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.multipleIA
 def test_v6_multipleIA_addresses_release_partial_success():
     #  Testing server ability to parse multiple IA's included into message
@@ -397,7 +393,6 @@ def test_v6_multipleIA_addresses_release_partial_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.multipleIA
 def test_v6_multipleIA_addresses_rebind_partial_success():
     #  Testing servers ability to rebind two IA form three received
@@ -518,7 +513,6 @@ def test_v6_multipleIA_addresses_rebind_partial_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.multipleIA
 def test_v6_multipleIA_addresses_noaddravail():
     #  Testing server ability to assign two addresses and

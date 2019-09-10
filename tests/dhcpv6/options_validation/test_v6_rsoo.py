@@ -11,7 +11,6 @@ import srv_msg
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rsoo
 def test_v6_options_rsoo_default_option():
@@ -55,7 +54,6 @@ def test_v6_options_rsoo_default_option():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rsoo
 def test_v6_options_rsoo_custom_option_list():
@@ -97,7 +95,6 @@ def test_v6_options_rsoo_custom_option_list():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rsoo
 def test_v6_options_rsoo_custom_option_list_default_option_65():
@@ -142,7 +139,6 @@ def test_v6_options_rsoo_custom_option_list_default_option_65():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rsoo
 def test_v6_options_rsoo_custom_option_list_server_has_option_configured_also():

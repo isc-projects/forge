@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_iPXE_client_arch():
     misc.test_setup()
@@ -51,7 +50,6 @@ def test_v4_client_classification_iPXE_client_arch():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_iPXE_client_inter():
     misc.test_setup()
@@ -92,7 +90,6 @@ def test_v4_client_classification_iPXE_client_inter():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_iPXE_machine_ident():
     misc.test_setup()

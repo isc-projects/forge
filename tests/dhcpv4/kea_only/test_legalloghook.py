@@ -11,7 +11,6 @@ from forge_cfg import world
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address():
@@ -69,7 +68,6 @@ def test_v4_legal_log_assigned_address():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_pgsql():
@@ -132,7 +130,6 @@ def test_v4_legal_log_assigned_address_pgsql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_mysql():
@@ -195,7 +192,6 @@ def test_v4_legal_log_assigned_address_mysql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_without_client_id():
@@ -250,7 +246,6 @@ def test_v4_legal_log_assigned_address_without_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_without_client_id_pgsql():
@@ -308,7 +303,6 @@ def test_v4_legal_log_assigned_address_without_client_id_pgsql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_without_client_id_mysql():
@@ -366,7 +360,6 @@ def test_v4_legal_log_assigned_address_without_client_id_mysql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_via_relay_pgsql_1():
@@ -426,7 +419,6 @@ def test_v4_legal_log_assigned_address_via_relay_pgsql_1():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_via_relay_pgsql_2():
@@ -490,7 +482,6 @@ def test_v4_legal_log_assigned_address_via_relay_pgsql_2():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_via_relay_mysql():
@@ -554,7 +545,6 @@ def test_v4_legal_log_assigned_address_via_relay_mysql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_renewed_address():
@@ -631,7 +621,6 @@ def test_v4_legal_log_renewed_address():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_renewed_address_pgsql():
@@ -713,7 +702,6 @@ def test_v4_legal_log_renewed_address_pgsql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_renewed_address_mysql():
@@ -795,7 +783,6 @@ def test_v4_legal_log_renewed_address_mysql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_rebind_address():
@@ -872,7 +859,6 @@ def test_v4_legal_log_rebind_address():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_rebind_address_mysql():
@@ -954,7 +940,6 @@ def test_v4_legal_log_rebind_address_mysql():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v4_legal_log_rebind_address_pgsql():

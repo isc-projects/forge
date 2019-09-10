@@ -11,7 +11,6 @@ import srv_msg
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.confirm
 def test_v6_statuscode_success_confirm():
@@ -68,7 +67,6 @@ def test_v6_statuscode_success_confirm():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.confirm
 def test_v6_statuscode_notonlink_confirm():

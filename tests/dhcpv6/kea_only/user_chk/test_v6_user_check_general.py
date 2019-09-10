@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.user_check
 @pytest.mark.IA_NA
@@ -29,7 +28,6 @@ def test_user_check_hook_IA_NA_no_registry():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.user_check
 @pytest.mark.IA_NA
@@ -65,7 +63,6 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.user_check
 @pytest.mark.IA_NA

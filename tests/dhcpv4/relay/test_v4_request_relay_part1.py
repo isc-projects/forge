@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_selecting_success_chaddr():
@@ -51,7 +50,6 @@ def test_v4_request_relay_selecting_success_chaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_selecting_success_chaddr_empty_pool():
@@ -106,7 +104,6 @@ def test_v4_request_relay_selecting_success_chaddr_empty_pool():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_selecting_success_client_id():
@@ -158,7 +155,6 @@ def test_v4_request_relay_selecting_success_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_selecting_success_client_id_empty_pool():
@@ -220,7 +216,6 @@ def test_v4_request_relay_selecting_success_client_id_empty_pool():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_selecting_success_client_id_chaddr_empty_pool():
@@ -293,7 +288,6 @@ def test_v4_request_relay_selecting_success_client_id_chaddr_empty_pool():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_selecting_success_second_request_fail():

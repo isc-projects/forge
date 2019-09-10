@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.user_check
 @pytest.mark.IA_NA
@@ -49,7 +48,6 @@ def test_user_check_hook_IA_NA_no_registry_logging():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.user_check
 @pytest.mark.IA_NA
@@ -91,7 +89,6 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.user_check
 @pytest.mark.IA_NA

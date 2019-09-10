@@ -11,7 +11,6 @@ import references
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.preference
 def test_v6_options_inforequest_preference():
@@ -43,7 +42,6 @@ def test_v6_options_inforequest_preference():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
 def test_v6_options_inforequest_sip_domains():
@@ -82,7 +80,6 @@ def test_v6_options_inforequest_sip_domains():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
 @pytest.mark.rfc3319
@@ -121,7 +118,6 @@ def test_v6_options_inforequest_sip_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
 @pytest.mark.rfc3319
@@ -150,7 +146,6 @@ def test_v6_options_inforequest_sip_servers_csv():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
 @pytest.mark.rfc3319
@@ -164,7 +159,6 @@ def test_v6_options_inforequest_sip_servers_csv_incorrect():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
 @pytest.mark.rfc3319
@@ -178,7 +172,6 @@ def test_v6_options_inforequest_sip_servers_csv_incorrect_hex():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.dns
 @pytest.mark.rfc3646
@@ -220,7 +213,6 @@ def test_v6_options_inforequest_dns_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc3646
 def test_v6_options_inforequest_domains():
@@ -259,7 +251,6 @@ def test_v6_options_inforequest_domains():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.rfc3898
@@ -299,7 +290,6 @@ def test_v6_options_inforequest_nis_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.nisp
@@ -342,7 +332,6 @@ def test_v6_options_inforequest_nisp_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.rfc3898
@@ -376,7 +365,6 @@ def test_v6_options_inforequest_nisdomain():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc3898
 def test_v6_options_inforequest_nispdomain():
@@ -409,7 +397,6 @@ def test_v6_options_inforequest_nispdomain():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sntp
 @pytest.mark.rfc4075
@@ -449,7 +436,6 @@ def test_v6_options_inforequest_sntp_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc4242
 def test_v6_options_inforequest_info_refresh():
@@ -482,7 +468,6 @@ def test_v6_options_inforequest_info_refresh():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_inforequest_multiple():
     #  Testing server ability to configure it with option multiple options:
@@ -541,7 +526,6 @@ def test_v6_options_inforequest_multiple():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.dns
 @pytest.mark.rfc3646

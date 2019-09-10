@@ -12,7 +12,6 @@ import srv_control
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_solicit_advertise():
     #  Basic message test, testing only server ability to respond with 'ADVERTISE' to received 'SOLICIT'
     #  Client		Server
@@ -39,7 +38,6 @@ def test_v6_basic_message_solicit_advertise():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_request_reply():
     #  Basic message test, testing only server ability message exchange
     #  between him and client.
@@ -77,7 +75,6 @@ def test_v6_basic_message_request_reply():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_confirm_reply():
     #  Basic message test, testing only server ability message exchange
     #  between him and client.
@@ -126,7 +123,6 @@ def test_v6_basic_message_confirm_reply():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_renew_reply():
     #  Basic message test, testing only server ability message exchange
     #  between him and client.
@@ -175,7 +171,6 @@ def test_v6_basic_message_renew_reply():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_rebind_reply():
     #  Basic message test, testing only server ability message exchange
     #  between him and client.
@@ -223,7 +218,6 @@ def test_v6_basic_message_rebind_reply():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_release_reply():
     #  Basic message test, testing only server ability message exchange
     #  between him and client.
@@ -272,7 +266,6 @@ def test_v6_basic_message_release_reply():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_decline_reply():
     #  Basic message test, testing only server ability message exchange
     #  between him and client.
@@ -322,7 +315,6 @@ def test_v6_basic_message_decline_reply():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_information_request_reply():
     #  Basic message test, testing only server ability to respond with 'REPLY'
     #  to received 'INFOREQUEST'. Without testing content of a message.
@@ -345,7 +337,6 @@ def test_v6_basic_message_information_request_reply():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_v6_basic_message_information_request_reply_without_client_id():
     #  Basic message test, testing only server ability to respond with 'REPLY'
     #  to received 'INFOREQUEST' message that not include CLIENT-ID option.

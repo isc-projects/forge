@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_subnet_mask():
@@ -35,7 +34,6 @@ def test_v4_options_subnet_mask():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_time_offset():
@@ -57,7 +55,6 @@ def test_v4_options_time_offset():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_routers():
@@ -80,7 +77,6 @@ def test_v4_options_routers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_time_servers():
@@ -103,7 +99,6 @@ def test_v4_options_time_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_name_servers():
@@ -126,7 +121,6 @@ def test_v4_options_name_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_domain_name_servers():
@@ -149,7 +143,6 @@ def test_v4_options_domain_name_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_domain_name_servers_csv_correct():
@@ -170,7 +163,6 @@ def test_v4_options_domain_name_servers_csv_correct():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_domain_name_servers_csv_incorrect_hex():
@@ -182,7 +174,6 @@ def test_v4_options_domain_name_servers_csv_incorrect_hex():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_domain_name_servers_csv_incorrect_address():
@@ -194,7 +185,6 @@ def test_v4_options_domain_name_servers_csv_incorrect_address():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_log_servers():
@@ -217,7 +207,6 @@ def test_v4_options_log_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_cookie_servers():
@@ -240,7 +229,6 @@ def test_v4_options_cookie_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_lpr_servers():
@@ -263,7 +251,6 @@ def test_v4_options_lpr_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_impress_servers():
@@ -286,7 +273,6 @@ def test_v4_options_impress_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_resource_location_servers():
@@ -309,7 +295,6 @@ def test_v4_options_resource_location_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_host_name():
@@ -331,7 +316,6 @@ def test_v4_options_host_name():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_boot_size():
@@ -353,7 +337,6 @@ def test_v4_options_boot_size():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_merit_dump():
@@ -375,7 +358,6 @@ def test_v4_options_merit_dump():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_swap_server():
@@ -397,7 +379,6 @@ def test_v4_options_swap_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_root_path():
@@ -423,7 +404,6 @@ def test_v4_options_root_path():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_extensions_path():
@@ -449,7 +429,6 @@ def test_v4_options_extensions_path():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_policy_filter():
@@ -472,7 +451,6 @@ def test_v4_options_policy_filter():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_max_dgram_reassembly():
@@ -494,7 +472,6 @@ def test_v4_options_max_dgram_reassembly():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_default_ip_ttl():
@@ -516,7 +493,6 @@ def test_v4_options_default_ip_ttl():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_path_mtu_aging_timeout():

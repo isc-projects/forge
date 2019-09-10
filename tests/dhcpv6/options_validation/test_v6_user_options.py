@@ -11,7 +11,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.user
 def test_v6_options_user_defined_option():
@@ -57,7 +56,6 @@ def test_v6_options_user_defined_option():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.user
 def test_v6_options_user_defined_option_code_zero():
@@ -81,7 +79,6 @@ def test_v6_options_user_defined_option_code_zero():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.user
 def test_v6_options_user_defined_option_standard_code():
@@ -105,7 +102,6 @@ def test_v6_options_user_defined_option_standard_code():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_all():
 

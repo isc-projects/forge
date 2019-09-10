@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_success():
 
@@ -62,7 +61,6 @@ def test_v4_release_success():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_success_with_additional_offer():
 
@@ -133,7 +131,6 @@ def test_v4_release_success_with_additional_offer():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_fail_with_different_chaddr_client_id():
 
@@ -198,7 +195,6 @@ def test_v4_release_fail_with_different_chaddr_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_fail_with_same_chaddr_different_client_id():
 
@@ -264,7 +260,6 @@ def test_v4_release_fail_with_same_chaddr_different_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_fail_with_different_chaddr_same_client_id():
 
@@ -334,7 +329,6 @@ def test_v4_release_fail_with_different_chaddr_same_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_only_chaddr_same_chaddr():
 
@@ -398,7 +392,6 @@ def test_v4_release_only_chaddr_same_chaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_fail_only_chaddr_different_chaddr():
 
@@ -456,7 +449,6 @@ def test_v4_release_fail_only_chaddr_different_chaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.release
 def test_v4_release_leases_expired():
 

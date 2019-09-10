@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.request
 def test_v4_request_renewing_success():
 
@@ -63,7 +62,6 @@ def test_v4_request_renewing_success():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.request
 def test_v4_request_rebinding_success():
 
@@ -116,7 +114,6 @@ def test_v4_request_rebinding_success():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.request
 def test_v4_request_rebinding_fail():
 

@@ -11,7 +11,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rapid
 @pytest.mark.kea_only
 def test_v6_rapid_commit_as_global_parameter():
@@ -23,7 +22,6 @@ def test_v6_rapid_commit_as_global_parameter():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rapid
 @pytest.mark.kea_only
 def test_v6_rapid_commit_basic_one_subnet():
@@ -50,7 +48,6 @@ def test_v6_rapid_commit_basic_one_subnet():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rapid
 @pytest.mark.kea_only
 def test_v6_rapid_commit_basic_one_subnet_rapid_not_included():
@@ -89,7 +86,6 @@ def test_v6_rapid_commit_basic_one_subnet_rapid_not_included():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rapid
 @pytest.mark.kea_only
 def test_v6_rapid_commit_basic_two_subnets():

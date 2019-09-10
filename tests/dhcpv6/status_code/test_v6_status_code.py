@@ -11,7 +11,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 def test_v6_statuscode_noaddravail_solicit():
 
@@ -53,7 +52,6 @@ def test_v6_statuscode_noaddravail_solicit():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.request
 def test_v6_statuscode_noaddravail_request():
@@ -100,7 +98,6 @@ def test_v6_statuscode_noaddravail_request():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.renew
 def test_v6_statuscode_nobinding_renew():
@@ -137,7 +134,6 @@ def test_v6_statuscode_nobinding_renew():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.renew
 @pytest.mark.disabled

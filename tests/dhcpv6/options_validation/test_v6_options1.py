@@ -11,7 +11,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.preference
 def test_v6_options_preference():
@@ -60,7 +59,6 @@ def test_v6_options_preference():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.preference
 def test_v6_options_unicast_1():
@@ -109,7 +107,6 @@ def test_v6_options_unicast_1():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
 def test_v6_options_sip_domains():
@@ -169,7 +166,6 @@ def test_v6_options_sip_domains():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sip
 @pytest.mark.rfc3319
@@ -229,7 +225,6 @@ def test_v6_options_sip_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.dns
 @pytest.mark.rfc3646
@@ -289,7 +284,6 @@ def test_v6_options_dns_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc3646
 def test_v6_options_domains():
@@ -348,7 +342,6 @@ def test_v6_options_domains():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.rfc3898
@@ -408,7 +401,6 @@ def test_v6_options_nis_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.nisp
@@ -450,7 +442,6 @@ def test_v6_options_nisp_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.nis
 @pytest.mark.rfc3898
@@ -500,7 +491,6 @@ def test_v6_options_nisdomain():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc3898
 def test_v6_options_nispdomain():
@@ -548,7 +538,6 @@ def test_v6_options_nispdomain():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.sntp
 @pytest.mark.rfc4075
@@ -608,7 +597,6 @@ def test_v6_options_sntp_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.rfc4242
 def test_v6_options_info_refresh():
@@ -657,7 +645,6 @@ def test_v6_options_info_refresh():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_multiple():
     #  Testing server ability to configure it with option multiple options:
@@ -753,7 +740,6 @@ def test_v6_options_multiple():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.dns
 @pytest.mark.rfc3646
@@ -825,7 +811,6 @@ def test_v6_options_negative():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_unicast_2():
     #  Testing server ability to configure it with option
@@ -871,7 +856,6 @@ def test_v6_options_unicast_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_bcmcs_server_dns():
     #  Testing server ability to configure it with option
@@ -925,7 +909,6 @@ def test_v6_options_bcmcs_server_dns():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_bcmcs_server_addr():
     #  Testing server ability to configure it with option
@@ -979,7 +962,6 @@ def test_v6_options_bcmcs_server_addr():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_pana_agent():
     #  Testing server ability to configure it with option
@@ -1027,7 +1009,6 @@ def test_v6_options_pana_agent():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_new_posix_timezone():
     #  Testing server ability to configure it with option
@@ -1081,7 +1062,6 @@ def test_v6_options_new_posix_timezone():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_new_tzdb_timezone():
     #  Testing server ability to configure it with option
@@ -1127,7 +1107,6 @@ def test_v6_options_new_tzdb_timezone():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_bootfile_url():
     #  Testing server ability to configure it with option
@@ -1181,7 +1160,6 @@ def test_v6_options_bootfile_url():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_bootfile_param():
     #  Testing server ability to configure it with option
@@ -1228,7 +1206,6 @@ def test_v6_options_bootfile_param():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.disabled
 def test_v6_options_lq_client_link():
@@ -1285,7 +1262,6 @@ def test_v6_options_lq_client_link():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 def test_v6_options_erp_local_domain_name():
     #  Testing server ability to configure it with option

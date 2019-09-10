@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.release
 def test_v4_relay_release_success():
@@ -80,7 +79,6 @@ def test_v4_relay_release_success():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.release
 def test_v4_relay_release_success_with_additional_offer():
@@ -166,7 +164,6 @@ def test_v4_relay_release_success_with_additional_offer():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.release
 def test_v4_relay_release_only_chaddr_same_chaddr():

@@ -4,13 +4,11 @@
 Vagrant.configure("2") do |config|
   # SERVER 1
   config.vm.define "${SERVER1_NAME}" do |srv1|
-    srv1.vm.box = "godfryd/forge-srv-ubuntu-18.04"
+    srv1.vm.box = "godfryd/${SERVER_IMAGE}"
     srv1.vm.hostname = "${SERVER1_NAME}"
     srv1.vm.provider "lxc" do |v|
       v.container_name = "${SERVER1_NAME}"
       v.customize 'rootfs.path', "/var/lib/lxc/${SERVER1_NAME}/rootfs"  # fix for issues in vagrant-lxc
-
-      v.customize 'net.0.name', 'int'
 
       v.customize 'net.1.type', 'veth'
       v.customize 'net.1.flags', 'up'
@@ -27,11 +25,12 @@ Vagrant.configure("2") do |config|
     end
     srv1.vm.synced_folder "${KEA_DIRS}", "/kea-dirs"
 
-    srv1.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key", "../../id_rsa"]
+    srv1.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key", "../../../id_rsa"]
     srv1.ssh.insert_key = false
-    srv1.vm.provision "file", source: "../../id_rsa", destination: "$HOME/.ssh/id_rsa"
-    srv1.vm.provision "file", source: "../../id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
-    srv1.vm.provision "shell", privileged: false, path: "../../provision-srv.sh"
+    srv1.vm.provision "file", source: "../../../id_rsa", destination: "$HOME/.ssh/id_rsa"
+    srv1.vm.provision "file", source: "../../../id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    srv1.vm.provision "shell", privileged: false, path: "../../../provision-keys.sh"
+    srv1.vm.provision "shell", privileged: false, path: "../../../provision-srv-${PKG}.sh"
   end
 
   # CLIENT
@@ -41,8 +40,6 @@ Vagrant.configure("2") do |config|
     clnt.vm.provider "lxc" do |v|
       v.container_name = "${CLIENT_NAME}"
       v.customize 'rootfs.path', "/var/lib/lxc/${CLIENT_NAME}/rootfs"
-
-      v.customize 'net.0.name', 'int'
 
       v.customize 'net.1.type', 'veth'
       v.customize 'net.1.flags', 'up'
@@ -57,12 +54,13 @@ Vagrant.configure("2") do |config|
       v.customize 'net.2.ipv6.address', '2001:db8:1::1000/64'
       v.customize 'net.2.name', '${IFACE}'
     end
-    clnt.vm.synced_folder "../../..", "/forge"
+    clnt.vm.synced_folder "../../../..", "/forge"
 
-    clnt.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key", "../../id_rsa"]
+    clnt.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key", "../../../id_rsa"]
     clnt.ssh.insert_key = false
-    clnt.vm.provision "file", source: "../../id_rsa", destination: "$HOME/.ssh/id_rsa"
-    clnt.vm.provision "file", source: "../../id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
-    clnt.vm.provision "shell", privileged: false, path: "../../provision-clnt.sh"
+    clnt.vm.provision "file", source: "../../../id_rsa", destination: "$HOME/.ssh/id_rsa"
+    clnt.vm.provision "file", source: "../../../id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
+    clnt.vm.provision "shell", privileged: false, path: "../../../provision-keys.sh"
+    clnt.vm.provision "shell", privileged: false, path: "../../../provision-clnt.sh"
   end
 end

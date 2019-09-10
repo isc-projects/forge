@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.user_check
 def test_user_check_IA_NA_no_registry_logging():
@@ -55,7 +54,6 @@ def test_user_check_IA_NA_no_registry_logging():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.user_check
 def test_user_check_IA_NA_with_registry_unknown_user_logging():
@@ -93,7 +91,6 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.kea_only
 @pytest.mark.user_check
 def test_user_check_IA_NA_with_registry_unknown_user_logging_2():

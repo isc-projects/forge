@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -37,7 +36,6 @@ def test_v6_client_classification_onesubnet_docsis3_advertise_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -62,7 +60,6 @@ def test_v6_client_classification_onesubnet_docsis3_advertise_fail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -103,7 +100,6 @@ def test_v6_client_classification_onesubnet_docsis3_request_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -143,7 +139,6 @@ def test_v6_client_classification_onesubnet_docsis3_request_fail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -170,7 +165,6 @@ def test_v6_client_classification_onesubnet_eRouter1_0_advertise_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -195,7 +189,6 @@ def test_v6_client_classification_onesubnet_eRouter1_0_advertise_fail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -236,7 +229,6 @@ def test_v6_client_classification_onesubnet_eRouter1_0_request_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes

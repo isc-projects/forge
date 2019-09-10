@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.decline
 def test_v4_relay_decline_success():
@@ -69,7 +68,6 @@ def test_v4_relay_decline_success():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.decline
 def test_v4_relay_decline_fail_without_serverid():

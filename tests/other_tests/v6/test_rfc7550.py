@@ -616,7 +616,6 @@ def test_v6_rfc7550_11():
 
 @pytest.mark.disabled
 @pytest.mark.rfc7550
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix():

@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 def test_v4_message_fields_chaddr():
     # that test needs more work with chaddr
@@ -30,7 +29,6 @@ def test_v4_message_fields_chaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.ciaddr
 def test_v4_message_fields_ciaddr_correct_offer():
@@ -52,7 +50,6 @@ def test_v4_message_fields_ciaddr_correct_offer():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.ciaddr
 def test_v4_message_fields_ciaddr_incorrect_offer():
@@ -74,7 +71,6 @@ def test_v4_message_fields_ciaddr_incorrect_offer():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.ciaddr
 def test_v4_message_fields_ciaddr_incorrect_nak():
@@ -115,7 +111,6 @@ def test_v4_message_fields_ciaddr_incorrect_nak():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.ciaddr
 def test_v4_message_fields_ciaddr_correct_nak():
@@ -156,7 +151,6 @@ def test_v4_message_fields_ciaddr_correct_nak():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_correct_offer():
@@ -178,7 +172,6 @@ def test_v4_message_fields_siaddr_correct_offer():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_incorrect_offer():
@@ -200,7 +193,6 @@ def test_v4_message_fields_siaddr_incorrect_offer():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_incorrect_nak():
@@ -241,7 +233,6 @@ def test_v4_message_fields_siaddr_incorrect_nak():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_correct_nak():
@@ -282,7 +273,6 @@ def test_v4_message_fields_siaddr_correct_nak():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_correct_offer_configured_global():
@@ -303,7 +293,6 @@ def test_v4_message_fields_siaddr_correct_offer_configured_global():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_correct_offer_configured_local():
@@ -324,7 +313,6 @@ def test_v4_message_fields_siaddr_correct_offer_configured_local():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_correct_nak_configured_local():
@@ -364,7 +352,6 @@ def test_v4_message_fields_siaddr_correct_nak_configured_local():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.fields
 @pytest.mark.siaddr
 def test_v4_message_fields_siaddr_correct_nak_configured_global():

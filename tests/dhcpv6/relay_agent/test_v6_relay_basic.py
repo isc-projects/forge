@@ -11,7 +11,6 @@ import srv_msg
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_solicit_advertise():
 
@@ -39,7 +38,6 @@ def test_v6_relay_message_solicit_advertise():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.unicast
 def test_v6_relay_message_unicast_global():
@@ -71,7 +69,6 @@ def test_v6_relay_message_unicast_global():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.unicast
 @pytest.mark.disabled
@@ -116,7 +113,6 @@ def test_v6_relay_message_unicast_local():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_solicit_reply():
 
@@ -144,7 +140,6 @@ def test_v6_relay_message_solicit_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_request_reply():
 
@@ -181,7 +176,6 @@ def test_v6_relay_message_request_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_confirm_reply():
 
@@ -227,7 +221,6 @@ def test_v6_relay_message_confirm_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_renew_reply():
 
@@ -274,7 +267,6 @@ def test_v6_relay_message_renew_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_rebind_reply():
 
@@ -318,7 +310,6 @@ def test_v6_relay_message_rebind_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_release_reply():
 
@@ -363,7 +354,6 @@ def test_v6_relay_message_release_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_decline_reply():
 
@@ -400,7 +390,6 @@ def test_v6_relay_message_decline_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_information_request_reply():
     misc.test_setup()

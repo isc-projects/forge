@@ -260,7 +260,8 @@ def set_init_all(args):
 def get_vagrant_dir(args):
     vagrant_dir = os.path.join('vagrant',
                                'lxc' if args.lxc else 'vbox',
-                               args.sid if args.sid else 'default')
+                               args.sid if args.sid else 'default',
+                               args.system)
     vagrant_dir = os.path.abspath(vagrant_dir)
     return vagrant_dir
 
@@ -285,6 +286,21 @@ def delete_lxc_bridges(args):
         execute('sudo brctl delbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
 
 
+def _get_server_name(args, idx):
+    if args.system == 'ubuntu-18.04':
+        short_sys = 'u1804'
+    elif args.system == 'fedora-30':
+        short_sys = 'f30'
+    else:
+        raise Exception('unsupported system %s' % args.system)
+
+    name = 'forge-srv%d-%s' % (idx, short_sys)
+    if args.sid:
+        name += '-' + args.sid
+
+    return name
+
+
 def setup(args):
     # load config
     cfg = _load_config()
@@ -296,9 +312,16 @@ def setup(args):
     else:
         vagrant_tpl = 'vagrant/Vagrantfile.in'
 
+    if 'ubuntu' in args.system or 'debian' in args.system:
+        pkg = 'deb'
+    else:
+        pkg = 'rpm'
+
+    server_image = 'forge-srv-' + args.system
+
     client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
-    server1_name = 'forge-srv1-u1804-' + args.sid if args.sid else 'forge-srv1-u1804'
-    server2_name = 'forge-srv2-u1804-' + args.sid if args.sid else 'forge-srv2-u1804'
+    server1_name = _get_server_name(args, 1)
+    server2_name = _get_server_name(args, 2)
     mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
     traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
     traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
@@ -320,7 +343,9 @@ def setup(args):
                               SERVER2_NAME=server2_name,
                               MGMT_BRG=mgmt_brg,
                               TRAFFIC1_BRG=traffic1_brg,
-                              TRAFFIC2_BRG=traffic2_brg)
+                              TRAFFIC2_BRG=traffic2_brg,
+                              SERVER_IMAGE=server_image,
+                              PKG=pkg)
     vagrant_dir = get_vagrant_dir(args)
     if not os.path.exists(vagrant_dir):
         os.makedirs(vagrant_dir)
@@ -372,63 +397,102 @@ def install_kea(args):
 
 def _install_kea_native(args):
     vagrant_dir = get_vagrant_dir(args)
-    server1_name = 'forge-srv1-u1804-' + args.sid if args.sid else 'forge-srv1-u1804'
+    server1_name = _get_server_name(args, 1)
     cmd_tpl = 'vagrant ssh ' + server1_name + ' -c "%s"'
 
     # copy hammer into vm and prepare system
     execute('rm -rf hammer.py', cwd=vagrant_dir)
     execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py', cwd=vagrant_dir)
     execute('chmod a+x hammer.py', cwd=vagrant_dir)
-    # cmd = 'vagrant upload ../../../hammer.py %s' % server1_name
     cmd = 'vagrant upload hammer.py %s' % server1_name
     execute(cmd, cwd=vagrant_dir)
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -w mysql,pgsql,radius,forge'
     execute(cmd, cwd=vagrant_dir)
 
-    # prepare pkg source repo in vm
+    # prepare pkg source repo url
     repository_url = 'https://packages.isc.org'
-    repo_name = 'kea-%s-%s-%s' % ('1.7', 'ubuntu', '18.04')
+    repo_name = 'kea-%s-%s' % ('1.7', args.system)
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
-    subcmd = "echo 'deb %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
-    cmd = cmd_tpl % subcmd
-    execute(cmd, cwd=vagrant_dir)
-    key_url = "%s/repository/repo-keys/repo-key.gpg" % repository_url
-    subcmd = 'wget -qO- %s | sudo apt-key add -' % key_url
-    cmd = cmd_tpl % subcmd
-    execute(cmd, cwd=vagrant_dir)
+    if 'ubuntu' in args.system:
+        # setup pkg source repo in vm
+        subcmd = "echo 'deb %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
+        cmd = cmd_tpl % subcmd
+        execute(cmd, cwd=vagrant_dir)
+        key_url = "%s/repository/repo-keys/repo-key.gpg" % repository_url
+        subcmd = 'wget -qO- %s | sudo apt-key add -' % key_url
+        cmd = cmd_tpl % subcmd
+        execute(cmd, cwd=vagrant_dir)
 
-    cmd = cmd_tpl % 'sudo apt update'
-    execute(cmd, cwd=vagrant_dir)
+        cmd = cmd_tpl % 'sudo apt update'
+        execute(cmd, cwd=vagrant_dir)
 
-    pkgs = ["isc-kea-admin",
-            "isc-kea-common",
-            "isc-kea-ctrl-agent",
-            "isc-kea-dev",
-            "isc-kea-dhcp4-server",
-            "isc-kea-dhcp6-server",
-            "isc-kea-dhcp-ddns-server",
-            "isc-kea-doc",
-            "isc-kea-premium-cb-cmds",
-            "isc-kea-premium-class-cmds",
-            "isc-kea-premium-flex-id",
-            "isc-kea-premium-forensic-log",
-            "isc-kea-premium-host-cache",
-            "isc-kea-premium-host-cmds",
-            "isc-kea-premium-radius",
-            "isc-kea-premium-subnet-cmds",
-            "python3-isc-kea-connector"]
+        # prepare packages list with versions
+        pkgs = ["isc-kea-admin",
+                "isc-kea-common",
+                "isc-kea-ctrl-agent",
+                "isc-kea-dev",
+                "isc-kea-dhcp4-server",
+                "isc-kea-dhcp6-server",
+                "isc-kea-dhcp-ddns-server",
+                "isc-kea-doc",
+                "isc-kea-premium-cb-cmds",
+                "isc-kea-premium-class-cmds",
+                "isc-kea-premium-flex-id",
+                "isc-kea-premium-forensic-log",
+                "isc-kea-premium-host-cache",
+                "isc-kea-premium-host-cmds",
+                "isc-kea-premium-radius",
+                "isc-kea-premium-subnet-cmds",
+                "python3-isc-kea-connector"]
 
-    sfx = '=' + args.version
-    pkgs = [p + sfx for p in pkgs]
-    pkgs = " ".join(pkgs)
+        sfx = '=' + args.version
+        pkgs = [p + sfx for p in pkgs]
+        pkgs = " ".join(pkgs)
 
-    cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
-    env = os.environ.copy()
-    env['DEBIAN_FRONTEND'] = 'noninteractive'
-    execute(cmd, cwd=vagrant_dir, env=env)
+        # install packages
+        cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
+        env = os.environ.copy()
+        env['DEBIAN_FRONTEND'] = 'noninteractive'
+        execute(cmd, cwd=vagrant_dir, env=env)
+
+    elif 'fedora' in args.system:
+        # setup pkg source repo in vm
+        subcmd = 'cat <<EOF | sudo tee /etc/yum.repos.d/isc.repo\n'
+        subcmd += '[nexus]\n'
+        subcmd += 'name=ISC Repo\n'
+        subcmd += 'baseurl=%s\n' % repo_url
+        subcmd += 'enabled=1\n'
+        subcmd += 'gpgcheck=0\n'
+        subcmd += 'EOF\n'
+        cmd = cmd_tpl % subcmd
+        execute(cmd, cwd=vagrant_dir)
+
+        # prepare packages list with versions
+        pkgs = ["isc-kea",
+                "isc-kea-devel",
+                "isc-kea-hooks",
+                "isc-kea-libs",
+                "isc-kea-premium-cb-cmds",
+                "isc-kea-premium-class-cmds",
+                "isc-kea-premium-flex-id",
+                "isc-kea-premium-forensic-log",
+                "isc-kea-premium-host-cache",
+                "isc-kea-premium-host-cmds",
+                "isc-kea-premium-radius",
+                "isc-kea-premium-subnet-cmds"]
+
+        sfx = '-%s.%s' % (args.version, 'fc30')
+        pkgs = [p + sfx for p in pkgs]
+        pkgs = " ".join(pkgs)
+
+        # install packages
+        cmd = cmd_tpl % 'sudo dnf install -y %s' % pkgs
+        env = os.environ.copy()
+        env['DEBIAN_FRONTEND'] = 'noninteractive'
+        execute(cmd, cwd=vagrant_dir, env=env)
 
 
 def _install_kea_make(args):
@@ -569,8 +633,21 @@ def _package_box(lxc_name, vagrant_dir, box_name):
     return box_path
 
 
-def package_box_and_upload(lxc_name, vagrant_dir):
-    box_name = 'forge-%s-%s-%s' % ('srv' if 'srv' in lxc_name else 'clt', 'ubuntu', '18.04')
+def package_box_and_upload(args):
+    if args.system == 'client':
+        lxc_name = 'forge-client-' + args.sid
+    else:
+        if args.system == 'ubuntu-18.04':
+            sn = 'u1804'
+        elif args.system == 'fedora-30':
+            sn = 'f30'
+        else:
+            sn = 'u1804'
+        lxc_name = 'forge-srv1-%s-%s' % (sn, args.sid)
+
+    vagrant_dir = get_vagrant_dir(args)
+
+    box_name = 'forge-%s-%s' % ('srv' if 'srv' in lxc_name else 'clt', args.system)
     box_path = _package_box(lxc_name, vagrant_dir, box_name)
 
     image_tpl = 'godfryd/' + box_name
@@ -607,6 +684,8 @@ def parse_args():
                              help='Use LXC instead of VirtualBox.')
     main_parser.add_argument('--sid', default=None,
                              help='ID of setup. If more setups needed in parallel then run with specific ID.')
+    main_parser.add_argument('-s', '--system', default='ubuntu-18.04',
+                             help="Server system name, default: 'ubuntu-18.04'")
 
     subparsers = main_parser.add_subparsers(
         dest='command',
@@ -642,8 +721,6 @@ def parse_args():
                                    help="Destroy VMs")
     parser = subparsers.add_parser('box',
                                    help="Package LXC box and upload to cloud")
-    parser.add_argument('--system',
-                        help="Either 'client' or server system name eg. 'ubuntu-18.04'")
 
     #args = main_parser.parse_args()
     args, rest = main_parser.parse_known_args()
@@ -686,15 +763,7 @@ def main():
         clean(args)
 
     elif args.command == "box":
-        if args.system == 'client':
-            lxc_name = 'forge-client-' + args.sid
-        else:
-            if system == 'ubuntu-18.04':
-                sn = 'u1804'
-            else:
-                sn = 'u1804'
-            lxc_name = 'forge-srv1-%s-%s' % (sn, args.sid)
-        package_box_and_upload(lxc_name, '/home/godfryd/isc/repos/forge-cb-cmds/vagrant/lxc/' + args.sid)
+        package_box_and_upload(args)
 
     else:
         parser.print_help()

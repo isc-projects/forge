@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.values
 @pytest.mark.disabled
 def test_v6_values_address1():
@@ -25,7 +24,6 @@ def test_v6_values_address1():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.values
 @pytest.mark.disabled
 def test_v6_values_address2():

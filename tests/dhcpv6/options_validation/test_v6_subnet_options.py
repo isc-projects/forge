@@ -11,7 +11,6 @@ import references
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v6_options_subnet_preference():
@@ -60,7 +59,6 @@ def test_v6_options_subnet_preference():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.rfc3646
@@ -119,7 +117,6 @@ def test_v6_options_subnet_dns_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.rfc3646
@@ -178,7 +175,6 @@ def test_v6_options_subnet_domains():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.rfc3646

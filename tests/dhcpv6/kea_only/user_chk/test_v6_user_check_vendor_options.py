@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.user_check
 @pytest.mark.vendor_options

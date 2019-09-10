@@ -11,7 +11,6 @@ from forge_cfg import world
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_duid():
@@ -57,7 +56,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_duid_mysql():
@@ -111,7 +109,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid_mysql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_duid_pgsql():
@@ -165,7 +162,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_renewed_duid():
@@ -233,7 +229,6 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_renewed_duid_mysql():
@@ -306,7 +301,6 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid_mysql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_renewed_duid_pgsql():
@@ -379,7 +373,6 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_rebind_duid():
@@ -447,7 +440,6 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_rebind_duid_pgsql():
@@ -520,7 +512,6 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_rebind_duid_mysql():
@@ -593,7 +584,6 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid_mysql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem():
@@ -649,7 +639,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_pgsql():
@@ -709,7 +698,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_mysql():
@@ -769,7 +757,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_mysql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts():
@@ -822,7 +809,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_pgsql():
@@ -880,7 +866,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_mysql():
@@ -938,7 +923,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_mysql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_relay():
@@ -1001,7 +985,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_relay_pgsql():
@@ -1068,7 +1051,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_address_assigned_relay_mysql():
@@ -1135,7 +1117,6 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_mysql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_mysql():
@@ -1207,7 +1188,6 @@ def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_mysql():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.legal_logging
 def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_pgsql():

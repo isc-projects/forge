@@ -11,7 +11,6 @@ import references
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v6_options_vendor_tftp_servers():
@@ -53,7 +52,6 @@ def test_v6_options_vendor_tftp_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v6_options_vendor_config_file():
@@ -95,7 +93,6 @@ def test_v6_options_vendor_config_file():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v6_options_vendor_syslog_servers():
@@ -137,7 +134,6 @@ def test_v6_options_vendor_syslog_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v6_options_vendor_time_servers():
@@ -180,7 +176,6 @@ def test_v6_options_vendor_time_servers():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v6_options_vendor_time_offset():
@@ -222,7 +217,6 @@ def test_v6_options_vendor_time_offset():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v6_options_vendor_multiple():

@@ -11,7 +11,6 @@ import srv_msg
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.release
 def test_v6_statuscode_nobinding_release_noleases():
@@ -65,7 +64,6 @@ def test_v6_statuscode_nobinding_release_noleases():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.release
 @pytest.mark.disabled
@@ -133,7 +131,6 @@ def test_v6_statuscode_nobinding_release():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.release
 @pytest.mark.disabled
@@ -202,7 +199,6 @@ def test_v6_statuscode_nobinding_release_new_client_id():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.release
 def test_v6_statuscode_nobinding_release_advertise():
@@ -290,7 +286,6 @@ def test_v6_statuscode_nobinding_release_advertise():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.release
 @pytest.mark.disabled
@@ -357,7 +352,6 @@ def test_v6_statuscode_nobinding_release_nobinding():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.status_code
 @pytest.mark.release
 def test_v6_statuscode_success_release():

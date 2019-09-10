@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.server_id
 def test_v6_server_id_llt():
@@ -43,7 +42,6 @@ def test_v6_server_id_llt():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.server_id
 def test_v6_server_id_en():
@@ -68,7 +66,6 @@ def test_v6_server_id_en():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.server_id
 def test_v6_server_id_ll():

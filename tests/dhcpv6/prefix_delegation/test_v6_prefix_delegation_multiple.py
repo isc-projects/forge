@@ -11,7 +11,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.multiplePD
@@ -105,7 +104,6 @@ def test_prefix_delegation_multiple_request():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.multiplePD
@@ -213,7 +211,6 @@ def test_prefix_delegation_multiple_PD_and_IA_request():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.multiplePD
@@ -315,7 +312,6 @@ def test_prefix_delegation_multiple_PD_and_IA_request_partial_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_multiple_PD_and_IA_request_partial_fail():
@@ -382,7 +378,6 @@ def test_prefix_delegation_multiple_PD_and_IA_request_partial_fail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_multiple_PD_and_IA_advertise_fail():

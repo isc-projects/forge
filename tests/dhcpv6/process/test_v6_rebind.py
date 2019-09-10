@@ -11,7 +11,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 def test_v6_message_rebind_reply_zerotime():
     #  Testing server ability server ability perform REBIND - REPLY message exchange.
@@ -90,7 +89,6 @@ def test_v6_message_rebind_reply_zerotime():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 def test_v6_message_rebind_reply_newtime():
     #  Testing server ability server ability perform REBIND - REPLY message exchange.

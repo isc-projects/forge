@@ -11,7 +11,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_rebind_success():
@@ -70,7 +69,6 @@ def test_prefix_delegation_rebind_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.disabled
@@ -127,7 +125,6 @@ def test_prefix_delegation_rebind_fail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_rebind_fail_dropped():

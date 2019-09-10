@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v4_options_vendor_encapsulated_space():
@@ -41,7 +40,6 @@ def test_v4_options_vendor_encapsulated_space():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.vendor
 @pytest.mark.private

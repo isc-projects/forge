@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_initreboot_success():
@@ -63,7 +62,6 @@ def test_v4_request_relay_initreboot_success():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_initreboot_fail():
@@ -114,7 +112,6 @@ def test_v4_request_relay_initreboot_fail():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.relay
 @pytest.mark.request
 def test_v4_request_relay_initreboot_no_leases():

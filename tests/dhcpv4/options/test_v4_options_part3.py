@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_ip_forwarding():
 
@@ -32,7 +31,6 @@ def test_v4_options_ip_forwarding():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_non_local_source_routing():
 
@@ -54,7 +52,6 @@ def test_v4_options_non_local_source_routing():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_perform_mask_discovery():
 
@@ -76,7 +73,6 @@ def test_v4_options_perform_mask_discovery():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_mask_supplier():
 
@@ -98,7 +94,6 @@ def test_v4_options_mask_supplier():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_router_discovery():
 
@@ -120,7 +115,6 @@ def test_v4_options_router_discovery():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_trailer_encapsulation():
 
@@ -142,7 +136,6 @@ def test_v4_options_trailer_encapsulation():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_ieee802_3_encapsulation():
 
@@ -164,7 +157,6 @@ def test_v4_options_ieee802_3_encapsulation():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_tcp_keepalive_garbage():
 
@@ -186,7 +178,6 @@ def test_v4_options_tcp_keepalive_garbage():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_user_custom_option():
 
@@ -208,7 +199,6 @@ def test_v4_options_user_custom_option():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_user_custom_option_code_0():
     # This test it's kind of hack, to override scapy v4 restrictions.
@@ -220,7 +210,6 @@ def test_v4_options_user_custom_option_code_0():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_user_custom_option_using_standard_code():
     # This test it's kind of hack, to override scapy v4 restrictions.

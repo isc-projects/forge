@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 def test_v6_client_classification_onesubnet_advertise_success():
@@ -36,7 +35,6 @@ def test_v6_client_classification_onesubnet_advertise_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
@@ -61,7 +59,6 @@ def test_v6_client_classification_onesubnet_advertise_fail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 def test_v6_client_classification_onesubnet_request_success():
@@ -101,7 +98,6 @@ def test_v6_client_classification_onesubnet_request_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 def test_v6_client_classification_twosubnets_request_success():
@@ -165,7 +161,6 @@ def test_v6_client_classification_twosubnets_request_success():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 def test_v6_client_classification_twosubnets_request_fail():
@@ -259,7 +254,6 @@ def test_v6_client_classification_twosubnets_request_fail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.kea_only
 @pytest.mark.classification
 def test_v6_client_classification_twoclasses_request_success():

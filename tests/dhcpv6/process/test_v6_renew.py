@@ -11,7 +11,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 def test_v6_message_renew_reply():
     #  Testing server ability to perform message exchange RENEW - REPLY
@@ -73,7 +72,6 @@ def test_v6_message_renew_reply():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 def test_v6_message_renew_reply_different_clients_the_same_iaid():
     #  Two clients try to renew address, using the same IA_ID but different Client-ID
@@ -164,7 +162,6 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 def test_v6_message_renew_reply_different_clients_the_same_iaid_2():
     #  Two clients try to renew address, using the same IA_ID but different Client-ID
@@ -255,7 +252,6 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 def test_v6_message_renew_reply_different_clients_the_same_iaid_expired():
     #  Two clients try to renew address, using the same IA_ID but different Client-ID
@@ -348,7 +344,6 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_expired():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 def test_v6_message_renew_reply_different_clients_the_same_iaid_expired_2():
     #  Two clients try to renew address, using the same IA_ID but different Client-ID
@@ -440,7 +435,6 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_expired_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 def test_v6_message_renew_reply_time_zero():
     #  Testing server ability to perform message exchange RENEW - REPLY

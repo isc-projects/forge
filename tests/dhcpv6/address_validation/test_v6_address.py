@@ -12,7 +12,6 @@ import srv_msg
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_global_solicit():
     #  Server MUST discard any Solicit it receives with
@@ -57,7 +56,6 @@ def test_v6_basic_message_unicast_global_solicit():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_global_confirm():
     #  Server MUST discard any Confirm it receives with
@@ -132,7 +130,6 @@ def test_v6_basic_message_unicast_global_confirm():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_global_rebind():
     #  Server MUST discard any Rebind it receives with
@@ -206,7 +203,6 @@ def test_v6_basic_message_unicast_global_rebind():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_global_inforequest():
     #  Server MUST discard any Information-Request it receives with
@@ -255,7 +251,6 @@ def test_v6_basic_message_unicast_global_inforequest():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
@@ -335,7 +330,6 @@ def test_v6_basic_message_unicast_global_request():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
@@ -419,7 +413,6 @@ def test_v6_basic_message_unicast_global_renew():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
@@ -503,7 +496,6 @@ def test_v6_basic_message_unicast_global_release():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_local_solicit():
     #  Server MUST discard any Solicit it receives with
@@ -544,7 +536,6 @@ def test_v6_basic_message_unicast_local_solicit():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_local_confirm():
     #  Server MUST discard any Confirm it receives with
@@ -615,7 +606,6 @@ def test_v6_basic_message_unicast_local_confirm():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_local_rebind():
     #  Server MUST discard any Rebind it receives with
@@ -687,7 +677,6 @@ def test_v6_basic_message_unicast_local_rebind():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 def test_v6_basic_message_unicast_local_inforequest():
     #  Server MUST discard any Information-Request it receives with
@@ -734,7 +723,6 @@ def test_v6_basic_message_unicast_local_inforequest():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
@@ -812,7 +800,6 @@ def test_v6_basic_message_unicast_local_request():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled
@@ -894,7 +881,6 @@ def test_v6_basic_message_unicast_local_renew():
 
 @pytest.mark.basic
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.unicast
 @pytest.mark.status_code
 @pytest.mark.disabled

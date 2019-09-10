@@ -9,7 +9,6 @@ import misc
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_malformed_values_pool():
@@ -31,7 +30,6 @@ def test_v4_options_malformed_values_pool():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_malformed_values_ip_forwarding():
@@ -50,7 +48,6 @@ def test_v4_options_malformed_values_ip_forwarding():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_malformed_values_subnet_mask():
@@ -69,7 +66,6 @@ def test_v4_options_malformed_values_subnet_mask():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_malformed_values_time_offset():
@@ -118,7 +114,6 @@ def test_v4_options_malformed_values_time_offset():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_malformed_values_boot_size():
@@ -143,7 +138,6 @@ def test_v4_options_malformed_values_boot_size():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled
@@ -169,7 +163,6 @@ def test_v4_options_malformed_values_policy_filter():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled
@@ -216,7 +209,6 @@ def test_v4_options_malformed_values_max_dgram_reassembly():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled
@@ -252,7 +244,6 @@ def test_v4_options_malformed_values_default_ip_ttl():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled
@@ -293,7 +284,6 @@ def test_v4_options_malformed_values_path_mtu_aging_timeout():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled
@@ -326,7 +316,6 @@ def test_v4_options_malformed_values_static_routes():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 def test_v4_options_malformed_values_arp_cache_timeout():
@@ -359,7 +348,6 @@ def test_v4_options_malformed_values_arp_cache_timeout():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled
@@ -393,7 +381,6 @@ def test_v4_options_malformed_values_default_tcp_ttl():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled
@@ -435,7 +422,6 @@ def test_v4_options_malformed_values_dhcp_option_overload():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.disabled

@@ -11,7 +11,6 @@ import misc
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_message_interfaceid():
 
@@ -39,7 +38,6 @@ def test_v6_relay_message_interfaceid():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.disabled
 def test_v6_relay_encapsulate_12lvl():
@@ -71,7 +69,6 @@ def test_v6_relay_encapsulate_12lvl():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 def test_v6_relay_encapsulate_8lvl():
 

@@ -11,7 +11,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_onlyPD_renew():
@@ -58,7 +57,6 @@ def test_prefix_delegation_onlyPD_renew():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.disabled
@@ -94,7 +92,6 @@ def test_prefix_delegation_onlyPD_renew_nobinding():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.disabled
@@ -132,7 +129,6 @@ def test_prefix_delegation_onlyPD_renew_nobinding_new_IA_PD():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_IA_and_PD_renew():
@@ -186,7 +182,6 @@ def test_prefix_delegation_IA_and_PD_renew():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.disabled

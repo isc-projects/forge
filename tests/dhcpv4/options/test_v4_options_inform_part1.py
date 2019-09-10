@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -37,7 +36,6 @@ def test_v4_options_inform_subnet_mask():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -61,7 +59,6 @@ def test_v4_options_inform_time_offset():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -86,7 +83,6 @@ def test_v4_options_inform_routers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -111,7 +107,6 @@ def test_v4_options_inform_time_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -136,7 +131,6 @@ def test_v4_options_inform_name_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -161,7 +155,6 @@ def test_v4_options_inform_domain_name_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -186,7 +179,6 @@ def test_v4_options_inform_log_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -211,7 +203,6 @@ def test_v4_options_inform_cookie_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -236,7 +227,6 @@ def test_v4_options_inform_lpr_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -261,7 +251,6 @@ def test_v4_options_inform_impress_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -286,7 +275,6 @@ def test_v4_options_inform_resource_location_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -310,7 +298,6 @@ def test_v4_options_inform_host_name():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -334,7 +321,6 @@ def test_v4_options_inform_boot_size():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -358,7 +344,6 @@ def test_v4_options_inform_merit_dump():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -382,7 +367,6 @@ def test_v4_options_inform_swap_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -410,7 +394,6 @@ def test_v4_options_inform_root_path():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -438,7 +421,6 @@ def test_v4_options_inform_extensions_path():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -463,7 +445,6 @@ def test_v4_options_inform_policy_filter():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -487,7 +468,6 @@ def test_v4_options_inform_max_dgram_reassembly():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -511,7 +491,6 @@ def test_v4_options_inform_default_ip_ttl():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -535,7 +514,6 @@ def test_v4_options_inform_path_mtu_aging_timeout():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -556,7 +534,6 @@ def test_v4_options_inform_invalid():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
@@ -586,7 +563,6 @@ def test_v4_options_inform_relay():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform

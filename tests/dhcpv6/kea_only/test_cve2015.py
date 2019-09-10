@@ -10,7 +10,6 @@ import srv_msg
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.confirm
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_confirm_with_empty_client_id_INFO():
@@ -71,7 +70,6 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_INFO():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.confirm
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_confirm_with_empty_client_id_FATAL():
@@ -132,7 +130,6 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_FATAL():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.confirm
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_confirm_with_empty_client_id_ERROR():
@@ -193,7 +190,6 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_ERROR():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.confirm
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_confirm_with_empty_client_id_WARN():
@@ -254,7 +250,6 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_WARN():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.confirm
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_confirm_with_empty_client_id_DEBUG():
@@ -315,7 +310,6 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_DEBUG():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.decline
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_decline_with_empty_client_id_DEBUG():
@@ -374,7 +368,6 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_DEBUG():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.decline
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_decline_with_empty_client_id_INFO():
@@ -433,7 +426,6 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_INFO():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.decline
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_decline_with_empty_client_id_FATAL():
@@ -492,7 +484,6 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_FATAL():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.decline
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_decline_with_empty_client_id_ERROR():
@@ -551,7 +542,6 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_ERROR():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.decline
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_decline_with_empty_client_id_WARN():
@@ -610,7 +600,6 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_WARN():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_rebind_with_empty_client_id_():
@@ -669,7 +658,6 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_rebind_with_empty_client_id_FATAL():
@@ -729,7 +717,6 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_FATAL():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_rebind_with_empty_client_id_ERROR():
@@ -789,7 +776,6 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_ERROR():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_rebind_with_empty_client_id_WARN():
@@ -849,7 +835,6 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_WARN():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_rebind_with_empty_client_id_INFO():
@@ -909,7 +894,6 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_INFO():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.rebind
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_rebind_with_empty_client_id_DEBUG():
@@ -969,7 +953,6 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_DEBUG():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.release
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_release_with_empty_client_id_FATAL():
@@ -1029,7 +1012,6 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_FATAL():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.release
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_release_with_empty_client_id_ERROR():
@@ -1089,7 +1071,6 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_ERROR():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.release
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_release_with_empty_client_id_WARN():
@@ -1149,7 +1130,6 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_WARN():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.release
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_release_with_empty_client_id_INFO():
@@ -1209,7 +1189,6 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_INFO():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.release
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_release_with_empty_client_id_DEBUG():
@@ -1269,7 +1248,6 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_DEBUG():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_renew_with_empty_client_id_FATAL():
@@ -1329,7 +1307,6 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_FATAL():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_renew_with_empty_client_id_ERROR():
@@ -1390,7 +1367,6 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_ERROR():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_renew_with_empty_client_id_WARN():
@@ -1451,7 +1427,6 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_WARN():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_renew_with_empty_client_id_INFO():
@@ -1512,7 +1487,6 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_INFO():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.renew
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_renew_with_empty_client_id_DEBUG():
@@ -1573,7 +1547,6 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_DEBUG():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.request
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_request_with_empty_client_id_FATAL():
@@ -1625,7 +1598,6 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_FATAL():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.request
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_request_with_empty_client_id_ERROR():
@@ -1677,7 +1649,6 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_ERROR():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.request
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_request_with_empty_client_id_WARN():
@@ -1729,7 +1700,6 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_WARN():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.request
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_request_with_empty_client_id_INFO():
@@ -1781,7 +1751,6 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_INFO():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.request
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_request_with_empty_client_id_DEBUG():
@@ -1833,7 +1802,6 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_DEBUG():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_solicit_with_empty_client_id_FATAL():
@@ -1875,7 +1843,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_FATAL():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_solicit_with_empty_client_id_ERROR():
@@ -1917,7 +1884,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_ERROR():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_solicit_with_empty_client_id_WARN():
@@ -1959,7 +1925,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_WARN():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_solicit_with_empty_client_id_INFO():
@@ -2001,7 +1966,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_INFO():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG():
@@ -2034,7 +1998,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG44():
@@ -2068,7 +2031,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG44():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG45():
@@ -2101,7 +2063,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG45():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2136,7 +2097,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGalloc_engine():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2171,7 +2131,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGbad_packets():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2206,7 +2165,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGcallouts():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2241,7 +2199,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGcommands():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2276,7 +2233,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGddns():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2311,7 +2267,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGdhcp6():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2346,7 +2301,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGdhcpsrv():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2381,7 +2335,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGeval():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2416,7 +2369,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGhooks():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2451,7 +2403,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGhosts():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2486,7 +2437,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGleases():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed
@@ -2521,7 +2471,6 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGoptions():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.solicit
 @pytest.mark.CVE2015
 @pytest.mark.detailed

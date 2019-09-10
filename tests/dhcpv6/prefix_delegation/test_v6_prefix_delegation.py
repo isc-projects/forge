@@ -11,7 +11,6 @@ import references
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_onlyPD_request():
@@ -47,7 +46,6 @@ def test_prefix_delegation_onlyPD_request():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_IA_and_PD_request():
@@ -91,7 +89,6 @@ def test_prefix_delegation_IA_and_PD_request():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_onlyPD_request_release():
@@ -140,7 +137,6 @@ def test_prefix_delegation_onlyPD_request_release():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_onlyPD_multiple_request_release():
@@ -221,7 +217,6 @@ def test_prefix_delegation_onlyPD_multiple_request_release():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_IA_and_PD_request_release():
@@ -274,7 +269,6 @@ def test_prefix_delegation_IA_and_PD_request_release():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_IA_and_PD_multiple_request_release():
@@ -368,7 +362,6 @@ def test_prefix_delegation_IA_and_PD_multiple_request_release():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_noprefixavail_release():
@@ -463,7 +456,6 @@ def test_prefix_delegation_noprefixavail_release():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_noprefixavail():
@@ -533,7 +525,6 @@ def test_prefix_delegation_noprefixavail():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_release_nobinding():
@@ -569,7 +560,6 @@ def test_prefix_delegation_release_nobinding():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_release_dual_nobinding():
@@ -609,7 +599,6 @@ def test_prefix_delegation_release_dual_nobinding():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_release_nobinding2():
@@ -668,7 +657,6 @@ def test_prefix_delegation_release_nobinding2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_onlyPD_relay():
@@ -698,7 +686,6 @@ def test_prefix_delegation_onlyPD_relay():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_assign_saved_iapd():
@@ -792,7 +779,6 @@ def test_prefix_delegation_assign_saved_iapd():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 @pytest.mark.disabled
@@ -854,7 +840,6 @@ def test_prefix_delegation_compare_prefixes_after_client_reboot():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 def test_prefix_delegation_just_PD_configured_PD_requested():
 
@@ -889,7 +874,6 @@ def test_prefix_delegation_just_PD_configured_PD_requested():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 def test_prefix_delegation_just_PD_configured_PD_and_IA_requested():
 

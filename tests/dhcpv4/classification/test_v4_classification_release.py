@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 @pytest.mark.release
 def test_v4_client_classification_release_same_chaddr_client_id():
@@ -77,7 +76,6 @@ def test_v4_client_classification_release_same_chaddr_client_id():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 @pytest.mark.release
 def test_v4_client_classification_release_different_chaddr_client_id():

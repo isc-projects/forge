@@ -11,7 +11,6 @@ import srv_msg
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_IA_and_PD_confirm():
@@ -67,7 +66,6 @@ def test_prefix_delegation_IA_and_PD_confirm():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.PD
 @pytest.mark.rfc3633
 def test_prefix_delegation_IA_and_PD_decline():

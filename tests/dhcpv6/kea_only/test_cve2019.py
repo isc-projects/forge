@@ -21,7 +21,6 @@ def _get_advertise():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_cve_2019_6472():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -38,7 +37,6 @@ def test_cve_2019_6472():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_cve_2019_6473():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -55,7 +53,6 @@ def test_cve_2019_6473():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_2019_6472_client_id():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -147,7 +144,6 @@ def test_2019_6472_client_id():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_2019_6472_server_id():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -165,7 +161,6 @@ def test_2019_6472_server_id():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_2019_6472_subscriber_id():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -185,7 +180,6 @@ def test_2019_6472_subscriber_id():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.disabled
 def test_2019_6472_subscriber_id_relay():
     # because of some reason scapy is crashing while parsing response, kea works correctly though.
@@ -208,7 +202,6 @@ def test_2019_6472_subscriber_id_relay():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_2019_6473_fqdn():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -230,7 +223,6 @@ def test_2019_6473_fqdn():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 def test_2019_6473_fqdn_0_length():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')

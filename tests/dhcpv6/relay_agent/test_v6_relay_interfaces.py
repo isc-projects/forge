@@ -11,7 +11,6 @@ import references
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_interface_local_and_relay_interface_in_the_same_subnet():
@@ -28,7 +27,6 @@ def test_v6_relay_interface_local_and_relay_interface_in_the_same_subnet():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_interface_two_subnets():
@@ -96,7 +94,6 @@ def test_v6_relay_interface_two_subnets():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_relayaddress_two_subnets():
@@ -165,7 +162,6 @@ def test_v6_relay_relayaddress_two_subnets():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 @pytest.mark.disabled
@@ -207,7 +203,6 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 @pytest.mark.disabled
@@ -249,7 +244,6 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 @pytest.mark.disabled
@@ -291,7 +285,6 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching_3():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_relayaddress_interface_id_two_subnets():
@@ -363,7 +356,6 @@ def test_v6_relay_relayaddress_interface_id_two_subnets():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_relayaddress_interface_id_two_subnets_2():
@@ -435,7 +427,6 @@ def test_v6_relay_relayaddress_interface_id_two_subnets_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_relayaddress_not_matching():
@@ -473,7 +464,6 @@ def test_v6_relay_relayaddress_not_matching():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_relayaddress_within_subnet():
@@ -511,7 +501,6 @@ def test_v6_relay_relayaddress_within_subnet():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_interface_one_subnet_not_matching_id():
@@ -551,7 +540,6 @@ def test_v6_relay_interface_one_subnet_not_matching_id():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_interface_two_subnets_direct_client():
@@ -611,7 +599,6 @@ def test_v6_relay_interface_two_subnets_direct_client():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.relay
 @pytest.mark.kea_only
 def test_v6_relay_interface_two_subnets_same_interface_id():

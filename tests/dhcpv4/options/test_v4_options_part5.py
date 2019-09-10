@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_nisplus_domain_name():
 
@@ -31,7 +30,6 @@ def test_v4_options_nisplus_domain_name():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_nisplus_servers():
 
@@ -53,7 +51,6 @@ def test_v4_options_nisplus_servers():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_mobile_ip_home_agent():
 
@@ -75,7 +72,6 @@ def test_v4_options_mobile_ip_home_agent():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_smtp_server():
 
@@ -97,7 +93,6 @@ def test_v4_options_smtp_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_pop_server():
 
@@ -119,7 +114,6 @@ def test_v4_options_pop_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_nntp_server():
 
@@ -141,7 +135,6 @@ def test_v4_options_nntp_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_www_server():
 
@@ -163,7 +156,6 @@ def test_v4_options_www_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_finger_server():
 
@@ -185,7 +177,6 @@ def test_v4_options_finger_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_irc_server():
 
@@ -207,7 +198,6 @@ def test_v4_options_irc_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_streettalk_server():
 
@@ -229,7 +219,6 @@ def test_v4_options_streettalk_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_streettalk_directory_assistance_server():
 
@@ -251,7 +240,6 @@ def test_v4_options_streettalk_directory_assistance_server():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.options
 def test_v4_options_not_requested_options():
 

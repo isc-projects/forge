@@ -10,7 +10,6 @@ import misc
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_member():
     misc.test_setup()
@@ -63,7 +62,6 @@ def test_v4_client_classification_member():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_unknown_pool():
     misc.test_setup()
@@ -104,7 +102,6 @@ def test_v4_client_classification_unknown_pool():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_known_pool():
     misc.test_setup()
@@ -145,7 +142,6 @@ def test_v4_client_classification_known_pool():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_known_unknown_pool():
     misc.test_setup()
@@ -208,7 +204,6 @@ def test_v4_client_classification_known_unknown_pool():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_option_hex():
     misc.test_setup()
@@ -253,7 +248,6 @@ def test_v4_client_classification_option_hex():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_option_exists():
     misc.test_setup()
@@ -297,7 +291,6 @@ def test_v4_client_classification_option_exists():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_relay_option_exists():
     misc.test_setup()
@@ -344,7 +337,6 @@ def test_v4_client_classification_relay_option_exists():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_transid():
     misc.test_setup()
@@ -391,7 +383,6 @@ def test_v4_client_classification_transid():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_siaddr():
     misc.test_setup()
@@ -424,7 +415,6 @@ def test_v4_client_classification_siaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_yiaddr():
     misc.test_setup()
@@ -457,7 +447,6 @@ def test_v4_client_classification_yiaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 @pytest.mark.disabled
 def test_v4_client_classification_giaddr():
@@ -505,7 +494,6 @@ def test_v4_client_classification_giaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_ciaddr():
     misc.test_setup()
@@ -552,7 +540,6 @@ def test_v4_client_classification_ciaddr():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_htype():
     misc.test_setup()
@@ -599,7 +586,6 @@ def test_v4_client_classification_htype():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_mac():
     misc.test_setup()
@@ -643,7 +629,6 @@ def test_v4_client_classification_mac():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_vendor():
     misc.test_setup()
@@ -690,7 +675,6 @@ def test_v4_client_classification_vendor():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_specific_vendor():
     misc.test_setup()
@@ -740,7 +724,6 @@ def test_v4_client_classification_specific_vendor():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_specific_vendor_2():
     misc.test_setup()
@@ -790,7 +773,6 @@ def test_v4_client_classification_specific_vendor_2():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_vendor_suboption_exists():
     misc.test_setup()
@@ -840,7 +822,6 @@ def test_v4_client_classification_vendor_suboption_exists():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_vendor_suboption_value():
     misc.test_setup()
@@ -890,7 +871,6 @@ def test_v4_client_classification_vendor_suboption_value():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_vendor_class_exists():
     misc.test_setup()
@@ -938,7 +918,6 @@ def test_v4_client_classification_vendor_class_exists():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_specific_vendor_class():
     misc.test_setup()
@@ -988,7 +967,6 @@ def test_v4_client_classification_specific_vendor_class():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_specific_vendor_class_2():
     misc.test_setup()
@@ -1038,7 +1016,6 @@ def test_v4_client_classification_specific_vendor_class_2():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_expressions_not_equal():
     misc.test_setup()
@@ -1084,7 +1061,6 @@ def test_v4_client_classification_expressions_not_equal():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_expressions_and():
     misc.test_setup()
@@ -1137,7 +1113,6 @@ def test_v4_client_classification_expressions_and():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_expressions_or():
     misc.test_setup()
@@ -1201,7 +1176,6 @@ def test_v4_client_classification_expressions_or():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_expressions_substring():
     misc.test_setup()
@@ -1242,7 +1216,6 @@ def test_v4_client_classification_expressions_substring():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_expressions_concat():
     misc.test_setup()
@@ -1301,7 +1274,6 @@ def test_v4_client_classification_expressions_concat():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 @pytest.mark.classification
 def test_v4_client_classification_expressions_ifelse():
     misc.test_setup()

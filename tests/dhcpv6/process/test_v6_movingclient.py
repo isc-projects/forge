@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.movingclient
 def test_v6_movingclient_0():
 
@@ -115,7 +114,6 @@ def test_v6_movingclient_0():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.movingclient
 def test_v6_movingclient_1():
 
@@ -181,7 +179,6 @@ def test_v6_movingclient_1():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.movingclient
 def test_v6_movingclient_2():
 
@@ -248,7 +245,6 @@ def test_v6_movingclient_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.movingclient
 def test_v6_movingclient_3():
 
@@ -318,7 +314,6 @@ def test_v6_movingclient_3():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.movingclient
 def test_v6_movingclient_4():
 

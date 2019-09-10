@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_multiple_subnets():
     misc.test_setup()
@@ -110,7 +109,6 @@ def test_v6_client_classification_multiple_subnets():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_multiple_subnets_2():
     misc.test_setup()
@@ -217,7 +215,6 @@ def test_v6_client_classification_multiple_subnets_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_class_with_option():
     misc.test_setup()
@@ -276,7 +273,6 @@ def test_v6_client_classification_class_with_option():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_multiple_subnets_options():
     misc.test_setup()
@@ -396,7 +392,6 @@ def test_v6_client_classification_multiple_subnets_options():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_multiple_subnets_options_override_global():
     misc.test_setup()
@@ -529,7 +524,6 @@ def test_v6_client_classification_multiple_subnets_options_override_global():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 @pytest.mark.sharedsubnets
 def test_v6_client_classification_shared_subnet_options_override():
@@ -604,7 +598,6 @@ def test_v6_client_classification_shared_subnet_options_override():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 @pytest.mark.sharedsubnets
 def test_v6_client_classification_shared_subnet_options_override_francis():
@@ -681,7 +674,6 @@ def test_v6_client_classification_shared_subnet_options_override_francis():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 @pytest.mark.sharedsubnets
 def test_v6_client_classification_shared_subnet_options_override_global():
@@ -726,7 +718,6 @@ def test_v6_client_classification_shared_subnet_options_override_global():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 @pytest.mark.sharedsubnets
 def test_v6_client_classification_shared_subnet_options_override_subnet():

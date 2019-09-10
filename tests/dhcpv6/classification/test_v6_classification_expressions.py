@@ -10,7 +10,6 @@ import srv_control
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_member():
     misc.test_setup()
@@ -68,7 +67,6 @@ def test_v6_client_classification_member():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 @pytest.mark.disabled
 def test_v6_client_classification_known_subnet_hw_address():
@@ -121,7 +119,6 @@ def test_v6_client_classification_known_subnet_hw_address():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 @pytest.mark.disabled
 def test_v6_client_classification_known_subnet_duid():
@@ -174,7 +171,6 @@ def test_v6_client_classification_known_subnet_duid():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_known_pool():
     misc.test_setup()
@@ -226,7 +222,6 @@ def test_v6_client_classification_known_pool():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_unknown_pool():
     misc.test_setup()
@@ -281,7 +276,6 @@ def test_v6_client_classification_unknown_pool():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_unknown_known_pool():
     misc.test_setup()
@@ -338,7 +332,6 @@ def test_v6_client_classification_unknown_known_pool():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_option_hex():
     misc.test_setup()
@@ -386,7 +379,6 @@ def test_v6_client_classification_option_hex():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_option_exists():
     misc.test_setup()
@@ -435,7 +427,6 @@ def test_v6_client_classification_option_exists():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_relay_option_exists():
     misc.test_setup()
@@ -504,7 +495,6 @@ def test_v6_client_classification_relay_option_exists():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_relay_peer():
     misc.test_setup()
@@ -575,7 +565,6 @@ def test_v6_client_classification_relay_peer():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_relay_linkaddr():
     misc.test_setup()
@@ -646,7 +635,6 @@ def test_v6_client_classification_relay_linkaddr():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 @pytest.mark.disabled
 def test_v6_client_classification_msgtype():
@@ -698,7 +686,6 @@ def test_v6_client_classification_msgtype():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_transid():
     misc.test_setup()
@@ -748,7 +735,6 @@ def test_v6_client_classification_transid():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_vendor():
     misc.test_setup()
@@ -797,7 +783,6 @@ def test_v6_client_classification_vendor():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_specific_vendor():
     misc.test_setup()
@@ -849,7 +834,6 @@ def test_v6_client_classification_specific_vendor():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_specific_vendor_2():
     misc.test_setup()
@@ -901,7 +885,6 @@ def test_v6_client_classification_specific_vendor_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_vendor_suboption_exists():
     misc.test_setup()
@@ -954,7 +937,6 @@ def test_v6_client_classification_vendor_suboption_exists():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_vendor_suboption_value():
     misc.test_setup()
@@ -1009,7 +991,6 @@ def test_v6_client_classification_vendor_suboption_value():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_vendor_class_exists():
     misc.test_setup()
@@ -1059,7 +1040,6 @@ def test_v6_client_classification_vendor_class_exists():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_specific_vendor_class():
     misc.test_setup()
@@ -1111,7 +1091,6 @@ def test_v6_client_classification_specific_vendor_class():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_specific_vendor_class_2():
     misc.test_setup()
@@ -1163,7 +1142,6 @@ def test_v6_client_classification_specific_vendor_class_2():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_expressions_not_equal():
     misc.test_setup()
@@ -1236,7 +1214,6 @@ def test_v6_client_classification_expressions_not_equal():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_expressions_and():
     misc.test_setup()
@@ -1308,7 +1285,6 @@ def test_v6_client_classification_expressions_and():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_expressions_or():
     misc.test_setup()
@@ -1402,7 +1378,6 @@ def test_v6_client_classification_expressions_or():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_expressions_substring():
     misc.test_setup()
@@ -1450,7 +1425,6 @@ def test_v6_client_classification_expressions_substring():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_expressions_concat():
     misc.test_setup()
@@ -1500,7 +1474,6 @@ def test_v6_client_classification_expressions_concat():
 
 
 @pytest.mark.v6
-@pytest.mark.dhcp6
 @pytest.mark.classification
 def test_v6_client_classification_expressions_ifelse():
     misc.test_setup()

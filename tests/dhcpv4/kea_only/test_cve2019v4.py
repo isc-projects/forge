@@ -21,7 +21,6 @@ def _get_offer():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6472():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -43,7 +42,6 @@ def test_cve_2019_6472():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6473():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -62,7 +60,6 @@ def test_cve_2019_6473():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6473_hostname():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -84,7 +81,6 @@ def test_cve_2019_6473_hostname():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6473_hostname_length_0():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -105,7 +101,6 @@ def test_cve_2019_6473_hostname_length_0():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6473_hostname_over_255():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -127,7 +122,6 @@ def test_cve_2019_6473_hostname_over_255():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6473_fqdn():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -148,7 +142,6 @@ def test_cve_2019_6473_fqdn():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6473_fqdn_too_long():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -170,7 +163,6 @@ def test_cve_2019_6473_fqdn_too_long():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6473_fqdn_0_length():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -192,7 +184,6 @@ def test_cve_2019_6473_fqdn_0_length():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_wtf():
     misc.test_setup()
     srv_control.config_srv_subnet('10.0.0.0/8', '10.0.0.0-10.255.255.255')
@@ -210,7 +201,6 @@ def test_cve_2019_wtf():
 
 
 @pytest.mark.v4
-@pytest.mark.dhcp4
 def test_cve_2019_6474():
     # This test verifies two issues uncovered in CVE-2019-6474:
     # - a broken packet can cause Kea to write invalid lease to disk
