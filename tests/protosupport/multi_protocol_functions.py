@@ -225,7 +225,7 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
         command = 'mysql -u {db_user} -p{db_passwd} -e "delete from {table_name}" {db_name}'.format(**locals())
         fabric_run_command(command)
     elif db_type in ["postgresql", "PostgreSQL"]:
-        command = 'psql -U {db_user} -d {db_name} -c "delete from {table_name}"'.format(**locals())
+        command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} -c "delete from {table_name}"'.format(**locals())
         fabric_run_command(command)
     elif db_type == "cql":
         # TODO: hardcoded passwords for now in cassandra, extend it in some time :)
@@ -247,7 +247,7 @@ def db_table_contain(table_name, db_type, condition, line, db_name=world.f_cfg.d
         result = fabric_sudo_command('grep -c "{line}" /tmp/mysql_out'.format(**locals()))
 
     elif db_type in ["postgresql", "PostgreSQL"]:
-        command = 'psql -U {db_user} -d {db_name} -c "select * from {table_name}" > /tmp/pgsql_out'.format(**locals())
+        command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} -c "select * from {table_name}" > /tmp/pgsql_out'.format(**locals())
         fabric_run_command(command)
         result = fabric_sudo_command('grep -c "{line}" /tmp/pgsql_out'.format(**locals()))
 

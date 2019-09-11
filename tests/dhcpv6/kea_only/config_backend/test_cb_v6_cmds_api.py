@@ -1166,11 +1166,12 @@ def test_remote_global_parameter6_get_all_multiple():
                                                                       "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response == {"arguments": {"count": 2, "parameters": [{"calculate-tee-times": True,
-                                                                  "metadata": {"server-tags": ["abc"]}},
-                                                                 {"decline-probation-period": 123456,
-                                                                  "metadata": {"server-tags": ["abc"]}}]},
-                        "result": 0, "text": "2 DHCPv6 global parameter(s) found."}
+    assert response["result"] == 0
+    assert response["text"] == "2 DHCPv6 global parameter(s) found."
+    assert response["arguments"]["count"] == 2
+    assert {"calculate-tee-times": True, "metadata": {"server-tags": ["abc"]}} in response["arguments"]["parameters"]
+    assert {"decline-probation-period": 123456,
+            "metadata": {"server-tags": ["abc"]}} in response["arguments"]["parameters"]
 
 
 def test_remote_global_parameter6_get_all_zero():

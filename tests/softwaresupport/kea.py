@@ -541,15 +541,28 @@ def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     fabric_remove_file_command(world.f_cfg.data_join('*'), destination_host=destination_address)
     fabric_remove_file_command(world.f_cfg.run_join('*'), destination_host=destination_address)
 
-    # use kea script for cleaning DB
-    cmd = 'bash {software_install_path}/share/kea/scripts/mysql/wipe_data.sh `mysql -u{db_user} -p{db_passwd} {db_name} -N -B'
-    cmd += ' -e "SELECT CONCAT_WS(\'.\', version, minor) FROM schema_version;" 2>/dev/null` -N -B'
+    # use kea script for cleaning mysql
+    cmd = 'bash {software_install_path}/share/kea/scripts/mysql/wipe_data.sh '
+    cmd += ' `mysql -u{db_user} -p{db_passwd} {db_name} -N -B'
+    cmd += '   -e "SELECT CONCAT_WS(\'.\', version, minor) FROM schema_version;" 2>/dev/null` -N -B'
     cmd += ' -u{db_user} -p{db_passwd} {db_name}'
     cmd = cmd.format(software_install_path=world.f_cfg.software_install_path,
                      db_user=world.f_cfg.db_user,
                      db_passwd=world.f_cfg.db_passwd,
                      db_name=world.f_cfg.db_name)
     fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address)
+
+    # use kea script for cleaning pgsql
+    cmd = 'PGPASSWORD={db_passwd} bash {software_install_path}/share/kea/scripts/pgsql/wipe_data.sh '
+    cmd += ' `PGPASSWORD={db_passwd} psql --set ON_ERROR_STOP=1 -A -t -h "localhost" '
+    cmd += '   -q -U {db_user} -d {db_name} -c "SELECT version || \'.\' || minor FROM schema_version;" 2>/dev/null`'
+    cmd += ' --set ON_ERROR_STOP=1 -A -t -h "localhost" -q -U {db_user} -d {db_name}'
+    cmd = cmd.format(software_install_path=world.f_cfg.software_install_path,
+                     db_user=world.f_cfg.db_user,
+                     db_passwd=world.f_cfg.db_passwd,
+                     db_name=world.f_cfg.db_name)
+    fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address)
+
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
     v4 = False
@@ -619,7 +632,9 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
         result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
     else:
         if not hasattr(world, 'server_system'):
-            result = fabric_sudo_command('ls -al /etc/redhat-release', destination_host=destination_address)
+            result = fabric_sudo_command('ls -al /etc/redhat-release 2>/dev/null',
+                                         destination_host=destination_address,
+                                         ignore_errors=True)
             if result.succeeded:
                 world.server_system = 'redhat'
             else:
@@ -1059,21 +1074,21 @@ def db_setup():
     result = fabric_run_command(cmd)
     assert result.succeeded
 
-    # # POSTGRESQL
-    # cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
-    # fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True)
-    # cmd = "cd /; psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
-    # result = fabric_sudo_command(cmd, sudo_user='postgres')
-    # assert result.succeeded
-    # cmd = "cd /; psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
-    # result = fabric_sudo_command(cmd, sudo_user='postgres')
-    # assert result.succeeded
-    # cmd = "cd /; psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
-    # result = fabric_sudo_command(cmd, sudo_user='postgres')
-    # assert result.succeeded
-    # cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
-    # result = fabric_sudo_command(cmd, sudo_user='postgres')
-    # assert result.succeeded
-    # cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-    # result = fabric_run_command(cmd)
-    # assert result.succeeded
+    # POSTGRESQL
+    cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
+    fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True)
+    cmd = "cd /; psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres')
+    assert result.succeeded
+    cmd = "cd /; psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres')
+    assert result.succeeded
+    cmd = "cd /; psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres')
+    assert result.succeeded
+    cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres')
+    assert result.succeeded
+    cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+    result = fabric_run_command(cmd)
+    assert result.succeeded

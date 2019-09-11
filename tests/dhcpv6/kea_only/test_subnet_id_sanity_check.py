@@ -12,7 +12,6 @@ import srv_msg
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_fix_able():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -103,7 +102,6 @@ def test_v6_sanity_check_subnet_id_fix_able():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -209,7 +207,6 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_fix_unable():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -300,7 +297,6 @@ def test_v6_sanity_check_subnet_id_fix_unable():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_fix_del_unable():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -362,7 +358,6 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_fix_del_able():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -420,7 +415,6 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_warn():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -497,7 +491,6 @@ def test_v6_sanity_check_subnet_id_warn():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_del_renew():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -601,7 +594,6 @@ def test_v6_sanity_check_subnet_id_del_renew():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_del():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -704,7 +696,6 @@ def test_v6_sanity_check_subnet_id_del():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
-@pytest.mark.abc
 def test_v6_sanity_check_subnet_id_none():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
