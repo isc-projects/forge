@@ -8,4 +8,4 @@ sudo systemctl disable apt-daily.service apt-daily-upgrade.service
 
 sudo apt update
 ps axf
-sudo apt install -y socat gnupg
+sudo apt install -y socat gnupg freeradius bind9
