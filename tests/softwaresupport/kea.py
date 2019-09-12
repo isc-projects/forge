@@ -472,15 +472,16 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
             fabric_send_file(world.cfg["cfg_file_2"],
                              world.f_cfg.etc_join("keactrl.conf"),
                              destination_host=destination_address)
-            kea_conf_file = "kea.conf"
+            kea_conf_files = ["kea.conf"]
         else:
+            kea_conf_files = ["kea-dhcp%s.conf" % world.proto[1],
+                              "kea-dhcp-ddns.conf",
+                              'kea-ctrl-agent.conf']
+
+        for f in kea_conf_files:
             fabric_send_file(world.cfg["cfg_file"],
-                             world.f_cfg.etc_join('kea-ctrl-agent.conf'),
+                             world.f_cfg.etc_join(f),
                              destination_host=destination_address)
-            kea_conf_file = "kea-dhcp%s.conf" % world.proto[1]
-        fabric_send_file(world.cfg["cfg_file"],
-                         world.f_cfg.etc_join(kea_conf_file),
-                         destination_host=destination_address)
 
     copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
     copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
@@ -605,6 +606,15 @@ def _restart_kea_with_systemctl(destination_address):
             service_name = 'isc-kea-ctrl-agent'
         cmd = cmd_tpl.format(service=service_name)
         fabric_sudo_command(cmd, destination_host=destination_address)
+
+    if world.ddns_enable:
+        if world.server_system == 'redhat':
+            service_name = 'kea-dhcp-ddns'
+        else:
+            service_name = 'isc-kea-dhcp-ddns'
+        cmd = cmd_tpl.format(service=service_name)
+        fabric_sudo_command(cmd, destination_host=destination_address)
+
 
 
 def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):

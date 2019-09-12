@@ -470,7 +470,7 @@ def test_v6_sanity_check_subnet_id_warn():
 
     srv_msg.forge_sleep('2', 'seconds')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')

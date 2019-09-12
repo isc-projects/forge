@@ -14,3 +14,7 @@ rm -rf $HOME/venv
 python -m virtualenv $HOME/venv
 $HOME/venv/bin/pip install -U pip
 $HOME/venv/bin/pip install -r /forge/requirements.txt
+
+
+# this is needed for ddns tests
+sudo ip -6 route add 3000::1000/64 dev enp0s9

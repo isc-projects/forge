@@ -84,7 +84,7 @@ def _check_if_ddns_is_working_correctly():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_list():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -112,7 +112,7 @@ def test_ddns6_control_channel_list():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_config_set():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -140,7 +140,7 @@ def test_ddns6_control_channel_config_set():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_config_set_all_values():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -207,7 +207,7 @@ def test_ddns6_control_channel_config_set_all_values():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_config_test():
     # let's check minimal configuration
     misc.test_setup()
@@ -344,7 +344,7 @@ def test_ddns6_control_channel_config_test():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_config_reload():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -391,7 +391,7 @@ def test_ddns6_control_channel_config_reload():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_build_report():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -414,7 +414,7 @@ def test_ddns6_control_channel_build_report():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_config_write():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -445,7 +445,7 @@ def test_ddns6_control_channel_config_write():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_shutdown():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -475,7 +475,7 @@ def test_ddns6_control_channel_shutdown():
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.kea_only
-@pytest.mark.control_channel
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_version_get():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')

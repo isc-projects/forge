@@ -186,8 +186,13 @@ def log_contains(line, condition, log_file=None):
         result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
     else:
         if log_file is None:
-            cmd = 'ts=`systemctl show -p ActiveEnterTimestamp isc-kea-dhcp%s-server.service | awk \'{{print $2 $3}}\'`;' % world.proto[1]
-            cmd += ' journalctl -u isc-kea-dhcp%s-server.service --since $ts |' % world.proto[1]
+            if world.server_system == 'redhat':
+                service_name = 'kea-dhcp%s' % world.proto[1]
+            else:
+                service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+            cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
+            cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
+            cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service
             cmd += 'grep -c "%s"' % line
             result = fabric_sudo_command(cmd)
         else:
@@ -420,7 +425,7 @@ def _process_ctrl_response(response, exp_result):
         result = json.loads(response)
         log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
     except:
-        log.exception('Problem with parsing json: %s', str(response))
+        log.exception('Problem with parsing json:\n%s', str(response))
         result = response
 
     if exp_result is not None:

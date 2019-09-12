@@ -38,7 +38,8 @@ MGMT_ADDRESS = "172.28.0.31"
 MGMT_ADDRESS_2 = "172.28.0.32"
 MGMT_ADDRESS_3 = "172.28.0.33"
 DNS4_ADDR = SRV4_ADDR
-DNS6_ADDR = "2001:db8:0:f101::1"
+#DNS6_ADDR = "2001:db8:0:f101::1"
+DNS6_ADDR = SRV_IPV6_ADDR_GLOBAL
 IFACE = "enp0s9"
 SERVER_IFACE = "enp0s9"
 INSTALL_METHOD = "make"
@@ -301,6 +302,16 @@ def _get_server_name(args, idx):
     return name
 
 
+def _destroy_lxc_containers(args):
+    client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
+    server1_name = _get_server_name(args, 1)
+    server2_name = _get_server_name(args, 2)
+
+    for cntr in [client_name, server1_name, server2_name]:
+        execute('sudo lxc-stop --name %s' % cntr, raise_error=False)
+        execute('sudo lxc-destroy --name %s' % cntr, raise_error=False)
+
+
 def setup(args):
     # load config
     cfg = _load_config()
@@ -364,9 +375,7 @@ def setup(args):
 
         if args.lxc:
             # in case of LXC to be sure destroys containers explicitly
-            for cntr in [client_name, server1_name, server2_name]:
-                execute('sudo lxc-stop --name %s' % cntr, raise_error=False)
-                execute('sudo lxc-destroy --name %s' % cntr, raise_error=False)
+            _destroy_lxc_containers(args)
 
         # create and start VMs via Vagrant
         execute('vagrant up', cwd=vagrant_dir)
@@ -540,7 +549,7 @@ def test(args, params):
     print('Test params: %s' % params)
     client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
     cmd = 'vagrant ssh ' + client_name + ' -c "%s"'
-    subcmd = 'cd /forge/; ls -al; sudo ~/venv/bin/pytest ' + params
+    subcmd = 'cd /forge/; sudo ~/venv/bin/pytest ' + params
     cmd %= subcmd
     try:
         execute(cmd, cwd=vagrant_dir)  # , raise_error=False)
@@ -557,6 +566,10 @@ def clean(args):
 
     # destroy VMs
     execute('vagrant destroy -f', cwd=vagrant_dir, raise_error=False)
+
+    if args.lxc:
+        # in case of LXC to be sure destroys containers explicitly
+        _destroy_lxc_containers(args)
 
     # clean files
     for path in ['tests/init_all.py', os.path.join(vagrant_dir, 'Vagrantfile')]:
