@@ -1044,10 +1044,11 @@ def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_valu
 
 
 def db_setup():
-    if world.server_system == 'redhat':
-        fabric_sudo_command("rpm -qa '*kea*'")
-    else:
-        fabric_sudo_command("dpkg -l '*kea*'")
+    if world.f_cfg.install_method != 'make':
+        if world.server_system == 'redhat':
+            fabric_sudo_command("rpm -qa '*kea*'")
+        else:
+            fabric_sudo_command("dpkg -l '*kea*'")
 
     if world.f_cfg.disable_db_setup:
         return
