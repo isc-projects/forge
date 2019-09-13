@@ -659,7 +659,7 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
         if world.server_system == 'redhat':
             service_names = 'kea-dhcp4 kea-dhcp6 kea-ctrl-agent kea-dhcp-ddns'
         else:
-            service_names = 'isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent isc-kea-dhcp-ddns'
+            service_names = 'isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent isc-kea-dhcp-ddns-server'
 
         cmd = 'systemctl stop %s' % service_names
         fabric_sudo_command(cmd, destination_host=destination_address)
