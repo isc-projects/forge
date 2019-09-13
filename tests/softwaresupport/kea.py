@@ -617,7 +617,7 @@ def _restart_kea_with_systemctl(destination_address):
         if world.server_system == 'redhat':
             service_name = 'kea-dhcp-ddns'
         else:
-            service_name = 'isc-kea-dhcp-ddns'
+            service_name = 'isc-kea-dhcp-ddns-server'
         cmd = cmd_tpl.format(service=service_name)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
