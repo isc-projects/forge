@@ -304,6 +304,18 @@ def test_start():
         kea.db_setup()
 
 
+def _clear_remainings():
+    if not world.f_cfg.no_server_management:
+        for remote_server in world.f_cfg.multiple_tested_servers:
+            for sut in world.f_cfg.software_under_test:
+                functions = importlib.import_module("softwaresupport.%s.functions" % sut)
+                # every software have something else to clear. Put in clear_all() whatever you need
+                functions.clear_all(destination_address=remote_server)
+
+                # except:  # TODO this should be on multi_server_functions level!
+                #     log.info("Remote location " + remote_server + " unreachable!")
+
+
 #@before.each_scenario
 def initialize(scenario):
     # try to automagically detect DHCP version based on fixture presence
@@ -428,20 +440,6 @@ def cleanup(scenario):
 
                 if world.f_cfg.save_logs:
                     functions.save_logs(destination_address=remote_server)
-
-    _clear_remainings()
-
-
-def _clear_remainings():
-    if not world.f_cfg.no_server_management:
-        for remote_server in world.f_cfg.multiple_tested_servers:
-            for sut in world.f_cfg.software_under_test:
-                functions = importlib.import_module("softwaresupport.%s.functions" % sut)
-                # every software have something else to clear. Put in clear_all() whatever you need
-                functions.clear_all(destination_address=remote_server)
-
-                # except:  # TODO this should be on multi_server_functions level!
-                #     log.info("Remote location " + remote_server + " unreachable!")
 
 
 #@after.all

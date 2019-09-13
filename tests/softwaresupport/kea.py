@@ -453,8 +453,7 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     default it's world.f_cfg.mgmt_address
     """
 
-    #import pudb; pudb.set_trace()
-
+    # generate config files content
     if world.proto == 'v4':
         add_defaults4()
     else:
@@ -467,26 +466,33 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     else:
         _write_cfg2(cfg)
 
+    if world.f_cfg.install_method == 'make':
+        kea_conf_files = ["kea.conf"]
+    else:
+        kea_conf_files = ["kea-dhcp%s.conf" % world.proto[1],
+                          "kea-dhcp-ddns.conf",
+                          'kea-ctrl-agent.conf']
+
+    # send to server if requested
     if connection_type == "SSH":
         if world.f_cfg.install_method == 'make':
             fabric_send_file(world.cfg["cfg_file_2"],
                              world.f_cfg.etc_join("keactrl.conf"),
                              destination_host=destination_address)
-            kea_conf_files = ["kea.conf"]
-        else:
-            kea_conf_files = ["kea-dhcp%s.conf" % world.proto[1],
-                              "kea-dhcp-ddns.conf",
-                              'kea-ctrl-agent.conf']
 
         for f in kea_conf_files:
             fabric_send_file(world.cfg["cfg_file"],
                              world.f_cfg.etc_join(f),
                              destination_host=destination_address)
 
-    copy_configuration_file(world.cfg["cfg_file"], destination_host=destination_address)
-    copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
+    # store files for debug purposes
+    if world.f_cfg.install_method == 'make':
+        copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
+        remove_local_file(world.cfg["cfg_file_2"])
+
+    for f in kea_conf_files:
+        copy_configuration_file(world.cfg["cfg_file"], f, destination_host=destination_address)
     remove_local_file(world.cfg["cfg_file"])
-    remove_local_file(world.cfg["cfg_file_2"])
 
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
