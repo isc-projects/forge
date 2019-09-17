@@ -14,7 +14,10 @@ from forge_cfg import world
 
 def _send_directly_to_ca(cmd, exp_result=0, address='$(SRV4_ADDR)', exp_failed=False):
     # when sending through http we are getting list, so we want just first element of that list
-    return srv_msg.send_ctrl_cmd_via_http(command=cmd, address=address, exp_result=exp_result, exp_failed=exp_failed)
+    result = srv_msg.send_ctrl_cmd_via_http(command=cmd, address=address, exp_result=exp_result, exp_failed=exp_failed)
+    if result is None:
+        return None
+    return result[0]
 
 
 @pytest.mark.v6

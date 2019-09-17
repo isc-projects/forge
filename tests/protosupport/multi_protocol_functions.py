@@ -507,7 +507,7 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
         elif 200 <= response.status_code < 300:
             response = response.text
             result = _process_ctrl_response(response, exp_result)
-            return result[0]
+            return result
 
 
 def assert_result(condition, result, value):
