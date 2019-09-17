@@ -599,13 +599,13 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 
 @step('Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
-def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port='8000', exp_result=0):
+def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port='8000', exp_result=0, exp_failed=False):
     if isinstance(command, dict):
         substitute_vars(command)
         address, port = test_define_value(address, port)
     else:
         address, port, command = test_define_value(address, port, command)
-    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result)
+    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed)
 
 
 def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0):

@@ -214,6 +214,10 @@ def _define_software(dhcp_version):
 
 
 def declare_all(dhcp_version=None):
+    # world.ddns_main = None
+    # world.dhcp_main = None # this probably will be needed soon
+    world.ca_main = {}
+
     world.climsg = []  # Message(s) to be sent
     world.srvmsg = []  # Server's response(s)
     world.rlymsg = []  # Server's response(s) Relayed by Relay Agent
@@ -249,6 +253,7 @@ def declare_all(dhcp_version=None):
     # in future it's designed to clear JSON configuration process as well
 
     world.configString = ""
+    world.generated_config = None
     world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
                                        'var/lib/kea/kea-leases%s.csv' % world.proto[1])
     world.cfg['kea_logs'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea.log')

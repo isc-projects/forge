@@ -37,7 +37,14 @@ def add_ddns_server(address, port):
                        "forward-ddns": {'ddns-domains': []},
                        "tsig-keys": [],
                        "ncr-format": "JSON",  # default value
-                       "ncr-protocol": "UDP"}  # default value
+                       "ncr-protocol": "UDP"
+        # ,
+        #                "loggers": [
+        #                    {"debuglevel": 99,"name": "kea-ctrl-agent",
+        #                     "output_options": [{
+        #                         "output": logging_file_path}],
+        #                     "severity": "DEBUG"}]
+                       }  # default value
 
     add_ddns_server_options("server-ip", address)
     add_ddns_server_options("enable-updates", False)

@@ -22,7 +22,7 @@ from forge_cfg import world
 from protosupport.multi_protocol_functions import add_variable
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
-from softwaresupport.multi_server_functions import fabric_remove_file_command, json_file_layout
+from softwaresupport.multi_server_functions import fabric_remove_file_command
 from softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
 
 from kea6_server.functions_ddns import build_ddns_config
@@ -414,6 +414,9 @@ def _cfg_write():
         if world.ddns_enable:
             cfg_file.write(',{"name": "kea-dhcp-ddns","output_options": [{"output": "' + logging_file + '_ddns"}')
             cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
+        if world.ctrl_enable:
+            cfg_file.write(',{"name": "kea-ctrl-agent","output_options": [{"output": "' + logging_file + '_ca"}')
+            cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
     else:
         cfg_file.write(world.cfg["logger"])
 
@@ -428,8 +431,19 @@ def _cfg_write():
     config = open(world.cfg["cfg_file"], 'r')
     world.configString = config.read().replace('\n', '').replace(' ', '')
     config.close()
-    add_variable("SERVER_CONFIG", world.configString, False)  # TODO: is it needed?
-    json_file_layout()
+    # for lettuce history reasons we keep config as string
+    # TODO remove this and edit all tests that are using this solution
+    add_variable("SERVER_CONFIG", world.configString, False)
+    world.generated_config = json.loads(world.configString)
+
+    # let's fix layout of the file, read saved file and overwrite it
+    with open(world.cfg["cfg_file"], 'r') as conf_file:
+        data = conf_file.read()
+    tmp = json.loads(data)
+    conf_file.close()
+    with open(world.cfg["cfg_file"], 'w') as conf_file:
+        data = conf_file.write(json.dumps(tmp, indent=4, sort_keys=True))
+    conf_file.close()
 
 
 def _write_cfg2(cfg):
@@ -498,6 +512,7 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
     fabric_remove_file_command(world.f_cfg.log_join('kea.log*'),
                                destination_host=destination_address)
+
 
 def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
                  destination_address=world.f_cfg.mgmt_address):
@@ -622,7 +637,6 @@ def _restart_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-
 def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start kea with generated config
@@ -719,12 +733,29 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 
 def agent_control_channel(host_address, host_port, socket_name='control_socket'):
+    if world.f_cfg.install_method == 'make':
+        logging_file = 'kea.log-CA'
+        logging_file_path = world.f_cfg.log_join(logging_file)
+    else:
+        logging_file_path = 'stdout'
+
     world.ctrl_enable = True
-    world.cfg["agent"] = '"Control-agent":{"http-host": "' + host_address
-    world.cfg["agent"] += '","http-port":' + host_port
-    world.cfg["agent"] += ',"control-sockets":{"dhcp%s":{' % world.proto[1]
-    world.cfg["agent"] += '"socket-type": "unix","socket-name": "' + world.f_cfg.run_join(socket_name)
-    world.cfg["agent"] += '"}}}'
+    # new type, keep all in dict
+    server_socket_type = "dhcp%s" % world.proto[1]
+    world.ca_main["Control-agent"] = {'http-host': host_address,
+                                      'http-port':  int(host_port),
+                                      'control-sockets': {server_socket_type: {"socket-type": "unix",
+                                                          "socket-name": world.f_cfg.run_join(socket_name)}}}
+                                      # extend each test with kea ctrl logging, configured on CA level
+                                      # for future use
+                                      # "loggers": [
+                                      #     {"debuglevel": 99, "name": "kea-ctrl-agent",
+                                      #      "output_options": [{"output": logging_file_path}],
+                                      #      "severity": "DEBUG"}]}
+
+    # but let's stick for now to old config write/send system
+    # TODO while moving entire forge from str to dict - this should be replaced as well
+    world.cfg["agent"] = '"Control-agent":' + json.dumps(world.ca_main["Control-agent"])
 
 
 def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):

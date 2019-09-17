@@ -479,17 +479,35 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
     return result
 
 
-def send_ctrl_cmd_via_http(command, address, port, exp_result=0):
+def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False):
+    if exp_failed:
+        # expected result should be default (0) or None
+        assert exp_result in [0, None]
+        # force expected result to None so it is not checked
+        exp_result = None
+
     log.info(pprint.pformat(command))
     if isinstance(command, dict):
         command = json.dumps(command)
-    response = requests.post("http://" + address + ":" + locale.str(port),
-                             headers={"Content-Type": "application/json"},
-                             data=command)
-    response = response.text
+    try:
+        response = requests.post("http://" + address + ":" + locale.str(port),
+                                 headers={"Content-Type": "application/json"},
+                                 data=command)
+        # print response.status_code
+    except requests.exceptions.ConnectionError:
+        # this is weird, if post fail it should have 400 or 500 but it's not created instead
+        response = None
 
-    result = _process_ctrl_response(response, exp_result)
-    return result
+    if exp_failed:
+        if response is not None:
+            assert False, "Connection successful, we expected failure"
+    else:
+        if response is None:
+            assert False, "Connection failed, but we expected success"
+        elif 200 <= response.status_code < 300:
+            response = response.text
+            result = _process_ctrl_response(response, exp_result)
+            return result[0]
 
 
 def assert_result(condition, result, value):
