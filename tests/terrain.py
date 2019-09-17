@@ -29,7 +29,7 @@ from scapy.layers.dhcp6 import DUID_LLT
 
 from forge_cfg import world, step
 from softwaresupport.multi_server_functions import make_tarfile, archive_file_name,\
-    fabric_remove_file_command, fabric_run_command
+    fabric_run_command
 from softwaresupport import kea
 import logging_facility
 from srv_control import start_srv
@@ -295,6 +295,15 @@ def test_start():
     # Initialize the common logger.
     logging_facility.logger_initialize(world.f_cfg.loglevel)
 
+    # check remote system if it is redhat or debian based
+    result = fabric_run_command('ls -al /etc/redhat-release 2>/dev/null',
+                                ignore_errors=True)
+    if result.succeeded:
+        world.server_system = 'redhat'
+    else:
+        world.server_system = 'debian'
+
+    # stop any SUT running
     kea_under_test = False
     if not world.f_cfg.no_server_management:
         for sut_name in world.f_cfg.software_under_test:

@@ -34,15 +34,19 @@ log = logging.getLogger('forge')
 
 def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
                        user_loc=world.f_cfg.mgmt_username,
-                       password_loc=world.f_cfg.mgmt_password, hide_all=False):
+                       password_loc=world.f_cfg.mgmt_password, hide_all=False,
+                       ignore_errors=False):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore",category=DeprecationWarning)
-        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=True):
+        with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
+            if ignore_errors:
+                fabric.state.output.warnings = False
             if hide_all:
                 with hide('running', 'stdout', 'stderr'):
                     result = run(cmd, pty=False)
             else:
                 result = run(cmd, pty=False)
+    fabric.state.output.warnings = True
     return result
 
 

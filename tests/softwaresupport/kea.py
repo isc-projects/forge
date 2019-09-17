@@ -661,15 +661,6 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
     else:
-        if not hasattr(world, 'server_system'):
-            result = fabric_sudo_command('ls -al /etc/redhat-release 2>/dev/null',
-                                         destination_host=destination_address,
-                                         ignore_errors=True)
-            if result.succeeded:
-                world.server_system = 'redhat'
-            else:
-                world.server_system = 'debian'
-
         if world.server_system == 'redhat':
             service_names = 'kea-dhcp4 kea-dhcp6 kea-ctrl-agent kea-dhcp-ddns'
         else:

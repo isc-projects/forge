@@ -54,12 +54,15 @@ def _init_radius():
     with open(authorize_file, 'w') as f:
         f.write(authorize_content)
 
-    # freeradius 3.x
-    fabric_send_file(authorize_file,
-                     "/etc/freeradius/3.0/mods-config/files/authorize")
-    # freeradius 2.x
-    fabric_send_file(authorize_file,
-                     "/etc/freeradius/users")
+    if world.server_system == 'redhat':
+        # freeradius 3.x
+        fabric_send_file(authorize_file, "/etc/raddb/mods-config/files/authorize")
+    else:
+        # freeradius 3.x
+        fabric_send_file(authorize_file,
+                         "/etc/freeradius/3.0/mods-config/files/authorize")
+        # freeradius 2.x
+        fabric_send_file(authorize_file, "/etc/freeradius/users")
     os.unlink(authorize_file)
 
     # clients.conf file
@@ -81,16 +84,22 @@ client {mgmt_address} {{
     with open(clients_conf_file, 'w') as f:
         f.write(clients_conf_content)
 
-    # freeradius 3.x
-    fabric_send_file(clients_conf_file,
-                     "/etc/freeradius/3.0/clients.conf")
-    # freeradius 2.x
-    fabric_send_file(clients_conf_file,
-                     "/etc/freeradius/clients.conf")
+    if world.server_system == 'redhat':
+        # freeradius 3.x
+        fabric_send_file(clients_conf_file, "/etc/raddb/clients.conf")
+    else:
+        # freeradius 3.x
+        fabric_send_file(clients_conf_file, "/etc/freeradius/3.0/clients.conf")
+        # freeradius 2.x
+        fabric_send_file(clients_conf_file, "/etc/freeradius/clients.conf")
+
     os.unlink(clients_conf_file)
 
 def _start_radius():
-    cmd = 'sudo systemctl restart freeradius'
+    if world.server_system == 'redhat':
+        cmd = 'sudo systemctl restart radiusd'
+    else:
+        cmd = 'sudo systemctl restart freeradius'
     fabric_sudo_command(cmd)
 
 
