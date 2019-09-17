@@ -1,5 +1,5 @@
 # bleeding edge scapy with our dhcp6 patches
--e git://github.com/secdev/scapy/@d3ef08bb247a45e71413c89b491c40bfb8de7107#egg=scapy
+-e git://github.com/secdev/scapy/@b7e30eb1d9b2a65bd69f45147a4e9f5d29f03267#egg=scapy
 
 # required by scapy
 pcapy
