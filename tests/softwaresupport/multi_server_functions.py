@@ -55,7 +55,7 @@ def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
                         password_loc=world.f_cfg.mgmt_password, hide_all=False,
                         sudo_user=None, ignore_errors=False):
     with settings(host_string=destination_host, user=user_loc, password=password_loc,
-                  sudo_user=sudo_user, warn_only=True):
+                  sudo_user=sudo_user, warn_only=ignore_errors):
         try:
             if ignore_errors:
                 fabric.state.output.warnings = False
