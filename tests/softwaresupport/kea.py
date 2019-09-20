@@ -637,6 +637,40 @@ def _restart_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
+def _reload_kea_with_systemctl(destination_address):
+    cmd_tpl = 'systemctl reload {service} &&'
+    cmd_tpl += ' ts=`systemctl show -p ExecReload {service}.service | sed -E -n \'s/.*stop_time=\\[(.*)\\].*/\\1/p\'`;'  # get time of log beginning
+    cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'  # if started for the first time then ts is empty so set to current date
+    cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
+    cmd_tpl += ' journalctl -u {service}.service --since "$ts" |'  # get logs since last start of kea service
+    cmd_tpl += ' grep "{sentence}" 2>/dev/null;'  # if in the logs there is given sequence then ok
+    cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
+
+    if world.server_system == 'redhat':
+        service_name = 'kea-dhcp%s' % world.proto[1]
+    else:
+        service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+
+    cmd = cmd_tpl.format(service=service_name, sentence='initiate server reconfiguration')
+    fabric_sudo_command(cmd, destination_host=destination_address)
+
+    if world.ctrl_enable:
+        if world.server_system == 'redhat':
+            service_name = 'kea-ctrl-agent'
+        else:
+            service_name = 'isc-kea-ctrl-agent'
+        cmd = cmd_tpl.format(service=service_name, sentence='reloading configuration')
+        fabric_sudo_command(cmd, destination_host=destination_address)
+
+    if world.ddns_enable:
+        if world.server_system == 'redhat':
+            service_name = 'kea-dhcp-ddns'
+        else:
+            service_name = 'isc-kea-dhcp-ddns-server'
+        cmd = cmd_tpl.format(service=service_name, sentence='reloading configuration')
+        fabric_sudo_command(cmd, destination_host=destination_address)
+
+
 def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start kea with generated config
@@ -712,7 +746,7 @@ def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
         result = _reload_kea_with_keactrl(destination_address)
         _check_kea_process_result(True, result, 'reconfigure')
     else:
-        _restart_kea_with_systemctl(destination_address)
+        _reload_kea_with_systemctl(destination_address)
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):

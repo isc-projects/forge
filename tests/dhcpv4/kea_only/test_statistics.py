@@ -352,7 +352,16 @@ def test_stats_reconfigure():
                                                        '192.168.51.1-192.168.51.2')
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
+
+    # reconfigure (reload) server, stats should be preserved
     srv_control.start_srv('DHCP', 'reconfigured')
+
+    assert get_stat('pkt4-received') == [1, 0]
+    assert get_stat('subnet[1].total-addresses') == [1]
+    assert get_stat('subnet[2].total-addresses') == [2]
+
+    # restart kea, now stats should be reset
+    srv_control.start_srv('DHCP', 'restarted')
 
     assert get_stat('pkt4-received') == [0]
     assert get_stat('subnet[1].total-addresses') == [1]
