@@ -656,7 +656,6 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-
 def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_during_reconfigure_2():
 
     misc.test_setup()

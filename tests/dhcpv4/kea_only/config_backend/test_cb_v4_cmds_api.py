@@ -1474,7 +1474,7 @@ def test_remote_global_option4_global_set_missing_data(channel):
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "code": 6}]})
-    srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=0)
+    srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
 
 def test_remote_global_option4_global_set_name():
