@@ -485,7 +485,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
-    srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
+    srv_control.add_ddns_server_options('qualifying-suffix', 'four.example.com')
     srv_control.add_ddns_server_options('hostname-char-set', '[^A-Za-z0-9.-]')
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')

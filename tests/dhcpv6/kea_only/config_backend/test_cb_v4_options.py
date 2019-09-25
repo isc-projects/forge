@@ -71,6 +71,46 @@ def test_subnet_option():
 
 
 @pytest.mark.v4
+def test_multiple_subnet_option():
+    _subnet_set()
+
+    cmd = dict(command="remote-subnet4-set",
+               arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+                          "subnets": [{"subnet": "10.10.0.0/24", "id": 9, "interface": "$(SERVER_IFACE)",
+                                       "shared-network-name": "", "pools": [{"pool": "10.10.0.1-10.10.0.100"}]}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    cmd = dict(command="remote-option4-subnet-set",
+               arguments={"subnets": [{"id": 5}],
+                          "options": [{"always-send": False, "code": 6, "csv-format": True,
+                                       "data": "10.0.0.1", "name": "domain-name-servers",
+                                       "space": "dhcp4"}], "remote": {"type": "mysql"}})
+    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    cmd = dict(command="remote-option4-subnet-set",
+               arguments={"subnets": [{"id": 9}],
+                          "options": [{"always-send": False, "code": 6, "csv-format": True,
+                                       "data": "10.0.0.2", "name": "domain-name-servers",
+                                       "space": "dhcp4"}], "remote": {"type": "mysql"}})
+    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    srv_msg.forge_sleep(3, "seconds")
+
+    cfg = _get_server_config()
+    assert cfg["arguments"]["Dhcp4"]["subnet4"][0]["option-data"] == cmd["arguments"]["options"]
+
+    cmd = dict(command="remote-option4-subnet-del",
+               arguments={"subnets": [{"id": 5}], "options": [{"code": 6, "space": "dhcp4"}],
+                          "remote": {"type": "mysql"}})
+    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    srv_msg.forge_sleep(3, "seconds")
+
+    cfg = _get_server_config(reload_kea=True)
+    assert cfg["arguments"]["Dhcp4"]["subnet4"][0]["option-data"] == []
+
+
+@pytest.mark.v4
 def test_subnet_in_network_option():
     _set_network()
     cmd = dict(command="remote-subnet4-set",

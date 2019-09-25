@@ -12,7 +12,6 @@ import misc
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_duplicate_reservations():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -26,13 +25,13 @@ def test_v4_host_reservation_conflicts_duplicate_reservations():
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
 
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -48,17 +47,18 @@ def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets(
                                            '1',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
 
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation_of_used_address():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -100,6 +100,7 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
     srv_control.upload_db_reservation('MySQL')
 
     # Reserve address 192.168.50.2 in subnet 0 for host uniquely identified by hw-address ff:01:02:03:ff:77.
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -114,7 +115,6 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation_of_used_address_2():
 
     misc.test_setup()
@@ -126,6 +126,7 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', '1', 'MySQL', '1')
     srv_control.upload_db_reservation('MySQL')
 
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -165,7 +166,7 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:77')
-
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -180,7 +181,6 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_used_address_3():
     misc.test_setup()
     # reconfigure different address for same MAC from outside of the pool
@@ -190,6 +190,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -215,7 +216,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -239,7 +240,6 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reservations_in_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.30')
@@ -248,6 +248,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -273,7 +274,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
-
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -288,7 +289,6 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reservations_out_of_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.30')
@@ -297,6 +297,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -322,7 +323,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
-
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -337,10 +338,10 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_host_that_has_leases():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -366,7 +367,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_ho
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -413,7 +414,6 @@ def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_ho
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_renew_address_that_has_been_reserved_during_reconfiguration():
 
     misc.test_setup()
@@ -421,6 +421,7 @@ def test_v4_host_reservation_conflicts_renew_address_that_has_been_reserved_duri
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -452,6 +453,7 @@ def test_v4_host_reservation_conflicts_renew_address_that_has_been_reserved_duri
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -494,7 +496,6 @@ def test_v4_host_reservation_conflicts_renew_address_that_has_been_reserved_duri
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_has_been_reserved_during_reconfiguration():
 
     misc.test_setup()
@@ -502,6 +503,7 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -533,6 +535,7 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -566,7 +569,6 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_during_reconfigure():
 
     misc.test_setup()
@@ -579,6 +581,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -610,6 +613,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -652,7 +656,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
+
 def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_during_reconfigure_2():
 
     misc.test_setup()
@@ -665,6 +669,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -696,6 +701,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -730,7 +736,6 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_during_reconfigure():
 
     misc.test_setup()
@@ -743,6 +748,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -774,6 +780,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -793,6 +800,11 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_msg.send_wait_for_message('MUST', None, 'NAK')
 
     srv_msg.forge_sleep('6', 'seconds')
+    # TODO indeed this is a bug, or incomplete feature, kea should remove lease when:
+    # address X was assigned to client A
+    # kea was reconfigured and address X is now reserved for client B
+    # client A tried to rebind address but he was denied - which is good
+    # bud kea didn't reclaim that address, it will be waiting until valid lifetime will pass
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
@@ -816,7 +828,6 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-@pytest.mark.trzz
 def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_during_reconfigure_2():
 
     misc.test_setup()
@@ -829,6 +840,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -860,6 +872,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:01')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()

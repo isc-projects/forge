@@ -740,9 +740,8 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
 
-    response = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.0.2.205","next-server":"192.0.2.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
+    response = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.168.50.205","next-server":"192.168.50.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
     assert response['result'] == 0
-    # TODO: it fails with: "specified reservation '192.0.2.205' is not matching the IPv4 subnet prefix '192.168.50.0/24'", how should Kea behave actually?
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
@@ -750,7 +749,7 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.0.2.205')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
     srv_msg.response_check_include_option('Response', None, '6')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')
@@ -759,14 +758,14 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.0.2.205')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.205')
     srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
     srv_msg.client_sets_value('Client', 'chaddr', '01:0a:0b:0c:0d:0e:0f')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.0.2.205')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
     srv_msg.response_check_include_option('Response', None, '6')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')
@@ -794,9 +793,8 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
 
-    result = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.0.2.205","next-server":"192.0.2.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
+    result = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.168.50.205","next-server":"192.168.50.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
     assert result['result'] == 0
-    # TODO: it fails with: "specified reservation '192.0.2.205' is not matching the IPv4 subnet prefix '192.168.50.0/24'", how should Kea behave actually?
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
@@ -804,7 +802,7 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.0.2.205')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
     srv_msg.response_check_include_option('Response', None, '6')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')
@@ -813,14 +811,14 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.0.2.205')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.205')
     srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
     srv_msg.client_sets_value('Client', 'chaddr', '01:0a:0b:0c:0d:0e:0f')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.0.2.205')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
     srv_msg.response_check_include_option('Response', None, '6')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
     srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')

@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2019 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -183,7 +183,8 @@ def log_contains(line, condition, log_file=None):
         if log_file is None:
             log_file = 'kea.log'
         log_file = world.f_cfg.log_join(log_file)
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
+        # ignore errors because we analise those errors later
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
     else:
         if log_file is None:
             if world.server_system == 'redhat':

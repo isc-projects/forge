@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2019 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -407,14 +407,10 @@ def ByteToHex(byteStr):
 def test_option(opt_code, received, expected):
     tmp = ""
 
-    decode_opts_byte_to_hex = [61, 76]
+    decode_opts_byte_to_hex = [61]
 
     if opt_code in decode_opts_byte_to_hex or expected[:4] == "HEX:":
         received = received[0], ByteToHex(received[1])
-
-    decode_opts_hex_to_int = [76]
-    if opt_code in decode_opts_hex_to_int:
-        received = received[0], int(str(received[1]), 16)
 
     if expected[:4] == "HEX:":
         expected = expected[4:]
