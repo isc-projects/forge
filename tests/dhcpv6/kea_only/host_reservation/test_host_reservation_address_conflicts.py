@@ -15,12 +15,12 @@ import srv_msg
 def test_v6_host_reservation_duplicate_reservation():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
                                            '0',
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::2',
                                            '0',
                                            'duid',
@@ -36,12 +36,12 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnet
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     srv_control.config_srv_another_subnet_no_interface('3001::/30', '3001::1-3001::10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
                                            '0',
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::3',
                                            '1',
                                            'hw-address',
@@ -111,7 +111,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     # bigger prefix pool + reservation
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
                                            '0',
                                            'duid',
@@ -204,7 +204,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     # bigger prefix pool + reservation
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
                                            '0',
                                            'duid',
@@ -304,7 +304,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.set_time('valid-lifetime', '107')
     srv_control.set_time('preferred-lifetime', '108')
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::3')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::2',
                                            '0',
                                            'duid',
@@ -425,7 +425,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.set_time('preferred-lifetime', '7')
     srv_control.set_time('valid-lifetime', '8')
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::3')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::2',
                                            '0',
                                            'duid',

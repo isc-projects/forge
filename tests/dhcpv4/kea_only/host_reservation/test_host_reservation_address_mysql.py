@@ -116,7 +116,7 @@ def test_v4_host_reservation_mysql_one_address_outside_pool_dual_backend():
     srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.10', 'MySQL', '1')
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', '1', 'MySQL', '1')
     srv_control.upload_db_reservation('MySQL')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.11',
                                            '0',
                                            'hw-address',
@@ -210,7 +210,7 @@ def test_v4_host_reservation_one_address_empty_pool():
     misc.test_setup()
     # request address from different mac that has been reserved
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',

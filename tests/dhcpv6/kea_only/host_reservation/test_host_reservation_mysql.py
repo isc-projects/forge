@@ -475,7 +475,7 @@ def test_v6_host_reservation_mysql_hwaddrr_matching_dualbackend():
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', '1', 'MySQL', '1')
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', '1')
     srv_control.upload_db_reservation('MySQL')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::fff',
                                            '0',
                                            'hw-address',

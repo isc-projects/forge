@@ -116,7 +116,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address():
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.5')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -157,12 +157,12 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_2():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'hostname', 'reserved-name')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'hostname', 'reserved-name')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -208,7 +208,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_3():
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.5')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

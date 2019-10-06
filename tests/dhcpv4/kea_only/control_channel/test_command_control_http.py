@@ -340,7 +340,7 @@ def test_control_channel_http_test_config():
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.5')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
     srv_control.generate_config_files()
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(SERVER_CONFIG) }',
@@ -366,7 +366,7 @@ def test_control_channel_http_test_config():
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::1')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::1')
     srv_control.generate_config_files()
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(SERVER_CONFIG) }',

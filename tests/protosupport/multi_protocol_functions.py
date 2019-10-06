@@ -350,49 +350,43 @@ def test_define_value(*args):
     "Client defines new variable: (\S+) with value (\S+)." """
     tested_args = []
     for i in range(len(args)):
-        try:
-            tmp = str(args[i])
-        except UnicodeEncodeError:
-            tmp = unicode(args[i])
-        tmp_loop = ""
-        while True:
-            imported = None
-            front = None
-            # if "$" in args[i]:
-            if "$" in tmp:
-                index = tmp.find('$')
-                front = tmp[:index]
-                tmp = tmp[index:]
+        if type(args[i]) == dict:
+            pass
+        #TODO finish it
+        else:
+            try:
+                tmp = str(args[i])
+            except UnicodeEncodeError:
+                tmp = unicode(args[i])
+            tmp_loop = ""
+            while True:
+                imported = None
+                front = None
+                if "$" in tmp:
+                    index = tmp.find('$')
+                    front = tmp[:index]
+                    tmp = tmp[index:]
 
-            if tmp[:2] == "$(":
-                index = tmp.find(')')
-                assert index > 2, "Defined variable not complete. Missing ')'. "
+                if tmp[:2] == "$(":
+                    index = tmp.find(')')
+                    assert index > 2, "Defined variable not complete. Missing ')'. "
 
-                for each in world.define:
-                    if str(each[0]) == tmp[2: index]:
-                        imported = int(each[1]) if each[1].isdigit() else str(each[1])
-                if imported is None:
-                    imported = getattr(world.f_cfg, tmp[2: index].lower())
-                # TODO: WTF?
-                #if imported is None:
-                #    try:
-                #        imported = getattr(__import__('init_all', fromlist=[tmp[2: index]]), tmp[2: index])
-                #    except ImportError:
-                #        assert False, "No variable in init_all.py or in world.define named: " + tmp[2: index]
-                if front is None:
-                    # tested_args.append(imported + tmp[index + 1:])
-                    tmp_loop = str(imported) + tmp[index + 1:]
+                    for each in world.define:
+                        if str(each[0]) == tmp[2: index]:
+                            imported = int(each[1]) if each[1].isdigit() else str(each[1])
+                    if imported is None:
+                        imported = getattr(world.f_cfg, tmp[2: index].lower())
+                    if front is None:
+                        tmp_loop = str(imported) + tmp[index + 1:]
+                    else:
+                        tmp_loop = front + str(imported) + tmp[index + 1:]
                 else:
-                    # tested_args.append(front + imported + tmp[index + 1:])
-                    tmp_loop = front + str(imported) + tmp[index + 1:]
-            else:
-                # tested_args.append(args[i])
-                tmp_loop = tmp
-            if "$(" not in tmp_loop:
-                tested_args.append(tmp_loop)
-                break
-            else:
-                tmp = tmp_loop
+                    tmp_loop = tmp
+                if "$(" not in tmp_loop:
+                    tested_args.append(tmp_loop)
+                    break
+                else:
+                    tmp = tmp_loop
     return tested_args
 
 

@@ -175,8 +175,7 @@ def test_v6_client_classification_known_subnet_duid():
 def test_v6_client_classification_known_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '$(EMPTY)')
-    srv_control.add_line_to_subnet('0',
-                                   ',"pools":[{"pool": "2001:db8:a::100-2001:db8:a::100","client-class": "KNOWN"}]')
+    srv_control.add_line_to_subnet(0, {"pools":[{"pool": "2001:db8:a::100-2001:db8:a::100", "client-class": "KNOWN"}]})
 
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
@@ -226,8 +225,7 @@ def test_v6_client_classification_known_pool():
 def test_v6_client_classification_unknown_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '$(EMPTY)')
-    srv_control.add_line_to_subnet('0',
-                                   ',"pools":[{"pool": "2001:db8:a::10-2001:db8:a::10","client-class": "UNKNOWN"}]')
+    srv_control.add_line_to_subnet(0, {"pools":[{"pool": "2001:db8:a::10-2001:db8:a::10", "client-class": "UNKNOWN"}]})
 
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
@@ -280,8 +278,8 @@ def test_v6_client_classification_unknown_pool():
 def test_v6_client_classification_unknown_known_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '$(EMPTY)')
-    srv_control.add_line_to_subnet('0',
-                                   ',"pools":[{"pool": "2001:db8:a::10-2001:db8:a::10","client-class": "UNKNOWN"},{"pool": "2001:db8:a::100-2001:db8:a::100","client-class": "KNOWN"}]')
+    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "2001:db8:a::10-2001:db8:a::10", "client-class": "UNKNOWN"},
+                                                 {"pool": "2001:db8:a::100-2001:db8:a::100", "client-class": "KNOWN"}]})
 
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',

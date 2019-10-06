@@ -419,7 +419,7 @@ def test_control_channel_http_test_config():
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
                                            '0',
                                            'duid',
@@ -452,7 +452,7 @@ def test_control_channel_http_test_config():
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     # WRONG ADDRESS RESERVATION
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.0.5',
                                            '0',
                                            'duid',

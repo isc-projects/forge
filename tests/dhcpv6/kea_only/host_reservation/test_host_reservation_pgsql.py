@@ -236,7 +236,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_dual_backend():
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'PostgreSQL', '1')
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::fff',
                                            '0',
                                            'hw-address',

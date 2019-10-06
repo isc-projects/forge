@@ -20,8 +20,8 @@ def test_v6_host_reservation_all_values_mac():
                                            '0',
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::100')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'prefix', '3001::/40')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::100')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '3001::/40')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
@@ -76,8 +76,8 @@ def test_v6_host_reservation_all_values_duid():
                                            '0',
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::100')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'prefix', '3001::/40')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::100')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '3001::/40')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
@@ -134,8 +134,8 @@ def test_v6_host_reservation_all_values_duid_2():
                                            '0',
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::100')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'prefix', '2001:db8:1::/40')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::100')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '2001:db8:1::/40')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
@@ -191,8 +191,8 @@ def test_v6_host_reservation_classes_1():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.add_line_to_subnet('0',
-                                   ',"reservations": [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:22","client-classes": [ "reserved-class1"]}]')
+    srv_control.add_line_to_subnet(0, {"reservations": [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:22",
+                                                         "client-classes": ["reserved-class1"]}]})
 
     srv_control.create_new_class('reserved-class1')
     srv_control.add_option_to_defined_class('1', 'sip-server-addr', '2001:db8::1,2001:db8::2')
@@ -241,8 +241,8 @@ def test_v6_host_reservation_classes_2():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.add_line_to_subnet('0',
-                                   ',"reservations": [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:22","client-classes": [ "reserved-class1", "reserved-class2" ]}]')
+    srv_control.add_line_to_subnet(0, {"reservations": [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:22",
+                                                         "client-classes": ["reserved-class1", "reserved-class2"]}]})
 
     srv_control.create_new_class('reserved-class1')
     srv_control.add_option_to_defined_class('1', 'sip-server-addr', '2001:db8::1,2001:db8::2')

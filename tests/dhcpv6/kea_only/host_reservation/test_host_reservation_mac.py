@@ -15,7 +15,7 @@ import misc
 def test_v6_host_reservation_mac_requesting_reserved_address_inside_the_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::10',
                                            '0',
                                            'hw-address',
@@ -73,7 +73,7 @@ def test_v6_host_reservation_mac_requesting_reserved_address_inside_the_pool():
 def test_v6_host_reservation_mac_requesting_reserved_address_outside_the_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::ff',
                                            '0',
                                            'hw-address',

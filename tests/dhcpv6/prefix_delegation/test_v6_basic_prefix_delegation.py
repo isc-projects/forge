@@ -113,8 +113,9 @@ def test_prefix_delegation_without_server_configuration():
 def test_prefix_delegation_exclude_prefix():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/48', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.add_line_to_subnet('0',
-                                   ',"pd-pools":[{"prefix": "2001:db8:1::","prefix-len": 90,"delegated-len": 90,"excluded-prefix": "2001:db8:1::20:0:0","excluded-prefix-len": 91}]')
+    srv_control.add_line_to_subnet(0, {"pd-pools": [{"prefix": "2001:db8:1::", "prefix-len": 90,
+                                                     "delegated-len": 90, "excluded-prefix": "2001:db8:1::20:0:0",
+                                                     "excluded-prefix-len": 91}]})
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')

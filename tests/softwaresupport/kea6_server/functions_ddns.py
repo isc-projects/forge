@@ -30,6 +30,12 @@ def add_ddns_server(address, port):
     if port == "default":
         port = 53001
 
+    if world.f_cfg.install_method == 'make':
+        logging_file = 'kea.log_ddns'
+        logging_file_path = world.f_cfg.log_join(logging_file)
+    else:
+        logging_file_path = 'stdout'
+
     world.ddns_main = {"ip-address": address,
                        "port": int(port),  # this value is passed as string
                        "dns-server-timeout": 100,
@@ -37,13 +43,12 @@ def add_ddns_server(address, port):
                        "forward-ddns": {'ddns-domains': []},
                        "tsig-keys": [],
                        "ncr-format": "JSON",  # default value
-                       "ncr-protocol": "UDP"
-        # ,
-        #                "loggers": [
-        #                    {"debuglevel": 99,"name": "kea-ctrl-agent",
-        #                     "output_options": [{
-        #                         "output": logging_file_path}],
-        #                     "severity": "DEBUG"}]
+                       "ncr-protocol": "UDP",
+                       "loggers": [
+                           {"debuglevel": 99, "name": "kea-dhcp-ddns",
+                            "output_options": [{
+                                "output": logging_file_path}],
+                            "severity": "DEBUG"}]
                        }  # default value
 
     add_ddns_server_options("server-ip", address)
@@ -57,7 +62,9 @@ def add_ddns_server_options(option, value):
         value = True
     if value in ["false", "False", "FALSE"]:
         value = False
-    world.ddns_add[option] = value
+    if "dhcp-ddns" not in world.dhcp_main:
+        world.dhcp_main["dhcp-ddns"] = {}
+    world.dhcp_main["dhcp-ddns"][option] = value
 
 
 def add_forward_ddns(name, key_name, ip_address, port, hostname=""):

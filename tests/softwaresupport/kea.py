@@ -44,54 +44,399 @@ kea_otheroptions = {
 
 def add_defaults4():
     eth = world.f_cfg.server_iface
-    t1 = world.cfg["server_times"]["renew-timer"]
-    t2 = world.cfg["server_times"]["rebind-timer"]
-    t3 = world.cfg["server_times"]["valid-lifetime"]
+    if world.cfg["server_times"]["renew-timer"] != "":
+        world.dhcp_main["renew-timer"] = world.cfg["server_times"]["renew-timer"]
+    if world.cfg["server_times"]["rebind-timer"] != "":
+        world.dhcp_main["rebind-timer"] = world.cfg["server_times"]["rebind-timer"]
+    if world.cfg["server_times"]["valid-lifetime"] != "":
+        world.dhcp_main["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
 
-    pointer_start = "{"
-    pointer_end = "}"
-
-    world.cfg["main"] = '{"Dhcp4" :{'
-    if t1 != "":
-        world.cfg["main"] += '"renew-timer": {t1},'.format(**locals())
-    if t2 != "":
-        world.cfg["main"] += '"rebind-timer": {t2},'.format(**locals())
-    if t3 != "":
-        world.cfg["main"] += '"valid-lifetime": {t3},'.format(**locals())
-
-    if "global_parameters" in world.cfg:
-        world.cfg["main"] += world.cfg["global_parameters"]
-
-    if eth is not None and eth not in world.cfg["interfaces"]:
-        add_interface(eth)
-
-    # world.cfg["conf"] += dedent(subnetcfg)
-    # world.dhcp["subnet_cnt"] += 1
+    add_interface(eth)
 
 
 def add_defaults6():
-    t1 = world.cfg["server_times"]["renew-timer"]
-    t2 = world.cfg["server_times"]["rebind-timer"]
-    t3 = world.cfg["server_times"]["preferred-lifetime"]
-    t4 = world.cfg["server_times"]["valid-lifetime"]
+    world.dhcp_main["renew-timer"] = world.cfg["server_times"]["renew-timer"]
+    world.dhcp_main["rebind-timer"] = world.cfg["server_times"]["rebind-timer"]
+    world.dhcp_main["preferred-lifetime"] = world.cfg["server_times"]["preferred-lifetime"]
+    world.dhcp_main["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
     eth = world.f_cfg.server_iface
+    add_interface(eth)
+
+
+def add_logger(log_type, severity, severity_level, logging_file=None):
+    if world.f_cfg.install_method == 'make':
+        if logging_file is None:
+            logging_file = 'kea.log'
+        logging_file_path = world.f_cfg.log_join(logging_file)
+    else:
+        if logging_file is None:
+            logging_file_path = 'stdout'
+        else:
+            logging_file_path = world.f_cfg.log_join(logging_file)
+
+    logger = {"name": log_type,
+              "output_options": [{"output": logging_file_path}],
+              "severity": severity}
+    if severity_level != "None":
+        logger["debuglevel"] = int(severity_level)
+
+    world.dhcp_main["loggers"].append(logger)
+
+
+def open_control_channel_socket(socket_name=None):
+    if socket_name is not None:
+        socket_path = world.f_cfg.run_join(socket_name)
+    else:
+        socket_path = world.f_cfg.run_join('control_socket')
+        world.dhcp_main["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
+
+
+def create_new_class(class_name):
+    if "client-classes" not in world.dhcp_main:
+        world.dhcp_main["client-classes"] = []
+    world.dhcp_main["client-classes"].append({"name": class_name, "option-def": [], "option-data": []})
+
+
+def add_test_to_class(class_number, parameter_name, parameter_value):
+    if parameter_name == "test":
+        world.dhcp_main["client-classes"][class_number - 1][parameter_name] = parameter_value
+    else:
+        world.dhcp_main["client-classes"][class_number - 1][parameter_name].append(parameter_value)
+
+
+def add_option_to_defined_class(class_no, option_name, option_value):
+    space = world.cfg["space"]
+
+    if world.proto == 'v4':
+        option_code = world.kea_options4.get(option_name)
+    else:
+        option_code = world.kea_options6.get(option_name)
+        if option_code is None:
+            option_code = kea_otheroptions.get(option_name)
+
+    world.dhcp_main["client-classes"][class_no - 1]["option-data"].append({"csv-format": True,
+                                                                           "code": option_code,
+                                                                           "data": option_value,
+                                                                           "name": option_name,
+                                                                           "space": space})
+
+
+def config_client_classification(subnet, option_value):
+    sub = "subnet%s" % world.proto[1]
+    world.dhcp_main[sub][subnet]["client-class"] = option_value
+
+
+def config_require_client_classification(subnet, option_value):
+    sub = "subnet%s" % world.proto[1]
+    if "require-client-classes" not in world.dhcp_main[sub][subnet]:
+        world.dhcp_main[sub][subnet]["require-client-classes"] = []
+
+    world.dhcp_main[sub][subnet]["require-client-classes"].append(option_value)
+
+
+def set_time(which_time, value, subnet=None):
+    assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
+
+    if subnet is None:
+            world.dhcp_main[which_time] = value
+    else:
+        subnet = int(subnet)
+        sub = "subnet%s" % world.proto[1]
+        world.dhcp_main[sub][subnet][which_time] = value
+
+
+def add_line_in_global(additional_line):
+    world.dhcp_main.update(additional_line)
+
+
+def add_line_to_shared_subnet(subnet_id, additional_line):
+    # TODO needs new system
+    sub = "subnet%s" % world.proto[1]
+    world.dhcp_main[sub][subnet_id].update(additional_line)
+
+
+def add_line_in_subnet(subnet_id, additional_line):
+    sub = "subnet%s" % world.proto[1]
+    world.dhcp_main[sub][subnet_id].update(additional_line)
+
+
+def prepare_cfg_subnet(subnet, pool, eth=None):
+    if world.proto == 'v4':
+        if subnet == "default":
+            subnet = "192.168.0.0/24"
+        if pool == "default":
+            pool = "192.168.0.1 - 192.168.0.254"
+    else:
+        if subnet == "default":
+            subnet = "2001:db8:1::/64"
+        if pool == "default":
+            pool = "2001:db8:1::1 - 2001:db8:1::ffff"
+    if eth is None:
+        eth = world.f_cfg.server_iface
+
+    sub = "subnet%s" % world.proto[1]
+    if sub not in world.dhcp_main.keys():
+        world.dhcp_main[sub] = [{}] # TO NIE DZIALA DLA SUBNETOW I PUSTYCH KONFIGURACJI
+    else:
+        world.dhcp_main[sub].append({})
+
+    if subnet is not "":
+        world.dhcp_main[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
+                                                          "pools": [],
+                                                          "interface": eth}
+    if pool is not "":
+        world.dhcp_main[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
+    add_interface(eth)
+
+
+def config_srv_another_subnet(subnet, pool, eth):
+    world.dhcp["subnet_cnt"] += 1
+    prepare_cfg_subnet(subnet, pool, eth)
+
+
+def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
+    if subnet == "default":
+        subnet = "2001:db8:1::/64"
+    if pool == "default":
+        pool = "2001:db8:1::1 - 2001:db8:1::ffff"
+
+    # This is weird, it's not used in any test looks like we have some errors because it was used
+    # TODO write missing tests using specific interface!
+    sub = "subnet%s" % world.proto[1]
+    if sub not in world.dhcp_main.keys():
+        world.dhcp_main[sub] = [{}]
+
+    if subnet is not "":
+        world.dhcp_main[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
+                                                          "pools": [],
+                                                          "interface": interface + "/" + address}
+    if pool is not "":
+        world.dhcp_main[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
+
+    add_interface(interface + "/" + address)
+
+
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
+    prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user')
+
+    if "option-def" not in world.dhcp_main.keys():
+        world.dhcp_main["option-def"] = []
+
+    world.dhcp_main["option-def"].append({"code": opt_code, "name": opt_name,
+                                          "space": space, "encapsulate": "", "record-types": "",
+                                          "array": False, "type": opt_type})
+
+
+def add_interface(eth):
+    if "interfaces-config" not in world.dhcp_main.keys():
+        world.dhcp_main["interfaces-config"] = {"interfaces": []}
+
+    if eth is not None and eth not in world.dhcp_main["interfaces-config"]["interfaces"]:
+        world.dhcp_main["interfaces-config"]["interfaces"].append(eth)
+
+
+def add_pool_to_subnet(pool, subnet):
+    sub = "subnet%s" % world.proto[1]
+    world.dhcp_main[sub][subnet]["pools"].append({"pool": pool})
+
+
+def set_conf_parameter_global(parameter_name, value):
+    world.dhcp_main[parameter_name] = value
+
+
+def set_conf_parameter_subnet(parameter_name, value, subnet_id):
+    sub = "subnet%s" % world.proto[1]
+    world.dhcp_main[sub][subnet_id][parameter_name] = value
+
+
+def add_to_shared_subnet(subnet_id, shared_subnet_id):
+    sub = "subnet%s" % world.proto[1]
+    # copy subnet from subnetX do shared-networks and remove it from subnetX
+    world.dhcp_main["shared-networks"].append(world.dhcp_main[sub][subnet_id].copy())
+    del world.dhcp_main[sub][subnet_id]
+    world.dhcp["subnet_cnt"] -= 1
+
+
+def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
+    # magic for backward compatibility, was easier than editing all tests we already have.
+    value = value.strip("\"")
+    if value[0] == "{":
+        value=json.loads(value)
+    world.dhcp_main["shared-networks"][subnet_id][parameter_name]=value
+
+
+def _check_empty_value(val):
+    return (False, "") if val == "<empty>" else (True, val)
+
+
+def prepare_cfg_add_option(option_name, option_value, space,
+                           option_code=None, opt_type='default', where='options'):
+    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+    if opt_type == 'default':
+        if world.proto == 'v4':
+            option_code = world.kea_options4.get(option_name)
+        else:
+            option_code = world.kea_options6.get(option_name)
+            if option_code is None:
+                option_code = kea_otheroptions.get(option_name)
+
+    if world.proto == 'v4':
+        csv_format, option_value = _check_empty_value(option_value)
+    else:
+        csv_format = True
+    # TODO check "WHERE"
+    world.dhcp_main["option-data"].append({"csv-format": csv_format, "code": option_code,
+                                           "data": option_value, "name": option_name, "space": space})
+
+
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
+    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+    space = world.cfg["space"]
+    subnet = int(subnet)
+    if world.proto == 'v4':
+        option_code = world.kea_options4.get(option_name)
+    else:
+        option_code = world.kea_options6.get(option_name)
+        if option_code is None:
+            option_code = kea_otheroptions.get(option_name)
+
+    if world.proto == 'v4':
+        csv_format, option_value = _check_empty_value(option_value)
+    else:
+        csv_format = True
+
+    sub = "subnet%s" % world.proto[1]
+    if "option-data" not in world.dhcp_main[sub][subnet]:
+        world.dhcp_main[sub][subnet]["option-data"] = []
+    world.dhcp_main[sub][subnet]["option-data"].append({"csv-format": csv_format, "code": option_code,
+                                                        "data": option_value, "name": option_name, "space": space})
+
+
+def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_value):
+    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+    space = world.cfg["space"]
+    shared_subnet = int(shared_subnet)
+    if world.proto == 'v4':
+        option_code = world.kea_options4.get(option_name)
+    else:
+        option_code = world.kea_options6.get(option_name)
+        if option_code is None:
+            option_code = kea_otheroptions.get(option_name)
+
     pointer_start = "{"
     pointer_end = "}"
 
-    world.cfg["main"] = '''
-        {pointer_start} "Dhcp6" :
+    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
+    if len(world.shared_subcfg[shared_subnet][0]) > 10:
+        world.shared_subcfg[shared_subnet][0] += ','
 
-        {pointer_start}
-        "renew-timer": {t1},
-        "rebind-timer": {t2},
-        "preferred-lifetime": {t3},
-        "valid-lifetime": {t4},
-        '''.format(**locals())
-    if "global_parameters" in world.cfg:
-        world.cfg["main"] += world.cfg["global_parameters"]
+    world.shared_subcfg[shared_subnet][0] += '''
+            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
+            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
-    if eth is not None and eth not in world.cfg["interfaces"]:
-        add_interface(eth)
+    #TODO needs dict system
+
+
+def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
+    sub = "subnet%s" % world.proto[1]
+    if "reservations" not in world.dhcp_main[sub][subnet]:
+        world.dhcp_main[sub][subnet]["reservations"] = []
+
+    world.dhcp_main[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
+                                                         reservation_type: reserved_value})
+
+
+def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
+    sub = "subnet%s" % world.proto[1]
+    world.dhcp_main[sub][subnet]["reservations"][reservation_number].update({reservation_type: reserved_value})
+
+
+def _config_db_backend():
+    if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
+        world.dhcp_main["lease-database"] = {"type": "memfile"}
+    else:
+        world.dhcp_main["lease-database"] = {"type": world.reservation_backend,
+                                             "name": world.f_cfg.db_name,
+                                             "host": world.f_cfg.db_host,
+                                             "user": world.f_cfg.db_user,
+                                             "password": world.f_cfg.db_passwd}
+        if world.f_cfg.db_type in ["cql"]:
+            if "keyspace" not in world.dhcp_main["lease-database"].keys():
+                world.dhcp_main["lease-database"] = {"keyspace": "keatest"}
+
+    # set reservations
+    if world.reservation_backend in ["mysql", "postgresql", "cql"]:
+        world.dhcp_main["hosts-database"] = {"type": world.reservation_backend,
+                                             "name": world.f_cfg.db_name,
+                                             "host": world.f_cfg.db_host,
+                                             "user": world.f_cfg.db_user,
+                                             "password": world.f_cfg.db_passwd}
+
+        if world.reservation_backend in ["cql"]:
+            # if value is not given in the test - use default (backward compatibility)
+            if "keyspace" not in world.dhcp_main["hosts-database"].keys():
+                world.dhcp_main["hosts-database"] = {"keyspace": "keatest"}
+
+
+def add_hooks(library_path):
+    if "libdhcp_ha" in library_path:
+        world.dhcp_main["hooks-libraries"].append({"library": library_path,
+                                                   "parameters": {
+                                                       "high-availability": [{"peers": [],
+                                                                              "state-machine": {"states": []}}]}})
+    else:
+        world.dhcp_main["hooks-libraries"].append({"library": library_path})
+
+
+def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
+    if "parameters" not in world.dhcp_main["hooks-libraries"][hook_no-1].keys():
+        world.dhcp_main["hooks-libraries"][hook_no - 1]["parameters"] = {}
+
+    world.dhcp_main["hooks-libraries"][hook_no-1]["parameters"][parameter_name] = parameter_value
+
+
+def ha_add_parameter_to_hook(parameter_name, parameter_value):
+    # First let's find HA hook in the list:
+    # TODO Michal, is there a more elegant solution for editing one specific dictionary from the list of dictionaries?
+    # btw.. I wonder why "high-availability" is list of dictionaries not dictionary
+    # and it's just for current backward compatibility, I will change it when I will get back to HA tests
+    for hook in world.dhcp_main["hooks-libraries"]:
+        if "libdhcp_ha" in hook["library"]:
+            if parameter_name == "machine-state":
+                parameter_value.strip("'")
+                parameter_value = json.loads(parameter_value)
+                hook["parameters"]["high-availability"][0]["state-machine"]["states"].append(parameter_value)
+            elif parameter_name == "peers":
+                parameter_value.strip("'")
+                parameter_value = json.loads(parameter_value)
+                hook["parameters"]["high-availability"][0]["peers"].append(parameter_value)
+            elif parameter_name == "lib":
+                pass
+            else:
+                if parameter_value.isdigit():
+                    parameter_value = int(parameter_value)
+                else:
+                    parameter_value = parameter_value.strip("\"")
+                hook["parameters"]["high-availability"][0][parameter_name] = parameter_value
+
+
+def agent_control_channel(host_address, host_port, socket_name='control_socket'):
+    if world.f_cfg.install_method == 'make':
+        logging_file = 'kea.log-CA'
+        logging_file_path = world.f_cfg.log_join(logging_file)
+    else:
+        logging_file_path = 'stdout'
+
+    world.ctrl_enable = True
+    server_socket_type = "dhcp%s" % world.proto[1]
+    world.ca_main["Control-agent"] = {'http-host': host_address,
+                                      'http-port':  int(host_port),
+                                      'control-sockets': {server_socket_type: {"socket-type": "unix",
+                                                          "socket-name": world.f_cfg.run_join(socket_name)}},
+                                      "loggers": [
+                                          {"debuglevel": 99, "name": "kea-ctrl-agent",
+                                           "output_options": [{"output": logging_file_path}],
+                                           "severity": "DEBUG"}]}
 
 
 def _set_kea_ctrl_config():
@@ -132,317 +477,33 @@ def _set_kea_ctrl_config():
     '''.format(**locals())
 
 
-def _add_simple_opt(passed_option):
-    if "simple_options" not in world.cfg:
-        world.cfg["simple_options"] = ''
-    else:
-        world.cfg["simple_options"] += ","
-    world.cfg["simple_options"] += passed_option
-
-
-def _config_add_reservation_database():
-    db_type = world.reservation_backend
-    db_name = world.f_cfg.db_name
-    db_user = world.f_cfg.db_user
-    db_passwd = world.f_cfg.db_passwd
-    pointer_start = '{'
-    pointer_end = '}'
-    if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
-        db_host = ""
-
-    if world.reservation_backend in ["mysql", "postgresql"]:
-        _add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
-                       "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
-                       "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
-
-    # TODO remove hardcoded values for cassandra
-    if world.reservation_backend in ["cql"]:
-        _add_simple_opt('''"hosts-database":{pointer_start}"type": "{db_type}",
-                       "keyspace":"keatest", "host":"", "user":"keatest",
-                       "password":"keatest"{pointer_end}'''.format(**locals()))
-
-
-def _config_db_backend():
-    if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
-        _add_simple_opt('"lease-database":{"type": "memfile"}')
-        # _add_simple_opt('"lease-database":{"type": "memfile", "lfc-interval": 10}')
-    else:
-        pointer_start = '{'
-        pointer_end = '}'
-        db_type = world.f_cfg.db_type
-        db_name = world.f_cfg.db_name
-        db_user = world.f_cfg.db_user
-        db_passwd = world.f_cfg.db_passwd
-        if world.f_cfg.db_host == "" or world.f_cfg.db_host == "localhost":
-            db_host = ""
-        else:
-            db_host = world.f_cfg.db_host
-        if db_type in ["mysql", "postgresql"]:
-            _add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
-                            "name":"{db_name}", "host":"{db_host}", "user":"{db_user}",
-                            "password":"{db_passwd}"{pointer_end}'''.format(**locals()))
-        # TODO remove hardcoded values for cassandra
-        elif db_type in ["cql"]:
-            _add_simple_opt('''"lease-database":{pointer_start}"type": "{db_type}",
-                            "keyspace":"keatest", "host":"", "user":"keatest",
-                            "password":"keatest"{pointer_end}'''.format(**locals()))
-    _config_add_reservation_database()
-
-
 def _cfg_write():
-    _config_db_backend()
-    checker = 0
-    for number in range(len(world.subcfg)):
-        if len(world.subcfg[number][2]) > 10:
-            world.subcfg[number][2] = '"option-data": [' + world.subcfg[number][2] + "]"
-        if len(world.subcfg[number][4]) > 10:
-            world.subcfg[number][4] = '"pools": [' + world.subcfg[number][4] + "]"
-        if len(world.subcfg[number][5]) > 10:
-            world.subcfg[number][5] = '"reservations":[' + world.subcfg[number][5] + "]"
-    cfg_file = open(world.cfg["cfg_file"], 'w')
-    # add timers
-    cfg_file.write(world.cfg["main"])
-    if len(world.cfg["server-id"]) > 5:
-        cfg_file.write(world.cfg["server-id"])
-    # add class definitions
-    if len(world.classification) > 0:
-        if len(world.classification[0][0]) > 0:
-            cfg_file.write('"client-classes": [')
-            counter = 0
-            for each_class in world.classification:
-                if counter > 0:
-                    cfg_file.write(',')
-                cfg_file.write('{')  # open class
-                cfg_file.write('"name":"' + each_class[0] + '"')
-                if len(each_class[1]) > 0:
-                    cfg_file.write("," + each_class[1])
-                if len(each_class[2]) > 0:
-                    cfg_file.write(',"option-data": [' + each_class[2] + "]")
-                cfg_file.write('}')  # close each class
-                counter += 1
-            cfg_file.write("],")  # close classes
-    # add interfaces
-    cfg_file.write('"interfaces-config": { "interfaces": [ ' + world.cfg["interfaces"] + ' ] },')
-    # add header for subnets
-    if world.subnet_add:
-        if "kea6" in world.cfg["dhcp_under_test"]:
-            cfg_file.write('"subnet6":[')
-        elif "kea4" in world.cfg["dhcp_under_test"]:
-            cfg_file.write('"subnet4":[')
-        # add subnets
-        counter = 0
-        comma = 0
-        for each_subnet in world.subcfg:
-            if counter in world.shared_subnets_tmp:
-                # subnets that suppose to go to shared-networks should be omitted here
-                checker = 1
-                counter += 1
-                continue
-            if counter > 0 and comma == 1:
-                cfg_file.write(",")
-            tmp = each_subnet[0]
-            # we need to be able to add interface-id to config but we want to keep backward compatibility.
-            if "interface" not in tmp or "interface-id" not in tmp:
-                eth = world.f_cfg.server_iface
-                tmp += ', "interface": "{eth}" '.format(**locals())
-            counter += 1
-            comma = 1
-            for each_subnet_config_part in each_subnet[1:]:
-                checker = 1
-                if len(each_subnet_config_part) > 0:
-                    tmp += ',' + each_subnet_config_part
-            cfg_file.write(tmp + '}')
-        cfg_file.write(']')
-        # that is ugly hack but kea confing generation is awaiting rebuild anyway
-        if "options" in world.cfg:
-            cfg_file.write(',' + world.cfg["options"])
-            cfg_file.write("]")
-            del world.cfg["options"]
-
-    if "options" in world.cfg:
-        cfg_file.write(world.cfg["options"])
-        checker = 1
-        cfg_file.write("]")
-        del world.cfg["options"]
-
-    if "option_def" in world.cfg:
-        cfg_file.write(',' + world.cfg["option_def"])
-        cfg_file.write("]")
-        del world.cfg["option_def"]
-
-    if len(world.hooks) > 0 or len(world.kea_ha[0]) > 0:
-        if checker == 1:
-            cfg_file.write(',')
-        cfg_file.write('"hooks-libraries": [')
-        test_length_1 = len(world.hooks)
-        counter_1 = 1
-        for each_hook in world.hooks:
-            cfg_file.write('{"library": "' + each_hook[0] + '"')
-            if len(each_hook[1]) > 0:
-                cfg_file.write(',"parameters": {')
-                test_length_2 = len(each_hook[1])
-                counter_2 = 1
-                for every_parameter in each_hook[1]:
-                    cfg_file.write('"' + every_parameter[0] + '":')
-                    if every_parameter[1] in ["true", "false"]:  # TODO add if value is numeric
-                        cfg_file.write(every_parameter[1])
-                    else:
-                        cfg_file.write('"' + every_parameter[1] + '"')
-                    if counter_2 < test_length_2:
-                        cfg_file.write(',')
-                    counter_2 += 1
-                cfg_file.write('}')  # closing parameters
-            if counter_1 < test_length_1:
-                cfg_file.write('},')
-            counter_1 += 1
-        cfg_file.write('}')  # closing libs
-        if len(world.kea_ha[0]) > 0:
-            if len(world.hooks) > 0:
-                cfg_file.write(',')
-            cfg_file.write('{"library": "' + world.kea_ha[0][0] + '","parameters":{"high-availability":[{')
-            # add single parameters to main map
-            for each_param in world.kea_ha[1]:
-                cfg_file.write('"'+each_param[0]+'":'+each_param[1]+",")
-            # add peers
-            cfg_file.write('"peers": [')
-            for each_ha_peer in world.kea_ha[2]:
-                cfg_file.write(each_ha_peer)
-                if world.kea_ha[2].index(each_ha_peer) != len(world.kea_ha[2]) - 1:
-                    cfg_file.write(",")
-            cfg_file.write(']')
-            if len(world.kea_ha[3]) > 0:
-                cfg_file.write(',"state-machine":{"states":[')
-                for each_state in world.kea_ha[3]:
-                    cfg_file.write(each_state)
-                    if world.kea_ha[3].index(each_state) != len(world.kea_ha[3]) - 1:
-                        cfg_file.write(",")
-                cfg_file.write(']}')
-            cfg_file.write('}]}}')
-
-        cfg_file.write(']')  # closing hooks
-
-    if "simple_options" in world.cfg:
-        cfg_file.write(',' + world.cfg["simple_options"])
-        del world.cfg["simple_options"]
-
-    if world.ddns_enable:
-        cfg_file.write(',"dhcp-ddns":' + json.dumps(world.ddns_add))
-
-    if "custom_lines" in world.cfg:
-        cfg_file.write(',' + world.cfg["custom_lines"])
-        # cfg_file.write("]")
-        del world.cfg["custom_lines"]
-
-    if "socket" in world.cfg:
-        cfg_file.write(',' + world.cfg["socket"])
-        del world.cfg["socket"]
-
-    if len(world.shared_subnets) > 0:
-        shared_counter = 0
-        last_option = ""
-        cfg_file.write(' ,"shared-networks":[')
-        for each_shared_subnet in world.shared_subnets:
-            counter = 0
-            comma = 0
-            if shared_counter > 0:
-                cfg_file.write(',')
-            cfg_file.write('{')
-
-            for each_option in world.shared_subcfg[shared_counter]:
-                cfg_file.write(each_option)
-                last_option = each_option
-
-            if last_option[:-1] != ",":
-                cfg_file.write(",")
-
-            if "kea6" in world.cfg["dhcp_under_test"]:
-                cfg_file.write('"subnet6":[')
-
-            elif "kea4" in world.cfg["dhcp_under_test"]:
-                cfg_file.write('"subnet4":[')
-
-            for each_subnet in world.subcfg:
-                if counter in each_shared_subnet:
-                    if counter > 0 and comma == 1:
-                        cfg_file.write(",")
-                    tmp = each_subnet[0]
-                    # we need to be able to add interface-id to config but we want to keep backward compatibility.
-                    # if "interface" not in tmp or "interface-id" not in tmp:
-                    #     eth = world.f_cfg.server_iface
-                    #     tmp += ', "interface": "{eth}" '.format(**locals())
-                    counter += 1
-                    comma = 1
-
-                    for each_subnet_config_part in each_subnet[1:]:
-                        if len(each_subnet_config_part) > 0:
-                            tmp += ',' + each_subnet_config_part
-                        # tmp += str(each_subnet[-1])
-                    cfg_file.write(tmp + '}')
-                else:
-                    counter += 1
-            # shared_counter += 1
-            cfg_file.write(']')
-            shared_counter += 1
-            cfg_file.write('}')  # end of map of each shared network
-        cfg_file.write(']')  # end of shared networks list
-
-    cfg_file.write('}')  # end of DHCP part (should be moved if something else will be added after shared-networks
-
-    if world.ddns_enable:
-        build_ddns_config()
-        cfg_file.write(world.ddns)
-
-    if "agent" in world.cfg:
-        cfg_file.write(',' + world.cfg["agent"])
-        del world.cfg["agent"]
+    # For now let's keep to old system of sending config file
+    cfg_file = open(world.cfg["cfg_file_2"], 'w')
+    cfg_file.write(world.cfg["keactrl"])
+    cfg_file.close()
 
     if world.f_cfg.install_method == 'make':
         logging_file = world.f_cfg.log_join('kea.log')
     else:
         logging_file = 'stdout'
 
-    log_type = ''
-    if "kea6" in world.cfg["dhcp_under_test"]:
-        log_type = 'kea-dhcp6'
-    elif "kea4" in world.cfg["dhcp_under_test"]:
-        log_type = 'kea-dhcp4'
+    add_logger('kea-dhcp%s' % world.proto[1], "DEBUG", 99, logging_file)
 
-    cfg_file.write(',"Logging": {"loggers": [')
-    if "logger" not in world.cfg:
-        cfg_file.write('{"name": "' + log_type + '","output_options": [{"output": "' + logging_file + '"}')
-        cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
-        if world.ddns_enable:
-            cfg_file.write(',{"name": "kea-dhcp-ddns","output_options": [{"output": "' + logging_file + '_ddns"}')
-            cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
-        if world.ctrl_enable:
-            cfg_file.write(',{"name": "kea-ctrl-agent","output_options": [{"output": "' + logging_file + '_ca"}')
-            cfg_file.write('],"debuglevel": 99,"severity": "DEBUG"}')
-    else:
-        cfg_file.write(world.cfg["logger"])
+    _config_db_backend()
 
-    cfg_file.write(']}')
-    cfg_file.write('}')  # end of the config file
-    cfg_file.close()
-    # kea ctrl script config file
-    cfg_file = open(world.cfg["cfg_file_2"], 'w')
-    cfg_file.write(world.cfg["keactrl"])
-    cfg_file.close()
-    world.subcfg = [["", "", "", "", "", "", ""]]
-    config = open(world.cfg["cfg_file"], 'r')
-    world.configString = config.read().replace('\n', '').replace(' ', '')
-    config.close()
-    # for lettuce history reasons we keep config as string
-    # TODO remove this and edit all tests that are using this solution
-    add_variable("SERVER_CONFIG", world.configString, False)
-    world.generated_config = json.loads(world.configString)
+    world.temprary_cfg = {}
+    dhcp = "Dhcp%s" % world.proto[1]
+    world.dhcp_main = {dhcp: world.dhcp_main}
+    world.temprary_cfg.update(world.dhcp_main)
+    world.temprary_cfg.update(world.ca_main)
+    world.temprary_cfg.update({"DhcpDdns": world.ddns_main})
+    world.generated_config = world.dhcp_main
 
-    # let's fix layout of the file, read saved file and overwrite it
-    with open(world.cfg["cfg_file"], 'r') as conf_file:
-        data = conf_file.read()
-    tmp = json.loads(data)
-    conf_file.close()
+    # print json.dumps(world.temprary_cfg, sort_keys=True, indent=2, separators=(',', ': '))
+
     with open(world.cfg["cfg_file"], 'w') as conf_file:
-        data = conf_file.write(json.dumps(tmp, indent=4, sort_keys=True))
+        conf_file.write(json.dumps(world.temprary_cfg, indent=4, sort_keys=True))
     conf_file.close()
 
 
@@ -757,32 +818,6 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
         _restart_kea_with_systemctl(destination_address)
 
 
-def agent_control_channel(host_address, host_port, socket_name='control_socket'):
-    if world.f_cfg.install_method == 'make':
-        logging_file = 'kea.log-CA'
-        logging_file_path = world.f_cfg.log_join(logging_file)
-    else:
-        logging_file_path = 'stdout'
-
-    world.ctrl_enable = True
-    # new type, keep all in dict
-    server_socket_type = "dhcp%s" % world.proto[1]
-    world.ca_main["Control-agent"] = {'http-host': host_address,
-                                      'http-port':  int(host_port),
-                                      'control-sockets': {server_socket_type: {"socket-type": "unix",
-                                                          "socket-name": world.f_cfg.run_join(socket_name)}}}
-                                      # extend each test with kea ctrl logging, configured on CA level
-                                      # for future use
-                                      # "loggers": [
-                                      #     {"debuglevel": 99, "name": "kea-ctrl-agent",
-                                      #      "output_options": [{"output": logging_file_path}],
-                                      #      "severity": "DEBUG"}]}
-
-    # but let's stick for now to old config write/send system
-    # TODO while moving entire forge from str to dict - this should be replaced as well
-    world.cfg["agent"] = '"Control-agent":' + json.dumps(world.ca_main["Control-agent"])
-
-
 def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
         # TODO
@@ -801,318 +836,6 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                                                                '.',
                                                                destination_address),
                          destination_host=destination_address, ignore_errors=True)
-
-
-def ha_add_parameter_to_hook(parameter_name, parameter_value):
-    if parameter_name == "lib":
-        world.kea_ha[0].append(parameter_value)
-    elif parameter_name == "machine-state":
-        world.kea_ha[3] += ([parameter_value])
-    elif parameter_name == "peers":
-        world.kea_ha[2] += ([parameter_value])
-    else:
-        world.kea_ha[1] += ([[parameter_name, parameter_value]])
-
-
-def add_hooks(library_path):
-    world.hooks.append([library_path, []])
-
-
-def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
-    try:
-        world.hooks[hook_no-1][1].append([parameter_name, parameter_value])
-    except():
-        assert False, "There is no hook with such number, add hook first."
-
-
-def add_logger(log_type, severity, severity_level, logging_file=None):
-    if "logger" not in world.cfg:
-        world.cfg["logger"] = ''
-    else:
-        if len(world.cfg["logger"]) > 20:
-            world.cfg["logger"] += ','
-
-    if world.f_cfg.install_method == 'make':
-        if logging_file is None:
-            logging_file = 'kea.log'
-        logging_file_path = world.f_cfg.log_join(logging_file)
-    else:
-        if logging_file is None:
-            logging_file_path = 'stdout'
-        else:
-            logging_file_path = world.f_cfg.log_join(logging_file)
-
-    if severity_level != "None":
-        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '"' \
-                               '}],"debuglevel": ' + severity_level + ',"severity": ' \
-                               '"' + severity + '"}'
-    else:
-        world.cfg["logger"] += '{"name": "' + log_type + '","output_options": [{"output": "' + logging_file_path + '"' \
-                               '}],"severity": ' \
-                               '"' + severity + '"}'
-
-
-def open_control_channel_socket(socket_name=None):
-    if socket_name is not None:
-        socket_path = world.f_cfg.run_join(socket_name)
-    else:
-        socket_path = world.f_cfg.run_join('control_socket')
-    world.cfg["socket"] = '"control-socket": {"socket-type": "unix","socket-name": "' + socket_path + '"}'
-
-
-def add_test_to_class(class_number, parameter_name, parameter_value):
-    if len(world.classification[class_number-1][1]) > 5:
-        world.classification[class_number-1][1] += ','
-    if parameter_value[0] in ["[", "{"] or parameter_value in ["true", "false"]:
-        world.classification[class_number-1][1] += '"{parameter_name}" : {parameter_value}'.format(**locals())
-    else:
-        world.classification[class_number-1][1] += '"{parameter_name}" : "{parameter_value}"'.format(**locals())
-
-
-def create_new_class(class_name):
-    world.classification.append([class_name, "", ""])  # class name, class test (now empty), list of class options
-
-
-def set_logger():
-    pass
-    assert False, "For now option unavailable!"
-
-
-def set_time(which_time, value, subnet=None):
-    assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
-
-    if subnet is None:
-            world.cfg["server_times"][which_time] = value
-    else:
-        subnet = int(subnet)
-        if len(world.subcfg[subnet][3]) > 2:
-            world.subcfg[subnet][3] += ', '
-        world.subcfg[subnet][3] += '"{which_time}": {value}'.format(**locals())
-
-
-def add_line_in_global(command):
-    if "custom_lines" not in world.cfg:
-        world.cfg["custom_lines"] = ''
-
-    world.cfg["custom_lines"] += ('\n'+command+'\n')
-
-
-def prepare_cfg_subnet(subnet, pool, eth=None):
-    # world.subcfg[0] = [subnet, client class/simple options, options, pools, host reservation]
-    if world.proto == 'v4':
-        if subnet == "default":
-            subnet = "192.168.0.0/24"
-        if pool == "default":
-            pool = "192.168.0.1 - 192.168.0.254"
-    else:
-        if subnet == "default":
-            subnet = "2001:db8:1::/64"
-        if pool == "default":
-            pool = "2001:db8:1::1 - 2001:db8:1::ffff"
-    if eth is None:
-        eth = world.f_cfg.server_iface
-
-    if "interfaces" not in world.cfg:
-        world.cfg["interfaces"] = ''
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    if subnet is not "":
-        world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"'''.format(**locals())
-    else:
-        world.subnet_add = False
-    if pool is not "":
-        world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
-
-    if eth not in world.cfg["interfaces"]:
-        add_interface(eth)
-
-
-def config_srv_another_subnet(subnet, pool, eth):
-    world.subcfg.append(["", "", "", "", "", "", ""])
-    world.dhcp["subnet_cnt"] += 1
-
-    prepare_cfg_subnet(subnet, pool, eth)
-
-
-def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
-    pointer_start = "{"
-    pointer_end = "}"
-
-    if "option_def" not in world.cfg:
-        world.cfg["option_def"] = '"option-def": ['
-    else:
-        world.cfg["option_def"] += ","
-
-    # make definition of the new option
-    world.cfg["option_def"] += '''
-            {pointer_start}"code": {opt_code}, "name": "{opt_name}", "space": "{space}",
-            "encapsulate": "", "record-types": "", "array": false, "type": "{opt_type}"{pointer_end}'''\
-        .format(**locals())
-
-    # add defined option
-    prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user')
-
-
-def add_interface(eth):
-    if len(world.cfg["interfaces"]) > 3:
-        world.cfg["interfaces"] += ','
-    world.cfg["interfaces"] += '"{eth}"'.format(**locals())
-
-
-def add_pool_to_subnet(pool, subnet):
-    pointer_start = "{"
-    pointer_end = "}"
-
-    world.subcfg[subnet][4] += ',{pointer_start}"pool": "{pool}"{pointer_end}'.format(**locals())
-    pass
-
-
-def set_conf_parameter_global(parameter_name, value):
-    if "global_parameters" not in world.cfg:
-        world.cfg["global_parameters"] = ''
-
-    world.cfg["global_parameters"] += '"{parameter_name}": {value},'.format(**locals())
-
-
-def set_conf_parameter_subnet(parameter_name, value, subnet_id):
-    world.subcfg[subnet_id][0] += ',"{parameter_name}": {value}'.format(**locals())
-
-
-def add_line_in_subnet(subnetid, command):
-    if len(world.subcfg[subnetid][0][-1:]) == ",":
-        world.subcfg[subnetid][0] += ","
-        world.subcfg[subnetid][0] += command
-    else:
-        world.subcfg[subnetid][0] += command
-
-
-def add_line_to_shared_subnet(subnet_id, cfg_line):
-    if len(world.shared_subcfg[subnet_id][0]) > 1:
-        world.shared_subcfg[subnet_id][0] += ","
-    world.shared_subcfg[subnet_id][0] += cfg_line
-
-
-def add_to_shared_subnet(subnet_id, shared_subnet_id):
-    if len(world.shared_subnets) <= shared_subnet_id:
-        world.shared_subnets.append([])
-        world.shared_subcfg.append([""])
-    world.shared_subnets[shared_subnet_id].append(subnet_id)
-    world.shared_subnets_tmp.append(subnet_id)
-
-
-def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
-    if len(world.shared_subcfg[subnet_id][0]) > 1:
-        world.shared_subcfg[subnet_id][0] += ','
-    world.shared_subcfg[subnet_id][0] += '"{parameter_name}": {value}'.format(**locals())
-
-
-def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
-    if subnet == "default":
-        subnet = "2001:db8:1::/64"
-    if pool == "default":
-        pool = "2001:db8:1::1 - 2001:db8:1::ffff"
-
-    eth = world.f_cfg.server_iface
-
-    if "interfaces" not in world.cfg:
-        world.cfg["interfaces"] = ''
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    if subnet is not "":
-        world.subcfg[world.dhcp["subnet_cnt"]][0] += '''{pointer_start} "subnet": "{subnet}"'''.format(**locals())
-    else:
-        world.subnet_add = False
-    if pool is not "":
-        world.subcfg[world.dhcp["subnet_cnt"]][4] += '{pointer_start}"pool": "{pool}" {pointer_end}'.format(**locals())
-
-    if len(world.cfg["interfaces"]) > 3:
-        world.cfg["interfaces"] += ','
-    world.cfg["interfaces"] += '"{interface}/{address}"'.format(**locals())
-
-
-def _check_empty_value(val):
-    return ("false", "") if val == "<empty>" else ("true", val)
-
-
-def prepare_cfg_add_option(option_name, option_value, space,
-                           option_code=None, opt_type='default', where='options'):
-    if where not in world.cfg:
-        world.cfg[where] = '"option-data": ['
-    else:
-        world.cfg[where] += ","
-
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
-    if opt_type == 'default':
-        if world.proto == 'v4':
-            option_code = world.kea_options4.get(option_name)
-        else:
-            option_code = world.kea_options6.get(option_name)
-            if option_code is None:
-                option_code = kea_otheroptions.get(option_name)
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    if world.proto == 'v4':
-        csv_format, option_value = _check_empty_value(option_value)
-    else:
-        csv_format = 'true'
-
-    assert option_code is not None, "Unsupported option name for other options: " + option_name
-
-    world.cfg[where] += '''
-            \t{pointer_start}"csv-format": {csv_format}, "code": {option_code}, "data": "{option_value}",
-            \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
-
-
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
-    space = world.cfg["space"]
-    subnet = int(subnet)
-    if world.proto == 'v4':
-        option_code = world.kea_options4.get(option_name)
-    else:
-        option_code = world.kea_options6.get(option_name)
-        if option_code is None:
-            option_code = kea_otheroptions.get(option_name)
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    assert option_code is not None, "Unsupported option name for other options: " + option_name
-    if len(world.subcfg[subnet][2]) > 10:
-        world.subcfg[subnet][2] += ','
-
-    world.subcfg[subnet][2] += '''
-            \t{pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
-            \t"name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
-
-
-def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_value):
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
-    space = world.cfg["space"]
-    shared_subnet = int(shared_subnet)
-    if world.proto == 'v4':
-        option_code = world.kea_options4.get(option_name)
-    else:
-        option_code = world.kea_options6.get(option_name)
-        if option_code is None:
-            option_code = kea_otheroptions.get(option_name)
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
-    if len(world.shared_subcfg[shared_subnet][0]) > 10:
-        world.shared_subcfg[shared_subnet][0] += ','
-
-    world.shared_subcfg[shared_subnet][0] += '''
-            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
-            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
 
 
 def db_setup():

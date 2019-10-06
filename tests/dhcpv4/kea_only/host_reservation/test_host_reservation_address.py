@@ -16,7 +16,7 @@ def test_v4_host_reservation_one_address_inside_pool_hw_address():
     misc.test_setup()
     # outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
@@ -52,7 +52,7 @@ def test_v4_host_reservation_one_address_inside_pool_client_id():
     misc.test_setup()
     # outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'client-id',
@@ -90,7 +90,7 @@ def test_v4_host_reservation_one_address_outside_pool():
     misc.test_setup()
     # outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
@@ -127,7 +127,7 @@ def test_v4_host_reservation_one_address_inside_pool_different_mac():
     misc.test_setup()
     # request address from different mac that has been reserved
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
@@ -162,7 +162,7 @@ def test_v4_host_reservation_one_address_empty_pool():
     misc.test_setup()
     # request address from different mac that has been reserved
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
@@ -185,12 +185,12 @@ def test_v4_host_reservation_multiple_address_reservation_empty_pool():
     misc.test_setup()
     # request address from different mac that has been reserved
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.11',
                                            '0',
                                            'hw-address',
@@ -213,17 +213,17 @@ def test_v4_host_reservation_multiple_address_reservation_empty_pool_2():
     misc.test_setup()
     # request address from different mac that has been reserved
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.12')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.11',
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:03')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.12',
                                            '0',
                                            'hw-address',

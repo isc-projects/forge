@@ -525,7 +525,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -578,7 +578,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -628,7 +628,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
@@ -681,7 +681,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 

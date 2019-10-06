@@ -15,12 +15,12 @@ import misc
 def test_v4_host_reservation_conflicts_duplicate_reservations():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.12',
                                            '0',
                                            'hw-address',
@@ -37,12 +37,12 @@ def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets(
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.12',
                                            '1',
                                            'hw-address',
@@ -161,7 +161,7 @@ def test_v4_host_reservation_conflicts_mysql_reconfigure_server_with_reservation
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.3')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.2',
                                            '0',
                                            'hw-address',
@@ -185,7 +185,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     misc.test_setup()
     # reconfigure different address for same MAC from outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.9')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
@@ -211,7 +211,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.9')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.30',
                                            '0',
                                            'hw-address',
@@ -243,7 +243,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reservations_in_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.30')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
@@ -269,7 +269,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.30')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'hw-address',
@@ -292,7 +292,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
 def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reservations_out_of_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.30')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.50',
                                            '0',
                                            'hw-address',
@@ -318,7 +318,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_switched_mac_in_reserv
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.30')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.50',
                                            '0',
                                            'hw-address',
@@ -362,7 +362,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_ho
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.50',
                                            '0',
                                            'hw-address',
@@ -448,7 +448,7 @@ def test_v4_host_reservation_conflicts_renew_address_that_has_been_reserved_duri
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -530,7 +530,7 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -576,7 +576,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -608,7 +608,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -663,7 +663,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -695,7 +695,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.60')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.50',
                                            '0',
                                            'hw-address',
@@ -742,7 +742,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -774,7 +774,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.10')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -834,7 +834,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            '0',
                                            'hw-address',
@@ -866,7 +866,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '500')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.60')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.50',
                                            '0',
                                            'hw-address',

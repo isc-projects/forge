@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2018 Internet Systems Consortium.
+# Copyright (C) 2013-2019 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -68,11 +68,6 @@ def config_srv_subnet(subnet, pool):
     subnet, pool = test_define_value(subnet, pool)
     dhcp.prepare_cfg_subnet(subnet, pool)
 
-    # new configuration system
-    # create class for pool and subnet, and add it to world.configClass
-    #world.configClass.addpool(new_config.ConfigurationPool(pool))
-    #world.configClass.addsubnet(new_config.ConfigurationSubnet(subnet))
-
 
 @step('Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet_with_iface(interface, address, subnet, pool):
@@ -88,12 +83,6 @@ def config_srv_subnet_with_iface(interface, address, subnet, pool):
     interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
     dhcp.prepare_cfg_subnet_specific_interface(interface, address, subnet, pool)
 
-    # new configuration system
-    # create class for pool and subnet, and add it to world.configClass
-    # subnet with different interface than default
-    #world.configClass.addpool(new_config.ConfigurationPool(pool))
-    #world.configClass.addsubnet(new_config.ConfigurationSubnet(subnet, interface=[interface, address]))
-
 
 @step('Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
 def config_srv_another_subnet(interface, subnet, pool):
@@ -102,12 +91,6 @@ def config_srv_another_subnet(interface, subnet, pool):
     """
     subnet, pool, interface = test_define_value(subnet, pool, interface)
     dhcp.config_srv_another_subnet(subnet, pool, interface)
-
-    # new configuration system
-    # create class for pool and subnet with non default interface, and add it to world.configClass
-    # this step is used when there already is subnet
-    #world.configClass.addpool(new_config.ConfigurationPool(pool))
-    #world.configClass.addsubnet(new_config.ConfigurationSubnet(subnet, interface))
 
 
 @step('Server is configured with another subnet: (\S+) with (\S+) pool.')
@@ -118,12 +101,6 @@ def config_srv_another_subnet_no_interface(subnet, pool):
     subnet, pool = test_define_value(subnet, pool)
     dhcp.config_srv_another_subnet(subnet, pool, None)
 
-    # new configuration system
-    # create class for pool and subnet, and add it to world.configClass
-    # this step is used when there already is subnet
-    #world.configClass.addpool(new_config.ConfigurationPool(pool))
-    #world.configClass.addsubnet(new_config.ConfigurationSubnet(subnet))
-
 
 @step('Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')
 def config_srv_prefix(prefix, subnet, length, delegated_length):
@@ -132,10 +109,6 @@ def config_srv_prefix(prefix, subnet, length, delegated_length):
     """
     prefix, length, delegated_length, subnet = test_define_value(prefix, length, delegated_length, subnet)
     dhcp.prepare_cfg_prefix(prefix, length, delegated_length, subnet)
-
-    # new configuration system
-    # this step is v6 only
-    # TODO implement this
 
 
 @step('Server-id configured with type (\S+) value (\S+).')
@@ -146,27 +119,17 @@ def config_srv_id(id_type, id_value):
     id_type, id_value = test_define_value(id_type, id_value)
     dhcp.config_srv_id(str(id_type), str(id_value))
 
-    # new configuration system:
-    # v6 only
-
 
 @step('Next server value on subnet (\d+) is configured with address (\S+).')
 def subnet_add_siaddr(subnet_number, addr):
     addr, subnet_number = test_define_value(addr, subnet_number)
     dhcp.add_siaddr(addr, subnet_number)
 
-    # new configuration system:
-    # update next-server value, should be generic, but let's keep backward compatibility
-    #world.configClass.updatevaluesubnet("next_server", addr, int(subnet_number))
-
 
 @step('Next server global value is configured with address (\S+).')
 def global_add_siaddr(addr):
     addr = test_define_value(addr)[0]
     dhcp.add_siaddr(addr, None)
-
-    # new configuration system:
-    #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters("next-server", addr))
 
 
 @step('Server is configured with (\S+) option with value (\S+).')
@@ -178,9 +141,6 @@ def config_srv_opt(option_name, option_value):
     option_name, option_value = test_define_value(option_name, option_value)
     dhcp.prepare_cfg_add_option(option_name, option_value, world.cfg["space"])
 
-    # new configuration system:
-    #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, world.cfg["space"]))
-
 
 @step('On space (\S+) server is configured with (\S+) option with value (\S+).')
 def config_srv_opt_space(space, option_name, option_value):
@@ -190,8 +150,6 @@ def config_srv_opt_space(space, option_name, option_value):
     """
     option_name, option_value, space = test_define_value(option_name, option_value, space)
     dhcp.prepare_cfg_add_option(option_name, option_value, space)
-    # new configuration system:
-    #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, space))
 
 
 @step('Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
@@ -206,9 +164,6 @@ def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value):
     opt_name, opt_code, opt_type, opt_value = test_define_value(opt_name, opt_code, opt_type, opt_value)
     dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, world.cfg["space"])
 
-    # new configuration system:
-    #world.configClass.addoptiondef(new_config.ConfigurationOptionDef(opt_name, opt_code, opt_type, opt_value, world.cfg["space"]))
-
 
 @step('On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt_space(space, opt_name, opt_code, opt_type, opt_value):
@@ -217,9 +172,6 @@ def config_srv_custom_opt_space(space, opt_name, opt_code, opt_type, opt_value):
     """
     opt_name, opt_code, opt_type, opt_value, space = test_define_value(opt_name, opt_code, opt_type, opt_value, space)
     dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space)
-
-    # new configuration system:
-    #world.configClass.addoptiondef(new_config.ConfigurationOptionDef(opt_name, opt_code, opt_type, opt_value, space))
 
 
 @step('Time (\S+) is configured with value (\S+).')
@@ -230,21 +182,6 @@ def set_time(which_time, value):
     which_time, value = test_define_value(which_time, value)
     dhcp.set_time(which_time, value, None)
 
-    # new configuration system:
-    #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(which_time, value))
-
-
-@step('Time (\S+) is not configured.')
-def unset_time(which_time):
-    """
-    Remove default values of T1, T2, preferred lifetime and valid lifetime.
-    """
-    which_time = test_define_value(which_time)[0]
-    dhcp.unset_time(which_time)
-
-    # new configuration system:
-    #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(which_time, ""))
-
 
 @step('Option (\S+) is configured with value (\S+).')
 def set_time_option(which_time, value):
@@ -253,9 +190,6 @@ def set_time_option(which_time, value):
     """
     which_time, value = test_define_value(which_time, value)
     dhcp.set_time(which_time, value)
-
-    # new configuration system:
-    #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(which_time, value))
 
 
 @step('Add configuration parameter (\S+) with value (\S+) to global configuration.')
@@ -270,9 +204,6 @@ def set_conf_parameter_global(parameter_name, value):
     parameter_name, value = test_define_value(parameter_name, value)
     dhcp.set_conf_parameter_global(parameter_name, value)
 
-    # new configuration system: this step can also be unified
-    #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(parameter_name, value))
-
 
 @step('Add configuration parameter (\S+) with value (\S+) to subnet (\d+) configuration.')
 def set_conf_parameter_subnet(parameter_name, value, subnet_id):
@@ -286,24 +217,6 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     parameter_name, value, subnet_id = test_define_value(parameter_name, value, subnet_id)
     dhcp.set_conf_parameter_subnet(parameter_name, value, int(subnet_id))
 
-    # new configuration system:
-    #world.configClass.updatevaluesubnet(parameter_name, value, int(subnet_id))
-
-
-@step('Run configuration command: (.+)')
-def run_command(command):
-    """
-    Add single line to configuration, there is no validation within this step.
-    Be aware what you are putting this and in what moment. If you use that
-    I recommend set variable "SAVE_CONFIG_FILES" to True.
-
-    Includes everything after "command: " to the end of the line.
-    """
-    command = test_define_value(command)[0]
-    dhcp.add_line_in_global(command)
-
-    # new configuration system: TODO figure out what is going on with this one
-
 
 @step('Add to config file line: (.+)')
 def add_line(command):
@@ -312,27 +225,11 @@ def add_line(command):
     """
     dhcp.add_line_in_global(command)
 
-    # new configuration system: TODO figure out what is going on with this one
-
-
-@step('To global section of the config add file line: (.+)')
-def add_line2(command):
-    """
-    The same step as 'Run configuration command: (.+)'
-    """
-    dhcp.add_line_in_global(command)
-
-    # new configuration system: TODO figure out what is going on with this one
-
 
 @step('To subnet (\d+) configuration section in the config file add line: (.+)')
 def add_line_to_subnet(subnetid, command):
-    """
-    The same step as 'Run configuration command: (.+)'
-    """
+    test_define_value(command)
     dhcp.add_line_in_subnet(int(subnetid), command)
-
-    # new configuration system: TODO figure out what is going on with this one
 
 
 @step('Add hooks library located (\S+).')
@@ -343,26 +240,18 @@ def add_hooks(library_path):
     full_library_path = world.f_cfg.hooks_join(library_path)
     dhcp.add_hooks(full_library_path)
 
-    # new configuration system: Not yet supported
-    # TODO implement this
-
 
 @step('To hook no. (\d+) add parameter named (\S+) with value: (.+)')
 def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.add_parameter_to_hook(int(hook_no), parameter_name, parameter_value)
 
-    # new configuration system: Not yet supported
-    # TODO implement this
-
 
 @step('Add High-Availability hook library located (\S+).')
 def add_ha_hook(library_path):
     full_library_path = world.f_cfg.hooks_join(library_path)
     dhcp.ha_add_parameter_to_hook("lib", full_library_path)
-
-    # new configuration system: Not yet supported
-    # TODO implement this
+    dhcp.add_hooks(full_library_path)
 
 
 @step('To HA hook configuration add (\S+) with value: (.+)')
@@ -370,17 +259,11 @@ def add_parameter_to_ha_hook(parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value)
 
-    # new configuration system: Not yet supported
-    # TODO implement this
-
 
 @step('Use (\S+) as lease database backend.')
 def define_temporary_lease_db_backend(lease_db_type):
     lease_db_type = test_define_value(lease_db_type)[0]
     world.f_cfg.db_type = lease_db_type
-
-    # new configuration system:
-    #world.configClass.updatevalueglobalparam("db_leases_type", lease_db_type)
 
 
 @step('Credentials for (\S+) database. User: (\S+); Passwd: (\S+); DB-name: (\S+); Host: (\S+);')
@@ -394,12 +277,6 @@ def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_p
     world.f_cfg.db_name = tmp_db_name
     world.f_cfg.db_passwd = tmp_db_passwd
     world.f_cfg.db_user = tmp_db_user
-
-    # new configuration system:
-    #world.configClass.updatevalueglobalparam("db_host", tmp_db_host)
-    #world.configClass.updatevalueglobalparam("db_name", tmp_db_name)
-    #world.configClass.updatevalueglobalparam("db_passwd", tmp_db_passwd)
-    #world.configClass.updatevalueglobalparam("db_user", tmp_db_user)
 
 
 # START Reservation backend section
@@ -495,7 +372,6 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
                                                      reserved_option_client_class, reserved_subnet_id,
                                                      reserved_option_scope, int(reservation_record_id))
     else:
-        #TODO add memfile reservation here
         assert False, "Database type not recognised."
 
 
@@ -535,12 +411,6 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
                                                                                                     unique_host_value)
     dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, None)
 
-    # new configuration system:
-    #world.configClass.addreservation(new_config.ConfigurationReservation(host_identifier=unique_host_value,
-                                                                         # reservation_type=reservation_type,
-                                                                         # reservation_value=reserved_value,
-                                                                         # host_identifier_type=unique_host_value_type))
-
 
 ##shared-subnet cfg
 @step('Add subnet (\d+) to shared-subnet set (\d+).')
@@ -551,16 +421,11 @@ def shared_subnet(subnet_id, shared_subnet_id):
     subnet_id, shared_subnet_id = test_define_value(subnet_id, shared_subnet_id)
     dhcp.add_to_shared_subnet(int(subnet_id), int(shared_subnet_id))
 
-    # new configuration system:
-    #world.configClass.updatevaluesubnet("shared_network_name", int(shared_subnet_id), int(subnet_id))
-
 
 @step('Shared subnet (\d+) is configured with option line: (.+)')
 def add_option_shared_subnet(shared_subnet_id, conf_line):
     shared_subnet_id, conf_line = test_define_value(shared_subnet_id, conf_line)
     dhcp.add_line_to_shared_subnet(shared_subnet_id, conf_line)
-
-    # new configuration system: TODO... well that also needs change, like all steps "add line"
 
 
 @step('Add configuration parameter (\S+) with value (\S+) to shared-subnet (\d+) configuration.')
@@ -574,16 +439,6 @@ def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
     """
     parameter_name, value, subnet_id = test_define_value(parameter_name, value, subnet_id)
     dhcp.set_conf_parameter_shared_subnet(parameter_name, value, int(subnet_id))
-    # new configuration system:
-    # #world.configClass.updatevaluesubnet("shared_network_name", int(shared_subnet_id), int(subnet_id))
-    # #world.configClass.addglobalparameter(new_config.ConfigurationGlobalParameters(which_time, value))
-    #
-    # #world.configClass.print_configuration("globalparameterList")
-    # #world.configClass.print_configuration("subnetList")
-    # #world.configClass.print_configuration("poolList")
-    # #world.configClass.print_configuration("optionList")
-    # #world.configClass.print_configuration("optiondefList")
-    # assert False, "bum"
 
 
 ##subnet options
@@ -598,13 +453,6 @@ def host_reservation_in_subnet(reservation_type, reserved_value, subnet, unique_
                                                                                                     unique_host_value)
     dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, int(subnet))
 
-    # new configuration system:
-    #world.configClass.addreservation(new_config.ConfigurationReservation(host_identifier=unique_host_value,
-                                                                         # reservation_type=reservation_type,
-                                                                         # reservation_value=reserved_value,
-                                                                         # host_identifier_type=unique_host_value_type,
-                                                                         # subnetid=int(subnet)))
-
 
 @step('For host reservation entry no. (\d+) in subnet (\d+) add (\S+) with value (\S+).')
 def host_reservation_in_subnet_add_value(reservation_number, subnet, reservation_type, reserved_value):
@@ -613,9 +461,6 @@ def host_reservation_in_subnet_add_value(reservation_number, subnet, reservation
     """
     reservation_type, reserved_value = test_define_value(reservation_type, reserved_value)
     dhcp.host_reservation_extension(int(reservation_number), int(subnet), reservation_type, reserved_value)
-
-    # new configuration system:
-    #world.configClass.updatevaluereservation(reservation_type, reserved_value, int(subnet))
 
 
 @step('Time (\S+) in subnet (\d+) is configured with value (\d+).')
@@ -626,16 +471,10 @@ def set_time_in_subnet(which_time, subnet, value):
     which_time, subnet, value = test_define_value(which_time, subnet, value)
     dhcp.set_time(which_time, value, subnet)
 
-    # new configuration system:
-    #world.configClass.updatevaluesubnet(which_time, value, int(subnet))
-
 
 @step('Server is configured with another pool (\S+) in subnet (\d+).')
 def new_pool(pool, subnet):
     dhcp.add_pool_to_subnet(pool, int(subnet))
-
-    # new configuration system
-    #world.configClass.addpool(new_config.ConfigurationPool(pool, int(subnet)))
 
 
 @step('Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
@@ -646,17 +485,6 @@ def config_srv(option_name, subnet, option_value):
     option_value value of the configuration
     """
     dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value)
-    #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, world.cfg["space"], subnet_id=subnet))
-
-
-@step('Server is configured with (\S+) option in subnet (\d+) and pool (\d+) with value (\S+).')
-def config_srv_pool(option_name, subnet, pool, option_value):
-    """
-    """
-    # dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value)
-    # step just for new config system!
-    #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, world.cfg["space"],
-                                                               # subnet_id=subnet, pool_id=pool))
 
 
 @step('On space (\S+) server is configured with (\S+) option in subnet (\d+) with value (\S+).')
@@ -667,20 +495,15 @@ def config_srv_on_space(space, option_name, subnet, option_value):
     option_value value of the configuration
     """
     dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value, space)
-    #world.configClass.addoption(new_config.ConfigurationOption(option_name, option_value, space, subnet_id=subnet))
 
 
 @step('Server is configured with client-classification option in subnet (\d+) with name (\S+).')
 def config_client_classification(subnet, option_value):
-    """
-    """
     dhcp.config_client_classification(subnet, option_value)
 
 
 @step('Server is configured with require-client-classification option in subnet (\d+) with name (\S+).')
 def config_require_client_classification(subnet, option_value):
-    """
-    """
     dhcp.config_require_client_classification(subnet, option_value)
 
 
@@ -691,14 +514,14 @@ def create_new_class(class_name):
 
 @step('To class no (\d+) add parameter named: (\S+) with value: (.+)')
 def add_test_to_class(class_number, parameter_name, parameter_value):
-    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
+    if parameter_name == "test":
+        parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.add_test_to_class(int(class_number), parameter_name, parameter_value)
 
 
 @step('To class no (\d+) add option (\S+) with value (\S+).')
 def add_option_to_defined_class(class_no, option, option_value):
     dhcp.add_option_to_defined_class(int(class_no), option, option_value)
-# @step('To class no (\d+) add custom option (\S+) with value (\S+).')
 
 
 @step('Server has control channel (\S+).')
@@ -774,7 +597,6 @@ def build_and_send_config_files_dest_addr(connection_type, configuration_type, d
 
 @step('Generate server configuration file.')
 def generate_config_files():
-    #world.configClass.build_xml_script()
     dhcp.build_and_send_config_files(connection_type=None, configuration_type="config-file")
 
 
@@ -808,12 +630,6 @@ def start_srv(name, type_of_action):
             dns.reconfigure_srv()
     else:
         assert False, "we don't support this action."
-
-
-@step('TEMP START')
-def temporary_start():
-    pass
-    #world.configClass.sendconfiguration()
 
 
 def check_remote_address(remote_address):

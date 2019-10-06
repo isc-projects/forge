@@ -17,8 +17,8 @@ def test_v6_relay_interface_local_and_relay_interface_in_the_same_subnet():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::1005"}')
-    srv_control.add_line_to_subnet('0', ',"interface":"$(SERVER_IFACE)"')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::1005"}})
+    srv_control.add_line_to_subnet(0, {"interface":"$(SERVER_IFACE)"})
     srv_control.set_conf_parameter_subnet('interface-id', '"abc"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
@@ -100,10 +100,10 @@ def test_v6_relay_relayaddress_two_subnets():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::1005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::1005"}})
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
-    srv_control.add_line_to_subnet('1', ',"relay": {"ip-address": "3000::2005"}')
+    srv_control.add_line_to_subnet(1, {"relay": {"ip-address": "3000::2005"}})
     srv_control.set_conf_parameter_subnet('interface-id', '"xyz"', '1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -170,7 +170,7 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
     srv_control.set_conf_parameter_subnet('interface-id', '"xyz"', '0')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::1005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::1005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -211,7 +211,7 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching_2():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
     srv_control.set_conf_parameter_subnet('interface-id', '"xyz"', '0')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::1005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::1005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -252,7 +252,7 @@ def test_v6_relay_relayaddress_interface_id_just_one_matching_3():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
     srv_control.set_conf_parameter_subnet('interface-id', '"xyz"', '0')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::1005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::1005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -292,11 +292,11 @@ def test_v6_relay_relayaddress_interface_id_two_subnets():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
     srv_control.set_conf_parameter_subnet('interface-id', '"xyz"', '0')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::1005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::1005"}})
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
     srv_control.set_conf_parameter_subnet('interface-id', '"abc"', '1')
-    srv_control.add_line_to_subnet('1', ',"relay": {"ip-address": "3000::1005"}')
+    srv_control.add_line_to_subnet(1, {"relay": {"ip-address": "3000::1005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -363,11 +363,11 @@ def test_v6_relay_relayaddress_interface_id_two_subnets_2():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
     srv_control.set_conf_parameter_subnet('interface-id', '"xyz"', '0')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::2005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::2005"}})
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
     srv_control.set_conf_parameter_subnet('interface-id', '"abc"', '1')
-    srv_control.add_line_to_subnet('1', ',"relay": {"ip-address": "3000::1005"}')
+    srv_control.add_line_to_subnet(1, {"relay": {"ip-address": "3000::1005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -433,7 +433,7 @@ def test_v6_relay_relayaddress_not_matching():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::2005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::2005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -470,7 +470,7 @@ def test_v6_relay_relayaddress_within_subnet():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
-    srv_control.add_line_to_subnet('0', ',"relay": {"ip-address": "3000::2005"}')
+    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::2005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

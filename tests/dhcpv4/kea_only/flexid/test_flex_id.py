@@ -20,8 +20,8 @@ def test_v4_hooks_flexid_libreload():
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.open_control_channel()
@@ -61,8 +61,8 @@ def test_v4_hooks_flexid_reconfigure():
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.open_control_channel()
@@ -85,8 +85,8 @@ def test_v4_hooks_flexid_reconfigure():
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.open_control_channel()
@@ -114,8 +114,8 @@ def test_v4_hooks_flexid_inside_pool():
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -156,8 +156,8 @@ def test_v4_hooks_flexid_inside_pool_negative():
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -195,8 +195,8 @@ def test_v4_hooks_flexid_outside_pool():
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '192.168.50.10')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -231,12 +231,12 @@ def test_v4_hooks_flexid_outside_pool():
 def test_v4_hooks_flexid_replace_mac_addr_inside_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -287,12 +287,12 @@ def test_v4_hooks_flexid_replace_mac_addr_inside_pool():
 def test_v4_hooks_flexid_replace_client_id_release_fail():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -330,12 +330,12 @@ def test_v4_hooks_flexid_replace_client_id_release_fail():
 def test_v4_hooks_flexid_replace_client_id_release_1():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -402,12 +402,12 @@ def test_v4_hooks_flexid_replace_client_id_release_1():
 def test_v4_hooks_flexid_replace_client_id_release_2():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -473,12 +473,12 @@ def test_v4_hooks_flexid_replace_client_id_release_2():
 def test_v4_hooks_flexid_replace_client_id_renew_1():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -534,12 +534,12 @@ def test_v4_hooks_flexid_replace_client_id_renew_1():
 def test_v4_hooks_flexid_replace_client_id_renew_2():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.host_reservation_in_subnet('address',
+    srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            '0',
                                            'flex-id',
                                            '\'docsis3.0\'')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -595,7 +595,7 @@ def test_v4_hooks_flexid_replace_client_id_renew_2():
 def test_v4_hooks_flexid_mysql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -643,7 +643,7 @@ def test_v4_hooks_flexid_mysql_1():
 def test_v4_hooks_flexid_mysql_negative():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -686,7 +686,7 @@ def test_v4_hooks_flexid_mysql_negative():
 def test_v4_hooks_flexid_pgsql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
@@ -733,7 +733,7 @@ def test_v4_hooks_flexid_pgsql_1():
 def test_v4_hooks_flexid_pgsql_negative():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.add_line('"host-reservation-identifiers": ["hw-address", "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
     srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')

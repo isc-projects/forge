@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2019 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -27,13 +27,15 @@ from softwaresupport.kea import start_srv, stop_srv, restart_srv, reconfigure_sr
 from softwaresupport.kea import agent_control_channel, save_logs, save_leases
 from softwaresupport.kea import ha_add_parameter_to_hook, add_hooks, add_parameter_to_hook, add_logger
 from softwaresupport.kea import open_control_channel_socket, create_new_class, add_test_to_class
-from softwaresupport.kea import set_logger, set_time, add_line_in_global, config_srv_another_subnet
+from softwaresupport.kea import set_time, add_line_in_global, config_srv_another_subnet
 from softwaresupport.kea import prepare_cfg_add_custom_option, add_interface, add_pool_to_subnet
 from softwaresupport.kea import set_conf_parameter_global, set_conf_parameter_subnet, add_line_in_subnet
 from softwaresupport.kea import add_line_to_shared_subnet, add_to_shared_subnet, set_conf_parameter_shared_subnet
 from softwaresupport.kea import prepare_cfg_subnet_specific_interface, prepare_cfg_subnet
 from softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_option_subnet
-from softwaresupport.kea import prepare_cfg_add_option_shared_subnet
+from softwaresupport.kea import prepare_cfg_add_option_shared_subnet, config_client_classification
+from softwaresupport.kea import add_option_to_defined_class, config_require_client_classification
+from softwaresupport.kea import host_reservation, host_reservation_extension
 
 log = logging.getLogger('forge')
 
@@ -124,94 +126,21 @@ world.kea_options4 = {
 }
 
 
-def config_client_classification(subnet, option_value):
-    subnet = int(subnet)
-    if len(world.subcfg[subnet][1]) > 2:
-        world.subcfg[subnet][1] += ', '
-    world.subcfg[subnet][1] += '"client-class": "{option_value}"\n'.format(**locals())
-
-
 def add_siaddr(addr, subnet_number):
     if subnet_number is None:
-        if "simple_options" not in world.cfg:
-            world.cfg["simple_options"] = ''
-        else:
-            world.cfg["simple_options"] += ','
-        world.cfg["simple_options"] += '"next-server": "{addr}"'.format(**locals())
+        world.dhcp_main["next-server"] = addr
     else:
-        subnet = int(subnet_number)
-        if len(world.subcfg[subnet][1]) > 2:
-            world.subcfg[subnet][1] += ', '
-        world.subcfg[subnet][1] += '"next-server": "{addr}"\n'.format(**locals())
+        world.dhcp_main["subnet4"][int(subnet_number)]["next-server"] = addr
 
 
 def disable_client_echo():
     # after using it, we should revert that at the end!
     # keep that in mind when first time using it.
-    if "simple_options" not in world.cfg:
-        world.cfg["simple_options"] = ''
-    else:
-        world.cfg["simple_options"] += ','
-    world.cfg["simple_options"] += '"echo-client-id": "False"'
-
-
-def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
-    if len(world.subcfg[subnet][5]) > 20:
-        world.subcfg[subnet][5] += ','
-
-    world.subcfg[subnet][5] += "{"
-    if reservation_type == "address":
-        world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}","ip-address":"{reserved_value}"'.format(**locals())
-    elif reservation_type == "hostname":
-        world.subcfg[subnet][5] += '"{unique_host_value_type}":"{unique_host_value}","hostname":"{reserved_value}"'.format(**locals())
-    else:
-        assert False, "Not supported yet."
-        # if reservation will allow on another value - add it here
-
-    world.subcfg[subnet][5] += "}"
-
-
-def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
-    pointer = locate_entry(world.subcfg[subnet][5], '}', reservation_number)
-    if reservation_type == "address":
-        tmp = world.subcfg[subnet][5][:pointer] + ',"ip-address":"{reserved_value}"'.format(**locals())
-        tmp += world.subcfg[subnet][5][pointer:]
-    elif reservation_type == "hostname":
-        tmp = world.subcfg[subnet][5][:pointer] + ',"hostname":"{reserved_value}"'.format(**locals())
-        tmp += world.subcfg[subnet][5][pointer:]
-    else:
-        assert False, "Not supported"
-        # if reservation will allow on another value - add it here
-
-    world.subcfg[subnet][5] = tmp
+    world.dhcp_main["echo-client-id"] = False
 
 
 def config_srv_id(id_type, id_value):
     assert False, "Not yet available for Kea4"
-
-
-def add_option_to_defined_class(class_no, option_name, option_value):
-    space = world.cfg["space"]
-    option_code = world.kea_options4.get(option_name)
-    # if option_code is None:
-    #     option_code = kea_otheroptions.get(option_name)
-
-    pointer_start = "{"
-    pointer_end = "}"
-
-    assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
-    if len(world.classification[class_no-1][2]) > 10:
-        world.classification[class_no-1][2] += ','
-
-    world.classification[class_no-1][2] += '''
-            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
-            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
-
-# =============================================================
-# ================ PREPARE CONFIG BLOCK END  ==================
-
-# =============================================================
-# ================ REMOTE SERVER BLOCK START ==================
 
 
 def prepare_cfg_prefix(prefix, length, delegated_length, subnet):

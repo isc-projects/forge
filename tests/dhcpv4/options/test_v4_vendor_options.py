@@ -54,19 +54,27 @@ def test_v4_options_vendor_encapsulated_space_private_iPXE():
     srv_control.add_test_to_class('1', 'test', 'option[vendor-class-identifier].text == \'APC\'')
     srv_control.add_test_to_class('1',
                                   'option-def',
-                                  '[{"name":"vendor-encapsulated-options","code":43,"type":"empty","encapsulate":"APC"}]')
+                                  {"name": "vendor-encapsulated-options", "code": 43,
+                                   "type": "empty", "encapsulate": "APC"})
     srv_control.add_test_to_class('1',
                                   'option-data',
-                                  '[{"name":"cookie","space":"APC","data":"1APC"},{"name": "vendor-encapsulated-options"}]')
+                                  {"name": "cookie", "space": "APC", "data": "1APC"})
+    srv_control.add_test_to_class('1',
+                                  'option-data',
+                                  {"name": "vendor-encapsulated-options"})
 
     srv_control.create_new_class('PXE')
     srv_control.add_test_to_class('2', 'test', 'option[vendor-class-identifier].text == \'PXE\'')
     srv_control.add_test_to_class('2',
                                   'option-def',
-                                  '[{"name": "vendor-encapsulated-options","code":43,"type": "empty","encapsulate": "PXE"}]')
+                                  {"name": "vendor-encapsulated-options", "code":43,
+                                   "type": "empty", "encapsulate": "PXE"})
     srv_control.add_test_to_class('2',
                                   'option-data',
-                                  '[{"name": "mtftp-ip","space": "PXE","data": "1.2.3.4"},{"name": "vendor-encapsulated-options"}]')
+                                  {"name": "mtftp-ip", "space": "PXE", "data": "1.2.3.4"})
+    srv_control.add_test_to_class('2',
+                                  'option-data',
+                                  {"name": "vendor-encapsulated-options"})
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')

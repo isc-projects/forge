@@ -148,7 +148,7 @@ def test_v4_options_domain_name_servers():
 def test_v4_options_domain_name_servers_csv_correct():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.add_line('"option-data": [{"code": 6, "data": "C0000201", "csv-format": false}]')
+    srv_control.add_line({"option-data": [{"code": 6, "data": "C0000201", "csv-format": False}]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -168,7 +168,7 @@ def test_v4_options_domain_name_servers_csv_correct():
 def test_v4_options_domain_name_servers_csv_incorrect_hex():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.add_line('"option-data": [{"code": 6, "data": "C000020Z1", "csv-format": false}]')
+    srv_control.add_line({"option-data": [{"code": 6, "data": "C000020Z1", "csv-format": False}]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configure')
 
@@ -179,7 +179,7 @@ def test_v4_options_domain_name_servers_csv_incorrect_hex():
 def test_v4_options_domain_name_servers_csv_incorrect_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.add_line('"option-data": [{"code": 6, "data": "199.0.2.1", "csv-format": false}]')
+    srv_control.add_line({"option-data": [{"code": 6, "data": "199.0.2.1", "csv-format": False}]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configure')
 

@@ -520,7 +520,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
 
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -592,7 +592,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id():
 def test_v6_hosts_cmds_add_reservation_pgsql_flex_id():
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.add_line('"host-reservation-identifiers": [ "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('2', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')

@@ -214,8 +214,11 @@ def _define_software(dhcp_version):
 
 
 def declare_all(dhcp_version=None):
-    # world.ddns_main = None
-    # world.dhcp_main = None # this probably will be needed soon
+    world.ddns_main = {}
+    world.dhcp_main = {"option-data": [],
+                       "loggers": [],
+                       "hooks-libraries": [],
+                       "shared-networks": []}  # this probably will be needed soon
     world.ca_main = {}
 
     world.climsg = []  # Message(s) to be sent

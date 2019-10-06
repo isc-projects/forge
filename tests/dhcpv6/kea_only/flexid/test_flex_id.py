@@ -20,8 +20,8 @@ def test_v6_hooks_flexid_1():
                                            '0',
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -67,8 +67,8 @@ def test_v6_hooks_flexid_libreload():
                                            '0',
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -144,8 +144,8 @@ def test_v6_hooks_flexid_reconfigure_1():
                                            '0',
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -187,8 +187,8 @@ def test_v6_hooks_flexid_reconfigure_1():
                                            '0',
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -236,8 +236,8 @@ def test_v6_hooks_flexid_reconfigure_2():
                                            '0',
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -279,8 +279,8 @@ def test_v6_hooks_flexid_reconfigure_2():
                                            '0',
                                            'flex-id',
                                            '\'port4321\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -352,8 +352,8 @@ def test_v6_hooks_flexid_2():
                                            '0',
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'relay6[0].option[18].hex')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -398,8 +398,8 @@ def test_v6_hooks_flexid_3():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -430,7 +430,7 @@ def test_v6_hooks_flexid_3():
 def test_v6_hooks_flexid_mysql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"host-reservation-identifiers": ["flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'relay6[0].option[18].hex')
 
@@ -477,7 +477,7 @@ def test_v6_hooks_flexid_mysql_1():
 def test_v6_hooks_flexid_mysql_2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -516,7 +516,7 @@ def test_v6_hooks_flexid_mysql_2():
 def test_v6_hooks_flexid_pgsql_1():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'relay6[0].option[18].hex')
 
@@ -564,7 +564,7 @@ def test_v6_hooks_flexid_pgsql_1():
 def test_v6_hooks_flexid_pgsql_2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -608,8 +608,8 @@ def test_v6_hooks_flexid_replace_duid():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -667,8 +667,8 @@ def test_v6_hooks_flexid_replace_duid_renew():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -746,8 +746,8 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -824,8 +824,8 @@ def test_v6_hooks_flexid_replace_duid_release():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -902,8 +902,8 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -983,8 +983,8 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
@@ -1084,8 +1084,8 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
                                            '0',
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value('0', '0', 'address', '3000::f')
-    srv_control.add_line('"host-reservation-identifiers": [  "duid",  "flex-id" ]')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.add_line({"host-reservation-identifiers": [ "duid",  "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1',
                                       'identifier-expression',
