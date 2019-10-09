@@ -214,12 +214,6 @@ def _define_software(dhcp_version):
 
 
 def declare_all(dhcp_version=None):
-    world.ddns_main = {}
-    world.dhcp_main = {"option-data": [],
-                       "hooks-libraries": [],
-                       "shared-networks": []}
-    world.ca_main = {}
-
     world.climsg = []  # Message(s) to be sent
     world.srvmsg = []  # Server's response(s)
     world.rlymsg = []  # Server's response(s) Relayed by Relay Agent
