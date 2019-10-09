@@ -124,8 +124,8 @@ def test_v6_options_inforequest_sip_servers():
 def test_v6_options_inforequest_sip_servers_csv():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"option-data": [{"code": 22, "data": "2001 0DB8 0001 0000 0000 0000 0000 CAFE",'
-                         '"always-send": false, "csv-format": false}]')
+    srv_control.add_line({"option-data": [{"code": 22, "data": "20010DB800010000000000000000CAFE",
+                                           "always-send": False, "csv-format": False}]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -152,8 +152,8 @@ def test_v6_options_inforequest_sip_servers_csv():
 def test_v6_options_inforequest_sip_servers_csv_incorrect():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"option-data": [{"code": 6, "data": "192.167.12.2",'
-                         '"always-send": true, "csv-format": false}]')
+    srv_control.add_line({"option-data": [{"code": 6, "data": "192.167.12.2",
+                                           "always-send": True, "csv-format": False}]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configure')
 
@@ -165,8 +165,8 @@ def test_v6_options_inforequest_sip_servers_csv_incorrect():
 def test_v6_options_inforequest_sip_servers_csv_incorrect_hex():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.add_line('"option-data": [{"code": 6, "data": "31 39 32 2x 31 30 2e 30 2e 31",'
-                         ' "always-send": true, "csv-format": false}]')
+    srv_control.add_line({"option-data": [{"code": 6, "data": "3139322x31302e302e31",
+                                           "always-send": True, "csv-format": False}]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configure')
 

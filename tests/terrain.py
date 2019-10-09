@@ -216,9 +216,8 @@ def _define_software(dhcp_version):
 def declare_all(dhcp_version=None):
     world.ddns_main = {}
     world.dhcp_main = {"option-data": [],
-                       "loggers": [],
                        "hooks-libraries": [],
-                       "shared-networks": []}  # this probably will be needed soon
+                       "shared-networks": []}
     world.ca_main = {}
 
     world.climsg = []  # Message(s) to be sent
@@ -358,15 +357,6 @@ def initialize(scenario):
     world.cfg["wait_interval"] = world.f_cfg.packet_wait_interval
     world.cfg["cfg_file"] = "server.cfg"
     world.cfg["cfg_file_2"] = "second_server.cfg"
-    world.cfg["conf"] = ""  # Just empty config for now
-    # additional config structure [subnet, client class/simple options, options, pools, host reservation]:
-    world.subcfg = [["", "", "", "", "", "", ""]]
-    world.shared_subcfg = []
-    world.shared_subnets = []
-    world.shared_subnets_tmp = []
-    world.kea_ha = [[], [], [], []]
-    world.hooks = []
-    world.classification = []
     world.reservation_backend = ""
     test_result_dir = str(scenario.name).replace(".", "_").replace('[', '_').replace(']', '_').replace('/', '_')
     world.cfg["test_result_dir"] = os.path.join('tests_results', test_result_dir)

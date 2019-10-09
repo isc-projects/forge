@@ -16,7 +16,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -61,7 +61,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -106,7 +106,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -151,7 +151,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -166,7 +166,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -211,7 +211,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -257,7 +257,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -301,7 +301,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -347,7 +347,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -362,7 +362,7 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -404,7 +404,7 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -419,7 +419,7 @@ def test_v6_sanity_check_subnet_id_warn():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"warn"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "warn"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -461,7 +461,7 @@ def test_v6_sanity_check_subnet_id_warn():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"warn"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "warn"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -495,7 +495,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -541,7 +541,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -598,7 +598,7 @@ def test_v6_sanity_check_subnet_id_del():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -644,7 +644,7 @@ def test_v6_sanity_check_subnet_id_del():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -700,7 +700,7 @@ def test_v6_sanity_check_subnet_id_none():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"none"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "none"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -742,7 +742,7 @@ def test_v6_sanity_check_subnet_id_none():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"none"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "none"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -761,7 +761,7 @@ def test_v6_sanity_check_subnet_id():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
     srv_control.set_conf_parameter_subnet('id', '666', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -808,7 +808,7 @@ def test_v6_sanity_check_subnet_id():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::2')
     srv_control.set_conf_parameter_subnet('id', '888', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -820,7 +820,7 @@ def test_v6_sanity_check_subnet_id():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::2')
     srv_control.set_conf_parameter_subnet('id', '999', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -891,11 +891,11 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
                                                        '2001:db8:b::1-2001:db8:b::1')
     srv_control.set_conf_parameter_subnet('id', '777', '1')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix-del"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -971,11 +971,11 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
                                                        '2001:db8:b::1-2001:db8:b::1')
     srv_control.set_conf_parameter_subnet('id', '999', '1')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    srv_control.set_conf_parameter_global('sanity-checks', '{"lease-checks":"fix"}')
+    srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
 

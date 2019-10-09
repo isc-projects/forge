@@ -47,7 +47,7 @@ def test_control_channel_socket_config_test():
     srv_control.open_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
                                            '0',
@@ -65,7 +65,7 @@ def test_control_channel_socket_config_test():
     srv_control.open_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     # WRONG ADDRESS RESERVATION
     srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.0.5',
@@ -108,7 +108,7 @@ def test_control_channel_socket_config_write():
     srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket({"command": "config-set", "arguments": world.dhcp_main})
     srv_msg.send_ctrl_cmd_via_socket({"command": "config-write",
                                       "arguments": {"filename": world.f_cfg.get_dhcp_conf_path()}})
 

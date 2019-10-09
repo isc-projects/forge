@@ -23,20 +23,21 @@ def test_hook_v4_network_cmds_list():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
-
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
+
+    # first shared subnet
+    srv_control.shared_subnet('192.168.50.0/24', '0')
+    srv_control.shared_subnet('192.168.51.0/24', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    # second shared-subnet
+    srv_control.shared_subnet('192.168.52.0/24', '1')
+    srv_control.shared_subnet('192.168.53.0/24', '1')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
+
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel()
@@ -61,21 +62,21 @@ def test_hook_v4_network_cmds_get_by_name():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
-
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
+
+    # first shared subnet
+    srv_control.shared_subnet('192.168.50.0/24', '0')
+    srv_control.shared_subnet('192.168.51.0/24', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    # second shared-subnet
+    srv_control.shared_subnet('192.168.52.0/24', '1')
+    srv_control.shared_subnet('192.168.53.0/24', '1')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
 
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -137,21 +138,20 @@ def test_hook_v4_network_cmds_add_conflict():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
-
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    # first shared subnet
+    srv_control.shared_subnet('192.168.50.0/24', '0')
+    srv_control.shared_subnet('192.168.51.0/24', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    # second shared-subnet
+    srv_control.shared_subnet('192.168.52.0/24', '1')
+    srv_control.shared_subnet('192.168.53.0/24', '1')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
 
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -174,12 +174,13 @@ def test_hook_v4_network_cmds_del():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.1')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.config_srv('time-servers', '0', '199.199.199.10')
+
+    srv_control.shared_subnet('192.168.50.0/24', '0')
+    srv_control.shared_subnet('192.168.51.0/24', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
 
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel()
@@ -218,12 +219,12 @@ def test_hook_v4_network_cmds_del_keep_subnet():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.1')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.config_srv('time-servers', '0', '199.199.199.10')
+    srv_control.shared_subnet('192.168.50.0/24', '0')
+    srv_control.shared_subnet('192.168.51.0/24', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
 
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel()
@@ -269,21 +270,20 @@ def test_hook_v4_network_cmds_del_non_existing():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-    # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
-
     srv_control.config_srv('time-servers', '0', '199.199.199.10')
     srv_control.config_srv('time-servers', '2', '199.199.199.100')
     srv_control.config_srv('time-servers', '3', '199.199.199.200')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    # first shared subnet
+    srv_control.shared_subnet('192.168.50.0/24', '0')
+    srv_control.shared_subnet('192.168.51.0/24', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    # second shared-subnet
+    srv_control.shared_subnet('192.168.52.0/24', '1')
+    srv_control.shared_subnet('192.168.53.0/24', '1')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
 
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -307,7 +307,7 @@ def test_hook_v4_network_cmds_del_global_options():
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.1')
     # first shared subnet
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('192.168.51.0/24', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
 

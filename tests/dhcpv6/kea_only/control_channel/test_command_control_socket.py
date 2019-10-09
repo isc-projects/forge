@@ -11,7 +11,7 @@ import srv_control
 
 @pytest.mark.v6
 @pytest.mark.controlchannel
-@pytest.mark.kea_onlyn
+@pytest.mark.kea_only
 def test_control_channel_socket_dhcp_disable_timer():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')

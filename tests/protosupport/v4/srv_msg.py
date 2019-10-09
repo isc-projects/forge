@@ -137,8 +137,8 @@ def convert_flags_fqdn():
 
 
 options_formatted_by_forge = ["vendor_specific",  # code 43
-                              "pxe_client_machine_identifier",  # code 82
-                              "relay_agent_information"  # code 97
+                              "pxe_client_machine_identifier",  # code 97
+                              "relay_agent_information"  # code 82
                               ]
 
 

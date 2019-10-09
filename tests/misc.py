@@ -35,18 +35,17 @@ def set_world():
         world.dhcp = {}
     else:
         world.dhcp.clear()
+
     world.dhcp["option_cnt"] = 0
     world.dhcp["subnet_cnt"] = 0
     world.dhcp["option_usr_cnt"] = 0
+
     # clear all config files
-    world.cfg["conf"] = ""
-    world.subcfg = [["", "", "", "", "", "", ""]]  # additional config structure
-    world.shared_subcfg = []
-    world.shared_subnets = []
-    world.shared_subnets_tmp = []
-    world.kea_ha = [[], [], [], []]
-    world.hooks = []
-    world.classification = []
+    world.ddns_main = {}
+    world.dhcp_main = {"option-data": [],
+                       "hooks-libraries": [],
+                       "shared-networks": []}
+    world.ca_main = {}
 
     # new configuration process:
     world.configClass = KeaConfiguration()
@@ -87,6 +86,7 @@ def test_procedure():
             # some tests skip "test setup" procedure and goes to "test procedure"
             # e.g. tests for server configuration. Then we need to setup
             # world.kea["option_cnt"] here.
+            # TODO this will probably mess up access to configuration dict from within the test
             set_world()
         else:
             pass

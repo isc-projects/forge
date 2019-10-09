@@ -19,8 +19,8 @@ def test_v6_sharednetworks_negative_missing_name():
     srv_control.config_srv_another_subnet_no_interface('2001:db8:d::/64',
                                                        '2001:db8:d::1-2001:db8:d::1')
     # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -40,11 +40,11 @@ def test_v6_sharednetworks_negative_not_unique_names():
     srv_control.config_srv('preference', '0', '123')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
     # first shared subnet
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
     # second shared-subnet
-    srv_control.shared_subnet('1', '1')
+    srv_control.shared_subnet('2001:db8:b::/64', '1')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '1')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-xyz"', '1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -59,7 +59,7 @@ def test_v6_sharednetworks_negative_not_unique_names():
 def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_iface():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -120,7 +120,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_iface()
 def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_address():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -217,7 +217,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
 def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_id():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -313,8 +313,8 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_iface(
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
                                                        '2001:db8:b::1-2001:db8:b::1')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -391,16 +391,16 @@ def test_v6_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
                                                        '2001:db8:b::1-2001:db8:b::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
                                                        '2001:db8:c::1-2001:db8:c::1')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.shared_subnet('2', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
-
     srv_control.config_srv_opt('preference', '1')
     srv_control.config_srv('preference', '0', '33')
     srv_control.config_srv('preference', '1', '44')
     srv_control.config_srv('preference', '2', '55')
+
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
+    srv_control.shared_subnet('2001:db8:c::/64', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -490,17 +490,16 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_id_o
     srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
                                                        '2001:db8:c::1-2001:db8:c::1')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
-
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.shared_subnet('2', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
-
     srv_control.config_srv_opt('preference', '1')
     srv_control.config_srv('preference', '0', '33')
     srv_control.config_srv('preference', '1', '44')
     srv_control.config_srv('preference', '2', '55')
+
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
+    srv_control.shared_subnet('2001:db8:c::/64', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
+    srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -629,8 +628,8 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
                                                        '2001:db8:b::1-2001:db8:b::1')
     srv_control.config_srv('preference', '0', '123')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -752,17 +751,16 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
                                                        '2001:db8:c::1-2001:db8:c::1')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
-
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.shared_subnet('2', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', '0')
-
     srv_control.config_srv_opt('preference', '1')
     srv_control.config_srv('preference', '0', '33')
     srv_control.config_srv('preference', '1', '44')
     srv_control.config_srv('preference', '2', '55')
+
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
+    srv_control.shared_subnet('2001:db8:c::/64', '0')
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
 
@@ -895,8 +893,8 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
                                                        '2001:db8:b::1-2001:db8:b::1')
     srv_control.config_srv('preference', '0', '123')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -1028,17 +1026,17 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
                                                        '2001:db8:f::1-2001:db8:f::1')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
     # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
     # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
+    srv_control.shared_subnet('2001:db8:c::/64', '1')
+    srv_control.shared_subnet('2001:db8:d::/64', '1')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '1')
-    srv_control.shared_subnet('4', '2')
-    srv_control.shared_subnet('5', '2')
+    srv_control.shared_subnet('2001:db8:e::/64', '2')
+    srv_control.shared_subnet('2001:db8:f::/64', '2')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', '2')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', '2')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -1317,17 +1315,17 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
     srv_control.config_srv('preference', '5', '66')
 
     # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
     # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
+    srv_control.shared_subnet('2001:db8:c::/64', '1')
+    srv_control.shared_subnet('2001:db8:d::/64', '1')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '1')
-    srv_control.shared_subnet('4', '2')
-    srv_control.shared_subnet('5', '2')
+    srv_control.shared_subnet('2001:db8:e::/64', '2')
+    srv_control.shared_subnet('2001:db8:f::/64', '2')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', '2')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', '2')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -1666,13 +1664,13 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_control.config_srv('preference', '0', '123')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
     # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', '0')
     # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
+    srv_control.shared_subnet('2001:db8:c::/64', '1')
+    srv_control.shared_subnet('2001:db8:d::/64', '1')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', '1')
 
@@ -1934,13 +1932,13 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
     srv_control.config_srv('preference', '0', '123')
     srv_control.config_srv('dns-servers', '1', '2001:db8::1,2001:db8::2')
     # first shared subnet
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', '0')
     # second shared-subnet
-    srv_control.shared_subnet('2', '1')
-    srv_control.shared_subnet('3', '1')
+    srv_control.shared_subnet('2001:db8:c::/64', '1')
+    srv_control.shared_subnet('2001:db8:d::/64', '1')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-xyz"', '1')
 
@@ -2202,13 +2200,13 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_control.add_test_to_class('3', 'test', 'substring(option[1].hex,8,2) == 0xf299')
     srv_control.config_client_classification('0', 'Client_f2f0')
 
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.shared_subnet('2', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
+    srv_control.shared_subnet('2001:db8:c::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.set_conf_parameter_shared_subnet('option-data',
-                                                 '[{"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}]',
+                                                 '{"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}',
                                                  '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -2328,8 +2326,8 @@ def test_v6_sharednetworks_host_reservation_duplicate_reservation():
                                            '0',
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
@@ -2354,9 +2352,9 @@ def test_v6_sharednetworks_host_reservation_all_values_duid():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', 'true')
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
-    srv_control.shared_subnet('2', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
+    srv_control.shared_subnet('2001:db8:c::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -2421,11 +2419,11 @@ def test_v6_sharednetworks_host_reservation_options_override_1():
                                              '1')
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.set_conf_parameter_shared_subnet('option-data',
-                                                 '[{"code":7,"data":"5","name":"preference","space":"dhcp6"}]',
+                                                 '{"code":7,"data":"5","name":"preference","space":"dhcp6"}',
                                                  '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -2501,11 +2499,11 @@ def test_v6_sharednetworks_host_reservation_options_override_2():
                                              '1')
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.set_conf_parameter_shared_subnet('option-data',
-                                                 '[{"code":7,"data":"5","name":"preference","space":"dhcp6"}]',
+                                                 '{"code":7,"data":"5","name":"preference","space":"dhcp6"}',
                                                  '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')

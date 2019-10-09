@@ -352,7 +352,7 @@ def test_define_value(*args):
     for i in range(len(args)):
         if type(args[i]) == dict:
             pass
-        #TODO finish it
+            # substitute_vars(args[i])
         else:
             try:
                 tmp = str(args[i])

@@ -658,7 +658,6 @@ def test_v4_hooks_HA_state_hold_lb_once():
 @pytest.mark.v4
 @pytest.mark.hook
 @pytest.mark.HA
-@pytest.mark.wtf
 def test_v4_hooks_HA_state_hold_hs_once():
 
     # HA SERVER 1

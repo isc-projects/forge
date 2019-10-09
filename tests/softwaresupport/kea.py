@@ -41,24 +41,163 @@ kea_otheroptions = {
     "time-offset": 38
 }
 
+world.kea_options6 = {
+    "client-id": 1,
+    "server-id": 2,
+    "IA_NA": 3,
+    "IN_TA": 4,
+    "IA_address": 5,
+    "preference": 7,
+    "relay-msg": 9,
+    "unicast": 12,
+    "status-code": 13,
+    "rapid_commit": 14,
+    "interface-id": 18,
+    "sip-server-dns": 21,
+    "sip-server-addr": 22,
+    "dns-servers": 23,
+    "domain-search": 24,
+    "IA_PD": 25,
+    "IA-Prefix": 26,
+    "nis-servers": 27,
+    "nisp-servers": 28,
+    "nis-domain-name": 29,
+    "nisp-domain-name": 30,
+    "sntp-servers": 31,
+    "information-refresh-time": 32,
+    "bcmcs-server-dns": 33,
+    "bcmcs-server-addr": 34,
+    "pana-agent": 40,
+    "new-posix-timezone": 41,
+    "new-tzdb-timezone": 42,
+    "lq-client-link": 48,
+    "bootfile-url": 59,
+    "bootfile-param": 60,
+    "erp-local-domain-name": 65
+}
+
+world.kea_options4 = {
+    "subnet-mask": 1,  # ipv4-address (array)
+    "time-offset": 2,
+    "routers": 3,  # ipv4-address (single)
+    "time-servers": 4,  # ipv4-address (single)
+    "name-servers": 5,  # ipv4-address (array)
+    "domain-name-servers": 6,  # ipv4-address (array)
+    "log-servers": 7,  # ipv4-address (single)
+    "cookie-servers": 8,  # ipv4-address (single)
+    "lpr-servers": 9,  # ipv4-address (single)
+    "impress-servers": 10,  # ipv4-address (single)
+    "resource-location-servers": 11,  # ipv4-address (single)
+    "host-name": 12,  # string
+    "boot-size": 13,
+    "merit-dump": 14,  # string
+    "domain-name": 15,  # fqdn (single)
+    "swap-server": 16,  # ipv4-address (single)
+    "root-path": 17,  # string
+    "extensions-path": 18,  # string
+    "ip-forwarding": 19,  # boolean
+    "non-local-source-routing": 20,  # boolean
+    "policy-filter": 21,  # ipv4-address (single)
+    "max-dgram-reassembly": 22,
+    "default-ip-ttl": 23,
+    "path-mtu-aging-timeout": 24,
+    "path-mtu-plateau-table": 25,
+    "interface-mtu": 26,
+    "all-subnets-local": 27,  # boolean
+    "broadcast-address": 28,  # ipv4-address (single)
+    "perform-mask-discovery": 29,  # boolean
+    "mask-supplier": 30,  # boolean
+    "router-discovery": 31,  # boolean
+    "router-solicitation-address": 32,  # ipv4-address (single)
+    "static-routes": 33,  # ipv4-address (array)
+    "trailer-encapsulation": 34,  # boolean
+    "arp-cache-timeout": 35,
+    "ieee802-3-encapsulation": 36,
+    "default-tcp-ttl": 37,
+    "tcp-keepalive-interval": 38,
+    "tcp-keepalive-garbage": 39,  # boolean
+    "nis-domain": 40,  # string (single)
+    "nis-servers": 41,  # ipv4-address (array)
+    "ntp-servers": 42,  # ipv4-address (array)
+    "vendor-encapsulated-options": 43,  # empty
+    "netbios-name-servers": 44,  # ipv4-address
+    "netbios-dd-server": 45,  # ipv4-address
+    "netbios-node-type": 46,  # uint8
+    "netbios-scope": 47,  # string
+    "font-servers": 48,  # ipv4-address
+    "x-display-manager": 49,  # ipv4-address
+    "dhcp-requested-address": 50,  # ipv4-address
+    "dhcp-option-overload": 52,  # uint8
+    "server_id": 54,
+    "dhcp-server-identifier": 54,
+    "dhcp-message": 56,  # string
+    "dhcp-max-message-size": 57,  # uint16
+    "vendor-class-identifier": 60,  # binary
+    "client_id": 61,
+    "nwip-domain-name": 62,  # string
+    "nwip-suboptions": 63,  # binary
+    "nisplus-domain-name": 64,  # string
+    "nisplus-servers": 65,  # ipv4-address (array)
+    "boot-file-name": 67,  # string
+    "mobile-ip-home-agent": 68,  # ipv4-address (array)
+    "smtp-server": 69,  # ipv4-address (array)
+    "pop-server": 70,  # ipv4-address (array)
+    "nntp-server": 71,  # ipv4-address (array)
+    "www-server": 72,  # ipv4-address (array)
+    "finger-server": 73,  # ipv4-address (array)
+    "irc-server": 74,  # ipv4-address (array)
+    "streettalk-server": 75,  # ipv4-address (array)
+    "streettalk-directory-assistance-server": 76,  # ipv4-address (array)
+    "user-class": 77,  # binary
+    "fqdn": 81,  # record
+    "dhcp-agent-options": 82,  # empty
+    "authenticate": 90,  # binary
+    "client-last-transaction-time": 91,  # uint32
+    "associated-ip": 92,  # ipv4-address
+    "subnet-selection": 118,  # ipv4-address
+    "domain-search": 119,  # binary
+    "vivco-suboptions": 124,  # binary
+    "vivso-suboptions": 125,  # binary
+    "end": 255
+}
+
+
+def _check_value(value):
+    # test_define_value from protosupport.multi_protocol_functions mostly return strings
+    # we want to check if string should be boolean or digit and correct type, if not return unchanged value
+    if isinstance(value, str):
+        if value.isdigit():
+            return int(value)
+        if value.lower() == "true":
+            return True
+        if value.lower() == "false":
+            return False
+    return value
+
 
 def add_defaults4():
     eth = world.f_cfg.server_iface
-    if world.cfg["server_times"]["renew-timer"] != "":
+    # TODO for now I will just change if condition but the way to go is remove pre-setting timers!
+    # although it could affect to many tests, at this point I wont do it
+    if "renew-timer" not in world.dhcp_main:
         world.dhcp_main["renew-timer"] = world.cfg["server_times"]["renew-timer"]
-    if world.cfg["server_times"]["rebind-timer"] != "":
+    if "rebind-timer" not in world.dhcp_main:
         world.dhcp_main["rebind-timer"] = world.cfg["server_times"]["rebind-timer"]
-    if world.cfg["server_times"]["valid-lifetime"] != "":
+    if "valid-lifetime" not in world.dhcp_main:
         world.dhcp_main["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
 
     add_interface(eth)
 
 
 def add_defaults6():
-    world.dhcp_main["renew-timer"] = world.cfg["server_times"]["renew-timer"]
-    world.dhcp_main["rebind-timer"] = world.cfg["server_times"]["rebind-timer"]
-    world.dhcp_main["preferred-lifetime"] = world.cfg["server_times"]["preferred-lifetime"]
-    world.dhcp_main["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
+    if "renew-timer" not in world.dhcp_main:
+        world.dhcp_main["renew-timer"] = world.cfg["server_times"]["renew-timer"]
+    if "rebind-timer" not in world.dhcp_main:
+        world.dhcp_main["rebind-timer"] = world.cfg["server_times"]["rebind-timer"]
+    if "preferred-lifetime" not in world.dhcp_main:
+        world.dhcp_main["preferred-lifetime"] = world.cfg["server_times"]["preferred-lifetime"]
+    if "valid-lifetime" not in world.dhcp_main:
+        world.dhcp_main["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
     eth = world.f_cfg.server_iface
     add_interface(eth)
 
@@ -80,6 +219,8 @@ def add_logger(log_type, severity, severity_level, logging_file=None):
     if severity_level != "None":
         logger["debuglevel"] = int(severity_level)
 
+    if "loggers" not in world.dhcp_main:
+        world.dhcp_main["loggers"] = []
     world.dhcp_main["loggers"].append(logger)
 
 
@@ -88,25 +229,30 @@ def open_control_channel_socket(socket_name=None):
         socket_path = world.f_cfg.run_join(socket_name)
     else:
         socket_path = world.f_cfg.run_join('control_socket')
-        world.dhcp_main["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
+    world.dhcp_main["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
 
 
 def create_new_class(class_name):
     if "client-classes" not in world.dhcp_main:
         world.dhcp_main["client-classes"] = []
-    world.dhcp_main["client-classes"].append({"name": class_name, "option-def": [], "option-data": []})
+    world.dhcp_main["client-classes"].append({"name": class_name})
 
 
 def add_test_to_class(class_number, parameter_name, parameter_value):
-    if parameter_name == "test":
-        world.dhcp_main["client-classes"][class_number - 1][parameter_name] = parameter_value
-    else:
+    if parameter_name == "option-def":
+        if "option-def" not in world.dhcp_main["client-classes"][class_number - 1]:
+            world.dhcp_main["client-classes"][class_number - 1]["option-def"] = []
         world.dhcp_main["client-classes"][class_number - 1][parameter_name].append(parameter_value)
+    elif parameter_name == "option-data":
+        if "option-data" not in world.dhcp_main["client-classes"][class_number - 1]:
+            world.dhcp_main["client-classes"][class_number - 1]["option-data"] = []
+        world.dhcp_main["client-classes"][class_number - 1][parameter_name].append(parameter_value)
+    else:
+        world.dhcp_main["client-classes"][class_number - 1][parameter_name] = _check_value(parameter_value)
 
 
 def add_option_to_defined_class(class_no, option_name, option_value):
     space = world.cfg["space"]
-
     if world.proto == 'v4':
         option_code = world.kea_options4.get(option_name)
     else:
@@ -114,8 +260,10 @@ def add_option_to_defined_class(class_no, option_name, option_value):
         if option_code is None:
             option_code = kea_otheroptions.get(option_name)
 
+    if "option-data" not in world.dhcp_main["client-classes"][class_no - 1]:
+        world.dhcp_main["client-classes"][class_no - 1]["option-data"] = []
     world.dhcp_main["client-classes"][class_no - 1]["option-data"].append({"csv-format": True,
-                                                                           "code": option_code,
+                                                                           "code": int(option_code),
                                                                            "data": option_value,
                                                                            "name": option_name,
                                                                            "space": space})
@@ -123,11 +271,12 @@ def add_option_to_defined_class(class_no, option_name, option_value):
 
 def config_client_classification(subnet, option_value):
     sub = "subnet%s" % world.proto[1]
-    world.dhcp_main[sub][subnet]["client-class"] = option_value
+    world.dhcp_main[sub][int(subnet)]["client-class"] = option_value
 
 
 def config_require_client_classification(subnet, option_value):
     sub = "subnet%s" % world.proto[1]
+    subnet = int(subnet)
     if "require-client-classes" not in world.dhcp_main[sub][subnet]:
         world.dhcp_main[sub][subnet]["require-client-classes"] = []
 
@@ -136,9 +285,9 @@ def config_require_client_classification(subnet, option_value):
 
 def set_time(which_time, value, subnet=None):
     assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
-
+    value = int(value)
     if subnet is None:
-            world.dhcp_main[which_time] = value
+        world.dhcp_main[which_time] = value
     else:
         subnet = int(subnet)
         sub = "subnet%s" % world.proto[1]
@@ -150,9 +299,7 @@ def add_line_in_global(additional_line):
 
 
 def add_line_to_shared_subnet(subnet_id, additional_line):
-    # TODO needs new system
-    sub = "subnet%s" % world.proto[1]
-    world.dhcp_main[sub][subnet_id].update(additional_line)
+    world.dhcp_main["shared-networks"][subnet_id].update(additional_line)
 
 
 def add_line_in_subnet(subnet_id, additional_line):
@@ -175,9 +322,9 @@ def prepare_cfg_subnet(subnet, pool, eth=None):
         eth = world.f_cfg.server_iface
 
     sub = "subnet%s" % world.proto[1]
-    if sub not in world.dhcp_main.keys():
-        world.dhcp_main[sub] = [{}] # TO NIE DZIALA DLA SUBNETOW I PUSTYCH KONFIGURACJI
-    else:
+    if sub not in world.dhcp_main.keys() and subnet is not "":
+        world.dhcp_main[sub] = [{}]
+    elif sub in world.dhcp_main.keys() and subnet is not "":
         world.dhcp_main[sub].append({})
 
     if subnet is not "":
@@ -222,7 +369,7 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
     if "option-def" not in world.dhcp_main.keys():
         world.dhcp_main["option-def"] = []
 
-    world.dhcp_main["option-def"].append({"code": opt_code, "name": opt_name,
+    world.dhcp_main["option-def"].append({"code": int(opt_code), "name": opt_name,
                                           "space": space, "encapsulate": "", "record-types": "",
                                           "array": False, "type": opt_type})
 
@@ -246,23 +393,43 @@ def set_conf_parameter_global(parameter_name, value):
 
 def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     sub = "subnet%s" % world.proto[1]
-    world.dhcp_main[sub][subnet_id][parameter_name] = value
+    world.dhcp_main[sub][subnet_id][parameter_name] = _check_value(value)
+    if parameter_name in ["interface-id", "relay"]:
+        world.dhcp_main[sub][subnet_id].pop("interface", None)
 
 
-def add_to_shared_subnet(subnet_id, shared_subnet_id):
+def add_to_shared_subnet(subnet_def, shared_network_id):
     sub = "subnet%s" % world.proto[1]
-    # copy subnet from subnetX do shared-networks and remove it from subnetX
-    world.dhcp_main["shared-networks"].append(world.dhcp_main[sub][subnet_id].copy())
-    del world.dhcp_main[sub][subnet_id]
-    world.dhcp["subnet_cnt"] -= 1
+    if len(world.dhcp_main["shared-networks"]) <= shared_network_id:
+        world.dhcp_main["shared-networks"].append({})
+    if sub not in world.dhcp_main["shared-networks"][shared_network_id]:
+        world.dhcp_main["shared-networks"][shared_network_id][sub] = []
+
+    for i in range(len(world.dhcp_main[sub])):
+        if world.dhcp_main[sub][i]["subnet"] == subnet_def:
+            world.dhcp_main["shared-networks"][shared_network_id][sub].append(world.dhcp_main[sub][i])
+            del world.dhcp_main[sub][i]
+            world.dhcp["subnet_cnt"] -= 1
+            break  # removing one from the list will cause error at the end of the loop
 
 
-def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
+def set_conf_parameter_shared_subnet(parameter_name, value, network_id):
     # magic for backward compatibility, was easier than editing all tests we already have.
     value = value.strip("\"")
-    if value[0] == "{":
-        value=json.loads(value)
-    world.dhcp_main["shared-networks"][subnet_id][parameter_name]=value
+    if len(value) > 0:
+        if value[0] == "{":
+            value = json.loads(value)
+    if parameter_name == "option-data":
+        if "option-data" not in world.dhcp_main["shared-networks"][network_id]:
+            world.dhcp_main["shared-networks"][network_id]["option-data"] = []
+        world.dhcp_main["shared-networks"][network_id][parameter_name].append(value)
+    else:
+        world.dhcp_main["shared-networks"][network_id][parameter_name] = _check_value(value)
+
+    if parameter_name in ["interface-id", "relay"]:
+        world.dhcp_main["shared-networks"][network_id].pop("interface", None)
+        for subnet in world.dhcp_main["shared-networks"][network_id]["subnet%s" % world.proto[1]]:
+            subnet.pop("interface", None)
 
 
 def _check_empty_value(val):
@@ -284,8 +451,7 @@ def prepare_cfg_add_option(option_name, option_value, space,
         csv_format, option_value = _check_empty_value(option_value)
     else:
         csv_format = True
-    # TODO check "WHERE"
-    world.dhcp_main["option-data"].append({"csv-format": csv_format, "code": option_code,
+    world.dhcp_main["option-data"].append({"csv-format": csv_format, "code": int(option_code),
                                            "data": option_value, "name": option_name, "space": space})
 
 
@@ -308,7 +474,7 @@ def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
     sub = "subnet%s" % world.proto[1]
     if "option-data" not in world.dhcp_main[sub][subnet]:
         world.dhcp_main[sub][subnet]["option-data"] = []
-    world.dhcp_main[sub][subnet]["option-data"].append({"csv-format": csv_format, "code": option_code,
+    world.dhcp_main[sub][subnet]["option-data"].append({"csv-format": csv_format, "code": int(option_code),
                                                         "data": option_value, "name": option_name, "space": space})
 
 
@@ -323,18 +489,15 @@ def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_valu
         if option_code is None:
             option_code = kea_otheroptions.get(option_name)
 
-    pointer_start = "{"
-    pointer_end = "}"
-
     assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
-    if len(world.shared_subcfg[shared_subnet][0]) > 10:
-        world.shared_subcfg[shared_subnet][0] += ','
 
-    world.shared_subcfg[shared_subnet][0] += '''
-            {pointer_start}"csv-format": true, "code": {option_code}, "data": "{option_value}",
-            "name": "{option_name}", "space": "{space}"{pointer_end}'''.format(**locals())
-
-    #TODO needs dict system
+    if "option-data" not in world.dhcp_main["shared-networks"][shared_subnet]:
+        world.dhcp_main["shared-networks"][shared_subnet]["option-data"] = []
+    world.dhcp_main["shared-networks"][shared_subnet]["option-data"].append({"csv-format": True,
+                                                                             "code": int(option_code),
+                                                                             "data": option_value,
+                                                                             "name": option_name,
+                                                                             "space": space})
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
@@ -342,13 +505,36 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
     if "reservations" not in world.dhcp_main[sub][subnet]:
         world.dhcp_main[sub][subnet]["reservations"] = []
 
-    world.dhcp_main[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
-                                                         reservation_type: reserved_value})
+    # v6 for ip-address reservation and prefixes using different format and names:
+    if world.proto[1] == '6':
+        if reservation_type in ["ip-address", "prefix", "prefixes"]:
+            if reservation_type[-2:] != "es":
+                # in tests there are "prefixes", "prefix" and "ip-address", but we need "es" at the end
+                reservation_type += "es"
+            # add reservation as list if it's prefix or address
+            world.dhcp_main[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
+                                                                 reservation_type: [reserved_value]})
+        else:
+            world.dhcp_main[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
+                                                                 reservation_type: reserved_value})
+    else:
+        world.dhcp_main[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
+                                                             reservation_type: reserved_value})
 
 
 def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
     sub = "subnet%s" % world.proto[1]
-    world.dhcp_main[sub][subnet]["reservations"][reservation_number].update({reservation_type: reserved_value})
+    if world.proto[1] == '6':
+        if reservation_type in ["ip-address", "prefix", "prefixes"]:
+            if reservation_type[-2:] != "es":
+                reservation_type += "es"
+            if not reservation_type in world.dhcp_main[sub][subnet]["reservations"][reservation_number]:
+                world.dhcp_main[sub][subnet]["reservations"][reservation_number][reservation_type] = []
+            world.dhcp_main[sub][subnet]["reservations"][reservation_number][reservation_type].append(reserved_value)
+        else:
+            world.dhcp_main[sub][subnet]["reservations"][reservation_number].update({reservation_type: reserved_value})
+    else:
+        world.dhcp_main[sub][subnet]["reservations"][reservation_number].update({reservation_type: reserved_value})
 
 
 def _config_db_backend():
@@ -391,7 +577,10 @@ def add_hooks(library_path):
 def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
     if "parameters" not in world.dhcp_main["hooks-libraries"][hook_no-1].keys():
         world.dhcp_main["hooks-libraries"][hook_no - 1]["parameters"] = {}
-
+    if parameter_value in ["True", "true"]:
+        parameter_value = True
+    elif parameter_value in ["False", 'false']:
+        parameter_value = False
     world.dhcp_main["hooks-libraries"][hook_no-1]["parameters"][parameter_name] = parameter_value
 
 
@@ -437,6 +626,52 @@ def agent_control_channel(host_address, host_port, socket_name='control_socket')
                                           {"debuglevel": 99, "name": "kea-ctrl-agent",
                                            "output_options": [{"output": logging_file_path}],
                                            "severity": "DEBUG"}]}
+
+
+def config_srv_id(id_type, id_value):
+    if world.proto == 'v4':
+        assert False, "Not yet available for Kea4"
+
+    id_value = id_value.replace(":", "")
+    if id_type == "EN":
+        world.dhcp_main["server-id"] = {"type": "EN",
+                                        "enterprise-id": int(id_value[4:12], 16),
+                                        "identifier": id_value[12:]}
+    elif id_type == "LLT":
+        world.dhcp_main["server-id"] = {"type": "LLT",
+                                        "htype": int(id_value[4:8], 16),
+                                        "identifier": id_value[16:],
+                                        "time": int(id_value[8:16], 16)}
+    elif id_type == "LL":
+        world.dhcp_main["server-id"] = {"type": "LL",
+                                        "htype": int(id_value[4:8], 16),
+                                        "identifier": id_value[8:]}
+
+
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
+    if world.proto == 'v4':
+        assert False, "Not available for DHCPv4"
+
+    sub = "subnet%s" % world.proto[1]
+    world.dhcp_main[sub][int(subnet)].update({"pd-pools": [{"delegated-len": int(delegated_length),
+                                                            "prefix": prefix,
+                                                            "prefix-len": int(length)}]})
+
+
+def add_siaddr(addr, subnet_number):
+    if world.proto == 'v6':
+        assert False, "Not available for DHCPv6"
+
+    if subnet_number is None:
+        world.dhcp_main["next-server"] = addr
+    else:
+        world.dhcp_main["subnet4"][int(subnet_number)]["next-server"] = addr
+
+
+def disable_client_echo():
+    if world.proto == 'v6':
+        assert False, "Not available for DHCPv6"
+    world.dhcp_main["echo-client-id"] = False
 
 
 def _set_kea_ctrl_config():
@@ -492,18 +727,21 @@ def _cfg_write():
 
     _config_db_backend()
 
-    world.temprary_cfg = {}
+    world.temporary_cfg = {}
     dhcp = "Dhcp%s" % world.proto[1]
     world.dhcp_main = {dhcp: world.dhcp_main}
-    world.temprary_cfg.update(world.dhcp_main)
-    world.temprary_cfg.update(world.ca_main)
-    world.temprary_cfg.update({"DhcpDdns": world.ddns_main})
-    world.generated_config = world.dhcp_main
+    world.temporary_cfg.update(world.dhcp_main)
+    world.temporary_cfg.update(world.ca_main)
+    if world.ddns_enable:
+        world.temporary_cfg.update({"DhcpDdns": world.ddns_main})
 
-    # print json.dumps(world.temprary_cfg, sort_keys=True, indent=2, separators=(',', ': '))
+    # this is for tests where $(SERVER_CONFIG) is used e.g. config-set tests
+    add_variable("SERVER_CONFIG", json.dumps(world.temporary_cfg), False)
+    # log.info('Generated config: %s', json.dumps(world.temporary_cfg, sort_keys=True,
+    #                                             indent=2, separators=(',', ': ')))
 
     with open(world.cfg["cfg_file"], 'w') as conf_file:
-        conf_file.write(json.dumps(world.temprary_cfg, indent=4, sort_keys=True))
+        conf_file.write(json.dumps(world.temporary_cfg, indent=4, sort_keys=True))
     conf_file.close()
 
 

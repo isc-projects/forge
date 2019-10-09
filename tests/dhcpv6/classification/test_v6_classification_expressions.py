@@ -175,7 +175,7 @@ def test_v6_client_classification_known_subnet_duid():
 def test_v6_client_classification_known_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '$(EMPTY)')
-    srv_control.add_line_to_subnet(0, {"pools":[{"pool": "2001:db8:a::100-2001:db8:a::100", "client-class": "KNOWN"}]})
+    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "2001:db8:a::100-2001:db8:a::100", "client-class": "KNOWN"}]})
 
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
@@ -225,7 +225,7 @@ def test_v6_client_classification_known_pool():
 def test_v6_client_classification_unknown_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '$(EMPTY)')
-    srv_control.add_line_to_subnet(0, {"pools":[{"pool": "2001:db8:a::10-2001:db8:a::10", "client-class": "UNKNOWN"}]})
+    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "2001:db8:a::10-2001:db8:a::10", "client-class": "UNKNOWN"}]})
 
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
@@ -429,7 +429,7 @@ def test_v6_client_classification_option_exists():
 def test_v6_client_classification_relay_option_exists():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.set_conf_parameter_subnet('interface-id', '"abc"', '0')
+    srv_control.set_conf_parameter_subnet('interface-id', 'abc', '0')
 
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class('1', 'test', 'relay6[0].option[16].exists')
@@ -497,7 +497,7 @@ def test_v6_client_classification_relay_option_exists():
 def test_v6_client_classification_relay_peer():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.set_conf_parameter_subnet('interface-id', '"abc"', '0')
+    srv_control.set_conf_parameter_subnet('interface-id', 'abc', '0')
 
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class('1', 'test', 'relay6[0].peeraddr == 3000::1005')
@@ -567,7 +567,7 @@ def test_v6_client_classification_relay_peer():
 def test_v6_client_classification_relay_linkaddr():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.set_conf_parameter_subnet('interface-id', '"abc"', '0')
+    srv_control.set_conf_parameter_subnet('interface-id', 'abc', '0')
 
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class('1', 'test', 'relay6[0].linkaddr == 3000::1005')
@@ -638,7 +638,7 @@ def test_v6_client_classification_relay_linkaddr():
 def test_v6_client_classification_msgtype():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.set_conf_parameter_subnet('interface-id', '"abc"', '0')
+    srv_control.set_conf_parameter_subnet('interface-id', 'abc', '0')
 
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class('1', 'test', 'pkt6.msgtype == 12')

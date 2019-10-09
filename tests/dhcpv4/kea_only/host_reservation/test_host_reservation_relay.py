@@ -82,7 +82,7 @@ def test_v4_host_reservation_circuit_id_negative():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_does_include_with_value('relay_agent_Information', '16616263')
+    srv_msg.client_does_include_with_value('relay_agent_information', '16616263')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()

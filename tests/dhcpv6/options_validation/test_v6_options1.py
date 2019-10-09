@@ -1025,7 +1025,7 @@ def test_v6_options_new_posix_timezone():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('new-posix-timezone', r'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
+    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -1042,7 +1042,7 @@ def test_v6_options_new_posix_timezone():
                                           '41',
                                           None,
                                           'optdata',
-                                          r'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
+                                          'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -1058,7 +1058,7 @@ def test_v6_options_new_posix_timezone():
                                           '41',
                                           None,
                                           'optdata',
-                                          r'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
+                                          'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
 
 
 @pytest.mark.v6

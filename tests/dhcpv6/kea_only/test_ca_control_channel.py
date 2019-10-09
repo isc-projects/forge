@@ -67,10 +67,11 @@ def test_ca_control_channel_config_get_set():
     cfg = response["arguments"]
     # let's dump logging configuration
     del cfg["Control-agent"]["loggers"]
+    del world.ca_main["Control-agent"]["loggers"]
     # empty list is default config part, in our generated config it's not existing
     del cfg["Control-agent"]["hooks-libraries"]
 
-    assert world.generated_config["Control-agent"] == cfg["Control-agent"]
+    assert world.ca_main["Control-agent"] == cfg["Control-agent"]
 
     cmd = dict(command='config-set', arguments=cfg)
 
@@ -232,10 +233,11 @@ def test_ca_control_channel_config_reload():
     cfg = response["arguments"]
     # let's dump logging configuration
     del cfg["Control-agent"]["loggers"]
+    del world.ca_main["Control-agent"]["loggers"]
     # empty list is default config part, in our generated config it's not existing
     del cfg["Control-agent"]["hooks-libraries"]
 
-    assert world.generated_config["Control-agent"] == cfg["Control-agent"]
+    assert world.ca_main["Control-agent"] == cfg["Control-agent"]
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -255,12 +257,13 @@ def test_ca_control_channel_config_reload():
     new_cfg = response["arguments"]
     # let's dump logging configuration
     del new_cfg["Control-agent"]["loggers"]
+    del world.ca_main["Control-agent"]["loggers"]
     # empty list is default config part, in our generated config it's not existing
     del new_cfg["Control-agent"]["hooks-libraries"]
     # if test continue on this point we know that server was reconfigured with proper address
     # now let's check if the rest of the config is correct
 
-    assert world.generated_config["Control-agent"] == new_cfg["Control-agent"]
+    assert world.ca_main["Control-agent"] == new_cfg["Control-agent"]
 
 
 @pytest.mark.v6
@@ -310,9 +313,10 @@ def test_ca_control_channel_config_write():
     with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r') as f:
         downloaded_config = json.load(f)
     del downloaded_config["Control-agent"]["loggers"]
+    del world.ca_main["Control-agent"]["loggers"]
     del downloaded_config["Control-agent"]["hooks-libraries"]
 
-    assert downloaded_config["Control-agent"] == world.generated_config["Control-agent"]
+    assert downloaded_config["Control-agent"] == world.ca_main["Control-agent"]
 
 
 @pytest.mark.v6

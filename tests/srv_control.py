@@ -201,7 +201,7 @@ def set_conf_parameter_global(parameter_name, value):
     :param value:
     :return:
     """
-    parameter_name, value = test_define_value(parameter_name, value)
+    # parameter_name, value = test_define_value(parameter_name, value)
     dhcp.set_conf_parameter_global(parameter_name, value)
 
 
@@ -419,7 +419,7 @@ def shared_subnet(subnet_id, shared_subnet_id):
     Configure shared subnets.
     """
     subnet_id, shared_subnet_id = test_define_value(subnet_id, shared_subnet_id)
-    dhcp.add_to_shared_subnet(int(subnet_id), int(shared_subnet_id))
+    dhcp.add_to_shared_subnet(subnet_id, int(shared_subnet_id))
 
 
 @step('Shared subnet (\d+) is configured with option line: (.+)')

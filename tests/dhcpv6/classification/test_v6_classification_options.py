@@ -537,13 +537,13 @@ def test_v6_client_classification_shared_subnet_options_override():
     srv_control.add_option_to_defined_class('1', 'dns-servers', '2001:db8::888')
     srv_control.config_client_classification('0', 'Client_Class_1')
 
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
 
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.set_conf_parameter_shared_subnet('option-data',
-                                                 '[{"csv-format":true,"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}]',
+                                                 '{"csv-format":true,"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}',
                                                  '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -613,13 +613,13 @@ def test_v6_client_classification_shared_subnet_options_override_francis():
     # Server is configured with client-classification option in subnet 0 with name Client_Class_1.
     srv_control.config_require_client_classification('0', 'Client_Class_1')
 
-    srv_control.shared_subnet('0', '0')
-    srv_control.shared_subnet('1', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
+    srv_control.shared_subnet('2001:db8:b::/64', '0')
 
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.set_conf_parameter_shared_subnet('option-data',
-                                                 '[{"csv-format":true,"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}]',
+                                                 '{"csv-format":true,"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}',
                                                  '0')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -686,7 +686,7 @@ def test_v6_client_classification_shared_subnet_options_override_global():
     srv_control.add_option_to_defined_class('1', 'dns-servers', '2001:db8::888')
     srv_control.config_client_classification('0', 'Client_Class_1')
 
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -730,7 +730,7 @@ def test_v6_client_classification_shared_subnet_options_override_subnet():
     srv_control.add_option_to_defined_class('1', 'dns-servers', '2001:db8::888')
     srv_control.config_client_classification('0', 'Client_Class_1')
 
-    srv_control.shared_subnet('0', '0')
+    srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
     srv_control.build_and_send_config_files('SSH', 'config-file')

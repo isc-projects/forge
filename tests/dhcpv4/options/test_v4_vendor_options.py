@@ -67,7 +67,7 @@ def test_v4_options_vendor_encapsulated_space_private_iPXE():
     srv_control.add_test_to_class('2', 'test', 'option[vendor-class-identifier].text == \'PXE\'')
     srv_control.add_test_to_class('2',
                                   'option-def',
-                                  {"name": "vendor-encapsulated-options", "code":43,
+                                  {"name": "vendor-encapsulated-options", "code": 43,
                                    "type": "empty", "encapsulate": "PXE"})
     srv_control.add_test_to_class('2',
                                   'option-data',
