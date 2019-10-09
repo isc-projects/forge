@@ -130,7 +130,7 @@ def test_ddns6_control_channel_config_set():
     # let's ignore logging, it's added in Dhcp part and for now common,
     # that will have to be fixed in 1.7
     del cfg["DhcpDdns"]["loggers"]
-    assert cfg["DhcpDdns"] == world.ddns_main
+    assert cfg["DhcpDdns"] == world.ddns_cfg
 
     # now let's try to set configuration we received
     cmd = dict(command='config-set', arguments=cfg)
@@ -164,9 +164,9 @@ def test_ddns6_control_channel_config_set_all_values():
     # let's ignore logging, it's added in Dhcp part and for now common,
     # that will have to be fixed in 1.7
     del cfg["DhcpDdns"]["loggers"]
-    assert cfg["DhcpDdns"] == world.ddns_main
+    assert cfg["DhcpDdns"] == world.ddns_cfg
 
-    tmp_cfg = world.ddns_main
+    tmp_cfg = world.ddns_cfg
     # now let's try to set configuration we received
     # first let's stop everything and start empty DDNS server with just control channel:
     # (DHCP and DDNS are combined for now)
@@ -360,7 +360,7 @@ def test_ddns6_control_channel_config_reload():
     cmd = dict(command='config-get', arguments={})
     cfg = _send_through_ddns_socket(cmd)
     del cfg["arguments"]["DhcpDdns"]["loggers"]
-    assert cfg["arguments"]["DhcpDdns"] == world.ddns_main
+    assert cfg["arguments"]["DhcpDdns"] == world.ddns_cfg
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -380,7 +380,7 @@ def test_ddns6_control_channel_config_reload():
     cmd = dict(command='config-get', arguments={})
     cfg = _send_through_ddns_socket(cmd)
     del cfg["arguments"]["DhcpDdns"]["loggers"]
-    assert cfg["arguments"]["DhcpDdns"] == world.ddns_main
+    assert cfg["arguments"]["DhcpDdns"] == world.ddns_cfg
 
     srv_control.use_dns_set_number('3')
     srv_control.start_srv('DNS', 'started')
@@ -439,7 +439,7 @@ def test_ddns6_control_channel_config_write():
     with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r') as f:
         downloaded_config = json.load(f)
     del downloaded_config["DhcpDdns"]["loggers"]
-    assert downloaded_config["DhcpDdns"] == world.ddns_main
+    assert downloaded_config["DhcpDdns"] == world.ddns_cfg
 
 
 @pytest.mark.v6

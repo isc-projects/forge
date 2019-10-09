@@ -108,7 +108,7 @@ def test_control_channel_socket_config_write():
     srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket({"command": "config-set", "arguments": world.dhcp_main})
+    srv_msg.send_ctrl_cmd_via_socket({"command": "config-set", "arguments": world.dhcp_cfg})
     srv_msg.send_ctrl_cmd_via_socket({"command": "config-write",
                                       "arguments": {"filename": world.f_cfg.get_dhcp_conf_path()}})
 

@@ -36,20 +36,20 @@ def add_ddns_server(address, port):
     else:
         logging_file_path = 'stdout'
 
-    world.ddns_main = {"ip-address": address,
-                       "port": int(port),  # this value is passed as string
-                       "dns-server-timeout": 100,
-                       "reverse-ddns": {'ddns-domains': []},
-                       "forward-ddns": {'ddns-domains': []},
-                       "tsig-keys": [],
-                       "ncr-format": "JSON",  # default value
-                       "ncr-protocol": "UDP",
-                       "loggers": [
-                           {"debuglevel": 99, "name": "kea-dhcp-ddns",
-                            "output_options": [{
-                                "output": logging_file_path}],
-                            "severity": "DEBUG"}]
-                       }  # default value
+    world.ddns_cfg = {"ip-address": address,
+                      "port": int(port),  # this value is passed as string
+                      "dns-server-timeout": 100,
+                      "reverse-ddns": {'ddns-domains': []},
+                      "forward-ddns": {'ddns-domains': []},
+                      "tsig-keys": [],
+                      "ncr-format": "JSON",  # default value
+                      "ncr-protocol": "UDP",
+                      "loggers": [
+                          {"debuglevel": 99, "name": "kea-dhcp-ddns",
+                           "output_options": [{
+                               "output": logging_file_path}],
+                           "severity": "DEBUG"}]
+                      }  # default value
 
     add_ddns_server_options("server-ip", address)
     add_ddns_server_options("enable-updates", False)
@@ -62,13 +62,13 @@ def add_ddns_server_options(option, value):
         value = True
     if value in ["false", "False", "FALSE"]:
         value = False
-    if "dhcp-ddns" not in world.dhcp_main:
-        world.dhcp_main["dhcp-ddns"] = {}
-    world.dhcp_main["dhcp-ddns"][option] = value
+    if "dhcp-ddns" not in world.dhcp_cfg:
+        world.dhcp_cfg["dhcp-ddns"] = {}
+    world.dhcp_cfg["dhcp-ddns"][option] = value
 
 
 def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
-    world.ddns_main["forward-ddns"] = {"ddns-domains": [{
+    world.ddns_cfg["forward-ddns"] = {"ddns-domains": [{
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
@@ -80,11 +80,11 @@ def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
     }
 
     if key_name == "EMPTY_KEY":
-        del world.ddns_main["forward-ddns"]["ddns-domains"][0]["key-name"]
+        del world.ddns_cfg["forward-ddns"]["ddns-domains"][0]["key-name"]
 
 
 def add_reverse_ddns(name, key_name, ip_address, port, hostname=""):
-    world.ddns_main["reverse-ddns"] = {"ddns-domains": [{
+    world.ddns_cfg["reverse-ddns"] = {"ddns-domains": [{
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
@@ -96,11 +96,11 @@ def add_reverse_ddns(name, key_name, ip_address, port, hostname=""):
     }
 
     if key_name == "EMPTY_KEY":
-        del world.ddns_main["reverse-ddns"]["ddns-domains"][0]["key-name"]
+        del world.ddns_cfg["reverse-ddns"]["ddns-domains"][0]["key-name"]
 
 
 def add_keys(secret, name, algorithm):
-    world.ddns_main["tsig-keys"].append({
+    world.ddns_cfg["tsig-keys"].append({
         "secret": secret,
         "name": name,
         "algorithm": algorithm,
@@ -114,9 +114,4 @@ def ddns_open_control_channel_socket(socket_name=None):
     else:
         socket_path = world.f_cfg.run_join('ddns_control_socket')
 
-    world.ddns_main["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
-
-
-def build_ddns_config():
-    # let's for now don't change how config is saved to the file
-    world.ddns = ',"DhcpDdns":' + json.dumps(world.ddns_main)
+    world.ddns_cfg["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}

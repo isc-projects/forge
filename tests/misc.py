@@ -41,11 +41,11 @@ def set_world():
     world.dhcp["option_usr_cnt"] = 0
 
     # clear all config files
-    world.ddns_main = {}
-    world.dhcp_main = {"option-data": [],
-                       "hooks-libraries": [],
-                       "shared-networks": []}
-    world.ca_main = {}
+    world.ddns_cfg = {}
+    world.dhcp_cfg = {"option-data": [],
+                      "hooks-libraries": [],
+                      "shared-networks": []}
+    world.ca_cfg = {}
 
     # new configuration process:
     world.configClass = KeaConfiguration()
