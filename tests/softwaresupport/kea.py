@@ -731,7 +731,8 @@ def _cfg_write():
     world.temporary_cfg.update(world.dhcp_cfg)
     world.temporary_cfg.update(world.ca_cfg)
     if world.ddns_enable:
-        world.temporary_cfg.update({"DhcpDdns": world.ddns_cfg})
+        world.ddns_cfg = {"DhcpDdns": world.ddns_cfg}
+        world.temporary_cfg.update(world.ddns_cfg)
 
     # this is for tests where $(SERVER_CONFIG) is used e.g. config-set tests
     add_variable("SERVER_CONFIG", json.dumps(world.temporary_cfg), False)
