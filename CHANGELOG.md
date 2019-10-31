@@ -1,36 +1,36 @@
-33.	[func]		godfryd
+* 33.	[func]		godfryd
 
 	Implemented tests for class_cmds hook in Kea.
 	(gitlab !9)
 
-32.	[func]		godfryd
+* 32.	[func]		godfryd
 
 	Implemented better logging.
 	(gitlab !2)
 
-31.	[func]		godfryd
+* 31.	[func]		godfryd
 
 	Added support for pytest. Many cleanups.
 	(gitlab !5)
 
-30.	[func]		wlodek
+* 30.	[func]		wlodek
 
 	Implemented new tests for reservation-get-all and reservation-get-page
 	commands.
 	(gitlab !7)
 
-29.	[bug]		wlodek
+* 29.	[bug]		wlodek
 
 	Fixes for multiple tests.
 	(gitlab !8)
 
-28.	[func]		godfryd
+* 28.	[func]		godfryd
 
 	Preparation for pytest support, as an intended replacement for lettuce
 	that is no longer being developed.
 	(gitlab !1)
 
-27.	[func]		wlodek
+* 27.	[func]		wlodek
 
 	Imlemented new tests for lease retrieval page by page.
 	(gitlab !3)
@@ -38,115 +38,115 @@
 Code migrated from github (http://github.com/isc-projects/forge)
             to gitlab (http://gitlab.isc.org/isc-projects/forge)
 
-26.	[func]		Maciej Fijalkowski
+* 26.	[func]		Maciej Fijalkowski
 
 	Experimental DHCP client tests.
 	(github, 70 commits)
 
-25.	[func]		thomas
+* 25.	[func]		thomas
 
 	user_chk hook library tests, improved support for isc-dhcp v6,
 	several smaller improvements.
 	(github, 14 commits)
 
-24.	[build]		marcin
+* 24.	[build]		marcin
 
 	Several improvements: logging, scapy patch, v6 option tests,
 	better results reporting.
 	(github, 16 commits)
 
-23.	[func]	wlodek
+* 23.	[func]	wlodek
 
 	Support for DNS and DDNS added.
 	(no backwards compatibility)
 
-22.	[func]	wlodek
+* 22.	[func]	wlodek
 
 	- copy log files for Kea servers
 
-21.	[func]	wlodek
+* 21.	[func]	wlodek
 
     - configuration server timers (e.g. renew-timer)
 
-20.	[func] 	wlodek
+* 20.	[func] 	wlodek
 
 	- support for vendor option tests
 
-19. [func]	maciek
+* 19. [func]	maciek
 
 	- support for changing multiple values
 
-18. [bug]	wlodek
+* 18. [bug]	wlodek
 
 	- parsing received message more accurate
 	- added new patch for Scapy!
 
-17.	[func]	wlodek
+* 17.	[func]	wlodek
 
 	- support for Prefix Delegation (RFC 3633)
 
-16.	[bug]	wlodek
+* 16.	[bug]	wlodek
 
 	- multiple copy-from-received message procedure now fully functional
 
-15.	[func]	wlodek
+* 15.	[func]	wlodek
 
 	- multiple IA options in msg
 
-14.	[bug]	wlodek
+* 14.	[bug]	wlodek
 
 	- Scapy statuscode fixed, all tests now operational
 
-13.	[bug]	wlodek
+* 13.	[bug]	wlodek
 
 	- IA_NA option fixed
 	- double option bug fixed
 
-12.	[func]	wlodek
+* 12.	[func]	wlodek
 
 	- config generation for Dibbler (v6)
 	- automatic start/stop Dibbler (v6)
 
-11.	[bug]	wlodek
+* 11.	[bug]	wlodek
 
 	- removed - character from directory names.
 
-10.	[func]	wlodek
+* 10.	[func]	wlodek
 
 	- config generation for ISC-DHCPv6
 	- automatic start/stop ISC-DHCPv6
 
-9. 	[func]	wlodek
+* 9. 	[func]	wlodek
 
 	- new type of tests, Scenario Outline
 	- reports for Scenario Outline
 
-8.	[func]	wlodek
+* 8.	[func]	wlodek
 
 	- first version of UserHelp in using Forge (set of all available
 	test sets, features, test names) and building new tests
 
-7.	[func]	wlodek
+* 7.	[func]	wlodek
 
 	new functions in run_test.py:
 	-l for listing all features (for specific IP version)
 	-s for choosing test set based on directory name
 
-6.	[bug]	wlodek
+* 6. [bug] wlodek
 
 	- options -v4 and -v6 in run_test.py are operational
 
-5.	[func]	wlodek
+* 5. [func] wlodek
 
 	- building basic relay-forward message
 	- relay-forward message tests
 
-4.	[doc]	tomek
+* 4. [doc] tomek
 
 	Initial documentation added. Many overlapping and redundant copies
 	of readme/todo/notes sorted out.
 
-3.	[func]	wlodek
+* 3. [func] wlodek
 
 	- configuration checker (when starting by run_test.py)
 	- configuration in different file
@@ -156,12 +156,12 @@ Code migrated from github (http://github.com/isc-projects/forge)
 	- test tags
 	- automatic start/stop/configure bind10 - dhcp
 
-2.      [func]	rafal
+* 2. [func] rafal
 
 	Refactoring: generic code with dynamically loaded modules for
 	specific server or protocol
 
-1.	[func]	rafal, wlodek, tomek
+* 1. [func] rafal, wlodek, tomek
 
 	Initial code merged in. This is a result of a common development
 	on separate private repos.
