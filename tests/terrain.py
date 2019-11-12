@@ -30,6 +30,7 @@ from scapy.layers.dhcp6 import DUID_LLT
 from forge_cfg import world, step
 from softwaresupport.multi_server_functions import fabric_download_file, make_tarfile, archive_file_name,\
     fabric_remove_file_command, fabric_run_command
+from softwaresupport import kea
 import logging_facility
 from srv_control import start_srv
 
@@ -289,14 +290,18 @@ def test_start():
     # Initialize the common logger.
     logging_facility.logger_initialize(world.f_cfg.loglevel)
 
+    kea_under_test = False
     if not world.f_cfg.no_server_management:
         for each in world.f_cfg.software_under_test:
             sut = importlib.import_module("softwaresupport.%s.functions" % each)
             # True passed to stop_srv is to hide output in console.
             sut.stop_srv(True)
 
-            if hasattr(sut, 'db_setup'):
-                sut.db_setup()
+            if 'kea' in each:
+                kea_under_test = True
+
+    if kea_under_test:
+        kea.db_setup()
 
 
 #@before.each_scenario
