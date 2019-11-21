@@ -72,8 +72,6 @@ SETTINGS = {
     'DNS_PORT': 53,
     'DNS_SERVER_INSTALL_PATH': '/opt/bind/sbin',
     'DNS_DATA_PATH': '/opt/bind/data',
-    'ISC_DHCP_LOG_FACILITY': 'local7',
-    'ISC_DHCP_LOG_FILE': '/var/log/forge_dhcpd.log',
     'DB_TYPE': 'memfile',
     'DB_NAME': 'keadb',
     'DB_USER': 'keauser',
@@ -89,9 +87,7 @@ class ForgeConfiguration:
     def __init__(self):
         # default
         self.dns_used = ["bind9_server"]
-        self.dhcp_used = ["dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server",
-                          "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind", "kea6_mini_server",
-                          "none_server"]
+        self.dhcp_used = ["kea4_server", "kea6_server", "none_server"]
 
         self._load_settings()
 

@@ -8,12 +8,13 @@ For questions, ideas bug reports please contact us via kea-dev@lists.isc.org
 
  Dependencies Installation
 ---------------------------
-Forge requires python 2.7.x, the latest Scapy (from git) and pytest (?.?.? or newer).
+Forge requires python 2.7.x, the latest Scapy (from git) and pytest (4.6.5 or newer).
 Please see [requirements.txt](../requirements.txt) for details.
 
 You basically only need to do this:
 
 ```
+cd forge-source-code-path
 python -m virtualenv venv 
  source ./venv/bin/activate
  ./venv/bin/pip install -r requirements.txt 
@@ -42,14 +43,13 @@ On Device Under Test (DUT) on which will be running your server you need:
  Configuration
 ---------------
 Configuration management is not well designed yet. The default configuration
-is stored in forge/lettuce/features/init_all.py_default. Please copy this file
-to features/init_all.py and edit relevant values in this file. The configuration
-is not described here in detail example how you should fill it is stored in
-forge/lettuce/features/init_all.py_example. Without init_all.py Forge will
-not start at all. init_all.py is added to gitignore, so any local changes
-you make to this file will be ignored by git.
+is stored in forge/tests/init_all.py_default. Please copy this file
+to forge/tests/init_all.py and edit relevant values in this file.
+Without init_all.py Forge will not start at all. init_all.py is added
+to gitignore, so any local changes you make to this file will be ignored by git.
 
-Also make sure that your ssh server is configured.
+Also make sure that your ssh server is configured. Make sure that SSH connection between
+used vms can be executed using generated keys.
 
 Environment example:
 To use Forge you will need two PC's. In this configuration author used two virtual
@@ -71,25 +71,40 @@ Author used this configuration:
 That's only example, other architectures not tested. If you set up other configuration please
 report it on https://github.com/isc-projects/forge to update documentation.
 
- Usage (OUTDATED)
+ Usage
 -------
 
-IMPORTANT:
-	You can dynamically generate user help by running forge/lettuce/help.py. UserHelp.txt
-	will contain all information about using and further developing Forge project.
+To run tests using virtualenv created previously
+```
+ source ./venv/bin/activate
+sudo ./venv/bin/pytest
+```
 
-cd forge/lettuce
+To run just subset of tests from one file
+```
+sudo ./venv/bin/pytest tests/dhcpv4/kea_only/control_channel/test_command_control_socket.py
+```
+Additional useful options are:
 
-The following command should be executed as root because these tests require
-opening of privileged ports (DHCP client port):
+using tests tags:
+```
+sudo ./venv/bin/pytest -m ddns
+```
+Increased verbosity for debugging tests results
 
-./forge.py -6 -t basic
+```
+sudo ./venv/bin/pytest -vv
+```
 
+Forge system tests require root privileges to open DHCP ports, mange DHCP servers and
+capturing traffic via tcpdump.
 
  Writing new tests
 -------------------
 
-TODO: Write this section from scratch. Lettuce example was useless.
+Since forge moved from lettuce to pytest, writing new tests it's just python programming.
+Functions available in tests/srv_control.py are used to operate remote DHCP/DNS servers.
+Functions available in tests/srv_msg.py are used to generate and parse traffic.
 
  Additional info
 -----------------

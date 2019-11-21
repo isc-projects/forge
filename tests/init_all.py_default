@@ -5,14 +5,6 @@
 # general - for general Forge configuration ;)
 # ssh - for ssh connection between virtual machines
 # kea - for kea configuration
-# ISC-DHCP - for ISC-DHCP configurations
-
-# DO NOT CHANGE THAT UNTIL YOU ADD SUPPORT FOR ANOTHER SOFTWARE
-# then place it's name in DNS or DHCP list.
-DNS = "bind9_server",
-DHCP = "dibbler_server", "dibbler_client", "isc_dhcp4_server", "isc_dhcp6_server",\
-       "kea4_server", "kea4_server_bind", "kea6_server", "kea6_server_bind"
-
 
 # =======================================
 # =============== GENERAL ===============
@@ -36,12 +28,11 @@ SHOW_PACKETS_FROM = ""
 # This is list of software under test, you can test server or client (not both!) at the same time,
 # also you can use only one DHCP and one DNS server and must end with coma ","
 # in e.g.:
-# SOFTWARE_UNDER_TEST = "kea6_server","bind9_server",
+# SOFTWARE_UNDER_TEST = "kea6_server", "bind9_server",
 
 SOFTWARE_UNDER_TEST = "",
 
 # INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = "kea6_server","kea4_server"
-# or SOFTWARE_UNDER_TEST = "kea6_server","dibbler_client"
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ""
@@ -57,26 +48,6 @@ GIADDR4 = "0.0.0.0"
 # Defines name of the DUT-facing network interface
 IFACE = ""
 
-# Defines port numbers for each DHCP version, default values are:
-# dhcp v4 source = 68
-# dhcp v4 destination = 67
-# dhcp v6 source = 546
-# dhcp v6 destination = 547
-
-DHCP4_PORT_S = 68  # source port
-DHCP4_PORT_D = 67  # destination port
-
-DHCP6_PORT_S = 546  # source port
-DHCP6_PORT_D = 547  # destination port
-
-# defines client MAC (used for DUID generation)
-CLI_MAC = "00:02:03:04:05:06"
-
-# Because Scapy have problems with reading IPv6 link local addresses on some OS,
-# to be sure that your packet don't get dropped fill CLI_LINK_LOCAL with link local
-# IPv6 address (it is from pool fe80::/64) assigned to interface you choose in IFACE
-CLI_LINK_LOCAL = ""
-
 # For all servers, choose ethernet interface on which server will be configured
 # to listen and respond.
 SERVER_IFACE = ""
@@ -89,13 +60,6 @@ SOFTWARE_INSTALL_PATH = "/usr/local/"
 # - 'make' - make install straight from sources or
 # - 'native' - from native deb/rpm packages using rpm or dpkg
 INSTALL_METHOD = 'make'
-
-# When waiting for output data of a running process, use OUTPUT_WAIT_INTERVAL
-# as the interval in which to check again if it has not been found yet.
-# If we have waited OUTPUT_WAIT_MAX_INTERVALS times, we will abort with an
-# error (so as not to hang indefinitely). Values are counted in seconds.
-OUTPUT_WAIT_INTERVAL = 3
-OUTPUT_WAIT_MAX_INTERVALS = 5
 
 # When Forge sends a packet, it typically awaits for the server to respond.
 # Server typically does that promptly, but during debugging it is benefical for
@@ -142,10 +106,6 @@ AUTO_ARCHIVE = False
 SLEEP_TIME_1 = 2  # wait after starting remote server
 SLEEP_TIME_2 = 2  # wait after all others commands
 
-# EMPTY value is introduced for cases when in test you want configure (or send)
-# specific variable without any value.
-EMPTY = ""
-
 # =============== DATABASE BACKENDS ===============
 # If server is capable to use different database backends, fill this section
 
@@ -174,38 +134,6 @@ MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
 
-# =============== Kea ===============
-# === For Bundy configuration backend ===
-# Also we can decide which logging type choose, logging lvl,
-# and BIND10 module type
-# for more accurate information please read BIND10 Guide, Chapter 21. Logging
-
-# Allowed values for BINDX: FATAL, ERROR, WARN, INFO, DEBUG.
-BIND_LOG_TYPE = "INFO"
-
-# Log level applies to debuglevel in BINDX. Allowed values: 0...99
-BIND_LOG_LVL = 0
-
-# This corresponds to Logging/loggers[X]/name field. Leave this as "*" if you
-# want every BIND module to log something.
-BIND_MODULE = ""
-
-
-# =============== ISC-DHCP ================
-# ISC_DHCP dhcpd uses syslog (rsyslog). In order to capture logging
-# you will need to modify /etc/syslog.conf (/etc/rsyslog.conf) to
-# contain a line as follows:
-#
-#     <ISC_DHCP_LOG_FACILITY>.*        <ISC_DHCP_LOG_FILE_NAME>
-#
-# Example
-#
-#    local7.*      /varlog/forge_dhcpd.log
-#
-ISC_DHCP_LOG_FACILITY = "local7"
-ISC_DHCP_LOG_FILE = "/var/log/forge_dhcpd.log"
-
-
 # =============== DNS ===============
 # When DNS protocol used to testing.
 
@@ -224,6 +152,3 @@ DNS_SERVER_INSTALL_PATH = ""
 
 # Additional path for server management:
 DNS_DATA_PATH = ""
-
-EMPTY = ""
-NONE = None
