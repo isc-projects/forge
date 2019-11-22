@@ -17,10 +17,7 @@
 #
 # author: Wlodzimierz Wencel
 
-import importlib
-import optparse
 import os
-import sys
 import threading
 import fcntl
 import socket
@@ -33,7 +30,6 @@ import init_all
 
 # all settings and their default values, if value is None then it is required
 SETTINGS = {
-    'SOFTWARE_INSTALL_PATH': '/usr/local',
     'INSTALL_METHOD': 'make',
     'LOGLEVEL': 'info',
     'SOFTWARE_UNDER_TEST': ('kea4_server', 'bind9_server'),
@@ -94,6 +90,12 @@ class ForgeConfiguration:
                           "none_server"]
 
         self._load_settings()
+
+        if not hasattr(init_all, 'SOFTWARE_INSTALL_PATH'):
+            # if init_all wont have SOFTWARE_INSTALL_PATH configured, it will check
+            # env variable, if it's missing then set to default /usr/local
+            # this is for jenkins deployment
+            self.software_install_path = os.getenv('SOFTWARE_INSTALL_PATH', '/usr/local')
 
         # no_server_management value can be set by -N option on startup to turn off remote server management
         self.no_server_management = False
