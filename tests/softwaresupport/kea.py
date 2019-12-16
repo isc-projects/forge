@@ -1096,13 +1096,11 @@ def db_setup():
     result = fabric_sudo_command(cmd)
     assert result.succeeded
     cmd = "mysql -u root -e 'CREATE DATABASE {db_name};'".format(**locals())
-    result = fabric_sudo_command(cmd)
-    assert result.succeeded
+    fabric_sudo_command(cmd)
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
     fabric_sudo_command(cmd, ignore_errors=True)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
-    result = fabric_sudo_command(cmd)
-    assert result.succeeded
+    fabric_sudo_command(cmd)
     cmd = "{kea_admin} db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
     result = fabric_run_command(cmd)
     assert result.succeeded
@@ -1111,17 +1109,13 @@ def db_setup():
     cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
     fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True)
     cmd = "cd /; psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
+    fabric_sudo_command(cmd, sudo_user='postgres')
     cmd = "cd /; psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
+    fabric_sudo_command(cmd, sudo_user='postgres')
     cmd = "cd /; psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
+    fabric_sudo_command(cmd, sudo_user='postgres')
     cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
-    result = fabric_sudo_command(cmd, sudo_user='postgres')
-    assert result.succeeded
+    fabric_sudo_command(cmd, sudo_user='postgres')
     cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
     result = fabric_run_command(cmd)
     assert result.succeeded

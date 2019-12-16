@@ -284,7 +284,7 @@ def upload_db_reservation(exp_failed=False):
         fabric_send_file("db_reservation", remote_db_path)
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
-        result = fabric_sudo_command('cqlsh --keyspace=keatest --user=keatest --password=keatest -f ' + remote_db_path))
+        result = fabric_sudo_command('cqlsh --keyspace=keatest --user=keatest --password=keatest -f ' + remote_db_path), ignore_errors=True)
         if exp_failed:
             if result.failed:
                 fail_spotted = True

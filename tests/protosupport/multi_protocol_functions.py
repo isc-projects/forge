@@ -195,10 +195,10 @@ def log_contains(line, condition, log_file=None):
             cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
             cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service
             cmd += 'grep -c "%s"' % line
-            result = fabric_sudo_command(cmd)
+            result = fabric_sudo_command(cmd, ignore_errors=True)
         else:
             log_file = world.f_cfg.log_join(log_file)
-            result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
+            result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
 
     if condition is not None:
         if result.succeeded:
@@ -211,9 +211,9 @@ def log_contains(line, condition, log_file=None):
 def regular_file_contain(file_name, condition, line, destination=None):
 
     if destination is None:
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name))
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), ignore_errors=True)
     else:
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), destination_host=destination)
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), destination_host=destination, ignore_errors=True)
 
     if condition is not None:
         if result.succeeded:
@@ -250,12 +250,12 @@ def db_table_contain(table_name, db_type, condition, line, db_name=world.f_cfg.d
         command = 'mysql -u {db_user} -p{db_passwd} -e "select * from {table_name}"' \
                   ' {db_name} --silent --raw > /tmp/mysql_out'.format(**locals())
         fabric_run_command(command)
-        result = fabric_sudo_command('grep -c "{line}" /tmp/mysql_out'.format(**locals()))
+        result = fabric_sudo_command('grep -c "{line}" /tmp/mysql_out'.format(**locals()), ignore_errors=True)
 
     elif db_type in ["postgresql", "PostgreSQL"]:
         command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} -c "select * from {table_name}" > /tmp/pgsql_out'.format(**locals())
         fabric_run_command(command)
-        result = fabric_sudo_command('grep -c "{line}" /tmp/pgsql_out'.format(**locals()))
+        result = fabric_sudo_command('grep -c "{line}" /tmp/pgsql_out'.format(**locals()), ignore_errors=True)
 
     elif world.f_cfg.db_type == "cql":
         result = -1
@@ -284,9 +284,9 @@ def log_contains_count(server_type, count, line):
     else:
         assert False, "No such name as: {server_type}".format(**locals())
 
-    result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file))
+    result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
 
-    if count != result:
+    if int(count) != int(result):
         assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
 
 
@@ -307,7 +307,7 @@ def change_network_variables(value_name, value):
 
 
 def execute_shell_cmd(path, arguments=''):
-    result = fabric_sudo_command(path + ' ' + arguments, hide_all=False)
+    result = fabric_sudo_command(path + ' ' + arguments, hide_all=False, ignore_errors=True)
 
     file_name = path.split("/")[-1] + '_output'
     file_name = generate_file_name(1, file_name)
@@ -459,7 +459,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
     else:
         socket_path = world.f_cfg.run_join('control_socket')
     cmd = 'socat UNIX:' + socket_path + ' - <command_file'
-    response = fabric_sudo_command(cmd, hide_all=True, destination_host=destination_address)
+    response = fabric_sudo_command(cmd, hide_all=True, destination_host=destination_address, ignore_errors=exp_failed)
     if exp_failed:
         assert response.failed
     else:

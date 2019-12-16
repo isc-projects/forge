@@ -204,11 +204,19 @@ class ConfigModel(ConfigElem):
         else:
             log_file = 'stdout'
 
+        # loggers config
         cfg["loggers"] = [{"name": "kea-dhcp" + proto,
                            "output_options": [{"output": log_file}],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
 
+        # some default settings
+        cfg['ddns-replace-client-name'] = 'never'
+        cfg['ddns-generated-prefix'] = 'myhost'
+        cfg['ddns-send-updates'] = True
+
+
+        # combining whole config
         dhcp_key = 'Dhcp' + proto
         cfg = {dhcp_key: cfg,
                "Control-agent": {"http-host": '$(MGMT_ADDRESS)',
