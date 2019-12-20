@@ -98,7 +98,8 @@ def client_send_msg(msgname, iface, addr):
         msg = build_msg([("message-type", "inform")] + options)
 
     elif msgname == "BOOTP_REQUEST":
-        msg = build_msg(options)
+        world.cfg["values"]["broadcastBit"] = True
+        msg = build_msg(['\x63\x82\x53\x63'] + options)
 
     else:
         assert False, "Invalid message type: %s" % msgname
