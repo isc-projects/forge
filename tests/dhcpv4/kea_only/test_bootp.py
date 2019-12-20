@@ -4,8 +4,6 @@ import srv_msg
 import srv_control
 import misc
 
-
-import json
 from forge_cfg import world
 
 
