@@ -502,7 +502,8 @@ def _compare_dicts(rcvd_dict, exp_dict):
         if k in ['id', 'config-control', 'lease-database', 'server-tag', 'server-tags',
                  'interfaces-config', 'dhcp-queue-control', 'dhcp-ddns',
                  'hooks-libraries', 'sanity-checks', 'expired-leases-processing',
-                 'control-socket', 'host-reservation-identifiers', 'relay']:
+                 'control-socket', 'host-reservation-identifiers', 'relay',
+                 'hostname-char-set']:
             # TODO: for now ignore these fields
             continue
         if k in exp_dict:

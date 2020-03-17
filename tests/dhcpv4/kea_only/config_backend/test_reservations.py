@@ -65,7 +65,7 @@ def test_reservation_mode_in_globals(dhcp_version):
                 }]
             }],
             reservations=[{"duid": "00:03:00:01:00:00:00:00:00:01",
-                           "ip-addresses": ['2001:db8:1::1']}])
+                           "ip-addresses": ['2001:db8:1::3']}])
 
     init_cfg['check-config'] = True
 
@@ -76,11 +76,10 @@ def test_reservation_mode_in_globals(dhcp_version):
 
     # change reservation-mode to 'global' and now address should be returned from global reservations
     cfg.set_global_parameter(reservation_mode='global')
-    get_address(mac_addr="00:00:00:00:00:01", exp_addr='1.1.1.1' if dhcp_version == 'v4' else '2001:db8:1::1')
-    # BUG #585: this is failing because global fields are inherited by predefined subnets during config file parsing
-    # and then later there are not longer inherited when are updated by CB API
+    get_address(mac_addr="00:00:00:00:00:01", exp_addr='1.1.1.1' if dhcp_version == 'v4' else '2001:db8:1::3')
 
     # now change reservation-mode to 'disabled' and then the address should be returned from subnet pool
+    # (not from reservations)
     cfg.set_global_parameter(reservation_mode='disabled')
     get_address(mac_addr="00:00:00:00:00:01",
-                exp_addr='2.2.2.1' if dhcp_version == 'v4' else '2001:db8:1::??')  # TODO: ipv6 addr
+                exp_addr='2.2.2.1' if dhcp_version == 'v4' else '2001:db8:1::1')
