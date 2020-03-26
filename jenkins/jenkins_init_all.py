@@ -23,17 +23,17 @@ LOGLEVEL = "info"
 # Not all of those are functional yet. This is essentailly
 # name of the subdirectory in lettuce/features/serversupport
 #SERVER_TYPE = "kea6"
-SOFTWARE_UNDER_TEST = "kea6_server","bind9_server",
+SOFTWARE_UNDER_TEST = "kea4_server", "kea6_server","bind9_server",
 
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
-PROTO = "v6"
+PROTO = ""
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = "192.168.50.252"
 REL4_ADDR = ""
-GIADDR4 = ""
-CIADDR = ""
+GIADDR4 = "192.168.50.249"
+CIADDR = "192.168.50.253"
 # defines client MAC (used for DUID generation)
 CLI_MAC = "00:01:02:03:04:05"
 CLI_LINK_LOCAL="fe80::250:56ff:fe87:28b6"
@@ -98,6 +98,8 @@ AUTO_ARCHIVE = False
 # file, or use root account.
 # ip address and port. ssh port default 22
 MGMT_ADDRESS = "149.20.57.198"
+MGMT_ADDRESS_2 = ""
+MGMT_ADDRESS_3 = ""
 MGMT_USERNAME = "test"
 MGMT_PASSWORD = "test&0"
 
@@ -131,7 +133,7 @@ PACKET_WAIT_INTERVAL = 1
 SAVE_LOGS = "True"
 # ============ DNS ============
 DNS_IFACE = "ens224"
-DNS6_ADDR = "2001:db8:1::1000"
+DNS6_ADDR = "192.168.50.252"
 DNS4_ADDR = "2001:db8:1::1000"
 DNS_PORT = 53
 DNS_SERVER_INSTALL_DIR = "/usr/local/sbin/"
