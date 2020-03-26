@@ -1023,7 +1023,7 @@ def _start_kea_with_keactrl(destination_host):
     # - display these logs to screen using cat so forge can catch errors in the logs
     start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
     start_cmd += " start  < /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
-    start_cmd += " do tail /usr/local/var/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;"
+    start_cmd += " do tail %s/var/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;" % world.f_cfg.software_install_path
     start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
     start_cmd += " sync; cat /tmp/keactrl.log"
     return fabric_sudo_command(start_cmd, destination_host=destination_host)

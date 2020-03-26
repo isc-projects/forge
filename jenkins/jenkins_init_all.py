@@ -133,8 +133,8 @@ PACKET_WAIT_INTERVAL = 1
 SAVE_LOGS = "True"
 # ============ DNS ============
 DNS_IFACE = "ens224"
-DNS6_ADDR = "192.168.50.252"
-DNS4_ADDR = "2001:db8:1::1000"
+DNS4_ADDR = "192.168.50.252"
+DNS6_ADDR = "2001:db8:1::1000"
 DNS_PORT = 53
 DNS_SERVER_INSTALL_DIR = "/usr/local/sbin/"
 DNS_SERVER_INSTALL_PATH = "/usr/local/sbin/"
