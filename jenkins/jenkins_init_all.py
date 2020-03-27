@@ -41,7 +41,7 @@ CLI_LINK_LOCAL="fe80::250:56ff:fe87:28b6"
 SLEEP_TIME_1=2
 SLEEP_TIME_2=2
 # For all servers, choose ethernet interface on which server will be configured
-SERVER_IFACE = "ens256"
+SERVER_IFACE = "ens224"
 MGMT_ADDRESS_2 =""
 MGMT_ADDRESS_3 =""
 # In order to make sure we start all tests with a 'clean' environment,
@@ -72,7 +72,7 @@ SRV_IPV6_ADDR_GLOBAL = "3000::"
 SRV_IPV6_ADDR_LINK_LOCAL = "fe80::250:56ff:fe87:8c8"
 
 # Defines name of the DUT-facing network interface
-IFACE = "ens256"
+IFACE = "ens224"
 
 # If you wont to build tests history in history.html set HISTORY on True if not, on False
 # but for more detailed information about tests, use --with_xunit option when starting run_test.py
