@@ -503,7 +503,8 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  'interfaces-config', 'dhcp-queue-control', 'dhcp-ddns',
                  'hooks-libraries', 'sanity-checks', 'expired-leases-processing',
                  'control-socket', 'host-reservation-identifiers', 'relay',
-                 'hostname-char-set']:
+                 'hostname-char-set', 'statistic-default-sample-count',
+                 'multi-threading']:
             # TODO: for now ignore these fields
             continue
         if k in exp_dict:
