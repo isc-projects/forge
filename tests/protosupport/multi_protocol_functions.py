@@ -416,7 +416,7 @@ def _process_ctrl_response(response, exp_result):
         result = json.loads(response)
         log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
     except:
-        log.exception('Problem with parsing json:\n%s', str(response))
+        log.exception('Problem with parsing json:\n"%s"', str(response))
         result = response
 
     if exp_result is not None:
@@ -425,7 +425,7 @@ def _process_ctrl_response(response, exp_result):
         elif isinstance(result, list):
             res = result[0]
         else:
-            raise Exception('unexpected type of result: %s' % str(type(result)))
+            assert False, 'unexpected result: "%s"' % str(result)
         assert 'result' in res and res['result'] == exp_result
         if res['result'] == 1:
             assert len(res) == 2 and 'text' in res
@@ -459,11 +459,18 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
     else:
         socket_path = world.f_cfg.run_join('control_socket')
     cmd = 'socat UNIX:' + socket_path + ' - <command_file'
-    response = fabric_sudo_command(cmd, hide_all=True, destination_host=destination_address, ignore_errors=exp_failed)
-    if exp_failed:
-        assert response.failed
-    else:
-        assert response.succeeded
+
+    attempts = 0
+    while attempts < 3:
+        response = fabric_sudo_command(cmd, hide_all=True, destination_host=destination_address, ignore_errors=exp_failed)
+        if exp_failed:
+            assert response.failed
+        else:
+            assert response.succeeded
+        if str(response) != '':
+            break
+        attempts += 1
+
     fabric_remove_file_command('command_file')
 
     result = _process_ctrl_response(response, exp_result)
