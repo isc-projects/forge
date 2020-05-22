@@ -40,7 +40,7 @@ class StatsState4(object):
 
     def compare(self):
         result = srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
-        assert len(result['arguments']) == 24
+        assert len(result['arguments']) == 26
 
         s = result['arguments']
 
