@@ -1099,6 +1099,8 @@ def db_setup():
     fabric_sudo_command(cmd)
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
     fabric_sudo_command(cmd, ignore_errors=True)
+    cmd = "mysql -u root -e \"set global log_bin_trust_function_creators=1;\""
+    fabric_sudo_command(cmd, ignore_errors=True)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
     fabric_sudo_command(cmd)
     cmd = "{kea_admin} db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())

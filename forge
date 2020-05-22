@@ -290,8 +290,12 @@ def delete_lxc_bridges(args):
 def _get_server_name(args, idx):
     if args.system == 'ubuntu-18.04':
         short_sys = 'u1804'
+    elif args.system == 'ubuntu-20.04':
+        short_sys = 'u2004'
     elif args.system == 'fedora-30':
         short_sys = 'f30'
+    elif args.system == 'fedora-32':
+        short_sys = 'f32'
     else:
         raise Exception('unsupported system %s' % args.system)
 
@@ -328,7 +332,7 @@ def setup(args):
     else:
         pkg = 'rpm'
 
-    server_image = 'forge-srv-' + args.system
+    server_image = 'kea-' + args.system
 
     client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
     server1_name = _get_server_name(args, 1)
@@ -493,7 +497,14 @@ def _install_kea_native(args):
                 "isc-kea-premium-radius",
                 "isc-kea-premium-subnet-cmds"]
 
-        sfx = '-%s.%s' % (args.version, 'fc30')
+        if args.system == 'fedora-30':
+            suffix = 'fc30'
+        elif args.system == 'fedora-32':
+            suffix = 'fc32'
+        else:
+            raise NotImplementedError("System %s not supported" % args.system)
+
+        sfx = '-%s.%s' % (args.version, suffix)
         pkgs = [p + sfx for p in pkgs]
         pkgs = " ".join(pkgs)
 

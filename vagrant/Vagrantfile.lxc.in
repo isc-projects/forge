@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   # SERVER 1
   config.vm.define "${SERVER1_NAME}" do |srv1|
-    srv1.vm.box = "godfryd/${SERVER_IMAGE}"
+    srv1.vm.box = "isc/${SERVER_IMAGE}"
     srv1.vm.hostname = "${SERVER1_NAME}"
     srv1.vm.provider "lxc" do |v|
       v.container_name = "${SERVER1_NAME}"
