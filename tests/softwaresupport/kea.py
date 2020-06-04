@@ -735,7 +735,7 @@ def _cfg_write():
     for hooks in world.dhcp_cfg["hooks-libraries"]:
         list_of_used_hooks.append(hooks["library"].split("/")[-1])
 
-    # compare two lists, update configuration if all hooks that are used are MT
+    # if any of configured hooks is not working with multi-threading then do NOT enable multi-threading in kea config
     if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0:
         world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": True, "thread-pool-size": 2,
                                                    "packet-queue-size": 16}})
