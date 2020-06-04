@@ -727,6 +727,19 @@ def _cfg_write():
 
     world.temporary_cfg = {}
     dhcp = "Dhcp%s" % world.proto[1]
+    # hooks that are not MT compatible (ever or at this moment)
+    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_legal_log.so", "libdhcp_radius.so"]
+
+    # all configured hooks
+    list_of_used_hooks = []
+    for hooks in world.dhcp_cfg["hooks-libraries"]:
+        list_of_used_hooks.append(hooks["library"].split("/")[-1])
+
+    # compare two lists, update configuration if all hooks that are used are MT
+    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0:
+        world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": True, "thread-pool-size": 2,
+                                                   "packet-queue-size": 16}})
+
     world.dhcp_cfg = {dhcp: world.dhcp_cfg}
     world.temporary_cfg.update(world.dhcp_cfg)
     world.temporary_cfg.update(world.ca_cfg)
