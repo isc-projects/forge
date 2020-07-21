@@ -330,9 +330,9 @@ def execute_shell_cmd(path, arguments='', save_results=True):
         myfile.write(unicode('\nScript stdout:\n' + result.stdout))
         myfile.close()
 
-        assert result.succeeded
+    assert result.succeeded
 
-        return result
+    return result
 
 
 def test_define_value(*args):

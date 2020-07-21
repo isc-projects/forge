@@ -30,7 +30,6 @@ from scapy.layers.dhcp6 import DUID_LLT
 from forge_cfg import world, step
 from softwaresupport.multi_server_functions import make_tarfile, archive_file_name,\
     fabric_run_command
-from protosupport.multi_protocol_functions import execute_shell_cmd
 from softwaresupport import kea
 import logging_facility
 from srv_control import start_srv
@@ -306,10 +305,7 @@ def test_start():
         for sut_name in world.f_cfg.software_under_test:
             sut_module = importlib.import_module("softwaresupport.%s.functions" % sut_name)
             # True passed to stop_srv is to hide output in console.
-            # sut_module.stop_srv(True)
-            # for now just killall kea processes and ignore errors
-            execute_shell_cmd("killall -q kea-ctrl-agent  kea-dhcp-ddns  kea-dhcp4  kea-dhcp6 || true",
-                              save_results=False)
+            sut_module.stop_srv(True)
 
             if 'kea' in sut_name:
                 kea_under_test = True

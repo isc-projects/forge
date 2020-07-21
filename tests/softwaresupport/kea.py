@@ -19,7 +19,7 @@ import json
 import logging
 
 from forge_cfg import world
-from protosupport.multi_protocol_functions import add_variable
+from protosupport.multi_protocol_functions import add_variable, execute_shell_cmd
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
 from softwaresupport.multi_server_functions import fabric_remove_file_command
@@ -747,19 +747,16 @@ def _cfg_write():
         add_variable("DDNS_CONFIG", json.dumps(world.ddns_cfg), False)
         with open("kea-dhcp-ddns.conf", 'w') as conf_file:
             conf_file.write(json.dumps(world.ddns_cfg, indent=4, sort_keys=True))
-        conf_file.close()
 
     if world.ctrl_enable:
         add_variable("AGENT_CONFIG", json.dumps(world.ca_cfg), False)
         with open("kea-ctrl-agent.conf", 'w') as conf_file:
             conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=True))
-        conf_file.close()
 
     add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
 
     with open("kea-dhcp%s.conf" % world.proto[1], 'w') as conf_file:
         conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=True))
-    conf_file.close()
 
 
 # def _write_cfg2(cfg):
@@ -1027,7 +1024,10 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
-        result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
+        # for now just killall kea processes and ignore errors
+        execute_shell_cmd("killall -q kea-ctrl-agent  kea-dhcp-ddns  kea-dhcp4  kea-dhcp6 || true",
+                          save_results=False)
+
     else:
         if world.server_system == 'redhat':
             service_names = 'kea-dhcp4 kea-dhcp6 kea-ctrl-agent kea-dhcp-ddns'
