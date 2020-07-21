@@ -56,7 +56,7 @@ def test_control_channel_socket_config_test():
     srv_control.generate_config_files()
 
     # Sleep for 10 seconds.
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-test","arguments": $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-test","arguments": $(DHCP_CONFIG) }')
     # should be ok
 
     misc.test_setup()
@@ -74,7 +74,7 @@ def test_control_channel_socket_config_test():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
     #
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-test","arguments": $(SERVER_CONFIG) }', exp_result=1)
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-test","arguments": $(DHCP_CONFIG) }', exp_result=1)
     # should NOT be ok
 
 

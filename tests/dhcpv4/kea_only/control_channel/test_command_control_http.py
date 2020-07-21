@@ -161,9 +161,9 @@ def test_control_channel_http_config_set_basic():
     srv_control.agent_control_channel('$(SRV4_ADDR)')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"], "arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"], "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
-    srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
@@ -214,10 +214,10 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_control.generate_config_files()
 
     # reconfigure dhcp4 (new subnet, new socket)
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
     # reconfigure control-agent to switch to new dhcp4 socket
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -264,7 +264,7 @@ def test_control_channel_http_after_restart_load_config_file():
     srv_control.agent_control_channel('$(SRV4_ADDR)')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -343,7 +343,7 @@ def test_control_channel_http_test_config():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -369,7 +369,7 @@ def test_control_channel_http_test_config():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::1')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -415,7 +415,7 @@ def test_control_channel_http_config_write():
     srv_control.agent_control_channel('$(SRV4_ADDR)')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_requests_option('1')

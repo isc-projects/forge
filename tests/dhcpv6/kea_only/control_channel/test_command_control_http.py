@@ -197,7 +197,7 @@ def test_control_channel_http_config_set_basic():
     # Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: control_socket.
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"], "arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
@@ -262,10 +262,10 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_control.generate_config_files()
 
     # reconfigure dhcp6 (new subnet, new socket)
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
     # reconfigure control-agent to switch to new dhcp4 socket
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
@@ -326,7 +326,7 @@ def test_control_channel_http_after_restart_load_config_file():
     srv_control.agent_control_channel('$(SRV4_ADDR)')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
@@ -426,7 +426,7 @@ def test_control_channel_http_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"], "arguments":  $(SERVER_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -459,7 +459,7 @@ def test_control_channel_http_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
 
-    response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"], "arguments":  $(SERVER_CONFIG) }',
+    response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
                                               '$(SRV4_ADDR)',
                                               exp_result=1)
     assert "invalid prefix '192.168.0.5' for new IPv6 reservation" in response[0]['text']
@@ -517,7 +517,7 @@ def test_control_channel_http_config_write():
     srv_control.agent_control_channel('$(SRV4_ADDR)')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }')
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 

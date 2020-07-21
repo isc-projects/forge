@@ -152,7 +152,7 @@ def test_control_channel_socket_config_get_basic():
     srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-get","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-get","arguments":  $(DHCP_CONFIG) }')
 
 
 @pytest.mark.v4
@@ -181,7 +181,7 @@ def test_control_channel_socket_config_set_basic():
     srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_requests_option('1')
@@ -220,7 +220,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     srv_control.open_control_channel('control_socket2')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_requests_option('1')
@@ -263,7 +263,7 @@ def test_control_channel_socket_after_restart_load_config_file():
     srv_control.open_control_channel()
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(SERVER_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
     srv_msg.client_requests_option('1')

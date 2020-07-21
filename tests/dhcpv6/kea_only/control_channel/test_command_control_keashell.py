@@ -337,7 +337,7 @@ def test_control_channel_keashell_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
 
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<\'$(SERVER_CONFIG)\'')
+    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<\'$(DHCP_CONFIG)\'')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -368,7 +368,7 @@ def test_control_channel_keashell_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
 
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<\'$(SERVER_CONFIG)\'')
+    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<\'$(DHCP_CONFIG)\'')
     srv_msg.forge_sleep('5', 'seconds')
 
     misc.test_procedure()
