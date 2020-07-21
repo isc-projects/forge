@@ -54,6 +54,7 @@ def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
                         user_loc=world.f_cfg.mgmt_username,
                         password_loc=world.f_cfg.mgmt_password, hide_all=False,
                         sudo_user=None, ignore_errors=False):
+    # print("Executing command: %s" % cmd, "at %s" % destination_host)
     with settings(host_string=destination_host, user=user_loc, password=password_loc,
                   sudo_user=sudo_user, warn_only=ignore_errors):
         try:
@@ -177,49 +178,6 @@ def copy_configuration_file(local_file, file_name='configuration_file', destinat
         if not os.path.exists(world.cfg["test_result_dir"]):
             os.makedirs(world.cfg["test_result_dir"])
         copy(local_file, check_local_path_for_downloaded_files(world.cfg["test_result_dir"], file_name, destination_host))
-
-
-def simple_file_layout():
-    # Make simple config file (like ISC-DHCP style) correct!
-    config = open(world.cfg["cfg_file"], 'r')
-    new_config = ""
-
-    for each in config:
-        new_line = each.strip()
-        new_config += new_line
-    config.close()
-
-    real_config = ""
-    counter = 0
-    space = "\t"
-    flag = 0
-
-    for each in new_config:
-        if each == '"' and flag == 0:
-            flag = 1
-            real_config += each
-
-        elif each == '"' and flag == 1:
-            flag = 0
-            real_config += each
-
-        elif each == "{" and flag == 0:
-            real_config += space * counter + each
-            counter += 1
-            real_config += "\n" + space * counter
-
-        elif each == "}" and flag == 0:
-            counter -= 1
-            real_config += "\n" + space * counter + each + "\n" + space * counter
-
-        elif each == ";" and flag == 0:
-            real_config += each + "\n" + space * counter
-        else:
-            real_config += each
-
-    config = open(world.cfg["cfg_file"], 'w')
-    config.write(real_config)
-    config.close()
 
 
 def locate_entry(where_we_looking, what_we_looking, n):

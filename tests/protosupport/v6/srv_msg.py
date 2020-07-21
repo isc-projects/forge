@@ -45,6 +45,7 @@ OPTIONS = {"client-id": 1,
            "IN_TA": 4,
            "IA_address": 5,
            "preference": 7,
+           "elapsedtime": 8,
            "relay-msg": 9,
            "unicast": 12,
            "status-code": 13,
@@ -200,7 +201,7 @@ def client_does_include(sender_type, opt_type, value):
     elif opt_type == "rapid-commit":
         add_client_option(dhcp6.DHCP6OptRapidCommit())
 
-    elif opt_type == "time":
+    elif opt_type in ["time", "elapsedtime"]:
         add_client_option(dhcp6.DHCP6OptElapsedTime(elapsedtime=world.cfg["values"]["elapsedtime"]))
 
     elif opt_type == "relay-msg":

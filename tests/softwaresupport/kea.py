@@ -46,6 +46,7 @@ world.kea_options6 = {
     "IN_TA": 4,
     "IA_address": 5,
     "preference": 7,
+    "elapsedtime": 8,
     "relay-msg": 9,
     "unicast": 12,
     "status-code": 13,
@@ -696,11 +697,11 @@ def _set_kea_ctrl_config():
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
     ctrl_agent_srv={path}/sbin/kea-ctrl-agent
     netconf_srv={path}/sbin/kea-netconf
-    kea_dhcp4_config_file={path}/etc/kea/kea.conf
-    kea_dhcp6_config_file={path}/etc/kea/kea.conf
-    kea_dhcp_ddns_config_file={path}/etc/kea/kea.conf
-    kea_ctrl_agent_config_file={path}/etc/kea/kea.conf
-    kea_netconf_config_file={path}/etc/kea/kea.conf
+    kea_dhcp4_config_file={path}/etc/kea/kea-dhcp4.conf
+    kea_dhcp6_config_file={path}/etc/kea/kea-dhcp6.conf
+    kea_dhcp_ddns_config_file={path}/etc/kea/kea-dhcp-ddns.conf
+    kea_ctrl_agent_config_file={path}/etc/kea/kea-ctrl-agent.conf
+    kea_netconf_config_file={path}/etc/kea/kea-netconf.conf
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
@@ -725,10 +726,9 @@ def _cfg_write():
 
     _config_db_backend()
 
-    world.temporary_cfg = {}
     dhcp = "Dhcp%s" % world.proto[1]
     # hooks that are not MT compatible (ever or at this moment)
-    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_legal_log.so", "libdhcp_radius.so"]
+    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_legal_log.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
 
     # all configured hooks
     list_of_used_hooks = []
@@ -741,30 +741,36 @@ def _cfg_write():
                                                    "packet-queue-size": 16}})
 
     world.dhcp_cfg = {dhcp: world.dhcp_cfg}
-    world.temporary_cfg.update(world.dhcp_cfg)
-    world.temporary_cfg.update(world.ca_cfg)
+
     if world.ddns_enable:
         world.ddns_cfg = {"DhcpDdns": world.ddns_cfg}
-        world.temporary_cfg.update(world.ddns_cfg)
+        add_variable("DDNS_CONFIG", json.dumps(world.ddns_cfg), False)
+        with open("kea-dhcp-ddns.conf", 'w') as conf_file:
+            conf_file.write(json.dumps(world.ddns_cfg, indent=4, sort_keys=True))
+        conf_file.close()
 
-    # this is for tests where $(SERVER_CONFIG) is used e.g. config-set tests
-    add_variable("SERVER_CONFIG", json.dumps(world.temporary_cfg), False)
-    # log.info('Generated config: %s', json.dumps(world.temporary_cfg, sort_keys=True,
-    #                                             indent=2, separators=(',', ': ')))
+    if world.ctrl_enable:
+        add_variable("AGENT_CONFIG", json.dumps(world.ca_cfg), False)
+        with open("kea-ctrl-agent.conf", 'w') as conf_file:
+            conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=True))
+        conf_file.close()
 
-    with open(world.cfg["cfg_file"], 'w') as conf_file:
-        conf_file.write(json.dumps(world.temporary_cfg, indent=4, sort_keys=True))
+    add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
+
+    with open("kea-dhcp%s.conf" % world.proto[1], 'w') as conf_file:
+        conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=True))
     conf_file.close()
 
 
-def _write_cfg2(cfg):
-    # log.info('provisioned cfg:\n%s', cfg)
-    with open(world.cfg["cfg_file"], 'w') as cfg_file:
-        json.dump(cfg, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
-
-    cfg_file = open(world.cfg["cfg_file_2"], 'w')
-    cfg_file.write(world.cfg["keactrl"])
-    cfg_file.close()
+# def _write_cfg2(cfg):
+#     TODO I'm not removing this, may be useful at some point but with multiple conf files it won't work
+#     # log.info('provisioned cfg:\n%s', cfg)
+#     with open(world.cfg["cfg_file"], 'w') as cfg_file:
+#         json.dump(cfg, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
+#
+#     cfg_file = open(world.cfg["cfg_file_2"], 'w')
+#     cfg_file.write(world.cfg["keactrl"])
+#     cfg_file.close()
 
 
 def build_and_send_config_files(connection_type, configuration_type="config-file",
@@ -789,14 +795,13 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     if cfg is None:
         _cfg_write()
     else:
-        _write_cfg2(cfg)
+        # TODO if needed add this, at this point I can't find single test with this.
+        pass
+        # _write_cfg2(cfg)
 
-    if world.f_cfg.install_method == 'make':
-        kea_conf_files = ["kea.conf"]
-    else:
-        kea_conf_files = ["kea-dhcp%s.conf" % world.proto[1],
-                          "kea-dhcp-ddns.conf",
-                          'kea-ctrl-agent.conf']
+    kea_conf_files = ["kea-dhcp%s.conf" % world.proto[1],
+                      "kea-dhcp-ddns.conf",
+                      'kea-ctrl-agent.conf']
 
     # send to server if requested
     if connection_type == "SSH":
@@ -805,19 +810,37 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
                              world.f_cfg.etc_join("keactrl.conf"),
                              destination_host=destination_address)
 
-        for f in kea_conf_files:
-            fabric_send_file(world.cfg["cfg_file"],
-                             world.f_cfg.etc_join(f),
-                             destination_host=destination_address)
+        fabric_send_file("kea-dhcp%s.conf" % world.proto[1],
+                         world.f_cfg.etc_join("kea-dhcp%s.conf" % world.proto[1]),
+                         destination_host=destination_address)
+
+        if world.ctrl_enable:
+            fabric_send_file("kea-ctrl-agent.conf",
+                            world.f_cfg.etc_join("kea-ctrl-agent.conf"),
+                            destination_host=destination_address)
+
+        if world.ddns_enable:
+            fabric_send_file("kea-dhcp-ddns.conf",
+                            world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
+                            destination_host=destination_address)
 
     # store files for debug purposes
     if world.f_cfg.install_method == 'make':
         copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file_2"])
 
-    for f in kea_conf_files:
-        copy_configuration_file(world.cfg["cfg_file"], f, destination_host=destination_address)
-    remove_local_file(world.cfg["cfg_file"])
+    copy_configuration_file("kea-dhcp%s.conf" % world.proto[1],
+                            "kea-dhcp%s.conf" % world.proto[1], destination_host=destination_address)
+    remove_local_file("kea-dhcp%s.conf" % world.proto[1])
+
+    if world.ctrl_enable:
+        copy_configuration_file("kea-ctrl-agent.conf", "kea-ctrl-agent.conf", destination_host=destination_address)
+        remove_local_file("kea-ctrl-agent.conf")
+
+    if world.ddns_enable:
+        copy_configuration_file("kea-dhcp-ddns.conf", "kea-dhcp-ddns.conf", destination_host=destination_address)
+        remove_local_file("kea-dhcp-ddns.conf")
+
 
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):

@@ -306,32 +306,33 @@ def change_network_variables(value_name, value):
         assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
 
 
-def execute_shell_cmd(path, arguments=''):
+def execute_shell_cmd(path, arguments='', save_results=True):
     result = fabric_sudo_command(path + ' ' + arguments, hide_all=False, ignore_errors=True)
 
-    file_name = path.split("/")[-1] + '_output'
-    file_name = generate_file_name(1, file_name)
+    if save_results:
+        file_name = path.split("/")[-1] + '_output'
+        file_name = generate_file_name(1, file_name)
 
-    # assert False, type(result.stdout)
-    if not os.path.exists(world.cfg["test_result_dir"]):
-        os.makedirs(world.cfg["test_result_dir"])
+        # assert False, type(result.stdout)
+        if not os.path.exists(world.cfg["test_result_dir"]):
+            os.makedirs(world.cfg["test_result_dir"])
 
-    myfile = open(world.cfg["test_result_dir"] + '/' + file_name, 'w')
-    myfile.write(unicode('Script: ' + path))
-    if arguments == '':
-        arguments = "no arguments used!"
-    myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))
-    if result.failed:
-        myfile.write(unicode('\nStatus: FAILED\n'))
-    else:
-        myfile.write(unicode('\nStatus: SUCCEED\n'))
+        myfile = open(world.cfg["test_result_dir"] + '/' + file_name, 'w')
+        myfile.write(unicode('Script: ' + path))
+        if arguments == '':
+            arguments = "no arguments used!"
+        myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))
+        if result.failed:
+            myfile.write(unicode('\nStatus: FAILED\n'))
+        else:
+            myfile.write(unicode('\nStatus: SUCCEED\n'))
 
-    myfile.write(unicode('\nScript stdout:\n' + result.stdout))
-    myfile.close()
+        myfile.write(unicode('\nScript stdout:\n' + result.stdout))
+        myfile.close()
 
-    assert result.succeeded
+        assert result.succeeded
 
-    return result
+        return result
 
 
 def test_define_value(*args):
