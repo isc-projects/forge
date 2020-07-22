@@ -759,15 +759,24 @@ def _cfg_write():
         conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=True))
 
 
-# def _write_cfg2(cfg):
-#     TODO I'm not removing this, may be useful at some point but with multiple conf files it won't work
-#     # log.info('provisioned cfg:\n%s', cfg)
-#     with open(world.cfg["cfg_file"], 'w') as cfg_file:
-#         json.dump(cfg, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
-#
-#     cfg_file = open(world.cfg["cfg_file_2"], 'w')
-#     cfg_file.write(world.cfg["keactrl"])
-#     cfg_file.close()
+def _write_cfg2(cfg):
+    log.info('provisioned cfg:\n%s', cfg)
+    if "Control-agent" in cfg:
+        with open("kea-ctrl-agent.conf", 'w') as cfg_file:
+            json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=True,
+                      indent=4, separators=(',', ': '))
+    if "Dhcp%s" % world.proto[1] in cfg:
+        with open("kea-dhcp%s.conf" % world.proto[1], 'w') as cfg_file:
+            json.dump({"Dhcp%s" % world.proto[1]: cfg["Dhcp%s" % world.proto[1]]},
+                      cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
+
+    if "DhcpDdns" in cfg:
+        with open("kea-dhcp-ddns.conf", 'w') as cfg_file:
+            json.dump({"DhcpDdns": cfg["DhcpDdns"]}, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
+
+    cfg_file = open(world.cfg["cfg_file_2"], 'w')
+    cfg_file.write(world.cfg["keactrl"])
+    cfg_file.close()
 
 
 def build_and_send_config_files(connection_type, configuration_type="config-file",
@@ -792,9 +801,7 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     if cfg is None:
         _cfg_write()
     else:
-        # TODO if needed add this, at this point I can't find single test with this.
-        pass
-        # _write_cfg2(cfg)
+        _write_cfg2(cfg)
 
     kea_conf_files = ["kea-dhcp%s.conf" % world.proto[1],
                       "kea-dhcp-ddns.conf",
