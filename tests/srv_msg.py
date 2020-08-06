@@ -211,7 +211,7 @@ def response_check_include_option(resp_rel, yes_or_no, opt_code):
     """
     Use this step for parsing respond. For more details please read manual section "Parsing respond"
     """
-    include = not (yes_or_no == "NOT ")
+    include = False if yes_or_no in ["NOT ", "NOT", False] else True
     dhcpmsg.response_check_include_option(include, opt_code)
 
 

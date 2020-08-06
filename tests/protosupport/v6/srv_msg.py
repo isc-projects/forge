@@ -548,7 +548,7 @@ def create_relay_forward(level=1):
     # message encapsulation
     for lvl in range(level):
         # all three values: linkaddr, peeraddr and hopcount must be filled
-        relay_msg = dhcp6.DHCP6_RelayForward(hopcount=lvl + 1,
+        relay_msg = dhcp6.DHCP6_RelayForward(hopcount=lvl,
                                               linkaddr=world.cfg["values"]["linkaddr"],
                                               peeraddr=world.cfg["values"]["peeraddr"])
         for each_option in world.relayopts:
