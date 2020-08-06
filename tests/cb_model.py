@@ -26,9 +26,9 @@ def get_config():
 
 def _reload():
     # request config reloading
-    cmd = {"command": "config-reload", "arguments": {}}
+    cmd = {"command": "config-backend-pull", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd)
-    assert response == {'result': 0, 'text': 'Configuration successful.'}
+    assert response == {'result': 0, 'text': 'On demand configuration update successful.'}
 
 
 class ConfigElem(object):
