@@ -31,7 +31,7 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
                 ],
                 "hw-address": "01:02:03:04:05:07"
             }
-        ],"client-classes": [
+        ], "client-classes": [
             {
                 "name": "special"
             },
@@ -39,19 +39,18 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
                 "name": "NOTspecial",
                 "test": "not member('special')"
             }
-        ],"reservation-mode": "global"
-    })
+        ], "reservation-mode": "global"})
 
     world.dhcp_cfg["subnet6"][1].update({"reservations": [
-            {
-                "ip-addresses": ["2001:db8:a::1111"],
-                "hw-address": "01:02:03:04:05:07"
-            }
-        ],"reservation-mode": "all"})
-    
+        {
+            "ip-addresses": ["2001:db8:a::1111"],
+            "hw-address": "01:02:03:04:05:07"
+        }
+    ], "reservation-mode": "all"})
+
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
-    
+
     srv_control.set_conf_parameter_shared_subnet('name', 'name-abc', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '$(SERVER_IFACE)', 0)
 
@@ -106,8 +105,7 @@ def test_v6_pool_selection_based_on_global_reservation_of_class():
                 "name": "NOTspecial",
                 "test": "not member('special')"
             }
-        ], "reservation-mode": "global"
-    })
+        ], "reservation-mode": "global"})
     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-class"] = "NOTspecial"
     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-class"] = "special"
 
