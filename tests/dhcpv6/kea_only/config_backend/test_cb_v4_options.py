@@ -23,7 +23,7 @@ def run_around_tests():
 
 def _get_server_config(reload_kea=False):
     if reload_kea:
-        cmd = dict(command="config-reload", arguments={})
+        cmd = dict(command="config-backend-pull", arguments={})
         srv_msg.send_ctrl_cmd(cmd, exp_result=0)
     cmd = dict(command="config-get", arguments={})
     return srv_msg.send_ctrl_cmd(cmd, exp_result=0)

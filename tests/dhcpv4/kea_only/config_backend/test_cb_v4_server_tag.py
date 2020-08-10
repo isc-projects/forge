@@ -32,7 +32,7 @@ def _set_server_tag(tag="abc"):
 
 def _get_server_config(reload_kea=False):
     if reload_kea:
-        cmd = dict(command="config-reload", arguments={})
+        cmd = dict(command="config-backend-pull", arguments={})
         srv_msg.send_ctrl_cmd(cmd, exp_result=0)
     cmd = dict(command="config-get", arguments={})
     return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -156,7 +156,7 @@ def test_server_tag_global_option4():
 
     # delete option with tag "xyz", kea should download tag "all"
     cfg_xyz.del_option(server_tags=["xyz"], code=3)
-    xyz = _get_server_config()
+    xyz = _get_server_config(reload_kea=True)
     assert len(xyz["arguments"]["Dhcp4"]["option-data"]) == 1
     assert xyz["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.1"
     get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.1"})
@@ -251,7 +251,7 @@ def test_server_tag_global_parameter4():
                    pools=[{'pool': "192.168.52.1-192.168.52.100"}])
 
     # new servers should start with "xyz"
-    xyz = _get_server_config()
+    xyz = _get_server_config(reload_kea=True)
     assert xyz["arguments"]["Dhcp4"]["boot-file-name"] == "/dev/null_xyz"
     get_address(exp_boot_file_name="/dev/null_xyz")
 

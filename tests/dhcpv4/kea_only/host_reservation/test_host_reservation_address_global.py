@@ -100,6 +100,7 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
                 "test": "not member('special')"
             }
         ], "reservation-mode": "global"})
+
     world.dhcp_cfg["subnet4"][0]["pools"][0]["client-class"] = "NOTspecial"
     world.dhcp_cfg["subnet4"][0]["pools"][1]["client-class"] = "special"
 

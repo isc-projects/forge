@@ -105,7 +105,9 @@ def test_v6_pool_selection_based_on_global_reservation_of_class():
                 "name": "NOTspecial",
                 "test": "not member('special')"
             }
+
         ], "reservation-mode": "global"})
+
     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-class"] = "NOTspecial"
     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-class"] = "special"
 
