@@ -57,6 +57,7 @@ def test_flex_options_add():
     srv_msg.response_check_option_content('Response', 31, None, 'value', '3000::2')
     srv_msg.response_check_option_content('Response', 31, 'NOT', 'value', '3000::1')
 
+
 @pytest.mark.v6
 @pytest.mark.flex_options
 def test_flex_options_remove():
@@ -106,6 +107,7 @@ def test_flex_options_remove():
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
     srv_msg.response_check_include_option('Response', None, 30)
     srv_msg.response_check_option_content('Response', 30, None, 'value', 'ntp.example.com.')
+
 
 @pytest.mark.v6
 @pytest.mark.flex_options
