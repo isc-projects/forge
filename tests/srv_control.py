@@ -21,7 +21,7 @@ import importlib
 from forge_cfg import world, step
 
 import softwaresupport.bind9_server.functions as dns
-from protosupport.multi_protocol_functions import test_define_value
+from protosupport.multi_protocol_functions import test_define_value, substitute_vars
 
 
 class Dispatcher(object):
@@ -242,16 +242,16 @@ def add_hooks(library_path):
 
 
 @step('To hook no. (\d+) add parameter named (\S+) with value: (.+)')
-def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
-    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
-    dhcp.add_parameter_to_hook(int(hook_no), parameter_name, parameter_value)
+def add_parameter_to_hook(hook_name, parameter):
+    substitute_vars(parameter)
+    dhcp.add_parameter_to_hook(hook_name, parameter)
 
-
-@step('Add High-Availability hook library located (\S+).')
-def add_ha_hook(library_path):
-    full_library_path = world.f_cfg.hooks_join(library_path)
-    dhcp.ha_add_parameter_to_hook("lib", full_library_path)
-    dhcp.add_hooks(full_library_path)
+#
+# @step('Add High-Availability hook library located (\S+).')
+# def add_ha_hook(library_path):
+#     full_library_path = world.f_cfg.hooks_join(library_path)
+#     dhcp.ha_add_parameter_to_hook("lib", full_library_path)
+#     dhcp.add_hooks(full_library_path)
 
 
 @step('To HA hook configuration add (\S+) with value: (.+)')

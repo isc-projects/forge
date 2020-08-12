@@ -567,45 +567,31 @@ def add_hooks(library_path):
     if "libdhcp_ha" in library_path:
         world.dhcp_cfg["hooks-libraries"].append({"library": library_path,
                                                   "parameters": {
-                                                      "high-availability": [{"peers": [],
-                                                                             "state-machine": {"states": []}}]}})
+                                                      "high-availability": [{}]}})
     else:
         world.dhcp_cfg["hooks-libraries"].append({"library": library_path})
 
 
-def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
-    if "parameters" not in world.dhcp_cfg["hooks-libraries"][hook_no-1].keys():
-        world.dhcp_cfg["hooks-libraries"][hook_no - 1]["parameters"] = {}
-    if parameter_value in ["True", "true"]:
-        parameter_value = True
-    elif parameter_value in ["False", 'false']:
-        parameter_value = False
-    world.dhcp_cfg["hooks-libraries"][hook_no-1]["parameters"][parameter_name] = parameter_value
+def add_parameter_to_hook(hook_lib_name, param):
+    # find hook by name and update it with dict
+    if isinstance(param, dict):
+        if "libdhcp_ha" in hook_lib_name:
+            ha_add_parameter_to_hook(param)
+        else:
+            for hook in world.dhcp_cfg["hooks-libraries"]:
+                if hook_lib_name in hook["library"]:
+                    if "parameters" in hook:
+                        hook["parameters"].update(param)
+                    else:
+                        hook.update({"parameters": param})
+    else:
+        assert False, "please pass parameter as dict."
 
 
-def ha_add_parameter_to_hook(parameter_name, parameter_value):
-    # First let's find HA hook in the list:
-    # TODO Michal, is there a more elegant solution for editing one specific dictionary from the list of dictionaries?
-    # btw.. I wonder why "high-availability" is list of dictionaries not dictionary
-    # and it's just for current backward compatibility, I will change it when I will get back to HA tests
+def ha_add_parameter_to_hook(param):
     for hook in world.dhcp_cfg["hooks-libraries"]:
         if "libdhcp_ha" in hook["library"]:
-            if parameter_name == "machine-state":
-                parameter_value.strip("'")
-                parameter_value = json.loads(parameter_value)
-                hook["parameters"]["high-availability"][0]["state-machine"]["states"].append(parameter_value)
-            elif parameter_name == "peers":
-                parameter_value.strip("'")
-                parameter_value = json.loads(parameter_value)
-                hook["parameters"]["high-availability"][0]["peers"].append(parameter_value)
-            elif parameter_name == "lib":
-                pass
-            else:
-                if parameter_value.isdigit():
-                    parameter_value = int(parameter_value)
-                else:
-                    parameter_value = parameter_value.strip("\"")
-                hook["parameters"]["high-availability"][0][parameter_name] = parameter_value
+            hook["parameters"]["high-availability"][0].update(param)
 
 
 def agent_control_channel(host_address, host_port, socket_name='control_socket'):

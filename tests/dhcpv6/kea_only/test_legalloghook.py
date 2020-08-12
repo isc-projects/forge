@@ -70,10 +70,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -123,10 +122,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -244,10 +242,9 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -316,10 +313,9 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -455,10 +451,9 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -527,10 +522,9 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -654,10 +648,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.add_line({"mac-sources": ["docsis-modem"]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -713,10 +706,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.add_line({"mac-sources": ["docsis-modem"]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -824,10 +816,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.add_line({"mac-sources": ["docsis-cmts"]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -881,10 +872,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.add_line({"mac-sources": ["docsis-cmts"]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -981,7 +971,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay():
                                'connected via relay at address:')
     srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
-                               'for client on link address: 3000::1005, hop count: 5')
+                               'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -1000,10 +990,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_pgsql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -1047,7 +1036,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_pgsql():
     srv_msg.table_contains_line('logs',
                                 'PostgreSQL',
                                 None,
-                                'for client on link address: 3000::1005, hop count: 5')
+                                'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -1066,10 +1055,9 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_mysql():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -1113,7 +1101,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_mysql():
     srv_msg.table_contains_line('logs',
                                 'MySQL',
                                 None,
-                                'for client on link address: 3000::1005, hop count: 5')
+                                'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -1137,14 +1125,11 @@ def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_mysql():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('2',
-                                      'identifier-expression',
-                                      'vendor[4491].option[1026].hex')
+    srv_control.add_parameter_to_hook("libdhcp_flex_id", {"identifier-expression": "vendor[4491].option[1026].hex"})
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -1208,14 +1193,11 @@ def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_pgsql():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
     srv_control.config_srv_prefix('3001::', '0', '90', '94')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('2',
-                                      'identifier-expression',
-                                      'vendor[4491].option[1026].hex')
+    srv_control.add_parameter_to_hook("libdhcp_flex_id", {"identifier-expression": "vendor[4491].option[1026].hex"})
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')

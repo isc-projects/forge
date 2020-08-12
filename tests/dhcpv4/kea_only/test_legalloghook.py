@@ -80,10 +80,9 @@ def test_v4_legal_log_assigned_address_pgsql():
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -142,10 +141,9 @@ def test_v4_legal_log_assigned_address_mysql():
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -258,10 +256,9 @@ def test_v4_legal_log_assigned_address_without_client_id_pgsql():
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -315,10 +312,9 @@ def test_v4_legal_log_assigned_address_without_client_id_mysql():
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -431,10 +427,9 @@ def test_v4_legal_log_assigned_address_via_relay_pgsql_2():
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.2-192.168.50.2')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -494,10 +489,9 @@ def test_v4_legal_log_assigned_address_via_relay_mysql():
     srv_control.set_time('valid-lifetime', '600')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.2-192.168.50.2')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -632,10 +626,9 @@ def test_v4_legal_log_renewed_address_pgsql():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -713,10 +706,9 @@ def test_v4_legal_log_renewed_address_mysql():
     srv_control.set_time('rebind-timer', '50')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -870,10 +862,9 @@ def test_v4_legal_log_rebind_address_mysql():
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'mysql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "mysql", "user": "$(DB_USER)"})
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -951,10 +942,9 @@ def test_v4_legal_log_rebind_address_pgsql():
     srv_control.set_time('rebind-timer', '4')
     srv_control.set_time('valid-lifetime', '600')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook('1', 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook('1', 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook('1', 'type', 'postgresql')
-    srv_control.add_parameter_to_hook('1', 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log",
+                                      {"name": "$(DB_NAME)", "password": "$(DB_PASSWD)",
+                                       "type": "postgresql", "user": "$(DB_USER)"})
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
