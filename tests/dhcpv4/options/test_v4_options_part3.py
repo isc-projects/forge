@@ -15,7 +15,7 @@ def test_v4_options_ip_forwarding():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('ip-forwarding', 'True')
+    srv_control.config_srv_opt('ip-forwarding', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -36,7 +36,7 @@ def test_v4_options_non_local_source_routing():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('non-local-source-routing', 'True')
+    srv_control.config_srv_opt('non-local-source-routing', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -57,7 +57,7 @@ def test_v4_options_perform_mask_discovery():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('perform-mask-discovery', 'False')
+    srv_control.config_srv_opt('perform-mask-discovery', False)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -78,7 +78,7 @@ def test_v4_options_mask_supplier():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('mask-supplier', 'True')
+    srv_control.config_srv_opt('mask-supplier', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -99,7 +99,7 @@ def test_v4_options_router_discovery():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('router-discovery', 'True')
+    srv_control.config_srv_opt('router-discovery', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -120,7 +120,7 @@ def test_v4_options_trailer_encapsulation():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('trailer-encapsulation', 'True')
+    srv_control.config_srv_opt('trailer-encapsulation', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -141,7 +141,7 @@ def test_v4_options_ieee802_3_encapsulation():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('ieee802-3-encapsulation', 'True')
+    srv_control.config_srv_opt('ieee802-3-encapsulation', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -162,7 +162,7 @@ def test_v4_options_tcp_keepalive_garbage():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('tcp-keepalive-garbage', 'True')
+    srv_control.config_srv_opt('tcp-keepalive-garbage', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

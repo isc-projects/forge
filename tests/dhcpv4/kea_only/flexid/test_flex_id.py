@@ -239,7 +239,7 @@ def test_v4_hooks_flexid_replace_mac_addr_inside_pool():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     srv_control.set_conf_parameter_global('match-client-id', False)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -295,7 +295,7 @@ def test_v4_hooks_flexid_replace_client_id_release_fail():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -338,7 +338,7 @@ def test_v4_hooks_flexid_replace_client_id_release_1():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -410,7 +410,7 @@ def test_v4_hooks_flexid_replace_client_id_release_2():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -481,7 +481,7 @@ def test_v4_hooks_flexid_replace_client_id_renew_1():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -542,7 +542,7 @@ def test_v4_hooks_flexid_replace_client_id_renew_2():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -598,7 +598,7 @@ def test_v4_hooks_flexid_mysql_1():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
 
@@ -646,7 +646,7 @@ def test_v4_hooks_flexid_mysql_negative():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
 
@@ -689,7 +689,7 @@ def test_v4_hooks_flexid_pgsql_1():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
 
@@ -736,7 +736,7 @@ def test_v4_hooks_flexid_pgsql_negative():
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
-    srv_control.add_parameter_to_hook('1', 'replace-client-id', 'true')
+    srv_control.add_parameter_to_hook('1', 'replace-client-id', True)
     # enable matching client id
     srv_control.set_conf_parameter_global('match-client-id', True)
 

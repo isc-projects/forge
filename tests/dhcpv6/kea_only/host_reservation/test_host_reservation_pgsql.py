@@ -35,7 +35,7 @@ def test_v6_host_reservation_pgsql_all_values_mac():
                                              '1')
     srv_control.upload_db_reservation('PostgreSQL')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', 'true')
+    srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')

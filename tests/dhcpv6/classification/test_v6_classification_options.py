@@ -608,7 +608,7 @@ def test_v6_client_classification_shared_subnet_options_override_francis():
 
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class('1', 'test', 'substring(option[1].hex,8,2) == 0xf2f1')
-    srv_control.add_test_to_class('1', 'only-if-required', 'true')
+    srv_control.add_test_to_class('1', 'only-if-required', True)
     srv_control.add_option_to_defined_class('1', 'dns-servers', '2001:db8::888')
     # Server is configured with client-classification option in subnet 0 with name Client_Class_1.
     srv_control.config_require_client_classification('0', 'Client_Class_1')

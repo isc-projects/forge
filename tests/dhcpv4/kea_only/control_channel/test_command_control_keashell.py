@@ -258,7 +258,7 @@ def test_control_channel_keashell_test_config():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', 'true')
+    srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
@@ -283,7 +283,7 @@ def test_control_channel_keashell_test_config():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', 'true')
+    srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',

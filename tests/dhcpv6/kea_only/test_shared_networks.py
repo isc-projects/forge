@@ -2350,7 +2350,7 @@ def test_v6_sharednetworks_host_reservation_all_values_duid():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::100')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '3001::/40')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', 'true')
+    srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.shared_subnet('2001:db8:a::/64', '0')
     srv_control.shared_subnet('2001:db8:b::/64', '0')

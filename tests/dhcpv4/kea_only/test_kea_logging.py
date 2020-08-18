@@ -1050,7 +1050,7 @@ def test_ddns4_logging_all_types_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', 'true')
+    srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'abc.com')
     srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')

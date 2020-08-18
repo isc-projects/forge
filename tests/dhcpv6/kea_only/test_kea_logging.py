@@ -785,7 +785,7 @@ def test_ddns6_logging_all_types_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', 'true')
+    srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'abc.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
