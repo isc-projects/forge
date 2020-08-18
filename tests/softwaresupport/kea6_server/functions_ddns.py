@@ -55,20 +55,23 @@ def add_ddns_server(address, port):
     add_ddns_server_options("enable-updates", False)
 
 
-def add_ddns_server_options(option, value):
+def add_ddns_server_options(option, value=None):
     # function test_define_value return everything as string, until this function will be rewritten
     # we will have to have such combinations as below
-    if value in ["true", "True", "TRUE"]:
-        value = True
-    if value in ["false", "False", "FALSE"]:
-        value = False
     if "dhcp-ddns" not in world.dhcp_cfg:
         world.dhcp_cfg["dhcp-ddns"] = {}
+    if isinstance(option, dict) and value is None:
+        world.dhcp_cfg["dhcp-ddns"].update(option)
+    elif value in ["true", "True", "TRUE"]:
+        value = True
+    elif value in ["false", "False", "FALSE"]:
+        value = False
+
     world.dhcp_cfg["dhcp-ddns"][option] = value
 
 
 def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
-    world.ddns_cfg["forward-ddns"] = {"ddns-domains": [{
+    tmp_record = {
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
@@ -76,15 +79,15 @@ def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
             "ip-address": ip_address,
             "port": port
         }]
-    }]
     }
 
     if key_name == "EMPTY_KEY":
-        del world.ddns_cfg["forward-ddns"]["ddns-domains"][0]["key-name"]
+        del tmp_record["key-name"]
+    world.ddns_cfg["forward-ddns"]["ddns-domains"].append(tmp_record)
 
 
 def add_reverse_ddns(name, key_name, ip_address, port, hostname=""):
-    world.ddns_cfg["reverse-ddns"] = {"ddns-domains": [{
+    tmp_record = {
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
@@ -92,11 +95,11 @@ def add_reverse_ddns(name, key_name, ip_address, port, hostname=""):
             "ip-address": ip_address,
             "port": port
         }]
-    }]
     }
 
     if key_name == "EMPTY_KEY":
-        del world.ddns_cfg["reverse-ddns"]["ddns-domains"][0]["key-name"]
+        del tmp_record["key-name"]
+    world.ddns_cfg["reverse-ddns"]["ddns-domains"].append(tmp_record)
 
 
 def add_keys(secret, name, algorithm):

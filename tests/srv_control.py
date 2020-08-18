@@ -17,6 +17,7 @@
 
 import sys
 import importlib
+import json
 
 from forge_cfg import world, step
 
@@ -601,7 +602,7 @@ def generate_config_files():
 
 
 @step('(\S+) server is (started|stopped|restarted|reconfigured).')
-def start_srv(name, type_of_action):
+def start_srv(name, type_of_action, config_set=None):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -612,6 +613,8 @@ def start_srv(name, type_of_action):
         if name == "DHCP":
             dhcp.start_srv(True, None)
         elif name == "DNS":
+            if config_set is not None:
+                use_dns_set_number(config_set)
             dns.start_srv(True, None)
     elif type_of_action == "stopped":
         if name == "DHCP":
@@ -714,14 +717,17 @@ def add_remote_server(remote_address):
 
 
 @step('Clear (\S+).')
-def clear_some_data(data_type):
-    if data_type == "leases":
-        dhcp.clear_leases()
-    elif data_type == "logs":
-        dhcp.clear_logs()
-    elif data_type == "all":
-        dhcp.clear_all()
-
+def clear_some_data(data_type, service='dhcp'):
+    if service == 'dhcp':
+        if data_type == "leases":
+            dhcp.clear_leases()
+        elif data_type == "logs":
+            dhcp.clear_logs()
+        elif data_type == "all":
+            dhcp.clear_all()
+    elif service.lower() == 'dns':
+        # let's just dump all without logs
+        dns.clear_all(remove_logs=False)
 
 ##DDNS server
 @step('DDNS server has control channel (\S+).')
@@ -767,3 +773,12 @@ def add_keys(name, algorithm, secret):
 @step('Use DNS set no. (\d+).')
 def use_dns_set_number(number):
     dns.use_config_set(int(number))
+
+
+def print_cfg(service='DHCP'):
+    if service.lower() == 'dhcp':
+        print "DHCP config:"
+        print json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': '))
+    elif service.lower() == 'ddns':
+        print "DDNS config:"
+        print json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': '))

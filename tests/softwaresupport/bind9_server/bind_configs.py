@@ -1735,25 +1735,362 @@ dns			A	172.16.1.1
 $ORIGIN 50.168.192.in-addr.arpa.
 
 1 	IN	PTR      dns1.four.example.com.
-"""]
+"""], 31: ["""
+options {
+    directory "${data_path}";  // Working directory
+    listen-on-v6 port ${dns_port} { ${dns_addr}; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
 
+zone "a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
 
+};
 
+zone "b.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+     type master;
+     file "rev2.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
 
+};
 
-}
-#["filename","""file""","filename","file"]
+zone "c.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+     type master;
+     file "rev3.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
 
+};
 
+zone "six.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
 
+};
 
+zone "abc.example.com" {
+     type master;
+     file "fwd2.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
 
+};
 
+zone "xyz.example.com" {
+     type master;
+     file "fwd3.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
 
+};
 
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+controls {
+    inet 127.0.0.1 port 53001
+    allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
 
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+six.example.com		IN SOA	dns6-1.six.example.com. mail.six.example.com. (
+				107        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns6-1.six.example.com.
+$ORIGIN six.example.com.
+dns6-1			AAAA	2001:db8:a::1
+nanny6			AAAA	2001:db8:a::10
 
+""", """$ORIGIN .
+$TTL 3600	; 1 hour
+a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa IN SOA	dns6-1.six.example.com. mail.six.example.com. (
+				102        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				604800     ; expire (1 week)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns6-1.six.example.com.
+$ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+0			PTR	nanny6.six.exmaple.com.a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+abc.example.com		IN SOA	dns6-1.abc.example.com. mail.abc.example.com. (
+				107        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns6-1.abc.example.com.
+$ORIGIN abc.example.com.
+dns6-1			AAAA	2001:db8:b::1
+nanny6			AAAA	2001:db8:b::10
 
+""", """$ORIGIN .
+$TTL 3600	; 1 hour
+b.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa IN SOA	dns6-1.abc.example.com. mail.abc.example.com. (
+				102        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				604800     ; expire (1 week)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns6-1.abc.example.com.
+$ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.b.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+0			PTR	nanny6.abc.exmaple.com.b.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+xyz.example.com		IN SOA	dns6-1.xyz.example.com. mail.xyz.example.com. (
+				107        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns6-1.xyz.example.com.
+$ORIGIN xyz.example.com.
+dns6-1			AAAA	2001:db8:c::1
+nanny6			AAAA	2001:db8:c::10
+
+""", """$ORIGIN .
+$TTL 3600	; 1 hour
+c.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa IN SOA	dns6-1.xyz.example.com. mail.xyz.example.com. (
+				102        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				604800     ; expire (1 week)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns6-1.xyz.example.com.
+$ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.c.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+0			PTR	nanny6.xyz.exmaple.com.c.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+"""], 32: ["""
+options {
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+};
+
+zone "50.168.192.in-addr.arpa." {
+     type master;
+     file "rev.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
+};
+
+zone "51.168.192.in-addr.arpa." {
+     type master;
+     file "rev2.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
+};
+
+zone "52.168.192.in-addr.arpa." {
+     type master;
+     file "rev3.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
+};
+
+zone "four.example.com" {
+     type master;
+     file "fwd.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "five.example.com" {
+     type master;
+     file "fwd2.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "three.example.com" {
+     type master;
+     file "fwd3.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-transfer { any; };
+     allow-query { any; };              // This is the default
+
+};
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""", """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+five.example.com	IN SOA	dns.five.example.com. mail.five.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.five.example.com.
+$ORIGIN five.example.com.
+dns			A	192.168.51.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.five.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.five.example.com.
+
+$ORIGIN 51.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.five.example.com.
+""", """$ORIGIN .
+$TTL 86400	; 1 day
+three.example.com	IN SOA	dns.three.example.com. mail.three.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.three.example.com.
+$ORIGIN three.example.com.
+dns			A	192.168.52.1
+""", """$TTL 1h	; Default TTL
+@ IN SOA dns1.three.example.com. hostmaster.three.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.three.example.com.
+
+$ORIGIN 52.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.three.example.com.
+"""]}
 
 keys = '''/* $Id: bind.keys,v 1.7 2011/01/03 23:45:07 each Exp $ */
 # The bind.keys file is used to override the built-in DNSSEC trust anchors

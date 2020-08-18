@@ -110,6 +110,11 @@ def use_config_set(number):
     make_file('rndc.conf', config_file_set[number][1])
     make_file('fwd.db', config_file_set[number][2])
     make_file('rev.db', config_file_set[number][3])
+    if len(config_file_set[number]) == 8:
+        make_file('fwd2.db', config_file_set[number][4])
+        make_file('rev2.db', config_file_set[number][5])
+        make_file('fwd3.db', config_file_set[number][6])
+        make_file('rev3.db', config_file_set[number][7])
     world.cfg["dns_log_file"] = '/tmp/dns.log'
     make_file('bind.keys', keys)
 
@@ -131,6 +136,23 @@ def use_config_set(number):
     copy_configuration_file('rev.db', 'dns/DNS_rev.db')
     remove_local_file('rev.db')
 
+    if len(config_file_set[number]) == 8:
+        fabric_send_file('fwd2.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/fwd2.db'))
+        copy_configuration_file('fwd2.db', 'dns/DNS_fwd2.db')
+        remove_local_file('fwd2.db')
+
+        fabric_send_file('rev2.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/rev2.db'))
+        copy_configuration_file('rev2.db', 'dns/DNS_rev2.db')
+        remove_local_file('rev2.db')
+
+        fabric_send_file('fwd3.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/fwd3.db'))
+        copy_configuration_file('fwd3.db', 'dns/DNS_fwd3.db')
+        remove_local_file('fwd3.db')
+
+        fabric_send_file('rev3.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/rev3.db'))
+        copy_configuration_file('rev3.db', 'dns/DNS_rev3.db')
+        remove_local_file('rev3.db')
+
     fabric_send_file('bind.keys', os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'))
     copy_configuration_file('bind.keys', 'dns/DNS_managed-keys.bind')
     remove_local_file('bind.keys')
@@ -148,7 +170,7 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
     fabric_sudo_command('(' + os.path.join(world.f_cfg.dns_server_install_path, 'named') + ' -c ' +
-                        os.path.join(world.f_cfg.dns_data_path, 'named.conf') + ' & ); sleep ' + str(world.f_cfg.sleep_time_1),
+                        os.path.join(world.f_cfg.dns_data_path, 'named.conf') + ' & ); sleep ' + str(world.f_cfg.sleep_time_1+2),
                         destination_host=destination_address)
 
 
@@ -170,9 +192,10 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          destination_host=destination_address, ignore_errors=True)
 
 
-def clear_all(destination_address=world.f_cfg.mgmt_address):
+def clear_all(destination_address=world.f_cfg.mgmt_address, remove_logs=True):
     stop_srv(value=True, destination_address=destination_address)
-    fabric_remove_file_command('/tmp/dns.log', destination_host=destination_address)
+    if remove_logs:
+        fabric_remove_file_command('/tmp/dns.log', destination_host=destination_address)
     fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, 'namedb/*'), destination_host=destination_address)
     fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, '*.conf'), destination_host=destination_address)
     fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'), destination_host=destination_address)

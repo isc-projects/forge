@@ -82,11 +82,11 @@ def prepare_query():
 
 def send_wait_for_query(choose_must, presence):
     if world.f_cfg.show_packets_from in ['both', 'client']:
-            world.climsg[0].show()
+        world.climsg[0].show()
 
     ans, unans = sr(world.climsg,
                     iface=world.cfg["dns_iface"],
-                    timeout=world.cfg["wait_interval"],
+                    timeout=world.cfg["wait_interval"] + 0.5,
                     multi=True,
                     verbose=99)
 
