@@ -210,7 +210,7 @@ def test_flex_options_supersede():
                 "options": [
                     {
                         "code": 5,
-                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', '10.0.0.1','')"
+                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', '10.0.0.1','199.199.199.1')"
                     }
                 ]
             }
@@ -288,7 +288,7 @@ def test_flex_options_all_actions():
                     {
                         # change option 5 to 10.0.0.1 if hostname is myuniquehostname
                         "code": 5,
-                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', 10.0.0.1,'')"
+                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', 10.0.0.1, 199.199.199.1)"
                     },
                     {
                         # remove option 6 domain-name-servers if client has a reservation
