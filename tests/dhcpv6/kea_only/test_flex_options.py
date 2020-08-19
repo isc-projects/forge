@@ -237,7 +237,7 @@ def test_flex_options_supersede_string():
                     {
                         "code": 41,
                         "supersede": "ifelse(relay6[0].peeraddr == 3000::1005,"
-                                     "'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00','')"
+                                     "'EST5EDT4\,M3.2.0/02:00\,M11.1.0/02:00','')"
                     }
                 ]
             }
@@ -263,7 +263,7 @@ def test_flex_options_supersede_string():
     srv_msg.response_check_include_option('Response', None, 9)
     srv_msg.response_check_option_content('Response', 9, None, 'Relayed', 'Message')
     srv_msg.response_check_include_option('Response', None, 41)
-    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5EDT4\,M3.2.0/02:00\,M11.1.0/02:00')
+    srv_msg.response_check_option_content('Response', 41, None, 'optdata', 'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', None, 'client-id')
@@ -282,7 +282,7 @@ def test_flex_options_supersede_string():
     srv_msg.response_check_include_option('Response', None, 9)
     srv_msg.response_check_option_content('Response', 9, None, 'Relayed', 'Message')
     srv_msg.response_check_include_option('Response', None, 41)
-    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5EDT4\,M3.2.0/02:00\,M11.1.0/02:00')
+    srv_msg.response_check_option_content('Response', 41, None, 'optdata', 'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
 
 
 @pytest.mark.v6
@@ -331,7 +331,43 @@ def test_flex_options_all_actions():
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
-    # first client will trigger all changes
+    # this client will trigger one change
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:01:02:03:04:05:07')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(41)
+    srv_msg.client_requests_option(30)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.response_check_include_option('Response', None, 41)
+    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
+    srv_msg.response_check_include_option('Response', None, 30)
+    srv_msg.response_check_option_content('Response', 30, None, 'value', 'ntp.example.com.')
+    srv_msg.response_check_include_option('Response', None, 22)
+    srv_msg.response_check_option_content('Response', 22, None, 'addresses', '3000::2')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:01:02:03:04:05:07')
+    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(41)
+    srv_msg.client_requests_option(30)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.response_check_include_option('Response', None, 41)
+    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5EDT4,M3.2.0/02:00,M11.1.0/02:00')
+    srv_msg.response_check_include_option('Response', None, 30)
+    srv_msg.response_check_option_content('Response', 30, None, 'value', 'ntp.example.com.')
+    srv_msg.response_check_include_option('Response', None, 22)
+    srv_msg.response_check_option_content('Response', 22, None, 'addresses', '3000::2')
+
+    # client will trigger all changes
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
     srv_msg.client_does_include('Client', None, 'vendor-class')
@@ -345,13 +381,14 @@ def test_flex_options_all_actions():
     srv_msg.client_does_include('Client', None, 'fqdn')
     srv_msg.client_requests_option(41)
     srv_msg.client_requests_option(30)
+    srv_msg.client_requests_option(22)
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
     srv_msg.response_check_include_option('Response', "NOT", 30)
     srv_msg.response_check_include_option('Response', None, 41)
-    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5\,M4.3.0/02:00\,M13.2.0/02:00')
+    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5,M4.3.0/02:00,M13.2.0/02:00')
     srv_msg.response_check_include_option('Response', None, 22)
     srv_msg.response_check_option_content('Response', 22, None, 'addresses', '3000::1')
 
@@ -369,48 +406,17 @@ def test_flex_options_all_actions():
     srv_msg.client_does_include('Client', None, 'fqdn')
     srv_msg.client_requests_option(41)
     srv_msg.client_requests_option(30)
+    srv_msg.client_requests_option(22)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '2001:db8:1::1000')
+    srv_msg.response_check_include_option('Response', None, 3)
+    srv_msg.response_check_option_content('Response', 3, None, 'sub-option', 5)
+    srv_msg.response_check_suboption_content('Response', 5, 3, None, 'addr', '2001:db8:1::1000')
     srv_msg.response_check_include_option('Response', "NOT", 30)
     srv_msg.response_check_include_option('Response', None, 41)
-    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5\,M4.3.0/02:00\,M13.2.0/02:00')
+    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5,M4.3.0/02:00,M13.2.0/02:00')
     srv_msg.response_check_include_option('Response', None, 22)
     srv_msg.response_check_option_content('Response', 22, None, 'addresses', '3000::1')
 
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:01:02:03:04:05:07')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
-    srv_msg.client_requests_option(41)
-    srv_msg.client_requests_option(30)
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, 41)
-    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5EDT4\,M3.2.0/02:00,M11.1.0/02:00')
-    srv_msg.response_check_include_option('Response', None, 30)
-    srv_msg.response_check_option_content('Response', 30, None, 'value', 'ntp.example.com.')
-    srv_msg.response_check_option_content('Response', 22, None, 'addresses', '3000::2')
-
-    misc.test_procedure()
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:01:02:03:04:05:07')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_requests_option(41)
-    srv_msg.client_requests_option(30)
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, 41)
-    srv_msg.response_check_option_content('Response', 41, None, 'optdata', r'EST5EDT4\,M3.2.0/02:00,M11.1.0/02:00')
-    srv_msg.response_check_include_option('Response', None, 30)
-    srv_msg.response_check_option_content('Response', 30, None, 'value', 'ntp.example.com.')
-    srv_msg.response_check_option_content('Response', 22, None, 'addresses', '3000::2')

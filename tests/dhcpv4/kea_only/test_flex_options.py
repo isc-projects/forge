@@ -177,7 +177,7 @@ def test_flex_options_remove_non_existing():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
     srv_msg.response_check_include_option('Response', 'NOT ', 5)
 
     misc.test_procedure()
@@ -185,12 +185,12 @@ def test_flex_options_remove_non_existing():
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('hostname', 'myuniquehostname')
     srv_msg.client_requests_option(5)
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
+    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
     srv_msg.response_check_include_option('Response', 'NOT ', 5)
 
 
@@ -210,7 +210,7 @@ def test_flex_options_supersede():
                 "options": [
                     {
                         "code": 5,
-                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', 0x0a000001,'')"
+                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', '10.0.0.1','')"
                     }
                 ]
             }
@@ -288,7 +288,7 @@ def test_flex_options_all_actions():
                     {
                         # change option 5 to 10.0.0.1 if hostname is myuniquehostname
                         "code": 5,
-                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', 0x0a000001,'')"
+                        "supersede": "ifelse(option[host-name].text == 'myuniquehostname', 10.0.0.1,'')"
                     },
                     {
                         # remove option 6 domain-name-servers if client has a reservation
@@ -323,13 +323,16 @@ def test_flex_options_all_actions():
     srv_msg.client_sets_value('Client', 'chaddr', '01:02:03:04:05:06')
     srv_msg.client_does_include_with_value('hostname', 'myuniquehostname')
     srv_msg.client_requests_option(5)
+    srv_msg.client_requests_option(6)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', None, 'OFFER')
     srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.200')
     srv_msg.response_check_include_option('Response', 'NOT ', 6)
+    srv_msg.response_check_include_option('Response', None, 5)
     srv_msg.response_check_option_content('Response', 5, None, 'value', '10.0.0.1')
+    srv_msg.response_check_include_option('Response', None, 67)
     srv_msg.response_check_option_content('Response', 67, None, 'value', 'myuniquehostname.boot')
 
     misc.test_procedure()
@@ -337,6 +340,7 @@ def test_flex_options_all_actions():
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('hostname', 'myuniquehostname')
     srv_msg.client_requests_option(5)
+    srv_msg.client_requests_option(6)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.200')
     srv_msg.client_send_msg('REQUEST')
 
@@ -350,6 +354,7 @@ def test_flex_options_all_actions():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '01:01:01:01:05:06')
     srv_msg.client_requests_option(5)
+    srv_msg.client_requests_option(6)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
@@ -363,6 +368,7 @@ def test_flex_options_all_actions():
     srv_msg.client_sets_value('Client', 'chaddr', '01:01:01:04:05:06')
     srv_msg.client_copy_option('server_id')
     srv_msg.client_requests_option(5)
+    srv_msg.client_requests_option(6)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
     srv_msg.client_send_msg('REQUEST')
 
