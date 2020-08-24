@@ -5,6 +5,7 @@ import logging
 
 import pytest
 
+import srv_msg
 from cb_model import setup_server_for_config_backend_cmds, get_cfg_default
 from dhcp4_scen import get_address, get_rejected
 
@@ -133,43 +134,89 @@ def test_subnet_and_timers_renew_less(dhcp_version):  # pylint: disable=unused-a
 
 
 @pytest.mark.v4
-@pytest.mark.v6
-def test_subnet_and_timers_renew_greater(dhcp_version):
+def test_subnet_and_timers_renew_greater_4():
     # change both renew and rebind timers on different levels (global and subnet)
-    # and check if these changes are properly reflected in received ACKs
-    # in this case renew is always greater than rebind time,
-    # ie. renew should be ignored and not present in responses
+    # and check that if renew timer is greater than rebind timer
+    # then an error is returned
 
     cfg = setup_server_for_config_backend_cmds()
 
     # define one, default subnet
     cfg.add_subnet()
 
-    # check getting address from this subnet
-    get_address()
+    cmd = {'command': 'remote-subnet4-set',
+           'arguments': {'remote': {'type': 'mysql'},
+                         'server-tags': ['all'],
+                         'subnets': [{'id': 1,
+                                      'interface': 'enp0s10',
+                                      'pools': [{'option-data': [],
+                                                 'pool': '192.168.50.1-192.168.50.100'}],
+                                      'rebind-timer': 10,
+                                      'renew-timer': 100,
+                                      'shared-network-name': '',
+                                      'subnet': '192.168.50.0/24'}]}}
 
-    # TODO: add test for bug #505, renew_timer < rebind_timer
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    # set renew and rebind timers on global level
-    # and as renew is greater rebind check if only rebind is present in ACK packet
-    cfg.set_global_parameter(renew_timer=100, rebind_timer=10)
-    get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=10)
+    assert response == {
+        "result": 1,
+        "text": "subnet configuration failed: the value of renew-timer (100) "
+                "is greater than the value of rebind-timer (10)"}
 
-    # set renew and rebind timers on subnet level
-    # and as renew is greater rebind check if only rebind is present in ACK packet
-    cfg.update_subnet(renew_timer=100, rebind_timer=10)
-    get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=10)
+    cmd = {'command': 'remote-global-parameter4-set',
+           'arguments': {'parameters': {'rebind-timer': 10, 'renew-timer': 100},
+                         'remote': {'type': 'mysql'},
+                         'server-tags': ['all']}}
 
-    # change renew and rebind timers on subnet level
-    # and as renew is greater rebind check if only rebind is present in ACK packet
-    cfg.update_subnet(renew_timer=200, rebind_timer=20)
-    get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=20)
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    # change renew and rebind timers on global level
-    # and check if they are not reflected in ACK packet,
-    # they still should be taken from subnet
-    cfg.set_global_parameter(renew_timer=300, rebind_timer=30)
-    get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=20)
+    assert response == {
+        "result": 1,
+        "text": "subnet configuration failed: the value of renew-timer (100) "
+                "is greater than the value of rebind-timer (10)"}
+
+
+@pytest.mark.v6
+def test_subnet_and_timers_renew_greater_6():
+    # change both renew and rebind timers on different levels (global and subnet)
+    # and check that if renew timer is greater than rebind timer
+    # then an error is returned
+
+    cfg = setup_server_for_config_backend_cmds()
+
+    # define one, default subnet
+    cfg.add_subnet()
+
+    cmd = {'command': 'remote-subnet6-set',
+           'arguments': {'remote': {'type': 'mysql'},
+                         'server-tags': ['all'],
+                         'subnets': [{'id': 1,
+                                      'interface': 'enp0s10',
+                                      'pools': [{'option-data': [],
+                                                 'pool': '2001:db8:1::1-2001:db8:1::100'}],
+                                      'rebind-timer': 10,
+                                      'renew-timer': 100,
+                                      'shared-network-name': '',
+                                      'subnet': '2001:db8:1::/64'}]}}
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert response == {
+        "result": 1,
+        "text": "subnet configuration failed: the value of renew-timer (100) "
+                "is greater than the value of rebind-timer (10)"}
+
+    cmd = {'command': 'remote-global-parameter6-set',
+           'arguments': {'parameters': {'rebind-timer': 10, 'renew-timer': 100},
+                         'remote': {'type': 'mysql'},
+                         'server-tags': ['all']}}
+
+    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+
+    assert response == {
+        "result": 1,
+        "text": "subnet configuration failed: the value of renew-timer (100) "
+                "is greater than the value of rebind-timer (10)"}
 
 
 @pytest.mark.v4
@@ -225,11 +272,7 @@ def test_subnet_and_timers_mix(dhcp_version):
     # check getting address from this subnet
     get_address()
 
-    # change renew and rebind timers that they are either greater
-    # less or equal to each other, do it on global level
-    cfg.set_global_parameter(renew_timer=1500, rebind_timer=1000)
-    get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1000)
-
+    # change renew and rebind timers that they are less or equal to each other, do it on global level
     cfg.set_global_parameter(renew_timer=1500, rebind_timer=1500)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1500)
 
@@ -240,9 +283,6 @@ def test_subnet_and_timers_mix(dhcp_version):
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1000)
 
     # now change on subnet level in all directions
-    cfg.update_subnet(renew_timer=1500, rebind_timer=1000)
-    get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1000)
-
     cfg.update_subnet(renew_timer=1500, rebind_timer=1500)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1500)
 
