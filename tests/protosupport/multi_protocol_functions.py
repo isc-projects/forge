@@ -459,7 +459,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
         socket_path = world.f_cfg.run_join(socket_name)
     else:
         socket_path = world.f_cfg.run_join('control_socket')
-    cmd = 'socat UNIX:' + socket_path + ' - <command_file'
+    cmd = 'socat -t 5 UNIX:' + socket_path + ' - <command_file'
 
     attempts = 0
     while attempts < 3:
