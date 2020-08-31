@@ -48,15 +48,15 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user():
     misc.test_procedure()
     # Send a query from an unregistered user
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '1000::5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_1.txt')
@@ -83,15 +83,15 @@ def test_user_check_hook_IA_NA_with_registry_known_user():
     misc.test_procedure()
     # Send a query from a registered user
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:11:02:03:04:05:06')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_2.txt')

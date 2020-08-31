@@ -116,7 +116,7 @@ def client_does_include_with_value(opt_type, value):
 
 
 @step('(\S+) does (NOT )?include (\S+).')
-def client_does_include(sender_type, yes_or_not, opt_type):
+def client_does_include(sender_type, opt_type):
     # add " option." to the end of the step - change all tests!
     """
     You can choose to include options to message (support for every option listed
@@ -198,50 +198,48 @@ def send_dont_wait_for_message():
 
 
 @step('Server (\S+) (NOT )?respond with (\w+) message.')
-def send_wait_for_message(server_type, yes_or_no, message):
+def send_wait_for_message(server_type, message, expect_response=True):
     """
     This step causes to send message to server and capture respond.
     """
-    presence = True if yes_or_no is None else False
-    return dhcpmsg.send_wait_for_message(server_type, presence, message)
+    return dhcpmsg.send_wait_for_message(server_type, expect_response, message)
 
 
 @step('(Response|Relayed Message) MUST (NOT )?include option (\d+).')
-def response_check_include_option(resp_rel, yes_or_no, opt_code):
+def response_check_include_option(opt_code, expect_include=True):
     """
     Use this step for parsing respond. For more details please read manual section "Parsing respond"
     """
-    include = False if yes_or_no in ["NOT ", "NOT", False] else True
-    dhcpmsg.response_check_include_option(include, opt_code)
+    dhcpmsg.response_check_include_option(expect_include, opt_code)
 
 
 @step('(Response|Relayed Message) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_content(resp_rel, expect, data_type, expected):
+def response_check_content(data_type, value, expected=True):
     """
     """
     #expect, data_type, expected = test_define_value(expect, data_type, expected)
-    dhcpmsg.response_check_content(expect, data_type, expected)
+    dhcpmsg.response_check_content(data_type, value, expected)
 
 
 @step('(Response|Relayed Message) option (\d+) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_option_content(resp_rel, opt_code, expect, data_type, expected_value):
+def response_check_option_content(opt_code, data_type, expected_value, expect_include=True):
     """
     Detailed parsing of received option. For more details please read manual section "Parsing respond"
     """
     data_type, expected_value = test_define_value(data_type, expected_value)
     if data_type == "sub-option":
-        dhcpmsg.response_check_include_suboption(opt_code, expect, expected_value)
+        dhcpmsg.response_check_include_suboption(opt_code, expect_include, expected_value)
     else:
-        dhcpmsg.response_check_option_content(opt_code, expect, data_type, expected_value)
+        dhcpmsg.response_check_option_content(opt_code, expect_include, data_type, expected_value)
 
 
 @step('(Response|Relayed Message) sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
-def response_check_suboption_content(resp_rel, subopt_code, opt_code, expect, data_type, expected):
+def response_check_suboption_content(subopt_code, opt_code, data_type, value, expect_include=True):
     """
     Some options can include suboptions, we can test them too.
     For more details please read manual section "Parsing respond"
     """
-    dhcpmsg.response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected)
+    dhcpmsg.response_check_suboption_content(subopt_code, opt_code, expect_include, data_type, value)
 
 
 def get_suboption(opt_code, subopt_code):
@@ -266,12 +264,11 @@ def client_send_dns_query():
 
 ##checking DNS respond
 @step('DNS server (\S+) (NOT )?respond with DNS query.')
-def send_wait_for_query(type, yes_or_no):
+def send_wait_for_query(type, expect_include=True):
     """
     This step causes to send message to server and capture respond.
     """
-    presence = True if yes_or_no is None else False
-    dns.send_wait_for_query(type, presence)
+    dns.send_wait_for_query(type, expect_include)
 
 
 @step('Received DNS query MUST (NOT )?contain (\S+) with value (\S+).')
@@ -281,14 +278,14 @@ def dns_check(expect, data_type, expected_data_value):
 
 
 @step('Received DNS query MUST include (NOT )?empty (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) part.')
-def dns_option(expect_empty, part_name):
-    dns.check_dns_option(expect_empty, str(part_name))
+def dns_option(part_name, expect_include=True):
+    dns.check_dns_option(expect_include, str(part_name))
     # later probably we'll have to change MUST on (\S+) for sth like MAY
 
 
 @step('Received DNS part (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) MUST (NOT )?contain (\S+) with value (\S+).')
-def dns_option_content(part_name, expect, value_name, value):
-    dns.dns_option_content(part_name, expect, str(value_name), str(value))
+def dns_option_content(part_name, value_name, value, expect_include=True):
+    dns.dns_option_content(part_name, expect_include, str(value_name), str(value))
     # later probably we'll have to change MUST on (\S+) for sth like MAY
 
 
@@ -599,7 +596,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 
 @step('Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
-def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port='8000', exp_result=0, exp_failed=False):
+def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False):
     if isinstance(command, dict):
         substitute_vars(command)
         address, port = test_define_value(address, port)

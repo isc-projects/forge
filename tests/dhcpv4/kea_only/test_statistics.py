@@ -88,14 +88,14 @@ def test_stats_basic():
             cnt += 1
     assert len(stat_cmds) == cnt
 
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     stats.s['pkt4-offer-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
@@ -105,13 +105,13 @@ def test_stats_basic():
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     stats.s['pkt4-ack-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
@@ -132,14 +132,14 @@ def test_stats_basic():
     stats.compare()
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     stats.s['pkt4-offer-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
@@ -149,13 +149,13 @@ def test_stats_basic():
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     stats.s['pkt4-ack-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
@@ -179,8 +179,8 @@ def test_stats_basic():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
     stats.s['pkt4-offer-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
@@ -193,8 +193,8 @@ def test_stats_basic():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
     stats.s['pkt4-ack-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
@@ -217,12 +217,12 @@ def test_stats_basic():
     stats.compare()
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '$(CIADDR)')
     srv_msg.client_send_msg('INFORM')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
     stats.s['pkt4-ack-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
@@ -267,20 +267,20 @@ def test_stats_remove_reset():
     assert result['arguments']['pkt4-received'][0][0] == 0
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
 
     assert get_stat('pkt4-received') == [2, 1, 0]
     srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-remove","arguments": {"name": "pkt4-received"}}')
@@ -288,20 +288,20 @@ def test_stats_remove_reset():
     assert result == {'arguments': {}, 'result': 0}
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
 
     assert get_stat('pkt4-received') == [2, 1]
     srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-reset","arguments": {"name": "pkt4-received"}}')
@@ -309,20 +309,20 @@ def test_stats_remove_reset():
     assert result['arguments']['pkt4-received'][0][0] == 0
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
 
     assert get_stat('pkt4-received') == [2, 1, 0]
 
@@ -339,11 +339,11 @@ def test_stats_reconfigure():
     assert get_stat('subnet[1].total-addresses') == [10]
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
     assert get_stat('pkt4-received') == [1, 0]
 
     misc.test_setup()
@@ -387,11 +387,11 @@ def test_stats_sample_count():
 
     misc.test_procedure()
     for _ in range(3):
-        srv_msg.client_requests_option('1')
+        srv_msg.client_requests_option(1)
         srv_msg.client_send_msg('DISCOVER')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+        srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     assert get_stat('pkt4-received') == [3, 2]
 
@@ -415,11 +415,11 @@ def test_stats_sample_age():
 
     misc.test_procedure()
     for _ in range(3):
-        srv_msg.client_requests_option('1')
+        srv_msg.client_requests_option(1)
         srv_msg.client_send_msg('DISCOVER')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+        srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     time.sleep(1)
 
@@ -432,7 +432,7 @@ def test_X():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3000:100::/64',
                                                        '3000:100::5-3000:100::ff')
-    srv_control.config_srv_prefix('3000::', '0', '90', '92')
+    srv_control.config_srv_prefix('3000::', 0, 90, 92)
     srv_control.open_control_channel('control_socket2')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
@@ -442,7 +442,7 @@ def test_X():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_prefix('3000::', '0', '90', '92')
+    srv_control.config_srv_prefix('3000::', 0, 90, 92)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -450,7 +450,7 @@ def test_X():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_prefix('3000::', '0', '90', '92')
+    srv_control.config_srv_prefix('3000::', 0, 90, 92)
     srv_control.open_control_channel('control_socket2')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'reconfigured')

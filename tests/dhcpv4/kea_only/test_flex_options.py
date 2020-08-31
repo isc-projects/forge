@@ -37,9 +37,9 @@ def test_flex_options_add():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'myuniquehostname.boot')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(67, 'value', 'myuniquehostname.boot')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:01')
@@ -49,18 +49,18 @@ def test_flex_options_add():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'myuniquehostname.boot')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(67, 'value', 'myuniquehostname.boot')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:02')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'no-boot-file')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_option_content(67, 'value', 'no-boot-file')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:01')
@@ -69,9 +69,9 @@ def test_flex_options_add():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'no-boot-file')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_option_content(67, 'value', 'no-boot-file')
 
 
 @pytest.mark.v4
@@ -105,9 +105,9 @@ def test_flex_options_remove():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '199.199.199.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:02')
@@ -117,9 +117,9 @@ def test_flex_options_remove():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '199.199.199.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:03')
@@ -128,9 +128,9 @@ def test_flex_options_remove():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
-    srv_msg.response_check_include_option('Response', 'NOT ', 5)
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(5, expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:03')
@@ -141,9 +141,9 @@ def test_flex_options_remove():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
-    srv_msg.response_check_include_option('Response', 'NOT ', 5)
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(5, expect_include=False)
 
 
 @pytest.mark.v4
@@ -176,9 +176,9 @@ def test_flex_options_remove_non_existing():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', 'NOT ', 5)
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(5, expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:03')
@@ -189,9 +189,9 @@ def test_flex_options_remove_non_existing():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', 'NOT ', 5)
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(5, expect_include=False)
 
 
 @pytest.mark.v4
@@ -225,10 +225,10 @@ def test_flex_options_supersede():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, 5)
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '199.199.199.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:02')
@@ -238,10 +238,10 @@ def test_flex_options_supersede():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, 5)
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '199.199.199.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:03')
@@ -250,10 +250,10 @@ def test_flex_options_supersede():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
-    srv_msg.response_check_include_option('Response', None, 5)
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '10.0.0.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '10.0.0.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:03')
@@ -264,10 +264,10 @@ def test_flex_options_supersede():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.2')
-    srv_msg.response_check_include_option('Response', None, 5)
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '10.0.0.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '10.0.0.1')
 
 
 @pytest.mark.v4
@@ -327,13 +327,13 @@ def test_flex_options_all_actions():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.200')
-    srv_msg.response_check_include_option('Response', 'NOT ', 6)
-    srv_msg.response_check_include_option('Response', None, 5)
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '10.0.0.1')
-    srv_msg.response_check_include_option('Response', None, 67)
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'myuniquehostname.boot')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.200')
+    srv_msg.response_check_include_option(6, expect_include=False)
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '10.0.0.1')
+    srv_msg.response_check_include_option(67)
+    srv_msg.response_check_option_content(67, 'value', 'myuniquehostname.boot')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '01:02:03:04:05:06')
@@ -345,11 +345,11 @@ def test_flex_options_all_actions():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.200')
-    srv_msg.response_check_include_option('Response', 'NOT ', 6)
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '10.0.0.1')
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'myuniquehostname.boot')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.200')
+    srv_msg.response_check_include_option(6, expect_include=False)
+    srv_msg.response_check_option_content(5, 'value', '10.0.0.1')
+    srv_msg.response_check_option_content(67, 'value', 'myuniquehostname.boot')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '01:01:01:01:05:06')
@@ -358,11 +358,11 @@ def test_flex_options_all_actions():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', 6, None, 'value', '100.100.100.1')
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'no-boot-file')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(6, 'value', '100.100.100.1')
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(67, 'value', 'no-boot-file')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '01:01:01:04:05:06')
@@ -373,7 +373,7 @@ def test_flex_options_all_actions():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', 5, None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', 67, None, 'value', 'no-boot-file')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(67, 'value', 'no-boot-file')

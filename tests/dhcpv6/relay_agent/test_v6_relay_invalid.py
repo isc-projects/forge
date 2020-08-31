@@ -22,31 +22,31 @@ def test_v6_relay_invalid_with_client_id():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'client-id')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'client-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -64,33 +64,33 @@ def test_v6_relay_invalid_with_server_id():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
     srv_msg.client_sets_value('RelayAgent',
                               'server_id',
                               '00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8')
-    srv_msg.client_does_include('RelayAgent', None, 'server-id')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'server-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -109,30 +109,30 @@ def test_v6_relay_invalid_options_preference():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'preference')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'preference')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -151,30 +151,30 @@ def test_v6_relay_invalid_options_time():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'time')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'time')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -193,32 +193,32 @@ def test_v6_relay_invalid_options_option_request():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -237,32 +237,32 @@ def test_v6_relay_invalid_options_server_unicast():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'server-unicast')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'server-unicast')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -281,31 +281,31 @@ def test_v6_relay_invalid_options_status_code():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'status-code')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'status-code')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -324,31 +324,31 @@ def test_v6_relay_invalid_options_rapid_commit():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'rapid-commit')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'rapid-commit')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -367,30 +367,30 @@ def test_v6_relay_invalid_options_reconfigure():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'reconfigure')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'reconfigure')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -409,29 +409,29 @@ def test_v6_relay_invalid_options_reconfigure_accept():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     # add options to relay message
-    srv_msg.client_does_include('RelayAgent', None, 'reconfigure-accept')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'reconfigure-accept')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')

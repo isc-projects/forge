@@ -17,7 +17,7 @@ def _get_offer():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
 
 @pytest.mark.v4

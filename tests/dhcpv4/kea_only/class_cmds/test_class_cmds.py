@@ -23,7 +23,7 @@ def _setup_server_for_class_cmds(dhcp_version):
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     else:
         srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-    srv_control.config_client_classification('0', 'Client_Class_1')
+    srv_control.config_client_classification(0, 'Client_Class_1')
 
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -147,8 +147,8 @@ def test_add_class_and_check_traffic(dhcp_version):
         srv_msg.client_send_msg('DISCOVER')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-        srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+        srv_msg.send_wait_for_message('MUST', 'OFFER')
+        srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
         misc.test_procedure()
         srv_msg.client_copy_option('server_id')
@@ -158,42 +158,37 @@ def test_add_class_and_check_traffic(dhcp_version):
         srv_msg.client_send_msg('REQUEST')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'ACK')
-        srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
-        srv_msg.response_check_include_option('Response', None, '1')
-        srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+        srv_msg.send_wait_for_message('MUST', 'ACK')
+        srv_msg.response_check_content('yiaddr', '192.168.50.50')
+        srv_msg.response_check_include_option(1)
+        srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     else:
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:11:11:11:11:11:11')
-        srv_msg.client_does_include('Client', None, 'client-id')
-        srv_msg.client_does_include('Client', None, 'IA-NA')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_does_include('Client', 'IA-NA')
         srv_msg.client_send_msg('SOLICIT')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-        srv_msg.response_check_include_option('Response', None, '1')
-        srv_msg.response_check_include_option('Response', None, '2')
-        srv_msg.response_check_include_option('Response', None, '3')
-        srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '13')
-        srv_msg.response_check_suboption_content('Response', '13', '3', None, 'statuscode', '2')
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+        srv_msg.response_check_include_option(1)
+        srv_msg.response_check_include_option(2)
+        srv_msg.response_check_include_option(3)
+        srv_msg.response_check_option_content(3, 'sub-option', 13)
+        srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
 
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-        srv_msg.client_does_include('Client', None, 'client-id')
-        srv_msg.client_does_include('Client', None, 'IA-NA')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_does_include('Client', 'IA-NA')
         srv_msg.client_send_msg('SOLICIT')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-        srv_msg.response_check_include_option('Response', None, '1')
-        srv_msg.response_check_include_option('Response', None, '2')
-        srv_msg.response_check_include_option('Response', None, '3')
-        srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-        srv_msg.response_check_suboption_content('Response',
-                                                 '5',
-                                                 '3',
-                                                 None,
-                                                 'addr',
-                                                 '2001:db8:a::1')
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+        srv_msg.response_check_include_option(1)
+        srv_msg.response_check_include_option(2)
+        srv_msg.response_check_include_option(3)
+        srv_msg.response_check_option_content(3, 'sub-option', 5)
+        srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')
 
 
 def test_negative_add_unknown_field(dhcp_version):  # pylint: disable=unused-argument

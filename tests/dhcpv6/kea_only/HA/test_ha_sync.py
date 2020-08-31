@@ -19,13 +19,13 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.config_srv_prefix('2001:db8:2::', '0', '48', '91')
+    srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -33,12 +33,12 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
 
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
-    srv_control.add_parameter_to_ha_hook('sync-page-limit', '2')
+    srv_control.add_parameter_to_ha_hook('sync-page-limit', 2)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
@@ -51,22 +51,22 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     # HA SERVER 2
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.config_srv_prefix('2001:db8:2::', '0', '48', '91')
+    srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
-    srv_control.add_parameter_to_ha_hook('sync-page-limit', '2')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
+    srv_control.add_parameter_to_ha_hook('sync-page-limit', 2)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
@@ -77,7 +77,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
     misc.test_procedure()
-    srv_msg.forge_sleep('2', 'seconds')
+    srv_msg.forge_sleep(2, 'seconds')
 
     tmp = world.f_cfg.show_packets_from
     world.f_cfg.show_packets_from = ""
@@ -88,43 +88,39 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
 
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', duid + str(each))
-        srv_msg.client_does_include('Client', None, 'client-id')
+        srv_msg.client_does_include('Client', 'client-id')
         for each_ia in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_id', ia_1 + each_ia)
-            srv_msg.client_does_include('Client', None, 'IA-NA')
+            srv_msg.client_does_include('Client', 'IA-NA')
 
         for each_pd in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_pd', ia_1 + each_pd)
-            srv_msg.client_does_include('Client', None, 'IA-PD')
+            srv_msg.client_does_include('Client', 'IA-PD')
         srv_msg.client_send_msg('SOLICIT')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', duid + str(each))
-        srv_msg.client_does_include('Client', None, 'client-id')
+        srv_msg.client_does_include('Client', 'client-id')
 
         for each_ia in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_id', ia_1 + each_ia)
-            srv_msg.client_does_include('Client', None, 'IA-NA')
+            srv_msg.client_does_include('Client', 'IA-NA')
 
         for each_pd in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_pd', ia_1 + each_pd)
-            srv_msg.client_does_include('Client', None, 'IA-PD')
+            srv_msg.client_does_include('Client', 'IA-PD')
 
         srv_msg.client_copy_option('server-id')
         srv_msg.client_send_msg('REQUEST')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-        srv_msg.response_check_include_option('Response', None, '2')
-        srv_msg.response_check_option_content('Response',
-                                              '2',
-                                              None,
-                                              'duid',
-                                              '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
-    srv_msg.forge_sleep('2', 'seconds')
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.response_check_include_option(2)
+        srv_msg.response_check_option_content(2, 'duid', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
+    srv_msg.forge_sleep(2, 'seconds')
     world.f_cfg.show_packets_from = tmp
 
     srv_msg.remote_log_includes_line('$(MGMT_ADDRESS_2)',
@@ -141,7 +137,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
                                      None,
                                      'Bulk apply of 10 IPv6 leases completed.')
     srv_control.start_srv('DHCP', 'stopped')
-    srv_msg.forge_sleep('2', 'seconds')
+    srv_msg.forge_sleep(2, 'seconds')
 
     tmp = world.f_cfg.show_packets_from
     world.f_cfg.show_packets_from = ""
@@ -151,45 +147,41 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
 
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', duid + str(each))
-        srv_msg.client_does_include('Client', None, 'client-id')
+        srv_msg.client_does_include('Client', 'client-id')
         for each_ia in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_id', ia_1 + each_ia)
-            srv_msg.client_does_include('Client', None, 'IA-NA')
+            srv_msg.client_does_include('Client', 'IA-NA')
 
         for each_pd in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_pd', ia_1 + each_pd)
-            srv_msg.client_does_include('Client', None, 'IA-PD')
+            srv_msg.client_does_include('Client', 'IA-PD')
         srv_msg.client_send_msg('SOLICIT')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', duid + str(each))
-        srv_msg.client_does_include('Client', None, 'client-id')
+        srv_msg.client_does_include('Client', 'client-id')
 
         for each_ia in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_id', ia_1 + each_ia)
-            srv_msg.client_does_include('Client', None, 'IA-NA')
+            srv_msg.client_does_include('Client', 'IA-NA')
 
         for each_pd in range(test_range):
             srv_msg.client_sets_value('Client', 'ia_pd', ia_1 + each_pd)
-            srv_msg.client_does_include('Client', None, 'IA-PD')
+            srv_msg.client_does_include('Client', 'IA-PD')
 
         srv_msg.client_copy_option('server-id')
         srv_msg.client_send_msg('REQUEST')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
 
-        srv_msg.response_check_include_option('Response', None, '2')
-        srv_msg.response_check_option_content('Response',
-                                              '2',
-                                              None,
-                                              'duid',
-                                              '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
+        srv_msg.response_check_include_option(2)
+        srv_msg.response_check_option_content(2, 'duid', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     srv_control.start_srv('DHCP', 'started')
-    srv_msg.forge_sleep('4', 'seconds')
+    srv_msg.forge_sleep(4, 'seconds')
     # now we should have 180 leases in HEA server 1
 
 
@@ -205,9 +197,9 @@ def test_v6_hooks_HA_page_size_sync():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -215,12 +207,12 @@ def test_v6_hooks_HA_page_size_sync():
 
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
-    srv_control.add_parameter_to_ha_hook('sync-page-limit', '10')
+    srv_control.add_parameter_to_ha_hook('sync-page-limit', 10)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
@@ -235,21 +227,21 @@ def test_v6_hooks_HA_page_size_sync():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
-    srv_control.add_parameter_to_ha_hook('sync-page-limit', '10')
+    srv_control.add_parameter_to_ha_hook('sync-page-limit', 10)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
@@ -259,13 +251,13 @@ def test_v6_hooks_HA_page_size_sync():
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
 
     misc.test_procedure()
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
 
-    srv_msg.loops('SOLICIT', 'REPLY', '100')
+    srv_msg.loops('SOLICIT', 'REPLY', 100)
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     misc.pass_criteria()
     srv_msg.log_contains('DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv6 leases starting from address 2001:db8:1::5b')
@@ -291,9 +283,9 @@ def test_v6_hooks_HA_page_size_sync_2():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -301,12 +293,12 @@ def test_v6_hooks_HA_page_size_sync_2():
 
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
-    srv_control.add_parameter_to_ha_hook('sync-page-limit', '10')
+    srv_control.add_parameter_to_ha_hook('sync-page-limit', 10)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
@@ -321,21 +313,21 @@ def test_v6_hooks_HA_page_size_sync_2():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
-    srv_control.add_parameter_to_ha_hook('sync-page-limit', '15')
+    srv_control.add_parameter_to_ha_hook('sync-page-limit', 15)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
@@ -345,14 +337,14 @@ def test_v6_hooks_HA_page_size_sync_2():
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
 
     misc.test_procedure()
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
 
     # create leases in HA 1
-    srv_msg.loops('SOLICIT', 'REPLY', '100')
+    srv_msg.loops('SOLICIT', 'REPLY', 100)
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
     # sync HA 2 with HA 1
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     misc.pass_criteria()
     srv_msg.log_contains('DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 15 IPv6 leases starting from address 2001:db8:1::5')
@@ -379,15 +371,15 @@ def test_v6_hooks_HA_page_size_sync_2():
     srv_control.start_srv('DHCP', 'stopped')
 
     misc.test_procedure()
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
 
     # create leases in HA 2
-    srv_msg.loops('SOLICIT', 'REPLY', '100')
+    srv_msg.loops('SOLICIT', 'REPLY', 100)
     srv_control.clear_some_data('logs')
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     misc.pass_criteria()
     srv_msg.log_contains('DHCPSRV_MEMFILE_ADD_ADDR6 adding IPv6 lease with address 2001:db8:1::c9')
@@ -406,9 +398,9 @@ def test_v6_hooks_HA_page_size_sync_large():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -416,10 +408,10 @@ def test_v6_hooks_HA_page_size_sync_large():
 
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
@@ -434,18 +426,18 @@ def test_v6_hooks_HA_page_size_sync_large():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
@@ -454,7 +446,7 @@ def test_v6_hooks_HA_page_size_sync_large():
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
     # UNCOMMENT:
     # Exchange messages SOLICIT - REPLY 200000 times.
 

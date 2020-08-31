@@ -531,7 +531,7 @@ def open_control_channel(socket_name=None):
 
 
 @step('Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
-def agent_control_channel(host_address='$(MGMT_ADDRESS)', host_port='8000', socket_name='control_socket'):
+def agent_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket_name='control_socket'):
     host_address, host_port = test_define_value(host_address, host_port)
     dhcp.agent_control_channel(host_address, host_port, socket_name)
 

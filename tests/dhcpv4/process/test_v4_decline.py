@@ -25,8 +25,8 @@ def test_v4_decline_success_long_decline_period():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
@@ -36,8 +36,8 @@ def test_v4_decline_success_long_decline_period():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
@@ -75,8 +75,8 @@ def test_v4_decline_success_short_decline_period():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
@@ -86,8 +86,8 @@ def test_v4_decline_success_short_decline_period():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
@@ -108,7 +108,7 @@ def test_v4_decline_success_short_decline_period():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:44')
@@ -116,8 +116,8 @@ def test_v4_decline_success_short_decline_period():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
 
 @pytest.mark.v4
@@ -135,8 +135,8 @@ def test_v4_decline_fail_without_serverid():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
@@ -146,8 +146,8 @@ def test_v4_decline_fail_without_serverid():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
@@ -173,8 +173,8 @@ def test_v4_decline_fail_without_serverid():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     # @v4 @dhcp4 @decline
     # Scenario: v4.decline.fail-without-serverid
@@ -232,8 +232,8 @@ def test_v4_decline_fail_without_requested_ip_address():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
@@ -243,8 +243,8 @@ def test_v4_decline_fail_without_requested_ip_address():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
@@ -270,8 +270,8 @@ def test_v4_decline_fail_without_requested_ip_address():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
     # client should get back this address because it's not in declined period
 
 
@@ -290,10 +290,10 @@ def test_v4_decline_fail_client_id_not_included():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, '61')
-    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040122')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(61, 'value', '00010203040122')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -303,10 +303,10 @@ def test_v4_decline_fail_client_id_not_included():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, '61')
-    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040122')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(61, 'value', '00010203040122')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
@@ -331,10 +331,10 @@ def test_v4_decline_fail_client_id_not_included():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, '61')
-    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040122')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(61, 'value', '00010203040122')
 
 
 @pytest.mark.v4
@@ -351,10 +351,10 @@ def test_v4_decline_fail_different_client_id():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, '61')
-    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040111')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(61, 'value', '00010203040111')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -363,10 +363,10 @@ def test_v4_decline_fail_different_client_id():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, '61')
-    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040111')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(61, 'value', '00010203040111')
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '00010203040666')
@@ -383,7 +383,7 @@ def test_v4_decline_fail_different_client_id():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'NAK')
+    srv_msg.send_wait_for_message('MUST', 'NAK')
 
 
 @pytest.mark.v4
@@ -399,8 +399,8 @@ def test_v4_decline_fail_different_chaddr():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -408,8 +408,8 @@ def test_v4_decline_fail_different_chaddr():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -427,4 +427,4 @@ def test_v4_decline_fail_different_chaddr():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'NAK')
+    srv_msg.send_wait_for_message('MUST', 'NAK')

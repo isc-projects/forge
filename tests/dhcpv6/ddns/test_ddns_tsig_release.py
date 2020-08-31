@@ -28,7 +28,7 @@ def test_ddns6_tsig_sha1_forw_and_rev_release():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_control.use_dns_set_number('3')
+    srv_control.use_dns_set_number(3)
     srv_control.start_srv('DNS', 'started')
 
     misc.test_procedure()
@@ -36,47 +36,47 @@ def test_ddns6_tsig_sha1_forw_and_rev_release():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_save_option_count('1', 'IA_NA')
-    srv_msg.client_save_option_count('1', 'server-id')
-    srv_msg.client_add_saved_option_count('1', 'DONT ')
+    srv_msg.client_save_option_count(1, 'IA_NA')
+    srv_msg.client_save_option_count(1, 'server-id')
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-    srv_msg.client_does_include('Client', None, 'fqdn')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
-    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(39)
+    srv_msg.response_check_option_content(39, 'flags', 'S')
+    srv_msg.response_check_option_content(39, 'fqdn', 'sth6.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', '2001:db8:1::50')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', '2001:db8:1::50')
 
     misc.test_procedure()
     srv_msg.dns_question_record('0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
@@ -85,32 +85,30 @@ def test_ddns6_tsig_sha1_forw_and_rev_release():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', 'sth6.six.example.com.')
-    srv_msg.dns_option_content('ANSWER',
-                               None,
-                               'rrname',
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', 'sth6.six.example.com.')
+    srv_msg.dns_option_content('ANSWER', 'rrname',
                                '0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count('1', 'DONT ')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.dns_question_record('0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
@@ -119,8 +117,8 @@ def test_ddns6_tsig_sha1_forw_and_rev_release():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
 
 @pytest.mark.v6
@@ -142,7 +140,7 @@ def test_ddns6_tsig_forw_and_rev_release_notenabled():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_control.use_dns_set_number('3')
+    srv_control.use_dns_set_number(3)
     srv_control.start_srv('DNS', 'started')
 
     misc.test_procedure()
@@ -150,47 +148,47 @@ def test_ddns6_tsig_forw_and_rev_release_notenabled():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_save_option_count('1', 'IA_NA')
-    srv_msg.client_save_option_count('1', 'server-id')
-    srv_msg.client_add_saved_option_count('1', 'DONT ')
+    srv_msg.client_save_option_count(1, 'IA_NA')
+    srv_msg.client_save_option_count(1, 'server-id')
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-    srv_msg.client_does_include('Client', None, 'fqdn')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', None, 'flags', 'S')
-    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(39)
+    srv_msg.response_check_option_content(39, 'flags', 'S')
+    srv_msg.response_check_option_content(39, 'fqdn', 'sth6.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', '2001:db8:1::50')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', '2001:db8:1::50')
 
     misc.test_procedure()
     srv_msg.dns_question_record('0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
@@ -199,12 +197,10 @@ def test_ddns6_tsig_forw_and_rev_release_notenabled():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', 'sth6.six.example.com.')
-    srv_msg.dns_option_content('ANSWER',
-                               None,
-                               'rrname',
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', 'sth6.six.example.com.')
+    srv_msg.dns_option_content('ANSWER', 'rrname',
                                '0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.')
 
     misc.test_procedure()
@@ -224,23 +220,23 @@ def test_ddns6_tsig_forw_and_rev_release_notenabled():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count('1', 'DONT ')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', '2001:db8:1::50')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', '2001:db8:1::50')
 
     misc.test_procedure()
     srv_msg.dns_question_record('0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
@@ -249,12 +245,10 @@ def test_ddns6_tsig_forw_and_rev_release_notenabled():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', 'sth6.six.example.com.')
-    srv_msg.dns_option_content('ANSWER',
-                               None,
-                               'rrname',
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', 'sth6.six.example.com.')
+    srv_msg.dns_option_content('ANSWER', 'rrname',
                                '0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.')
 
 
@@ -277,7 +271,7 @@ def test_ddns6_tsig_sha1_rev_release():
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_control.use_dns_set_number('3')
+    srv_control.use_dns_set_number(3)
     srv_control.start_srv('DNS', 'started')
 
     misc.test_procedure()
@@ -285,8 +279,8 @@ def test_ddns6_tsig_sha1_rev_release():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.dns_question_record('0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
@@ -295,47 +289,47 @@ def test_ddns6_tsig_sha1_rev_release():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_save_option_count('1', 'IA_NA')
-    srv_msg.client_save_option_count('1', 'server-id')
-    srv_msg.client_add_saved_option_count('1', 'DONT ')
+    srv_msg.client_save_option_count(1, 'IA_NA')
+    srv_msg.client_save_option_count(1, 'server-id')
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
-    srv_msg.client_does_include('Client', None, 'fqdn')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '39')
-    srv_msg.response_check_option_content('Response', '39', "NOT", 'flags', 'S')
-    srv_msg.response_check_option_content('Response', '39', "NOT", 'flags', 'N')
-    srv_msg.response_check_option_content('Response', '39', "NOT", 'flags', 'O')
-    srv_msg.response_check_option_content('Response', '39', None, 'fqdn', 'sth6.six.example.com.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(39)
+    srv_msg.response_check_option_content(39, 'flags', 'S', expect_include=False)
+    srv_msg.response_check_option_content(39, 'flags', 'N', expect_include=False)
+    srv_msg.response_check_option_content(39, 'flags', 'O', expect_include=False)
+    srv_msg.response_check_option_content(39, 'fqdn', 'sth6.six.example.com.')
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.dns_question_record('0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
@@ -344,32 +338,30 @@ def test_ddns6_tsig_sha1_rev_release():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', 'sth6.six.example.com.')
-    srv_msg.dns_option_content('ANSWER',
-                               None,
-                               'rrname',
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', 'sth6.six.example.com.')
+    srv_msg.dns_option_content('ANSWER', 'rrname',
                                '0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count('1', 'DONT ')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.dns_question_record('0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
@@ -378,5 +370,5 @@ def test_ddns6_tsig_sha1_rev_release():
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option(None, 'ANSWER')
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)

@@ -204,15 +204,15 @@ def check_dns_respond(expect, data_type, expected_data_value):
                       " value has been excluded from correct values.".format(**locals())
 
 
-def report_dns_option(flag, expect_empty, name):
-    if flag and expect_empty is None:
+def report_dns_option(flag, expect_include, name):
+    if flag and not expect_include:
         assert False, 'In received DNS query part: "{name}" is NOT empty as we expected.'.format(**locals())
 
-    elif not flag and expect_empty is not None:
+    elif not flag and expect_include:
         assert False, 'In received DNS query part: "{name}" is empty.'.format(**locals())
 
 
-def check_dns_option(expect_empty, part_name):
+def check_dns_option(expect_include, part_name):
     flag = 0
     if part_name == 'QUESTION':
         if len(world.dns_qd) > 0:
@@ -230,7 +230,7 @@ def check_dns_option(expect_empty, part_name):
         if len(world.dns_ar) > 0:
             flag = 1
 
-    report_dns_option(flag, expect_empty, part_name)
+    report_dns_option(flag, expect_include, part_name)
 
 
 def parsing_received_parts(query_part_list, length, expect, value_name, value):

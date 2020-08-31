@@ -18,7 +18,7 @@ def test_bootp():
     world.dhcp_cfg["subnet4"][0]["pools"][0]["client-class"] = "BOOTP"
     world.dhcp_cfg["subnet4"][0]["pools"][1]["client-class"] = "DHCP"
     srv_control.create_new_class('DHCP')
-    srv_control.add_test_to_class('1', 'test', "not member('BOOTP')")
+    srv_control.add_test_to_class(1, 'test', "not member('BOOTP')")
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -26,15 +26,15 @@ def test_bootp():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.10')
 
     misc.test_procedure()
     srv_msg.client_send_msg('BOOTP_REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'BOOTP_REPLY')
-    srv_msg.response_check_include_option('Response', 'NOT ', '53')
-    srv_msg.response_check_include_option('Response', 'NOT ', '58')
-    srv_msg.response_check_include_option('Response', 'NOT ', '59')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
+    srv_msg.send_wait_for_message('MUST', 'BOOTP_REPLY')
+    srv_msg.response_check_include_option(53, expect_include=False)
+    srv_msg.response_check_include_option(58, expect_include=False)
+    srv_msg.response_check_include_option(59, expect_include=False)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')

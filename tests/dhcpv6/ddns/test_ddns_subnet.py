@@ -21,13 +21,13 @@ def _check_fqdn_record(fqdn, address='', expect='notempty'):
     srv_msg.client_send_dns_query()
     if expect == 'empty':
         misc.pass_criteria()
-        srv_msg.send_wait_for_query('MUST', None)
-        srv_msg.dns_option(None, 'ANSWER')
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER', expect_include=False)
     else:
         misc.pass_criteria()
-        srv_msg.send_wait_for_query('MUST', None)
-        srv_msg.dns_option('NOT ', 'ANSWER')
-        srv_msg.dns_option_content('ANSWER', None, 'rdata', address)
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER')
+        srv_msg.dns_option_content('ANSWER', 'rdata', address)
 
 
 def _check_address_record(fqdn, arpa):
@@ -36,21 +36,21 @@ def _check_address_record(fqdn, arpa):
     srv_msg.client_send_dns_query()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', None)
-    srv_msg.dns_option('NOT ', 'ANSWER')
-    srv_msg.dns_option_content('ANSWER', None, 'rdata', fqdn)
-    srv_msg.dns_option_content('ANSWER', None, 'rrname', arpa)
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER')
+    srv_msg.dns_option_content('ANSWER', 'rdata', fqdn)
+    srv_msg.dns_option_content('ANSWER', 'rrname', arpa)
 
 
 def _get_address(duid, fqdn):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
@@ -58,15 +58,15 @@ def _get_address(duid, fqdn):
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-    srv_msg.client_does_include('Client', None, 'fqdn')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, 39)
-    srv_msg.response_check_option_content('Response', 39, None, 'flags', 'S')
-    srv_msg.response_check_option_content('Response', 39, None, 'fqdn', fqdn)
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(39)
+    srv_msg.response_check_option_content(39, 'flags', 'S')
+    srv_msg.response_check_option_content(39, 'fqdn', fqdn)
 
 
 def _get_address_and_update_ddns(duid=None, fqdn=None, address=None, arpa=None):

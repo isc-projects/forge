@@ -22,36 +22,36 @@ def test_control_channel_http_dhcp_disable_timer():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "dhcp-disable","service": ["dhcp4"], "arguments": {"max-period": 5}}',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep('7', 'seconds')
+    srv_msg.forge_sleep(7, 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -67,20 +67,20 @@ def test_control_channel_http_dhcp_disable():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "dhcp-disable","service": ["dhcp4"]}',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
@@ -100,20 +100,20 @@ def test_control_channel_http_dhcp_disable_and_enable():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "dhcp-disable","service": ["dhcp4"]}',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
@@ -123,14 +123,14 @@ def test_control_channel_http_dhcp_disable_and_enable():
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -146,14 +146,14 @@ def test_control_channel_http_config_set_basic():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -169,14 +169,14 @@ def test_control_channel_http_config_set_basic():
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -197,14 +197,14 @@ def test_control_channel_http_change_socket_during_reconfigure():
     assert result[0]['result'] == 0
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -221,14 +221,14 @@ def test_control_channel_http_change_socket_during_reconfigure():
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     result = srv_msg.send_ctrl_cmd_via_http('{"command":"config-get", "service": ["dhcp4"], "arguments": {} }',
                                             '$(SRV4_ADDR)')
@@ -249,14 +249,14 @@ def test_control_channel_http_after_restart_load_config_file():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # now configuration is set over control-agent
     misc.test_setup()
@@ -268,27 +268,27 @@ def test_control_channel_http_after_restart_load_config_file():
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # and now goes restart so configuration again is taken from files
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -321,14 +321,14 @@ def test_control_channel_http_test_config():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -337,7 +337,7 @@ def test_control_channel_http_test_config():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
@@ -347,14 +347,14 @@ def test_control_channel_http_test_config():
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -363,7 +363,7 @@ def test_control_channel_http_test_config():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::1')
@@ -373,14 +373,14 @@ def test_control_channel_http_test_config():
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -401,14 +401,14 @@ def test_control_channel_http_config_write():
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -418,26 +418,26 @@ def test_control_channel_http_config_write():
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -453,14 +453,14 @@ def test_control_channel_http_reload_config():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -472,23 +472,23 @@ def test_control_channel_http_reload_config():
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')

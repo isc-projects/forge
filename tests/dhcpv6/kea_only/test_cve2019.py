@@ -12,12 +12,12 @@ import misc
 def _get_advertise():
     misc.test_procedure()
     srv_msg.generate_new("Client_ID")
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
 
 @pytest.mark.v6
@@ -60,29 +60,29 @@ def test_2019_6472_client_id():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'IA-PD')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_does_include('Client', 'client-id')
 
     # let's get one exchange correct to save server-id
     correct_id = "\x00\x19\x00\x0c\x27\xfe\x0c\x00\xff\x6f\x95\x00\x00\x02\x00\x00"
     srv_msg.send_raw_message(msg_type='SOLICIT', raw_append=correct_id)
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.client_save_option('server-id')
 
     # All messages below are send with too long client-id, and should remain unanswered
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'IA-PD')
+    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('SOLICIT')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(raw_append=invalid_data)
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
     srv_msg.send_wait_for_message('MUST', 'NOT ', None)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'IA-PD')
+    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_add_saved_option('DONT ')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
@@ -91,19 +91,19 @@ def test_2019_6472_client_id():
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'IA-PD')
+    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_add_saved_option('DONT ')
     srv_msg.client_send_msg('REQUEST')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'IA-PD')
+    srv_msg.client_does_include('Client', 'IA-PD')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(msg_type='REBIND', raw_append=invalid_data)
@@ -111,19 +111,19 @@ def test_2019_6472_client_id():
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'IA-PD')
+    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('REBIND')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
     misc.test_procedure()
     srv_msg.client_add_saved_option('DONT ')
-    srv_msg.client_does_include('Client', None, 'IA-PD')
+    srv_msg.client_does_include('Client', 'IA-PD')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(msg_type='RENEW', raw_append=invalid_data)
@@ -132,13 +132,13 @@ def test_2019_6472_client_id():
 
     misc.test_procedure()
     srv_msg.client_add_saved_option('DONT ')
-    srv_msg.client_does_include('Client', None, 'IA-PD')
+    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('RENEW')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(raw_append=invalid_data)
     misc.pass_criteria()
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
     srv_msg.send_wait_for_message('MUST', "NOT ", None)
 
@@ -169,14 +169,14 @@ def test_2019_6472_subscriber_id():
     srv_control.start_srv('DHCP', 'started')
 
     for msg in ["REQUEST", "RENEW", "RELEASE"]:
-        srv_msg.client_does_include('Client', None, 'client-id')
+        srv_msg.client_does_include('Client', 'client-id')
         # first let's add server id
         invalid_data = "\x00\x02\x00\x0e\x00\x01\x00\x02\x52\x7b\xa8\xf0\x08\x00\x27\x58\xf1\xe8"
         # and incorrect subscriber-id
         invalid_data += "\x00\x26\x01\x90\x00\x01\x00\x01\x24\xe9\x4e\x2a\x08\x00\x27\x4a\x04\x65" + 386 * "\x11"
         srv_msg.send_raw_message(msg_type=msg, raw_append=invalid_data)
 
-        srv_msg.send_wait_for_message('MUST', None, "REPLY")
+        srv_msg.send_wait_for_message('MUST', "REPLY")
 
 
 @pytest.mark.v6
@@ -198,7 +198,7 @@ def test_2019_6472_subscriber_id_relay():
 
     misc.pass_criteria()
     srv_msg.send_raw_message(raw_append=killer_message)
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
 
 
 @pytest.mark.v6

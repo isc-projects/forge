@@ -43,14 +43,14 @@ def test_control_channel_socket_config_test():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.config_srv_prefix('2001:db8:1::', '0', '90', '96')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
     srv_control.open_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
-                                           '0',
+                                           0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
@@ -61,7 +61,7 @@ def test_control_channel_socket_config_test():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.config_srv_prefix('2001:db8:1::', '0', '90', '96')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
     srv_control.open_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
@@ -69,7 +69,7 @@ def test_control_channel_socket_config_test():
     # WRONG ADDRESS RESERVATION
     srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.0.5',
-                                           '0',
+                                           0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
@@ -91,17 +91,17 @@ def test_control_channel_socket_config_write():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -114,23 +114,17 @@ def test_control_channel_socket_config_write():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response',
-                                             '5',
-                                             '3',
-                                             None,
-                                             'addr',
-                                             '2001:db8:1::1')
-
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
     # Using UNIX socket on server in path control_socket send {"command": "list-commands","arguments": {}}
     # Using UNIX socket on server in path control_socket send {"command": "config-write","parameters":  { "filename": "abc"} }
     # Using UNIX socket on server in path control_socket send {"command": "config-write","arguments":  { "filename": "whatever"} }
@@ -140,22 +134,17 @@ def test_control_channel_socket_config_write():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:33')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response',
-                                             '5',
-                                             '3',
-                                             None,
-                                             'addr',
-                                             '2001:db8:1::1')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
 
 
 @pytest.mark.v6
@@ -171,17 +160,17 @@ def test_control_channel_socket_config_reload():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response', '5', '3', None, 'addr', '3000::1')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}')
 
@@ -195,40 +184,29 @@ def test_control_channel_socket_config_reload():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response',
-                                             '5',
-                                             '3',
-                                             None,
-                                             'addr',
-                                             '2001:db8:1::1')
-
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
-    srv_msg.response_check_suboption_content('Response',
-                                             '5',
-                                             '3',
-                                             None,
-                                             'addr',
-                                             '2001:db8:1::1')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')

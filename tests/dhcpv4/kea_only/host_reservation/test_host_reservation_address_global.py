@@ -17,8 +17,8 @@ def _send_offer(mac, address):
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', address)
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', address)
 
 
 def _send_request(mac, address):
@@ -28,8 +28,8 @@ def _send_request(mac, address):
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', address)
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', address)
 
 
 def _get_an_address(mac, address):

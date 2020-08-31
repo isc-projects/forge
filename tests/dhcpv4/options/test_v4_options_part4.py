@@ -36,13 +36,13 @@ def test_v4_options_malformed_values_ip_forwarding():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('ip-forwarding', '2')
+    srv_control.config_srv_opt('ip-forwarding', 2)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('ip-forwarding', '1')
+    srv_control.config_srv_opt('ip-forwarding', 1)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -100,7 +100,7 @@ def test_v4_options_malformed_values_time_offset():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('time-offset', '50')
+    srv_control.config_srv_opt('time-offset', 50)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -108,7 +108,7 @@ def test_v4_options_malformed_values_time_offset():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('time-offset', '0')
+    srv_control.config_srv_opt('time-offset', 0)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -177,7 +177,7 @@ def test_v4_options_malformed_values_max_dgram_reassembly():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('max-dgram-reassembly', '0')
+    srv_control.config_srv_opt('max-dgram-reassembly', 0)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
@@ -216,13 +216,13 @@ def test_v4_options_malformed_values_default_ip_ttl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('default-ip-ttl', '0')
+    srv_control.config_srv_opt('default-ip-ttl', 0)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('default-ip-ttl', '1')
+    srv_control.config_srv_opt('default-ip-ttl', 1)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -252,7 +252,7 @@ def test_v4_options_malformed_values_path_mtu_aging_timeout():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('path-mtu-aging-timeout', '67')
+    srv_control.config_srv_opt('path-mtu-aging-timeout', 67)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
@@ -278,7 +278,7 @@ def test_v4_options_malformed_values_path_mtu_aging_timeout():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('path-mtu-aging-timeout', '68')
+    srv_control.config_srv_opt('path-mtu-aging-timeout', 68)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -334,7 +334,7 @@ def test_v4_options_malformed_values_arp_cache_timeout():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('arp-cache-timeout', '0')
+    srv_control.config_srv_opt('arp-cache-timeout', 0)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -355,7 +355,7 @@ def test_v4_options_malformed_values_default_tcp_ttl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('default-tcp-ttl', '0')
+    srv_control.config_srv_opt('default-tcp-ttl', 0)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
@@ -375,7 +375,7 @@ def test_v4_options_malformed_values_default_tcp_ttl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('default-tcp-ttl', '1')
+    srv_control.config_srv_opt('default-tcp-ttl', 1)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -388,19 +388,19 @@ def test_v4_options_malformed_values_dhcp_option_overload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('dhcp-option-overload', '0')
+    srv_control.config_srv_opt('dhcp-option-overload', 0)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('dhcp-option-overload', '4')
+    srv_control.config_srv_opt('dhcp-option-overload', 4)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('dhcp-option-overload', '1')
+    srv_control.config_srv_opt('dhcp-option-overload', 1)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -408,7 +408,7 @@ def test_v4_options_malformed_values_dhcp_option_overload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('dhcp-option-overload', '2')
+    srv_control.config_srv_opt('dhcp-option-overload', 2)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -416,7 +416,7 @@ def test_v4_options_malformed_values_dhcp_option_overload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('dhcp-option-overload', '3')
+    srv_control.config_srv_opt('dhcp-option-overload', 3)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -429,7 +429,7 @@ def test_v4_options_malformed_values_dhcp_max_message_size():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('dhcp-max-message-size', '0')
+    srv_control.config_srv_opt('dhcp-max-message-size', 0)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 

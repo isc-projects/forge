@@ -48,6 +48,7 @@ def build_raw(msg, append):
         client_send_msg(msg, None, None)
         world.climsg[0] = world.climsg[0] / Raw(load=append)
 
+
 def client_send_msg(msgname, iface, addr):
     """
     Sends specified message with defined options.
@@ -205,7 +206,7 @@ def response_check_content(expect, data_type, expected):
     # I did little hack, added 'value:' as option code, and changed assertion message
     outcome, received = test_option(0, ['value:', received], expected)
 
-    if expect is None:
+    if expect:
         assert outcome, "Invalid {data_type} received {received}" \
                         " but expected: {expected}.".format(**locals())
     else:
@@ -467,7 +468,7 @@ def response_check_option_content(opt_code, expect, data_type, expected):
 
     opt_descr = _get_opt_descr(opt_code)
 
-    if expect is None:
+    if expect:
         assert outcome, "Invalid {opt_descr} option received: {received} but expected {expected}".format(**locals())
     else:
         assert not outcome, "Invalid {opt_descr} option received: {received}" \

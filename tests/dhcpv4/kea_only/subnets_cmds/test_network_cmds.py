@@ -23,20 +23,20 @@ def test_hook_v4_network_cmds_list():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
-    srv_control.config_srv('time-servers', '2', '199.199.199.100')
-    srv_control.config_srv('time-servers', '3', '199.199.199.200')
+    srv_control.config_srv('time-servers', 0, '199.199.199.10')
+    srv_control.config_srv('time-servers', 2, '199.199.199.100')
+    srv_control.config_srv('time-servers', 3, '199.199.199.200')
 
     # first shared subnet
-    srv_control.shared_subnet('192.168.50.0/24', '0')
-    srv_control.shared_subnet('192.168.51.0/24', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     # second shared-subnet
-    srv_control.shared_subnet('192.168.52.0/24', '1')
-    srv_control.shared_subnet('192.168.53.0/24', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
+    srv_control.shared_subnet('192.168.52.0/24', 1)
+    srv_control.shared_subnet('192.168.53.0/24', 1)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
@@ -62,21 +62,21 @@ def test_hook_v4_network_cmds_get_by_name():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
-    srv_control.config_srv('time-servers', '2', '199.199.199.100')
-    srv_control.config_srv('time-servers', '3', '199.199.199.200')
+    srv_control.config_srv('time-servers', 0, '199.199.199.10')
+    srv_control.config_srv('time-servers', 2, '199.199.199.100')
+    srv_control.config_srv('time-servers', 3, '199.199.199.200')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     # first shared subnet
-    srv_control.shared_subnet('192.168.50.0/24', '0')
-    srv_control.shared_subnet('192.168.51.0/24', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     # second shared-subnet
-    srv_control.shared_subnet('192.168.52.0/24', '1')
-    srv_control.shared_subnet('192.168.53.0/24', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
+    srv_control.shared_subnet('192.168.52.0/24', 1)
+    srv_control.shared_subnet('192.168.53.0/24', 1)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -101,7 +101,7 @@ def test_hook_v4_network_cmds_add():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
@@ -112,16 +112,16 @@ def test_hook_v4_network_cmds_add():
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-add","arguments":{"shared-networks": [{"name": "name-xyz","rebind-timer": 100,"renew-timer": 100,"valid-lifetime": 400,"subnet4": [{"interface": "$(SERVER_IFACE)", "pools": [{"pool": "192.168.50.1/32"}],"rebind-timer": 2000,"renew-timer": 1000,"subnet": "192.168.50.0/24","valid-lifetime": 4000}]}]}}')
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-get","arguments":{"name": "name-xyz"}}')
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
 
 @pytest.mark.v4
@@ -138,20 +138,20 @@ def test_hook_v4_network_cmds_add_conflict():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
-    srv_control.config_srv('time-servers', '2', '199.199.199.100')
-    srv_control.config_srv('time-servers', '3', '199.199.199.200')
+    srv_control.config_srv('time-servers', 0, '199.199.199.10')
+    srv_control.config_srv('time-servers', 2, '199.199.199.100')
+    srv_control.config_srv('time-servers', 3, '199.199.199.200')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     # first shared subnet
-    srv_control.shared_subnet('192.168.50.0/24', '0')
-    srv_control.shared_subnet('192.168.51.0/24', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     # second shared-subnet
-    srv_control.shared_subnet('192.168.52.0/24', '1')
-    srv_control.shared_subnet('192.168.53.0/24', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
+    srv_control.shared_subnet('192.168.52.0/24', 1)
+    srv_control.shared_subnet('192.168.53.0/24', 1)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -174,12 +174,12 @@ def test_hook_v4_network_cmds_del():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.1')
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
+    srv_control.config_srv('time-servers', 0, '199.199.199.10')
 
-    srv_control.shared_subnet('192.168.50.0/24', '0')
-    srv_control.shared_subnet('192.168.51.0/24', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
@@ -189,19 +189,19 @@ def test_hook_v4_network_cmds_del():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-list","arguments":{}}')
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-del","arguments":{"name":"name-abc","subnets-action": "delete"}}')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
@@ -219,11 +219,11 @@ def test_hook_v4_network_cmds_del_keep_subnet():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.1')
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
-    srv_control.shared_subnet('192.168.50.0/24', '0')
-    srv_control.shared_subnet('192.168.51.0/24', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.config_srv('time-servers', 0, '199.199.199.10')
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
@@ -233,25 +233,25 @@ def test_hook_v4_network_cmds_del_keep_subnet():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-list","arguments":{}}')
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-del","arguments":{"name":"name-abc","subnets-action": "keep"}}')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-list","arguments":{}}', exp_result=3)
 
@@ -270,20 +270,20 @@ def test_hook_v4_network_cmds_del_non_existing():
                                                        '192.168.52.1-192.168.52.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24',
                                                        '192.168.53.1-192.168.53.1')
-    srv_control.config_srv('time-servers', '0', '199.199.199.10')
-    srv_control.config_srv('time-servers', '2', '199.199.199.100')
-    srv_control.config_srv('time-servers', '3', '199.199.199.200')
+    srv_control.config_srv('time-servers', 0, '199.199.199.10')
+    srv_control.config_srv('time-servers', 2, '199.199.199.100')
+    srv_control.config_srv('time-servers', 3, '199.199.199.200')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     # first shared subnet
-    srv_control.shared_subnet('192.168.50.0/24', '0')
-    srv_control.shared_subnet('192.168.51.0/24', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     # second shared-subnet
-    srv_control.shared_subnet('192.168.52.0/24', '1')
-    srv_control.shared_subnet('192.168.53.0/24', '1')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', '1')
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', '1')
+    srv_control.shared_subnet('192.168.52.0/24', 1)
+    srv_control.shared_subnet('192.168.53.0/24', 1)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -307,9 +307,9 @@ def test_hook_v4_network_cmds_del_global_options():
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.1')
     # first shared subnet
-    srv_control.shared_subnet('192.168.51.0/24', '0')
-    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', '0')
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', '0')
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
@@ -318,21 +318,21 @@ def test_hook_v4_network_cmds_del_global_options():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "network4-del","arguments":{"name":"name-abc","subnets-action": "delete"}}')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
@@ -341,15 +341,15 @@ def test_hook_v4_network_cmds_del_global_options():
 
     # That needs subnet with empty pool to work
     misc.test_procedure()
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(6)
     srv_msg.client_sets_value('Client', 'ciaddr', '$(CIADDR)')
     srv_msg.client_send_msg('INFORM')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '100.100.100.1')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(6, 'value', '100.100.100.1')
 
 
 @pytest.mark.v4
@@ -368,7 +368,7 @@ def test_hook_v4_network_cmds_add_and_del():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
@@ -378,21 +378,21 @@ def test_hook_v4_network_cmds_add_and_del():
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-add","arguments":{"shared-networks": [{"name": "name-xyz","rebind-timer": 100,"renew-timer": 100,"valid-lifetime": 400,"subnet4": [{"interface": "$(SERVER_IFACE)", "pools": [{"pool": "192.168.50.1/32"}],"rebind-timer": 2000,"renew-timer": 1000,"subnet": "192.168.50.0/24","valid-lifetime": 4000}]}]}}')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "network4-del","arguments":{"name":"name-xyz","subnets-action": "delete"}}')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 

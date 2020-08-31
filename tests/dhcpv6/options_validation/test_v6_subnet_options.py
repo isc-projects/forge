@@ -28,32 +28,32 @@ def test_v6_options_subnet_preference():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv('preference', '0', '123')
+    srv_control.config_srv('preference', 0, 123)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '7')
-    srv_msg.response_check_option_content('Response', '7', None, 'value', '123')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', 123)
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '7')
-    srv_msg.response_check_option_content('Response', '7', None, 'value', '123')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', 123)
 
     references.references_check('v6.options,')
 
@@ -78,40 +78,32 @@ def test_v6_options_subnet_dns_servers():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv('dns-servers', '0', '2001:db8::1,2001:db8::2')
+    srv_control.config_srv('dns-servers', 0, '2001:db8::1,2001:db8::2')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('23')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '23')
-    srv_msg.response_check_option_content('Response',
-                                          '23',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::1,2001:db8::2')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1,2001:db8::2')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_requests_option('23')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '23')
-    srv_msg.response_check_option_content('Response',
-                                          '23',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::1,2001:db8::2')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1,2001:db8::2')
 
     references.references_check('v6.options,')
 
@@ -136,40 +128,32 @@ def test_v6_options_subnet_domains():
     # 					domain1.example.com and domain2.isc.org
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv('domain-search', '0', 'domain1.example.com,domain2.isc.org')
+    srv_control.config_srv('domain-search', 0, 'domain1.example.com,domain2.isc.org')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('24')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(24)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response',
-                                          '24',
-                                          None,
-                                          'domains',
-                                          'domain1.example.com.,domain2.isc.org.')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'domains', 'domain1.example.com.,domain2.isc.org.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_requests_option('24')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(24)
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response',
-                                          '24',
-                                          None,
-                                          'domains',
-                                          'domain1.example.com.,domain2.isc.org.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'domains', 'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('v6.options,')
 
@@ -198,31 +182,31 @@ def test_v6_options_subnet_override():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('domain-search', 'global.example.com')
-    srv_control.config_srv('domain-search', '0', 'subnet.example.com')
+    srv_control.config_srv('domain-search', 0, 'subnet.example.com')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('24')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(24)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com.')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'domains', 'subnet.example.com.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_requests_option('24')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(24)
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response', '24', None, 'domains', 'subnet.example.com.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'domains', 'subnet.example.com.')
 
     references.references_check('v6.options,')

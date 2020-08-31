@@ -19,13 +19,13 @@ def test_v4_all_hooks_start():
     # flex id
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
-                                           '0',
+                                           0,
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id", "hw-address"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook(1, 'identifier-expression', 'option[60].hex')
     # legal log
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -37,10 +37,10 @@ def test_v4_all_hooks_start():
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8080/","role":"primary","auto-failover":true}')
@@ -64,13 +64,13 @@ def test_v4_all_hooks_test_cooperation():
     # flex id
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
-                                           '0',
+                                           0,
                                            'flex-id',
                                            '\'docsis3.0\'')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id", "hw-address"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('1', 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook(1, 'identifier-expression', 'option[60].hex')
     # legal log
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -176,41 +176,41 @@ def test_v4_all_hooks_test_cooperation():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.10')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.10')
 
     # legal log
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_does_include_with_value('client_id', '00010203040506')
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '54')
-    srv_msg.response_check_include_option('Response', None, '61')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040506')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(61, 'value', '00010203040506')
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '00010203040506')
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '54')
-    srv_msg.response_check_include_option('Response', None, '61')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content('Response', '61', None, 'value', '00010203040506')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(61, 'value', '00010203040506')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
 

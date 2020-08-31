@@ -65,15 +65,15 @@ def test_user_check_IA_NA_with_registry_unknown_user():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', '0c:0e:0a:01:ff:01')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '10.0.0.5')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '10.0.0.5')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
@@ -98,15 +98,15 @@ def test_user_check_IA_NA_with_registry_known_user():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', '0c:0e:0a:01:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.5')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')

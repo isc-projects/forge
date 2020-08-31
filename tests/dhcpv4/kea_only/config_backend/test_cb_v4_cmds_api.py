@@ -1209,7 +1209,7 @@ def test_remote_option_def4_set_using_zero_as_code():
                                                                 "type": "uint32"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert "invalid option code '0': reserved for PAD" in response["text"]
+    assert "invalid option code 0: reserved for PAD" in response["text"]
 
 
 def test_remote_option_def4_set_using_standard_code():
@@ -1564,7 +1564,7 @@ def test_remote_global_option4_global_set_different_space():
                                                                             "space": "xyz"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert "definition for the option 'xyz.' having code '6' does not exist" in response["text"]
+    assert "definition for the option 'xyz.' having code 6 does not exist" in response["text"]
 
 
 def test_remote_global_option4_global_set_csv_false_incorrect():

@@ -20,7 +20,7 @@ def test_v4_host_reservation_hostname_hostname_option():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -31,7 +31,7 @@ def test_v4_host_reservation_hostname_hostname_option():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -41,13 +41,9 @@ def test_v4_host_reservation_hostname_hostname_option():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_include_option('Response', None, '12')
-    srv_msg.response_check_option_content('Response',
-                                          '12',
-                                          None,
-                                          'value',
-                                          'reserved-name.my.domain.com')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(12)
+    srv_msg.response_check_option_content(12, 'value', 'reserved-name.my.domain.com')
 
 
 @pytest.mark.v4
@@ -61,7 +57,7 @@ def test_v4_host_reservation_hostname_fqdn_option():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -71,35 +67,27 @@ def test_v4_host_reservation_hostname_fqdn_option():
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-    srv_msg.client_does_include('Client', None, 'fqdn')
+    srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '81')
-    srv_msg.response_check_option_content('Response',
-                                          '81',
-                                          None,
-                                          'fqdn',
-                                          'reserved-name.my.domain.com.')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'fqdn', 'reserved-name.my.domain.com.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.30')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-    srv_msg.client_does_include('Client', None, 'fqdn')
+    srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_include_option('Response', None, '81')
-    srv_msg.response_check_option_content('Response',
-                                          '81',
-                                          None,
-                                          'fqdn',
-                                          'reserved-name.my.domain.com.')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'fqdn', 'reserved-name.my.domain.com.')
 
 
 @pytest.mark.v4
@@ -113,14 +101,14 @@ def test_v4_host_reservation_hostname_hostname_option_and_address():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.forge_sleep('2', 'seconds')
+    srv_msg.forge_sleep(2, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
@@ -128,7 +116,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -138,14 +126,10 @@ def test_v4_host_reservation_hostname_hostname_option_and_address():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
-    srv_msg.response_check_include_option('Response', None, '12')
-    srv_msg.response_check_option_content('Response',
-                                          '12',
-                                          None,
-                                          'value',
-                                          'reserved-name.my.domain.com')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.5')
+    srv_msg.response_check_include_option(12)
+    srv_msg.response_check_option_content(12, 'value', 'reserved-name.my.domain.com')
 
 
 @pytest.mark.v4
@@ -159,14 +143,14 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_2():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'hostname', 'reserved-name')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.forge_sleep('2', 'seconds')
+    srv_msg.forge_sleep(2, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
@@ -174,7 +158,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_2():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -184,14 +168,10 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_2():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
-    srv_msg.response_check_include_option('Response', None, '12')
-    srv_msg.response_check_option_content('Response',
-                                          '12',
-                                          None,
-                                          'value',
-                                          'reserved-name.my.domain.com')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.5')
+    srv_msg.response_check_include_option(12)
+    srv_msg.response_check_option_content(12, 'value', 'reserved-name.my.domain.com')
 
 
 @pytest.mark.v4
@@ -205,14 +185,14 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_3():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.forge_sleep('2', 'seconds')
+    srv_msg.forge_sleep(2, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
@@ -220,7 +200,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_3():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -230,14 +210,10 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_3():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.5')
-    srv_msg.response_check_include_option('Response', None, '12')
-    srv_msg.response_check_option_content('Response',
-                                          '12',
-                                          None,
-                                          'value',
-                                          'reserved-name.my.domain.com')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.5')
+    srv_msg.response_check_include_option(12)
+    srv_msg.response_check_option_content(12, 'value', 'reserved-name.my.domain.com')
 
 
 @pytest.mark.v4
@@ -252,12 +228,12 @@ def test_v4_host_reservation_hostname_multiple_entries():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet('hostname',
                                            'resderved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:44')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -276,12 +252,12 @@ def test_v4_host_reservation_hostname_duplicated_entries():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet('hostname',
                                            'resderved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.build_and_send_config_files('SSH', 'config-file')

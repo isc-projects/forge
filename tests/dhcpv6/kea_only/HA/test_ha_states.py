@@ -20,8 +20,8 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -34,10 +34,10 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                          '{"state":"partner-down","pause":"always"}')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
@@ -52,17 +52,17 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
@@ -72,12 +72,12 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -86,14 +86,14 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -108,7 +108,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('7', 'seconds')
+    srv_msg.forge_sleep(7, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "syncing"')
@@ -121,7 +121,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -131,14 +131,14 @@ def test_v6_hooks_HA_state_hold_lb_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -148,8 +148,8 @@ def test_v6_hooks_HA_state_hold_lb_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -160,7 +160,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
@@ -170,33 +170,33 @@ def test_v6_hooks_HA_state_hold_lb_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     # server1 has to keep load-balancing
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -206,12 +206,12 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -219,20 +219,20 @@ def test_v6_hooks_HA_state_hold_lb_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -241,7 +241,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -250,7 +250,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -258,7 +258,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -272,7 +272,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -287,13 +287,13 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -304,12 +304,12 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -317,7 +317,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -326,7 +326,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -336,7 +336,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -345,7 +345,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -359,7 +359,7 @@ def test_v6_hooks_HA_state_hold_lb_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -371,16 +371,16 @@ def test_v6_hooks_HA_state_hold_lb_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
 
 @pytest.mark.v6
@@ -394,8 +394,8 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -409,10 +409,10 @@ def test_v6_hooks_HA_state_hold_lb_once():
 
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
     srv_control.add_parameter_to_ha_hook('peers',
@@ -426,17 +426,17 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
     srv_control.add_parameter_to_ha_hook('peers',
@@ -444,12 +444,12 @@ def test_v6_hooks_HA_state_hold_lb_once():
 
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -458,14 +458,14 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -480,7 +480,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('7', 'seconds')
+    srv_msg.forge_sleep(7, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "syncing"')
@@ -493,7 +493,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -503,14 +503,14 @@ def test_v6_hooks_HA_state_hold_lb_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -520,8 +520,8 @@ def test_v6_hooks_HA_state_hold_lb_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -532,7 +532,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
@@ -542,33 +542,33 @@ def test_v6_hooks_HA_state_hold_lb_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     # server1 has to keep load-balancing
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -578,12 +578,12 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -591,20 +591,20 @@ def test_v6_hooks_HA_state_hold_lb_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -612,7 +612,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -620,7 +620,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -633,7 +633,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -643,7 +643,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
     srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     # this time - no paused states!
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
@@ -652,7 +652,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -660,7 +660,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -668,7 +668,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
@@ -682,7 +682,7 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -691,20 +691,20 @@ def test_v6_hooks_HA_state_hold_lb_once():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "load-balancing"')
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
 
 @pytest.mark.v6
@@ -718,8 +718,8 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -733,10 +733,10 @@ def test_v6_hooks_HA_state_hold_hs_once():
                                          '{"state":"partner-down","pause":"once"}')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
@@ -751,18 +751,18 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
@@ -771,12 +771,12 @@ def test_v6_hooks_HA_state_hold_hs_once():
 
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -785,14 +785,14 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -807,7 +807,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('7', 'seconds')
+    srv_msg.forge_sleep(7, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "syncing"')
@@ -820,7 +820,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -830,14 +830,14 @@ def test_v6_hooks_HA_state_hold_hs_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -847,8 +847,8 @@ def test_v6_hooks_HA_state_hold_hs_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -859,7 +859,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
@@ -869,33 +869,33 @@ def test_v6_hooks_HA_state_hold_hs_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     # server1 has to keep hot-standby
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -905,12 +905,12 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -918,20 +918,20 @@ def test_v6_hooks_HA_state_hold_hs_once():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -939,7 +939,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -947,7 +947,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -960,7 +960,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -970,7 +970,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
     srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     # this time - no paused states!
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
@@ -979,7 +979,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -987,7 +987,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -995,7 +995,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
@@ -1008,7 +1008,7 @@ def test_v6_hooks_HA_state_hold_hs_once():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine is not paused')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1017,20 +1017,20 @@ def test_v6_hooks_HA_state_hold_hs_once():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
 
 @pytest.mark.v6
@@ -1044,8 +1044,8 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -1059,10 +1059,10 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                          '{"state":"partner-down","pause":"always"}')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role":"primary","auto-failover":true}')
@@ -1077,18 +1077,18 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS_2)')
-    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', '99')
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', '99', 'kea.log-CTRL2')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
+    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server2"')
     srv_control.add_parameter_to_ha_hook('mode', '"hot-standby"')
-    srv_control.add_parameter_to_ha_hook('heartbeat-delay', '1000')
-    srv_control.add_parameter_to_ha_hook('max-response-delay', '1001')
-    srv_control.add_parameter_to_ha_hook('max-unacked-clients', '0')
-    srv_control.add_parameter_to_ha_hook('max-ack-delay', '0')
+    srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)
+    srv_control.add_parameter_to_ha_hook('max-response-delay', 1001)
+    srv_control.add_parameter_to_ha_hook('max-unacked-clients', 0)
+    srv_control.add_parameter_to_ha_hook('max-ack-delay', 0)
 
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8000/","role": "primary","auto-failover":true}')
@@ -1098,12 +1098,12 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_control.build_and_send_config_files_dest_addr('SSH', 'config-file', '$(MGMT_ADDRESS_2)')
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -1112,14 +1112,14 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "waiting"')
-    srv_msg.json_response_parsing('result', None, '0')
+    srv_msg.json_response_parsing('result', None, 0)
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1134,7 +1134,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('7', 'seconds')
+    srv_msg.forge_sleep(7, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "syncing"')
@@ -1147,7 +1147,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -1157,14 +1157,14 @@ def test_v6_hooks_HA_state_hold_hs_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep('3', 'seconds')
+    srv_msg.forge_sleep(3, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
@@ -1174,8 +1174,8 @@ def test_v6_hooks_HA_state_hold_hs_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -1186,7 +1186,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
@@ -1196,33 +1196,33 @@ def test_v6_hooks_HA_state_hold_hs_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'stopped', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     # server1 has to keep hot-standby
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1232,12 +1232,12 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-continue","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1245,20 +1245,20 @@ def test_v6_hooks_HA_state_hold_hs_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1267,7 +1267,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1276,7 +1276,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1284,7 +1284,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1298,7 +1298,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1313,13 +1313,13 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "hot-standby"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1330,12 +1330,12 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('arguments', None, '"state": "partner-down"')
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1343,7 +1343,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
 
     srv_control.remote_start_srv('DHCP', 'started', '$(MGMT_ADDRESS_2)')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1352,7 +1352,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1362,7 +1362,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1371,7 +1371,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS_2)')
     srv_msg.json_response_parsing('arguments', None, '"state": "ready"')
 
-    srv_msg.forge_sleep('5', 'seconds')
+    srv_msg.forge_sleep(5, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1385,7 +1385,7 @@ def test_v6_hooks_HA_state_hold_hs_always():
                                    '$(MGMT_ADDRESS)')
     srv_msg.json_response_parsing('text', None, 'HA state machine continues')
 
-    srv_msg.forge_sleep('10', 'seconds')
+    srv_msg.forge_sleep(10, 'seconds')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "ha-heartbeat","service":["dhcp6"],"arguments": {} }',
                                    '$(MGMT_ADDRESS)')
@@ -1397,13 +1397,13 @@ def test_v6_hooks_HA_state_hold_hs_always():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)

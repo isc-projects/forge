@@ -36,30 +36,25 @@ def test_user_check_hook_vendor_options_all():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '32')
-    srv_msg.add_vendor_suboption('Client', '1', '33')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 32)
+    srv_msg.add_vendor_suboption('Client', 1, 33)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
     # We don't really care about the address value
     # Options should come from default user in registry
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '32')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 32)
     # Response sub-option 32 from option 17 MUST contain tftp-servers 9000::1.
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '33')
-    srv_msg.response_check_suboption_content('Response',
-                                             '33',
-                                             '17',
-                                             None,
-                                             'config-file',
-                                             'bootfile.from.default')
+    srv_msg.response_check_option_content(17, 'sub-option', 33)
+    srv_msg.response_check_suboption_content(33, 17, 'config-file', 'bootfile.from.default')
 
     #
     # Send a query from a registered user with no properties
@@ -67,30 +62,25 @@ def test_user_check_hook_vendor_options_all():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:11:02:03:04:05:06')
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '32')
-    srv_msg.add_vendor_suboption('Client', '1', '33')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 32)
+    srv_msg.add_vendor_suboption('Client', 1, 33)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
     # We don't really care about the address value
     # Options should come from server config
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '32')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 32)
     # Response sub-option 32 from option 17 MUST contain tftp-servers 7000::1.
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '33')
-    srv_msg.response_check_suboption_content('Response',
-                                             '33',
-                                             '17',
-                                             None,
-                                             'config-file',
-                                             'bootfile.from.server')
+    srv_msg.response_check_option_content(17, 'sub-option', 33)
+    srv_msg.response_check_suboption_content(33, 17, 'config-file', 'bootfile.from.server')
 
     #
     # Send a query from a registered user who supplies only bootfile
@@ -98,30 +88,25 @@ def test_user_check_hook_vendor_options_all():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:22:02:03:04:05:06')
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '32')
-    srv_msg.add_vendor_suboption('Client', '1', '33')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 32)
+    srv_msg.add_vendor_suboption('Client', 1, 33)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
     # We don't really care about the address value
     # bootfile should be from user, tftp server from server config
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '32')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 32)
     # Response sub-option 32 from option 17 MUST contain tftp-servers 7000::1.
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '33')
-    srv_msg.response_check_suboption_content('Response',
-                                             '33',
-                                             '17',
-                                             None,
-                                             'config-file',
-                                             'bootfile.from.user')
+    srv_msg.response_check_option_content(17, 'sub-option', 33)
+    srv_msg.response_check_suboption_content(33, 17, 'config-file', 'bootfile.from.user')
 
     #
     # Send a query from a registered user who supplies only tftp server
@@ -129,56 +114,46 @@ def test_user_check_hook_vendor_options_all():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:33:02:03:04:05:06')
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '32')
-    srv_msg.add_vendor_suboption('Client', '1', '33')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 32)
+    srv_msg.add_vendor_suboption('Client', 1, 33)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
     # We don't really care about the address value
     # bootfile should be from server config, tftp server from user
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '32')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 32)
     # Response sub-option 32 from option 17 MUST contain tftp-servers 8000::1.
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '33')
-    srv_msg.response_check_suboption_content('Response',
-                                             '33',
-                                             '17',
-                                             None,
-                                             'config-file',
-                                             'bootfile.from.server')
+    srv_msg.response_check_option_content(17, 'sub-option', 33)
+    srv_msg.response_check_suboption_content(33, 17, 'config-file', 'bootfile.from.server')
 
     misc.test_procedure()
     # Send a query from a registered user who supplies both tftp server and bootfile
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:44:02:03:04:05:06')
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '32')
-    srv_msg.add_vendor_suboption('Client', '1', '33')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 32)
+    srv_msg.add_vendor_suboption('Client', 1, 33)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'sub-option', '5')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
     # We don't really care about the address value
     # tftp server and bootfile should be from user
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '32')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 32)
     # Response sub-option 32 from option 17 MUST contain tftp-servers 8002::1.
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '33')
-    srv_msg.response_check_suboption_content('Response',
-                                             '33',
-                                             '17',
-                                             None,
-                                             'config-file',
-                                             'bootfile.from.user-2')
+    srv_msg.response_check_option_content(17, 'sub-option', 33)
+    srv_msg.response_check_suboption_content(33, 17, 'config-file', 'bootfile.from.user-2')

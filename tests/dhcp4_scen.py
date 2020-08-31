@@ -20,7 +20,7 @@ def _send_discover(chaddr=None, client_id=None, giaddr=None, req_opts=None):
     if client_id is not None:
         srv_msg.client_does_include_with_value('client_id', client_id)
     if giaddr is not None:
-        srv_msg.network_variable('source_port', '67')
+        srv_msg.network_variable('source_port', 67)
         srv_msg.network_variable('source_address', giaddr)
         srv_msg.network_variable('destination_address', '$(SRV4_ADDR)')
         srv_msg.client_sets_value('Client', 'giaddr', giaddr)
@@ -41,9 +41,9 @@ def rebind_with_ack_answer(ciaddr):
     srv_msg.client_sets_value('Client', 'ciaddr', ciaddr)
     srv_msg.client_send_msg('REQUEST')
 
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_include_option('Response', None, '54')
-    srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
     # TODO: what else should be checked
 
 
@@ -57,9 +57,9 @@ def rebind_with_nak_answer(chaddr=None, client_id=None, ciaddr=None):
         srv_msg.client_sets_value('Client', 'ciaddr', ciaddr)
     srv_msg.client_send_msg('REQUEST')
 
-    srv_msg.send_wait_for_message('MUST', None, 'NAK')
-    srv_msg.response_check_include_option('Response', None, '54')
-    srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
+    srv_msg.send_wait_for_message('MUST', 'NAK')
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
 
 
 def send_decline4(requested_addr):
@@ -85,37 +85,37 @@ def send_discover_and_check_offer(
     _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opts=req_opts)
 
     # check OFFER
-    msgs = srv_msg.send_wait_for_message('MUST', None, 'OFFER')
+    msgs = srv_msg.send_wait_for_message('MUST', 'OFFER')
     rcvd_yiaddr = msgs[0].yiaddr
     if exp_yiaddr is not None:
         assert rcvd_yiaddr == exp_yiaddr
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_include_option('Response', None, '54')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
 
     if exp_option:
         for opt in exp_option:
-            srv_msg.response_check_option_content('Response', opt.get("code"), None, 'value', opt.get("data"))
+            srv_msg.response_check_option_content(opt.get("code"), 'value', opt.get("data"))
 
     if no_exp_option:
         for opt in no_exp_option:
-            srv_msg.response_check_include_option('Response', 'NOT ', opt.get("code"))
+            srv_msg.response_check_include_option(opt.get("code"), expect_include=False)
 
     if exp_client_id is not None:
         if exp_client_id == 'missing':
-            srv_msg.response_check_include_option('Response', 'NOT ', '61')
+            srv_msg.response_check_include_option(61, expect_include=False)
         else:
-            srv_msg.response_check_include_option('Response', None, '61')
-            srv_msg.response_check_option_content('Response', '61', None, 'value', exp_client_id)
+            srv_msg.response_check_include_option(61)
+            srv_msg.response_check_option_content(61, 'value', exp_client_id)
     if exp_next_server is not None:
-        srv_msg.response_check_content('Response', None, 'siaddr', exp_next_server)
+        srv_msg.response_check_content('siaddr', exp_next_server)
     if exp_server_hostname is not None:
-        srv_msg.response_check_content('Response', None, 'sname', exp_server_hostname)
+        srv_msg.response_check_content('sname', exp_server_hostname)
     if exp_boot_file_name is not None:
-        srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
+        srv_msg.response_check_content('file', exp_boot_file_name)
     if no_exp_boot_file_name is not None:
-        srv_msg.response_check_content('Response', 'NOT ', 'file', no_exp_boot_file_name)
+        srv_msg.response_check_content('file', no_exp_boot_file_name, expected=False)
     return rcvd_yiaddr
 
 
@@ -143,7 +143,7 @@ def send_request_and_check_ack(
     srv_msg.client_send_msg('REQUEST')
 
     # check ACK
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
     if exp_yiaddr is not None:
         exp_addr = exp_yiaddr
     elif requested_addr is not None:
@@ -153,45 +153,45 @@ def send_request_and_check_ack(
     else:
         exp_addr = None
     if exp_addr is not None:
-        srv_msg.response_check_content('Response', None, 'yiaddr', exp_addr)
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
-    srv_msg.response_check_include_option('Response', None, '54')
-    srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
-    srv_msg.response_check_include_option('Response', None, '51')
+        srv_msg.response_check_content('yiaddr', exp_addr)
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_include_option(51)
     if exp_lease_time is not None:
-        srv_msg.response_check_option_content('Response', '51', None, 'value', exp_lease_time)
+        srv_msg.response_check_option_content(51, 'value', exp_lease_time)
     if exp_renew_timer is not None:
         missing = 'NOT ' if exp_renew_timer == 'missing' else None
-        srv_msg.response_check_include_option('Response', missing, '58')
+        srv_msg.response_check_include_option(58, expect_include=missing)
         if not missing:
-            srv_msg.response_check_option_content('Response', '58', None, 'value', exp_renew_timer)
+            srv_msg.response_check_option_content(58, 'value', exp_renew_timer)
     if exp_rebind_timer is not None:
         missing = 'NOT ' if exp_rebind_timer == 'missing' else None
-        srv_msg.response_check_include_option('Response', missing, '59')
+        srv_msg.response_check_include_option(59, expect_include=missing)
         if not missing:
-            srv_msg.response_check_option_content('Response', '59', None, 'value', exp_rebind_timer)
+            srv_msg.response_check_option_content(59, 'value', exp_rebind_timer)
     if exp_client_id is not None:
         if exp_client_id == 'missing':
-            srv_msg.response_check_include_option('Response', 'NOT ', '61')
+            srv_msg.response_check_include_option(61, expect_include=False)
         else:
-            srv_msg.response_check_include_option('Response', None, '61')
-            srv_msg.response_check_option_content('Response', '61', None, 'value', exp_client_id)
+            srv_msg.response_check_include_option(61)
+            srv_msg.response_check_option_content(61, 'value', exp_client_id)
 
     if no_exp_boot_file_name is not None:
-        srv_msg.response_check_content('Response', 'NOT ', 'file', no_exp_boot_file_name)
+        srv_msg.response_check_content('file', no_exp_boot_file_name, expected=False)
     if exp_next_server is not None:
-        srv_msg.response_check_content('Response', None, 'siaddr', exp_next_server)
+        srv_msg.response_check_content('siaddr', exp_next_server)
     if exp_server_hostname is not None:
-        srv_msg.response_check_content('Response', None, 'sname', exp_server_hostname)
+        srv_msg.response_check_content('sname', exp_server_hostname)
     if exp_boot_file_name is not None:
-        srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
+        srv_msg.response_check_content('file', exp_boot_file_name)
     if exp_option:
         for opt in exp_option:
-            srv_msg.response_check_option_content('Response', opt.get("code"), None, 'value', opt.get("data"))
+            srv_msg.response_check_option_content(opt.get("code"), 'value', opt.get("data"))
     if no_exp_option:
         for opt in no_exp_option:
-            srv_msg.response_check_include_option('Response', 'NOT ', opt.get("code"))
+            srv_msg.response_check_include_option(opt.get("code"), expect_include=False)
 
 
 def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
@@ -222,12 +222,12 @@ def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
 # DHCPv6
 
 DHCPv6_STATUS_CODES = {
-    'Success': '0',
-    'UnspecFail': '1',
-    'NoAddrsAvail': '2',
-    'NoBinding': '3',
-    'NotOnLink': '4',
-    'UseMulticast': '5'
+    'Success': 0,
+    'UnspecFail': 1,
+    'NoAddrsAvail': 2,
+    'NoBinding': 3,
+    'NotOnLink': 4,
+    'UseMulticast': 5
 }
 
 def _check_ia_na_options(exp_ia_na_t1,
@@ -236,14 +236,14 @@ def _check_ia_na_options(exp_ia_na_t1,
                          exp_ia_na_iaaddr_addr,
                          exp_ia_na_iaaddr_preflft,
                          exp_ia_na_iaaddr_validlft):
-    srv_msg.response_check_include_option('Response', None, 'IA_NA')
+    srv_msg.response_check_include_option('IA_NA')
 
     # check IA_NA
     if exp_ia_na_t1 is not None:
-        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'T1', exp_ia_na_t1)
+        srv_msg.response_check_option_content('IA_NA', 'T1', exp_ia_na_t1)
 
     if exp_ia_na_t2 is not None:
-        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'T2', exp_ia_na_t2)
+        srv_msg.response_check_option_content('IA_NA', 'T2', exp_ia_na_t2)
 
     # check IA_NA/status_code
     if exp_ia_na_status_code is not None:
@@ -252,33 +252,33 @@ def _check_ia_na_options(exp_ia_na_t1,
         elif not exp_ia_na_status_code.isdigit():
             raise Exception("exp_ia_na_status_code value '%s' should be a digit or status code name" % exp_ia_na_status_code)
 
-        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'sub-option', 'status-code')
-        srv_msg.response_check_suboption_content('Response', 'status-code', 'IA_NA', None, 'statuscode', exp_ia_na_status_code)
+        srv_msg.response_check_option_content('IA_NA', 'sub-option', 'status-code')
+        srv_msg.response_check_suboption_content('status-code', 'IA_NA', 'statuscode', exp_ia_na_status_code)
 
     # check IA_NA/IA_address
     if exp_ia_na_iaaddr_addr is not None or exp_ia_na_iaaddr_validlft is not None or exp_ia_na_iaaddr_preflft is not None:
-        srv_msg.response_check_option_content('Response', 'IA_NA', None, 'sub-option', 'IA_address')
+        srv_msg.response_check_option_content('IA_NA', 'sub-option', 'IA_address')
 
     if exp_ia_na_iaaddr_addr is not None:
-        srv_msg.response_check_suboption_content('Response', 'IA_address', 'IA_NA', None, 'addr', exp_ia_na_iaaddr_addr)
+        srv_msg.response_check_suboption_content('IA_address', 'IA_NA', 'addr', exp_ia_na_iaaddr_addr)
     if exp_ia_na_iaaddr_preflft is not None:
-        srv_msg.response_check_suboption_content('Response', 'IA_address', 'IA_NA', None, 'preflft', exp_ia_na_iaaddr_preflft)
+        srv_msg.response_check_suboption_content('IA_address', 'IA_NA', 'preflft', exp_ia_na_iaaddr_preflft)
     if exp_ia_na_iaaddr_validlft is not None:
-        srv_msg.response_check_suboption_content('Response', 'IA_address', 'IA_NA', None, 'validlft', exp_ia_na_iaaddr_validlft)
+        srv_msg.response_check_suboption_content('IA_address', 'IA_NA', 'validlft', exp_ia_na_iaaddr_validlft)
 
 
 def _check_ia_pd_options(exp_ia_pd_iaprefix_prefix=None,
                          exp_ia_pd_iaprefix_plen=None):
     # IA-PD checks
-    srv_msg.response_check_include_option('Response', None, 'IA_PD')
+    srv_msg.response_check_include_option('IA_PD')
 
     if exp_ia_pd_iaprefix_prefix is not None:
-        srv_msg.response_check_option_content('Response', 'IA_PD', None, 'sub-option', 'IA-Prefix')
-        srv_msg.response_check_suboption_content('Response', 'IA-Prefix', 'IA_PD', None, 'prefix', exp_ia_pd_iaprefix_prefix)
+        srv_msg.response_check_option_content('IA_PD', 'sub-option', 'IA-Prefix')
+        srv_msg.response_check_suboption_content('IA-Prefix', 'IA_PD', 'prefix', exp_ia_pd_iaprefix_prefix)
 
     if exp_ia_pd_iaprefix_plen is not None:
-        srv_msg.response_check_option_content('Response', 'IA_PD', None, 'sub-option', 'IA-Prefix')
-        srv_msg.response_check_suboption_content('Response', 'IA-Prefix', 'IA_PD', None, 'plen', exp_ia_pd_iaprefix_plen)
+        srv_msg.response_check_option_content('IA_PD', 'sub-option', 'IA-Prefix')
+        srv_msg.response_check_suboption_content('IA-Prefix', 'IA_PD', 'plen', exp_ia_pd_iaprefix_plen)
 
 
 def _send_and_check_response(req_ia,
@@ -294,11 +294,11 @@ def _send_and_check_response(req_ia,
                              exp_rapid_commit,
                              exp_option,
                              no_exp_option):
-    msgs = srv_msg.send_wait_for_message('MUST', None, exp_msg_type)
+    msgs = srv_msg.send_wait_for_message('MUST', exp_msg_type)
 
     if exp_msg_type == 'RELAYREPLY':
-        srv_msg.response_check_include_option('Response', None, 'relay-msg')
-        srv_msg.response_check_option_content('Response', 'relay-msg', None, 'Relayed', 'Message')
+        srv_msg.response_check_include_option('relay-msg')
+        srv_msg.response_check_option_content('relay-msg', 'Relayed', 'Message')
 
     if req_ia == 'IA-NA':
         _check_ia_na_options(exp_ia_na_t1,
@@ -313,15 +313,15 @@ def _send_and_check_response(req_ia,
                              exp_ia_pd_iaprefix_plen)
 
     if exp_rapid_commit:
-        srv_msg.response_check_include_option('Response', None, 'rapid_commit')
+        srv_msg.response_check_include_option('rapid_commit')
 
     if exp_option:
         for opt in exp_option:
-            srv_msg.response_check_option_content('Response', opt.get("code"), None, 'value', opt.get("data"))
+            srv_msg.response_check_option_content(opt.get("code"), 'value', opt.get("data"))
 
     if no_exp_option:
         for opt in no_exp_option:
-            srv_msg.response_check_include_option('Response', 'NOT ', opt.get("code"))
+            srv_msg.response_check_include_option(opt.get("code"), expect_include=False)
 
 
 def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
@@ -339,20 +339,20 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
                                     no_exp_option=None):
     # send SOLICIT
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     if duid is not None:
         srv_msg.client_sets_value('Client', 'DUID', duid)
     #if client_id is not None:
     #    srv_msg.client_does_include_with_value('client_id', client_id)
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     if req_ia is not None:
-        srv_msg.client_does_include('Client', None, req_ia)
+        srv_msg.client_does_include('Client', req_ia)
     if req_opts is not None:
         for opt in req_opts:
             srv_msg.client_requests_option(opt)
 
     if rapid_commit:
-        srv_msg.client_does_include('Client', None, 'rapid-commit')
+        srv_msg.client_does_include('Client', 'rapid-commit')
 
     srv_msg.client_send_msg('SOLICIT')
 
@@ -362,7 +362,7 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
 
     if interface_id is not None:
         srv_msg.client_sets_value('RelayAgent', 'ifaceid', interface_id)
-        srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+        srv_msg.client_does_include('RelayAgent', 'interface-id')
 
     if relay_addr is not None or interface_id is not None:
         srv_msg.create_relay_forward()
@@ -389,17 +389,17 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
                              exp_option,
                              no_exp_option)
 
-    # srv_msg.response_check_include_option('Response', None, '1')
-    # srv_msg.response_check_include_option('Response', None, '54')
-    # srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
-    # srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
+    # srv_msg.response_check_include_option(1)
+    # srv_msg.response_check_include_option(54)
+    # srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    # srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
 
     # if exp_client_id is not None:
     #     if exp_client_id == 'missing':
-    #         srv_msg.response_check_include_option('Response', 'NOT ', '61')
+    #         srv_msg.response_check_include_option(61, expect_include=False)
     #     else:
-    #         srv_msg.response_check_include_option('Response', None, '61')
-    #         srv_msg.response_check_option_content('Response', '61', None, 'value', exp_client_id)
+    #         srv_msg.response_check_include_option(61)
+    #         srv_msg.response_check_option_content(61, 'value', exp_client_id)
 
     #return rcvd_yiaddr
     return None
@@ -432,7 +432,7 @@ def send_request_and_check_reply(duid=None,
     #     srv_msg.client_does_include_with_value('requested_addr', requested_addr)
     # if ciaddr is not None:
     #     srv_msg.client_sets_value('Client', 'ciaddr', ciaddr)
-    # srv_msg.client_requests_option('1')
+    # srv_msg.client_requests_option(1)
     if req_ia == 'IA-NA':
         srv_msg.client_copy_option('IA_NA')
     if req_ia == 'IA-PD':
@@ -440,7 +440,7 @@ def send_request_and_check_reply(duid=None,
     srv_msg.client_copy_option('server-id')
     #srv_msg.client_save_option('server-id')
     #srv_msg.client_add_saved_option('DONT ')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     if req_opts is not None:
         for opt in req_opts:
             srv_msg.client_requests_option(opt)
@@ -449,38 +449,38 @@ def send_request_and_check_reply(duid=None,
 
     if interface_id is not None:
         srv_msg.client_sets_value('RelayAgent', 'ifaceid', interface_id)
-        srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+        srv_msg.client_does_include('RelayAgent', 'interface-id')
         srv_msg.create_relay_forward()
 
-    # srv_msg.response_check_include_option('Response', None, '1')
-    # srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
-    # srv_msg.response_check_include_option('Response', None, '54')
-    # srv_msg.response_check_option_content('Response', '54', None, 'value', '$(SRV4_ADDR)')
-    # srv_msg.response_check_include_option('Response', None, '51')
+    # srv_msg.response_check_include_option(1)
+    # srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    # srv_msg.response_check_include_option(54)
+    # srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    # srv_msg.response_check_include_option(51)
     # if exp_renew_timer is not None:
     #     missing = 'NOT ' if exp_renew_timer == 'missing' else None
-    #     srv_msg.response_check_include_option('Response', missing, '58')
+    #     srv_msg.response_check_include_option('Response', missing, 58)
     #     if not missing:
-    #         srv_msg.response_check_option_content('Response', '58', None, 'value', exp_renew_timer)
+    #         srv_msg.response_check_option_content(58, 'value', exp_renew_timer)
     # if exp_rebind_timer is not None:
     #     missing = 'NOT ' if exp_rebind_timer == 'missing' else None
-    #     srv_msg.response_check_include_option('Response', missing, '59')
+    #     srv_msg.response_check_include_option('Response', missing, 59)
     #     if not missing:
-    #         srv_msg.response_check_option_content('Response', '59', None, 'value', exp_rebind_timer)
+    #         srv_msg.response_check_option_content(59, 'value', exp_rebind_timer)
 
     # if exp_client_id is not None:
     #     if exp_client_id == 'missing':
-    #         srv_msg.response_check_include_option('Response', 'NOT ', '61')
+    #         srv_msg.response_check_include_option(61, expect_include=False)
     #     else:
-    #         srv_msg.response_check_include_option('Response', None, '61')
-    #         srv_msg.response_check_option_content('Response', '61', None, 'value', exp_client_id)
+    #         srv_msg.response_check_include_option(61)
+    #         srv_msg.response_check_option_content(61, 'value', exp_client_id)
 
     # if exp_next_server is not None:
-    #     srv_msg.response_check_content('Response', None, 'siaddr', exp_next_server)
+    #     srv_msg.response_check_content('siaddr', exp_next_server)
     # if exp_server_hostname is not None:
-    #     srv_msg.response_check_content('Response', None, 'sname', exp_server_hostname)
+    #     srv_msg.response_check_content('sname', exp_server_hostname)
     # if exp_boot_file_name is not None:
-    #     srv_msg.response_check_content('Response', None, 'file', exp_boot_file_name)
+    #     srv_msg.response_check_content('file', exp_boot_file_name)
 
     if interface_id is not None:
         exp_msg_type = 'RELAYREPLY'
@@ -549,11 +549,11 @@ def send_decline6():
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
 
 
 #########################################################################

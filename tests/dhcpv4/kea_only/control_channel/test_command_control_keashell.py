@@ -23,35 +23,35 @@ def test_control_channel_keashell_dhcp_disable_timer():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 dhcp-disable <<<\'"max-period": 5\'')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.forge_sleep('7', 'seconds')
+    srv_msg.forge_sleep(7, 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -67,19 +67,19 @@ def test_control_channel_keashell_dhcp_disable():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 dhcp-disable <<<\'\'')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
@@ -99,19 +99,19 @@ def test_control_channel_keashell_dhcp_disable_and_enable():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 dhcp-disable <<<\'\'')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
@@ -120,14 +120,14 @@ def test_control_channel_keashell_dhcp_disable_and_enable():
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 dhcp-enable <<<\'\'')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -143,14 +143,14 @@ def test_control_channel_keashell_set_config_basic():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # this command is with new configuration
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"%s"}}\'' % world.f_cfg.run_join('control_socket'))
@@ -158,14 +158,14 @@ def test_control_channel_keashell_set_config_basic():
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -181,40 +181,40 @@ def test_control_channel_keashell_after_restart_load_config_file():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"%s"}}\'' % world.f_cfg.run_join('control_socket'))
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -246,14 +246,14 @@ def test_control_channel_keashell_test_config():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -262,7 +262,7 @@ def test_control_channel_keashell_test_config():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
@@ -271,14 +271,14 @@ def test_control_channel_keashell_test_config():
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-test <<<\'$(DHCP_CONFIG)\'')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -287,7 +287,7 @@ def test_control_channel_keashell_test_config():
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
-                                           '0',
+                                           0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::1')
@@ -297,14 +297,14 @@ def test_control_channel_keashell_test_config():
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -320,14 +320,14 @@ def test_control_channel_keashell_write_config():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
@@ -338,14 +338,14 @@ def test_control_channel_keashell_write_config():
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-write <<<\'\'')
 
@@ -353,14 +353,14 @@ def test_control_channel_keashell_write_config():
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -377,14 +377,14 @@ def test_control_channel_socket_reload_config():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # now configuration is set over kea-shell
     misc.test_setup()
@@ -396,24 +396,24 @@ def test_control_channel_socket_reload_config():
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-reload <<<\'\'')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # and now goes restart so configuration again is taken from files
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.51.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')

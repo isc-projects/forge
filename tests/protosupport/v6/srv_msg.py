@@ -856,15 +856,13 @@ def extract_duid(option):
 
 def response_check_include_suboption(opt_code, expect, expected_value):
     # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str) and not opt_code.isdigit():
+    if isinstance(opt_code, str):
         opt_code = OPTIONS[opt_code]
-    if isinstance(expected_value, str) and not expected_value.isdigit():
-        expected_value = OPTIONS[expected_value]
 
     x, receive_tmp = get_subopt_from_option(int(opt_code), int(expected_value))
     opt_descr = _get_opt_descr(opt_code)
     subopt_descr = _get_opt_descr(expected_value)
-    if expect is None:
+    if expect:
         assert len(x) > 0, "Expected sub-option {subopt_descr} not present in the option {opt_descr}".format(**locals())
     else:
         assert len(x) == 0, "NOT expected sub-option {subopt_descr} is present in the option {opt_descr}".format(**locals())
@@ -878,9 +876,9 @@ values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sips
 
 def response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected_value):
     # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str) and not opt_code.isdigit():
+    if isinstance(opt_code, str):
         opt_code = OPTIONS[opt_code]
-    if isinstance(subopt_code, str) and not subopt_code.isdigit():
+    if isinstance(subopt_code, str):
         subopt_code = OPTIONS[subopt_code]
 
     #first check if subotion exists and get suboption
@@ -890,7 +888,7 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
     data_type = str(data_type)
     expected_value = str(expected_value)
     received = []
-    opts, receive_tmp = response_check_include_suboption(opt_code, None, subopt_code)
+    opts, receive_tmp = response_check_include_suboption(opt_code, True, subopt_code)
     assert int(subopt_code) == int(receive_tmp), "You should never see this error, if so, please report that bug a"
     # that is duplicated code but lets leave it for now
     for opt in opts:
@@ -906,7 +904,7 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
 
     opt_descr = _get_opt_descr(opt_code)
 
-    if expect is None or expect is True:
+    if expect:
         assert expected_value in received, ("Invalid {opt_descr} option, received {data_type}: ".format(**locals()) +
                                             ",".join(received) + ", but expected " + str(expected_value))
     else:
@@ -965,7 +963,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
             assert False, "Within option " + opt_descr + " there is no " + initial_data_type\
                           + " value. Probably that is test error"
 
-        if expect is None or expect is True:
+        if expect:
             assert expected_value in received, "Invalid " + opt_descr + " option, received "\
                                                + data_type + ": " + ",".join(received) + ", but expected " \
                                                + str(expected_value)

@@ -25,18 +25,18 @@ def test_v6_options_inforequest_preference():
     # 					Preference option with value 123
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('preference', '123')
+    srv_control.config_srv_opt('preference', 123)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
+    srv_msg.client_requests_option(7)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '7')
-    srv_msg.response_check_option_content('Response', '7', None, 'value', '123')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', 123)
 
     references.references_check('RFC3315')
 
@@ -64,17 +64,13 @@ def test_v6_options_inforequest_sip_domains():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('21')
+    srv_msg.client_requests_option(21)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '21')
-    srv_msg.response_check_option_content('Response',
-                                          '21',
-                                          None,
-                                          'domains',
-                                          'srv1.example.com.,srv2.isc.org.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(21)
+    srv_msg.response_check_option_content(21, 'domains', 'srv1.example.com.,srv2.isc.org.')
 
     references.references_check('RFC331')
 
@@ -102,17 +98,13 @@ def test_v6_options_inforequest_sip_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('22')
+    srv_msg.client_requests_option(22)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '22')
-    srv_msg.response_check_option_content('Response',
-                                          '22',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::1,2001:db8::2')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(22)
+    srv_msg.response_check_option_content(22, 'addresses', '2001:db8::1,2001:db8::2')
 
     references.references_check('RFC331')
 
@@ -130,17 +122,13 @@ def test_v6_options_inforequest_sip_servers_csv():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('22')
+    srv_msg.client_requests_option(22)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '22')
-    srv_msg.response_check_option_content('Response',
-                                          '22',
-                                          None,
-                                          'addresses',
-                                          '2001:db8:1::cafe')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(22)
+    srv_msg.response_check_option_content(22, 'addresses', '2001:db8:1::cafe')
 
     references.references_check('RFC331')
 
@@ -195,17 +183,13 @@ def test_v6_options_inforequest_dns_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('23')
+    srv_msg.client_requests_option(23)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '23')
-    srv_msg.response_check_option_content('Response',
-                                          '23',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::1,2001:db8::2')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1,2001:db8::2')
 
     misc.test_procedure()
 
@@ -235,17 +219,13 @@ def test_v6_options_inforequest_domains():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('24')
+    srv_msg.client_requests_option(24)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response',
-                                          '24',
-                                          None,
-                                          'domains',
-                                          'domain1.example.com.,domain2.isc.org.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'domains', 'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('RFC364')
 
@@ -274,17 +254,13 @@ def test_v6_options_inforequest_nis_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('27')
+    srv_msg.client_requests_option(27)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '27')
-    srv_msg.response_check_option_content('Response',
-                                          '27',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::abc,3000::1,2000::1234')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(27)
+    srv_msg.response_check_option_content(27, 'addresses', '2001:db8::abc,3000::1,2000::1234')
 
     references.references_check('RFC389')
 
@@ -314,19 +290,15 @@ def test_v6_options_inforequest_nisp_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('28')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(28)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '28')
-    srv_msg.response_check_option_content('Response',
-                                          '28',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::abc,3000::1,2000::1234')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(28)
+    srv_msg.response_check_option_content(28, 'addresses', '2001:db8::abc,3000::1,2000::1234')
 
     references.references_check('RFC389')
 
@@ -353,13 +325,13 @@ def test_v6_options_inforequest_nisdomain():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('29')
+    srv_msg.client_requests_option(29)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '29')
-    srv_msg.response_check_option_content('Response', '29', None, 'domain', 'ntp.example.com.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(29)
+    srv_msg.response_check_option_content(29, 'domain', 'ntp.example.com.')
 
     references.references_check('RFC389')
 
@@ -385,13 +357,13 @@ def test_v6_options_inforequest_nispdomain():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('30')
+    srv_msg.client_requests_option(30)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '30')
-    srv_msg.response_check_option_content('Response', '30', None, 'domain', 'ntp.example.com.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(30)
+    srv_msg.response_check_option_content(30, 'domain', 'ntp.example.com.')
 
     references.references_check('RFC389')
 
@@ -420,17 +392,13 @@ def test_v6_options_inforequest_sntp_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('31')
+    srv_msg.client_requests_option(31)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '31')
-    srv_msg.response_check_option_content('Response',
-                                          '31',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::abc,3000::1,2000::1234')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(31)
+    srv_msg.response_check_option_content(31, 'addresses', '2001:db8::abc,3000::1,2000::1234')
 
     references.references_check('RFC407')
 
@@ -456,13 +424,13 @@ def test_v6_options_inforequest_info_refresh():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('32')
+    srv_msg.client_requests_option(32)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '32')
-    srv_msg.response_check_option_content('Response', '32', None, 'value', '12345678')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(32)
+    srv_msg.response_check_option_content(32, 'value', '12345678')
 
     references.references_check('RFC424')
 
@@ -485,7 +453,7 @@ def test_v6_options_inforequest_multiple():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('preference', '123')
+    srv_control.config_srv_opt('preference', 123)
     srv_control.config_srv_opt('sip-server-dns', 'srv1.example.com,srv2.isc.org')
     srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
@@ -493,34 +461,22 @@ def test_v6_options_inforequest_multiple():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_requests_option('21')
-    srv_msg.client_requests_option('23')
-    srv_msg.client_requests_option('24')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_requests_option(21)
+    srv_msg.client_requests_option(23)
+    srv_msg.client_requests_option(24)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '7')
-    srv_msg.response_check_include_option('Response', None, '21')
-    srv_msg.response_check_include_option('Response', None, '23')
-    srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response', '7', None, 'value', '123')
-    srv_msg.response_check_option_content('Response',
-                                          '21',
-                                          None,
-                                          'addresses',
-                                          'srv1.example.com.,srv2.isc.org.')
-    srv_msg.response_check_option_content('Response',
-                                          '23',
-                                          None,
-                                          'addresses',
-                                          '2001:db8::1,2001:db8::2')
-    srv_msg.response_check_option_content('Response',
-                                          '24',
-                                          None,
-                                          'domains',
-                                          'domain1.example.com.,domain2.isc.org.')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_include_option(21)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(7, 'value', 123)
+    srv_msg.response_check_option_content(21, 'addresses', 'srv1.example.com.,srv2.isc.org.')
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1,2001:db8::2')
+    srv_msg.response_check_option_content(24, 'domains', 'domain1.example.com.,domain2.isc.org.')
 
     references.references_check('RFC3315')
 
@@ -552,20 +508,20 @@ def test_v6_options_inforequest_negative():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('24')
+    srv_msg.client_requests_option(24)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', 'NOT ', '23')
-    srv_msg.response_check_include_option('Response', 'NOT ', '24')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(23, expect_include=False)
+    srv_msg.response_check_include_option(24, expect_include=False)
 
     misc.test_procedure()
-    srv_msg.client_requests_option('23')
+    srv_msg.client_requests_option(23)
     srv_msg.client_send_msg('INFOREQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, '23')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(23)
 
     references.references_check('RFC364')

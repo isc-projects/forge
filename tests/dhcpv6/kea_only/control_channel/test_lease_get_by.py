@@ -20,29 +20,29 @@ def _send_cmd(cmd, extra_param=None, exp_result=0):
 def _get_address(duid, address, ia_id, ia_pd=None, fqdn=None):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'ia_id', ia_id)
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'IA-NA')
     if ia_pd is not None:
         srv_msg.client_sets_value('Client', 'ia_pd', ia_pd)
-        srv_msg.client_does_include('Client', None, 'IA-PD')
+        srv_msg.client_does_include('Client', 'IA-PD')
     if fqdn is not None:
         srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
         srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-        srv_msg.client_does_include('Client', None, 'fqdn')
+        srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, 1)
-    srv_msg.response_check_include_option('Response', None, 2)
-    srv_msg.response_check_include_option('Response', None, 3)
-    srv_msg.response_check_option_content('Response', 3, None, 'sub-option', 5)
-    srv_msg.response_check_suboption_content('Response', 5, 3, None, 'addr', address)
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', address)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
     if ia_pd is not None:
@@ -50,20 +50,20 @@ def _get_address(duid, address, ia_id, ia_pd=None, fqdn=None):
     if fqdn is not None:
         srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
         srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-        srv_msg.client_does_include('Client', None, 'fqdn')
+        srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
-    srv_msg.response_check_include_option('Response', None, 1)
-    srv_msg.response_check_include_option('Response', None, 2)
-    srv_msg.response_check_include_option('Response', None, 3)
-    srv_msg.response_check_option_content('Response', 3, None, 'sub-option', 5)
-    srv_msg.response_check_suboption_content('Response', 5, 3, None, 'addr', address)
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', address)
     if fqdn is not None:
-        srv_msg.response_check_include_option('Response', None, 39)
-        srv_msg.response_check_option_content('Response', 39, None, 'flags', 'S')
-        srv_msg.response_check_option_content('Response', 39, None, 'fqdn', fqdn)
+        srv_msg.response_check_include_option(39)
+        srv_msg.response_check_option_content(39, 'flags', 'S')
+        srv_msg.response_check_option_content(39, 'fqdn', fqdn)
 
 
 # lease6-get-by-duid, lease6-get-by-hostname

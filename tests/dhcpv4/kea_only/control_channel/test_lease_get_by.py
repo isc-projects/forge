@@ -25,12 +25,12 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
     if fqdn is not None:
         srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
         srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-        srv_msg.client_does_include('Client', None, 'fqdn')
+        srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', address)
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', address)
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -40,12 +40,12 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
     if fqdn is not None:
         srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
         srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-        srv_msg.client_does_include('Client', None, 'fqdn')
+        srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', address)
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', address)
 
 
 # lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-adderss

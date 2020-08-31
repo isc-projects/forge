@@ -28,8 +28,8 @@ def test_v4_hosts_cmds_libreload():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -38,8 +38,8 @@ def test_v4_hosts_cmds_libreload():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -48,10 +48,10 @@ def test_v4_hosts_cmds_libreload():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.send_ctrl_cmd_via_socket('{"command": "libreload","arguments": {}}')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
@@ -61,8 +61,8 @@ def test_v4_hosts_cmds_libreload():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
 
 @pytest.mark.v4
@@ -84,8 +84,8 @@ def test_v4_hosts_cmds_reconfigure():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -94,8 +94,8 @@ def test_v4_hosts_cmds_reconfigure():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -114,8 +114,8 @@ def test_v4_hosts_cmds_reconfigure():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
 
 @pytest.mark.v4
@@ -137,8 +137,8 @@ def test_v4_hosts_cmds_add_reservation_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -147,8 +147,8 @@ def test_v4_hosts_cmds_add_reservation_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -157,10 +157,10 @@ def test_v4_hosts_cmds_add_reservation_mysql():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -182,8 +182,8 @@ def test_v4_hosts_cmds_del_reservation_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -192,8 +192,8 @@ def test_v4_hosts_cmds_del_reservation_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
 
@@ -202,8 +202,8 @@ def test_v4_hosts_cmds_del_reservation_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
 
 @pytest.mark.v4
@@ -218,9 +218,9 @@ def test_v4_hosts_cmds_del_reservation_mysql_2():
 
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'ff:01:02:03:ff:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', '1')
-    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'MySQL', '1')
-    srv_control.update_db_backend_reservation('dhcp4_subnet_id', '1', 'MySQL', '1')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -231,8 +231,8 @@ def test_v4_hosts_cmds_del_reservation_mysql_2():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
 
@@ -241,8 +241,8 @@ def test_v4_hosts_cmds_del_reservation_mysql_2():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
 
 @pytest.mark.v4
@@ -264,8 +264,8 @@ def test_v4_hosts_cmds_del_reservation_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -274,8 +274,8 @@ def test_v4_hosts_cmds_del_reservation_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
 
@@ -284,8 +284,8 @@ def test_v4_hosts_cmds_del_reservation_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
 
 @pytest.mark.v4
@@ -299,9 +299,9 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'ff:01:02:03:ff:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', '1')
-    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'PostgreSQL', '1')
-    srv_control.update_db_backend_reservation('dhcp4_subnet_id', '1', 'PostgreSQL', '1')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', 1)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'PostgreSQL', 1)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -312,8 +312,8 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
 
@@ -322,8 +322,8 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -332,10 +332,10 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -357,8 +357,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -367,8 +367,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -377,10 +377,10 @@ def test_v4_hosts_cmds_add_reservation_pgsql():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -402,8 +402,8 @@ def test_v4_hosts_cmds_get_reservation_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -412,8 +412,8 @@ def test_v4_hosts_cmds_get_reservation_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
 
@@ -430,9 +430,9 @@ def test_v4_hosts_cmds_get_reservation_mysql_2():
 
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'ff:01:02:03:ff:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', '1')
-    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'MySQL', '1')
-    srv_control.update_db_backend_reservation('dhcp4_subnet_id', '1', 'MySQL', '1')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -443,8 +443,8 @@ def test_v4_hosts_cmds_get_reservation_mysql_2():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
 
@@ -468,8 +468,8 @@ def test_v4_hosts_cmds_get_reservation_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
 
@@ -478,8 +478,8 @@ def test_v4_hosts_cmds_get_reservation_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
 
@@ -495,9 +495,9 @@ def test_v4_hosts_cmds_get_reservation_pgsql_2():
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'ff:01:02:03:ff:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', '1')
-    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'PostgreSQL', '1')
-    srv_control.update_db_backend_reservation('dhcp4_subnet_id', '1', 'PostgreSQL', '1')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', 1)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', 'PostgreSQL', 1)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -508,8 +508,8 @@ def test_v4_hosts_cmds_get_reservation_pgsql_2():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
 
@@ -524,7 +524,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'option[60].hex')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('MySQL')
@@ -538,8 +538,8 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
 
@@ -549,8 +549,8 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_procedure()
     # Client adds to the message vendor_class_id with value docsis3.0.
@@ -561,10 +561,10 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -577,7 +577,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'option[60].hex')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('MySQL')
@@ -591,8 +591,8 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
 
@@ -602,8 +602,8 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_procedure()
     # Client adds to the message vendor_class_id with value docsis3.0.
@@ -614,7 +614,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'NAK')
+    srv_msg.send_wait_for_message('MUST', 'NAK')
 
 
 @pytest.mark.v4
@@ -627,7 +627,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'option[60].hex')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -641,8 +641,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
 
@@ -652,8 +652,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_procedure()
     # Client adds to the message vendor_class_id with value docsis3.0.
@@ -664,10 +664,10 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -680,7 +680,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook('2', 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'option[60].hex')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -694,8 +694,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
 
@@ -705,8 +705,8 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.100')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.100')
 
     misc.test_procedure()
     # Client adds to the message vendor_class_id with value docsis3.0.
@@ -717,7 +717,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'NAK')
+    srv_msg.send_wait_for_message('MUST', 'NAK')
 
 
 @pytest.mark.v4
@@ -737,8 +737,8 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     response = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.168.50.205","next-server":"192.168.50.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
     assert response['result'] == 0
@@ -748,13 +748,13 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
-    srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')
-    srv_msg.response_check_content('Response', None, 'sname', 'hal9000')
-    srv_msg.response_check_content('Response', None, 'file', '/dev/null')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.205')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.203')
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.202')
+    srv_msg.response_check_content('sname', 'hal9000')
+    srv_msg.response_check_content('file', '/dev/null')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -764,13 +764,13 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
-    srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')
-    srv_msg.response_check_content('Response', None, 'sname', 'hal9000')
-    srv_msg.response_check_content('Response', None, 'file', '/dev/null')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.205')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.203')
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.202')
+    srv_msg.response_check_content('sname', 'hal9000')
+    srv_msg.response_check_content('file', '/dev/null')
 
 
 @pytest.mark.v4
@@ -790,8 +790,8 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
     result = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.168.50.205","next-server":"192.168.50.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
     assert result['result'] == 0
@@ -801,13 +801,13 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
-    srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')
-    srv_msg.response_check_content('Response', None, 'sname', 'hal9000')
-    srv_msg.response_check_content('Response', None, 'file', '/dev/null')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.205')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.203')
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.202')
+    srv_msg.response_check_content('sname', 'hal9000')
+    srv_msg.response_check_content('file', '/dev/null')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -817,10 +817,10 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', '192.168.50.205')
-    srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.203')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '10.1.1.202')
-    srv_msg.response_check_content('Response', None, 'sname', 'hal9000')
-    srv_msg.response_check_content('Response', None, 'file', '/dev/null')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.205')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.203')
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.202')
+    srv_msg.response_check_content('sname', 'hal9000')
+    srv_msg.response_check_content('file', '/dev/null')

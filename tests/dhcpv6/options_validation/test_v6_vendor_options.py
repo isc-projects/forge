@@ -35,18 +35,18 @@ def test_v6_options_vendor_tftp_servers():
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '32')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 32)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
 
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '32')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 32)
 
     references.references_check('RFC3315')
 
@@ -76,18 +76,18 @@ def test_v6_options_vendor_config_file():
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '33')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 33)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
 
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '33')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 33)
 
     references.references_check('RFC3315')
 
@@ -117,18 +117,18 @@ def test_v6_options_vendor_syslog_servers():
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '34')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 34)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
 
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '34')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 34)
 
     references.references_check('RFC3315')
 
@@ -159,18 +159,18 @@ def test_v6_options_vendor_time_servers():
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '37')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 37)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
 
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '37')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 37)
 
     references.references_check('RFC3315')
 
@@ -200,18 +200,18 @@ def test_v6_options_vendor_time_offset():
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '38')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 38)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
 
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '38')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 38)
 
     references.references_check('RFC3315')
 
@@ -261,25 +261,25 @@ def test_v6_options_vendor_multiple():
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
-    srv_msg.client_does_include('Client', None, 'vendor-class')
-    srv_msg.add_vendor_suboption('Client', '1', '32')
-    srv_msg.add_vendor_suboption('Client', '1', '33')
-    srv_msg.add_vendor_suboption('Client', '1', '34')
-    srv_msg.add_vendor_suboption('Client', '1', '37')
-    srv_msg.add_vendor_suboption('Client', '1', '38')
-    srv_msg.client_does_include('Client', None, 'vendor-specific-info')
+    srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.add_vendor_suboption('Client', 1, 32)
+    srv_msg.add_vendor_suboption('Client', 1, 33)
+    srv_msg.add_vendor_suboption('Client', 1, 34)
+    srv_msg.add_vendor_suboption('Client', 1, 37)
+    srv_msg.add_vendor_suboption('Client', 1, 38)
+    srv_msg.client_does_include('Client', 'vendor-specific-info')
 
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '32')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '33')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '34')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '37')
-    srv_msg.response_check_option_content('Response', '17', None, 'sub-option', '38')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'sub-option', 32)
+    srv_msg.response_check_option_content(17, 'sub-option', 33)
+    srv_msg.response_check_option_content(17, 'sub-option', 34)
+    srv_msg.response_check_option_content(17, 'sub-option', 37)
+    srv_msg.response_check_option_content(17, 'sub-option', 38)
 
     references.references_check('RFC3315')

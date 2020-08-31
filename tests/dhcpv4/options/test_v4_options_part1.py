@@ -22,13 +22,13 @@ def test_v4_options_subnet_mask():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('1')
+    srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '1')
-    srv_msg.response_check_option_content('Response', '1', None, 'value', '255.255.255.0')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # References: v4.options, v4.prl, RFC2131
 
@@ -40,18 +40,18 @@ def test_v4_options_time_offset():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('time-offset', '50')
+    srv_control.config_srv_opt('time-offset', 50)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('2')
+    srv_msg.client_requests_option(2)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '2')
-    srv_msg.response_check_option_content('Response', '2', None, 'value', '50')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_option_content(2, 'value', 50)
 
 
 @pytest.mark.v4
@@ -66,14 +66,14 @@ def test_v4_options_routers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('3')
+    srv_msg.client_requests_option(3)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '3')
-    srv_msg.response_check_option_content('Response', '3', None, 'value', '100.100.100.10')
-    srv_msg.response_check_option_content('Response', '3', None, 'value', '50.50.50.5')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'value', '100.100.100.10')
+    srv_msg.response_check_option_content(3, 'value', '50.50.50.5')
 
 
 @pytest.mark.v4
@@ -88,14 +88,14 @@ def test_v4_options_time_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('4')
+    srv_msg.client_requests_option(4)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '4')
-    srv_msg.response_check_option_content('Response', '4', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '4', None, 'value', '199.199.199.2')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(4)
+    srv_msg.response_check_option_content(4, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(4, 'value', '199.199.199.2')
 
 
 @pytest.mark.v4
@@ -110,14 +110,14 @@ def test_v4_options_name_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('5')
+    srv_msg.client_requests_option(5)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '5')
-    srv_msg.response_check_option_content('Response', '5', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '5', None, 'value', '100.100.100.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(5, 'value', '100.100.100.1')
 
 
 @pytest.mark.v4
@@ -132,14 +132,14 @@ def test_v4_options_domain_name_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(6)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '100.100.100.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(6, 'value', '100.100.100.1')
 
 
 @pytest.mark.v4
@@ -153,13 +153,13 @@ def test_v4_options_domain_name_servers_csv_correct():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('6')
+    srv_msg.client_requests_option(6)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '6')
-    srv_msg.response_check_option_content('Response', '6', None, 'value', '192.0.2.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '192.0.2.1')
 
 
 @pytest.mark.v4
@@ -196,14 +196,14 @@ def test_v4_options_log_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
+    srv_msg.client_requests_option(7)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '7')
-    srv_msg.response_check_option_content('Response', '7', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '7', None, 'value', '100.100.100.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(7, 'value', '100.100.100.1')
 
 
 @pytest.mark.v4
@@ -218,14 +218,14 @@ def test_v4_options_cookie_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('8')
+    srv_msg.client_requests_option(8)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '8')
-    srv_msg.response_check_option_content('Response', '8', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '8', None, 'value', '100.100.100.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(8)
+    srv_msg.response_check_option_content(8, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(8, 'value', '100.100.100.1')
 
 
 @pytest.mark.v4
@@ -240,14 +240,14 @@ def test_v4_options_lpr_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('9')
+    srv_msg.client_requests_option(9)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '9')
-    srv_msg.response_check_option_content('Response', '9', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '9', None, 'value', '150.150.150.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(9)
+    srv_msg.response_check_option_content(9, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(9, 'value', '150.150.150.1')
 
 
 @pytest.mark.v4
@@ -262,14 +262,14 @@ def test_v4_options_impress_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('10')
+    srv_msg.client_requests_option(10)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '10')
-    srv_msg.response_check_option_content('Response', '10', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '10', None, 'value', '150.150.150.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(10)
+    srv_msg.response_check_option_content(10, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(10, 'value', '150.150.150.1')
 
 
 @pytest.mark.v4
@@ -284,14 +284,14 @@ def test_v4_options_resource_location_servers():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('11')
+    srv_msg.client_requests_option(11)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '11')
-    srv_msg.response_check_option_content('Response', '11', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '11', None, 'value', '150.150.150.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(11)
+    srv_msg.response_check_option_content(11, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(11, 'value', '150.150.150.1')
 
 
 @pytest.mark.v4
@@ -306,13 +306,13 @@ def test_v4_options_host_name():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('12')
+    srv_msg.client_requests_option(12)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '12')
-    srv_msg.response_check_option_content('Response', '12', None, 'value', 'isc.example.com')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(12)
+    srv_msg.response_check_option_content(12, 'value', 'isc.example.com')
 
 
 @pytest.mark.v4
@@ -322,18 +322,18 @@ def test_v4_options_boot_size():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('boot-size', '55')
+    srv_control.config_srv_opt('boot-size', 55)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('13')
+    srv_msg.client_requests_option(13)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '13')
-    srv_msg.response_check_option_content('Response', '13', None, 'value', '55')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'value', 55)
 
 
 @pytest.mark.v4
@@ -348,13 +348,13 @@ def test_v4_options_merit_dump():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('14')
+    srv_msg.client_requests_option(14)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '14')
-    srv_msg.response_check_option_content('Response', '14', None, 'value', 'some-string')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(14)
+    srv_msg.response_check_option_content(14, 'value', 'some-string')
 
 
 @pytest.mark.v4
@@ -369,13 +369,13 @@ def test_v4_options_swap_server():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('16')
+    srv_msg.client_requests_option(16)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '16')
-    srv_msg.response_check_option_content('Response', '16', None, 'value', '199.199.199.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(16)
+    srv_msg.response_check_option_content(16, 'value', '199.199.199.1')
 
 
 @pytest.mark.v4
@@ -390,17 +390,13 @@ def test_v4_options_root_path():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('17')
+    srv_msg.client_requests_option(17)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '17')
-    srv_msg.response_check_option_content('Response',
-                                          '17',
-                                          None,
-                                          'value',
-                                          '/some/location/example/')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(17)
+    srv_msg.response_check_option_content(17, 'value', '/some/location/example/')
 
 
 @pytest.mark.v4
@@ -415,17 +411,13 @@ def test_v4_options_extensions_path():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('18')
+    srv_msg.client_requests_option(18)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_option_content('Response',
-                                          '18',
-                                          None,
-                                          'value',
-                                          '/some/location/example/')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_option_content(18, 'value', '/some/location/example/')
 
 
 @pytest.mark.v4
@@ -440,14 +432,14 @@ def test_v4_options_policy_filter():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('21')
+    srv_msg.client_requests_option(21)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '21')
-    srv_msg.response_check_option_content('Response', '21', None, 'value', '199.199.199.1')
-    srv_msg.response_check_option_content('Response', '21', None, 'value', '50.50.50.1')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(21)
+    srv_msg.response_check_option_content(21, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(21, 'value', '50.50.50.1')
 
 
 @pytest.mark.v4
@@ -457,18 +449,18 @@ def test_v4_options_max_dgram_reassembly():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('max-dgram-reassembly', '600')
+    srv_control.config_srv_opt('max-dgram-reassembly', 600)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('22')
+    srv_msg.client_requests_option(22)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '22')
-    srv_msg.response_check_option_content('Response', '22', None, 'value', '600')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(22)
+    srv_msg.response_check_option_content(22, 'value', 600)
 
 
 @pytest.mark.v4
@@ -478,18 +470,18 @@ def test_v4_options_default_ip_ttl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('default-ip-ttl', '86')
+    srv_control.config_srv_opt('default-ip-ttl', 86)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('23')
+    srv_msg.client_requests_option(23)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '23')
-    srv_msg.response_check_option_content('Response', '23', None, 'value', '86')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'value', 86)
 
 
 @pytest.mark.v4
@@ -499,15 +491,15 @@ def test_v4_options_path_mtu_aging_timeout():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('path-mtu-aging-timeout', '85')
+    srv_control.config_srv_opt('path-mtu-aging-timeout', 85)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('24')
+    srv_msg.client_requests_option(24)
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_include_option('Response', None, '24')
-    srv_msg.response_check_option_content('Response', '24', None, 'value', '85')
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'value', 85)

@@ -20,17 +20,17 @@ def test_v6_relay_message_solicit_advertise():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response option 9 MUST contain message 2.
     # message 2 - Advertise
 
@@ -51,19 +51,19 @@ def test_v6_relay_message_unicast_global():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.unicast_addres('GLOBAL', None)
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -84,30 +84,30 @@ def test_v6_relay_message_unicast_local():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.unicast_addres(None, 'LINK_LOCAL')
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.response_check_include_option(9)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
 
     references.references_check('RFC3315')
 
@@ -122,18 +122,18 @@ def test_v6_relay_message_solicit_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'rapid-commit')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'rapid-commit')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')
@@ -149,27 +149,27 @@ def test_v6_relay_message_request_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')
@@ -185,36 +185,36 @@ def test_v6_relay_message_confirm_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')
@@ -230,37 +230,37 @@ def test_v6_relay_message_renew_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')
@@ -276,34 +276,34 @@ def test_v6_relay_message_rebind_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')
@@ -319,35 +319,35 @@ def test_v6_relay_message_release_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'REPLY')
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')
@@ -363,27 +363,27 @@ def test_v6_relay_message_decline_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_does_include('Client', None, 'client-id')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')
@@ -398,25 +398,25 @@ def test_v6_relay_message_information_request_reply():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ADVERTISE')
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_send_msg('INFOREQUEST')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include REPLY message.
 
     references.references_check('RFC3315')

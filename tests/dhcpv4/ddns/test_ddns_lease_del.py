@@ -29,14 +29,14 @@ def _check_fqdn_record(fqdn, address='', expect='notempty'):
     srv_msg.client_send_dns_query()
     if expect == 'empty':
         misc.pass_criteria()
-        srv_msg.send_wait_for_query('MUST', None)
-        srv_msg.dns_option(None, 'ANSWER')
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER', expect_include=False)
     else:
         misc.pass_criteria()
-        srv_msg.send_wait_for_query('MUST', None)
-        srv_msg.dns_option('NOT ', 'ANSWER')
-        srv_msg.dns_option_content('ANSWER', None, 'rdata', address)
-        srv_msg.dns_option_content('ANSWER', None, 'rrname', fqdn)
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER')
+        srv_msg.dns_option_content('ANSWER', 'rdata', address)
+        srv_msg.dns_option_content('ANSWER', 'rrname', fqdn)
 
 
 def _check_address_record(arpa, fqdn='', expect="notempty"):
@@ -45,14 +45,14 @@ def _check_address_record(arpa, fqdn='', expect="notempty"):
     srv_msg.client_send_dns_query()
     if expect == 'empty':
         misc.pass_criteria()
-        srv_msg.send_wait_for_query('MUST', None)
-        srv_msg.dns_option(None, 'ANSWER')
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER', expect_include=False)
     else:
         misc.pass_criteria()
-        srv_msg.send_wait_for_query('MUST', None)
-        srv_msg.dns_option('NOT ', 'ANSWER')
-        srv_msg.dns_option_content('ANSWER', None, 'rdata', fqdn)
-        srv_msg.dns_option_content('ANSWER', None, 'rrname', arpa)
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER')
+        srv_msg.dns_option_content('ANSWER', 'rdata', fqdn)
+        srv_msg.dns_option_content('ANSWER', 'rrname', arpa)
 
 
 def _get_address(mac, fqdn, address):
@@ -61,23 +61,23 @@ def _get_address(mac, fqdn, address):
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'OFFER')
-    srv_msg.response_check_content('Response', None, 'yiaddr', address)
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', address)
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', address)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-    srv_msg.client_does_include('Client', None, 'fqdn')
+    srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'ACK')
-    srv_msg.response_check_content('Response', None, 'yiaddr', address)
-    srv_msg.response_check_include_option('Response', None, 81)
-    srv_msg.response_check_option_content('Response', 81, None, 'flags', 1)
-    srv_msg.response_check_option_content('Response', 81, None, 'fqdn', fqdn)
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', address)
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'flags', 1)
+    srv_msg.response_check_option_content(81, 'fqdn', fqdn)
 
 
 def _get_address_and_update_ddns(mac=None, fqdn=None, address=None, arpa=None):

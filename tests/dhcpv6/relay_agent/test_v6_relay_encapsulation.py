@@ -16,22 +16,22 @@ def test_v6_relay_message_interfaceid():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv('interface-id', '0', '15')
+    srv_control.config_srv('interface-id', 0, 15)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include ADVERTISE message.
 
     references.references_check('RFC3315')
@@ -48,18 +48,18 @@ def test_v6_relay_encapsulate_12lvl():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_requests_option('7')
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward(12)
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include ADVERTISE message.
 
     # TODO: we should check these 12 levels in RELAYREPLY
@@ -78,17 +78,17 @@ def test_v6_relay_encapsulate_8lvl():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', None, 'client-id')
-    srv_msg.client_does_include('Client', None, 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.client_does_include('RelayAgent', None, 'interface-id')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward(8)
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, 'RELAYREPLY')
-    srv_msg.response_check_include_option('Response', None, '18')
-    srv_msg.response_check_include_option('Response', None, '9')
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
     # Response MUST include ADVERTISE message.
 
     # TODO: we should check these 8 levels in RELAYREPLY
