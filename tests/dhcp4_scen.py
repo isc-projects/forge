@@ -164,12 +164,12 @@ def send_request_and_check_ack(
     if exp_renew_timer is not None:
         include = False if exp_renew_timer == 'missing' else True
         srv_msg.response_check_include_option(58, expect_include=include)
-        if not include:
+        if include:
             srv_msg.response_check_option_content(58, 'value', exp_renew_timer)
     if exp_rebind_timer is not None:
         include = False if exp_rebind_timer == 'missing' else True
         srv_msg.response_check_include_option(59, expect_include=include)
-        if not include:
+        if include:
             srv_msg.response_check_option_content(59, 'value', exp_rebind_timer)
     if exp_client_id is not None:
         if exp_client_id == 'missing':
