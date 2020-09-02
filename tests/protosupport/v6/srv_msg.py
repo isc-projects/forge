@@ -858,6 +858,9 @@ def response_check_include_suboption(opt_code, expect, expected_value):
     # if opt_code is actually a opt name then convert it to code
     if isinstance(opt_code, str):
         opt_code = OPTIONS[opt_code]
+    if isinstance(expected_value, str):
+        if not expected_value.isdigit():
+            expected_value = OPTIONS[expected_value]
 
     x, receive_tmp = get_subopt_from_option(int(opt_code), int(expected_value))
     opt_descr = _get_opt_descr(opt_code)
@@ -879,7 +882,8 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
     if isinstance(opt_code, str):
         opt_code = OPTIONS[opt_code]
     if isinstance(subopt_code, str):
-        subopt_code = OPTIONS[subopt_code]
+        if not subopt_code.isdigit():
+            subopt_code = OPTIONS[subopt_code]
 
     #first check if subotion exists and get suboption
     opt_code = int(opt_code)

@@ -218,7 +218,7 @@ def response_check_content(data_type, value, expected=True):
     """
     """
     #expect, data_type, expected = test_define_value(expect, data_type, expected)
-    dhcpmsg.response_check_content(data_type, value, expected)
+    dhcpmsg.response_check_content(expected, data_type, value)
 
 
 @step('(Response|Relayed Message) option (\d+) MUST (NOT )?contain (\S+) (\S+).')
