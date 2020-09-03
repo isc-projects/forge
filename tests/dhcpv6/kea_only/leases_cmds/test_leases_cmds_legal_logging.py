@@ -22,7 +22,7 @@ def test_hook_v6_lease_cmds_legal_logging_add():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

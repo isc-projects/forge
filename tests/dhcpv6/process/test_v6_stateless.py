@@ -15,7 +15,7 @@ def test_v6_stateless_with_subnet_empty_pool():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -48,7 +48,7 @@ def test_v6_stateless_with_subnet_empty_pool_inforequest():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -77,7 +77,7 @@ def test_v6_stateless_without_subnet():
 
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
     srv_control.build_and_send_config_files('SSH', 'config-file')
@@ -110,7 +110,7 @@ def test_v6_stateless_without_subnet_inforequest():
 
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
     srv_control.build_and_send_config_files('SSH', 'config-file')

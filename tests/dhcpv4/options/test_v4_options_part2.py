@@ -124,7 +124,7 @@ def test_v4_options_arp_cache_timeout():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('arp-cache-timeout', 48)
+    srv_control.config_srv_opt('arp-cache-timeout', '48')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -145,7 +145,7 @@ def test_v4_options_default_tcp_ttl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('default-tcp-ttl', 44)
+    srv_control.config_srv_opt('default-tcp-ttl', '44')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -296,7 +296,7 @@ def test_v4_options_netbios_node_type():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('netbios-node-type', 8)
+    srv_control.config_srv_opt('netbios-node-type', '8')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -403,7 +403,7 @@ def test_v4_options_dhcp_option_overload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('dhcp-option-overload', 1)
+    srv_control.config_srv_opt('dhcp-option-overload', '1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

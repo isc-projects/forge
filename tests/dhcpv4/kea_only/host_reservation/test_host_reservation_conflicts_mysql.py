@@ -12,19 +12,20 @@ import misc
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-def test_v4_host_reservation_conflicts_duplicate_reservations():
+def test_v4_host_reservation_conflicts_duplicate_reservations_mysql():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.host_reservation_in_subnet('ip-address',
-                                           '192.168.50.10',
-                                           0,
-                                           'hw-address',
-                                           'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet('ip-address',
-                                           '192.168.50.12',
-                                           0,
-                                           'hw-address',
-                                           'ff:01:02:03:ff:04')
+    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'ff:01:02:03:ff:11')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.2', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
+
+    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'ff:01:02:03:ff:11')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 2)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.3', 'MySQL', 2)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 2)
+    srv_control.upload_db_reservation('MySQL')
+
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
@@ -32,21 +33,22 @@ def test_v4_host_reservation_conflicts_duplicate_reservations():
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets():
+def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets_mysql():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.50')
-    srv_control.host_reservation_in_subnet('ip-address',
-                                           '192.168.50.10',
-                                           0,
-                                           'hw-address',
-                                           'ff:01:02:03:ff:04')
-    srv_control.host_reservation_in_subnet('ip-address',
-                                           '192.168.50.12',
-                                           1,
-                                           'hw-address',
-                                           'ff:01:02:03:ff:04')
+    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'ff:01:02:03:ff:11')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.2', 'MySQL', 1)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
+
+    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'ff:01:02:03:ff:11')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 2)
+    srv_control.update_db_backend_reservation('ipv4_address', '192.168.51.3', 'MySQL', 2)
+    srv_control.update_db_backend_reservation('dhcp4_subnet_id', 2, 'MySQL', 2)
+    srv_control.upload_db_reservation('MySQL')
+
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

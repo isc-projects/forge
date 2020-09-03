@@ -28,7 +28,7 @@ def test_v6_options_subnet_preference():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

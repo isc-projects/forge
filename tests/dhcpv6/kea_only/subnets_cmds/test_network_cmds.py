@@ -101,7 +101,7 @@ def test_hook_v6_network_cmds_get_by_name():
 def test_hook_v6_network_cmds_add_on_interface():
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     # Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
@@ -149,7 +149,7 @@ def test_hook_v6_network_cmds_add_on_interface():
 def test_hook_v6_network_cmds_add_on_interface_id():
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
@@ -204,7 +204,7 @@ def test_hook_v6_network_cmds_add_on_interface_id():
 def test_hook_v6_network_cmds_add_on_relay_addr():
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
@@ -497,7 +497,7 @@ def test_hook_v6_network_cmds_del_non_existing():
 def test_hook_v6_network_cmds_add_and_del():
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')

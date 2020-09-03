@@ -36,7 +36,7 @@ def test_hook_v6_lease_cmds_list():
 def test_hook_v6_lease_cmds_add_notvalid_id():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -88,7 +88,7 @@ def test_hook_v6_lease_cmds_add_notvalid_id():
 def test_hook_v6_lease_cmds_add_address_from_different_subnet():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -140,7 +140,7 @@ def test_hook_v6_lease_cmds_add_address_from_different_subnet():
 def test_hook_v6_lease_cmds_add_valid():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -186,7 +186,7 @@ def test_hook_v6_lease_cmds_add_valid():
 def test_hook_v6_lease_cmds_add_expired_with_options():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -238,7 +238,7 @@ def test_hook_v6_lease_cmds_add_expired_with_options():
 def test_hook_v6_lease_cmds_add_valid_with_options():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

@@ -43,7 +43,7 @@ def test_v4_options_inform_time_offset():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('time-offset', 50)
+    srv_control.config_srv_opt('time-offset', '50')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -305,7 +305,7 @@ def test_v4_options_inform_boot_size():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('boot-size', 55)
+    srv_control.config_srv_opt('boot-size', '55')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -444,7 +444,7 @@ def test_v4_options_inform_max_dgram_reassembly():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('max-dgram-reassembly', 600)
+    srv_control.config_srv_opt('max-dgram-reassembly', '600')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -467,7 +467,7 @@ def test_v4_options_inform_default_ip_ttl():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('default-ip-ttl', 86)
+    srv_control.config_srv_opt('default-ip-ttl', '86')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -490,7 +490,7 @@ def test_v4_options_inform_path_mtu_aging_timeout():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('path-mtu-aging-timeout', 85)
+    srv_control.config_srv_opt('path-mtu-aging-timeout', '85')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -533,7 +533,7 @@ def test_v4_options_inform_relay():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('path-mtu-aging-timeout', 85)
+    srv_control.config_srv_opt('path-mtu-aging-timeout', '85')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -562,7 +562,7 @@ def test_v4_options_inform_invalid_with_serverid():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.config_srv_opt('path-mtu-aging-timeout', 85)
+    srv_control.config_srv_opt('path-mtu-aging-timeout', '85')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

@@ -31,7 +31,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option():
                                              1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -87,7 +87,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_1():
                                              1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -143,7 +143,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_2():
                                              1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -211,7 +211,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_inforequest():
                                              1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -305,7 +305,7 @@ def test_v6_host_reservation_mysql_option_multiple():
 
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.config_srv_opt('sip-server-dns', 'srv4.example.com,srv5.isc.org')
     # 21
     srv_control.config_srv_opt('dns-servers', '2001:db8::4,2001:db8::5')
@@ -394,7 +394,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option():
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.config_srv_opt('preference', 12)
+    srv_control.config_srv_opt('preference', '12')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -450,7 +450,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option_no_address():
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.config_srv_opt('preference', 12)
+    srv_control.config_srv_opt('preference', '12')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -500,7 +500,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option_inforequest():
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.config_srv_opt('preference', 12)
+    srv_control.config_srv_opt('preference', '12')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -579,7 +579,7 @@ def test_v6_host_reservation_pgsql_option_multiple():
 
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.config_srv_opt('sip-server-dns', 'srv4.example.com,srv5.isc.org')
     # 21
     srv_control.config_srv_opt('dns-servers', '2001:db8::4,2001:db8::5')

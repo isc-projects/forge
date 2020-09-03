@@ -196,10 +196,10 @@ def check_dns_respond(expect, data_type, expected_data_value):
     if expected_data_value == received:
         flag = 1  # if we found what we were looking for change flag to 1
 
-    if expect is None and flag == 0:
+    if expect and flag == 0:
         assert False, "Invalid {data_type} received {received} but expected: {expected_data_value}.".format(**locals())
 
-    if expect is not None and flag == 1:
+    if not expect and flag == 1:
         assert False, "Invalid {data_type} received {received} that" \
                       " value has been excluded from correct values.".format(**locals())
 
@@ -265,9 +265,9 @@ def dns_option_content(part_name, expect, value_name, value):
     elif part_name == 'ADDITIONAL_RECORDS':
         flag, outcome = parsing_received_parts(world.srvmsg[0].ar, world.srvmsg[0].arcount, expect, value_name, value)
 
-    if not flag and expect is None:
+    if not flag and expect:
         assert False, 'In received DNS query part: "{value_name}" there is/are values:' \
                       ' {outcome} expected was: {value}'.format(**locals())
-    elif flag and expect is not None:
+    elif flag and not expect:
         assert False, 'In received DNS query part: "{value_name}" there is value:' \
                       ' {outcome} which was forbidden to show up.'.format(**locals())

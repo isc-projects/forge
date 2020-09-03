@@ -153,7 +153,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
 @pytest.mark.v6
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnets():
+def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnets_prefix():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
@@ -164,7 +164,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnet
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('ip-address',
-                                           '3000::3',
+                                           '3001::3',
                                            1,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')

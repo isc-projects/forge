@@ -222,7 +222,7 @@ def test_v6_basic_message_unicast_global_inforequest():
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -694,7 +694,7 @@ def test_v6_basic_message_unicast_local_inforequest():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 

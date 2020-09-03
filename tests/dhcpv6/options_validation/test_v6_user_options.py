@@ -107,7 +107,7 @@ def test_v6_options_all():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('sip-server-dns', 'srv1.example.com,srv2.isc.org')
     srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
@@ -128,7 +128,7 @@ def test_v6_options_all():
     srv_control.config_srv_opt('bootfile-param', '000B48656C6C6F20776F726C640003666F6F')
     srv_control.config_srv_opt('erp-local-domain-name', 'erp-domain.isc.org')
     srv_control.config_srv('domain-search', 0, 'subnet.example.com')
-    srv_control.config_srv_custom_opt('foo', 100, 'uint8', 123)
+    srv_control.config_srv_custom_opt('foo', 100, 'uint8', '123')
     srv_control.config_srv_opt_space('vendor-4491',
                                      'tftp-servers',
                                      '2001:558:ff18:16:10:253:175:76')

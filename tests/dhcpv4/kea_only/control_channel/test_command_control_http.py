@@ -343,8 +343,10 @@ def test_control_channel_http_test_config():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(DHCP_CONFIG) }',
-                                   '$(SRV4_ADDR)')
+    response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"],'
+                                              ' "arguments":  $(DHCP_CONFIG) }', '$(SRV4_ADDR)', exp_result=1)
+
+    assert "specified reservation '192.168.50.5' is not within the IPv4 subnet '192.168.51.0/24'" in response[0]['text']
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
@@ -369,8 +371,10 @@ def test_control_channel_http_test_config():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::1')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"], "arguments":  $(DHCP_CONFIG) }',
-                                   '$(SRV4_ADDR)')
+    response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp4"],'
+                                              ' "arguments":  $(DHCP_CONFIG) }', '$(SRV4_ADDR)', exp_result=1)
+
+    assert "address '3000::1' is not a valid IPv4 address" in response[0]['text']
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)

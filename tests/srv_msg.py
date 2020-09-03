@@ -194,7 +194,7 @@ def send_dont_wait_for_message():
     This step causes to send message in cases when we don't expect any response.
     Step used only for v4 testing
     """
-    dhcpmsg.send_wait_for_message("MUST", False, "None")
+    dhcpmsg.send_wait_for_message("MUST", False, None)
 
 
 @step('Server (\S+) (NOT )?respond with (\w+) message.')

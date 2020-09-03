@@ -42,7 +42,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnet
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('ip-address',
-                                           '3000::3',
+                                           '3001::3',
                                            1,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')

@@ -179,7 +179,7 @@ def test_v6_host_reservation_classes_1():
 
     srv_control.create_new_class('reserved-class1')
     srv_control.add_option_to_defined_class(1, 'sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.add_option_to_defined_class(1, 'preference', 123)
+    srv_control.add_option_to_defined_class(1, 'preference', '123')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -227,7 +227,7 @@ def test_v6_host_reservation_classes_2():
     srv_control.add_option_to_defined_class(1, 'sip-server-addr', '2001:db8::1,2001:db8::2')
 
     srv_control.create_new_class('reserved-class2')
-    srv_control.add_option_to_defined_class(2, 'preference', 123)
+    srv_control.add_option_to_defined_class(2, 'preference', '123')
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')

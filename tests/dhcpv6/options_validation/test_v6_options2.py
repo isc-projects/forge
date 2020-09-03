@@ -25,7 +25,7 @@ def test_v6_options_inforequest_preference():
     # 					Preference option with value 123
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -453,7 +453,7 @@ def test_v6_options_inforequest_multiple():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_opt('preference', 123)
+    srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('sip-server-dns', 'srv1.example.com,srv2.isc.org')
     srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')

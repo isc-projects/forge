@@ -43,7 +43,7 @@ def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets(
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet('ip-address',
-                                           '192.168.50.12',
+                                           '192.168.51.12',
                                            1,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')

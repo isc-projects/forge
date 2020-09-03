@@ -37,7 +37,7 @@ def test_v6_sharednetworks_negative_not_unique_names():
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:d::/64',
                                                        '2001:db8:d::1-2001:db8:d::1')
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
     # first shared subnet
     srv_control.shared_subnet('2001:db8:a::/64', 0)
@@ -386,10 +386,10 @@ def test_v6_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
                                                        '2001:db8:b::1-2001:db8:b::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
                                                        '2001:db8:c::1-2001:db8:c::1')
-    srv_control.config_srv_opt('preference', 1)
-    srv_control.config_srv('preference', 0, 33)
-    srv_control.config_srv('preference', 1, 44)
-    srv_control.config_srv('preference', 2, 55)
+    srv_control.config_srv_opt('preference', '1')
+    srv_control.config_srv('preference', 0, '33')
+    srv_control.config_srv('preference', 1, '44')
+    srv_control.config_srv('preference', 2, '55')
 
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
@@ -485,10 +485,10 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_id_o
     srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
                                                        '2001:db8:c::1-2001:db8:c::1')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('preference', 1)
-    srv_control.config_srv('preference', 0, 33)
-    srv_control.config_srv('preference', 1, 44)
-    srv_control.config_srv('preference', 2, 55)
+    srv_control.config_srv_opt('preference', '1')
+    srv_control.config_srv('preference', 0, '33')
+    srv_control.config_srv('preference', 1, '44')
+    srv_control.config_srv('preference', 2, '55')
 
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
@@ -621,7 +621,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
                                                        '2001:db8:b::1-2001:db8:b::1')
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
@@ -746,10 +746,10 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
                                                        '2001:db8:c::1-2001:db8:c::1')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('preference', 1)
-    srv_control.config_srv('preference', 0, 33)
-    srv_control.config_srv('preference', 1, 44)
-    srv_control.config_srv('preference', 2, 55)
+    srv_control.config_srv_opt('preference', '1')
+    srv_control.config_srv('preference', 0, '33')
+    srv_control.config_srv('preference', 1, '44')
+    srv_control.config_srv('preference', 2, '55')
 
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
@@ -886,7 +886,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
                                                        '2001:db8:b::1-2001:db8:b::1')
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
@@ -1303,11 +1303,11 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
                                                        '2001:db8:f::1-2001:db8:f::1')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
 
-    srv_control.config_srv_opt('preference', 1)
-    srv_control.config_srv('preference', 2, 33)
-    srv_control.config_srv('preference', 3, 44)
-    srv_control.config_srv('preference', 4, 55)
-    srv_control.config_srv('preference', 5, 66)
+    srv_control.config_srv_opt('preference', '1')
+    srv_control.config_srv('preference', 2, '33')
+    srv_control.config_srv('preference', 3, '44')
+    srv_control.config_srv('preference', 4, '55')
+    srv_control.config_srv('preference', 5, '66')
 
     # first shared subnet
     srv_control.shared_subnet('2001:db8:a::/64', 0)
@@ -1656,7 +1656,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
                                                        '2001:db8:c::1-2001:db8:c::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:d::/64',
                                                        '2001:db8:d::1-2001:db8:d::1')
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
     # first shared subnet
     srv_control.shared_subnet('2001:db8:a::/64', 0)
@@ -1924,7 +1924,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
                                                        '2001:db8:c::1-2001:db8:c::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:d::/64',
                                                        '2001:db8:d::1-2001:db8:d::1')
-    srv_control.config_srv('preference', 0, 123)
+    srv_control.config_srv('preference', 0, '123')
     srv_control.config_srv('dns-servers', 1, '2001:db8::1,2001:db8::2')
     # first shared subnet
     srv_control.shared_subnet('2001:db8:a::/64', 0)
@@ -2326,7 +2326,7 @@ def test_v6_sharednetworks_host_reservation_all_values_duid():
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::100')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8:a::100')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '3001::/40')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
@@ -2364,7 +2364,7 @@ def test_v6_sharednetworks_host_reservation_all_values_duid():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::100')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '3001::')

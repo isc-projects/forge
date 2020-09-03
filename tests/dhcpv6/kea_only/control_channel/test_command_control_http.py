@@ -409,9 +409,10 @@ def test_control_channel_http_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.generate_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
-                                   '$(SRV4_ADDR)')
+    response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"],'
+                                              ' "arguments":  $(DHCP_CONFIG) }', '$(SRV4_ADDR)', exp_result=1)
 
+    assert "specified reservation \'3000::1\' is not within the IPv6 subnet \'2001:db8:a::/64\'" in response[0]['text']
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')

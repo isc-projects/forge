@@ -355,7 +355,7 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     if subnet is not "":
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
-                                                         "interface": interface + "/" + address}
+                                                         "interface": interface}
     if pool is not "":
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
 
