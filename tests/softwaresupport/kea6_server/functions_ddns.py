@@ -38,7 +38,7 @@ def add_ddns_server(address, port):
 
     world.ddns_cfg = {"ip-address": address,
                       "port": int(port),  # this value is passed as string
-                      "dns-server-timeout": 100,
+                      "dns-server-timeout": 2000,
                       "reverse-ddns": {'ddns-domains': []},
                       "forward-ddns": {'ddns-domains': []},
                       "tsig-keys": [],
