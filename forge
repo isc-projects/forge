@@ -425,7 +425,7 @@ def _install_kea_native(args):
 
     # prepare pkg source repo url
     repository_url = 'https://packages.isc.org'
-    repo_name = 'kea-%s-%s' % ('1.7', args.system)
+    repo_name = 'kea-%s-%s' % ('1.9', args.system)
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
