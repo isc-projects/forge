@@ -79,6 +79,7 @@ SETTINGS = {
     'DB_HOST': '',
     'CIADDR': None,
     'FABRIC_PTY': False,
+    'DNS_RETRY': 6,
     'DISABLE_DB_SETUP': False,
 }
 

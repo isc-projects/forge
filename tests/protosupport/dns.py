@@ -96,7 +96,6 @@ def send_wait_for_query(choose_must, presence):
     world.dns_ar = []
 
     world.srvmsg = []
-    world.climsg = []
 
     for x in ans:
         a, b = x
@@ -135,6 +134,7 @@ def send_wait_for_query(choose_must, presence):
 
 def build_query():
     # TODO all those should have ability to be set from test level
+    world.dns_send_query_counter = 0  # let's put counter to zero for each new query
     msg = dns.DNS(id=1,
                   qr=0,
                   opcode="QUERY",
@@ -209,7 +209,13 @@ def report_dns_option(flag, expect_include, name):
         assert False, 'In received DNS query part: "{name}" is NOT empty as we expected.'.format(**locals())
 
     elif not flag and expect_include:
-        assert False, 'In received DNS query part: "{name}" is empty.'.format(**locals())
+        # this is where we had huge amount of failures on jenkins, let's bring here retries.
+        if world.dns_send_query_counter <= world.f_cfg.dns_retry:
+            world.dns_send_query_counter += 1
+            send_wait_for_query('MUST', True)
+            check_dns_option(True, name)
+        else:
+            assert False, 'In received DNS query part: "{name}" is empty.'.format(**locals())
 
 
 def check_dns_option(expect_include, part_name):
