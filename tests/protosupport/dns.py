@@ -204,7 +204,7 @@ def check_dns_respond(expect, data_type, expected_data_value):
                       " value has been excluded from correct values.".format(**locals())
 
 
-def loop(exp, name):
+def resend_query(exp, name):
     world.dns_send_query_counter += 1
     send_wait_for_query('MUST', True)
     check_dns_option(exp, name)
@@ -213,14 +213,14 @@ def loop(exp, name):
 def report_dns_option(flag, expect_include, name):
     if flag and not expect_include:
         if world.dns_send_query_counter <= world.f_cfg.dns_retry:
-            loop(False, name)
+            resend_query(False, name)
         else:
             assert False, 'In received DNS query part: "{name}" is NOT empty as we expected.'.format(**locals())
 
     elif not flag and expect_include:
         # this is where we had huge amount of failures on jenkins, let's bring here retries.
         if world.dns_send_query_counter <= world.f_cfg.dns_retry:
-            loop(True, name)
+            resend_query(True, name)
         else:
             assert False, 'In received DNS query part: "{name}" is empty.'.format(**locals())
 
