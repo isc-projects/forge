@@ -33,7 +33,7 @@ def _send_discover(chaddr=None, client_id=None, giaddr=None, req_opts=None):
 def send_discover_with_no_answer(chaddr=None, client_id=None, giaddr=None):
     misc.test_procedure()
     _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr)
-    srv_msg.send_wait_for_message("MUST", False, "None")
+    srv_msg.send_wait_for_message("MUST", None, expect_response=False)
 
 
 def rebind_with_ack_answer(ciaddr):

@@ -185,7 +185,7 @@ def test_ddns6_control_channel_config_set_all_values():
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-set', arguments=cfg)
-    # send to the new socket
+    # send to the new socket, config will change this socket to ddns_control_socket
     _send_through_ddns_socket(cmd, socket_name="different_ddns_control_socket")
 
     srv_control.use_dns_set_number(3)
@@ -198,11 +198,12 @@ def test_ddns6_control_channel_config_set_all_values():
     _send_through_ddns_socket(cmd, socket_name="different_ddns_control_socket", exp_failed=True)
 
     # send to the new socket, should work, and it should be the same configuration as previously
+    # previously we removed logging from config, so new ddns configuration is without logging seciotn
     cmd = dict(command='config-get', arguments={})
     response = _send_through_ddns_socket(cmd)
     cfg = response["arguments"]
 
-    assert cfg["DhcpDdns"] == tmp_cfg
+    assert cfg == tmp_cfg
 
 
 @pytest.mark.v6

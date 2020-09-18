@@ -981,7 +981,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay():
                                'connected via relay at address:')
     srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                None,
-                               'for client on link address: 3000::1005, hop count: 5')
+                               'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -1047,7 +1047,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_pgsql():
     srv_msg.table_contains_line('logs',
                                 'PostgreSQL',
                                 None,
-                                'for client on link address: 3000::1005, hop count: 5')
+                                'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -1113,7 +1113,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_mysql():
     srv_msg.table_contains_line('logs',
                                 'MySQL',
                                 None,
-                                'for client on link address: 3000::1005, hop count: 5')
+                                'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6

@@ -36,6 +36,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -59,7 +60,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_control.clear_some_data('logs')
 
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::2')
     srv_control.set_conf_parameter_subnet('id', 999, 0)
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
@@ -96,8 +97,22 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::2')
 
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'ia_id', '1234567')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
 @pytest.mark.v6
 @pytest.mark.kea_only
@@ -149,7 +164,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.clear_some_data('logs')
 
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::2')
     srv_control.set_conf_parameter_subnet('id', 999, 0)
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
@@ -164,7 +179,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.start_srv('DHCP', 'stopped')
 
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::2')
     srv_control.set_conf_parameter_subnet('id', 999, 0)
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
@@ -199,9 +214,22 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::2')
 
-    # Pause the Test.
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'ia_id', '1234567')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
 
 @pytest.mark.v6
@@ -549,7 +577,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -652,7 +680,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks and was dropped.')
+    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')

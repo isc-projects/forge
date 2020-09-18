@@ -88,7 +88,7 @@ def test_2019_6472_client_id():
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(msg_type='REQUEST', raw_append=invalid_data)
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', "NOT ", None)
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
@@ -100,7 +100,7 @@ def test_2019_6472_client_id():
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
-    srv_msg.send_wait_for_message('MUST', "NOT ", None)
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
@@ -108,7 +108,7 @@ def test_2019_6472_client_id():
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(msg_type='REBIND', raw_append=invalid_data)
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', "NOT ", None)
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
@@ -119,7 +119,7 @@ def test_2019_6472_client_id():
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
-    srv_msg.send_wait_for_message('MUST', "NOT ", None)
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
     misc.test_procedure()
     srv_msg.client_add_saved_option('DONT ')
@@ -128,7 +128,7 @@ def test_2019_6472_client_id():
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(msg_type='RENEW', raw_append=invalid_data)
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', "NOT ", None)
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
     misc.test_procedure()
     srv_msg.client_add_saved_option('DONT ')
@@ -140,7 +140,7 @@ def test_2019_6472_client_id():
     misc.pass_criteria()
     srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
-    srv_msg.send_wait_for_message('MUST', "NOT ", None)
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
 
 @pytest.mark.v6
@@ -218,7 +218,7 @@ def test_2019_6473_fqdn():
 
         srv_msg.send_raw_message(raw_append=invalid_data)
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', "NOT ", None)
+        srv_msg.send_wait_for_message('MUST', None, expect_response=False)
         _get_advertise()
 
 
