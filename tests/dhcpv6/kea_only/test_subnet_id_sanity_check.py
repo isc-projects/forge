@@ -114,6 +114,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
+
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
