@@ -217,7 +217,7 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
     # reconfigure control-agent to switch to new dhcp4 socket
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(DHCP_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(AGENT_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()

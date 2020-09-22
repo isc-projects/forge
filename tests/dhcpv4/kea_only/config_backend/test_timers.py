@@ -168,6 +168,7 @@ def test_subnet_and_timers_renew_greater_4():
                          'remote': {'type': 'mysql'},
                          'server-tags': ['all']}}
 
+    # bug #505
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {
@@ -211,6 +212,7 @@ def test_subnet_and_timers_renew_greater_6():
                          'remote': {'type': 'mysql'},
                          'server-tags': ['all']}}
 
+    # bug #505
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {

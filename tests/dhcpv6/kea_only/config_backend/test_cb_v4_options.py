@@ -97,7 +97,13 @@ def test_multiple_subnet_option():
     srv_msg.forge_sleep(3, "seconds")
 
     cfg = _get_server_config()
-    assert cfg["arguments"]["Dhcp4"]["subnet4"][0]["option-data"] == cmd["arguments"]["options"]
+
+    subnets = cfg["arguments"]["Dhcp4"]["subnet4"]
+    assert len(subnets) == 2
+    if subnets[0]["id"] == 9:
+        assert subnets[0]["option-data"] == cmd["arguments"]["options"]
+    else:
+        assert subnets[1]["option-data"] == cmd["arguments"]["options"]
 
     cmd = dict(command="remote-option4-subnet-del",
                arguments={"subnets": [{"id": 5}], "options": [{"code": 6, "space": "dhcp4"}],
@@ -107,7 +113,13 @@ def test_multiple_subnet_option():
     srv_msg.forge_sleep(3, "seconds")
 
     cfg = _get_server_config(reload_kea=True)
-    assert cfg["arguments"]["Dhcp4"]["subnet4"][0]["option-data"] == []
+
+    subnets = cfg["arguments"]["Dhcp4"]["subnet4"]
+    assert len(subnets) == 2
+    if subnets[0]["id"] == 5:
+        assert subnets[0]["option-data"] == []
+    else:
+        assert subnets[1]["option-data"] == []
 
 
 @pytest.mark.v4
