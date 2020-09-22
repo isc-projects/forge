@@ -196,7 +196,7 @@ class ForgeConfiguration:
 
     def get_dhcp_conf_path(self):
         if self.install_method == 'make':
-            return os.path.join(self.software_install_path, 'etc/kea/kea.conf')
+            return os.path.join(self.software_install_path, 'etc/kea/kea-dhcp%s.conf' % world.proto[1])
         else:
             return '/etc/kea/kea-dhcp%s.conf' % world.proto[1]
 

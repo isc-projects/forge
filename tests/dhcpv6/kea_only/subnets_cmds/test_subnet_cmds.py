@@ -218,7 +218,7 @@ def test_hook_v6_subnet_cmds_add_conflict():
                                                                             "subnet": "2002:db8:1::/64",
                                                                             "pools": [{"pool": "2002:db8:1::10-2002:db8:1::20"}]}]}},
                                                 exp_result=1)
-    assert response['text'] == "ID of the new IPv6 subnet 1 is already in use"
+    assert response['text'] == "ID of the new IPv6 subnet '1' is already in use"
     response = srv_msg.send_ctrl_cmd_via_socket('{"command":"subnet6-get","arguments":{"id": 1}}')
     assert response['arguments']['subnet6'][0]['subnet'] == '2001:db8:1::/64'
 
