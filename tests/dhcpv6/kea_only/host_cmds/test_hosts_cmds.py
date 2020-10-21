@@ -916,3 +916,175 @@ def test_v6_hosts_cmds_reservation_get_all_page_pgsql():
     srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname2')
     srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.kea_only
+@pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
+def test_v6_host_reservation_conflicts_duplicate_duid_reservations(hosts_db):
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
+    srv_control.open_control_channel()
+    srv_control.enable_db_backend_reservation(hosts_db)
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.send_ctrl_cmd_via_socket(
+        {"command": "reservation-add",
+         "arguments": {"reservation": {
+             "subnet-id": 1,
+             "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+             "ip-addresses": ["3000::5"]}}})
+
+    # the same DUID - it should fail
+    srv_msg.send_ctrl_cmd_via_socket(
+        {"command": "reservation-add",
+         "arguments": {"reservation": {
+             "subnet-id": 1,
+             "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+             "ip-addresses": ["3000::6"]}}},
+        exp_result=1)
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.kea_only
+@pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
+def test_v6_host_reservation_conflicts_duplicate_ip_reservations(hosts_db):
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
+    srv_control.open_control_channel()
+    srv_control.enable_db_backend_reservation(hosts_db)
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.send_ctrl_cmd_via_socket(
+        {"command": "reservation-add",
+         "arguments": {"reservation": {
+             "subnet-id": 1,
+             "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+             "ip-addresses": ["3000::5"]}}})
+
+    # the same IP - it should fail
+    srv_msg.send_ctrl_cmd_via_socket(
+        {"command": "reservation-add",
+         "arguments": {"reservation": {
+             "subnet-id": 1,
+             "duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
+             "ip-addresses": ["3000::5"]}}},
+        exp_result=1)
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.kea_only
+@pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
+def test_v6_host_reservation_duplicate_ip_reservations_allowed(hosts_db):
+    the_same_ip_address = '3000::5'
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
+    # allow non-unique IP address in multiple reservations
+    srv_control.set_conf_parameter_global('ip-reservations-unique', False)
+    srv_control.open_control_channel()
+    srv_control.enable_db_backend_reservation(hosts_db)
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.send_ctrl_cmd_via_socket(
+        {"command": "reservation-add",
+         "arguments": {"reservation": {
+             "subnet-id": 1,
+             "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+             "ip-addresses": ["3000::5"]}}})
+
+    # the same IP - it should fail
+    srv_msg.send_ctrl_cmd_via_socket(
+        {"command": "reservation-add",
+         "arguments": {"reservation": {
+             "subnet-id": 1,
+             "duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
+             "ip-addresses": ["3000::5"]}}})
+
+    # first request address by 00:03:00:01:f6:f5:f4:f3:f2:01
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', the_same_ip_address)
+
+    # release taken IP address
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('RELEASE')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+    # and now request address by 00:03:00:01:f6:f5:f4:f3:f2:02 again, the IP should be the same ie. 3000::5
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:02')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:02')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', the_same_ip_address)
+
+    # try to request address by 00:03:00:01:f6:f5:f4:f3:f2:01 again, the IP address should be just
+    # from the pool (ie. 3000::1) as 3000::5 is already taken by 00:03:00:01:f6:f5:f4:f3:f2:02
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')

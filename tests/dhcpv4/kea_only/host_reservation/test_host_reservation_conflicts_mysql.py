@@ -12,7 +12,7 @@ import misc
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-def test_v4_host_reservation_conflicts_duplicate_reservations_mysql():
+def test_v4_host_reservation_conflicts_duplicate_mac_reservations_mysql():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'ff:01:02:03:ff:11')
@@ -24,10 +24,9 @@ def test_v4_host_reservation_conflicts_duplicate_reservations_mysql():
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 2)
     srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.3', 'MySQL', 2)
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 2)
-    srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    # expect failure due to db constrain on unique hw-address
+    srv_control.upload_db_reservation('MySQL', exp_failed=True)
 
 
 @pytest.mark.v4

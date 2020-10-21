@@ -625,7 +625,7 @@ def start_srv(name, type_of_action, config_set=None, dest=world.f_cfg.mgmt_addre
         elif name == "DNS":
             dns.reconfigure_srv(destination_address=dest)
     else:
-        assert False, "we don't support this action."
+        assert False, "we don't support '%s' action." % str(type_of_action)
 
 
 def check_remote_address(remote_address):

@@ -12,21 +12,149 @@ import srv_msg
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
-def test_v4_host_reservation_conflicts_duplicate_reservations():
+def test_v4_host_reservation_conflicts_duplicate_mac_reservations():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.10',
                                            0,
                                            'hw-address',
-                                           'ff:01:02:03:ff:04')
+                                           'ff:01:02:03:ff:04')  # the same MAC address
     srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.12',
                                            0,
                                            'hw-address',
-                                           'ff:01:02:03:ff:04')
+                                           'ff:01:02:03:ff:04')  # the same MAC address
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
+
+    # expected error logs
+    srv_msg.log_contains(r'ERROR \[kea-dhcp4.dhcp4')
+    srv_msg.log_contains(r'failed to add new host using the HW address')
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+@pytest.mark.kea_only
+def test_v4_host_reservation_conflicts_duplicate_ip_reservations():
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           '192.168.50.10',  # the same IP address
+                                           0,
+                                           'hw-address',
+                                           'aa:aa:aa:aa:aa:aa')
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           '192.168.50.10',  # the same IP address
+                                           0,
+                                           'hw-address',
+                                           'bb:bb:bb:bb:bb:bb')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv_during_process('DHCP', 'configuration')
+
+    # expected error logs
+    srv_msg.log_contains(r'ERROR \[kea-dhcp4.dhcp4')
+    srv_msg.log_contains(r'failed to add new host using the HW address')
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+@pytest.mark.kea_only
+def test_v4_host_reservation_duplicate_ip_reservations_allowed():
+    the_same_ip_address = '192.168.50.10'
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    # allow non-unique IP address in multiple reservations
+    srv_control.set_conf_parameter_global('ip-reservations-unique', False)
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           the_same_ip_address,  # the same IP
+                                           0,
+                                           'hw-address',
+                                           'aa:aa:aa:aa:aa:aa')
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           the_same_ip_address,  # the same IP
+                                           0,
+                                           'hw-address',
+                                           'bb:bb:bb:bb:bb:bb')
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
+
+    # these error logs should not appear
+    srv_msg.log_doesnt_contain(r'ERROR \[kea-dhcp4.dhcp4')
+    srv_msg.log_doesnt_contain(r'failed to add new host using the HW address')
+
+    # first request address by aa:aa:aa:aa:aa:aa
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'aa:aa:aa:aa:aa:aa')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', the_same_ip_address)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', the_same_ip_address)
+    srv_msg.client_sets_value('Client', 'chaddr', 'aa:aa:aa:aa:aa:aa')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', the_same_ip_address)
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    # release taken IP address
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'ciaddr', the_same_ip_address)
+    srv_msg.client_send_msg('RELEASE')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    # and now request address by bb:bb:bb:bb:bb:bb again, the IP should be the same ie. 192.168.50.10
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'bb:bb:bb:bb:bb:bb')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', the_same_ip_address)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', the_same_ip_address)
+    srv_msg.client_sets_value('Client', 'chaddr', 'bb:bb:bb:bb:bb:bb')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', the_same_ip_address)
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    # try to request address by aa:aa:aa:aa:aa:aa again, the IP address should be just
+    # from the pool (ie. 192.168.50.1) as 192.168.50.10 is already taken by bb:bb:bb:bb:bb:bb
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'aa:aa:aa:aa:aa:aa')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'aa:aa:aa:aa:aa:aa')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
