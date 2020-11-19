@@ -339,9 +339,9 @@ def test_ddns4_notsig_rev_release():
 def test_ddns4_notsig_expire():
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 3)
-    srv_control.set_time('rebind-timer', 4)
-    srv_control.set_time('valid-lifetime', 5)
+    srv_control.set_time('renew-timer', 8)
+    srv_control.set_time('rebind-timer', 9)
+    srv_control.set_time('valid-lifetime', 10)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
@@ -354,22 +354,6 @@ def test_ddns4_notsig_expire():
 
     srv_control.use_dns_set_number(20)
     srv_control.start_srv('DNS', 'started')
-
-    misc.test_procedure()
-    srv_msg.dns_question_record('aa.four.example.com', 'A', 'IN')
-    srv_msg.client_send_dns_query()
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST')
-    srv_msg.dns_option('ANSWER', expect_include=False)
-
-    misc.test_procedure()
-    srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
-    srv_msg.client_send_dns_query()
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST')
-    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)

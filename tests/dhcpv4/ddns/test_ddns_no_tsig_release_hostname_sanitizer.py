@@ -1221,9 +1221,9 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_4():
 def test_ddns4_notsig_expire_hostname_sanitization():
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 3)
-    srv_control.set_time('rebind-timer', 4)
-    srv_control.set_time('valid-lifetime', 5)
+    srv_control.set_time('renew-timer', 4)
+    srv_control.set_time('rebind-timer', 5)
+    srv_control.set_time('valid-lifetime', 6)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('hostname-char-set', '[^A-Za-z0-9.-]')
@@ -1238,22 +1238,6 @@ def test_ddns4_notsig_expire_hostname_sanitization():
 
     srv_control.use_dns_set_number(20)
     srv_control.start_srv('DNS', 'started')
-
-    misc.test_procedure()
-    srv_msg.dns_question_record('xaax.four.example.com', 'A', 'IN')
-    srv_msg.client_send_dns_query()
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST')
-    srv_msg.dns_option('ANSWER', expect_include=False)
-
-    misc.test_procedure()
-    srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
-    srv_msg.client_send_dns_query()
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST')
-    srv_msg.dns_option('ANSWER', expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
@@ -1325,9 +1309,9 @@ def test_ddns4_notsig_expire_hostname_sanitization():
 def test_ddns4_notsig_expire_fqdn_sanitization():
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 3)
-    srv_control.set_time('rebind-timer', 4)
-    srv_control.set_time('valid-lifetime', 5)
+    srv_control.set_time('renew-timer', 5)
+    srv_control.set_time('rebind-timer', 6)
+    srv_control.set_time('valid-lifetime', 7)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('hostname-char-set', '[^A-Za-z0-9.-]')
@@ -1344,22 +1328,6 @@ def test_ddns4_notsig_expire_fqdn_sanitization():
     srv_control.start_srv('DNS', 'started')
 
     misc.test_procedure()
-    srv_msg.dns_question_record('xaax.four.example.com', 'A', 'IN')
-    srv_msg.client_send_dns_query()
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST')
-    srv_msg.dns_option('ANSWER', expect_include=False)
-
-    misc.test_procedure()
-    srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
-    srv_msg.client_send_dns_query()
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST')
-    srv_msg.dns_option('ANSWER', expect_include=False)
-
-    misc.test_procedure()
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
@@ -1372,7 +1340,7 @@ def test_ddns4_notsig_expire_fqdn_sanitization():
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
-    srv_msg.client_sets_value('Client', 'FQDN_domain_name', '^aa$(WHITE_SPACE).four.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', '^aa .four.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('REQUEST')

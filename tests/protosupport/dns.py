@@ -80,13 +80,13 @@ def prepare_query():
     build_msg()
 
 
-def send_wait_for_query(choose_must, presence):
+def send_wait_for_query(choose_must, expect_include):
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
     ans, unans = sr(world.climsg,
                     iface=world.cfg["dns_iface"],
-                    timeout=world.cfg["wait_interval"] + 0.5,
+                    timeout=world.cfg["wait_interval"] + world.dns_send_query_time_out,
                     multi=True,
                     verbose=99)
 
@@ -107,12 +107,16 @@ def send_wait_for_query(choose_must, presence):
             except:
                 pass
 
-    if presence:
-        assert len(world.srvmsg) != 0, "No response received."
-        # TODO testing should be more sophisticated, it's not working for dns queries
-        # TODO make assertion for getting message that we didn't expected
+    if expect_include:
+        # if message was not received but expected, resend query with higher timeout
+        if len(world.srvmsg) == 0 and world.dns_send_query_counter <= world.f_cfg.dns_retry:
+            world.dns_send_query_counter += 1
+            world.dns_send_query_time_out += 0.5
+            send_wait_for_query(choose_must, expect_include)
+        else:
+            assert len(world.srvmsg) != 0, "No response received."
 
-    elif not presence:
+    elif not expect_include:
         assert len(world.srvmsg) == 0, "Response received, not expected"
 
     if world.srvmsg[0].qd is not None:
@@ -135,6 +139,7 @@ def send_wait_for_query(choose_must, presence):
 def build_query():
     # TODO all those should have ability to be set from test level
     world.dns_send_query_counter = 0  # let's put counter to zero for each new query
+    world.dns_send_query_time_out = 0.5
     msg = dns.DNS(id=1,
                   qr=0,
                   opcode="QUERY",
