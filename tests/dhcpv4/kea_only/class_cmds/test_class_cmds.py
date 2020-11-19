@@ -192,7 +192,7 @@ def test_add_class_and_check_traffic(dhcp_version):
 
 
 def test_negative_add_unknown_field(dhcp_version):  # pylint: disable=unused-argument
-    # bug: #229
+    # bug: #229, FIXED
     cmd = dict(command='class-add', arguments={"client-classes": [{"name": 'ipxe',
                                                                    "unknown": "123"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
@@ -200,7 +200,7 @@ def test_negative_add_unknown_field(dhcp_version):  # pylint: disable=unused-arg
 
 
 def test_negative_update_unknown_field(dhcp_version):
-    # bug: #229
+    # bug: #229, FIXED
     # add new class ipxe
     if dhcp_version == 'v4':
         exp_class = {'boot-file-name': '/dev/null',
@@ -227,7 +227,7 @@ def test_negative_update_unknown_field(dhcp_version):
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
 def test_negative_missing_class_data_1(class_cmd, dhcp_version):  # pylint: disable=unused-argument
-    # bug: #254
+    # bug: #254, FIXED
     cmd = dict(command=class_cmd, arguments={"client-classes": []})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd
@@ -236,7 +236,7 @@ def test_negative_missing_class_data_1(class_cmd, dhcp_version):  # pylint: disa
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
 def test_negative_missing_class_data_2(class_cmd, dhcp_version):  # pylint: disable=unused-argument
-    # bug: #254
+    # bug: #254, FIXED
     cmd = dict(command=class_cmd, arguments={"client-classes": [{}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert 'missing' in response['text'] and "'name'" in response['text']
@@ -317,7 +317,8 @@ def test_negative_wrong_args_6c(class_cmd, dhcp_version):  # pylint: disable=unu
 
 
 def test_negative_redundant_args_in_list(dhcp_version):  # pylint: disable=unused-argument
-    # bug: #253
+    # bug: #253, FIXED
+    # bug: #432
     cmd = dict(command='class-list', extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -325,7 +326,8 @@ def test_negative_redundant_args_in_list(dhcp_version):  # pylint: disable=unuse
 
 
 def test_negative_redundant_args_in_add(dhcp_version):  # pylint: disable=unused-argument
-    # bug: #253
+    # bug: #253, FIXED
+    # bug: #432
     cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe"}]}, extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -333,7 +335,8 @@ def test_negative_redundant_args_in_add(dhcp_version):  # pylint: disable=unused
 
 
 def test_negative_redundant_args_in_update(dhcp_version):  # pylint: disable=unused-argument
-    # bug: #253
+    # bug: #253, FIXED
+    # bug: #432
     cmd = dict(command='class-update', arguments={"client-classes": [{"name": "voip"}]}, extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -342,7 +345,8 @@ def test_negative_redundant_args_in_update(dhcp_version):  # pylint: disable=unu
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
 def test_negative_redundant_args_in_other(class_cmd, dhcp_version):  # pylint: disable=unused-argument
-    # bug: #253
+    # bug: #253, FIXED
+    # bug: #432
     cmd = dict(command=class_cmd, arguments=dict(name='voip'), extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -350,6 +354,7 @@ def test_negative_redundant_args_in_other(class_cmd, dhcp_version):  # pylint: d
 
 
 def test_negative_wrong_command_1(dhcp_version):  # pylint: disable=unused-argument
+    # bug: #432
     cmd = dict(wrong_command='class-add', arguments={"client-classes": [{"name": "ipxe"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = ("Error during command processing: Invalid answer specified, "
