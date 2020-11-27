@@ -57,7 +57,7 @@ SETTINGS = {
     'SLEEP_TIME_1': 1,
     'SLEEP_TIME_2': 2,
     'MGMT_ADDRESS': None,
-    'MGMT_ADDRESS_2': '',
+    'MGMT_ADDRESS_2': None,
     'MGMT_ADDRESS_3': '',
     'MGMT_USERNAME': None,
     'MGMT_PASSWORD': None,
@@ -89,6 +89,8 @@ class ForgeConfiguration:
         # default
         self.dns_used = ["bind9_server"]
         self.dhcp_used = ["kea4_server", "kea6_server", "none_server"]
+        self.mgmt_address = None  # will be reconfigured, added to keep pycodestyle quiet
+        self.mgmt_address_2 = None
 
         self._load_settings()
 
@@ -101,6 +103,8 @@ class ForgeConfiguration:
         self.multiple_tested_servers = [self.mgmt_address]
 
         self.proto = 'v4'  # default value but it is overriden by each test in terrain.declare_all()
+        self.multi_threading_enabled = True  # change this at the beginning of the test and we have
+                                             # easy comparision between single and multi, or use as fixture
 
         if self.install_method == 'native':
             self.software_install_path = '/usr'
@@ -150,13 +154,9 @@ class ForgeConfiguration:
             setattr(self, key.lower(), value)
 
     def gethwaddr(self, ifname):
-        if sys.platform != "darwin":
-            s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-            info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname))
-            return ':'.join(['%02x' % ord(char) for char in info[18:24]])
-        else:
-            # TODO fix this for MAC OS, this is temporary quick fix just for my local system
-            return "0a:00:27:00:00:00"
+        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname))
+        return ':'.join(['%02x' % ord(char) for char in info[18:24]])
 
     def basic_validation(self):
         if self.software_install_path == "":

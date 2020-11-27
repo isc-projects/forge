@@ -108,6 +108,7 @@ values_v4 = {"ciaddr": "0.0.0.0",
              "htype": 1,
              "broadcastBit": False,
              "hops": 0,
+             "secs": 0,
              "chaddr": None,
              "FQDN_flags": "",
              "FQDN_domain_name": ""}
@@ -305,13 +306,16 @@ def test_start():
         for sut_name in world.f_cfg.software_under_test:
             sut_module = importlib.import_module("softwaresupport.%s.functions" % sut_name)
             # True passed to stop_srv is to hide output in console.
-            sut_module.stop_srv(True)
+            sut_module.stop_srv()
 
             if 'kea' in sut_name:
                 kea_under_test = True
 
     if kea_under_test:
+        # for now let's assume that both systems are the same
         kea.db_setup()
+        if world.f_cfg.mgmt_address_2 is not None:
+            kea.db_setup(dest=world.f_cfg.mgmt_address_2)
 
 
 def _clear_remainings():
@@ -321,9 +325,6 @@ def _clear_remainings():
                 functions = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # every software have something else to clear. Put in clear_all() whatever you need
                 functions.clear_all(destination_address=remote_server)
-
-                # except:  # TODO this should be on multi_server_functions level!
-                #     log.info("Remote location " + remote_server + " unreachable!")
 
 
 #@before.each_scenario
@@ -425,9 +426,6 @@ def cleanup(scenario):
     if 'outline' not in info:
         world.result.append(info)
 
-    # stop dhcp server
-    start_srv('DHCP', 'stopped')
-
     if world.f_cfg.tcpdump:
         time.sleep(1)
         args = ["killall tcpdump"]
@@ -436,6 +434,7 @@ def cleanup(scenario):
 
     if not world.f_cfg.no_server_management:
         for remote_server in world.f_cfg.multiple_tested_servers:
+            start_srv('DHCP', 'stopped', dest=remote_server)
             for sut in world.f_cfg.software_under_test:
                 functions = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # try:
@@ -464,7 +463,7 @@ def say_goodbye():
                 stop = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # True passed to stop_srv is to hide output in console.
                 try:
-                    stop.stop_srv(value=True, destination_address=remote_server)
+                    stop.stop_srv(destination_address=remote_server)
                 except:
                     pass
 

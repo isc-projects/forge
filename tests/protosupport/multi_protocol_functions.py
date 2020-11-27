@@ -243,30 +243,39 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
         assert False, "db type {db_type} not recognized/not supported".format(**locals())
 
 
-def db_table_contain(table_name, db_type, condition, line, db_name=world.f_cfg.db_name,
-                     db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd):
+def db_table_contain(table_name, db_type, line="", grep_cmd=None, more_than_zero=True, db_name=world.f_cfg.db_name,
+                     db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                     destination=world.f_cfg.mgmt_address):
 
-    if db_type in ["mysql", "MySQL"]:
-        command = 'mysql -u {db_user} -p{db_passwd} -e "select * from {table_name}"' \
-                  ' {db_name} --silent --raw > /tmp/mysql_out'.format(**locals())
-        fabric_run_command(command)
-        result = fabric_sudo_command('grep -c "{line}" /tmp/mysql_out'.format(**locals()), ignore_errors=True)
+    if db_type.lower() == "mysql":
+        if table_name == 'lease6':
+            select = 'select hex(duid), address, iaid, valid_lifetime'
+        elif table_name == 'lease4':
+            select = 'select hex(address), hex(hwaddr), valid_lifetime'
+        else:
+            select = 'select *'
+        command = 'mysql -u {db_user} -p{db_passwd} -e "{select} from {table_name}"' \
+                  ' {db_name} --silent > /tmp/db_out'.format(**locals())
 
-    elif db_type in ["postgresql", "PostgreSQL"]:
-        command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} -c "select * from {table_name}" > /tmp/pgsql_out'.format(**locals())
-        fabric_run_command(command)
-        result = fabric_sudo_command('grep -c "{line}" /tmp/pgsql_out'.format(**locals()), ignore_errors=True)
+    elif db_type.lower() in ["postgresql", "pgsql"]:
+        if table_name == 'lease4':
+            select = "select to_hex(address), encode(hwaddr,'hex'), valid_lifetime"
+        else:
+            select = 'select *'
+        command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} ' \
+                  '-c "{select} from {table_name}" > /tmp/db_out'.format(**locals())
 
-    elif world.f_cfg.db_type == "cql":
-        result = -1
-        # command = 'for table_name in dhcp_option_scope host_reservations lease4 lease6;' \
-        #           ' do cqlsh --keyspace=keatest --user=keatest --password=keatest -e "TRUNCATE $table_name;"' \
-        #           ' ; done'.format(**locals())
-        # fabric_run_command(command)
     else:
         assert False, "db type {db_type} not recognized/not supported".format(**locals())
 
-    if condition is not None:
+    fabric_run_command(command, destination_host=destination)
+    cmd = 'grep -c "{line}" /tmp/db_out'.format(**locals())
+    if grep_cmd is not None:
+        cmd = grep_cmd
+
+    result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
+
+    if not more_than_zero:
         if int(result) > 0:
             assert False, 'In database {0} table name "{1}" has {2} of: "{3}".' \
                           ' That is to much.'.format(db_type, table_name, result, line)
@@ -306,8 +315,9 @@ def change_network_variables(value_name, value):
         assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
 
 
-def execute_shell_cmd(path, arguments='', save_results=True):
-    result = fabric_sudo_command(path + ' ' + arguments, hide_all=False, ignore_errors=True)
+def execute_shell_cmd(path, arguments='', save_results=True, dest=world.f_cfg.mgmt_address):
+    result = fabric_sudo_command(path + ' ' + arguments, hide_all=False, ignore_errors=True,
+                                 destination_host=dest)
 
     if save_results:
         file_name = path.split("/")[-1] + '_output'
@@ -571,3 +581,44 @@ def parse_socket_received_data():
 
 def set_value(env_name, env_value):
     world.f_cfg.set_env_val(env_name, env_value)
+
+
+def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address):
+    if not isinstance(leases_list, list):
+        leases_list =[leases_list]
+    if backend == 'memfile':
+        for lease in leases_list:
+            if world.f_cfg.proto == 'v4':
+                cmd = "grep -E %s %s | grep -E %s | grep -E -c %s" % (lease["address"], world.f_cfg.get_leases_path(),
+                                                                      lease["hwaddr"], lease["valid_lifetime"])
+
+            elif world.f_cfg.proto == 'v6':
+                cmd = "grep -E %s %s | grep -E %s | grep -E -c %s" % (lease["address"], world.f_cfg.get_leases_path(),
+                                                                      lease["duid"], lease["idid"])
+            else:
+                assert False, "There is something bad, you should never see this :)"
+
+            result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
+            if not result.succeeded:
+                assert False, "Lease do NOT contain lease: %s" % json.dumps(lease)
+            # TODO write check if there is more than one entry of the same type
+
+    elif backend in ['mysql', 'postgresql']:
+        for lease in leases_list:
+            if world.f_cfg.proto == 'v4':
+                table = 'lease4'
+                cmd = "grep -E -i %s /tmp/db_out | grep -E -i %s | grep -E  -c %s" % ('{:02X}{:02X}{:02X}{:02X}'.format(*map(int, lease["address"].split('.'))),
+                                                                                      lease["hwaddr"].replace(":",""),
+                                                                                      lease["valid_lifetime"])
+            elif world.f_cfg.proto == 'v6':
+                table = 'lease6'
+                cmd = "grep -E %s /tmp/db_out | grep -E -i %s | grep -E -c %s" % (lease["address"],
+                                                                                  lease["duid"].replace(":", ""),
+                                                                                  lease["idid"])
+            else:
+                assert False, "There is something bad, you should never see this :)"
+            db_table_contain(table, backend, grep_cmd=cmd, destination=destination)
+
+    elif backend == 'cassandra':
+        # TODO implement this sometime in the future
+        pass

@@ -23,6 +23,7 @@ from forge_cfg import world, step
 from protosupport import dns, multi_protocol_functions
 from protosupport.multi_protocol_functions import test_define_value, substitute_vars
 
+from scapy.layers.dhcp6 import DUID_LLT, DUID_LL, DUID_EN
 
 class Dispatcher(object):
     def __getattr__(self, attr_name):
@@ -66,7 +67,10 @@ def client_sets_value(sender_type, value_name, new_value):
     """
     # that is also used for DNS messages and RelayForward message but sender_type was
     # introduced just to keep tests cleaner - it's unused in the code.
-    value_name, new_value = test_define_value(value_name, new_value)
+    # if we pass DUID class do not check defined values
+    if not isinstance(new_value, (DUID_LLT, DUID_LL, DUID_EN)):
+        value_name, new_value = test_define_value(value_name, new_value)
+
     dhcpmsg.client_sets_value(value_name, new_value)
 
 
@@ -631,19 +635,6 @@ def json_response_parsing(parameter_name, condition, parameter_value):
     multi_protocol_functions.parse_json_file(condition, str(parameter_name), str(parameter_value))
 
 
-## loops
-## testing in loops is new feature that gives possibility to send lot of messages without
-## writing usual steps for each message. This feature is not fully tested.
-
-# @step('Start fuzzing. Time: (\d+) (hours|minutes).')
-# def start_fuzzing(time_period, time_units):
-#     dhcpmsg.start_fuzzing(time_period, time_units)
-#
-# @step('Start fuzzing.')
-# def start_fuzzing():
-#     dhcpmsg.start_fuzzing()
-
-
 @step('Loops config: Save leases details.')
 def loops_config_sld():
     dhcpmsg.loops_config_sld()
@@ -660,3 +651,13 @@ def loops(message_type_1, message_type_2, repeat):
     world.f_cfg.show_packets_from = ""
     dhcpmsg.loops(message_type_1, message_type_2, repeat)
     world.f_cfg.show_packets_from = tmp
+
+
+def get_all_addr():
+    return dhcpmsg.get_all_addr()
+
+
+def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address):
+    dest = test_define_value(dest)[0]
+    multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest)
+

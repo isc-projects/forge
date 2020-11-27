@@ -30,7 +30,8 @@ from scapy.sendrecv import send, sendp, sniff
 
 from forge_cfg import world
 from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
-
+import struct
+import os
 
 log = logging.getLogger('forge')
 
@@ -191,9 +192,8 @@ def response_check_content(expect, data_type, expected):
     elif data_type == 'src_address':
         received = world.srvmsg[0].src
     elif data_type == 'chaddr':
-        pass
-        # TODO: implement this!
-        received = world.srvmsg[0].chaddr  # decode!!
+        tmp = struct.unpack('16B', world.srvmsg[0].chaddr)
+        received = ':'.join("%.2x" % x for x in tmp[:6])
     elif data_type == 'sname':
         received = world.srvmsg[0].sname.replace('\x00', '')
     elif data_type == 'file':
@@ -281,6 +281,7 @@ def build_msg(opts):
     msg /= BOOTP(chaddr=tmp_hw,
                  giaddr=world.cfg["values"]["giaddr"],
                  flags=msg_flag,
+                 secs=world.cfg["values"]["secs"],
                  hops=world.cfg["values"]["hops"])
 
     # BOOTP requests can be optionless
@@ -333,11 +334,13 @@ def send_wait_for_message(msgtype, presence, exp_message):
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
-
+    multiply = 1
+    if "HA" in os.environ.get('PYTEST_CURRENT_TEST').split("/"):
+        multiply = 4
     apply_message_fields_changes()
     ans, unans = srp(world.climsg,
                      iface=world.cfg["iface"],
-                     timeout=world.cfg["wait_interval"],
+                     timeout=world.cfg["wait_interval"] * multiply,
                      multi=True,
                      verbose=99)
 
@@ -473,3 +476,19 @@ def response_check_option_content(opt_code, expect, data_type, expected):
     else:
         assert not outcome, "Invalid {opt_descr} option received: {received}" \
                             " that value has been excluded from correct values".format(**locals())
+
+
+def get_all_addr(decode_duid=True):
+    assert world.srvmsg
+    mac = ""
+    tmp = struct.unpack('16B', world.srvmsg[0].chaddr)
+    mac += ':'.join("%.2x" % x for x in tmp[:6])
+
+    lease = {"hwaddr": mac, "address": world.srvmsg[0].yiaddr}
+    try:
+        lease.update({"client_id": get_option(world.srvmsg[0], 61)[1]})
+    except:
+        pass
+    lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})
+
+    return lease

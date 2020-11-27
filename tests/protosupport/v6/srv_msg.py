@@ -20,9 +20,8 @@
 # By a lot of feature files.
 #
 import random
-import sys
+import os
 import logging
-from cookielib import debug
 
 from scapy.sendrecv import sr
 from scapy.layers import dhcp6
@@ -328,6 +327,8 @@ def client_does_include(sender_type, opt_type, value):
     elif opt_type == "rsoo":
         add_client_option(dhcp6.DHCP6OptRelaySuppliedOpt(relaysupplied=world.rsoo))
 
+    elif opt_type == "time-elapsed":
+        add_client_option(dhcp6.DHCP6OptElapsedTime(elapsedtime=world.cfg["values"]["elapsedtime"]))
     else:
         assert "unsupported option: " + opt_type
 
@@ -479,6 +480,9 @@ def convert_DUID(duid):
 
         Other configurations will cause to fail test.
     """
+    if isinstance(duid, (dhcp6.DUID_LLT, dhcp6.DUID_LL, dhcp6.DUID_EN)):
+        return duid
+
     duid = duid.replace(":", "")
 
     if duid[:8] == "00030001":
@@ -607,9 +611,12 @@ def send_wait_for_message(condition_type, presence, exp_message):
     conf.checkIPsrc = False
     apply_message_fields_changes()
 
+    multiply = 1
+    if "HA" in os.environ.get('PYTEST_CURRENT_TEST').split("/"):
+        multiply = 4
     ans, unans = sr(world.climsg,
                     iface=world.cfg["iface"],
-                    timeout=world.cfg["wait_interval"],
+                    timeout=world.cfg["wait_interval"] * multiply,
                     nofilter=1,
                     verbose=world.scapy_verbose)
 
@@ -744,6 +751,7 @@ def get_option(msg, opt_code):
     while x:
         if x.optcode == int(opt_code):
             tmp = x.copy()
+            # del tmp.payload
             world.opts.append(x)
 
         for each in check_suboptions:
@@ -798,6 +806,7 @@ def response_check_include_option(must_include, opt_code):
     else:
         assert opt is None, "Unexpected option {opt_descr} found in the message.".format(**locals())
 
+    return opt
 # Returns text representation of the option, interpreted as specified by data_type
 
 
@@ -1006,6 +1015,43 @@ def compare_values(value_name, option_name):
             "Compared values %s and %s do not match" % (world.savedvalue, to_cmp)
         world.opts = []
         world.subopts = []
+
+
+def get_all_addr(decode_duid=True):
+
+    assert world.srvmsg
+
+    msg = get_last_response()
+    if len(world.rlymsg) == 0:  # relay message is already cropped to exact layer
+        msg = msg.getlayer(3)  # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+
+    current_duid = ""
+    all_addr = []
+    while msg:
+        if msg.optcode == 1:
+            if decode_duid:
+                txt_duid = extract_duid(msg.duid)
+                current_duid = ":".join([txt_duid[i:i+2] for i in range(0, len(txt_duid), 2)])
+            else:
+                current_duid = msg.duid.copy()
+        elif msg.optcode == 3:
+            for ia_id in msg.ianaopts:
+                if ia_id.optcode == 5:
+                    all_addr.append({"duid": current_duid, "idid": msg.iaid, "valid_lifetime": ia_id.validlft,
+                                     "pref_lifetime":ia_id.preflft, "address": ia_id.addr, "prefix_len": 0})
+        elif msg.optcode == 25:
+            for ia_pd in msg.iapdopt:
+                if ia_pd.optcode == 26:
+                    all_addr.append({"duid": current_duid, "idid": msg.iaid, "valid_lifetime": ia_pd.validlft,
+                                     "pref_lifetime":ia_pd.preflft, "address": ia_pd.prefix, "prefix_len": ia_pd.plen})
+        msg = msg.payload
+
+    return all_addr
+
+
+def response_get_content(*args):
+    # only v4!
+    pass
 
 ## ================ PARSING RECEIVED MESSAGE BLOCK END ===================
 

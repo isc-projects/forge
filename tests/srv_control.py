@@ -261,6 +261,10 @@ def add_parameter_to_ha_hook(parameter_name, parameter_value):
     dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value)
 
 
+def update_ha_hook_parameter(param):
+    dhcp.update_ha_hook_parameter(param)
+
+
 @step('Use (\S+) as lease database backend.')
 def define_temporary_lease_db_backend(lease_db_type):
     lease_db_type = test_define_value(lease_db_type)[0]
@@ -569,31 +573,18 @@ def configure_loggers(log_type, severity, severity_level, logging_file=None):
 
 ##servers management
 @step('Send server configuration using (\S+) and (\S+).')
-def build_and_send_config_files(connection_type, configuration_type, cfg=None):
+def build_and_send_config_files(connection_type, configuration_type, cfg=None,
+                                dest=world.f_cfg.mgmt_address):
     """
-    Step used to choosing configuration type and channel to send it.
-    :param step:
     :param connection_type:
     :param configuration_type:
+    :param cfg:
+    :param dest:
+    :return:
     """
-    connection_type, configuration_type = test_define_value(connection_type, configuration_type)
-    dhcp.build_and_send_config_files(connection_type, configuration_type, cfg=cfg)
-
-
-@step('Send server configuration using (\S+) and (\S+) and destination address (\S+).')
-def build_and_send_config_files_dest_addr(connection_type, configuration_type, destination_address):
-    """
-    Step used to choosing configuration type and channel to send it.
-    :param step:
-    :param connection_type:
-    :param configuration_type:
-    :param destination_address:
-    """
-    connection_type, configuration_type, destination_address = test_define_value(connection_type,
-                                                                                 configuration_type,
-                                                                                 destination_address)
-    check_remote_address(destination_address)
-    dhcp.build_and_send_config_files(connection_type, configuration_type, destination_address)
+    connection_type, configuration_type, dest = test_define_value(connection_type, configuration_type, dest)
+    check_remote_address(dest)
+    dhcp.build_and_send_config_files(connection_type, configuration_type, cfg=cfg, destination_address=dest)
 
 
 @step('Generate server configuration file.')
@@ -602,35 +593,37 @@ def generate_config_files():
 
 
 @step('(\S+) server is (started|stopped|restarted|reconfigured).')
-def start_srv(name, type_of_action, config_set=None):
+def start_srv(name, type_of_action, config_set=None, dest=world.f_cfg.mgmt_address):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
     """
+    dest = test_define_value(dest)[0]
+    check_remote_address(dest)
     if name not in ["DHCP", "DNS"]:
         assert False, "I don't think there is support for something else than DNS or DHCP"
     if type_of_action == "started":
         if name == "DHCP":
-            dhcp.start_srv(True, None)
+            dhcp.start_srv(True, None, destination_address=dest)
         elif name == "DNS":
             if config_set is not None:
                 use_dns_set_number(config_set)
-            dns.start_srv(True, None)
+            dns.start_srv(True, None, destination_address=dest)
     elif type_of_action == "stopped":
         if name == "DHCP":
-            dhcp.stop_srv()
+            dhcp.stop_srv(destination_address=dest)
         elif name == "DNS":
-            dns.stop_srv()
+            dns.stop_srv(destination_address=dest)
     elif type_of_action == "restarted":
         if name == "DHCP":
-            dhcp.restart_srv()
+            dhcp.restart_srv(destination_address=dest)
         elif name == "DNS":
-            dns.restart_srv()
+            dns.restart_srv(destination_address=dest)
     elif type_of_action == "reconfigured":
         if name == "DHCP":
-            dhcp.reconfigure_srv()
+            dhcp.reconfigure_srv(destination_address=dest)
         elif name == "DNS":
-            dns.reconfigure_srv()
+            dns.reconfigure_srv(destination_address=dest)
     else:
         assert False, "we don't support this action."
 
@@ -717,14 +710,15 @@ def add_remote_server(remote_address):
 
 
 @step('Clear (\S+).')
-def clear_some_data(data_type, service='dhcp'):
+def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address):
+    dest = test_define_value(dest)[0]
     if service == 'dhcp':
         if data_type == "leases":
-            dhcp.clear_leases()
+            dhcp.clear_leases(destination_address=dest)
         elif data_type == "logs":
-            dhcp.clear_logs()
+            dhcp.clear_logs(destination_address=dest)
         elif data_type == "all":
-            dhcp.clear_all()
+            dhcp.clear_all(destination_address=dest)
     elif service.lower() == 'dns':
         # let's just dump all without logs
         dns.clear_all(remove_logs=False)
