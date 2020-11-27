@@ -30,5 +30,5 @@ from softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_option_s
 from softwaresupport.kea import prepare_cfg_add_option_shared_subnet, config_client_classification
 from softwaresupport.kea import kea_otheroptions, add_option_to_defined_class, config_require_client_classification
 from softwaresupport.kea import host_reservation, host_reservation_extension, add_siaddr, disable_client_echo
-
+from softwaresupport.kea import update_ha_hook_parameter
 # TODO remove this file :) but this is another set of reworks so for another time

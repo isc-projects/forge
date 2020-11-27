@@ -164,7 +164,7 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
-    stop_srv()
+    stop_srv(destination_address=destination_address)
     start_srv(True, None)
 
 

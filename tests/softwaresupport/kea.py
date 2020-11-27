@@ -19,7 +19,7 @@ import json
 import logging
 
 from forge_cfg import world
-from protosupport.multi_protocol_functions import add_variable, execute_shell_cmd
+from protosupport.multi_protocol_functions import add_variable, execute_shell_cmd, substitute_vars
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
 from softwaresupport.multi_server_functions import fabric_remove_file_command
@@ -540,7 +540,7 @@ def _config_db_backend():
     if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
         world.dhcp_cfg["lease-database"] = {"type": "memfile"}
     else:
-        world.dhcp_cfg["lease-database"] = {"type": world.reservation_backend,
+        world.dhcp_cfg["lease-database"] = {"type": world.f_cfg.db_type,
                                             "name": world.f_cfg.db_name,
                                             "host": world.f_cfg.db_host,
                                             "user": world.f_cfg.db_user,
@@ -585,18 +585,16 @@ def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
 
 def ha_add_parameter_to_hook(parameter_name, parameter_value):
     # First let's find HA hook in the list:
-    # TODO Michal, is there a more elegant solution for editing one specific dictionary from the list of dictionaries?
     # btw.. I wonder why "high-availability" is list of dictionaries not dictionary
     # and it's just for current backward compatibility, I will change it when I will get back to HA tests
     for hook in world.dhcp_cfg["hooks-libraries"]:
         if "libdhcp_ha" in hook["library"]:
             if parameter_name == "machine-state":
-                parameter_value.strip("'")
-                parameter_value = json.loads(parameter_value)
                 hook["parameters"]["high-availability"][0]["state-machine"]["states"].append(parameter_value)
             elif parameter_name == "peers":
-                parameter_value.strip("'")
-                parameter_value = json.loads(parameter_value)
+                if isinstance(parameter_value, str):
+                    parameter_value.strip("'")
+                    parameter_value = json.loads(parameter_value)
                 hook["parameters"]["high-availability"][0]["peers"].append(parameter_value)
             elif parameter_name == "lib":
                 pass
@@ -606,6 +604,14 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value):
                 else:
                     parameter_value = parameter_value.strip("\"")
                 hook["parameters"]["high-availability"][0][parameter_name] = parameter_value
+
+
+def update_ha_hook_parameter(param):
+    if not isinstance(param, dict):
+        assert False, "pass just dict as parameter"
+    for hook in world.dhcp_cfg["hooks-libraries"]:
+        if "libdhcp_ha" in hook["library"]:
+            hook["parameters"]["high-availability"][0].update(param)
 
 
 def agent_control_channel(host_address, host_port, socket_name='control_socket'):
@@ -736,7 +742,7 @@ def _cfg_write():
         list_of_used_hooks.append(hooks["library"].split("/")[-1])
 
     # if any of configured hooks is not working with multi-threading then do NOT enable multi-threading in kea config
-    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0:
+    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0 and world.f_cfg.multi_threading_enabled:
         world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": True, "thread-pool-size": 2,
                                                    "packet-queue-size": 16}})
 
@@ -791,6 +797,10 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     """
 
     # generate config files content
+    if destination_address not in world.f_cfg.multiple_tested_servers:
+        world.multiple_tested_servers.append(destination_address)
+
+    substitute_vars(world.dhcp_cfg)
     if world.proto == 'v4':
         add_defaults4()
     else:
@@ -844,7 +854,6 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
     if world.ddns_enable:
         copy_configuration_file("kea-dhcp-ddns.conf", "kea-dhcp-ddns.conf", destination_host=destination_address)
         remove_local_file("kea-dhcp-ddns.conf")
-
 
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
@@ -910,7 +919,7 @@ def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
                      db_user=world.f_cfg.db_user,
                      db_passwd=world.f_cfg.db_passwd,
                      db_name=world.f_cfg.db_name)
-    fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address)
+    fabric_run_command(cmd, destination_host=destination_address)
 
     # use kea script for cleaning pgsql
     cmd = 'PGPASSWORD={db_passwd} bash {software_install_path}/share/kea/scripts/pgsql/wipe_data.sh '
@@ -921,7 +930,7 @@ def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
                      db_user=world.f_cfg.db_user,
                      db_passwd=world.f_cfg.db_passwd,
                      db_name=world.f_cfg.db_name)
-    fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address)
+    fabric_run_command(cmd, destination_host=destination_address)
 
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
@@ -1013,6 +1022,9 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start kea with generated config
     """
+    if destination_address not in world.f_cfg.multiple_tested_servers:
+        world.multiple_tested_servers.append(destination_address)
+
     if world.f_cfg.install_method == 'make':
         v4_running, v6_running = _check_kea_status(destination_address)
 
@@ -1033,7 +1045,7 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         # for now just killall kea processes and ignore errors
         execute_shell_cmd("killall -q kea-ctrl-agent  kea-dhcp-ddns  kea-dhcp4  kea-dhcp6 || true",
-                          save_results=False)
+                          save_results=False, dest=destination_address)
 
     else:
         if world.server_system == 'redhat':
@@ -1118,12 +1130,12 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          destination_host=destination_address, ignore_errors=True)
 
 
-def db_setup():
+def db_setup(dest=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method != 'make':
         if world.server_system == 'redhat':
-            fabric_sudo_command("rpm -qa '*kea*'")
+            fabric_sudo_command("rpm -qa '*kea*'", destination_host=dest)
         else:
-            fabric_sudo_command("dpkg -l '*kea*'")
+            fabric_sudo_command("dpkg -l '*kea*'", destination_host=dest)
 
     if world.f_cfg.disable_db_setup:
         return
@@ -1136,31 +1148,31 @@ def db_setup():
 
     # MYSQL
     cmd = "mysql -u root -N -B -e \"DROP DATABASE IF EXISTS {db_name};\"".format(**locals())
-    result = fabric_sudo_command(cmd)
+    result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
     cmd = "mysql -u root -e 'CREATE DATABASE {db_name};'".format(**locals())
-    fabric_sudo_command(cmd)
+    fabric_sudo_command(cmd, destination_host=dest)
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
-    fabric_sudo_command(cmd, ignore_errors=True)
+    fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
     cmd = "mysql -u root -e \"set global log_bin_trust_function_creators=1;\""
-    fabric_sudo_command(cmd, ignore_errors=True)
+    fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
-    fabric_sudo_command(cmd)
+    fabric_sudo_command(cmd, destination_host=dest)
     cmd = "{kea_admin} db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-    result = fabric_run_command(cmd)
+    result = fabric_run_command(cmd, destination_host=dest)
     assert result.succeeded
 
     # POSTGRESQL
     cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True)
+    fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True, destination_host=dest)
     cmd = "cd /; psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres')
+    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     cmd = "cd /; psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres')
+    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     cmd = "cd /; psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres')
+    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres')
+    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-    result = fabric_run_command(cmd)
+    result = fabric_run_command(cmd, destination_host=dest)
     assert result.succeeded
