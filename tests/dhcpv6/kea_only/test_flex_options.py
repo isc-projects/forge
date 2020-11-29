@@ -14,18 +14,12 @@ def test_flex_options_add():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
-    world.dhcp_cfg["hooks-libraries"][0].update(
-        {
-            "parameters": {
-                "options": [
-                    {
-                        "code": 31,
-                        "add": "ifelse(option[39].exists,3000::1,3000::2)"
-                    }
-                ]
-            }
-        }
-    )
+    h_param = {"options": [{"code": 31,
+                            "add": "ifelse(option[39].exists,'3000::1','3000::2')",
+                            "csv-format": True}]}
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -66,18 +60,11 @@ def test_flex_options_remove():
     srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
-    world.dhcp_cfg["hooks-libraries"][0].update(
-        {
-            "parameters": {
-                "options": [
-                    {
-                        "code": 30,
-                        "remove": "option[39].exists"
-                    }
-                ]
-            }
-        }
-    )
+    h_param = {"options": [{"code": 30,
+                            "remove": "option[39].exists"}]}
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -116,18 +103,10 @@ def test_flex_options_remove_non_existing():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
-    world.dhcp_cfg["hooks-libraries"][0].update(
-        {
-            "parameters": {
-                "options": [
-                    {
-                        "code": 30,
-                        "remove": "option[39].exists"
-                    }
-                ]
-            }
-        }
-    )
+    h_param = {"options": [{"code": 30, "remove": "option[39].exists"}]}
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -158,6 +137,65 @@ def test_flex_options_remove_non_existing():
     srv_msg.response_check_include_option(30, expect_include=False)
 
 
+# \u0003ntp\u0007example\0u0003com\u0000
+@pytest.mark.v6
+@pytest.mark.flex_options
+def test_flex_options_supersede_domain_csv_false():
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')
+    srv_control.add_hooks('libdhcp_flex_option.so')
+
+    h_param = {"options": [{"code": 30,
+                            "supersede": "ifelse(relay6[0].peeraddr == 3000::1005, 0x6e7470322e6e6f746578616d706c652e636f6d,'')",
+                            "csv-format": False}]}
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
+    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(30)
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.client_sets_value('RelayAgent', 'peeraddr', '3000::1005')
+    srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
+    srv_msg.create_relay_forward()
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
+    srv_msg.response_check_option_content(9, 'Relayed', 'Message')
+    srv_msg.response_check_include_option(30)
+    srv_msg.response_check_option_content(30, 'value', 'ntp2.notexample.com.')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(30)
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.client_sets_value('RelayAgent', 'peeraddr', '3000::1')
+    srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
+    srv_msg.create_relay_forward()
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+    srv_msg.response_check_include_option(18)
+    srv_msg.response_check_include_option(9)
+    srv_msg.response_check_option_content(9, 'Relayed', 'Message')
+    srv_msg.response_check_include_option(30)
+    srv_msg.response_check_option_content(30, 'value', 'ntp.example.com.')
+
+
 @pytest.mark.v6
 @pytest.mark.flex_options
 def test_flex_options_supersede_domain():
@@ -166,18 +204,12 @@ def test_flex_options_supersede_domain():
     srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
-    world.dhcp_cfg["hooks-libraries"][0].update(
-        {
-            "parameters": {
-                "options": [
-                    {
-                        "code": 30,
-                        "supersede": "ifelse(relay6[0].peeraddr == 3000::1005, 'ntp2.notexample.com','')"
-                    }
-                ]
-            }
-        }
-    )
+    h_param = {"options": [{"code": 30,
+                            "supersede": "ifelse(relay6[0].peeraddr == 3000::1005, 'ntp2.notexample.com','')",
+                            "csv-format": True}]}
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -230,19 +262,12 @@ def test_flex_options_supersede_string():
     srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
-    world.dhcp_cfg["hooks-libraries"][0].update(
-        {
-            "parameters": {
-                "options": [
-                    {
-                        "code": 41,
-                        "supersede": "ifelse(relay6[0].peeraddr == 3000::1005,"
-                                     r"'EST5EDT4\,M3.2.0/02:00\,M11.1.0/02:00','')"
-                    }
-                ]
-            }
-        }
-    )
+    h_param = {"options": [{"code": 41,
+                            "supersede": "ifelse(relay6[0].peeraddr == 3000::1005,'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00','')",
+                            "csv-format": True}]}
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -294,39 +319,21 @@ def test_flex_options_all_actions():
     srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
-    world.dhcp_cfg["hooks-libraries"][0].update(
-        {
-            "parameters": {
-                "options": [
-                    {
-                        # new-posix-timezone if vendor exist
-                        "code": 41,
-                        "supersede": "ifelse(vendor[*].exists, 'EST5\\,M4.3.0/02:00\\,M13.2.0/02:00','')"
-                    },
-                    {
-                        # remove option 30 nisp-domain-name if client has a reservation
-                        "code": 30,
-                        "remove": "member('KNOWN')"
-                    },
-                    {
-                        # if fqdn is present add sip-server-addr 3000::1 if not add sntp-servers 3000::2
-                        "code": 22,
-                        "add": "ifelse(option[39].exists,3000::1,3000::2)"
-                    }
-                ]
-            }
-        }
-    )
-    world.dhcp_cfg["subnet6"][0].update(
-        {
-            "reservations": [
-                {
-                    "ip-addresses": ["2001:db8:1::1000"],
-                    "hw-address": "01:02:03:04:05:06"
-                }
-            ]
-        }
-    )
+    h_param = {"options": [{"code": 41,  # new-posix-timezone if vendor exist
+                            "supersede": "ifelse(vendor[*].exists, 'EST5\\,M4.3.0/02:00\\,M13.2.0/02:00','')",
+                            "csv-format": True},
+                           {"code": 30, # remove option 30 nisp-domain-name if client has a reservation
+                            "remove": "member('KNOWN')"},
+                           {"code": 22,  # if fqdn is present add sip-server-addr 3000::1 if not add sntp-servers 3000::2
+                            "add": "ifelse(option[39].exists,'3000::1','3000::2')",
+                            "csv-format": True}]}
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
+    reservation = {"reservations": [{"ip-addresses": ["2001:db8:1::1000"],
+                                     "hw-address": "01:02:03:04:05:06"}]}
+    world.dhcp_cfg["subnet6"][0].update(reservation)
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
