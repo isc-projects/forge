@@ -178,13 +178,17 @@ def user_victory():
     shutil.copy('../doc/.victory.jpg', world.cfg["test_result_dir"] + '/celebrate_success.jpg')
 
 
-def log_contains(line, condition, log_file=None):
-    if world.f_cfg.install_method == 'make':
+def log_contains(line, expect=True, log_file=None, count=None, dest=world.f_cfg.mgmt_address):
+    if world.f_cfg.install_method == 'make' and log_file != 'dns':
         if log_file is None:
             log_file = 'kea.log'
         log_file = world.f_cfg.log_join(log_file)
         # ignore errors because we analise those errors later
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True, destination_host=dest)
+    elif log_file == 'dns':
+        # for now world.cfg["dns_log_file"] is always /tmp/dns.log
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, world.cfg["dns_log_file"]),
+                                     ignore_errors=True, destination_host=dest)
     else:
         if log_file is None:
             if world.server_system == 'redhat':
@@ -195,12 +199,16 @@ def log_contains(line, condition, log_file=None):
             cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
             cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service
             cmd += 'grep -c "%s"' % line
-            result = fabric_sudo_command(cmd, ignore_errors=True)
+            result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
         else:
             log_file = world.f_cfg.log_join(log_file)
-            result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
+            result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True,
+                                         destination_host=dest)
+    if count is not None:
+        if int(count) != int(result):
+            assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
 
-    if condition is not None:
+    if not expect:
         if result.succeeded:
             assert False, 'Log contains line: "%s" But it should NOT.' % line
     else:

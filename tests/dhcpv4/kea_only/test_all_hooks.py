@@ -214,18 +214,15 @@ def test_v4_all_hooks_test_cooperation():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
 
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40')
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06')
+    srv_msg.log_contains('Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.log_contains('to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
     # lease commands
     srv_msg.send_ctrl_cmd_via_socket('{"command":"lease4-add","arguments":{"ip-address": "192.168.50.10","hostname": "newhostname.example.org","hw-address": "1a:1b:1c:1d:1e:1f","subnet-id":1,"valid-lft":500000}}')
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Administrator added a lease of address: 192.168.50.10 to a device with hardware address: 1a:1b:1c:1d:1e:1f for 5 days 18 hrs 53 mins 20 secs')
+    srv_msg.log_contains('Administrator added a lease of address: 192.168.50.10 to a device with hardware address: 1a:1b:1c:1d:1e:1f for 5 days 18 hrs 53 mins 20 secs',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
     #
     # Test Procedure:

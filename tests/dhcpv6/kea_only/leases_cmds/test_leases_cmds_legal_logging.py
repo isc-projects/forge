@@ -61,9 +61,8 @@ def test_hook_v6_lease_cmds_legal_logging_add():
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Administrator added a lease of address: 2001:db8:1::1 to a device with DUID: 1a:1b:1c:1d:1e:1f:20:21:22:23:24')
+    srv_msg.log_contains('Administrator added a lease of address: 2001:db8:1::1 to a device with DUID: 1a:1b:1c:1d:1e:1f:20:21:22:23:24',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
@@ -140,9 +139,8 @@ def test_hook_v6_lease_cmds_legal_logging_del_using_address():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Administrator deleted the lease for address: 2001:db8:1::1')
+    srv_msg.log_contains('Administrator deleted the lease for address: 2001:db8:1::1',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
@@ -220,9 +218,8 @@ def test_hook_v6_lease_cmds_legal_logging_del_using_duid():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Administrator deleted a lease for a device identified by: duid of 00:03:00:01:66:55:44:33:22:11')
+    srv_msg.log_contains('Administrator deleted a lease for a device identified by: duid of 00:03:00:01:66:55:44:33:22:11',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
@@ -374,6 +371,5 @@ def test_hook_v6_lease_cmds_legal_logging_update():
     srv_msg.lease_file_contains('2001:db8:1::1,01:02:03:04:05:06:07:08,1000')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Administrator updated information on the lease of address: 2001:db8:1::1 to a device with DUID: 01:02:03:04:05:06:07:08, hardware address: 1a:1b:1c:1d:1e:1f for 0 hrs 16 mins 40 secs')
+    srv_msg.log_contains('Administrator updated information on the lease of address: 2001:db8:1::1 to a device with DUID: 01:02:03:04:05:06:07:08, hardware address: 1a:1b:1c:1d:1e:1f for 0 hrs 16 mins 40 secs',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))

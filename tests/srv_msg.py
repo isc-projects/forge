@@ -367,34 +367,11 @@ def network_variable(value_name, value):
     multi_protocol_functions.change_network_variables(value_name, value)
 
 
-@step('File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
-def file_contains_line(file_path, condition, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    file_path, line = test_define_value(file_path, line)
-    multi_protocol_functions.regular_file_contain(file_path, condition, line)
-
-
-@step('DNS log MUST (NOT )?contain line: (.+)')
-def dns_log_contains(condition, line):
-    """
-    Check if DNS log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    line = test_define_value(line)[0]
-    multi_protocol_functions.regular_file_contain(world.cfg["dns_log_file"], condition, line)
-
-
-def log_contains(line, log_file=None):
-    line = test_define_value(line)[0]
-    multi_protocol_functions.log_contains(line, None, log_file)
-
-
-def log_doesnt_contain(line, log_file=None):
-    line = test_define_value(line)[0]
-    multi_protocol_functions.log_contains(line, 'NOT', log_file)
+def log_contains(line, log_file=None, expect=True, count=None, dest=world.f_cfg.mgmt_address):
+    line, dest = test_define_value(line, dest)
+    if log_file is not None:
+        log_file = test_define_value(log_file)[0]
+    multi_protocol_functions.log_contains(line, log_file=log_file, expect=expect, count=count, dest=dest)
 
 
 def lease_file_contains(line):
@@ -405,16 +382,6 @@ def lease_file_contains(line):
 def lease_file_doesnt_contain(line):
     line = test_define_value(line)[0]
     multi_protocol_functions.regular_file_contain(world.f_cfg.get_leases_path(), True, line)
-
-
-@step('Remote (\S+) file stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
-def remote_log_includes_line(destination, file_path, condition, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    destination, file_path, line = test_define_value(destination, file_path, line)
-    multi_protocol_functions.regular_file_contain(file_path, condition, line, destination=destination)
 
 
 @step('Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
@@ -431,16 +398,6 @@ def table_contains_line(table_name, db_type, condition, line):
 def remove_from_db_table(table_name, db_type):
     table_name, db_type = test_define_value(table_name, db_type)
     multi_protocol_functions.remove_from_db_table(table_name, db_type)
-
-
-@step('(\S+) log contains (\d+) of line: (.+)')
-def log_includes_count(server_type, count, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    count, line = test_define_value(count, line)
-    multi_protocol_functions.log_contains_count(server_type, count, line)
 
 
 @step('Sleep for (\S+) (seconds|second|milliseconds|millisecond).')

@@ -220,12 +220,10 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    srv_msg.log_contains('Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.log_contains('Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
@@ -430,13 +428,11 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    srv_msg.log_contains('Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
     # Spec says that when we are rebinding address it will be logged 'renewed', misleading :/
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    srv_msg.log_contains('Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
@@ -633,9 +629,8 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
+    srv_msg.log_contains('Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
@@ -803,9 +798,8 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts():
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
+    srv_msg.log_contains('Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
@@ -973,15 +967,12 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay():
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) connected via relay')
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'connected via relay at address:')
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'for client on link address: 3000::1005, hop count: 4')
+    srv_msg.log_contains('Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) connected via relay',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.log_contains('connected via relay at address:',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.log_contains('for client on link address: 3000::1005, hop count: 4',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v6
