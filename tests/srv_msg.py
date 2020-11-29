@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2017 Internet Systems Consortium.
+# Copyright (C) 2013-2020 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -70,7 +70,6 @@ def client_sets_value(sender_type, value_name, new_value):
     # if we pass DUID class do not check defined values
     if not isinstance(new_value, (DUID_LLT, DUID_LL, DUID_EN)):
         value_name, new_value = test_define_value(value_name, new_value)
-
     dhcpmsg.client_sets_value(value_name, new_value)
 
 

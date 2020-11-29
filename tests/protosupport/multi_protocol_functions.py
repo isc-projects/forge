@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2019 Internet Systems Consortium.
+# Copyright (C) 2013-2020 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -26,7 +26,6 @@ import termios
 import shutil
 import logging
 
-#from _pyio import open  # TODO: why this way? WTF?
 import requests
 
 from forge_cfg import world

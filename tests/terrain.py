@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2018 Internet Systems Consortium.
+# Copyright (C) 2013-2020 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -130,6 +130,7 @@ def _set_values():
     else:
         world.cfg["values"] = values_v4.copy()
         world.cfg["server_times"] = server_times_v4.copy()
+
 
 world.set_values = _set_values
 

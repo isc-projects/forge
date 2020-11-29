@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2019 Internet Systems Consortium.
+# Copyright (C) 2013-2020 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -14,7 +14,6 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import os
-import sys
 import json
 import logging
 
