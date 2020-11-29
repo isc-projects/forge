@@ -60,9 +60,8 @@ def test_hook_v4_lease_cmds_legal_logging_update():
     srv_msg.send_ctrl_cmd_via_socket('{"command":"lease4-update","arguments":{"ip-address": "192.168.50.1","hostname": "newhostname.example.org","hw-address": "1a:1b:1c:1d:1e:1f","subnet-id":1,"valid-lft":500000}}')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               ' Administrator updated information on the lease of address: 192.168.50.1 to a device with hardware address: 1a:1b:1c:1d:1e:1f for 5 days 18 hrs 53 mins 20 secs')
+    srv_msg.log_contains('Administrator updated information on the lease of address: 192.168.50.1 to a device with hardware address: 1a:1b:1c:1d:1e:1f for 5 days 18 hrs 53 mins 20 secs',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v4
@@ -93,9 +92,8 @@ def test_hook_v4_lease_cmds_legal_logging_add():
     srv_msg.lease_file_contains('my.host.some.name')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               ' Administrator added a lease of address: 192.168.50.5 to a device with hardware address: 1a:1b:1c:1d:1e:1f, client-id: aa:bb:cc:dd:11:22 for 2 hrs 9 mins 37 secs')
+    srv_msg.log_contains('Administrator added a lease of address: 192.168.50.5 to a device with hardware address: 1a:1b:1c:1d:1e:1f, client-id: aa:bb:cc:dd:11:22 for 2 hrs 9 mins 37 secs',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v4
@@ -162,9 +160,8 @@ def test_hook_v4_lease_cmds_legal_logging_del_using_address():
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Administrator deleted the lease for address: 192.168.50.1')
+    srv_msg.log_contains('Administrator deleted the lease for address: 192.168.50.1',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v4
@@ -231,9 +228,8 @@ def test_hook_v4_lease_cmds_legal_logging_del_using_hw_address():
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               None,
-                               'Administrator deleted a lease for a device identified by: hw-address of ff:01:02:03:ff:04')
+    srv_msg.log_contains('Administrator deleted a lease for a device identified by: hw-address of ff:01:02:03:ff:04',
+                         log_file=world.f_cfg.data_join('kea-legal*.txt'))
 
 
 @pytest.mark.v4
