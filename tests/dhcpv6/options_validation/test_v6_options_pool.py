@@ -58,5 +58,3 @@ def test_v6_options_pool_level():
     _get_lease('00:03:00:01:ff:ff:ff:ff:ff:01', 1)
     # lease from seconnd pool should have preference val set to 2
     _get_lease('00:03:00:01:ff:ff:ff:ff:ff:02', 2)
-
-

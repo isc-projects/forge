@@ -5,7 +5,6 @@
 import pytest
 
 import srv_msg
-import references
 import srv_control
 import misc
 
