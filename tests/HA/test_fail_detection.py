@@ -86,11 +86,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     # check status of secondary system, it should not be changed
     assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
     # send traffic with increased elapsed time (system is set to change after 5 clients)
-    send_increased_elapsed_time(3, dhcp_version=dhcp_version)
-    # check if secondary system status still hasn't changed
-    assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
-    # send more traffic with increased elapsed time
-    send_increased_elapsed_time(2, dhcp_version=dhcp_version)
+    send_increased_elapsed_time(5, dhcp_version=dhcp_version)
     # let's wait until secondary system switch status
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
     # check leases in secondary system
@@ -196,11 +192,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     # check status of secondary system, it should not be changed
     assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
     # send traffic with increased elapsed time (system is set to change after 5 clients)
-    send_increased_elapsed_time(3, dhcp_version=dhcp_version)
-    # check if secondary system status still hasn't changed
-    assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
-    # send more traffic with increased elapsed time
-    send_increased_elapsed_time(2, dhcp_version=dhcp_version)
+    send_increased_elapsed_time(5, dhcp_version=dhcp_version)
     # let's wait until secondary system switch status
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
     # check leases in secondary system

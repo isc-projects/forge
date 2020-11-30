@@ -369,8 +369,7 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
 
 @pytest.mark.v6
 @pytest.mark.v4
-# @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize("backend", ['memfile'])
+@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend):
     # HA SERVER 1
     misc.test_setup()
@@ -417,8 +416,7 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend):
 
 @pytest.mark.v6
 @pytest.mark.v4
-@pytest.mark.parametrize("backend", ['memfile'])
-# @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
     # HA SERVER 1
     misc.test_setup()

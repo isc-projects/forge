@@ -89,17 +89,17 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=3,
     :return: last response
     """
     for _ in range(retry):
+        srv_msg.forge_sleep(sleep, 'seconds')
         resp = send_cc(dest=dest, dhcp_version=dhcp_version)
         if resp["arguments"]["state"] == state:
             return resp
-        srv_msg.forge_sleep(sleep, 'seconds')
     assert False, "After %d retries HA did NOT reach '%s' state" % (retry, state)
 
 
 def _increase_mac(mac, rand=False):
     """
     Recalculate mac address by: keep first octet unchanged (we can change it in test to make sure that
-    cansecutive steps will generate different sets, change second octet always by 1, all the rest we can
+    consecutive steps will generate different sets, change second octet always by 1, all the rest we can
     change by one or random number between 3 and 20. Used rand=True to generate test data
     :param mac: mac address as string
     :return: increased mac address as string
@@ -231,9 +231,9 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
     tmp = world.f_cfg.show_packets_from
     world.f_cfg.show_packets_from = ""
     if dhcp_version == 'v6':
+        # v6 is in milliseconds not seconds so let's multiply elapsed time
+        elapsed *= 100
         for i in range(msg_count):
-            # v6 is in milliseconds not seconds so let's multiply elapsed time
-            elapsed *= 10
             if isinstance(duid, list):
                 # if we have a list just take last one
                 my_duid = duid[-1]
@@ -263,7 +263,8 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
                 my_mac = mac[-1]
                 mac = mac[:-1]
             else:
-                my_mac = _increase_mac(mac)
+                mac = _increase_mac(mac)
+                my_mac = mac
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'chaddr', my_mac)
             srv_msg.client_sets_value('Client', 'secs', elapsed + i)
