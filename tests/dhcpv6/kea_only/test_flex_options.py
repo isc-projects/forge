@@ -1,3 +1,7 @@
+""" testing flex option hook"""
+
+# pylint: disable=invalid-name,line-too-long
+
 import pytest
 
 import srv_msg

@@ -1,3 +1,7 @@
+""" testing flex option hook"""
+
+# pylint: disable=invalid-name,line-too-long
+
 import pytest
 
 import srv_msg
@@ -252,12 +256,12 @@ def test_flex_options_all_actions():
     srv_control.config_srv_opt('domain-name-servers', '100.100.100.1')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
-    h_param = {"options": [{"code": 5, #  change option 5 to 10.0.0.1 if hostname is myuniquehostname
+    h_param = {"options": [{"code": 5,  # change option 5 to 10.0.0.1 if hostname is myuniquehostname
                             "supersede": "ifelse(option[host-name].text == 'myuniquehostname', '10.0.0.1', '199.199.199.1')",
-                            "csv-format": True },
-                           {"code": 6, #  remove option 6 domain-name-servers if client has a reservation
+                            "csv-format": True},
+                           {"code": 6,  # remove option 6 domain-name-servers if client has a reservation
                             "remove": "member('KNOWN')"},
-                           {"code": 67, #  if hostname provided add option 67 hostname+'.boot' if hostname not provided
+                           {"code": 67,  # if hostname provided add option 67 hostname+'.boot' if hostname not provided
                             # add option 67 'no-boot-file'
                             "add": "ifelse(option[host-name].exists,concat(option[host-name].text,'.boot'),'no-boot-file')",
                             "csv-format": True}]}
