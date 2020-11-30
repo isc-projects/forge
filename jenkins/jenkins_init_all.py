@@ -42,8 +42,6 @@ SLEEP_TIME_1=2
 SLEEP_TIME_2=2
 # For all servers, choose ethernet interface on which server will be configured
 SERVER_IFACE = "ens224"
-MGMT_ADDRESS_2 =""
-MGMT_ADDRESS_3 =""
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
 # files, and removing generated data files.
@@ -98,7 +96,7 @@ AUTO_ARCHIVE = False
 # file, or use root account.
 # ip address and port. ssh port default 22
 MGMT_ADDRESS = "149.20.57.198"
-MGMT_ADDRESS_2 = ""
+MGMT_ADDRESS_2 = "149.20.57.203"
 MGMT_ADDRESS_3 = ""
 MGMT_USERNAME = "test"
 MGMT_PASSWORD = "test&0"
