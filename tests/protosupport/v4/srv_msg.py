@@ -478,7 +478,7 @@ def response_check_option_content(opt_code, expect, data_type, expected):
                             " that value has been excluded from correct values".format(**locals())
 
 
-def get_all_addr(decode_duid=True):
+def get_all_leases(decode_duid=True):
     assert world.srvmsg
     mac = ""
     tmp = struct.unpack('16B', world.srvmsg[0].chaddr)

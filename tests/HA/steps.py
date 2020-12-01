@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name,line-too-long,inconsistent-return-statements
 import random
 import misc
 import srv_msg
@@ -55,7 +55,12 @@ PASSIVE_BACKUP = {"parameters": {"high-availability": [{"mode": "passive-backup"
                                                         "state-machine": {"states": []}}]}}
 
 
-def send_cc(cmd=None, dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False):
+def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False):
+    return send_command(cmd={"command": "ha-heartbeat"}, dhcp_version=dhcp_version, exp_result=exp_result,
+                        dest=dest, exp_failed=exp_failed)
+
+
+def send_command(cmd=None, dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False):
     """
     send command to CA with http
     :param cmd: command, if not set ha-heartbeat will be send
@@ -66,9 +71,8 @@ def send_cc(cmd=None, dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_add
     :return: json response
     """
     service = 'dhcp6' if dhcp_version == 'v6' else 'dhcp4'
-
     if cmd is None:
-        cmd = {"command": "ha-heartbeat", "service": [service]}
+        assert False, "We can't send empty command"
     if "service" not in cmd:
         cmd.update({"service": [service]})
     result = srv_msg.send_ctrl_cmd_via_http(command=cmd, address=dest, exp_result=exp_result, exp_failed=exp_failed)
@@ -90,7 +94,7 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=3,
     """
     for _ in range(retry):
         srv_msg.forge_sleep(sleep, 'seconds')
-        resp = send_cc(dest=dest, dhcp_version=dhcp_version)
+        resp = send_heartbeat(dest=dest, dhcp_version=dhcp_version)
         if resp["arguments"]["state"] == state:
             return resp
     assert False, "After %d retries HA did NOT reach '%s' state" % (retry, state)
@@ -188,7 +192,7 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
                 srv_msg.response_check_include_option(25)
                 # srv_msg.response_check_include_option(26)
 
-            all_leases += srv_msg.get_all_addr()
+            all_leases += srv_msg.get_all_leases()
 
     elif dhcp_version == 'v4':
         for _ in range(leases_count):
@@ -213,7 +217,7 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             srv_msg.send_wait_for_message('MUST', 'ACK')
             srv_msg.response_check_content('yiaddr', yiaddr)
 
-            all_leases.append(srv_msg.get_all_addr())
+            all_leases.append(srv_msg.get_all_leases())
     world.f_cfg.show_packets_from = tmp
     return all_leases
 

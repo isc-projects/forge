@@ -1017,7 +1017,7 @@ def compare_values(value_name, option_name):
         world.subopts = []
 
 
-def get_all_addr(decode_duid=True):
+def get_all_leases(decode_duid=True):
 
     assert world.srvmsg
 

@@ -652,8 +652,8 @@ def loops(message_type_1, message_type_2, repeat):
     world.f_cfg.show_packets_from = tmp
 
 
-def get_all_addr():
-    return dhcpmsg.get_all_addr()
+def get_all_leases():
+    return dhcpmsg.get_all_leases()
 
 
 def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address):

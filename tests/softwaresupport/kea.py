@@ -606,8 +606,7 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value):
 
 
 def update_ha_hook_parameter(param):
-    if not isinstance(param, dict):
-        assert False, "pass just dict as parameter"
+    assert isinstance(param, dict), "pass just dict as parameter"
     for hook in world.dhcp_cfg["hooks-libraries"]:
         if "libdhcp_ha" in hook["library"]:
             hook["parameters"]["high-availability"][0].update(param)

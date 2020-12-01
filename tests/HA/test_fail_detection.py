@@ -8,7 +8,7 @@ import srv_msg
 import misc
 import srv_control
 
-from HA.steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_cc
+from HA.steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
 from HA.steps import HOT_STANDBY, LOAD_BALANCING
 
 
@@ -79,12 +79,12 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     # check if those were propagated to other system
     srv_msg.check_leases(set_of_leases_1, backend=backend, dest=world.f_cfg.mgmt_address_2)
     # check status of secondary system
-    assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
+    assert send_heartbeat(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
     # stop primary system
     srv_control.start_srv('DHCP', 'stopped')
     srv_msg.forge_sleep(2, 'seconds')
     # check status of secondary system, it should not be changed
-    assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
+    assert send_heartbeat(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
     # send traffic with increased elapsed time (system is set to change after 5 clients)
     send_increased_elapsed_time(5, dhcp_version=dhcp_version)
     # let's wait until secondary system switch status
@@ -185,12 +185,12 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     # check if those were propagated to other system
     srv_msg.check_leases(set_of_leases_1, backend=backend, dest=world.f_cfg.mgmt_address_2)
     # check status of secondary system
-    assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
+    assert send_heartbeat(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
     # stop primary system
     srv_control.start_srv('DHCP', 'stopped')
     srv_msg.forge_sleep(2, 'seconds')
     # check status of secondary system, it should not be changed
-    assert send_cc(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
+    assert send_heartbeat(dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
     # send traffic with increased elapsed time (system is set to change after 5 clients)
     send_increased_elapsed_time(5, dhcp_version=dhcp_version)
     # let's wait until secondary system switch status
