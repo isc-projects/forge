@@ -1,6 +1,6 @@
 """Kea HA fail detection"""
 
-# pylint: disable=invalid-name,line-too-long,inconsistent-return-statements
+# pylint: disable=invalid-name,line-too-long
 
 import pytest
 from forge_cfg import world
