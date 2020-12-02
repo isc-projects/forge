@@ -21,8 +21,7 @@ def test_flex_options_add():
     h_param = {"options": [{"code": 31,
                             "add": "ifelse(option[39].exists,'3000::1','3000::2')",
                             "csv-format": True}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -66,8 +65,7 @@ def test_flex_options_remove():
 
     h_param = {"options": [{"code": 30,
                             "remove": "option[39].exists"}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -108,8 +106,7 @@ def test_flex_options_remove_non_existing():
     srv_control.add_hooks('libdhcp_flex_option.so')
 
     h_param = {"options": [{"code": 30, "remove": "option[39].exists"}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -153,8 +150,7 @@ def test_flex_options_supersede_domain_csv_false():
     h_param = {"options": [{"code": 30,
                             "supersede": "ifelse(relay6[0].peeraddr == 3000::1005, 0x6e7470322e6e6f746578616d706c652e636f6d,'')",
                             "csv-format": False}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -211,8 +207,7 @@ def test_flex_options_supersede_domain():
     h_param = {"options": [{"code": 30,
                             "supersede": "ifelse(relay6[0].peeraddr == 3000::1005, 'ntp2.notexample.com','')",
                             "csv-format": True}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -269,8 +264,7 @@ def test_flex_options_supersede_string():
     h_param = {"options": [{"code": 41,
                             "supersede": "ifelse(relay6[0].peeraddr == 3000::1005,'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00','')",
                             "csv-format": True}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -326,14 +320,13 @@ def test_flex_options_all_actions():
     h_param = {"options": [{"code": 41,  # new-posix-timezone if vendor exist
                             "supersede": "ifelse(vendor[*].exists, 'EST5\\,M4.3.0/02:00\\,M13.2.0/02:00','')",
                             "csv-format": True},
-                           {"code": 30, # remove option 30 nisp-domain-name if client has a reservation
+                           {"code": 30,  # remove option 30 nisp-domain-name if client has a reservation
                             "remove": "member('KNOWN')"},
                            {"code": 22,  # if fqdn is present add sip-server-addr 3000::1 if not add sntp-servers 3000::2
                             "add": "ifelse(option[39].exists,'3000::1','3000::2')",
                             "csv-format": True}]}
     world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     reservation = {"reservations": [{"ip-addresses": ["2001:db8:1::1000"],
                                      "hw-address": "01:02:03:04:05:06"}]}

@@ -24,8 +24,7 @@ def test_flex_options_add():
                             "add": "ifelse(option[host-name].exists,concat(option[host-name].text,'.boot'),'no-boot-file')",
                             "csv-format": True}]}
 
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -84,8 +83,7 @@ def test_flex_options_remove():
     srv_control.add_hooks('libdhcp_flex_option.so')
 
     h_param = {"options": [{"code": 5, "remove": "option[host-name].exists"}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -145,8 +143,7 @@ def test_flex_options_remove_non_existing():
     srv_control.add_hooks('libdhcp_flex_option.so')
 
     h_param = {"options": [{"code": 5, "remove": "option[host-name].exists"}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
@@ -188,8 +185,7 @@ def test_flex_options_supersede():
     h_param = {"options": [{"code": 5,
                             "supersede": "ifelse(option[host-name].text == 'myuniquehostname', '10.0.0.1','199.199.199.1')",
                             "csv-format": True}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
@@ -266,8 +262,7 @@ def test_flex_options_all_actions():
                             "add": "ifelse(option[host-name].exists,concat(option[host-name].text,'.boot'),'no-boot-file')",
                             "csv-format": True}]}
 
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
     reservation = {"reservations": [{"ip-address": "192.168.50.200", "hw-address": "01:02:03:04:05:06"}]}
     world.dhcp_cfg["subnet4"][0].update(reservation)
 
@@ -351,8 +346,8 @@ def test_flex_options_complex():
 
     h_param = {"options": [{"code": 67,
                             "supersede": "ifelse(not option[77].exists and not option[60].exists, '', ifelse(not option[77].exists and option[60].exists, '/path/to/undionly.kpxe', ifelse(option[77].exists and option[60].exists and member('KNOWN'), concat('/path/to/host/specific/boot-', hexstring(pkt4.mac,'-')), '/path/to/default')))"}]}
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {}})
-    world.dhcp_cfg["hooks-libraries"][0]["parameters"].update(h_param)
+
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
     srv_control.build_and_send_config_files('SSH', 'configfile')
     srv_control.start_srv('DHCP', 'started')
 
