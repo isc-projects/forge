@@ -610,10 +610,12 @@ def send_wait_for_message(condition_type, presence, exp_message):
     # checkIPsrc must be False so scapy can correctly match response to request
     conf.checkIPsrc = False
     apply_message_fields_changes()
-
+    timeout = world.cfg["wait_interval"]
+    if "HA" in os.environ.get('PYTEST_CURRENT_TEST').split("/"):
+        timeout *= world.f_cfg.ha_packet_wait_interval
     ans, unans = sr(world.climsg,
                     iface=world.cfg["iface"],
-                    timeout=world.cfg["wait_interval"] * world.f_cfg.ha_packet_wait_interval,
+                    timeout=timeout,
                     nofilter=1,
                     verbose=world.scapy_verbose)
 
