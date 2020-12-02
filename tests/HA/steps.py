@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# pylint: disable=invalid-name,line-too-long,inconsistent-return-statements
+# pylint: disable=invalid-name,line-too-long
 import random
 import misc
 import srv_msg
@@ -71,8 +71,7 @@ def send_command(cmd=None, dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgm
     :return: json response
     """
     service = 'dhcp6' if dhcp_version == 'v6' else 'dhcp4'
-    if cmd is None:
-        assert False, "We can't send empty command"
+    assert cmd is not None, "We can't send empty command"
     if "service" not in cmd:
         cmd.update({"service": [service]})
     result = srv_msg.send_ctrl_cmd_via_http(command=cmd, address=dest, exp_result=exp_result, exp_failed=exp_failed)
@@ -98,6 +97,7 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=3,
         if resp["arguments"]["state"] == state:
             return resp
     assert False, "After %d retries HA did NOT reach '%s' state" % (retry, state)
+    return {}  # let's keep pylint error quiet
 
 
 def _increase_mac(mac, rand=False):

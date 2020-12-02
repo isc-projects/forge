@@ -242,10 +242,10 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
         assert False, "db type {db_type} not recognized/not supported".format(**locals())
 
 
-def db_table_contain(table_name, db_type, line="", grep_cmd=None, more_than_zero=True, db_name=world.f_cfg.db_name,
+def db_table_contain(table_name, db_type, line="", grep_cmd=None, expect=True, db_name=world.f_cfg.db_name,
                      db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
                      destination=world.f_cfg.mgmt_address):
-
+    # TODO add checking count of records
     if db_type.lower() == "mysql":
         if table_name == 'lease6':
             select = 'select hex(duid), address, iaid, valid_lifetime'
@@ -274,7 +274,7 @@ def db_table_contain(table_name, db_type, line="", grep_cmd=None, more_than_zero
 
     result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
 
-    if not more_than_zero:
+    if not expect:
         if int(result) > 0:
             assert False, 'In database {0} table name "{1}" has {2} of: "{3}".' \
                           ' That is to much.'.format(db_type, table_name, result, line)

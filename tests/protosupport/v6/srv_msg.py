@@ -611,12 +611,9 @@ def send_wait_for_message(condition_type, presence, exp_message):
     conf.checkIPsrc = False
     apply_message_fields_changes()
 
-    multiply = 1
-    if "HA" in os.environ.get('PYTEST_CURRENT_TEST').split("/"):
-        multiply = 4
     ans, unans = sr(world.climsg,
                     iface=world.cfg["iface"],
-                    timeout=world.cfg["wait_interval"] * multiply,
+                    timeout=world.cfg["wait_interval"] * world.f_cfg.ha_packet_wait_interval,
                     nofilter=1,
                     verbose=world.scapy_verbose)
 
