@@ -86,7 +86,7 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=3,
     way of active sleep
     :param state: what state we are waiting for
     :param dest: management address of server
-    :param retry: number of retries before we declar defeat
+    :param retry: number of retries before we declare defeat
     :param sleep: sleep between retries
     :param dhcp_version: version of dhcp
     :return: last response

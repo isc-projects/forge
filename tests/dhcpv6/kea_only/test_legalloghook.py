@@ -102,9 +102,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid_mysql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
@@ -155,9 +153,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_duid_pgsql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
@@ -290,13 +286,9 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid_mysql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
@@ -362,13 +354,9 @@ def test_v6_loggers_legal_log_hook_address_renewed_duid_pgsql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
@@ -500,14 +488,10 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid_pgsql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
     # Spec says that when we are rebinding address it will be logged 'renewed', misleading :/
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
@@ -572,14 +556,10 @@ def test_v6_loggers_legal_log_hook_address_rebind_duid_mysql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
     # Spec says that when we are rebinding address it will be logged 'renewed', misleading :/
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been renewed for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
@@ -691,9 +671,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_pgsql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
 
 
@@ -750,9 +728,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_modem_mysql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
 
 
@@ -859,9 +835,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_pgsql():
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
 
 
@@ -916,9 +890,7 @@ def test_v6_loggers_legal_log_hook_address_assigned_docsis_cmts_mysql():
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
 
 
@@ -1039,15 +1011,10 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_pgsql():
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) connected via relay')
-    srv_msg.table_contains_line('logs', 'PostgreSQL', None, 'connected via relay at address:')
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
-                                'for client on link address: 3000::1005, hop count: 4')
+    srv_msg.table_contains_line('logs', 'PostgreSQL', 'connected via relay at address:')
+    srv_msg.table_contains_line('logs', 'PostgreSQL', 'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -1105,15 +1072,10 @@ def test_v6_loggers_legal_log_hook_address_assigned_relay_mysql():
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) connected via relay')
-    srv_msg.table_contains_line('logs', 'MySQL', None, 'connected via relay at address:')
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
-                                'for client on link address: 3000::1005, hop count: 4')
+    srv_msg.table_contains_line('logs', 'MySQL', 'connected via relay at address:')
+    srv_msg.table_contains_line('logs', 'MySQL', 'for client on link address: 3000::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -1181,9 +1143,7 @@ def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_mysql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address:3000::f has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
@@ -1252,7 +1212,5 @@ def test_v6_loggers_legal_log_hook_with_flex_id_address_assigned_pgsql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address:3000::f has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')

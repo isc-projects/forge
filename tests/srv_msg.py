@@ -421,13 +421,13 @@ def remote_log_includes_line(destination, file_path, condition, line):
 
 
 @step('Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
-def table_contains_line(table_name, db_type, condition, line):
+def table_contains_line(table_name, db_type, line, expect=True):
     """
     Check if in table X in database type Y include line.
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     table_name, db_type, line = test_define_value(table_name, db_type, line)
-    multi_protocol_functions.db_table_contain(table_name, db_type, condition, line)
+    multi_protocol_functions.db_table_contain(table_name, db_type, line=line, expect=expect)
 
 
 @step('Remove all records from table (\S+) in (\S+) database.')

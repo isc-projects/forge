@@ -119,13 +119,9 @@ def test_v4_legal_log_assigned_address_pgsql():
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(61, 'value', '00010203040506')
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06')
 
 
@@ -181,13 +177,9 @@ def test_v4_legal_log_assigned_address_mysql():
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(61, 'value', '00010203040506')
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06')
 
 
@@ -291,15 +283,11 @@ def test_v4_legal_log_assigned_address_without_client_id_pgsql():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
-    srv_msg.table_contains_line('logs', 'PostgreSQL', 'NOT ', 'client-id:')
+    srv_msg.table_contains_line('logs', 'PostgreSQL', 'client-id:', expect=False)
 
 
 @pytest.mark.v4
@@ -348,15 +336,11 @@ def test_v4_legal_log_assigned_address_without_client_id_mysql():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
-    srv_msg.table_contains_line('logs', 'MySQL', 'NOT ', 'client-id:')
+    srv_msg.table_contains_line('logs', 'MySQL', 'client-id:', expect=False)
 
 
 @pytest.mark.v4
@@ -471,13 +455,9 @@ def test_v4_legal_log_assigned_address_via_relay_pgsql_2():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs to a device with hardware address: hwtype=1 00:00:00:00:00:00,')
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'client-id: 00:01:02:03:04:05:77 connected via relay at address: $(GIADDR4)')
 
 
@@ -534,13 +514,9 @@ def test_v4_legal_log_assigned_address_via_relay_mysql():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs to a device with hardware address: hwtype=1 00:00:00:00:00:00,')
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'client-id: 00:01:02:03:04:05:77 connected via relay at address: $(GIADDR4)')
 
 
@@ -691,13 +667,9 @@ def test_v4_legal_log_renewed_address_pgsql():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'ddress: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)')
 
 
@@ -772,13 +744,9 @@ def test_v4_legal_log_renewed_address_mysql():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'ddress: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)')
 
 
@@ -929,13 +897,9 @@ def test_v4_legal_log_rebind_address_mysql():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
 
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'MySQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'MySQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)')
 
 
@@ -1010,11 +974,7 @@ def test_v4_legal_log_rebind_address_pgsql():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
 
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'Address: 192.168.50.1 has been renewed for 0 hrs 10 mins 0 secs')
-    srv_msg.table_contains_line('logs',
-                                'PostgreSQL',
-                                None,
+    srv_msg.table_contains_line('logs', 'PostgreSQL',
                                 'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04 connected via relay at address: $(GIADDR4)')

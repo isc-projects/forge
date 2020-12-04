@@ -14,6 +14,7 @@ from HA.steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
 
 
 @pytest.mark.v6
+@pytest.mark.HA
 def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     # HA SERVER 1
     misc.test_setup()
@@ -86,6 +87,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
 
 @pytest.mark.v4
 @pytest.mark.v6
+@pytest.mark.HA
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
 
@@ -216,6 +218,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
 
 @pytest.mark.v6
 @pytest.mark.v4
+@pytest.mark.HA
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_HA_passive_backup_sync(dhcp_version, backend):
     misc.test_setup()
@@ -267,8 +270,11 @@ def test_HA_passive_backup_sync(dhcp_version, backend):
     srv_msg.check_leases(set_of_leases_1, backend=backend, dest=world.f_cfg.mgmt_address_2)
 
 
+# disabled, we know it fails due to design of HA load-balancing nothing will change here
 @pytest.mark.v6
 @pytest.mark.v4
+@pytest.mark.disabled
+@pytest.mark.HA
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_sync(dhcp_version, backend):
     # HA SERVER 1
@@ -369,6 +375,7 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
 
 @pytest.mark.v6
 @pytest.mark.v4
+@pytest.mark.HA
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend):
     # HA SERVER 1
@@ -416,6 +423,8 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend):
 
 @pytest.mark.v6
 @pytest.mark.v4
+@pytest.mark.disabled
+@pytest.mark.HA
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
     # HA SERVER 1
