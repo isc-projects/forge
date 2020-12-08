@@ -507,7 +507,7 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  'hostname-char-set', 'statistic-default-sample-count',
                  'multi-threading', 'ip-reservations-unique',
                  'ddns-use-conflict-resolution', 'reservations-in-subnet',
-+                'reservations-out-of-pool']:
+                 'reservations-out-of-pool', 'reservations-global']:
             # TODO: for now ignore these fields
             continue
         if k in exp_dict:
