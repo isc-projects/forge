@@ -12,6 +12,16 @@ from HA.steps import send_command, HOT_STANDBY, LOAD_BALANCING, wait_until_ha_st
 # TODO add checking logs in all those tests
 
 
+@pytest.fixture(autouse=True)
+def kill_kea_on_second_system():
+    # kill kea and clear data at the beginning and at the end
+    srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
+    yield
+    srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
+
+
 def _send_message(dhcp='v6', expect_answer=True):
     if dhcp == 'v6':
         misc.test_procedure()
@@ -69,8 +79,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-    srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
+
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     else:

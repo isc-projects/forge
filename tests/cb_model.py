@@ -214,6 +214,7 @@ class ConfigModel(ConfigElem):
         cfg['ddns-replace-client-name'] = 'never'
         cfg['ddns-generated-prefix'] = 'myhost'
         cfg['ddns-send-updates'] = True
+        cfg['ddns-use-conflict-resolution'] = True
 
 
         # combining whole config
@@ -505,7 +506,8 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  'control-socket', 'host-reservation-identifiers', 'relay',
                  'hostname-char-set', 'statistic-default-sample-count',
                  'multi-threading', 'ip-reservations-unique',
-                 'ddns-use-conflict-resolution']:
+                 'ddns-use-conflict-resolution', 'reservations-in-subnet',
++                'reservations-out-of-pool']:
             # TODO: for now ignore these fields
             continue
         if k in exp_dict:
