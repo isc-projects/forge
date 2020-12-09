@@ -134,6 +134,7 @@ def test_subnet_and_timers_renew_less(dhcp_version):  # pylint: disable=unused-a
 
 
 @pytest.mark.v4
+@pytest.mark.disabled  # #505 will not be fixed
 def test_subnet_and_timers_renew_greater_4():
     # change both renew and rebind timers on different levels (global and subnet)
     # and check that if renew timer is greater than rebind timer
@@ -178,6 +179,7 @@ def test_subnet_and_timers_renew_greater_4():
 
 
 @pytest.mark.v6
+@pytest.mark.disabled  # #505 will not be fixed
 def test_subnet_and_timers_renew_greater_6():
     # change both renew and rebind timers on different levels (global and subnet)
     # and check that if renew timer is greater than rebind timer

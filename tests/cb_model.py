@@ -131,7 +131,8 @@ CONFIG_DEFAULTS['v4'] = {
     'echo-client-id': True,
     'match-client-id': True,
     'next-server': '0.0.0.0',
-    'reservation-mode': 'all',
+    'reservation-mode': 'all',  # deprecated in 1.9.1, replaced by reservations-global, reservations-in-subnet and reservations-out-of-pool
+    'reservations-in-subnet': True,
     't1-percent': 0.5,
     't2-percent': 0.875,
     'valid-lifetime': 7200,
@@ -142,7 +143,8 @@ CONFIG_DEFAULTS['v6'] = {
     "mac-sources": ["any"],
     'preferred-lifetime': 3600,
     'relay-supplied-options': ["65"],
-    "reservation-mode": "all",
+    "reservation-mode": "all",  # deprecated in 1.9.1, replaced by reservations-global, reservations-in-subnet and reservations-out-of-pool
+    'reservations-in-subnet': True,
     "server-id": {
         "enterprise-id": 0,
         "htype": 0,
@@ -246,6 +248,30 @@ class ConfigModel(ConfigElem):
         # get config seen by server and compare it with our configuration
         srv_config = get_config()
         my_cfg = self.get_dict()
+
+        # translate old fields to new fields
+        if 'reservation-mode' in my_cfg[dhcp_key]:
+            mode = my_cfg[dhcp_key]['reservation-mode']
+            del my_cfg[dhcp_key]['reservation-mode']
+            if mode == 'all':
+                my_cfg[dhcp_key]['reservations-global'] = False
+                my_cfg[dhcp_key]['reservations-in-subnet'] = True
+                my_cfg[dhcp_key]['reservations-out-of-pool'] = False
+            elif mode == 'out-of-pool':
+                my_cfg[dhcp_key]['reservations-global'] = False
+                my_cfg[dhcp_key]['reservations-in-subnet'] = True
+                my_cfg[dhcp_key]['reservations-out-of-pool'] = True
+            elif mode == 'global':
+                my_cfg[dhcp_key]['reservations-global'] = True
+                my_cfg[dhcp_key]['reservations-in-subnet'] = False
+                my_cfg[dhcp_key]['reservations-out-of-pool'] = False
+            elif mode == 'disabled':
+                my_cfg[dhcp_key]['reservations-global'] = False
+                my_cfg[dhcp_key]['reservations-in-subnet'] = False
+                my_cfg[dhcp_key]['reservations-out-of-pool'] = False
+            else:
+                assert False, "unsupported 'reservation-mode' value in config: '%s'" % mode
+
         # log.info('MY CFG\n%s', pprint.pformat(my_cfg))
         # log.info('KEA CFG\n%s', pprint.pformat(srv_config['Dhcp4']))
         _compare(srv_config[dhcp_key], my_cfg[dhcp_key])
@@ -506,8 +532,8 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  'control-socket', 'host-reservation-identifiers', 'relay',
                  'hostname-char-set', 'statistic-default-sample-count',
                  'multi-threading', 'ip-reservations-unique',
-                 'ddns-use-conflict-resolution', 'reservations-in-subnet',
-                 'reservations-out-of-pool', 'reservations-global']:
+                 'ddns-use-conflict-resolution',
+                 ]:
             # TODO: for now ignore these fields
             continue
         if k in exp_dict:

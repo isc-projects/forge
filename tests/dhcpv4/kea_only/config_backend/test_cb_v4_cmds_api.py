@@ -229,7 +229,10 @@ def test_remote_subnet4_set_reservation_mode_all():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "disabled"
+    assert "reservation-mode" not in response["arguments"]["subnets"][0]   # not anymore since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] == False      # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == False   # new since 1.9.1
+    assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]    # new since 1.9.1
 
 
 def test_remote_subnet4_set_reservation_mode_global():
@@ -251,7 +254,10 @@ def test_remote_subnet4_set_reservation_mode_global():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "global"
+    assert "reservation-mode" not in response["arguments"]["subnets"][0]   # not anymore since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] == True       # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == False   # new since 1.9.1
+    assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]    # new since 1.9.1
 
 
 def test_remote_subnet4_set_reservation_mode_out_pool():
@@ -273,7 +279,10 @@ def test_remote_subnet4_set_reservation_mode_out_pool():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "out-of-pool"
+    assert "reservation-mode" not in response["arguments"]["subnets"][0]            # not anymore since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] == False      # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == True    # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-out-of-pool"] == True  # new since 1.9.1
 
 
 def test_remote_subnet4_set_reservation_mode_disabled():
@@ -293,7 +302,10 @@ def test_remote_subnet4_set_reservation_mode_disabled():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "disabled"
+    assert "reservation-mode" not in response["arguments"]["subnets"][0]           # not anymore since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] == False     # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == False  # new since 1.9.1
+    assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]   # new since 1.9.1
 
 
 def _subnet_set(server_tag=None):
@@ -428,7 +440,10 @@ def test_remote_subnet4_get_by_id():
                                                               "pool": "192.168.50.1-192.168.50.100"}],
                                                    "rebind-timer": 500,
                                                    "relay": {"ip-addresses": ["192.168.5.5"]}, "renew-timer": 200,
-                                                   "reservation-mode": "global", "server-hostname": "name-xyz",
+                                                   # "reservation-mode": "global",  # not anymore since 1.9.1
+                                                   'reservations-global': True,     # new since 1.9.1
+                                                   'reservations-in-subnet': False, # new since 1.9.1
+                                                   "server-hostname": "name-xyz",
                                                    "subnet": "192.168.50.0/24", "valid-lifetime": 1000}]},
                         "result": 0, "text": "IPv4 subnet 2 found."}
 
@@ -503,7 +518,10 @@ def test_remote_subnet4_get_by_prefix():
             "relay": {
                 "ip-addresses": [
                     "192.168.5.5"]},
-            "reservation-mode": "all",
+            # "reservation-mode": "all",  # not anymore since 1.9.1
+            'reservations-global': False,       # new since 1.9.1
+            'reservations-in-subnet': True,     # new since 1.9.1
+            'reservations-out-of-pool': False,  # new since 1.9.1
             "server-hostname": "name-xyz",
             "subnet": "192.168.50.0/24",
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv4 subnet 192.168.50.0/24 found."}
@@ -663,7 +681,10 @@ def test_remote_network4_get_all_values():
     assert response == {"arguments": {"count": 1,
                                       "shared-networks": [{"authoritative": False, "client-class": "abc",
                                                            "rebind-timer": 200, "renew-timer": 100,
-                                                           "valid-lifetime": 300, "reservation-mode": "global",
+                                                           "valid-lifetime": 300,
+                                                           # "reservation-mode": "global",   # not anymore since 1.9.1
+                                                           'reservations-global': True,      # new since 1.9.1
+                                                           'reservations-in-subnet': False,  # new since 1.9.1
                                                            "interface": srv_msg.get_interface(),
                                                            "metadata": {"server-tags": ["abc"]},
                                                            "require-client-classes": ["XYZ"],

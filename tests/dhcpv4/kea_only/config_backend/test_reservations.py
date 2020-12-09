@@ -17,25 +17,15 @@ pytestmark = [pytest.mark.kea_only,
 @pytest.mark.parametrize("initial_reservation_mode", [None, 'all', 'out-of-pool', 'global', 'disabled'])
 def test_reservation_mode_override_init(initial_reservation_mode, dhcp_version):
     # set initial reservation-mode
-    cfg, received_cfg = setup_server_for_config_backend_cmds(reservation_mode=initial_reservation_mode,
+    cfg, _ = setup_server_for_config_backend_cmds(reservation_mode=initial_reservation_mode,
                                                              check_config=True)
-    if initial_reservation_mode is None:
-        exp_reservation_mode = 'all'
-    else:
-        exp_reservation_mode = initial_reservation_mode
-
-    dhcp_key = 'Dhcp%s' % dhcp_version[1]
-
-    # check if initial reservation-mode is set
-    assert received_cfg[dhcp_key]['reservation-mode'] == exp_reservation_mode
 
     # change reservation-mode to disabled or global and check it
     if initial_reservation_mode == 'disabled':
         exp_reservation_mode = 'global'
     else:
         exp_reservation_mode = 'disabled'
-    received_cfg = cfg.set_global_parameter(reservation_mode=exp_reservation_mode)
-    assert received_cfg[dhcp_key]['reservation-mode'] == exp_reservation_mode
+    cfg.set_global_parameter(reservation_mode=exp_reservation_mode)
 
 
 def test_reservation_mode_in_globals(dhcp_version):
