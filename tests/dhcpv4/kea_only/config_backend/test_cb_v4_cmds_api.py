@@ -440,9 +440,9 @@ def test_remote_subnet4_get_by_id():
                                                               "pool": "192.168.50.1-192.168.50.100"}],
                                                    "rebind-timer": 500,
                                                    "relay": {"ip-addresses": ["192.168.5.5"]}, "renew-timer": 200,
-                                                   # "reservation-mode": "global",  # not anymore since 1.9.1
-                                                   'reservations-global': True,     # new since 1.9.1
-                                                   'reservations-in-subnet': False, # new since 1.9.1
+                                                   # "reservation-mode": "global",   # not anymore since 1.9.1
+                                                   'reservations-global': True,      # new since 1.9.1
+                                                   'reservations-in-subnet': False,  # new since 1.9.1
                                                    "server-hostname": "name-xyz",
                                                    "subnet": "192.168.50.0/24", "valid-lifetime": 1000}]},
                         "result": 0, "text": "IPv4 subnet 2 found."}
