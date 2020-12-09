@@ -230,8 +230,8 @@ def test_remote_subnet4_set_reservation_mode_all():
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert "reservation-mode" not in response["arguments"]["subnets"][0]   # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] == False      # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == False   # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] is False      # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is False   # new since 1.9.1
     assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]    # new since 1.9.1
 
 
@@ -255,8 +255,8 @@ def test_remote_subnet4_set_reservation_mode_global():
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert "reservation-mode" not in response["arguments"]["subnets"][0]   # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] == True       # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == False   # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] is True       # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is False   # new since 1.9.1
     assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]    # new since 1.9.1
 
 
@@ -280,9 +280,9 @@ def test_remote_subnet4_set_reservation_mode_out_pool():
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert "reservation-mode" not in response["arguments"]["subnets"][0]            # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] == False      # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == True    # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-out-of-pool"] == True  # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] is False      # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is True    # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-out-of-pool"] is True  # new since 1.9.1
 
 
 def test_remote_subnet4_set_reservation_mode_disabled():
@@ -303,8 +303,8 @@ def test_remote_subnet4_set_reservation_mode_disabled():
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert "reservation-mode" not in response["arguments"]["subnets"][0]           # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] == False     # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] == False  # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-global"] is False     # new since 1.9.1
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is False  # new since 1.9.1
     assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]   # new since 1.9.1
 
 
