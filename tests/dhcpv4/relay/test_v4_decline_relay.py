@@ -13,9 +13,11 @@ import srv_control
 @pytest.mark.relay
 @pytest.mark.decline
 def test_v4_relay_decline_success():
+    # check if DECLINE works when sent over relay
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.set_conf_parameter_global('decline-probation-period', 2)
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
@@ -54,6 +56,9 @@ def test_v4_relay_decline_success():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
+
+    # wait probation period
+    srv_msg.forge_sleep(2, 'seconds')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'giaddr', '$(GIADDR4)')
