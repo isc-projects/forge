@@ -11,9 +11,11 @@ import srv_msg
 
 @pytest.mark.v4
 @pytest.mark.request
-def test_v4_request_selecting_success_chaddr():
+@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+def test_v4_request_selecting_success_chaddr(backend):
 
     misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -39,13 +41,16 @@ def test_v4_request_selecting_success_chaddr():
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
 
 
 @pytest.mark.v4
 @pytest.mark.request
-def test_v4_request_selecting_success_chaddr_multiple_pools():
+@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+def test_v4_request_selecting_success_chaddr_multiple_pools(backend):
 
     misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.new_pool('192.168.50.2-192.168.50.2', 0)
     srv_control.new_pool('192.168.50.3-192.168.50.3', 0)
@@ -75,6 +80,7 @@ def test_v4_request_selecting_success_chaddr_multiple_pools():
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
@@ -99,6 +105,7 @@ def test_v4_request_selecting_success_chaddr_multiple_pools():
     srv_msg.response_check_content('yiaddr', '192.168.50.2')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
@@ -123,6 +130,7 @@ def test_v4_request_selecting_success_chaddr_multiple_pools():
     srv_msg.response_check_content('yiaddr', '192.168.50.3')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
 
 
 @pytest.mark.v4
@@ -171,9 +179,11 @@ def test_v4_request_selecting_success_chaddr_empty_pool():
 
 @pytest.mark.v4
 @pytest.mark.request
-def test_v4_request_selecting_success_client_id():
+@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+def test_v4_request_selecting_success_client_id(backend):
 
     misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
@@ -209,6 +219,7 @@ def test_v4_request_selecting_success_client_id():
     srv_msg.response_check_include_option(61)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(61, 'value', '00010203040506')
+    srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
 
 
 @pytest.mark.v4
