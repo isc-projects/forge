@@ -297,6 +297,8 @@ def enable_db_backend_reservation(db_type):
     elif db_type == 'Cassandra':
         cql_reservation.enable_db_backend_reservation()
         cql_reservation.clear_all_reservations()
+    elif db_type == "memfile":
+        pass
     else:
         assert False, "Database type not recognised."
 

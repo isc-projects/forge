@@ -602,7 +602,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
                 assert False, "Lease do NOT contain lease: %s" % json.dumps(lease)
             # TODO write check if there is more than one entry of the same type
 
-    elif backend in ['mysql', 'postgresql']:
+    elif backend.lower() in ['mysql', 'postgresql', 'pgsql']:
         for lease in leases_list:
             if world.f_cfg.proto == 'v4':
                 table = 'lease4'

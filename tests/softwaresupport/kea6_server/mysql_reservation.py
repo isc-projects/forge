@@ -278,7 +278,7 @@ def clear_all_reservations():
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user
     db_passwd = world.f_cfg.db_passwd
-    command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6;' \
+    command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts;' \
               ' do mysql -u {db_user} -p{db_passwd} -e "SET foreign_key_checks = 0;' \
               ' delete from $table_name" {db_name}; done'.format(**locals())
     fabric_run_command(command)
