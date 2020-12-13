@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
-import sys
+import codecs
 import logging
 from random import randint
 
@@ -236,8 +236,7 @@ def client_copy_option(opt_name):
 
 
 def convert_MAC(mac):
-    # convert MAC address to hex representation
-    return mac.replace(':', '').decode('hex')
+    return codecs.decode(mac.replace(":", ""), 'hex')
 
 
 def start_fuzzing():  # time_period, time_units):
@@ -246,14 +245,7 @@ def start_fuzzing():  # time_period, time_units):
 
 def build_msg(opts):
     conf.checkIPaddr = False
-    msg_flag = 0
-    import sys
-    if sys.platform != "darwin":
-        fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
-    else:
-        # TODO fix this for MAC OS, this is temporary quick fix just for my local system
-        hw = convert_MAC("0a:00:27:00:00:00")
-    tmp_hw = None
+    fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
 
     # we need to choose if we want to use chaddr, or client id.
     # also we can include both: client_id and chaddr
@@ -454,6 +446,9 @@ def response_check_option_content(opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
+
+    if isinstance(received[1], bytes):
+        received=(received[0], received[1].decode('utf-8'))
 
     # FQDN is being parsed different way because of scapy imperfections
     if opt_code == 81:

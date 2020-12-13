@@ -32,7 +32,7 @@ def test_auto_reload_1second(dhcp_version):
     # now check if there is a subnet in config
     new_cfg = get_config()
     assert len(new_cfg[dhcp_key][subnet_key]) == 1
-    assert new_cfg[dhcp_key][subnet_key][0]['subnet'] == cfg.subnets.keys()[0]
+    assert new_cfg[dhcp_key][subnet_key][0]['subnet'] == list(cfg.subnets.keys())[0]
 
     # there is subnet so getting address should succeed
     get_address()
