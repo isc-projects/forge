@@ -407,7 +407,7 @@ def test_v6_host_reservation_pgsql_conflicts_reconfigure_server_with_reservation
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'validlft', 0)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
-    srv_msg.response_check_suboption_content(5, 3, 'validlft', 197)
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 107)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::3')
 
     misc.test_procedure()
