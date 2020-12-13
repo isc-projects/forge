@@ -344,7 +344,7 @@ class ConfigModel(ConfigElem):
             network = list(self.shared_networks.values())[0]
         else:
             network = None
-            for n in list(self.shared_networks.values()):
+            for n in self.shared_networks.values():
                 if n['name'] == kwargs['network']:
                     network = n
             if network is None:
@@ -462,7 +462,7 @@ class ConfigModel(ConfigElem):
             subnet = list(self.subnets.values())[0]
         else:
             subnet = None
-            for sn in list(self.subnets.values()):
+            for sn in self.subnets.values():
                 if sn['subnet'] == kwargs['subnet']:
                     subnet = sn
             if subnet is None:
@@ -475,13 +475,13 @@ class ConfigModel(ConfigElem):
         # find subnet
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
-            print(self.subnets)
-            print(self.subnets.keys())
-            print(self.subnets.values())
+            print  (self.subnets)
+            print  (self.subnets.keys())
+            print  (self.subnets.values())
             subnet = list(self.subnets.values())[0]
         else:
             subnet = None
-            for sn in list(self.subnets.values()):
+            for sn in self.subnets.values():
                 if sn['subnet'] == kwargs['subnet']:
                     subnet = sn
             if subnet is None:
@@ -494,7 +494,7 @@ class ConfigModel(ConfigElem):
 
     def get_subnets(self, network=None):
         subnets = []
-        for sn in list(self.subnets.values()):
+        for sn in self.subnets.values():
             if (network is not None and sn.cfg['shared-network-name'] == network) or network is None:
                 subnets.append(sn)
         return subnets

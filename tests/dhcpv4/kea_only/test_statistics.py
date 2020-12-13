@@ -10,7 +10,7 @@ import misc
 import srv_control
 
 
-class StatsState4:
+class StatsState4():
     def __init__(self):
         self.s = {}
         self.s["declined-addresses"] = 0
