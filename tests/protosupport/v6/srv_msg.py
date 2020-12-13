@@ -421,8 +421,8 @@ def client_add_saved_option(erase, count="all"):
             if erase:
                 world.savedmsg = {}
     else:
-        if not world.savedmsg.has_key(count):
-            assert False, "There is no set no. {count} in saved opotions".format(**locals())
+        if count not in world.savedmsg:
+            assert False, "There is no set no. {count} in saved options".format(**locals())
 
         for each in world.savedmsg[count]:
             world.cliopts.append(each)
@@ -912,7 +912,10 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
         if type(tmp_field) is list:
             received.append(",".join(tmp_field))
         else:
-            received.append(str(tmp_field))
+            if isinstance(tmp_field, bytes):
+                received.append(tmp_field.decode('utf-8'))
+            else:
+                received.append(str(tmp_field))
 
     opt_descr = _get_opt_descr(opt_code)
 
@@ -968,8 +971,10 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                 if type(tmp_field) is list:
                     received.append(",".join(tmp_field))
                 else:
-                    received.append(str(tmp_field))
-
+                    if isinstance(tmp_field, bytes):
+                        received.append(tmp_field.decode('utf-8'))
+                    else:
+                        received.append(str(tmp_field))
         # test if expected option/suboption/value is in all collected options/suboptions/values
         if received[0] == 'None':
             assert False, "Within option " + opt_descr + " there is no " + initial_data_type\

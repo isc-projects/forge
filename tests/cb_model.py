@@ -286,7 +286,7 @@ class ConfigModel(ConfigElem):
                 if param in self.cfg:
                     del self.cfg[param]
             if param == "server_tags":
-                del kwargs["server_tags"]
+                # del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
             else:
@@ -316,7 +316,7 @@ class ConfigModel(ConfigElem):
                 val = _to_list(val)
             if param == "server_tags":
                 server_tags = _to_list(val)
-                del kwargs["server_tags"]
+                # del kwargs["server_tags"]
                 continue
 
             param = param.replace('_', '-')
@@ -341,7 +341,7 @@ class ConfigModel(ConfigElem):
         # find network
         if 'network' not in kwargs:
             assert len(self.shared_networks) == 1
-            network = self.shared_networks.values()[0]
+            network = list(self.shared_networks.values())[0]
         else:
             network = None
             for n in self.shared_networks.values():
@@ -369,7 +369,7 @@ class ConfigModel(ConfigElem):
                 continue
             if param == "server_tags":
                 server_tags = val
-                del kwargs["server_tags"]
+                # del kwargs["server_tags"]
                 server_tags = _to_list(server_tags)
                 continue
             param = param.replace('_', '-')
@@ -393,7 +393,7 @@ class ConfigModel(ConfigElem):
                 continue
             if param == "server_tags":
                 server_tags = _to_list(val)
-                del kwargs["server_tags"]
+                # del kwargs["server_tags"]
                 continue
             param = param.replace('_', '-')
             option[param] = val
@@ -430,8 +430,8 @@ class ConfigModel(ConfigElem):
             if param == 'option_data':
                 val = _to_list(val)
             if param == "server_tags":
-                server_tags = val
-                del kwargs["server_tags"]
+                # server_tags = val
+                # del kwargs["server_tags"] this is blowing up in python3
                 server_tags = _to_list(val)
                 continue
             param = param.replace('_', '-')
@@ -439,6 +439,9 @@ class ConfigModel(ConfigElem):
 
             if param == 'interface-id':
                 del subnet['interface']
+
+        if "server_tags" in kwargs:
+            del kwargs["server_tags"]
 
         # send command
         response = subnet_set(subnet, server_tags=server_tags)
@@ -456,7 +459,7 @@ class ConfigModel(ConfigElem):
         # find subnet
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
-            subnet = self.subnets.values()[0]
+            subnet = list(self.subnets.values())[0]
         else:
             subnet = None
             for sn in self.subnets.values():
@@ -472,7 +475,10 @@ class ConfigModel(ConfigElem):
         # find subnet
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
-            subnet = self.subnets.values()[0]
+            print  (self.subnets)
+            print  (self.subnets.keys())
+            print  (self.subnets.values())
+            subnet = list(self.subnets.values())[0]
         else:
             subnet = None
             for sn in self.subnets.values():

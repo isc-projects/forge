@@ -56,17 +56,19 @@ def _get_address(duid, fqdn):
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
-    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
-    srv_msg.client_does_include('Client', 'fqdn')
+    if fqdn is not None:
+        srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
+        srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+        srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.response_check_include_option(39)
-    srv_msg.response_check_option_content(39, 'flags', 'S')
-    srv_msg.response_check_option_content(39, 'fqdn', fqdn)
+    if fqdn is not None:
+        srv_msg.response_check_include_option(39)
+        srv_msg.response_check_option_content(39, 'flags', 'S')
+        srv_msg.response_check_option_content(39, 'fqdn', fqdn)
 
 
 def _get_address_and_update_ddns(duid=None, fqdn=None, address=None, arpa=None):
@@ -297,8 +299,10 @@ def test_ddns6_all_levels_resend_without_ddns():
     _check_fqdn_record("some.abc.example.com.", expect='empty')
     _check_fqdn_record("record.xyz.example.com.", expect='empty')
 
-    response = _resend_ddns('2001:db8:b::1', exp_result=3)
-    assert response["text"] == "No lease found for: 2001:db8:b::1"
+    response = _resend_ddns('2001:db8:c::1', exp_result=3)
+    assert response["text"] == "No lease found for: 2001:db8:c::1"
+    response = _resend_ddns('2001:db8:b::1', exp_result=1)
+    assert response["text"] == "Lease for: 2001:db8:b::1, has no hostname, nothing to update"
     response = _resend_ddns('2001:db8:a::1', exp_result=0)
     assert response["text"] == "NCR generated for: 2001:db8:a::1, hostname: sth6.six.example.com."
 

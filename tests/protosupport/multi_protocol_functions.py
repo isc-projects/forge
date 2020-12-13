@@ -403,7 +403,7 @@ def substitute_vars(cfg):
     It works as test_define_value but it takes dict as argument that contains whole configuration
     fields instead of one big string."""
     for k, v in cfg.items():
-        if isinstance(v, basestring):
+        if isinstance(v, str):
             cfg[k] = test_define_value(v)[0]
         elif isinstance(v, dict):
             substitute_vars(v)
@@ -413,7 +413,7 @@ def substitute_vars(cfg):
                 if isinstance(lv, dict):
                     substitute_vars(lv)
                     new_list.append(lv)
-                elif isinstance(lv, basestring):
+                elif isinstance(lv, str):
                     new_list.append(test_define_value(lv)[0])
                 else:
                     new_list.append(lv)
