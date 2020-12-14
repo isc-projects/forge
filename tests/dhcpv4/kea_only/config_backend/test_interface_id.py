@@ -46,7 +46,7 @@ def test_interface_id_in_network():
 
     # create a network with specific relay agent interface-id
     network_cfg, _ = cfg.add_network(interface_id='vlan-a')
-    # bug #1058
+    # bug #1058, FIXED
     subnet_cfg, _ = cfg.add_subnet(network=network_cfg, interface='')
 
     # client 1 behind interface-id 'vlan-a' should get a lease

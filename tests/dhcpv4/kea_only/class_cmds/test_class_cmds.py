@@ -318,7 +318,7 @@ def test_negative_wrong_args_6c(class_cmd, dhcp_version):  # pylint: disable=unu
 
 def test_negative_redundant_args_in_list(dhcp_version):  # pylint: disable=unused-argument
     # bug: #253, FIXED
-    # bug: #432
+    # bug: #432, FIXED
     cmd = dict(command='class-list', extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -327,7 +327,7 @@ def test_negative_redundant_args_in_list(dhcp_version):  # pylint: disable=unuse
 
 def test_negative_redundant_args_in_add(dhcp_version):  # pylint: disable=unused-argument
     # bug: #253, FIXED
-    # bug: #432
+    # bug: #432, FIXED
     cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe"}]}, extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -336,7 +336,7 @@ def test_negative_redundant_args_in_add(dhcp_version):  # pylint: disable=unused
 
 def test_negative_redundant_args_in_update(dhcp_version):  # pylint: disable=unused-argument
     # bug: #253, FIXED
-    # bug: #432
+    # bug: #432, FIXED
     cmd = dict(command='class-update', arguments={"client-classes": [{"name": "voip"}]}, extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -346,7 +346,7 @@ def test_negative_redundant_args_in_update(dhcp_version):  # pylint: disable=unu
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
 def test_negative_redundant_args_in_other(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     # bug: #253, FIXED
-    # bug: #432
+    # bug: #432, FIXED
     cmd = dict(command=class_cmd, arguments=dict(name='voip'), extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
@@ -354,7 +354,7 @@ def test_negative_redundant_args_in_other(class_cmd, dhcp_version):  # pylint: d
 
 
 def test_negative_wrong_command_1(dhcp_version):  # pylint: disable=unused-argument
-    # bug: #432
+    # bug: #432, FIXED
     cmd = dict(wrong_command='class-add', arguments={"client-classes": [{"name": "ipxe"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     expected = ("Error during command processing: Invalid answer specified, "
