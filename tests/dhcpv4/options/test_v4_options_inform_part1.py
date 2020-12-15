@@ -542,10 +542,8 @@ def test_v4_options_inform_relay():
     srv_msg.network_variable('source_address', '$(GIADDR4)')
     srv_msg.network_variable('destination_address', '$(SRV4_ADDR)')
     srv_msg.client_sets_value('Client', 'giaddr', '$(GIADDR4)')
-    srv_msg.client_sets_value('Client', 'broadcastBit', 1)
     srv_msg.client_sets_value('Client', 'hops', 1)
     srv_msg.client_requests_option(24)
-    srv_msg.client_sets_value('Client', 'ciaddr', '$(CIADDR)')
     srv_msg.client_send_msg('INFORM')
 
     misc.pass_criteria()
@@ -558,8 +556,10 @@ def test_v4_options_inform_relay():
 @pytest.mark.options
 @pytest.mark.subnet
 @pytest.mark.dhcp_inform
-def test_v4_options_inform_invalid_with_serverid():
-
+def test_v4_options_inform_with_serverid():
+    # RFC state that client MUST NOT include server id in DHCPINFORM, but
+    # does not say what server should do with such message, let's just check
+    # that kea survive such message
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('path-mtu-aging-timeout', '85')
@@ -580,4 +580,6 @@ def test_v4_options_inform_invalid_with_serverid():
     srv_msg.client_send_msg('INFORM')
 
     misc.pass_criteria()
-    srv_msg.send_dont_wait_for_message()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'value', 85)
