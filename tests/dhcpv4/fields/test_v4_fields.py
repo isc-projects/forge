@@ -348,7 +348,7 @@ def test_v4_message_fields_siaddr_correct_nak_configured_local():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
-    srv_msg.response_check_content('siaddr', '192.0.2.234')
+    srv_msg.response_check_content('siaddr', '0.0.0.0')
 
 
 @pytest.mark.v4
@@ -387,4 +387,4 @@ def test_v4_message_fields_siaddr_correct_nak_configured_global():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
-    srv_msg.response_check_content('siaddr', '192.0.2.234')
+    srv_msg.response_check_content('siaddr', '0.0.0.0')
