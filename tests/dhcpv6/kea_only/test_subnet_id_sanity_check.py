@@ -726,6 +726,7 @@ def test_v6_sanity_check_subnet_id_del():
                                      exp_result=3)
 
     # old lease should not be present in the lease file
+    # bug: #1618
     srv_msg.lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.lease_file_doesnt_contain('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
     # new one should be in the lease file
