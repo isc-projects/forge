@@ -663,6 +663,11 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
+    # lease should be available via lease6-get
+    resp = srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-get","arguments":{"ip-address": "2001:db8::1"}}')
+    assert resp['arguments']['subnet-id'] == 666
+
+    # it should be in lease file as well
     srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
@@ -712,14 +717,20 @@ def test_v6_sanity_check_subnet_id_del():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-get","arguments":{"ip-address": "2001:db8::1"}}')
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-get","arguments":{"subnet-id":666,"identifier-type":"duid", "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01"}}')
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
-    # Pause the Test.
 
-    # File stored in kea-leases6.csv MUST contain line or phrase: 2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22
-    # File stored in kea-leases6.csv MUST contain line or phrase: 999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22
+    # old lease from subnet-id 666 should not be available while new lease from subnet-id 999 should be
+    resp = srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-get","arguments":{"ip-address": "2001:db8::1"}}')
+    assert resp['arguments']['subnet-id'] == 999
+    # explict query for old lease should return error
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-get","arguments":{"subnet-id":666,"identifier-type":"duid", "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01"}}',
+                                     exp_result=3)
+
+    # old lease should not be present in the lease file
+    srv_msg.lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.lease_file_doesnt_contain('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    # new one should be in the lease file
+    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
+    srv_msg.lease_file_contains('999,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:22,0')
 
 
 @pytest.mark.v6
