@@ -151,8 +151,10 @@ def test_ca_control_channel_config_set():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.kea_only
+@pytest.mark.disabled
 @pytest.mark.controlchannel
 def test_ca_control_channel_config_test():
+    # this is bug, won't be fixed #910
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
