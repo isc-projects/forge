@@ -1652,26 +1652,29 @@ def test_remote_global_option6_global_get_missing_option():
 
 
 def test_remote_global_option6_global_get_csv_false():
-    cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
-                                                               "server-tags": ["abc"],
-                                                               "options": [{"code": 22,
-                                                                            "data": "C0000301C0000302",
-                                                                            "always-send": True,
-                                                                            "csv-format": False}]})
+    cmd = dict(command="remote-option6-global-set",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "options": [{"code": 22,
+                                       # in data: 1 IPv6 address encoded as 16 octets
+                                       "data": "C0000301C00003020a0b0c0d0e0f0807",
+                                       "always-send": True,
+                                       "csv-format": False}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"result": 0, "text": "DHCPv6 option successfully set.",
-                        "arguments": {"options": [{"code": 7, "space": "dhcp6"}]}}
+                        "arguments": {"options": [{"code": 22, "space": "dhcp6"}]}}
 
-    cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": "mysql"},
-                                                               "server-tags": ["abc"],
-                                                               "options": [{"code": 22}]})
+    cmd = dict(command="remote-option6-global-get",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "options": [{"code": 22}]})
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1, "options": [{"always-send": True, "code": 22, "csv-format": False,
-                                                               "data": "C0000301C0000302",
+                                                               "data": "C0000301C00003020A0B0C0D0E0F0807",
                                                                "metadata": {"server-tags": ["abc"]},
                                                                "name": "sip-server-addr", "space": "dhcp6"}]},
-                        "result": 0, "text": "DHCPv6 option 6 in 'dhcp6' found."}
+                        "result": 0, "text": "DHCPv6 option 22 in 'dhcp6' found."}
 
 
 def test_remote_global_option6_global_get_all():
