@@ -17,7 +17,7 @@ def _send_cmd(cmd, extra_param=None, exp_result=0):
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result, channel='socket')
 
 
-def _get_address(duid, address, ia_id, ia_pd=None, fqdn=None, flags='S'):
+def _get_address(duid, address, ia_id, ia_pd=None, fqdn=None, expected_flag='S'):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
@@ -62,7 +62,7 @@ def _get_address(duid, address, ia_id, ia_pd=None, fqdn=None, flags='S'):
     srv_msg.response_check_suboption_content(5, 3, 'addr', address)
     if fqdn is not None:
         srv_msg.response_check_include_option(39)
-        srv_msg.response_check_option_content(39, 'flags', flags)
+        srv_msg.response_check_option_content(39, 'flags', expected_flag)
         srv_msg.response_check_option_content(39, 'fqdn', fqdn)
 
 
@@ -103,7 +103,8 @@ def test_control_channel_lease6_get_by():
     _get_address("00:03:00:01:08:08:08:08:08:08", "2001:db8:a::5", ia_id=5, fqdn="six.hostname.com.")
     _get_address("00:03:00:01:09:09:09:09:09:09", "2001:db8:a::6", ia_pd=1, ia_id=6)
     _get_address("00:03:00:01:10:10:10:10:10:10", "2001:db8:b::10", ia_id=10)
-    _get_address("00:03:00:01:11:11:11:11:11:11", "2001:db8:b::11", fqdn="xyz.com.", ia_id=11, flags='ON')
+    _get_address("00:03:00:01:11:11:11:11:11:11", "2001:db8:b::11", fqdn="xyz.com.",
+                 ia_id=11, expected_flag='ON')
 
     by_id_1 = _send_cmd("lease6-get-by-duid", extra_param={"duid": "00:03:00:01:08:08:08:08:08:08"})
     del by_id_1["arguments"]["leases"][0]["cltt"]

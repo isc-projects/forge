@@ -2174,7 +2174,14 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
 @pytest.mark.sharednetworks
 @pytest.mark.sharedsubnets
 @pytest.mark.kea_only
-def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classification():
+def test_v6_sharednetworks_classification_with_defined_option():
+    # we discussed classification on numerous occasions. This is actually working
+    # as designed, I don't like this design, I still don't know why option defined
+    # in shared-network should takes precedence before option defined in class and
+    # it's only one level which does this (option in class takes precedence against
+    # option defined globally, subnet and pool).
+
+    # I gave up, I'm changing this test to reflect kea current operation.
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -2205,7 +2212,117 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
                                                  0)
 
     srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.start_srv('DHCP', 'started')
 
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:f1')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:b::1')
+
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:f1')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:b::1')
+
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:f2')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:c::1')
+
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:f2')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:c::1')
+
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1')
+
+    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1')
+    srv_msg.lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2')
+
+
+@pytest.mark.v6
+@pytest.mark.sharednetworks
+@pytest.mark.sharedsubnets
+@pytest.mark.kea_only
+def test_v6_sharednetworks_classification_without_defined_option():
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
+                                                       '2001:db8:b::1-2001:db8:b::10')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
+                                                       '2001:db8:c::1-2001:db8:c::10')
+
+    srv_control.create_new_class('Client_f2f1')
+    srv_control.add_test_to_class(1, 'test', 'substring(option[1].hex,8,2) == 0xf2f1')
+    srv_control.add_option_to_defined_class(1, 'dns-servers', '2001:db8::666')
+    srv_control.config_client_classification(1, 'Client_f2f1')
+
+    srv_control.create_new_class('Client_f2f2')
+    srv_control.add_test_to_class(2, 'test', 'substring(option[1].hex,8,2) == 0xf2f2')
+    srv_control.config_client_classification(2, 'Client_f2f2')
+
+    srv_control.create_new_class('Client_f2f0')
+    srv_control.add_test_to_class(3, 'test', 'substring(option[1].hex,8,2) == 0xf299')
+    srv_control.config_client_classification(0, 'Client_f2f0')
+
+    srv_control.shared_subnet('2001:db8:a::/64', 0)
+    srv_control.shared_subnet('2001:db8:b::/64', 0)
+    srv_control.shared_subnet('2001:db8:c::/64', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+    srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2260,8 +2377,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:c::1')
 
-    srv_msg.response_check_include_option(23)
-    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1')
+    srv_msg.response_check_include_option(23, expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:f2')
@@ -2279,8 +2395,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:c::1')
 
-    srv_msg.response_check_include_option(23)
-    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1')
+    srv_msg.response_check_include_option(23, expect_include=False)
 
     srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1')
     srv_msg.lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2')

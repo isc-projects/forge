@@ -299,10 +299,8 @@ def test_ddns6_all_levels_resend_without_ddns():
     _check_fqdn_record("some.abc.example.com.", expect='empty')
     _check_fqdn_record("record.xyz.example.com.", expect='empty')
 
-    response = _resend_ddns('2001:db8:c::1', exp_result=3)
-    assert response["text"] == "No lease found for: 2001:db8:c::1"
     response = _resend_ddns('2001:db8:b::1', exp_result=1)
-    assert response["text"] == "Lease for: 2001:db8:b::1, has no hostname, nothing to update"
+    assert response["text"] == 'Lease for: 2001:db8:b::1, has no hostname, nothing to update'
     response = _resend_ddns('2001:db8:a::1', exp_result=0)
     assert response["text"] == "NCR generated for: 2001:db8:a::1, hostname: sth6.six.example.com."
 

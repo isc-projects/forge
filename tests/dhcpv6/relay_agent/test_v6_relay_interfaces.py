@@ -8,6 +8,7 @@ import srv_control
 import misc
 import srv_msg
 import references
+from forge_cfg import world
 
 
 @pytest.mark.v6
@@ -17,9 +18,9 @@ def test_v6_relay_interface_local_and_relay_interface_in_the_same_subnet():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
-    srv_control.add_line_to_subnet(0, {"relay": {"ip-address": "3000::1005"}})
-    srv_control.add_line_to_subnet(0, {"interface": "$(SERVER_IFACE)"})
-    srv_control.set_conf_parameter_subnet('interface-id', 'abc', 0)
+    world.dhcp_cfg["subnet6"][0].update({"interface-id": "abc",
+                                         "interface": '$(SERVER_IFACE)',
+                                         "relay": {"ip-address": "3000::1005"}})
     srv_control.build_and_send_config_files('SSH', 'config-file')
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
