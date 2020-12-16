@@ -147,8 +147,11 @@ def test_flex_options_supersede_domain_csv_false():
     srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')
     srv_control.add_hooks('libdhcp_flex_option.so')
 
+    # domain name in raw format must be encoded according to:
+    # https://tools.ietf.org/html/rfc1035#section-3.1
+    # so 046e7470320a6e6f746578616d706c6503636f6d00 = ntp2.notexample.com
     h_param = {"options": [{"code": 30,
-                            "supersede": "ifelse(relay6[0].peeraddr == 3000::1005, 0x6e7470322e6e6f746578616d706c652e636f6d,'')",
+                            "supersede": "ifelse(relay6[0].peeraddr == 3000::1005, 0x046e7470320a6e6f746578616d706c6503636f6d00,'')",
                             "csv-format": False}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
