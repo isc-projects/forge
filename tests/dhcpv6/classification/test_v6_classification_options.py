@@ -498,6 +498,7 @@ def test_v6_client_classification_shared_subnet_options_override():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(23)
+    # the way this test worked previously
     # srv_msg.response_check_option_content(23, 'addresses', '2001:db8::888')
     # srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1', expect_include=False)
     srv_msg.response_check_option_content(23, 'addresses', '2001:db8::888', expect_include=False)
