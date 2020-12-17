@@ -268,7 +268,9 @@ def test_remote_subnet6_get_all_values():
                 "delegated-len": 91,
                 "prefix": "2001:db8:2::",
                 "prefix-len": 90}],
-            "reservation-mode": "all",
+            "reservations-global": False,
+            "reservations-in-subnet": True,
+            "reservations-out-of-pool": False,
             "subnet": "2001:db8:1::/64",
             "rebind-timer": 500,
             "renew-timer": 200,
@@ -277,13 +279,13 @@ def test_remote_subnet6_get_all_values():
 
 
 # reservation-mode is integer in db, so we need to check if it's converted correctly
-def test_remote_subnet6_set_reservation_mode_all():
+def test_remote_subnet6_set_reservation_mode_all_old():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
-                                                                     "reservation-mode": "disabled",
+                                                                     "reservation-mode": "all",
                                                                      "pools": [
                                                                          {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -295,10 +297,38 @@ def test_remote_subnet6_set_reservation_mode_all():
                                                                   "subnets": [{"subnet": "2001:db8:1::/64"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "disabled"
+    assert response["arguments"]["subnets"][0]["reservations-global"] is False
+    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is True
+    assert response["arguments"]["subnets"][0]["reservations-out-of-pool"] is False
 
 
-def test_remote_subnet6_set_reservation_mode_global():
+def test_remote_subnet6_set_reservation_mode_all_new():
+    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "shared-network-name": "",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": True,
+                                                                     "pools": [
+                                                                         {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
+                        "result": 0, "text": "IPv6 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet6-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "2001:db8:1::/64"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is True
+    if "reservations-out-of-pool" in subnet:
+        assert subnet["reservations-out-of-pool"] is False
+
+
+def test_remote_subnet6_set_reservation_mode_global_old():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
@@ -316,10 +346,41 @@ def test_remote_subnet6_set_reservation_mode_global():
                                                                   "subnets": [{"subnet": "2001:db8:1::/64"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "global"
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is True
+    assert subnet["reservations-in-subnet"] is False
+    if "reservations-out-of-pool" in subnet:
+        assert subnet["reservations-out-of-pool"] is False
 
 
-def test_remote_subnet6_set_reservation_mode_out_pool():
+def test_remote_subnet6_set_reservation_mode_global_new():
+    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "shared-network-name": "",
+                                                                     "reservations-global": True,
+                                                                     "reservations-in-subnet": False,
+                                                                     "reservations-out-of-pool": False,
+                                                                     "pools": [
+                                                                         {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
+                        "result": 0, "text": "IPv6 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet6-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "2001:db8:1::/64"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is True
+    assert subnet["reservations-in-subnet"] is False
+    if "reservations-out-of-pool" in subnet:
+        assert subnet["reservations-out-of-pool"] is False
+
+
+def test_remote_subnet6_set_reservation_mode_out_pool_old():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
@@ -337,10 +398,39 @@ def test_remote_subnet6_set_reservation_mode_out_pool():
                                                                   "subnets": [{"subnet": "2001:db8:1::/64"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "out-of-pool"
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is True
+    assert subnet["reservations-out-of-pool"] is True
 
 
-def test_remote_subnet6_set_reservation_mode_disabled():
+def test_remote_subnet6_set_reservation_mode_out_pool_new():
+    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "shared-network-name": "",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": True,
+                                                                     "reservations-out-of-pool": True,
+                                                                     "pools": [
+                                                                         {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
+                        "result": 0, "text": "IPv6 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet6-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "2001:db8:1::/64"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is True
+    assert subnet["reservations-out-of-pool"] is True
+
+
+def test_remote_subnet6_set_reservation_mode_disabled_old():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
@@ -356,7 +446,36 @@ def test_remote_subnet6_set_reservation_mode_disabled():
                                                                   "subnets": [{"subnet": "2001:db8:1::/64"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservation-mode"] == "disabled"
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is False
+    if "reservations-out-of-pool" in subnet:
+        assert subnet["reservations-out-of-pool"] is False
+
+
+def test_remote_subnet6_set_reservation_mode_disabled_new():
+    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
+                                                                     "shared-network-name": "",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": False,
+                                                                     "reservations-out-of-pool": False}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
+                        "result": 0, "text": "IPv6 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet6-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "2001:db8:1::/64"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is False
+    if "reservations-out-of-pool" in subnet:
+        assert subnet["reservations-out-of-pool"] is False
 
 
 def _subnet_set():
@@ -473,7 +592,8 @@ def test_remote_subnet6_get_by_id():
                                                                                "space": "dhcp6"}],
                                                               "pool": "2001:db8:1::1-2001:db8:1::10"}],
                                                    "rebind-timer": 500, "renew-timer": 200,
-                                                   "reservation-mode": "global",
+                                                   "reservations-global": True,
+                                                   "reservations-in-subnet": False,
                                                    "pd-pools": [],
                                                    "relay": {"ip-addresses": []},
                                                    "subnet": "2001:db8:1::/64", "valid-lifetime": 1000}]},
@@ -534,7 +654,9 @@ def test_remote_subnet6_get_by_prefix():
             "pools": [{
                 "option-data": [],
                 "pool": "2001:db8:1::1-2001:db8:1::10"}],
-            "reservation-mode": "all",
+            "reservations-global": False,
+            "reservations-in-subnet": True,
+            "reservations-out-of-pool": False,
             "pd-pools": [],
             "relay": {"ip-addresses": []},
             "subnet": "2001:db8:1::/64",
@@ -694,7 +816,9 @@ def test_remote_network6_get_all_values():
     assert response == {"arguments": {"count": 1,
                                       "shared-networks": [{"client-class": "abc",
                                                            "rebind-timer": 200, "renew-timer": 100,
-                                                           "valid-lifetime": 300, "reservation-mode": "global",
+                                                           "valid-lifetime": 300,
+                                                           "reservations-global": True,
+                                                           "reservations-in-subnet": False,
                                                            "interface": srv_msg.get_interface(),
                                                            "metadata": {"server-tags": ["abc"]},
                                                            "require-client-classes": ["XYZ"],
