@@ -17,6 +17,7 @@
 
 from locale import str
 import random
+import time
 
 from scapy.all import sr
 from scapy.layers import dns
@@ -111,6 +112,7 @@ def send_wait_for_query(choose_must, expect_include):
         if len(world.srvmsg) == 0 and world.dns_send_query_counter <= world.f_cfg.dns_retry:
             world.dns_send_query_counter += 1
             world.dns_send_query_time_out += 0.5
+            time.sleep(1)
             send_wait_for_query(choose_must, expect_include)
         else:
             assert len(world.srvmsg) != 0, "No response received."
@@ -209,7 +211,6 @@ def check_dns_respond(expect, data_type, expected_data_value):
 
 
 def resend_query(exp, name):
-    world.dns_send_query_counter += 1
     send_wait_for_query('MUST', True)
     check_dns_option(exp, name)
 
