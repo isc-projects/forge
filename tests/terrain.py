@@ -315,7 +315,7 @@ def test_start():
     if kea_under_test:
         # for now let's assume that both systems are the same
         kea.db_setup()
-        if world.f_cfg.mgmt_address_2 is not None:
+        if world.f_cfg.mgmt_address_2:
             kea.db_setup(dest=world.f_cfg.mgmt_address_2)
 
 
