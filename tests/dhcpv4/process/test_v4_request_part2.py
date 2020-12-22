@@ -101,6 +101,7 @@ def test_v4_request_initreboot_fail():
 
 @pytest.mark.v4
 @pytest.mark.request
+@pytest.mark.disabled
 def test_v4_request_initreboot_no_requested_address():
     # do not allocate any address, just go straight without including requested address;
     # the server should respond with NAK
@@ -114,7 +115,7 @@ def test_v4_request_initreboot_no_requested_address():
     srv_msg.client_send_msg('REQUEST')
 
     #  the server should discard it with NAK
-    # bug: #1608
+    # bug: #1608, closed as designed
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')

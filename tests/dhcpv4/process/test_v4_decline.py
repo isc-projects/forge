@@ -122,6 +122,7 @@ def test_v4_decline_success_short_decline_period():
 
 @pytest.mark.v4
 @pytest.mark.decline
+@pytest.mark.disabled
 def test_v4_decline_fail_without_serverid():
     # Send DECLINE for a lease but do not include server id.
     # Such packet should be dropped by the server.
@@ -164,7 +165,7 @@ def test_v4_decline_fail_without_serverid():
     srv_msg.send_dont_wait_for_message()
 
     # if it is dropped by the server then this log should not appear
-    # bug: # 1615
+    # bug: #1615, closed as designed
     srv_msg.log_doesnt_contain(r'The lease will be unavailable for')
 
 
