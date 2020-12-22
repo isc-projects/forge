@@ -623,6 +623,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.subnet_id_sanity_check
+@pytest.mark.disabled
 def test_v6_sanity_check_subnet_id_del():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -726,7 +727,7 @@ def test_v6_sanity_check_subnet_id_del():
                                      exp_result=3)
 
     # old lease should not be present in the lease file
-    # bug: #1618
+    # bug: #1618, closed as designed
     srv_msg.lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.lease_file_doesnt_contain('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
     # new one should be in the lease file
