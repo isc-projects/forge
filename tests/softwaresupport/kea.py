@@ -206,7 +206,7 @@ def add_logger(log_type, severity, severity_level, logging_file=None):
             logging_file = 'kea.log'
         logging_file_path = world.f_cfg.log_join(logging_file)
     else:
-        if logging_file is None:
+        if logging_file is None or logging_file == 'stdout':
             logging_file_path = 'stdout'
         else:
             logging_file_path = world.f_cfg.log_join(logging_file)
