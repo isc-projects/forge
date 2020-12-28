@@ -142,7 +142,7 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def _load_settings(self):
-        for key, default_value in SETTINGS.items():
+        for key, default_value in list(SETTINGS.items()):
             if hasattr(init_all, key):
                 value = getattr(init_all, key)
             else:
@@ -162,11 +162,11 @@ class ForgeConfiguration:
 
     def basic_validation(self):
         if self.software_install_path == "":
-            print ("Configuration failure, software_install_path empty. "
+            print("Configuration failure, software_install_path empty. "
                    "Please use ./forge.py -T to validate configuration.")
             sys.exit(-1)
         if self.mgmt_address == "":
-            print ("Configuration failure, mgmt_address empty. Please use ./forge.py -T to validate configuration.")
+            print("Configuration failure, mgmt_address empty. Please use ./forge.py -T to validate configuration.")
             sys.exit(-1)
 
     def set_env_val(self, env_name, env_val):
@@ -252,7 +252,7 @@ def step(pattern):
         def wrapped_func(*args, **kwargs):
             txt = func.__name__ + '('
             txt_args = ", ".join([_conv_arg_to_txt(a) for a in args])
-            txt_kwargs = ", ".join(['%s=%s' % (str(k), _conv_arg_to_txt(v)) for k, v in kwargs.items()])
+            txt_kwargs = ", ".join(['%s=%s' % (str(k), _conv_arg_to_txt(v)) for k, v in list(kwargs.items())])
             if txt_args:
                 txt += txt_args
                 if txt_kwargs:

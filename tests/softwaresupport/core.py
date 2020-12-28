@@ -30,7 +30,7 @@
 
 
 import copy
-import cPickle
+import pickle
 
 def ParseTokens(char_list):
   """Parses exploded isc named.conf portions.
@@ -177,15 +177,15 @@ def ScrubComments(isc_string):
         striped_line = line.strip()
         chars = enumerate(striped_line)
         while True:
-          i, c = chars.next()
+          i, c = next(chars)
           try:
             if c == '/' and striped_line[i+1] == '*':
               expanded_comment = True
-              chars.next()  # Skipp '*'
+              next(chars)  # Skipp '*'
               continue
             elif c == '*' and striped_line[i+1] == '/':
               expanded_comment = False
-              chars.next()  # Skipp '/'
+              next(chars)  # Skipp '/'
               continue
           except IndexError:
             continue  # We are at the end of the line
@@ -232,7 +232,7 @@ def MakeISC(isc_dict, terminate=True):
     if( type(isc_dict[option]) == bool ):
       isc_list.append('%s%s' % (option, terminator))
     elif( type(isc_dict[option]) == str or
-        type(isc_dict[option]) == unicode):
+        type(isc_dict[option]) == str):
       isc_list.append('%s %s%s' % (option, isc_dict[option], terminator))
     elif( type(isc_dict[option]) == list ):
       new_list = []
@@ -264,7 +264,7 @@ def Serialize(isc_string):
   Outputs:
     serialized_isc: serialized string of isc dict
   """
-  return u'%s' % cPickle.dumps(ParseISCString(isc_string))
+  return '%s' % pickle.dumps(ParseISCString(isc_string))
 
 def Deserialize(serialized_string):
   """Makes an iscpy dict from a serliazed ISC dict
@@ -275,4 +275,4 @@ def Deserialize(serialized_string):
   Outputs:
     deserialized_isc: unserialized dict of serialized isc dict
   """
-  return u'%s' % MakeISC(cPickle.loads(str(serialized_string)))
+  return '%s' % MakeISC(pickle.loads(str(serialized_string)))

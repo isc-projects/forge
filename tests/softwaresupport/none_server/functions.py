@@ -17,7 +17,7 @@
 
 import logging
 
-from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
+from .functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 from protosupport.multi_protocol_functions import test_pause
 
 

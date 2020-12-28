@@ -337,7 +337,7 @@ def change_message_field(message_filed, value, value_type):
     convert_type = {"int": int,
                     "string": str,
                     "str": str,
-                    "unicode": unicode}
+                    "unicode": str}
 
     convert = convert_type[value_type]
     world.message_fields.append([str(message_filed), convert(value)])
@@ -415,7 +415,7 @@ def client_add_saved_option(erase, count="all"):
     Add saved option to message, and erase.
     """
     if count == "all":
-        for each_key in world.savedmsg.keys():
+        for each_key in list(world.savedmsg.keys()):
             for every_opt in world.savedmsg[each_key]:
                 world.cliopts.append(every_opt)
             if erase:
@@ -679,7 +679,7 @@ def get_msg_type(msg):
                  "RELAYREPLY": dhcp6.DHCP6_RelayReply}
 
     # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
-    for msg_name in msg_types.keys():
+    for msg_name in list(msg_types.keys()):
         if type(msg.getlayer(2)) == msg_types[msg_name]:
             return msg_name
 

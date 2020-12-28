@@ -773,8 +773,8 @@ def use_dns_set_number(number):
 
 def print_cfg(service='DHCP'):
     if service.lower() == 'dhcp':
-        print ("DHCP config:")
-        print (json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+        print("DHCP config:")
+        print((json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': '))))
     elif service.lower() == 'ddns':
-        print ("DDNS config:")
-        print (json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+        print("DDNS config:")
+        print((json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': '))))

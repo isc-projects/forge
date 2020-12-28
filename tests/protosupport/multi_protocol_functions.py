@@ -327,16 +327,16 @@ def execute_shell_cmd(path, arguments='', save_results=True, dest=world.f_cfg.mg
             os.makedirs(world.cfg["test_result_dir"])
 
         myfile = open(world.cfg["test_result_dir"] + '/' + file_name, 'w')
-        myfile.write(unicode('Script: ' + path))
+        myfile.write(str('Script: ' + path))
         if arguments == '':
             arguments = "no arguments used!"
-        myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))
+        myfile.write(str('\nwith arguments: ' + arguments + '\n'))
         if result.failed:
-            myfile.write(unicode('\nStatus: FAILED\n'))
+            myfile.write(str('\nStatus: FAILED\n'))
         else:
-            myfile.write(unicode('\nStatus: SUCCEED\n'))
+            myfile.write(str('\nStatus: SUCCEED\n'))
 
-        myfile.write(unicode('\nScript stdout:\n' + result.stdout))
+        myfile.write(str('\nScript stdout:\n' + result.stdout))
         myfile.close()
 
     assert result.succeeded
@@ -363,7 +363,7 @@ def test_define_value(*args):
         try:
             tmp = str(args[i])
         except UnicodeEncodeError:
-            tmp = unicode(args[i])
+            tmp = str(args[i])
         tmp_loop = ""
         while True:
             imported = None
@@ -402,7 +402,7 @@ def substitute_vars(cfg):
     It goes through all fields, arrays etc in dictionary and in any string it substitutes vars.
     It works as test_define_value but it takes dict as argument that contains whole configuration
     fields instead of one big string."""
-    for k, v in cfg.items():
+    for k, v in list(cfg.items()):
         if isinstance(v, str):
             cfg[k] = test_define_value(v)[0]
         elif isinstance(v, dict):
@@ -606,7 +606,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
         for lease in leases_list:
             if world.f_cfg.proto == 'v4':
                 table = 'lease4'
-                cmd = "grep -E -i %s /tmp/db_out | grep -E -i %s | grep -E  -c %s" % ('{:02X}{:02X}{:02X}{:02X}'.format(*map(int, lease["address"].split('.'))),
+                cmd = "grep -E -i %s /tmp/db_out | grep -E -i %s | grep -E  -c %s" % ('{:02X}{:02X}{:02X}{:02X}'.format(*list(map(int, lease["address"].split('.')))),
                                                                                       lease["hwaddr"].replace(":",""),
                                                                                       lease["valid_lifetime"])
             elif world.f_cfg.proto == 'v6':

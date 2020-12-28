@@ -320,16 +320,16 @@ def prepare_cfg_subnet(subnet, pool, eth=None):
         eth = world.f_cfg.server_iface
 
     sub = "subnet%s" % world.proto[1]
-    if sub not in world.dhcp_cfg.keys() and subnet is not "":
+    if sub not in list(world.dhcp_cfg.keys()) and subnet != "":
         world.dhcp_cfg[sub] = [{}]
-    elif sub in world.dhcp_cfg.keys() and subnet is not "":
+    elif sub in list(world.dhcp_cfg.keys()) and subnet != "":
         world.dhcp_cfg[sub].append({})
 
-    if subnet is not "":
+    if subnet != "":
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
                                                          "interface": eth}
-    if pool is not "":
+    if pool != "":
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
     add_interface(eth)
 
@@ -348,14 +348,14 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     # This is weird, it's not used in any test looks like we have some errors because it was used
     # TODO write missing tests using specific interface!
     sub = "subnet%s" % world.proto[1]
-    if sub not in world.dhcp_cfg.keys():
+    if sub not in list(world.dhcp_cfg.keys()):
         world.dhcp_cfg[sub] = [{}]
 
-    if subnet is not "":
+    if subnet != "":
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
                                                          "interface": interface}
-    if pool is not "":
+    if pool != "":
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
 
     add_interface(interface + "/" + address)
@@ -364,7 +364,7 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
 def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
     prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user')
 
-    if "option-def" not in world.dhcp_cfg.keys():
+    if "option-def" not in list(world.dhcp_cfg.keys()):
         world.dhcp_cfg["option-def"] = []
 
     world.dhcp_cfg["option-def"].append({"code": int(opt_code), "name": opt_name,
@@ -373,7 +373,7 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
 
 
 def add_interface(eth):
-    if "interfaces-config" not in world.dhcp_cfg.keys():
+    if "interfaces-config" not in list(world.dhcp_cfg.keys()):
         world.dhcp_cfg["interfaces-config"] = {"interfaces": []}
 
     if eth is not None and eth not in world.dhcp_cfg["interfaces-config"]["interfaces"]:
@@ -545,7 +545,7 @@ def _config_db_backend():
                                             "user": world.f_cfg.db_user,
                                             "password": world.f_cfg.db_passwd}
         if world.f_cfg.db_type in ["cql"]:
-            if "keyspace" not in world.dhcp_cfg["lease-database"].keys():
+            if "keyspace" not in list(world.dhcp_cfg["lease-database"].keys()):
                 world.dhcp_cfg["lease-database"] = {"keyspace": "keatest"}
 
     # set reservations
@@ -558,7 +558,7 @@ def _config_db_backend():
 
         if world.reservation_backend in ["cql"]:
             # if value is not given in the test - use default (backward compatibility)
-            if "keyspace" not in world.dhcp_cfg["hosts-database"].keys():
+            if "keyspace" not in list(world.dhcp_cfg["hosts-database"].keys()):
                 world.dhcp_cfg["hosts-database"] = {"keyspace": "keatest"}
 
 
@@ -573,7 +573,7 @@ def add_hooks(library_path):
 
 
 def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
-    if "parameters" not in world.dhcp_cfg["hooks-libraries"][hook_no-1].keys():
+    if "parameters" not in list(world.dhcp_cfg["hooks-libraries"][hook_no-1].keys()):
         world.dhcp_cfg["hooks-libraries"][hook_no - 1]["parameters"] = {}
     if parameter_value in ["True", "true"]:
         parameter_value = True

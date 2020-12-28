@@ -569,7 +569,7 @@ def _common_keys_to_specific(kwargs):
         'relay_addr': {'v4': 'giaddr', 'v6': 'relay_addr'},
     }
 
-    for k, v in kwargs.items():
+    for k, v in list(kwargs.items()):
         if k in key_map:
             new_key = key_map[k][world.proto]
             new_kwargs[new_key] = v

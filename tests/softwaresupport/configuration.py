@@ -372,7 +372,7 @@ class KeaConfiguration:
 
     def sendconfiguration(self):
         # pass
-        from kea6_server.functions import set_kea_ctrl_config, start_srv
+        from .kea6_server.functions import set_kea_ctrl_config, start_srv
 
         # set_kea_ctrl_config()
         # cfg4 = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'etc/kea/control_socket"}},"Logging":{"loggers":[{"name":"kea-dhcp4","output_options":[{"output":"'+world.f_cfg.software_install_path+'var/log/kea.log"}],"debuglevel":99,"severity":"DEBUG"}]}}'

@@ -64,7 +64,7 @@ class ConfigNetworkModel(ConfigElem):
         return cfg
 
     def update(self, **kwargs):
-        for param, val in kwargs.items():
+        for param, val in list(kwargs.items()):
             param = param.replace('_', '-')
             if val is None:
                 if param in self.cfg:
@@ -100,7 +100,7 @@ class ConfigSubnetModel(ConfigElem):
             pool = kwargs.pop('pool')
             self.cfg['pools'] = [{"pool": pool}]
 
-        for param, val in kwargs.items():
+        for param, val in list(kwargs.items()):
             param = param.replace('_', '-')
             if val is None:
                 if param in self.cfg:
@@ -192,13 +192,13 @@ class ConfigModel(ConfigElem):
         if self.subnets:
             subnets_key = 'subnet' + proto
             cfg[subnets_key] = []
-            for sn in self.subnets.values():
+            for sn in list(self.subnets.values()):
                 if sn.cfg['shared-network-name'] is '':
                     cfg[subnets_key].append(sn.get_dict())
 
         if self.shared_networks:
             cfg['shared-networks'] = []
-            for net in self.shared_networks.values():
+            for net in list(self.shared_networks.values()):
                 cfg['shared-networks'].append(net.get_dict())
 
         if world.f_cfg.install_method == 'make':
@@ -281,7 +281,7 @@ class ConfigModel(ConfigElem):
         # prepare command
         server_tags = None
         parameters = {}
-        for param, val in kwargs.items():
+        for param, val in list(kwargs.items()):
             if val is None:
                 if param in self.cfg:
                     del self.cfg[param]
@@ -309,7 +309,7 @@ class ConfigModel(ConfigElem):
             "name": "floor13",
             "interface": "$(SERVER_IFACE)"}
 
-        for param, val in kwargs.items():
+        for param, val in list(kwargs.items()):
             if val is None:
                 continue
             if param == 'option_data':
@@ -344,7 +344,7 @@ class ConfigModel(ConfigElem):
             network = list(self.shared_networks.values())[0]
         else:
             network = None
-            for n in self.shared_networks.values():
+            for n in list(self.shared_networks.values()):
                 if n['name'] == kwargs['network']:
                     network = n
             if network is None:
@@ -364,7 +364,7 @@ class ConfigModel(ConfigElem):
                   "csv-format": None,
                   "name": None,
                   "space": None}
-        for param, val in kwargs.items():
+        for param, val in list(kwargs.items()):
             if val is None:
                 continue
             if param == "server_tags":
@@ -388,7 +388,7 @@ class ConfigModel(ConfigElem):
     def del_option(self, **kwargs):
         server_tags = None
         option = {"code": 0}
-        for param, val in kwargs.items():
+        for param, val in list(kwargs.items()):
             if val is None:
                 continue
             if param == "server_tags":
@@ -421,7 +421,7 @@ class ConfigModel(ConfigElem):
                        "option-data": _to_list(kwargs.pop('pool_option_data'))
                        if 'pool_option_data' in kwargs else []}]}
 
-        for param, val in kwargs.items():
+        for param, val in list(kwargs.items()):
             if val is None:
                 continue
             if param == 'network':
@@ -462,7 +462,7 @@ class ConfigModel(ConfigElem):
             subnet = list(self.subnets.values())[0]
         else:
             subnet = None
-            for sn in self.subnets.values():
+            for sn in list(self.subnets.values()):
                 if sn['subnet'] == kwargs['subnet']:
                     subnet = sn
             if subnet is None:
@@ -475,13 +475,13 @@ class ConfigModel(ConfigElem):
         # find subnet
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
-            print  (self.subnets)
-            print  (self.subnets.keys())
-            print  (self.subnets.values())
+            print((self.subnets))
+            print((list(self.subnets.keys())))
+            print((list(self.subnets.values())))
             subnet = list(self.subnets.values())[0]
         else:
             subnet = None
-            for sn in self.subnets.values():
+            for sn in list(self.subnets.values()):
                 if sn['subnet'] == kwargs['subnet']:
                     subnet = sn
             if subnet is None:
@@ -494,7 +494,7 @@ class ConfigModel(ConfigElem):
 
     def get_subnets(self, network=None):
         subnets = []
-        for sn in self.subnets.values():
+        for sn in list(self.subnets.values()):
             if (network is not None and sn.cfg['shared-network-name'] == network) or network is None:
                 subnets.append(sn)
         return subnets
@@ -582,7 +582,7 @@ def setup_server(**kwargs):
                 "control-socket": {"socket-type": 'unix',
                                    "socket-name": world.f_cfg.run_join('control_socket')}}
 
-    for param, val in kwargs.items():
+    for param, val in list(kwargs.items()):
         if val is None or param == 'check-config':
             continue
         if param in ['force-reload']:

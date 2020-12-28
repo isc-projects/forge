@@ -159,7 +159,7 @@ def client_does_include(sender_type, opt_type, value):
         if 'E' not in world.cfg["values"]["FQDN_flags"]:
             fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
         else:
-            domain = "".join(map(lambda z: chr(len(z))+z, world.cfg["values"]["FQDN_domain_name"].split('.')))
+            domain = "".join([chr(len(z))+z for z in world.cfg["values"]["FQDN_domain_name"].split('.')])
             fqdn = (flags + '\x00\x00' + domain)
         world.cliopts += [('client_FQDN', fqdn)]
     elif opt_type == 'pxe_client_architecture':
@@ -169,14 +169,14 @@ def client_does_include(sender_type, opt_type, value):
         # code - 94
         world.cliopts += [(opt_type, chr(int(value[0])) + chr(int(value[1])) + chr(int(value[2])))]
     elif opt_type in options_formatted_by_forge:
-        world.cliopts += [(opt_type, "".join(map(lambda z: chr(int(z, 16)), list(value))))]
+        world.cliopts += [(opt_type, "".join([chr(int(z, 16)) for z in list(value)]))]
     elif opt_type in ["vendor_specific_information", "vendor_class"]:
         world.cliopts += [(opt_type, value.decode("hex"))]
     else:
         try:
             world.cliopts += [(opt_type, str(value))]
         except UnicodeEncodeError:
-            world.cliopts += [(opt_type, unicode(value))]
+            world.cliopts += [(opt_type, str(value))]
 
 
 def response_check_content(expect, data_type, expected):
@@ -314,7 +314,7 @@ def get_msg_type(msg):
         return "BOOTP_REPLY"
 
     # opt[1] it's value of message-type option
-    for msg_code in msg_types.keys():
+    for msg_code in list(msg_types.keys()):
         if opt[1] == msg_code:
             return msg_types[msg_code]
 

@@ -39,4 +39,4 @@ def logger_initialize(loglevel):
     # This is the only message that is logged using the 'print' function because we
     # always want to have this message printed. Further log messages should go through
     # the logger.
-    print('Logger has been successfully initialized to %s level' % loglevel.upper())
+    print(('Logger has been successfully initialized to %s level' % loglevel.upper()))
