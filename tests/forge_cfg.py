@@ -130,14 +130,16 @@ class ForgeConfiguration:
         # get client link-local if empty
         if self.cli_link_local == '':
             addrs = netifaces.ifaddresses(self.iface)
-            addrs6 = addrs[netifaces.AF_INET6]
-            for addr in addrs6:
-                addr = addr['addr']
-                if '%' in addr:
-                    addr = addr.split('%')[0]
-                if addr.startswith('fe80'):
-                    self.cli_link_local = addr
-                    break
+            # If interface has IPv6 configured...
+            if netifaces.AF_INET6 in addrs:
+                addrs6 = addrs[netifaces.AF_INET6]
+                for addr in addrs6:
+                    addr = addr['addr']
+                    if '%' in addr:
+                        addr = addr.split('%')[0]
+                    if addr.startswith('fe80'):
+                        self.cli_link_local = addr
+                        break
 
         # used defined variables
         self.user_variables_temp = []
