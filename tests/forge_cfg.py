@@ -121,11 +121,19 @@ class ForgeConfiguration:
         self.gia4_addr = self.giaddr4
         self.software_install_dir = self.software_install_path
 
-        self.cli_mac = self.gethwaddr(self.iface)
+        try:
+            self.cli_mac = self.gethwaddr(self.iface)
+        except:
+            # Print an error message because the raised exception message
+            # itself is too cryptic.
+            print("ERROR: Could not get hardware address from interface '%s'." % self.iface)
+            raise
 
         # get client link-local if empty
         if self.cli_link_local == '':
             addrs = netifaces.ifaddresses(self.iface)
+            if netifaces.AF_INET6 not in addrs:
+                raise Exception("ERROR: IPv6 is required on interface '%s'." % self.iface)
             addrs6 = addrs[netifaces.AF_INET6]
             for addr in addrs6:
                 addr = addr['addr']
