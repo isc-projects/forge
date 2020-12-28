@@ -121,7 +121,11 @@ class ForgeConfiguration:
         self.gia4_addr = self.giaddr4
         self.software_install_dir = self.software_install_path
 
-        self.cli_mac = self.gethwaddr(self.iface)
+        try:
+            self.cli_mac = self.gethwaddr(self.iface)
+        except:
+            print(("ERROR: Could not get address for interface '%s'." % self.iface))
+            raise
 
         # get client link-local if empty
         if self.cli_link_local == '':
