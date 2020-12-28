@@ -6,8 +6,8 @@
 # ssh - for ssh connection between virtual machines
 # kea - for kea configuration
 
-# =======================================
-# =============== GENERAL ===============
+# ==============================================================================
+# ================================== GENERAL ===================================
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
 # case insensitive.
@@ -40,6 +40,9 @@ SRV4_ADDR = ""
 # This specifies relay agent address. Leave this as 0.0.0.0 if you don't want
 # to test relayed traffic.
 REL4_ADDR = "0.0.0.0"
+
+# Client address
+CIADDR = ""
 
 # This is a value client will set giaddr field to. Leave it as 0.0.0.0 if you
 # don't want to test relays
@@ -106,7 +109,7 @@ AUTO_ARCHIVE = False
 SLEEP_TIME_1 = 2  # wait after starting remote server
 SLEEP_TIME_2 = 2  # wait after all others commands
 
-# =============== DATABASE BACKENDS ===============
+# ============================= DATABASE BACKENDS ==============================
 # If server is capable to use different database backends, fill this section
 
 # Backend type:
@@ -125,7 +128,7 @@ DB_PASSWD = ""
 DB_HOST = "localhost"
 
 
-# =============== SSH ===============
+# ==================================== SSH =====================================
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required! So edit sudoers
 # file, or use root account.
@@ -134,7 +137,11 @@ MGMT_ADDRESS = ""
 MGMT_USERNAME = ""
 MGMT_PASSWORD = ""
 
-# =============== DNS ===============
+MGMT_ADDRESS_2 = ""
+MGMT_USERNAME_2 = ""
+MGMT_PASSWORD_2 = ""
+
+# ==================================== DNS =====================================
 # When DNS protocol used to testing.
 
 # Interface on which we are sending DNS queries
