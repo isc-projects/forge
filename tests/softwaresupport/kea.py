@@ -1121,7 +1121,23 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
-    fabric_download_file(world.f_cfg.log_join('kea.log*'),
+    if world.f_cfg.install_method == 'make':
+        log_path = world.f_cfg.log_join('kea.log*')
+    else:
+        if world.server_system == 'redhat':
+            service_name = 'kea-dhcp%s' % world.proto[1]
+        else:
+            service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+        cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
+        cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
+        cmd += ' journalctl -u %s --since $ts > ' % service_name  # get logs since last start of kea service
+        cmd += ' /tmp/kea.log'
+        result = fabric_sudo_command(cmd,
+                                     destination_host=destination_address,
+                                     ignore_errors=True)
+        log_path = '/tmp/kea.log'
+
+    fabric_download_file(log_path,
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                '.',
                                                                destination_address),
