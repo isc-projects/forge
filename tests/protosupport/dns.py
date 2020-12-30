@@ -15,7 +15,6 @@
 
 # Author: Wlodzimierz Wencel
 
-import sys
 from locale import str
 import random
 

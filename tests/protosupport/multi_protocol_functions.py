@@ -327,16 +327,16 @@ def execute_shell_cmd(path, arguments='', save_results=True, dest=world.f_cfg.mg
             os.makedirs(world.cfg["test_result_dir"])
 
         myfile = open(world.cfg["test_result_dir"] + '/' + file_name, 'w')
-        myfile.write(unicode('Script: ' + path))
+        myfile.write('Script: ' + path)
         if arguments == '':
             arguments = "no arguments used!"
-        myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))
+        myfile.write('\nwith arguments: ' + arguments + '\n')
         if result.failed:
-            myfile.write(unicode('\nStatus: FAILED\n'))
+            myfile.write('\nStatus: FAILED\n')
         else:
-            myfile.write(unicode('\nStatus: SUCCEED\n'))
+            myfile.write('\nStatus: SUCCEED\n')
 
-        myfile.write(unicode('\nScript stdout:\n' + result.stdout))
+        myfile.write('\nScript stdout:\n' + result.stdout + '\n')
         myfile.close()
 
     assert result.succeeded
