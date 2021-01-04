@@ -951,10 +951,9 @@ def test_v4_loggers_all_different_levels_same_file():
 @pytest.mark.v4
 @pytest.mark.kea_only
 @pytest.mark.logging
-@pytest.mark.disabled
 def test_v4_loggers_all_different_levels_different_file():
-    # it will fail, so I will disable this, issue link:
     # https://gitlab.isc.org/isc-projects/kea/issues/592
+    # bug: #592
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_opt('log-servers', '199.199.199.1,100.100.100.1')
@@ -1037,6 +1036,7 @@ def test_v4_loggers_all_different_levels_different_file():
     srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4', 'kea.log1')
     srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log2')
     srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log8')
+    # bug: #592
     srv_msg.log_contains(r'INFO \[kea-dhcp4.dhcpsrv', 'kea.log8')
     srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log2')
     srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.options', 'kea.log3')

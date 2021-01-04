@@ -185,11 +185,17 @@ def log_contains(line, condition, log_file=None):
         # ignore errors because we analise those errors later
         result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
     else:
-        if log_file is None:
-            if world.server_system == 'redhat':
-                service_name = 'kea-dhcp%s' % world.proto[1]
+        if log_file is None or log_file == 'kea.log_ddns':
+            if log_file == 'kea.log_ddns':
+                if world.server_system == 'redhat':
+                    service_name = 'kea-dhcp-ddns'
+                else:
+                    service_name = 'isc-kea-dhcp-ddns-server'
             else:
-                service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+                if world.server_system == 'redhat':
+                    service_name = 'kea-dhcp%s' % world.proto[1]
+                else:
+                    service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
             cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
             cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
             cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service
