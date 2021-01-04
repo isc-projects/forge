@@ -3,6 +3,18 @@ import os
 from .multi_server_functions import fabric_sudo_command, fabric_send_file
 from forge_cfg import world
 
+# Open file, write content and at the end of the context delete the file.
+class TemporaryFile(object):
+    def __init__(self, file_name, content):
+        self.file_name = file_name
+        self.content = content
+
+    def __enter__(self):
+        with open(self.file_name, 'w') as f:
+            f.write(self.content)
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        os.unlink(self.file_name)
 
 def _init_radius():
     # authorize config file
@@ -51,19 +63,16 @@ def _init_radius():
     \tFramed-Pool = "platinum"
     '''
     authorize_file = 'authorize.txt'
-    with open(authorize_file, 'w') as f:
-        f.write(authorize_content)
-
-    if world.server_system == 'redhat':
-        # freeradius 3.x
-        fabric_send_file(authorize_file, "/etc/raddb/mods-config/files/authorize")
-    else:
-        # freeradius 3.x
-        fabric_send_file(authorize_file,
-                         "/etc/freeradius/3.0/mods-config/files/authorize")
-        # freeradius 2.x
-        fabric_send_file(authorize_file, "/etc/freeradius/users")
-    os.unlink(authorize_file)
+    with TemporaryFile(authorize_file, authorize_content):
+        if world.server_system == 'redhat':
+            # freeradius 3.x
+            fabric_send_file(authorize_file, "/etc/raddb/mods-config/files/authorize")
+        else:
+            # freeradius 3.x
+            fabric_send_file(authorize_file,
+                            "/etc/freeradius/3.0/mods-config/files/authorize")
+            # freeradius 2.x
+            fabric_send_file(authorize_file, "/etc/freeradius/users")
 
     # clients.conf file
     clients_conf_content = '''
@@ -81,19 +90,16 @@ client {mgmt_address} {{
 }}'''
     clients_conf_content = clients_conf_content.format(mgmt_address=world.f_cfg.mgmt_address)
     clients_conf_file = 'clients.conf'
-    with open(clients_conf_file, 'w') as f:
-        f.write(clients_conf_content)
+    with TemporaryFile(clients_conf_file, clients_conf_content):
+        if world.server_system == 'redhat':
+            # freeradius 3.x
+            fabric_send_file(clients_conf_file, "/etc/raddb/clients.conf")
+        else:
+            # freeradius 3.x
+            fabric_send_file(clients_conf_file, "/etc/freeradius/3.0/clients.conf")
+            # freeradius 2.x
+            fabric_send_file(clients_conf_file, "/etc/freeradius/clients.conf")
 
-    if world.server_system == 'redhat':
-        # freeradius 3.x
-        fabric_send_file(clients_conf_file, "/etc/raddb/clients.conf")
-    else:
-        # freeradius 3.x
-        fabric_send_file(clients_conf_file, "/etc/freeradius/3.0/clients.conf")
-        # freeradius 2.x
-        fabric_send_file(clients_conf_file, "/etc/freeradius/clients.conf")
-
-    os.unlink(clients_conf_file)
 
 def _start_radius():
     if world.server_system == 'redhat':
