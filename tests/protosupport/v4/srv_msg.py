@@ -404,11 +404,11 @@ def ByteToHex(byteStr):
 def test_option(opt_code, received, expected):
     tmp = ""
 
-    decode_opts_byte_to_hex = []
-
+    decode_opts_byte_to_hex = [61]
     if opt_code in decode_opts_byte_to_hex or expected[:4] == "HEX:":
-        received = received[0], ByteToHex(received[1])
-
+        # for this option we need a bit magic, and proper formatting at the end
+        tmp = struct.unpack('%dB' % len(received[1]), received[1])
+        received = (received[0], "".join("%.2x" % x for x in tmp).upper())
     if expected[:4] == "HEX:":
         expected = expected[4:]
 
@@ -446,6 +446,8 @@ def response_check_option_content(opt_code, expect, data_type, expected):
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
 
+    if isinstance(received[1], bytes):
+        received = (received[0], received[1])
 
     # FQDN is being parsed different way because of scapy imperfections
     if opt_code == 81:
@@ -456,10 +458,6 @@ def response_check_option_content(opt_code, expect, data_type, expected):
             received = tmp, received[1][3:]
         else:
             assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
-    elif opt_code == 61:
-        expected = convert_to_hex(expected)
-    elif isinstance(received[1], bytes):
-        received = (received[0], received[1])
         # assert False, bytes(received[1][0])
 
     outcome, received = test_option(opt_code, received, expected)
