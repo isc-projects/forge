@@ -949,7 +949,8 @@ def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
 
 
 def _restart_kea_with_systemctl(destination_address):
-    cmd_tpl = 'systemctl restart {service} &&'
+    cmd_tpl = 'systemctl reset-failed {service} &&'  # prevent failing due to too many restarts
+    cmd_tpl += ' systemctl restart {service} &&'  # restart service
     cmd_tpl += ' ts=`systemctl show -p ActiveEnterTimestamp {service}.service | awk \'{{print $2 $3}}\'`;'  # get time of log beginning
     cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'  # if started for the first time then ts is empty so set to current date
     cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
@@ -983,7 +984,7 @@ def _restart_kea_with_systemctl(destination_address):
 
 
 def _reload_kea_with_systemctl(destination_address):
-    cmd_tpl = 'systemctl reload {service} &&'
+    cmd_tpl = 'systemctl reload {service} &&'  # reload service
     cmd_tpl += ' ts=`systemctl show -p ExecReload {service}.service | sed -E -n \'s/.*stop_time=\\[(.*)\\].*/\\1/p\'`;'  # get time of log beginning
     cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'  # if started for the first time then ts is empty so set to current date
     cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
