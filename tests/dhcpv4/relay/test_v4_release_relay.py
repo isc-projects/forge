@@ -16,7 +16,7 @@ def test_v4_relay_release_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -85,7 +85,7 @@ def test_v4_relay_release_success_with_additional_offer():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -170,7 +170,7 @@ def test_v4_relay_release_only_chaddr_same_chaddr():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

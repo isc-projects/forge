@@ -26,7 +26,7 @@ def test_v6_options_inforequest_preference():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('preference', '123')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -60,7 +60,7 @@ def test_v6_options_inforequest_sip_domains():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('sip-server-dns', 'srv1.example.com,srv2.isc.org')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -94,7 +94,7 @@ def test_v6_options_inforequest_sip_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -118,7 +118,7 @@ def test_v6_options_inforequest_sip_servers_csv():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.add_line({"option-data": [{"code": 22, "data": "20010DB800010000000000000000CAFE",
                                            "always-send": False, "csv-format": False}]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -142,7 +142,7 @@ def test_v6_options_inforequest_sip_servers_csv_incorrect():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.add_line({"option-data": [{"code": 6, "data": "192.167.12.2",
                                            "always-send": True, "csv-format": False}]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configure')
 
 
@@ -155,7 +155,7 @@ def test_v6_options_inforequest_sip_servers_csv_incorrect_hex():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.add_line({"option-data": [{"code": 6, "data": "3139322x31302e302e31",
                                            "always-send": True, "csv-format": False}]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configure')
 
 
@@ -179,7 +179,7 @@ def test_v6_options_inforequest_dns_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -215,7 +215,7 @@ def test_v6_options_inforequest_domains():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -250,7 +250,7 @@ def test_v6_options_inforequest_nis_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -286,7 +286,7 @@ def test_v6_options_inforequest_nisp_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('nisp-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -321,7 +321,7 @@ def test_v6_options_inforequest_nisdomain():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('nis-domain-name', 'ntp.example.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -353,7 +353,7 @@ def test_v6_options_inforequest_nispdomain():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -388,7 +388,7 @@ def test_v6_options_inforequest_sntp_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('sntp-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -420,7 +420,7 @@ def test_v6_options_inforequest_info_refresh():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('information-refresh-time', '12345678')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -457,7 +457,7 @@ def test_v6_options_inforequest_multiple():
     srv_control.config_srv_opt('sip-server-dns', 'srv1.example.com,srv2.isc.org')
     srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -504,7 +504,7 @@ def test_v6_options_inforequest_negative():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

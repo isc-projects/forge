@@ -26,7 +26,7 @@ def test_hook_v4_lease_cmds_legal_logging_update():
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -79,7 +79,7 @@ def test_hook_v4_lease_cmds_legal_logging_add():
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -112,7 +112,7 @@ def test_hook_v4_lease_cmds_legal_logging_del_using_address():
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -181,7 +181,7 @@ def test_hook_v4_lease_cmds_legal_logging_del_using_hw_address():
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -251,7 +251,7 @@ def test_hook_v4_lease_cmds_legal_logging_wipe():
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

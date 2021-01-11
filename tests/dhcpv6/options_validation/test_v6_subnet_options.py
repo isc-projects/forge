@@ -29,7 +29,7 @@ def test_v6_options_subnet_preference():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv('preference', 0, '123')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -79,7 +79,7 @@ def test_v6_options_subnet_dns_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv('dns-servers', 0, '2001:db8::1,2001:db8::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -129,7 +129,7 @@ def test_v6_options_subnet_domains():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv('domain-search', 0, 'domain1.example.com,domain2.isc.org')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -183,7 +183,7 @@ def test_v6_options_subnet_override():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('domain-search', 'global.example.com')
     srv_control.config_srv('domain-search', 0, 'subnet.example.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

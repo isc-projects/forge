@@ -17,7 +17,7 @@ def test_v6_rapid_commit_as_global_parameter():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.set_conf_parameter_global('rapid-commit', True)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
 
@@ -28,7 +28,7 @@ def test_v6_rapid_commit_basic_one_subnet():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.set_conf_parameter_subnet('rapid-commit', True, 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -54,7 +54,7 @@ def test_v6_rapid_commit_basic_one_subnet_rapid_not_included():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.set_conf_parameter_subnet('rapid-commit', True, 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -94,7 +94,7 @@ def test_v6_rapid_commit_basic_two_subnets():
     srv_control.set_conf_parameter_subnet('rapid-commit', True, 0)
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::5-2001:db8:2::5')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

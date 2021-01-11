@@ -18,7 +18,7 @@ def test_prefix_delegation_rebind_success():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -67,7 +67,7 @@ def test_prefix_delegation_rebind_fail():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -122,7 +122,7 @@ def test_prefix_delegation_rebind_fail_dropped():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -141,7 +141,7 @@ def test_prefix_delegation_rebind_fail_dropped():
     misc.test_setup()
     srv_control.config_srv_subnet('3001::/64', '3001::1-3001::ffff')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

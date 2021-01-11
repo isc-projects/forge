@@ -29,7 +29,7 @@ def test_ca_control_channel_list():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command="list-commands", service=[], arguments={})
@@ -57,7 +57,7 @@ def test_ca_control_channel_config_get_set():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -87,7 +87,7 @@ def test_ca_control_channel_config_set():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # let's send list-commands to dhcp6 that is running alongside, we expect this command to work
@@ -160,7 +160,7 @@ def test_ca_control_channel_config_test():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -225,7 +225,7 @@ def test_ca_control_channel_config_reload():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -245,7 +245,7 @@ def test_ca_control_channel_config_reload():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     cmd = dict(command='config-reload', arguments={})
     _send_directly_to_ca(cmd)
@@ -278,7 +278,7 @@ def test_ca_control_channel_build_report():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='build-report', arguments={})
@@ -302,7 +302,7 @@ def test_ca_control_channel_config_write():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-write', arguments={"filename": world.f_cfg.data_join("new_CA_config_file")})
@@ -330,7 +330,7 @@ def test_ca_control_channel_shutdown():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='shutdown')
@@ -348,7 +348,7 @@ def test_ca_control_channel_version_get():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='version-get', arguments={})

@@ -25,7 +25,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_replace_1():
     srv_control.add_ddns_server_options('hostname-char-replacement', 'x')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)
@@ -128,7 +128,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_replace_1():
     srv_control.add_ddns_server_options('hostname-char-replacement', 'x')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)
@@ -235,7 +235,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_replace_2():
     srv_control.add_ddns_server_options('hostname-char-replacement', 'x')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -304,7 +304,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_replace_2():
     srv_control.add_ddns_server_options('hostname-char-replacement', 'x')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -377,7 +377,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_1():
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)
@@ -482,7 +482,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)
@@ -610,7 +610,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_identical_
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)
@@ -776,7 +776,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)
@@ -948,7 +948,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_2():
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1017,7 +1017,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_2():
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1090,7 +1090,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_3():
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1158,7 +1158,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_4():
     srv_control.add_ddns_server_options('hostname-char-replacement', '$(EMPTY)')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1233,7 +1233,7 @@ def test_ddns4_notsig_expire_hostname_sanitization():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)
@@ -1321,7 +1321,7 @@ def test_ddns4_notsig_expire_fqdn_sanitization():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(20)

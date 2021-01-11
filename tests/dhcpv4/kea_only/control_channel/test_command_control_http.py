@@ -17,7 +17,7 @@ def test_control_channel_http_dhcp_disable_timer():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -62,7 +62,7 @@ def test_control_channel_http_dhcp_disable():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -95,7 +95,7 @@ def test_control_channel_http_dhcp_disable_and_enable():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -141,7 +141,7 @@ def test_control_channel_http_config_set_basic():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -189,7 +189,7 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     result = srv_msg.send_ctrl_cmd_via_http('{"command":"config-get", "service": ["dhcp4"], "arguments": {} }',
@@ -245,7 +245,7 @@ def test_control_channel_http_after_restart_load_config_file():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -299,7 +299,7 @@ def test_control_channel_http_get_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -316,7 +316,7 @@ def test_control_channel_http_test_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -396,7 +396,7 @@ def test_control_channel_http_config_write():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp4"],"arguments": {} }',
@@ -453,7 +453,7 @@ def test_control_channel_http_reload_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -470,7 +470,7 @@ def test_control_channel_http_reload_config():
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_msg.send_ctrl_cmd_via_http('{"command":"config-reload","service":["dhcp4"],"arguments":{}}',
                                    '$(SRV4_ADDR)')

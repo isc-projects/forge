@@ -591,7 +591,7 @@ def setup_server(**kwargs):
     cfg = ConfigModel(init_cfg, **config_model_args)
 
     srv_control.agent_control_channel()  # to force enabling ctrl-agent
-    srv_control.build_and_send_config_files('SSH', 'config-file', cfg=cfg.get_dict())
+    srv_control.build_and_send_config_files(cfg=cfg.get_dict())
     srv_control.start_srv('DHCP', 'started')
 
     # check actual configuration if requested

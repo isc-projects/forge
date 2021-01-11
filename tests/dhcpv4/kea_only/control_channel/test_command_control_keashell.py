@@ -18,7 +18,7 @@ def test_control_channel_keashell_dhcp_disable_timer():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -62,7 +62,7 @@ def test_control_channel_keashell_dhcp_disable():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -94,7 +94,7 @@ def test_control_channel_keashell_dhcp_disable_and_enable():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -138,7 +138,7 @@ def test_control_channel_keashell_set_config_basic():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -177,7 +177,7 @@ def test_control_channel_keashell_after_restart_load_config_file():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -225,7 +225,7 @@ def test_control_channel_keashell_get_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -241,7 +241,7 @@ def test_control_channel_keashell_test_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -316,7 +316,7 @@ def test_control_channel_keashell_write_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -373,7 +373,7 @@ def test_control_channel_socket_reload_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -391,7 +391,7 @@ def test_control_channel_socket_reload_config():
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-reload <<<\'\'')
 

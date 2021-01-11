@@ -26,7 +26,7 @@ def test_flex_options_add():
 
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -84,7 +84,7 @@ def test_flex_options_remove():
 
     h_param = {"options": [{"code": 5, "remove": "option[host-name].exists"}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -144,7 +144,7 @@ def test_flex_options_remove_non_existing():
 
     h_param = {"options": [{"code": 5, "remove": "option[host-name].exists"}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -187,7 +187,7 @@ def test_flex_options_supersede():
                             "csv-format": True}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -266,7 +266,7 @@ def test_flex_options_all_actions():
     reservation = {"reservations": [{"ip-address": "192.168.50.200", "hw-address": "01:02:03:04:05:06"}]}
     world.dhcp_cfg["subnet4"][0].update(reservation)
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -348,7 +348,7 @@ def test_flex_options_complex():
                             "supersede": "ifelse(not option[77].exists and not option[60].exists, '', ifelse(not option[77].exists and option[60].exists, '/path/to/undionly.kpxe', ifelse(option[77].exists and option[60].exists and member('KNOWN'), concat('/path/to/host/specific/boot-', hexstring(pkt4.mac,'-')), '/path/to/default')))"}]}
 
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # if option 60 not present and option 77 not present, leave option as it is

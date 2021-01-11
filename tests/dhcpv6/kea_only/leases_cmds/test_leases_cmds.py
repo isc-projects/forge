@@ -21,7 +21,7 @@ def test_hook_v6_lease_cmds_list():
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -40,7 +40,7 @@ def test_hook_v6_lease_cmds_add_notvalid_id():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -92,7 +92,7 @@ def test_hook_v6_lease_cmds_add_address_from_different_subnet():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -144,7 +144,7 @@ def test_hook_v6_lease_cmds_add_valid():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -190,7 +190,7 @@ def test_hook_v6_lease_cmds_add_expired_with_options():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -242,7 +242,7 @@ def test_hook_v6_lease_cmds_add_valid_with_options():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -291,7 +291,7 @@ def test_hook_v6_lease_cmds_del_using_address():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -361,7 +361,7 @@ def test_hook_v6_lease_cmds_del_using_duid():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -433,7 +433,7 @@ def test_hook_v6_lease_cmds_get_using_address():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -489,7 +489,7 @@ def test_hook_v6_lease_cmds_get_using_duid():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -532,7 +532,7 @@ def test_hook_v6_lease_cmds_wipe():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -697,7 +697,7 @@ def test_hook_v6_lease_cmds_update():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

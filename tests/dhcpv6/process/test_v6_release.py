@@ -29,7 +29,7 @@ def test_v6_statuscode_nobinding_release_noleases():
     # 					Status code with code NoBinding.
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -84,7 +84,7 @@ def test_v6_statuscode_nobinding_release():
     # 					IA_NA with suboption status-code with code NoBinding
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -152,7 +152,7 @@ def test_v6_statuscode_nobinding_release_new_client_id():
     # 					IA_NA with suboption status-code with code NoBinding
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -228,7 +228,7 @@ def test_v6_statuscode_nobinding_release_advertise():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -310,7 +310,7 @@ def test_v6_statuscode_nobinding_release_nobinding():
     srv_control.set_time('preferred-lifetime', 7)
     srv_control.set_time('valid-lifetime', 8)
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -372,7 +372,7 @@ def test_v6_statuscode_success_release():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

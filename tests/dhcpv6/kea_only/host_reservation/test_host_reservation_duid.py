@@ -20,7 +20,7 @@ def test_v6_host_reservation_duid_requesting_reserved_address_inside_the_pool():
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -78,7 +78,7 @@ def test_v6_host_reservation_duid_requesting_reserved_address_outside_the_pool()
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -136,7 +136,7 @@ def test_v6_host_reservation_duid_requesting_reserved_prefix():
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -197,7 +197,7 @@ def test_v6_host_reservation_duid_prefix_not_requested():
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -257,7 +257,7 @@ def test_v6_host_reservation_duid_requesting_reserved_prefix_outside_the_pool():
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -319,7 +319,7 @@ def test_v6_host_reservation_duid_requesting_reserved_prefix_inside_empty_pool()
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

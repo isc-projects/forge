@@ -21,7 +21,7 @@ def test_v4_host_reservation_one_address_inside_pool_hw_address():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -57,7 +57,7 @@ def test_v4_host_reservation_one_address_inside_pool_client_id():
                                            0,
                                            'client-id',
                                            'ff:01:02:03:ff:04:11:22')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -95,7 +95,7 @@ def test_v4_host_reservation_one_address_outside_pool():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -132,7 +132,7 @@ def test_v4_host_reservation_one_address_inside_pool_different_mac():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -167,7 +167,7 @@ def test_v4_host_reservation_one_address_empty_pool():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -195,7 +195,7 @@ def test_v4_host_reservation_multiple_address_reservation_empty_pool():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:03')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -228,7 +228,7 @@ def test_v4_host_reservation_multiple_address_reservation_empty_pool_2():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:02')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

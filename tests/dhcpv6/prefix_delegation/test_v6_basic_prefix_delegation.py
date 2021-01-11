@@ -17,7 +17,7 @@ def test_prefix_delegation_onlyPD_advertise():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -39,7 +39,7 @@ def test_prefix_delegation_IA_and_PD():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::2-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -63,7 +63,7 @@ def test_prefix_delegation_IA_and_PD():
 def test_prefix_delegation_without_server_configuration():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -83,7 +83,7 @@ def test_prefix_delegation_without_server_configuration():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::3-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -112,7 +112,7 @@ def test_prefix_delegation_exclude_prefix():
                                                      "delegated-len": 90, "excluded-prefix": "2001:db8:1::20:0:0",
                                                      "excluded-prefix-len": 91}]})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

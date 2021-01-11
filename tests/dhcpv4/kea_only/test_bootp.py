@@ -19,7 +19,7 @@ def test_bootp():
     world.dhcp_cfg["subnet4"][0]["pools"][1]["client-class"] = "DHCP"
     srv_control.create_new_class('DHCP')
     srv_control.add_test_to_class(1, 'test', "not member('BOOTP')")
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

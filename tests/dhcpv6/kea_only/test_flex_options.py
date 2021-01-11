@@ -23,7 +23,7 @@ def test_flex_options_add():
                             "csv-format": True}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -67,7 +67,7 @@ def test_flex_options_remove():
                             "remove": "option[39].exists"}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -108,7 +108,7 @@ def test_flex_options_remove_non_existing():
     h_param = {"options": [{"code": 30, "remove": "option[39].exists"}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -155,7 +155,7 @@ def test_flex_options_supersede_domain_csv_false():
                             "csv-format": False}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -212,7 +212,7 @@ def test_flex_options_supersede_domain():
                             "csv-format": True}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -269,7 +269,7 @@ def test_flex_options_supersede_string():
                             "csv-format": True}]}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -335,7 +335,7 @@ def test_flex_options_all_actions():
                                      "hw-address": "01:02:03:04:05:06"}]}
     world.dhcp_cfg["subnet6"][0].update(reservation)
 
-    srv_control.build_and_send_config_files('SSH', 'configfile')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # this client will trigger one change

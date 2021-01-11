@@ -29,7 +29,7 @@ def test_v6_message_renew_reply():
     #
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::55')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -82,7 +82,7 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid():
     srv_control.set_time('preferred-lifetime', 70)
     srv_control.set_time('valid-lifetime', 80)
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -172,7 +172,7 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_2():
     srv_control.set_time('preferred-lifetime', 70)
     srv_control.set_time('valid-lifetime', 80)
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -262,7 +262,7 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_expired():
     srv_control.set_time('preferred-lifetime', 7)
     srv_control.set_time('valid-lifetime', 8)
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -354,7 +354,7 @@ def test_v6_message_renew_reply_different_clients_the_same_iaid_expired_2():
     srv_control.set_time('preferred-lifetime', 7)
     srv_control.set_time('valid-lifetime', 8)
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -459,7 +459,7 @@ def test_v6_message_renew_reply_time_zero():
     # 					IA-NA with suboption IA-Address with validlft set to 0.
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::66-3000::66')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -487,7 +487,7 @@ def test_v6_message_renew_reply_time_zero():
 
     misc.reconfigure()
     srv_control.config_srv_subnet('3000::/64', '3000::100-3000::155')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

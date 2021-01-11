@@ -22,7 +22,7 @@ def test_v4_host_reservation_circuit_id():
                                            '060106020603')
     # "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ]
     srv_control.add_line({"host-reservation-identifiers": ["circuit-id"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -69,7 +69,7 @@ def test_v4_host_reservation_circuit_id_negative():
                                            '060106020603')
     # "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ]
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "duid", "client-id"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -99,7 +99,7 @@ def test_v4_host_reservation_duid():
     srv_control.host_reservation_in_subnet('ip-address', '192.168.50.10', 0, 'duid', '04:33:44')
     # "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ]
     srv_control.add_line({"host-reservation-identifiers": ["duid"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -143,7 +143,7 @@ def test_v4_host_reservation_duid_negative():
     srv_control.host_reservation_in_subnet('ip-address', '192.168.50.10', 0, 'duid', '04:33:44')
     # "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ]
     srv_control.add_line({"host-reservation-identifiers": ["hw-address", "circuit-id", "client-id"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -178,7 +178,7 @@ def test_v4_host_reservation_hwaddr_negative():
                                            'ff:01:02:03:ff:11')
     # "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ]
     srv_control.add_line({"host-reservation-identifiers": ["circuit-id", "duid", "client-id"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -211,7 +211,7 @@ def test_v4_host_reservation_client_id_negative():
                                            'ff:01:02:03:ff:11:22')
     # "host-reservation-identifiers": [ "hw-address", "duid", "circuit-id", "client-id" ]
     srv_control.add_line({"host-reservation-identifiers": ["circuit-id", "duid", "hw-address"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -250,7 +250,7 @@ def test_v4_host_reservation_reserved_classes_1():
                                                          "ip-address": "192.168.50.10",
                                                          "client-classes": ["ipxe_efi_x64"]}]})
     srv_control.add_line({"host-reservation-identifiers": ["hw-address"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -312,7 +312,7 @@ def test_v4_host_reservation_reserved_classes_2():
                                                          "ip-address": "192.168.50.10",
                                                          "client-classes": ["ipxe_efi_x64", "class-abc"]}]})
     srv_control.add_line({"host-reservation-identifiers": ["hw-address"]})
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

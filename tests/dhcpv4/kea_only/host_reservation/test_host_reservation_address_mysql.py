@@ -23,7 +23,7 @@ def test_v4_host_reservation_mysql_one_address_inside_pool():
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -77,7 +77,7 @@ def test_v4_host_reservation_mysql_one_address_inside_pool_option():
     srv_control.config_srv_opt('resource-location-servers', '199.199.199.1,150.150.150.1')
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -121,7 +121,7 @@ def test_v4_host_reservation_mysql_one_address_outside_pool_dual_backend():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:03')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -180,7 +180,7 @@ def test_v4_host_reservation_mysql_one_address_inside_pool_different_mac():
     srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.10', 'MySQL', 1)
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -215,7 +215,7 @@ def test_v4_host_reservation_one_address_empty_pool():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -245,7 +245,7 @@ def test_v4_host_reservation_mysql_multiple_address_reservation_empty_pool():
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 2)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -281,7 +281,7 @@ def test_v4_host_reservation_multiple_mysql_address_reservation_empty_pool_2():
 
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

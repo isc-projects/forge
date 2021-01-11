@@ -38,7 +38,7 @@ def test_v4_host_reservation_conflicts_duplicate_mac_reservations(backend):
                                                0,
                                                'hw-address',
                                                'ff:01:02:03:ff:04')  # the same MAC address
-        srv_control.build_and_send_config_files('SSH', 'config-file')
+        srv_control.build_and_send_config_files()
         srv_control.start_srv_during_process('DHCP', 'configuration')
 
         # expected error logs
@@ -73,7 +73,7 @@ def test_v4_host_reservation_conflicts_duplicate_mac_reservations_command_contro
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
     srv_control.enable_db_backend_reservation(backend)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     assert _add_reservation({"hw-address": "ff:01:02:03:ff:77", "ip-address": "192.168.50.2"})["text"] == "Host added."
     assert _add_reservation({"hw-address": "ff:01:02:03:ff:66", "ip-address": "192.168.50.2"}, exp_result=1)["text"] == "Database duplicate entry error"
@@ -91,7 +91,7 @@ def test_v4_host_reservation_allowed_duplicate_mac_reservations_command_control(
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
     srv_control.enable_db_backend_reservation(backend)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     assert _add_reservation({"hw-address": "ff:01:02:03:ff:77", "ip-address": "192.168.50.2"})["text"] == "Host added."
     assert _add_reservation({"hw-address": "ff:01:02:03:ff:66", "ip-address": "192.168.50.2"})["text"] == "Host added."
@@ -113,7 +113,7 @@ def test_v4_host_reservation_conflicts_duplicate_ip_reservations():
                                            0,
                                            'hw-address',
                                            'bb:bb:bb:bb:bb:bb')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
     # expected error logs
     srv_msg.log_contains(r'ERROR \[kea-dhcp4.dhcp4')
@@ -146,7 +146,7 @@ def test_v4_host_reservation_duplicate_ip_reservations_allowed(backend):
                                                'hw-address',
                                                'bb:bb:bb:bb:bb:bb')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     if backend != "memfile":
@@ -267,7 +267,7 @@ def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets(
         srv_control.update_db_backend_reservation('dhcp4_subnet_id', 2, backend, 2)
         srv_control.upload_db_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
 
@@ -281,7 +281,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -327,7 +327,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     if backend != 'memfile':
@@ -363,7 +363,7 @@ def test_v4_host_reservation_conflicts_reserve_assigned_address_to_different_cli
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     if backend != 'memfile':
@@ -414,7 +414,7 @@ def test_v4_host_reservation_conflicts_reserve_assigned_address_to_different_cli
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     if backend != 'memfile':
@@ -449,7 +449,7 @@ def test_v4_host_reservation_conflicts_change_reserved_address_during_reconfigur
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     if backend != 'memfile':
@@ -486,7 +486,7 @@ def test_v4_host_reservation_conflicts_change_reserved_address_during_reconfigur
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     if backend != 'memfile':
@@ -519,7 +519,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_ho
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -553,7 +553,7 @@ def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_ho
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     if backend != 'memfile':
@@ -613,7 +613,7 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -653,7 +653,7 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     if backend != 'memfile':
@@ -710,7 +710,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     if backend != 'memfile':
@@ -753,7 +753,7 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     if backend != 'memfile':
@@ -811,7 +811,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     if backend != 'memfile':
@@ -854,7 +854,7 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
         srv_control.add_hooks('libdhcp_host_cmds.so')
         srv_control.enable_db_backend_reservation(backend)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     if backend != 'memfile':

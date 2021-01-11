@@ -24,7 +24,7 @@ def test_user_check_IA_NA_no_registry_logging():
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp4.callouts', 'ERROR', 'None')
     srv_control.configure_loggers('kea-dhcp4.hooks', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
     # DHCP server is started.
     #
@@ -69,7 +69,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp4.callouts', 'DEBUG', 99)
     srv_control.configure_loggers('kea-dhcp4.hooks', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -106,7 +106,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     srv_control.add_hooks('libdhcp_user_chk.so')
     # Server logging system is configured with logger type kea-dhcp4.callouts, severity DEBUG, severity level 99 and log file kea.log.
     # Server logging system is configured with logger type kea-dhcp4.hooks, severity INFO, severity level None and log file kea.log.
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -135,7 +135,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
     srv_control.add_hooks('libdhcp_user_chk.so')
     # Server logging system is configured with logger type kea-dhcp4.callouts, severity DEBUG, severity level 99 and log file kea.log.
     # Server logging system is configured with logger type kea-dhcp4.hooks, severity INFO, severity level None and log file kea.log.
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -48,7 +48,7 @@ def test_v4_all_hooks_start():
                                          '{"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role":"secondary","auto-failover":true}')
 
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
     srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}')
@@ -92,7 +92,7 @@ def test_v4_all_hooks_test_cooperation():
 
     srv_control.open_control_channel()
     srv_control.agent_control_channel(host_port='8080')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

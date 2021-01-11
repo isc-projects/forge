@@ -21,7 +21,7 @@ def test_v4_client_classification_iPXE_client_arch():
     srv_control.add_test_to_class(1, 'server-hostname', 'hal9000')
     srv_control.add_test_to_class(1, 'boot-file-name', '/dev/null')
     srv_control.config_client_classification(0, 'ipxe_efi_x64')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -61,7 +61,7 @@ def test_v4_client_classification_iPXE_client_inter():
     srv_control.add_test_to_class(1, 'server-hostname', 'hal9000')
     srv_control.add_test_to_class(1, 'boot-file-name', '/dev/null')
     srv_control.config_client_classification(0, 'ipxe_efi_x64')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -101,7 +101,7 @@ def test_v4_client_classification_iPXE_machine_ident():
     srv_control.add_test_to_class(1, 'server-hostname', 'hal9000')
     srv_control.add_test_to_class(1, 'boot-file-name', '/dev/null')
     srv_control.config_client_classification(0, 'ipxe_efi_x64')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

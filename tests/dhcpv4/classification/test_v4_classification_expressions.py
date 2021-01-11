@@ -24,7 +24,7 @@ def test_v4_client_classification_member():
     srv_control.add_test_to_class(2, 'server-hostname', 'hal9000')
 
     srv_control.config_client_classification(0, 'Client_Class_2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -73,7 +73,7 @@ def test_v4_client_classification_unknown_pool():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -112,7 +112,7 @@ def test_v4_client_classification_known_pool():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -152,7 +152,7 @@ def test_v4_client_classification_known_unknown_pool():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -210,7 +210,7 @@ def test_v4_client_classification_option_hex():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'option[61].hex == 0xff010203ff041122')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -254,7 +254,7 @@ def test_v4_client_classification_option_exists():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'option[61].exists')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -297,7 +297,7 @@ def test_v4_client_classification_relay_option_exists():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'relay4[3].exists')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -343,7 +343,7 @@ def test_v4_client_classification_transid():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'pkt4.transid == 66')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -389,7 +389,7 @@ def test_v4_client_classification_siaddr():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'pkt4.siaddr == 1.1.1.1')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -421,7 +421,7 @@ def test_v4_client_classification_yiaddr():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'pkt4.yiaddr == 1.1.1.1')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -454,7 +454,7 @@ def test_v4_client_classification_giaddr():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'pkt4.giaddr == $(GIADDR4)')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -500,7 +500,7 @@ def test_v4_client_classification_ciaddr():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'pkt4.ciaddr == 192.0.0.1')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -546,7 +546,7 @@ def test_v4_client_classification_htype():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'pkt4.htype == 6')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -592,7 +592,7 @@ def test_v4_client_classification_mac():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'pkt4.mac == 0xff010203ff04')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -635,7 +635,7 @@ def test_v4_client_classification_vendor():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor[*].exists')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -681,7 +681,7 @@ def test_v4_client_classification_specific_vendor():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor[4444].exists')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -730,7 +730,7 @@ def test_v4_client_classification_specific_vendor_2():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor.enterprise == 4444')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -779,7 +779,7 @@ def test_v4_client_classification_vendor_suboption_exists():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor[4444].option[1].exists')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -828,7 +828,7 @@ def test_v4_client_classification_vendor_suboption_value():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor[4444].option[1].hex == 0x01')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -877,7 +877,7 @@ def test_v4_client_classification_vendor_class_exists():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor-class[*].exists')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -924,7 +924,7 @@ def test_v4_client_classification_specific_vendor_class():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor-class[4444].exists')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -973,7 +973,7 @@ def test_v4_client_classification_specific_vendor_class_2():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'vendor-class.enterprise == 4444')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1022,7 +1022,7 @@ def test_v4_client_classification_expressions_not_equal():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'not(vendor-class.enterprise == 5555)')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1069,7 +1069,7 @@ def test_v4_client_classification_expressions_and():
                                   'test',
                                   '(vendor.enterprise == 4444) and (vendor[4444].option[1].hex == 0x01)')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1121,7 +1121,7 @@ def test_v4_client_classification_expressions_or():
                                   'test',
                                   '(vendor.enterprise == 4444) or (vendor[*].option[1].hex == 0x01)')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1182,7 +1182,7 @@ def test_v4_client_classification_expressions_substring():
     srv_control.create_new_class('Client_Class_1')
     srv_control.add_test_to_class(1, 'test', 'substring(option[61].hex,4,2) == 0x0405')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1224,7 +1224,7 @@ def test_v4_client_classification_expressions_concat():
                                   'test',
                                   'concat(substring(option[61].hex,0,1),substring(option[61].hex,7,all)) == 0xff22')
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1283,7 +1283,7 @@ def test_v4_client_classification_expressions_ifelse():
                                   'ifelse(vendor[4444].option[1].exists, vendor[4444].option[1].hex, \'none\') == 0x01')
     # 0021 == 33
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

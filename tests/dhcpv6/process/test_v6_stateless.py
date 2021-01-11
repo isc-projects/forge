@@ -18,7 +18,7 @@ def test_v6_stateless_with_subnet_empty_pool():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -51,7 +51,7 @@ def test_v6_stateless_with_subnet_empty_pool_inforequest():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -80,7 +80,7 @@ def test_v6_stateless_without_subnet():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -113,7 +113,7 @@ def test_v6_stateless_without_subnet_inforequest():
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.config_srv_opt('nis-servers', '2001:db8::abc,3000::1,2000::1234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

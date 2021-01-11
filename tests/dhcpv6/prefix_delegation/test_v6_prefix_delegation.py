@@ -18,7 +18,7 @@ def test_prefix_delegation_onlyPD_request():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -53,7 +53,7 @@ def test_prefix_delegation_IA_and_PD_request():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -97,7 +97,7 @@ def test_prefix_delegation_onlyPD_request_release():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -145,7 +145,7 @@ def test_prefix_delegation_onlyPD_multiple_request_release():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -225,7 +225,7 @@ def test_prefix_delegation_IA_and_PD_request_release():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -277,7 +277,7 @@ def test_prefix_delegation_IA_and_PD_multiple_request_release():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -370,7 +370,7 @@ def test_prefix_delegation_noprefixavail_release():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -464,7 +464,7 @@ def test_prefix_delegation_noprefixavail():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -532,7 +532,7 @@ def test_prefix_delegation_release_nobinding():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -566,7 +566,7 @@ def test_prefix_delegation_release_dual_nobinding():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -606,7 +606,7 @@ def test_prefix_delegation_release_nobinding2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -664,7 +664,7 @@ def test_prefix_delegation_onlyPD_relay():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -694,7 +694,7 @@ def test_prefix_delegation_assign_saved_iapd():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     # two prefixes - 3000::/91; 3000::20:0:0/91;
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -746,7 +746,7 @@ def test_prefix_delegation_assign_saved_iapd():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 80, 95)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -782,7 +782,7 @@ def test_prefix_delegation_compare_prefixes_after_client_reboot():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::300')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -841,7 +841,7 @@ def test_prefix_delegation_just_PD_configured_PD_requested():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '$(EMPTY)')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -875,7 +875,7 @@ def test_prefix_delegation_just_PD_configured_PD_and_IA_requested():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '$(EMPTY)')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -31,7 +31,7 @@ def test_v6_options_vendor_tftp_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_opt_space('vendor-4491', 'tftp-servers', '2001:558::76')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
@@ -72,7 +72,7 @@ def test_v6_options_vendor_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_opt_space('vendor-4491', 'config-file', 'normal_erouter_v6.cm')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
@@ -113,7 +113,7 @@ def test_v6_options_vendor_syslog_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_opt_space('vendor-4491', 'syslog-servers', '2001::101')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
@@ -155,7 +155,7 @@ def test_v6_options_vendor_time_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_opt_space('vendor-4491', 'time-servers', '2001::76')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
@@ -196,7 +196,7 @@ def test_v6_options_vendor_time_offset():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_opt_space('vendor-4491', 'time-offset', '-18000')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
@@ -257,7 +257,7 @@ def test_v6_options_vendor_multiple():
                                      'time-servers',
                                      '2001:558:ff18:16:10:253:175:76')
     srv_control.config_srv_opt_space('vendor-4491', 'time-offset', '-10000')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.client_sets_value('Client', 'enterprisenum', '4491')

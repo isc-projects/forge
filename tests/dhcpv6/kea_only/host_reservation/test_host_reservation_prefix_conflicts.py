@@ -27,7 +27,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_1():
                                            0,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -74,7 +74,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_2():
                                            0,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -121,7 +121,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
                                            0,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -168,7 +168,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnet
                                            1,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -193,7 +193,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -268,7 +268,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -306,7 +306,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -375,7 +375,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -417,7 +417,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -503,7 +503,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
                                            0,
                                            'hw-address',
                                            '00:03:00:01:f6:f5:f4:f3:f2:02')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -555,7 +555,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.set_time('preferred-lifetime', 8)
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -645,7 +645,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:02')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 

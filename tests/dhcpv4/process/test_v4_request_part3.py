@@ -18,7 +18,7 @@ def test_v4_request_renewing_success():
     srv_control.set_time('rebind-timer', 50)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -70,7 +70,7 @@ def test_v4_request_rebinding_success():
     srv_control.set_time('rebind-timer', 3)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

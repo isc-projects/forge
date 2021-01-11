@@ -20,7 +20,7 @@ def test_v6_IPXE_1():
                                             'bootfile-url',
                                             'http://[2001:db8::1]/ubuntu.cfg')
     # Server is configured with client-classification option in subnet 0 with name a-ipxe.
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -51,7 +51,7 @@ def test_v6_IPXE_2():
     srv_control.add_test_to_class(1, 'test', 'option[61].hex == 0x0007')
     srv_control.add_option_to_defined_class(1, 'bootfile-url', 'http://[2001:db8::1]/ipxe.efi')
     # Server is configured with client-classification option in subnet 0 with name a-ipxe.
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -87,7 +87,7 @@ def test_v6_IPXE_combined():
     srv_control.add_test_to_class(2, 'test', 'option[61].hex == 0x0007')
     srv_control.add_option_to_defined_class(2, 'bootfile-url', 'http://[2001:db8::1]/ipxe.efi')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

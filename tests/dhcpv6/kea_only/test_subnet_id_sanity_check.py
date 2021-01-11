@@ -19,7 +19,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -65,7 +65,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
@@ -125,7 +125,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -170,7 +170,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
@@ -185,7 +185,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -243,7 +243,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -289,7 +289,7 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -333,7 +333,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -379,7 +379,7 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -394,7 +394,7 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -436,7 +436,7 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -451,7 +451,7 @@ def test_v6_sanity_check_subnet_id_warn():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "warn"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -493,7 +493,7 @@ def test_v6_sanity_check_subnet_id_warn():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "warn"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -527,7 +527,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -573,7 +573,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
@@ -631,7 +631,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -682,7 +682,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "del"})
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
@@ -745,7 +745,7 @@ def test_v6_sanity_check_subnet_id_none():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "none"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -787,7 +787,7 @@ def test_v6_sanity_check_subnet_id_none():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "none"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
     srv_msg.forge_sleep(2, 'seconds')
@@ -806,7 +806,7 @@ def test_v6_sanity_check_subnet_id():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -853,7 +853,7 @@ def test_v6_sanity_check_subnet_id():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -865,7 +865,7 @@ def test_v6_sanity_check_subnet_id():
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
     srv_msg.forge_sleep(12, 'seconds')
@@ -939,7 +939,7 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix-del"})
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1019,7 +1019,7 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     srv_control.set_conf_parameter_global('sanity-checks', {"lease-checks": "fix"})
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 

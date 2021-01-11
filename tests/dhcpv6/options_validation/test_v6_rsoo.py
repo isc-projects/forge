@@ -18,7 +18,7 @@ def test_v6_options_rsoo_default_option():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.set_conf_parameter_subnet('interface-id', 'abc', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -58,7 +58,7 @@ def test_v6_options_rsoo_custom_option_list():
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.set_conf_parameter_subnet('interface-id', 'abc', 0)
     srv_control.set_conf_parameter_global('relay-supplied-options', ["12"])
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -99,7 +99,7 @@ def test_v6_options_rsoo_custom_option_list_default_option_65():
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.set_conf_parameter_subnet('interface-id', 'abc', 0)
     srv_control.set_conf_parameter_global('relay-supplied-options', ["12"])
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -140,7 +140,7 @@ def test_v6_options_rsoo_custom_option_list_server_has_option_configured_also():
     srv_control.set_conf_parameter_subnet('interface-id', 'abc', 0)
     srv_control.set_conf_parameter_global('relay-supplied-options', ["12"])
     srv_control.config_srv_opt('unicast', '3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -73,7 +73,7 @@ def test_v4_subnet_selection_based_on_global_reservation_of_class():
     srv_control.set_conf_parameter_shared_subnet('name', 'name-abc', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '$(SERVER_IFACE)', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # get offer from NOTspecial
@@ -114,7 +114,7 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
     world.dhcp_cfg["subnet4"][0]["pools"][0]["client-class"] = "NOTspecial"
     world.dhcp_cfg["subnet4"][0]["pools"][1]["client-class"] = "special"
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # get offer from NOTspecial
@@ -167,7 +167,7 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
 #     srv_control.set_conf_parameter_shared_subnet('name', 'name-abc', 0)
 #     srv_control.set_conf_parameter_shared_subnet('interface', '$(SERVER_IFACE)', 0)
 #
-#     srv_control.build_and_send_config_files('SSH', 'config-file')
+#     srv_control.build_and_send_config_files()
 #     srv_control.start_srv('DHCP', 'started')
 #
 #     # get offer from NOTspecial

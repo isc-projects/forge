@@ -60,7 +60,7 @@ def test_stats_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     stats = StatsState4()
@@ -260,7 +260,7 @@ def test_stats_remove_reset():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     result = srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt4-received"}}')
@@ -332,7 +332,7 @@ def test_stats_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     assert get_stat('pkt4-received') == [0]
@@ -351,7 +351,7 @@ def test_stats_reconfigure():
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.1-192.168.51.2')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     # reconfigure (reload) server, stats should be preserved
     srv_control.start_srv('DHCP', 'reconfigured')
@@ -373,7 +373,7 @@ def test_stats_sample_count():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = {"command": "statistic-sample-count-set",
@@ -401,7 +401,7 @@ def test_stats_sample_age():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = {"command": "statistic-sample-age-set",
@@ -434,7 +434,7 @@ def test_X():
                                                        '3000:100::5-3000:100::ff')
     srv_control.config_srv_prefix('3000::', 0, 90, 92)
     srv_control.open_control_channel('control_socket2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
@@ -443,7 +443,7 @@ def test_X():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_prefix('3000::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
@@ -452,7 +452,7 @@ def test_X():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_prefix('3000::', 0, 90, 92)
     srv_control.open_control_channel('control_socket2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',

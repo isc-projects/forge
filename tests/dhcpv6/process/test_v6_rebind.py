@@ -31,7 +31,7 @@ def test_v6_message_rebind_reply_zerotime():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -55,7 +55,7 @@ def test_v6_message_rebind_reply_zerotime():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -107,7 +107,7 @@ def test_v6_message_rebind_reply_newtime():
     srv_control.set_time('renew-timer', 111)
     srv_control.set_time('rebind-timer', '222')
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

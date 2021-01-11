@@ -22,7 +22,7 @@ def test_v4_client_classification_one_class_docsis3_boot_file_name():
                                                        '192.168.50.100-192.168.50.100')
     srv_control.config_srv('boot-file-name', 0, 'somefilename')
     srv_control.config_srv_opt('boot-file-name', 'someotherfilename')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -58,7 +58,7 @@ def test_v4_client_classification_one_class_docsis3_next_server():
                                                        '192.168.50.100-192.168.50.100')
     srv_control.config_srv('boot-file-name', 0, 'somefilename')
     srv_control.subnet_add_siaddr(0, '192.0.2.234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -94,7 +94,7 @@ def test_v4_client_classification_one_class_eRouter1_global_next_server():
                                                        '192.168.50.100-192.168.50.100')
     srv_control.config_srv('boot-file-name', 0, 'somefilename')
     srv_control.global_add_siaddr('192.0.2.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -132,7 +132,7 @@ def test_v4_client_classification_one_class_eRouter1_subnet_next_server():
                                                        '192.168.50.100-192.168.50.100')
     srv_control.config_srv('boot-file-name', 0, 'somefilename')
     srv_control.subnet_add_siaddr(0, '192.0.2.234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -171,7 +171,7 @@ def test_v4_client_classification_one_class_eRouter1_two_next_servers():
     srv_control.config_srv('boot-file-name', 0, 'somefilename')
     srv_control.global_add_siaddr('192.0.2.2')
     srv_control.subnet_add_siaddr(0, '192.0.2.234')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -217,7 +217,7 @@ def test_v4_client_classification_multiple_classes_three_subnets_docsis_erouter(
     srv_control.config_srv_another_subnet_no_interface('192.168.50.0/24',
                                                        '192.168.50.100-192.168.50.100')
     srv_control.global_add_siaddr('192.0.50.100')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

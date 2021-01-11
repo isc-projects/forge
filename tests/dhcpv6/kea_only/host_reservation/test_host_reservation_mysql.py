@@ -36,7 +36,7 @@ def test_v6_host_reservation_mysql_all_values_mac():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -125,7 +125,7 @@ def test_v6_host_reservation_mysql_all_values_duid():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -180,7 +180,7 @@ def test_v6_host_reservation_mysql_all_values_duid_2():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -229,7 +229,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching():
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -257,7 +257,7 @@ def test_v6_host_reservation_mysql_duid_ll_not_matching():
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -300,7 +300,7 @@ def test_v6_host_reservation_mysql_duid_llt_matching():
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -331,7 +331,7 @@ def test_v6_host_reservation_mysql_duid_llt_not_matching():
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -372,7 +372,7 @@ def test_v6_host_reservation_mysql_hwaddrr_not_matching():
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -424,7 +424,7 @@ def test_v6_host_reservation_mysql_hwaddrr_matching():
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -468,7 +468,7 @@ def test_v6_host_reservation_mysql_hwaddrr_matching_dualbackend():
                                            0,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

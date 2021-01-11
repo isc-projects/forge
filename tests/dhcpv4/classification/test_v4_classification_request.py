@@ -16,7 +16,7 @@ def test_v4_client_classification_one_class_one_subnet():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_client_classification(0, 'VENDOR_CLASS_my-own-class')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -65,7 +65,7 @@ def test_v4_client_classification_one_class_two_subnets_same_values():
     srv_control.config_client_classification(0, 'VENDOR_CLASS_my-own-class')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.100-192.168.51.100')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -145,7 +145,7 @@ def test_v4_client_classification_one_class_two_subnets_different_class_id_inclu
     srv_control.config_client_classification(0, 'VENDOR_CLASS_my-own-class')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.100-192.168.51.100')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -175,7 +175,7 @@ def test_v4_client_classification_one_class_two_subnets_different_chaddr():
     srv_control.config_client_classification(0, 'VENDOR_CLASS_my-own-class')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.100-192.168.51.100')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -248,7 +248,7 @@ def test_v4_client_classification_one_class_empty_pool_with_classification():
     srv_control.config_client_classification(0, 'VENDOR_CLASS_my-own-class')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.100-192.168.51.100')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -308,7 +308,7 @@ def test_v4_client_classification_one_class_empty_pool_without_classification():
     srv_control.config_client_classification(0, 'VENDOR_CLASS_my-own-class')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.100-192.168.51.100')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -364,7 +364,7 @@ def test_v4_client_classification_multiple_classes_two_subnets_different_chaddr(
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.100-192.168.51.100')
     srv_control.config_client_classification(1, 'VENDOR_CLASS_my-other-class')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -440,7 +440,7 @@ def test_v4_client_classification_multiple_classes_three_subnets_different_chadd
     srv_control.config_client_classification(1, 'VENDOR_CLASS_my-other-class')
     srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24',
                                                        '192.168.52.150-192.168.52.150')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -516,7 +516,7 @@ def test_v4_client_classification_multiple_classes_three_subnets_different_value
     srv_control.config_client_classification(1, 'VENDOR_CLASS_my-other-class')
     srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24',
                                                        '192.168.52.150-192.168.52.150')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -24,7 +24,7 @@ def test_ddns4_tsig_sha1_forw_and_rev_release():
     srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(21)
@@ -128,7 +128,7 @@ def test_ddns4_tsig_forw_and_rev_release_notenabled():
     srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(21)
@@ -204,7 +204,7 @@ def test_ddns4_tsig_forw_and_rev_release_notenabled():
     srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -251,7 +251,7 @@ def test_ddns4_tsig_sha1_rev_release():
     srv_control.add_forward_ddns('four.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(21)

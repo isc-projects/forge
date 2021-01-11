@@ -51,7 +51,7 @@ def test_v6_options_pool_level():
     option2 = {"name": "preference", "space": "dhcp6", "data": "2"}
     world.dhcp_cfg["subnet6"][0]["pools"][1].update({"option-data": [option2]})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # lease from first pool should have preference val set to 1

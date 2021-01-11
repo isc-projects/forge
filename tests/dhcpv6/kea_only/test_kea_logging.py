@@ -16,7 +16,7 @@ def test_v6_loggers_options_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.options', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -59,7 +59,7 @@ def test_v6_loggers_options_info():
     # TODO negative testing
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.options', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -101,7 +101,7 @@ def test_v6_loggers_bad_packets_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -120,7 +120,7 @@ def test_v6_loggers_bad_packets_info():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -139,7 +139,7 @@ def test_v6_loggers_dhcp6():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -183,7 +183,7 @@ def test_v6_loggers_dhcp6_info():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -229,7 +229,7 @@ def test_v6_loggers_alloc_engine():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -271,7 +271,7 @@ def test_v6_loggers_dhcpsrv_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -313,7 +313,7 @@ def test_v6_loggers_dhcpsrv_info():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -356,7 +356,7 @@ def test_v6_loggers_leases_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.leases', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -398,7 +398,7 @@ def test_v6_loggers_leases_info():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.leases', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -440,7 +440,7 @@ def test_v6_loggers_packets_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.packets', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -482,7 +482,7 @@ def test_v6_loggers_packets_info():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.packets', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -524,7 +524,7 @@ def test_v6_loggers_hosts_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.hosts', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -566,7 +566,7 @@ def test_v6_loggers_hosts_info():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.hosts', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -608,7 +608,7 @@ def test_v6_loggers_all():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -662,7 +662,7 @@ def test_v6_loggers_all_different_levels_same_file():
     srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', 50)
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', 25)
     srv_control.configure_loggers('kea-dhcp6.options', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -727,7 +727,7 @@ def test_v6_loggers_all_different_levels_different_file():
     srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', 50, 'kea.log6')
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', 25, 'kea.log7')
     srv_control.configure_loggers('kea-dhcp6.options', 'INFO', 'None', 'kea.log8')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -790,7 +790,7 @@ def test_ddns6_logging_all_types_debug():
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
     srv_control.configure_loggers('kea-dhcp-ddns', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

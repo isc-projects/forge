@@ -17,7 +17,7 @@ def test_v4_options_path_mtu_plateau_table():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('path-mtu-plateau-table', '100,300,500')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -40,7 +40,7 @@ def test_v4_options_interface_mtu():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('interface-mtu', '321')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -61,7 +61,7 @@ def test_v4_options_broadcast_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('broadcast-address', '255.255.255.0')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -82,7 +82,7 @@ def test_v4_options_router_solicitation_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('router-solicitation-address', '199.199.199.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -103,7 +103,7 @@ def test_v4_options_static_routes():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('static-routes', '199.199.199.1,70.70.70.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -125,7 +125,7 @@ def test_v4_options_arp_cache_timeout():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('arp-cache-timeout', '48')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -146,7 +146,7 @@ def test_v4_options_default_tcp_ttl():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('default-tcp-ttl', '44')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -167,7 +167,7 @@ def test_v4_options_tcp_keepalive_interval():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('tcp-keepalive-interval', '4896')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -188,7 +188,7 @@ def test_v4_options_nis_domain():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('nis-domain', 'some.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -209,7 +209,7 @@ def test_v4_options_nis_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('nis-servers', '199.199.199.1,100.100.100.15')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -231,7 +231,7 @@ def test_v4_options_ntp_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('ntp-servers', '199.199.199.1,100.100.100.15')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -253,7 +253,7 @@ def test_v4_options_netbios_name_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('netbios-name-servers', '188.188.188.2,100.100.100.15')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -275,7 +275,7 @@ def test_v4_options_netbios_dd_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('netbios-dd-server', '188.188.188.2,70.70.70.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -297,7 +297,7 @@ def test_v4_options_netbios_node_type():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('netbios-node-type', '8')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -318,7 +318,7 @@ def test_v4_options_netbios_scope():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('netbios-scope', 'global')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -339,7 +339,7 @@ def test_v4_options_font_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('font-servers', '188.188.188.2,100.100.100.1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -361,7 +361,7 @@ def test_v4_options_x_display_manager():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('x-display-manager', '188.188.188.2,150.150.150.10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -383,7 +383,7 @@ def test_v4_options_dhcp_requested_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('dhcp-requested-address', '188.188.188.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -404,7 +404,7 @@ def test_v4_options_dhcp_option_overload():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('dhcp-option-overload', '1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -425,7 +425,7 @@ def test_v4_options_dhcp_message():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('dhcp-message', 'some-message')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -446,7 +446,7 @@ def test_v4_options_dhcp_max_message_size():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('dhcp-max-message-size', '2349')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -467,7 +467,7 @@ def test_v4_options_renew_timer():
     misc.test_setup()
     srv_control.set_time('renew-timer', 999)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -488,7 +488,7 @@ def test_v4_options_rebind_timer():
     misc.test_setup()
     srv_control.set_time('rebind-timer', '1999')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -509,7 +509,7 @@ def test_v4_options_nwip_domain_name():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('nwip-domain-name', 'some.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -530,7 +530,7 @@ def test_v4_options_boot_file_name():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('boot-file-name', 'somefilename')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -551,7 +551,7 @@ def test_v4_options_client_last_transaction_time():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('client-last-transaction-time', '3424')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -572,7 +572,7 @@ def test_v4_options_associated_ip():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('associated-ip', '188.188.188.2,199.188.188.12')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -594,7 +594,7 @@ def test_v4_options_subnet_selection():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('subnet-selection', '188.188.188.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -29,7 +29,7 @@ def test_v6_statuscode_success_confirm():
     # 					status-code with code 0
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -91,7 +91,7 @@ def test_v6_statuscode_notonlink_confirm():
     # 					status-code with code 4
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1000')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -118,7 +118,7 @@ def test_v6_statuscode_notonlink_confirm():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3001::/64', '3001::2000-3001::3000')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

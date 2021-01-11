@@ -22,7 +22,7 @@ def test_v4_options_vendor_encapsulated_space():
                                             'uint16',
                                             66)
     srv_control.config_srv_opt('vendor-encapsulated-options', '$(EMPTY)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -76,7 +76,7 @@ def test_v4_options_vendor_encapsulated_space_private_iPXE():
                                   'option-data',
                                   {"name": "vendor-encapsulated-options"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -17,7 +17,7 @@ def test_v4_stateless_with_subnet_empty_pool():
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     srv_control.config_srv_opt('time-offset', '50')
     srv_control.config_srv_opt('routers', '100.100.100.10,50.50.50.5')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

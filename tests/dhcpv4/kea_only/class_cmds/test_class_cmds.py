@@ -30,7 +30,7 @@ def _setup_server_for_class_cmds(dhcp_version):
 
     srv_control.add_hooks('libdhcp_class_cmds.so')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

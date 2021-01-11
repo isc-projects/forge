@@ -574,24 +574,21 @@ def configure_loggers(log_type, severity, severity_level, logging_file=None):
 
 
 ##servers management
-@step('Send server configuration using (\S+) and (\S+).')
-def build_and_send_config_files(connection_type, configuration_type, cfg=None,
-                                dest=world.f_cfg.mgmt_address):
+@step('Send server configuration.')
+def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
     """
-    :param connection_type:
-    :param configuration_type:
     :param cfg:
     :param dest:
     :return:
     """
-    connection_type, configuration_type, dest = test_define_value(connection_type, configuration_type, dest)
+    dest = test_define_value(dest)[0]
     check_remote_address(dest)
-    dhcp.build_and_send_config_files(connection_type, configuration_type, cfg=cfg, destination_address=dest)
+    dhcp.build_and_send_config_files(cfg=cfg, destination_address=dest)
 
 
 @step('Generate server configuration file.')
 def generate_config_files():
-    dhcp.build_and_send_config_files(connection_type=None, configuration_type="config-file")
+    dhcp.build_and_send_config_files()
 
 
 @step('(\S+) server is (started|stopped|restarted|reconfigured).')

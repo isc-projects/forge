@@ -24,7 +24,7 @@ def test_ddns6_notsig_forw_and_rev_release():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -135,7 +135,7 @@ def test_ddns6_notsig_forw_and_rev_release():
 #     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
 #     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
 #     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-#     srv_control.build_and_send_config_files('SSH', 'config-file')
+#     srv_control.build_and_send_config_files()
 #     srv_control.start_srv('DHCP', 'started')
 #
 #     srv_control.use_dns_set_number(1)
@@ -212,7 +212,7 @@ def test_ddns6_notsig_forw_and_rev_release():
 #     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
 #     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
 #     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-#     srv_control.build_and_send_config_files('SSH', 'config-file')
+#     srv_control.build_and_send_config_files()
 #     srv_control.start_srv('DHCP', 'started')
 #
 #     misc.test_procedure()
@@ -264,7 +264,7 @@ def test_ddns6_notsig_forw_and_rev_release():
 #     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
 #     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
 #     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-#     srv_control.build_and_send_config_files('SSH', 'config-file')
+#     srv_control.build_and_send_config_files()
 #     srv_control.start_srv('DHCP', 'started')
 #
 #     srv_control.use_dns_set_number(1)
@@ -389,7 +389,7 @@ def test_ddns6_notsig_forw_and_rev_release():
 #     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
 #     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
 #     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-#     srv_control.build_and_send_config_files('SSH', 'config-file')
+#     srv_control.build_and_send_config_files()
 #     srv_control.start_srv('DHCP', 'started')
 #
 #     srv_control.use_dns_set_number(1)

@@ -23,7 +23,7 @@ def test_v4_host_reservation_hostname_hostname_option():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -60,7 +60,7 @@ def test_v4_host_reservation_hostname_fqdn_option():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -105,7 +105,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.forge_sleep(2, 'seconds')
@@ -147,7 +147,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_2():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'hostname', 'reserved-name')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.forge_sleep(2, 'seconds')
@@ -189,7 +189,7 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_3():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.forge_sleep(2, 'seconds')
@@ -236,7 +236,7 @@ def test_v4_host_reservation_hostname_multiple_entries():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:44')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
 
@@ -260,5 +260,5 @@ def test_v4_host_reservation_hostname_duplicated_entries():
                                            0,
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')

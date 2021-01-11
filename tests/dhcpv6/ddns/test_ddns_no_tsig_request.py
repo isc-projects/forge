@@ -24,7 +24,7 @@ def test_ddns6_notsig_forw_and_rev_add_success_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -105,7 +105,7 @@ def test_ddns6_notsig_forw_and_rev_add_fail_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -193,7 +193,7 @@ def test_ddns6_notsig_forw_and_rev_notenabled_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -280,7 +280,7 @@ def test_ddns6_notsig_forw_and_rev_update_success_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(2)
@@ -367,7 +367,7 @@ def test_ddns6_notsig_forw_and_rev_update_success_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -470,7 +470,7 @@ def test_ddns6_notsig_forw_and_rev_two_dhci_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -590,7 +590,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -771,7 +771,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -950,7 +950,7 @@ def test_ddns6_notsig_forw_and_rev_add_success_withoutflag_override_client():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -1040,7 +1040,7 @@ def test_ddns6_notsig_rev_success_withoutflag():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -1133,7 +1133,7 @@ def test_ddns6_notsig_rev_withoutflag_notenabled():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)
@@ -1212,7 +1212,7 @@ def test_ddns6_notsig_rev_Nflag_override_no_update():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.use_dns_set_number(1)

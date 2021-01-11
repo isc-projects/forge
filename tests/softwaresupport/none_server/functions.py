@@ -184,7 +184,7 @@ def check_kea_process_result(succeed, result, process):
     pass
 
 
-def build_and_send_config_files(connection_type, configuration_type="config-file"):
+def build_and_send_config_files():
     pass
 
 

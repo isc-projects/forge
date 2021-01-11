@@ -33,7 +33,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option():
 
     srv_control.config_srv('preference', 0, '123')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -89,7 +89,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_1():
 
     srv_control.config_srv('preference', 0, '123')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -145,7 +145,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_2():
 
     srv_control.config_srv('preference', 0, '123')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -213,7 +213,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_inforequest():
 
     srv_control.config_srv('preference', 0, '123')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -315,7 +315,7 @@ def test_v6_host_reservation_mysql_option_multiple():
     srv_control.config_srv_opt('bootfile-param', '000B48656C6C6F20776F726C640003666F6F')
     # 60
     srv_control.config_srv_opt('new-tzdb-timezone', 'Europe/Zurich')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -395,7 +395,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option():
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.config_srv_opt('preference', '12')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -451,7 +451,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option_no_address():
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.config_srv_opt('preference', '12')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -501,7 +501,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option_inforequest():
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.config_srv_opt('preference', '12')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -588,7 +588,7 @@ def test_v6_host_reservation_pgsql_option_multiple():
     # 59
     srv_control.config_srv_opt('new-tzdb-timezone', 'Europe/Zurich')
     # 60 and not reserved
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

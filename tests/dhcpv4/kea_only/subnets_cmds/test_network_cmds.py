@@ -41,7 +41,7 @@ def test_hook_v4_network_cmds_list():
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -79,7 +79,7 @@ def test_hook_v4_network_cmds_get_by_name():
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"network4-get","arguments":{"name":"name-xyz"}}')
@@ -96,7 +96,7 @@ def test_hook_v4_network_cmds_add():
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -154,7 +154,7 @@ def test_hook_v4_network_cmds_add_conflict():
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -184,7 +184,7 @@ def test_hook_v4_network_cmds_del():
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -228,7 +228,7 @@ def test_hook_v4_network_cmds_del_keep_subnet():
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -286,7 +286,7 @@ def test_hook_v4_network_cmds_del_non_existing():
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -313,7 +313,7 @@ def test_hook_v4_network_cmds_del_global_options():
 
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -363,7 +363,7 @@ def test_hook_v4_network_cmds_add_and_del():
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

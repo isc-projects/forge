@@ -783,13 +783,10 @@ def _write_cfg2(cfg):
     cfg_file.close()
 
 
-def build_and_send_config_files(connection_type, configuration_type="config-file",
-                                destination_address=world.f_cfg.mgmt_address, cfg=None):
+def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
     """
     Generate final config file, save it to test result directory
     and send it to remote system unless testing step will define differently.
-    :param connection_type: for now two values expected: SSH and None for stating if files should be send
-    :param configuration_type: for now supported just config-file, generate file and save to results dir
     :param destination_address: address of remote system to which conf file will be send,
     default it's world.f_cfg.mgmt_address
     """
@@ -815,28 +812,32 @@ def build_and_send_config_files(connection_type, configuration_type="config-file
                       "kea-dhcp-ddns.conf",
                       'kea-ctrl-agent.conf']
 
-    # send to server if requested
-    if connection_type == "SSH":
-        if world.f_cfg.install_method == 'make':
-            fabric_send_file(world.cfg["cfg_file_2"],
-                             world.f_cfg.etc_join("keactrl.conf"),
-                             destination_host=destination_address)
+    # use mode=0666 to make config writable to enable config-wrtie tests
 
-        fabric_send_file("kea-dhcp%s.conf" % world.proto[1],
-                         world.f_cfg.etc_join("kea-dhcp%s.conf" % world.proto[1]),
+    # send to server if requested
+    if world.f_cfg.install_method == 'make':
+        fabric_send_file(world.cfg["cfg_file_2"],
+                         world.f_cfg.etc_join("keactrl.conf"),
                          destination_host=destination_address)
 
-        if world.ctrl_enable:
-            fabric_send_file("kea-ctrl-agent.conf",
-                            world.f_cfg.etc_join("kea-ctrl-agent.conf"),
-                            destination_host=destination_address)
+    fabric_send_file("kea-dhcp%s.conf" % world.proto[1],
+                     world.f_cfg.etc_join("kea-dhcp%s.conf" % world.proto[1]),
+                     destination_host=destination_address,
+                     mode=0666)
 
-        if world.ddns_enable:
-            fabric_send_file("kea-dhcp-ddns.conf",
-                            world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
-                            destination_host=destination_address)
+    if world.ctrl_enable:
+        fabric_send_file("kea-ctrl-agent.conf",
+                         world.f_cfg.etc_join("kea-ctrl-agent.conf"),
+                         destination_host=destination_address,
+                         mode=0666)
 
-    # store files for debug purposes
+    if world.ddns_enable:
+        fabric_send_file("kea-dhcp-ddns.conf",
+                         world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
+                         destination_host=destination_address,
+                         mode=0666)
+
+    # store files back to local for debug purposes
     if world.f_cfg.install_method == 'make':
         copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file_2"])
@@ -949,7 +950,7 @@ def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
 
 
 def _restart_kea_with_systemctl(destination_address):
-    cmd_tpl = 'systemctl reset-failed {service} &&'  # prevent failing due to too many restarts
+    cmd_tpl = 'systemctl reset-failed {service} ;'  # prevent failing due to too many restarts
     cmd_tpl += ' systemctl restart {service} &&'  # restart service
     cmd_tpl += ' ts=`systemctl show -p ActiveEnterTimestamp {service}.service | awk \'{{print $2 $3}}\'`;'  # get time of log beginning
     cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'  # if started for the first time then ts is empty so set to current date

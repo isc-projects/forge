@@ -25,7 +25,7 @@ def test_v6_host_reservation_all_values_mac():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -77,7 +77,7 @@ def test_v6_host_reservation_all_values_duid():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -131,7 +131,7 @@ def test_v6_host_reservation_all_values_duid_2():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -181,7 +181,7 @@ def test_v6_host_reservation_classes_1():
     srv_control.add_option_to_defined_class(1, 'sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.add_option_to_defined_class(1, 'preference', '123')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -229,7 +229,7 @@ def test_v6_host_reservation_classes_2():
     srv_control.create_new_class('reserved-class2')
     srv_control.add_option_to_defined_class(2, 'preference', '123')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

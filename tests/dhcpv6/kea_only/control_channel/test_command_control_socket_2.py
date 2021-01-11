@@ -18,7 +18,7 @@ def test_control_channel_socket_config_get():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -37,7 +37,7 @@ def test_control_channel_socket_config_test():
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -86,7 +86,7 @@ def test_control_channel_socket_config_write():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -155,7 +155,7 @@ def test_control_channel_socket_config_reload():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -178,7 +178,7 @@ def test_control_channel_socket_config_reload():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     # Generate server configuration file.
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-reload","arguments":  {} }')
 

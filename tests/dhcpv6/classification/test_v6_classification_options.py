@@ -32,7 +32,7 @@ def test_v6_client_classification_multiple_subnets():
     srv_control.add_test_to_class(3, 'test', 'substring(option[1].hex,8,2) == 0xf299')
     srv_control.config_client_classification(2, 'Client_Class_3')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -118,7 +118,7 @@ def test_v6_client_classification_multiple_subnets_2():
     srv_control.add_test_to_class(3, 'test', 'substring(option[1].hex,8,2) == 0xf299')
     srv_control.config_client_classification(2, 'Client_Class_3')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -190,7 +190,7 @@ def test_v6_client_classification_class_with_option():
     srv_control.add_option_to_defined_class(1, 'dns-servers', '2001:db8::666')
     srv_control.config_client_classification(0, 'Client_Class_1')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -254,7 +254,7 @@ def test_v6_client_classification_multiple_subnets_options():
     srv_control.add_option_to_defined_class(3, 'dns-servers', '2001:db8::999')
     srv_control.config_client_classification(2, 'Client_Class_3')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -355,7 +355,7 @@ def test_v6_client_classification_multiple_subnets_options_override_global():
     srv_control.add_option_to_defined_class(3, 'dns-servers', '2001:db8::999')
     srv_control.config_client_classification(2, 'Client_Class_3')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -464,7 +464,7 @@ def test_v6_client_classification_shared_subnet_options_override():
                                                  '{"csv-format":true,"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}',
                                                  0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -523,7 +523,7 @@ def test_v6_client_classification_shared_subnet_options_override_global():
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -560,7 +560,7 @@ def test_v6_client_classification_shared_subnet_options_subnet():
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

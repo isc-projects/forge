@@ -19,7 +19,7 @@ def test_prefix_delegation_multiple_request():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::5-3000::5')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -93,7 +93,7 @@ def test_prefix_delegation_multiple_PD_and_IA_request():
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
     # pool for 4 addresses and 4 prefix, all 8 with success
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -179,7 +179,7 @@ def test_prefix_delegation_multiple_PD_and_IA_request_partial_success():
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
     # pool for 2 addresses and 2 prefix, half success
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -263,7 +263,7 @@ def test_prefix_delegation_multiple_PD_and_IA_request_partial_fail():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -324,7 +324,7 @@ def test_prefix_delegation_multiple_PD_and_IA_advertise_fail():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

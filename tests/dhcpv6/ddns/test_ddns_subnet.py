@@ -96,7 +96,7 @@ def test_ddns6_global():
                            "ddns-generated-prefix": "six",
                            "ddns-qualifying-suffix": "example.com"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=31)
@@ -125,7 +125,7 @@ def test_ddns6_shared_network():
                                                  "ddns-generated-prefix": "abc",
                                                  "ddns-qualifying-suffix": "example.com"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=31)
@@ -155,7 +155,7 @@ def test_ddns6_subnet():
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=31)
@@ -207,7 +207,7 @@ def test_ddns6_all_levels_resend_command():
 
     # srv_control.print_cfg()
     # srv_control.print_cfg(service='DDNS')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=31)
@@ -278,7 +278,7 @@ def test_ddns6_all_levels_resend_without_ddns():
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     srv_control.start_srv('DNS', 'started', config_set=31)
 

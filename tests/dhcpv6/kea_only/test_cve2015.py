@@ -17,7 +17,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_INFO():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -77,7 +77,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_FATAL():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'FATAL', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -137,7 +137,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_ERROR():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -197,7 +197,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_WARN():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'WARN', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -257,7 +257,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_DEBUG():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -317,7 +317,7 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_DEBUG():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -375,7 +375,7 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_INFO():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -433,7 +433,7 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_FATAL():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'FATAL', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -491,7 +491,7 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_ERROR():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -549,7 +549,7 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_WARN():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'WARN', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -606,7 +606,7 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -665,7 +665,7 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_FATAL():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'FATAL', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -724,7 +724,7 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_ERROR():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -783,7 +783,7 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_WARN():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'WARN', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -842,7 +842,7 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_INFO():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -901,7 +901,7 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_DEBUG():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -960,7 +960,7 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_FATAL():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'FATAL', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1019,7 +1019,7 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_ERROR():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1078,7 +1078,7 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_WARN():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'WARN', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1137,7 +1137,7 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_INFO():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1196,7 +1196,7 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_DEBUG():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1255,7 +1255,7 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_FATAL():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'FATAL', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1314,7 +1314,7 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_ERROR():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1374,7 +1374,7 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_WARN():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'WARN', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1434,7 +1434,7 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_INFO():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1494,7 +1494,7 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_DEBUG():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1554,7 +1554,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_FATAL():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'FATAL', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1605,7 +1605,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_ERROR():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1656,7 +1656,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_WARN():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'WARN', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1707,7 +1707,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_INFO():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1758,7 +1758,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_DEBUG():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1809,7 +1809,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_FATAL():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'FATAL', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1850,7 +1850,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_ERROR():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'ERROR', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1891,7 +1891,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_WARN():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'WARN', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1932,7 +1932,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_INFO():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1973,7 +1973,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     misc.test_procedure()
     srv_msg.client_requests_option(7)
@@ -2006,7 +2006,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG44():
 
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 44)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     misc.test_procedure()
     srv_msg.client_requests_option(7)
@@ -2038,7 +2038,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUG45():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 45)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     misc.test_procedure()
     srv_msg.client_requests_option(7)
@@ -2071,7 +2071,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGalloc_engine():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2105,7 +2105,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGbad_packets():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2139,7 +2139,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGcallouts():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.callouts', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2173,7 +2173,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGcommands():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.commands', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2207,7 +2207,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGddns():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.ddns', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2241,7 +2241,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGdhcp6():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2275,7 +2275,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGdhcpsrv():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2309,7 +2309,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGeval():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.eval', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2343,7 +2343,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGhooks():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.hooks', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2377,7 +2377,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGhosts():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.hosts', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2411,7 +2411,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGleases():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.leases', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2445,7 +2445,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUGoptions():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.options', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2479,7 +2479,7 @@ def test_v6_CVE_2015_8373_solicit_with_empty_client_id_DEBUpackets():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.packets', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -31,7 +31,7 @@ def test_v6_multipleIA_addresses():
     # 					IA-Address with 3000::3 address
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -111,7 +111,7 @@ def test_v6_multipleIA_addresses_multiple_pools():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
     srv_control.new_pool('3000::2-3000::2', 0)
     srv_control.new_pool('3000::3-3000::3', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -191,7 +191,7 @@ def test_v6_multipleIA_addresses_release_success():
     # 					Status code 'success'
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -301,7 +301,7 @@ def test_v6_multipleIA_addresses_release_partial_success():
     # 					IA_Address with status code: NoBinding
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -423,7 +423,7 @@ def test_v6_multipleIA_addresses_rebind_partial_success():
     # 					abut what should happen in such case.
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -535,7 +535,7 @@ def test_v6_multipleIA_addresses_noaddravail():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

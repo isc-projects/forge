@@ -74,7 +74,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
                                                                        {"state": "load-balancing", "pause": "always"},
                                                                        {"state": "partner-down", "pause": "always"}]}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -96,7 +96,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     srv_msg.forge_sleep(3, 'seconds')
@@ -214,7 +214,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
                                                                        {"state": "load-balancing", "pause": "once"},
                                                                        {"state": "partner-down", "pause": "once"}]}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -238,7 +238,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
 
@@ -366,7 +366,7 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
                                                                        {"state": "hot-standby", "pause": "once"},
                                                                        {"state": "partner-down", "pause": "once"}]}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -391,7 +391,7 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
 
@@ -499,7 +499,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
                                                                        {"state": "hot-standby", "pause": "always"},
                                                                        {"state": "partner-down", "pause": "always"}]}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -523,7 +523,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     srv_msg.forge_sleep(3, 'seconds')

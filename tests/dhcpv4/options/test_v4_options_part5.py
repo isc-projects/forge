@@ -16,7 +16,7 @@ def test_v4_options_nisplus_domain_name():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('nisplus-domain-name', 'nisplus-domain.com')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -36,7 +36,7 @@ def test_v4_options_nisplus_servers():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('nisplus-servers', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -57,7 +57,7 @@ def test_v4_options_mobile_ip_home_agent():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('mobile-ip-home-agent', '166.1.1.1,177.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -78,7 +78,7 @@ def test_v4_options_smtp_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('smtp-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -99,7 +99,7 @@ def test_v4_options_pop_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('pop-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -120,7 +120,7 @@ def test_v4_options_nntp_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('nntp-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -141,7 +141,7 @@ def test_v4_options_www_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('www-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -162,7 +162,7 @@ def test_v4_options_finger_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('finger-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -183,7 +183,7 @@ def test_v4_options_irc_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('irc-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -204,7 +204,7 @@ def test_v4_options_streettalk_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('streettalk-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -225,7 +225,7 @@ def test_v4_options_streettalk_directory_assistance_server():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('streettalk-directory-assistance-server', '199.1.1.1,200.1.1.2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -248,7 +248,7 @@ def test_v4_options_not_requested_options():
     srv_control.config_srv_opt('routers', '100.100.100.10,50.50.50.5')
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
     # this should include fqdn option, 15
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

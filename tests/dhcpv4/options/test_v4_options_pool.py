@@ -49,7 +49,7 @@ def test_v4_options_pool_level():
     option2 = {"data": "172.170.10.111", "name": "routers"}
     world.dhcp_cfg["subnet4"][0]["pools"][1].update({"option-data": [option2]})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     _get_lease("01:01:01:01:01:01", "172.17.0.1", "172.16.0.20")

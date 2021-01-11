@@ -28,7 +28,7 @@ def test_v6_host_reservation_cql_duplicate_reservation_duid():
     srv_control.upload_db_reservation('Cassandra')
 
     # upload should failed!#TODO add step to failed upload
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
 
@@ -51,7 +51,7 @@ def test_v6_host_reservation_cql_duplicate_reservation_address():
     srv_control.upload_db_reservation('Cassandra')
 
     # upload should failed! #TODO add step to failed upload
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
 
@@ -73,7 +73,7 @@ def test_v6_host_reservation_cql_conflicts_two_entries_for_one_host_different_su
 
     srv_control.upload_db_reservation('Cassandra')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -133,7 +133,7 @@ def test_v6_host_reservation_cql_conflicts_two_entries_for_one_host_different_su
 def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_of_used_address():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -184,7 +184,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
 
     srv_control.upload_db_reservation('Cassandra')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -216,7 +216,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
 def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_of_used_address_2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -281,7 +281,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
 
     srv_control.upload_db_reservation('Cassandra')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -315,7 +315,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
 
     # Use Cassandra reservation system.
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -385,7 +385,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
     srv_control.ipv6_address_db_backend_reservation('3000::2', '$(EMPTY)', 'Cassandra', 1)
     srv_control.upload_db_reservation('Cassandra')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()
@@ -437,7 +437,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
     srv_control.set_time('preferred-lifetime', 7)
     srv_control.set_time('valid-lifetime', 8)
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -512,7 +512,7 @@ def test_v6_host_reservation_cql_conflicts_reconfigure_server_with_reservation_o
     srv_control.ipv6_address_db_backend_reservation('3000::2', '$(EMPTY)', 'Cassandra', 1)
     srv_control.upload_db_reservation('Cassandra')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     misc.test_procedure()

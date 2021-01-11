@@ -75,12 +75,13 @@ def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
 def fabric_send_file(file_local, file_remote,
                      destination_host=world.f_cfg.mgmt_address,
                      user_loc=world.f_cfg.mgmt_username,
-                     password_loc=world.f_cfg.mgmt_password):
+                     password_loc=world.f_cfg.mgmt_password,
+                     mode=None):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore",category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
             with hide('running', 'stdout', 'stderr'):
-                result = put(file_local, file_remote, use_sudo=True)
+                result = put(file_local, file_remote, use_sudo=True, mode=mode)
     return result
 
 

@@ -20,7 +20,7 @@ def test_v4_hosts_cmds_libreload():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -76,7 +76,7 @@ def test_v4_hosts_cmds_reconfigure():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -104,7 +104,7 @@ def test_v4_hosts_cmds_reconfigure():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
@@ -129,7 +129,7 @@ def test_v4_hosts_cmds_add_reservation_mysql():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -174,7 +174,7 @@ def test_v4_hosts_cmds_del_reservation_mysql():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -223,7 +223,7 @@ def test_v4_hosts_cmds_del_reservation_mysql_2():
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -256,7 +256,7 @@ def test_v4_hosts_cmds_del_reservation_pgsql():
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -304,7 +304,7 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -349,7 +349,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql():
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -394,7 +394,7 @@ def test_v4_hosts_cmds_get_reservation_mysql():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -435,7 +435,7 @@ def test_v4_hosts_cmds_get_reservation_mysql_2():
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -460,7 +460,7 @@ def test_v4_hosts_cmds_get_reservation_pgsql():
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -500,7 +500,7 @@ def test_v4_hosts_cmds_get_reservation_pgsql_2():
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -529,7 +529,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -582,7 +582,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
 
     srv_control.enable_db_backend_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -632,7 +632,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -685,7 +685,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -729,7 +729,7 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('PostgreSQL')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -782,7 +782,7 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
     srv_control.enable_db_backend_reservation('MySQL')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -838,7 +838,7 @@ def test_v4_hosts_cmds_conflicts_duplicate_mac_reservations(hosts_db):
 
     srv_control.enable_db_backend_reservation(hosts_db)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.send_ctrl_cmd_via_socket(
@@ -870,7 +870,7 @@ def test_v4_hosts_cmds_conflicts_duplicate_ip_reservations(hosts_db):
 
     srv_control.enable_db_backend_reservation(hosts_db)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.send_ctrl_cmd_via_socket(
@@ -906,7 +906,7 @@ def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(hosts_db):
 
     srv_control.enable_db_backend_reservation(hosts_db)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.send_ctrl_cmd_via_socket(

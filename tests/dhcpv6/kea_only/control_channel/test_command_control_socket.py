@@ -16,7 +16,7 @@ def test_control_channel_socket_dhcp_disable_timer():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -71,7 +71,7 @@ def test_control_channel_socket_dhcp_disable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -109,7 +109,7 @@ def test_control_channel_socket_dhcp_disable_and_enable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -164,7 +164,7 @@ def test_control_channel_socket_config_set_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -211,7 +211,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -264,7 +264,7 @@ def test_control_channel_socket_after_restart_load_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -326,7 +326,7 @@ def test_control_channel_socket_big_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

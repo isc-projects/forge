@@ -19,7 +19,7 @@ def test_v6_movingclient_0():
                                                        '2001:db8:2::1-2001:db8:2::10')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:3::/64',
                                                        '2001:db8:3::1-2001:db8:3::10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -121,7 +121,7 @@ def test_v6_movingclient_1():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ff')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -186,7 +186,7 @@ def test_v6_movingclient_2():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ff')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -252,7 +252,7 @@ def test_v6_movingclient_3():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ff')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -321,7 +321,7 @@ def test_v6_movingclient_4():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ff')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

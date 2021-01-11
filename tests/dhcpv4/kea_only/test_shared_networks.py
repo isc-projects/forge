@@ -22,7 +22,7 @@ def test_v4_sharednetworks_negative_missing_name():
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     # DHCP server is started.
     srv_control.start_srv_during_process('DHCP', 'configure')
@@ -42,7 +42,7 @@ def test_v4_sharednetworks_negative_empty_name():
     srv_control.shared_subnet('192.168.51.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '""', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     # DHCP server is started.
     srv_control.start_srv_during_process('DHCP', 'configure')
@@ -65,7 +65,7 @@ def test_v4_sharednetworks_negative_not_unique_names():
     srv_control.shared_subnet('192.168.50.1/24', 1)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 1)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 1)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv_during_process('DHCP', 'configure')
 
@@ -80,7 +80,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_one_subnet_based_on_iface()
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -117,7 +117,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -188,7 +188,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_two_subnets_based_on_iface(
     srv_control.shared_subnet('192.168.51.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -266,7 +266,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -408,7 +408,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -593,7 +593,7 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -774,7 +774,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -870,7 +870,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
 
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1015,7 +1015,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

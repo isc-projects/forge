@@ -21,7 +21,7 @@ def test_hook_v6_subnet_cmds_list():
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -40,7 +40,7 @@ def test_hook_v6_subnet_cmds_get_by_id():
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -59,7 +59,7 @@ def test_hook_v6_subnet_cmds_get_by_subnet():
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -78,7 +78,7 @@ def test_hook_v6_subnet_cmds_add():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -127,7 +127,7 @@ def test_hook_v6_subnet_cmds_add_with_options():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -194,7 +194,7 @@ def test_hook_v6_subnet_cmds_add_conflict():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -247,7 +247,7 @@ def test_hook_v6_subnet_cmds_del():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -294,7 +294,7 @@ def test_hook_v6_subnet_cmds_del_non_existing():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -342,7 +342,7 @@ def test_hook_v6_subnet_cmds_del_global_options():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -404,7 +404,7 @@ def test_hook_v6_subnet_cmds_add_and_del():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

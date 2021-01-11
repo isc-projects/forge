@@ -88,7 +88,7 @@ def test_ddns6_control_channel_list():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command="list-commands", arguments={})
@@ -116,7 +116,7 @@ def test_ddns6_control_channel_config_set():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -151,7 +151,7 @@ def test_ddns6_control_channel_config_set_all_values():
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -181,7 +181,7 @@ def test_ddns6_control_channel_config_set_all_values():
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     # new socket name
     srv_control.ddns_open_control_channel(socket_name="different_ddns_control_socket")
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-set', arguments=cfg)
@@ -220,7 +220,7 @@ def test_ddns6_control_channel_config_test():
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -242,7 +242,7 @@ def test_ddns6_control_channel_config_test():
     srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -356,7 +356,7 @@ def test_ddns6_control_channel_config_reload():
     srv_control.add_ddns_server_options('generated-prefix', 'six')
     srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-get', arguments={})
@@ -375,7 +375,7 @@ def test_ddns6_control_channel_config_reload():
     srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     cmd = dict(command='config-reload', arguments={})
     _send_through_ddns_socket(cmd)
@@ -401,7 +401,7 @@ def test_ddns6_control_channel_build_report():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='build-report', arguments={})
@@ -430,7 +430,7 @@ def test_ddns6_control_channel_config_write():
     srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='config-write', arguments={"filename": world.f_cfg.data_join("new_kea_config_file")})
@@ -456,7 +456,7 @@ def test_ddns6_control_channel_shutdown():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='shutdown', arguments={"type": "now"})
@@ -486,7 +486,7 @@ def test_ddns6_control_channel_version_get():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.ddns_open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmd = dict(command='version-get', arguments={})

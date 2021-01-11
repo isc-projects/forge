@@ -26,7 +26,7 @@ def test_user_check_hook_IA_NA_no_registry_logging():
     srv_control.configure_loggers('kea-dhcp6.callouts', 'ERROR', 'None')
     srv_control.configure_loggers('kea-dhcp6.hooks', 'ERROR', 'None')
     srv_control.add_hooks('libdhcp_user_chk.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
     # DHCP server is started.
@@ -65,7 +65,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging():
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp6.callouts', 'DEBUG', 99)
     srv_control.configure_loggers('kea-dhcp6.hooks', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -106,7 +106,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp6.callouts', 'DEBUG', 99)
     srv_control.configure_loggers('kea-dhcp6.hooks', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     # DHCP server failed to start. During configuration process.
     srv_control.start_srv('DHCP', 'started')
 
@@ -137,7 +137,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp6.callouts', 'DEBUG', 99)
     srv_control.configure_loggers('kea-dhcp6.hooks', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

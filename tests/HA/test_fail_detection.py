@@ -49,7 +49,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -76,7 +76,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
@@ -146,7 +146,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -182,7 +182,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
@@ -252,7 +252,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server1"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -283,7 +283,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
@@ -366,7 +366,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server1"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # HA SERVER 2
@@ -397,7 +397,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files('SSH', 'config-file', dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)

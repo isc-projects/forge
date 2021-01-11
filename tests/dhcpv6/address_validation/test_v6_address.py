@@ -27,7 +27,7 @@ def test_v6_basic_message_unicast_global_solicit():
                                              '3000::/64',
                                              '3000::1-3000::ff')
     # Server is configured with
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -80,7 +80,7 @@ def test_v6_basic_message_unicast_global_confirm():
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -154,7 +154,7 @@ def test_v6_basic_message_unicast_global_rebind():
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -223,7 +223,7 @@ def test_v6_basic_message_unicast_global_inforequest():
                                              '3000::/64',
                                              '3000::1-3000::ff')
     srv_control.config_srv_opt('preference', '123')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -287,7 +287,7 @@ def test_v6_basic_message_unicast_global_request():
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -362,7 +362,7 @@ def test_v6_basic_message_unicast_global_renew():
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -446,7 +446,7 @@ def test_v6_basic_message_unicast_global_release():
                                              '$(SRV_IPV6_ADDR_GLOBAL)',
                                              '3000::/64',
                                              '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -507,7 +507,7 @@ def test_v6_basic_message_unicast_local_solicit():
     #  		   						<--	ADVERTISE
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -556,7 +556,7 @@ def test_v6_basic_message_unicast_local_confirm():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -628,7 +628,7 @@ def test_v6_basic_message_unicast_local_rebind():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -695,7 +695,7 @@ def test_v6_basic_message_unicast_local_inforequest():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_opt('preference', '123')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -757,7 +757,7 @@ def test_v6_basic_message_unicast_local_request():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -830,7 +830,7 @@ def test_v6_basic_message_unicast_local_renew():
     # 					IA-Address
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -911,7 +911,7 @@ def test_v6_basic_message_unicast_local_release():
     # 					status-code with Success
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

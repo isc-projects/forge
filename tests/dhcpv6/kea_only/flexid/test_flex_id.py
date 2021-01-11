@@ -26,7 +26,7 @@ def test_v6_hooks_flexid_1():
     srv_control.add_parameter_to_hook(1,
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -69,7 +69,7 @@ def test_v6_hooks_flexid_libreload():
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -136,7 +136,7 @@ def test_v6_hooks_flexid_reconfigure_1():
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -174,7 +174,7 @@ def test_v6_hooks_flexid_reconfigure_1():
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -218,7 +218,7 @@ def test_v6_hooks_flexid_reconfigure_2():
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -256,7 +256,7 @@ def test_v6_hooks_flexid_reconfigure_2():
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -316,7 +316,7 @@ def test_v6_hooks_flexid_2():
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1, 'identifier-expression', 'relay6[0].option[18].hex')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     # Using UNIX socket on server in path control_socket send {"command": "config-reload","arguments":  {} }
@@ -359,7 +359,7 @@ def test_v6_hooks_flexid_3():
     srv_control.add_parameter_to_hook(1,
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -396,7 +396,7 @@ def test_v6_hooks_flexid_mysql_1():
     srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     # Pause the Test.
 
@@ -440,7 +440,7 @@ def test_v6_hooks_flexid_mysql_2():
     srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -477,7 +477,7 @@ def test_v6_hooks_flexid_pgsql_1():
     srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     # Pause the Test.
 
@@ -522,7 +522,7 @@ def test_v6_hooks_flexid_pgsql_2():
     srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -561,7 +561,7 @@ def test_v6_hooks_flexid_replace_duid():
                                       'vendor[4491].option[1026].hex')
     srv_control.add_parameter_to_hook(1, 'replace-client-id', True)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -620,7 +620,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
                                       'vendor[4491].option[1026].hex')
     srv_control.add_parameter_to_hook(1, 'replace-client-id', True)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -698,7 +698,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
     srv_control.add_parameter_to_hook(1, 'replace-client-id', True)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -777,7 +777,7 @@ def test_v6_hooks_flexid_replace_duid_release():
                                       'vendor[4491].option[1026].hex')
     srv_control.add_parameter_to_hook(1, 'replace-client-id', True)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -854,7 +854,7 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
     srv_control.add_parameter_to_hook(1, 'replace-client-id', True)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -943,7 +943,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1044,7 +1044,7 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
     srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

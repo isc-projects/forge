@@ -27,7 +27,7 @@ def test_user_check_hook_vendor_options_all():
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.config_srv_opt_space('vendor-4491', 'tftp-servers', '7000::1')
     srv_control.config_srv_opt_space('vendor-4491', 'config-file', 'bootfile.from.server')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     #

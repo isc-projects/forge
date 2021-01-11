@@ -133,7 +133,7 @@ def test_ddns6_all_levels_lease4_del_with_dns():
 
     # srv_control.print_cfg()
     # srv_control.print_cfg(service='DDNS')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=31)
@@ -224,7 +224,7 @@ def test_ddns6_all_levels_lease4_del_without_dns():
 
     # srv_control.print_cfg()
     # srv_control.print_cfg(service='DDNS')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=31)

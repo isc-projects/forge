@@ -22,7 +22,7 @@ def test_v6_sharednetworks_negative_missing_name():
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     # DHCP server is started.
     srv_control.start_srv_during_process('DHCP', 'configure')
@@ -47,7 +47,7 @@ def test_v6_sharednetworks_negative_not_unique_names():
     srv_control.shared_subnet('2001:db8:b::/64', 1)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 1)
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-xyz"', 1)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv_during_process('DHCP', 'configure')
 
@@ -62,7 +62,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_iface()
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -118,7 +118,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -215,7 +215,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_id():
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -312,7 +312,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_iface(
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -397,7 +397,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -496,7 +496,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_id_o
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -627,7 +627,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-abc"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -757,7 +757,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', 0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -892,7 +892,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1034,7 +1034,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_control.shared_subnet('2001:db8:f::/64', 2)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', 2)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1323,7 +1323,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
     srv_control.shared_subnet('2001:db8:f::/64', 2)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', 2)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1669,7 +1669,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 1)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -1937,7 +1937,7 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-xyz"', 1)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -2211,7 +2211,7 @@ def test_v6_sharednetworks_classification_with_defined_option():
                                                  '{"code":23,"data":"2001:db8::1","name":"dns-servers","space":"dhcp6"}',
                                                  0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2322,7 +2322,7 @@ def test_v6_sharednetworks_classification_without_defined_option():
     srv_control.shared_subnet('2001:db8:c::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2423,7 +2423,7 @@ def test_v6_sharednetworks_host_reservation_duplicate_reservation():
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
 
@@ -2451,7 +2451,7 @@ def test_v6_sharednetworks_host_reservation_all_values_duid():
     srv_control.shared_subnet('2001:db8:c::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2516,7 +2516,7 @@ def test_v6_sharednetworks_host_reservation_options_override_1():
                                                  '{"code":7,"data":"5","name":"preference","space":"dhcp6"}',
                                                  0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -2587,7 +2587,7 @@ def test_v6_sharednetworks_host_reservation_options_override_2():
                                                  '{"code":7,"data":"5","name":"preference","space":"dhcp6"}',
                                                  0)
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -44,7 +44,7 @@ def test_hook_v6_network_cmds_list():
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -86,7 +86,7 @@ def test_hook_v6_network_cmds_get_by_name():
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -105,7 +105,7 @@ def test_hook_v6_network_cmds_add_on_interface():
     # Server is configured with domain-search option with value domain1.example.com,domain2.isc.org.
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -153,7 +153,7 @@ def test_hook_v6_network_cmds_add_on_interface_id():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -208,7 +208,7 @@ def test_hook_v6_network_cmds_add_on_relay_addr():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -269,7 +269,7 @@ def test_hook_v6_network_cmds_add_conflict():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -383,7 +383,7 @@ def test_hook_v6_network_cmds_del():
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -407,7 +407,7 @@ def test_hook_v6_network_cmds_del_2():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -479,7 +479,7 @@ def test_hook_v6_network_cmds_del_non_existing():
     srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.open_control_channel()
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 
@@ -501,7 +501,7 @@ def test_hook_v6_network_cmds_add_and_del():
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
 

@@ -130,7 +130,7 @@ def test_ddns4_all_levels_lease4_del_with_dns():
     srv_control.add_reverse_ddns('51.168.192.in-addr.arpa.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('52.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     srv_control.start_srv('DNS', 'started', config_set=32)
 
@@ -215,7 +215,7 @@ def test_ddns4_all_levels_lease4_del_without_dns():
     srv_control.add_reverse_ddns('51.168.192.in-addr.arpa.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('52.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     srv_control.start_srv('DNS', 'started', config_set=32)
 

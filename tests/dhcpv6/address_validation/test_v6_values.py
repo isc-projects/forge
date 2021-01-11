@@ -17,7 +17,7 @@ def test_v6_values_address1():
 
     misc.test_setup()
     srv_control.config_srv_subnet('ff02::/64', 'ff02::1-ff02::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
     references.references_check('RFC3315')
@@ -30,7 +30,7 @@ def test_v6_values_address2():
 
     misc.test_setup()
     srv_control.config_srv_subnet('::/64', '::1-::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
     references.references_check('RFC3315')

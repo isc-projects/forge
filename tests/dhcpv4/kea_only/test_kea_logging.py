@@ -18,7 +18,7 @@ def test_v4_loggers_options_debug():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.options', 'DEBUG', 99)
     srv_control.config_srv_opt('time-offset', '50')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -72,7 +72,7 @@ def test_v4_loggers_options_info():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None')
     srv_control.config_srv_opt('time-offset', '50')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -124,7 +124,7 @@ def test_v4_loggers_bad_packets_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -157,7 +157,7 @@ def test_v4_loggers_bad_packets_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -190,7 +190,7 @@ def test_v4_loggers_dhcp4():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -243,7 +243,7 @@ def test_v4_loggers_dhcp4_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -296,7 +296,7 @@ def test_v4_loggers_alloc_engine():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -348,7 +348,7 @@ def test_v4_loggers_dhcpsrv_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -402,7 +402,7 @@ def test_v4_loggers_dhcpsrv_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -456,7 +456,7 @@ def test_v4_loggers_leases_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.leases', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -504,7 +504,7 @@ def test_v4_loggers_leases_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.leases', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -556,7 +556,7 @@ def test_v4_loggers_packets_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.packets', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -608,7 +608,7 @@ def test_v4_loggers_packets_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.packets', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -660,7 +660,7 @@ def test_v4_loggers_hosts_debug():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.hosts', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -712,7 +712,7 @@ def test_v4_loggers_hosts_info():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.hosts', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -764,7 +764,7 @@ def test_v4_loggers_all():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -874,7 +874,7 @@ def test_v4_loggers_all_different_levels_same_file():
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', 50)
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 25)
     srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -965,7 +965,7 @@ def test_v4_loggers_all_different_levels_different_file():
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', 50, 'kea.log6')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 25, 'kea.log7')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log8')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -1056,7 +1056,7 @@ def test_ddns4_logging_all_types_debug():
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'forge.sha1.key')
     srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
     srv_control.configure_loggers('kea-dhcp-ddns', 'DEBUG', 99)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

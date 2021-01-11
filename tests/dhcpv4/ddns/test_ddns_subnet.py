@@ -99,7 +99,7 @@ def test_ddns4_subnet():
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=32)
@@ -128,7 +128,7 @@ def test_ddns4_shared_network():
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=32)
@@ -157,7 +157,7 @@ def test_ddns4_gloabl():
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=32)
@@ -208,7 +208,7 @@ def test_ddns4_all_levels_resend_command():
 
     srv_control.print_cfg()
     srv_control.print_cfg(service='DDNS')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     srv_control.start_srv('DNS', 'started', config_set=32)
@@ -276,7 +276,7 @@ def test_ddns4_all_levels_resend_without_ddns():
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     srv_control.start_srv('DNS', 'started', config_set=32)
 

@@ -18,7 +18,7 @@ def test_prefix_delegation_onlyPD_renew():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -65,7 +65,7 @@ def test_prefix_delegation_onlyPD_renew_nobinding():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -101,7 +101,7 @@ def test_prefix_delegation_onlyPD_renew_nobinding_new_IA_PD():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -138,7 +138,7 @@ def test_prefix_delegation_IA_and_PD_renew():
     # Server is configured with 3000::/64 subnet with 3000::1-3000::3 pool.
     srv_control.config_srv_subnet('3000::/64', '3000::ffff:ffff:1-3000::ffff:ffff:3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -191,7 +191,7 @@ def test_prefix_delegation_IA_and_PD_renew_nobindig():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -97,7 +97,7 @@ def test_control_channel_lease6_get_by():
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     _get_address("00:03:00:01:08:08:08:08:08:08", "2001:db8:a::5", ia_id=5, fqdn="six.hostname.com.")

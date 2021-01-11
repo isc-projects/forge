@@ -77,7 +77,7 @@ def test_control_channel_lease4_get_by():
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     _get_address("08:08:08:08:08:08", "192.168.50.5", cli_id="00010203040506", fqdn="four.hostname.com.")

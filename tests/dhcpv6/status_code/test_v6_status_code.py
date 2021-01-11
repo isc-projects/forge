@@ -16,7 +16,7 @@ def test_v6_statuscode_noaddravail_solicit():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -58,7 +58,7 @@ def test_v6_statuscode_noaddravail_request():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -104,7 +104,7 @@ def test_v6_statuscode_nobinding_renew():
     # when client id not known
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -141,7 +141,7 @@ def test_v6_statuscode_nobinding_renew_newIA():
     # when client id not known
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.build_and_send_config_files('SSH', 'config-file')
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
