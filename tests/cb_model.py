@@ -475,9 +475,6 @@ class ConfigModel(ConfigElem):
         # find subnet
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
-            print(self.subnets)
-            print(self.subnets.keys())
-            print(self.subnets.values())
             subnet = list(self.subnets.values())[0]
         else:
             subnet = None
