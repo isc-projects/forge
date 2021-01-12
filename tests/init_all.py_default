@@ -11,13 +11,13 @@
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
 # case insensitive.
-LOGLEVEL = "info"
+# LOGLEVEL = 'info'
 
 # Controls whether packet contents are shown on stdout.  Choices are:
 # client - shows DHCP requests sent from the test client
 # server -  shows DHCP responses received from the server under test
 # both - shows DHCP packets from both test client and server under test
-SHOW_PACKETS_FROM = ""
+# SHOW_PACKETS_FROM = 'both'
 
 # This defines which software will be tested.
 # Allowed values:
@@ -26,103 +26,104 @@ SHOW_PACKETS_FROM = ""
 # Not all of those are functional yet. This is essentially
 # name of the subdirectory in lettuce/features/softwaresupport
 # This is list of software under test, you can test server or client (not both!) at the same time,
-# also you can use only one DHCP and one DNS server and must end with coma ","
-# in e.g.:
-# SOFTWARE_UNDER_TEST = "kea6_server", "bind9_server",
+# also you can use only one DHCP and one DNS server and must end with comma ","
+# like in e.g.: SOFTWARE_UNDER_TEST = ('kea4_server', 'bind9_server'),
+# INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = ('kea4_server', 'kea6_server'),
 
-SOFTWARE_UNDER_TEST = "",
-
-# INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = "kea6_server","kea4_server"
+# SOFTWARE_UNDER_TEST = ('kea4_server', 'bind9_server'),
 
 # Parameters specific to DHCPv4 tests
-SRV4_ADDR = ""
+SRV4_ADDR = ''
 
 # This specifies relay agent address. Leave this as 0.0.0.0 if you don't want
 # to test relayed traffic.
-REL4_ADDR = "0.0.0.0"
+# REL4_ADDR = '0.0.0.0'
+
+# Client address
+CIADDR = ''
 
 # This is a value client will set giaddr field to. Leave it as 0.0.0.0 if you
 # don't want to test relays
-GIADDR4 = "0.0.0.0"
+# GIADDR4 = '0.0.0.0'
 
 # Defines name of the DUT-facing network interface
-IFACE = ""
+IFACE = ''
 
 # For all servers, choose ethernet interface on which server will be configured
 # to listen and respond.
-SERVER_IFACE = ""
+SERVER_IFACE = ''
 
 # Specifies path to the server installation directory on DUT. This must
 # point to root directory of server installation and must end with /.
-SOFTWARE_INSTALL_PATH = "/usr/local/"
+# SOFTWARE_INSTALL_PATH = '/usr/local/'
 
 # Kea install method, it can be:
 # - 'make' - make install straight from sources or
 # - 'native' - from native deb/rpm packages using rpm or dpkg
-INSTALL_METHOD = 'make'
+# INSTALL_METHOD = 'make'
 
 # When Forge sends a packet, it typically awaits for the server to respond.
 # Server typically does that promptly, but during debugging it is benefical for
 # the the test to wait a long time. If test concludes too early, it will remove
 # the configuration and kill the server (while the debugging still taking place)
-PACKET_WAIT_INTERVAL = 1
+# PACKET_WAIT_INTERVAL = 1
 
 # scope link server address for testing unicast messages
 # Address 3000:: is strongly recommended for global address. Most tests are using pool
 # 3000::1-3000::ffff in this case recommended address will not cover any address form
 # server pool (what could cause some tests to fail)
-SRV_IPV6_ADDR_GLOBAL = ""
-SRV_IPV6_ADDR_LINK_LOCAL = ""
+# SRV_IPV6_ADDR_GLOBAL = '3000::1000'
+# SRV_IPV6_ADDR_LINK_LOCAL = 'fe80::a00:27ff:fedf:63bc'
 
 # If you wont to build tests history in history.html set HISTORY on True if not,
 # on False but for more detailed information about tests, use --with_xunit option
 # when starting run_test.py
-HISTORY = False
+# HISTORY = True
 
 # Save log file in tests result folder
-SAVE_LOGS = False
+# SAVE_LOGS = True
 
 # Save leases file in tests result folder
-SAVE_LEASES = False
+# SAVE_LEASES = True
 
 # Also you can save separate .pcap file of every test. In default it's disabled
 # If you recieve error tcpdump: <file name>: Permission denied
 # please use command as a root: aa-complain /usr/sbin/tcpdump
-TCPDUMP = False
+# TCPDUMP = True
 
 # If your tcpdump is installed in different location place that in TCPDUMP_INSTALL_DIR
 # otherwise leave it blank
-TCPDUMP_PATH = ""
+# TCPDUMP_PATH = ''
 
 # Also we can decide to keep main configuration file in tests_results.
-SAVE_CONFIG_FILE = False
+# SAVE_CONFIG_FILE = True
 
 # Auto archive it's feature that automatically create tar archive containing
 # folder 'tests_results' and history.html (if created). Default disabled.
-AUTO_ARCHIVE = False
+# AUTO_ARCHIVE = False
 
 # SLEEP_TIME 1 and 2 are times Forge waiting after performing commands on remote DUT.
 # for slower devices it's recommended to set sleep time for longer then couple 1-2 seconds
-SLEEP_TIME_1 = 2  # wait after starting remote server
-SLEEP_TIME_2 = 2  # wait after all others commands
+# SLEEP_TIME_1 = 1  # wait after starting remote server
+# SLEEP_TIME_2 = 2  # wait after all others commands
 
 # =============== DATABASE BACKENDS ===============
 # If server is capable to use different database backends, fill this section
 
 # Backend type:
-DB_TYPE = ""
+# DB_TYPE = 'memfile'
 
 # Data base name:
-DB_NAME = ""
+# DB_NAME = 'keadb'
 
-# User name for databased named DB_NAME
-DB_USER = ""
+# User name for database named DB_NAME
+# DB_USER = 'keauser'
 
 # Password for user DB_USER:
-DB_PASSWD = ""
+# DB_PASSWD = 'keapass'
 
 # Host address where is our data base, most likely it will be 'localhost'
-DB_HOST = "localhost"
+# DB_HOST = ''
 
 
 # =============== SSH ===============
@@ -130,25 +131,31 @@ DB_HOST = "localhost"
 # tested server will be running on) root privileges are required! So edit sudoers
 # file, or use root account.
 # ip address and port. ssh port default 22
-MGMT_ADDRESS = ""
-MGMT_USERNAME = ""
-MGMT_PASSWORD = ""
+MGMT_ADDRESS = ''
+MGMT_USERNAME = ''
+MGMT_PASSWORD = ''
+
+# The second HA node
+# MGMT_ADDRESS_2 = ''
+
+# The third HA node i.e. load-balancing backup node
+# MGMT_ADDRESS_3 = ''
 
 # =============== DNS ===============
 # When DNS protocol used to testing.
 
 # Interface on which we are sending DNS queries
-DNS_IFACE = ""
+# DNS_IFACE = ''
 
 # DNS server address:
-DNS4_ADDR = ""
-DNS6_ADDR = ""
+# DNS4_ADDR = ''
+# DNS6_ADDR = ''
 
 # DNS port number, default value is 53
-DNS_PORT = 53
+# DNS_PORT = 53
 
 # Absolute path to server installation:
-DNS_SERVER_INSTALL_PATH = ""
+# DNS_SERVER_INSTALL_PATH = '/opt/bind/sbin'
 
 # Additional path for server management:
-DNS_DATA_PATH = ""
+# DNS_DATA_PATH = '/opt/bind/data'

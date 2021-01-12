@@ -23,7 +23,7 @@ LOGLEVEL = "info"
 # Not all of those are functional yet. This is essentailly
 # name of the subdirectory in lettuce/features/serversupport
 #SERVER_TYPE = "kea6"
-SOFTWARE_UNDER_TEST = "kea4_server", "kea6_server","bind9_server",
+SOFTWARE_UNDER_TEST = ("kea4_server", "kea6_server", "bind9_server"),
 
 # This defines protocol family. Currently two are
 # supported: v4 (which means DHCPv4) and v6 (which means DHCPv6)
