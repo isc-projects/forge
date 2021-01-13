@@ -262,7 +262,7 @@ def test_control_channel_http_after_restart_load_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.generate_config_files()
+    srv_control.build_config_files()
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
@@ -391,7 +391,7 @@ def test_control_channel_http_test_config():
 @pytest.mark.controlchannel
 @pytest.mark.kea_only
 def test_control_channel_http_config_write():
-
+    # Start server with initial configuration.
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.open_control_channel()
@@ -399,44 +399,55 @@ def test_control_channel_http_config_write():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Write configuration to file.
     srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp4"],"arguments": {} }',
                                    '$(SRV4_ADDR)')
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp4"],"arguments": {"filename": "/tmp/config-modified-2017-03-15.json"}}',  # TODO probably confing file location/name',
                                    '$(SRV4_ADDR)')
 
+    # Send DISCOVER.
     misc.test_procedure()
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
+    # Receive OFFER.
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
+    # Generate new configuration.
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.generate_config_files()
+    srv_control.build_config_files()
 
+    # Set new configuration.
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }')
 
+    # Send DISCOVER.
     misc.test_procedure()
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
+    # Receive OFFER.
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_content('yiaddr', '192.168.51.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
+    # Restart server, it should configure itself with the old 192.168.50.0/24
+    # subnet.
     srv_control.start_srv('DHCP', 'restarted')
 
+    # Send DISCOVER.
     misc.test_procedure()
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 
+    # Receive OFFER, it should contain a lease from the old configuration.
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(1)

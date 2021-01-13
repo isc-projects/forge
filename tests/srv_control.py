@@ -574,7 +574,15 @@ def configure_loggers(log_type, severity, severity_level, logging_file=None):
 
 
 ##servers management
-@step('Send server configuration.')
+@step('Create server configuration.')
+def build_config_files(cfg=None):
+    """
+    :param cfg:
+    :return:
+    """
+    dhcp.build_config_files(cfg=cfg)
+
+@step('Create and send server configuration.')
 def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
     """
     :param cfg:

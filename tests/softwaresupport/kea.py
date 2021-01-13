@@ -783,18 +783,7 @@ def _write_cfg2(cfg):
     cfg_file.close()
 
 
-def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
-    """
-    Generate final config file, save it to test result directory
-    and send it to remote system unless testing step will define differently.
-    :param destination_address: address of remote system to which conf file will be send,
-    default it's world.f_cfg.mgmt_address
-    """
-
-    # generate config files content
-    if destination_address not in world.f_cfg.multiple_tested_servers:
-        world.multiple_tested_servers.append(destination_address)
-
+def build_config_files(cfg=None):
     substitute_vars(world.dhcp_cfg)
     if world.proto == 'v4':
         add_defaults4()
@@ -808,13 +797,23 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     else:
         _write_cfg2(cfg)
 
-    kea_conf_files = ["kea-dhcp%s.conf" % world.proto[1],
-                      "kea-dhcp-ddns.conf",
-                      'kea-ctrl-agent.conf']
+def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
+    """
+    Generate final config file, save it to test result directory
+    and send it to remote system unless testing step will define differently.
+    :param destination_address: address of remote system to which conf file will be send,
+    default it's world.f_cfg.mgmt_address
+    """
+
+    # generate config files content
+    build_config_files(cfg)
+
+    if destination_address not in world.f_cfg.multiple_tested_servers:
+        world.multiple_tested_servers.append(destination_address)
 
     # use mode=0666 to make config writable to enable config-wrtie tests
 
-    # send to server if requested
+    # send to server
     if world.f_cfg.install_method == 'make':
         fabric_send_file(world.cfg["cfg_file_2"],
                          world.f_cfg.etc_join("keactrl.conf"),
