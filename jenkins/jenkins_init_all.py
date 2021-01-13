@@ -21,7 +21,7 @@ LOGLEVEL = "info"
 # This defines server type. Allowed values are:
 # kea4, kea6, isc_dhcp4, isc_dhcp6, dibbler
 # Not all of those are functional yet. This is essentailly
-# name of the subdirectory in lettuce/features/serversupport
+# name of the subdirectory in tests/softwaresupport
 #SERVER_TYPE = "kea6"
 SOFTWARE_UNDER_TEST = ("kea4_server", "kea6_server", "bind9_server"),
 
@@ -72,8 +72,8 @@ SRV_IPV6_ADDR_LINK_LOCAL = "fe80::250:56ff:fe87:8c8"
 # Defines name of the DUT-facing network interface
 IFACE = "ens224"
 
-# If you wont to build tests history in history.html set HISTORY on True if not, on False
-# but for more detailed information about tests, use --with_xunit option when starting run_test.py
+# If you want to build tests history in history.html set HISTORY to True if not, to False
+# but for more detailed information about tests, use --with_xunit option when starting forge_test.py
 HISTORY = False
 
 # Also you can save separate .pcap file of every test. In default it's disabled

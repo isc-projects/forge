@@ -15,9 +15,9 @@ You basically only need to do this:
 
 ```
 cd forge-source-code-path
-python -m virtualenv venv 
- source ./venv/bin/activate
- ./venv/bin/pip install -r requirements.txt 
+python -m virtualenv venv
+source ./venv/bin/activate
+./venv/bin/pip install -r requirements.txt
 ```
 
 Also you may want to install tcpdump for saving captures of every test.
@@ -68,7 +68,7 @@ Author used this configuration:
 |______| <----vboxnet1: testing DHCP        ----> |______|
 ```
 
-That's only example, other architectures not tested. If you set up other configuration please
+That's the only example, other architectures not tested. If you set up other configuration please
 report it on https://github.com/isc-projects/forge to update documentation.
 
  Usage
@@ -76,7 +76,7 @@ report it on https://github.com/isc-projects/forge to update documentation.
 
 To run tests using virtualenv created previously
 ```
- source ./venv/bin/activate
+source ./venv/bin/activate
 sudo ./venv/bin/pytest
 ```
 

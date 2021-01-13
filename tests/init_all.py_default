@@ -1,13 +1,16 @@
-#Configuration file, please copy this to the init_all.py and fill it with your
-#variables. init_all.py is added to gitignore.
+# Configuration file, please copy this to the init_all.py and fill it with your
+# variables. init_all.py is added to gitignore.
 
 # All configurations are separated to different sections:
 # general - for general Forge configuration ;)
+# database backends - for database credentials
 # ssh - for ssh connection between virtual machines
 # kea - for kea configuration
 
-# =======================================
-# =============== GENERAL ===============
+
+# ==============================================================================
+# ================================== GENERAL ===================================
+
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
 # case insensitive.
@@ -23,8 +26,8 @@
 # Allowed values:
 # dibbler_client, dibbler_server, kea6_server, kea4_server, isc_dhcp4_server, isc_dhcp6_server,
 # kea4_server_bind, kea6_server_bind, bind9_server
-# Not all of those are functional yet. This is essentially
-# name of the subdirectory in lettuce/features/softwaresupport
+# Not all of those are functional yet. This is essentially the
+# name of the subdirectory in tests/softwaresupport
 # This is list of software under test, you can test server or client (not both!) at the same time,
 # also you can use only one DHCP and one DNS server and must end with comma ","
 # like in e.g.: SOFTWARE_UNDER_TEST = ('kea4_server', 'bind9_server'),
@@ -75,9 +78,9 @@ SERVER_IFACE = ''
 # SRV_IPV6_ADDR_GLOBAL = '3000::1000'
 # SRV_IPV6_ADDR_LINK_LOCAL = 'fe80::a00:27ff:fedf:63bc'
 
-# If you wont to build tests history in history.html set HISTORY on True if not,
-# on False but for more detailed information about tests, use --with_xunit option
-# when starting run_test.py
+# If you want to build tests history in history.html set HISTORY to True if not,
+# to False but for more detailed information about tests, use --with_xunit option
+# when starting forge_cfg.py
 # HISTORY = True
 
 # Save log file in tests result folder
@@ -87,7 +90,7 @@ SERVER_IFACE = ''
 # SAVE_LEASES = True
 
 # Also you can save separate .pcap file of every test. In default it's disabled
-# If you recieve error tcpdump: <file name>: Permission denied
+# If you receive error tcpdump: <file name>: Permission denied
 # please use command as a root: aa-complain /usr/sbin/tcpdump
 # TCPDUMP = True
 
@@ -107,7 +110,9 @@ SERVER_IFACE = ''
 # SLEEP_TIME_1 = 1  # wait after starting remote server
 # SLEEP_TIME_2 = 2  # wait after all others commands
 
-# =============== DATABASE BACKENDS ===============
+
+# ==============================================================================
+# ============================= DATABASE BACKENDS ==============================
 # If server is capable to use different database backends, fill this section
 
 # Backend type:
@@ -126,7 +131,8 @@ SERVER_IFACE = ''
 # DB_HOST = ''
 
 
-# =============== SSH ===============
+# ==============================================================================
+# ==================================== SSH =====================================
 # This are required management information about device under test (the one that
 # tested server will be running on) root privileges are required! So edit sudoers
 # file, or use root account.
@@ -141,7 +147,9 @@ MGMT_PASSWORD = ''
 # The third HA node i.e. load-balancing backup node
 # MGMT_ADDRESS_3 = ''
 
-# =============== DNS ===============
+
+# ==============================================================================
+# ==================================== DNS =====================================
 # When DNS protocol used to testing.
 
 # Interface on which we are sending DNS queries
