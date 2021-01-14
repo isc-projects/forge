@@ -8,6 +8,8 @@ import misc
 import srv_msg
 import srv_control
 
+from forge_cfg import world
+
 
 @pytest.mark.v4
 @pytest.mark.flexid
@@ -92,6 +94,8 @@ def test_v4_hooks_flexid_reconfigure():
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
+    srv_msg.wait_for_message_count_in_log(world.cfg['kea_logs'], 1, 'DHCP4_DYNAMIC_RECONFIGURATION')
+    srv_msg.wait_for_message_count_in_log(world.cfg['kea_logs'], 2, 'DHCP4_CONFIG_COMPLETE')
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('vendor_class_id', 'docsis3.0')
