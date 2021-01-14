@@ -30,10 +30,10 @@
 # name of the subdirectory in tests/softwaresupport
 # This is list of software under test, you can test server or client (not both!) at the same time,
 # also you can use only one DHCP and one DNS server and must end with comma ","
-# like in e.g.: SOFTWARE_UNDER_TEST = ('kea4_server', 'bind9_server'),
-# INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = ('kea4_server', 'kea6_server'),
+# like in e.g.: SOFTWARE_UNDER_TEST = 'kea4_server', 'bind9_server',
+# INCORRECT COMBINATIONS: SOFTWARE_UNDER_TEST = 'kea4_server', 'kea6_server',
 
-# SOFTWARE_UNDER_TEST = ('kea4_server', 'bind9_server'),
+# SOFTWARE_UNDER_TEST = 'kea4_server', 'bind9_server',
 
 # Parameters specific to DHCPv4 tests
 SRV4_ADDR = ''
