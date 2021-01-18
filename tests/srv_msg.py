@@ -447,12 +447,12 @@ def log_includes_count(server_type, count, line):
 
 
 @step('(\S+) log contains (\d+) of line: (.+)')
-def wait_for_message_count_in_log(log_file, count, line, timeout=16):
+def wait_for_message_count_in_log(log_file, count, line, timeout=4):
     """
     Wait until a line appears a certain number of times in a log.
     """
     log_file, count, line = test_define_value(log_file, count, line)
-    for i in range(timeout):
+    for i in range(timeout + 1):
         result = multi_protocol_functions.get_line_count_in_log(log_file, count, line)
         if count <= result:
             return
