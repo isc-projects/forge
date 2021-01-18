@@ -177,7 +177,7 @@ def user_victory():
     shutil.copy('../doc/.victory.jpg', world.cfg["test_result_dir"] + '/celebrate_success.jpg')
 
 
-def log_contains(line, condition, log_file=None):
+def get_line_count_in_log(line, log_file=None):
     if world.f_cfg.install_method == 'make':
         if log_file is None:
             log_file = 'kea.log'
@@ -204,6 +204,11 @@ def log_contains(line, condition, log_file=None):
         else:
             log_file = world.f_cfg.log_join(log_file)
             result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
+    return result
+
+
+def log_contains(line, condition, log_file=None):
+    result = get_line_count_in_log(line, log_file)
 
     if condition is not None:
         if result.succeeded:
@@ -289,8 +294,6 @@ def db_table_contain(table_name, db_type, line="", grep_cmd=None, expect=True, d
             assert False, 'In database {0} table name "{1}" has {2} of: "{3}".'.format(db_type,
                                                                                        table_name, result, line)
 
-def get_line_count_in_log(log_file, count, line):
-    return fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
 
 def log_contains_count(server_type, count, line):
     if server_type == "DHCP":
@@ -300,7 +303,7 @@ def log_contains_count(server_type, count, line):
     else:
         assert False, "No such name as: {server_type}".format(**locals())
 
-    result = get_line_count_in_log(log_file, count, line)
+    result = get_line_count_in_log(line, log_file)
 
     if int(count) != int(result):
         assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
