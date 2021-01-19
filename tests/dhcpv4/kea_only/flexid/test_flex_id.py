@@ -8,8 +8,6 @@ import misc
 import srv_msg
 import srv_control
 
-from forge_cfg import world
-
 
 @pytest.mark.v4
 @pytest.mark.flexid
