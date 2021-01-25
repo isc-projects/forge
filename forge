@@ -422,7 +422,9 @@ def _install_kea_native_on_server(args, server_idx):
 
     # copy hammer into vm and prepare system
     execute('rm -rf hammer.py', cwd=vagrant_dir)
-    execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py', cwd=vagrant_dir)
+    # TODO: return back
+    #execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py', cwd=vagrant_dir)
+    execute('wget https://manu.cz/hammer.py', cwd=vagrant_dir)
     execute('chmod a+x hammer.py', cwd=vagrant_dir)
     cmd = 'vagrant upload hammer.py %s' % server_name
     execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
@@ -431,7 +433,7 @@ def _install_kea_native_on_server(args, server_idx):
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # prepare pkg source repo url
-    repository_url = 'https://packages.isc.org'
+    repository_url = 'https://packages.aws.isc.org'
     repo_name = 'kea-%s-%s' % ('1.9', args.system)
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
