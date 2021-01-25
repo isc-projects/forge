@@ -10,6 +10,7 @@ import misc
 
 from forge_cfg import world
 
+
 @pytest.mark.v4
 @pytest.mark.options
 @pytest.mark.vendor
@@ -116,7 +117,7 @@ def test_v4_options_vivso_suboptions_mitel():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
     option = [{"array": False, "code": 130, "encapsulate": "", "name": "mitel-option",
-              "record-types": "", "space": "vendor-1027", "type": "string"}]
+               "record-types": "", "space": "vendor-1027", "type": "string"}]
 
     my_class = [{"name": "VENDOR_CLASS_1027",
                  "option-data": [{"name": "vivso-suboptions", "data": "1027"},
@@ -156,8 +157,7 @@ def test_v4_options_vendor_encapsulated_mitel():
                  "option-def": [{"name": "vendor-encapsulated-options",
                                  "code": 43, "type": "string"}],
                  "option-data": [{"name": "vendor-encapsulated-options",
-                                  "data": "id:ipphone.mitel.com;sw_tftp=11.11.11.11;call_srv=10.10.10.10"}]
-                 }]
+                                  "data": "id:ipphone.mitel.com;sw_tftp=11.11.11.11;call_srv=10.10.10.10"}]}]
     world.dhcp_cfg["client-classes"] = my_class
 
     srv_control.build_and_send_config_files()
