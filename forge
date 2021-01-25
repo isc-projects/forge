@@ -102,7 +102,7 @@ INSTALL_METHOD = "{INSTALL_METHOD}"
 """
 
 
-CONFIG_FIELDS = ['kea-dirs']
+CONFIG_FIELDS = ['kea-dirs', 'ccache-dir']
 
 
 def _load_config():
@@ -347,6 +347,7 @@ def setup(args):
         txt = f_in.read()
     tpl = string.Template(txt)
     txt = tpl.safe_substitute(KEA_DIRS=cfg['Forge']['kea-dirs'],
+                              CCACHE_DIR=cfg['Forge']['ccache-dir'],
                               MGMT_ADDRESS=MGMT_ADDRESS,
                               MGMT_ADDRESS_2=MGMT_ADDRESS_2,
                               SRV4_ADDR=SRV4_ADDR,
@@ -427,11 +428,11 @@ def _install_kea_native_on_server(args, server_idx):
     cmd = 'vagrant upload hammer.py %s' % server_name
     execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
 
-    cmd = cmd_tpl % './hammer.py prepare-system -p local -w mysql,pgsql,radius,forge'
+    cmd = cmd_tpl % './hammer.py prepare-system -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell'
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # prepare pkg source repo url
-    repository_url = 'https://packages.isc.org'
+    repository_url = 'https://packages.aws.isc.org'
     repo_name = 'kea-%s-%s' % ('1.9', args.system)
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
@@ -547,17 +548,25 @@ def _install_kea_make_on_server(args, server_idx):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', args.path)
-    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w forge mysql pgsql cql radius shell'
+    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell,ccache --ccache-dir /ccache'
 
     vagrant_dir = get_vagrant_dir(args)
 
+    # install any missing dependencies and prepare system
     subcmd1 = subcmd_tpl % (remote_path, 'prepare-system')
     cmd1 = cmd_tpl % subcmd1
     execute(cmd1, cwd=vagrant_dir, log_prefix=log_prefix)
 
+    # do kea build
     subcmd2 = subcmd_tpl % (remote_path, 'build')
     cmd2 = cmd_tpl % subcmd2
     execute(cmd2, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    # make clean to reclaim disk space
+    remote_kea_bld_dir = os.path.join(remote_path, 'kea-src/kea-0.0.1')
+    subcmd3 = 'cd %s && make clean' % remote_kea_bld_dir
+    cmd3 = cmd_tpl % subcmd3
+    execute(cmd3, cwd=vagrant_dir, log_prefix=log_prefix)
 
 
 def test(args, params):
