@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
-from softwaresupport.kea import build_and_send_config_files
+from softwaresupport.kea import build_config_files, build_and_send_config_files
 from softwaresupport.kea import clear_all, clear_logs, clear_leases, start_srv
 from softwaresupport.kea import start_srv, stop_srv, restart_srv, reconfigure_srv
 from softwaresupport.kea import agent_control_channel, save_logs, save_leases

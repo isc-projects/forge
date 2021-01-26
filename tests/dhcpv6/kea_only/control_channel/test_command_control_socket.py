@@ -284,7 +284,7 @@ def test_control_channel_socket_after_restart_load_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
-    srv_control.generate_config_files()
+    srv_control.build_config_files()
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 

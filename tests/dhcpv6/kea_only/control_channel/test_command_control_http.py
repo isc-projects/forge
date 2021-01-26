@@ -313,7 +313,7 @@ def test_control_channel_http_after_restart_load_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.generate_config_files()
+    srv_control.build_config_files()
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
