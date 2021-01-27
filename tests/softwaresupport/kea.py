@@ -537,7 +537,8 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 
 def _config_db_backend():
     if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
-        world.dhcp_cfg["lease-database"] = {"type": "memfile"}
+        if "lease-database" not in world.dhcp_cfg:
+            world.dhcp_cfg["lease-database"] = {"type": "memfile"}
     else:
         world.dhcp_cfg["lease-database"] = {"type": world.f_cfg.db_type,
                                             "name": world.f_cfg.db_name,
