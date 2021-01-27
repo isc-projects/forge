@@ -117,7 +117,8 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
     # change config, it have to point to new location
     new_location = os.path.join(location, 'postgresql', pgsql_version, "main")
     print "new loc: %s" % new_location
-    cmd = "sudo sed -i 's/%s/%s/g' %s" % (full_current_location.replace("/","\\/"), new_location.replace("/","\\/"), pgsql_conf)
+    cmd = "sudo sed -i 's/%s/%s/g' %s" % (full_current_location.replace("/", "\\/"),
+                                          new_location.replace("/", "\\/"), pgsql_conf)
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
 
     cmd = 'sudo systemctl start postgresql'
