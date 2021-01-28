@@ -354,7 +354,6 @@ def test_v4_options_vivso_suboptions_siemens_defined_in_class():
                      {"always-send": True, "data": "sdlp://192.0.2.11:18443",
                       "name": "dls", "space": "vendor-339"}]}]
 
-    # world.dhcp_cfg["option-def"] = option
     world.dhcp_cfg["client-classes"] = my_class
 
     srv_control.build_and_send_config_files()
