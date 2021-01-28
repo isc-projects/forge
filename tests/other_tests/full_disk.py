@@ -1,5 +1,6 @@
 """Testing how kea behaves when available disk space run out
-   THIS IS NOT DESIGNED FOR AUTOMATED TESTING!
+   THIS IS NOT DESIGNED FOR AUTOMATED TESTING! Only manual!
+   Tests are explained in test code
 """
 
 # pylint: disable=invalid-name,line-too-long
@@ -26,8 +27,8 @@ def _create_ramdisk(location='/tmp/kea_ram_disk', size='10M', dest=world.f_cfg.m
     :param dest: IP address of a system on which we want to allocate disk space
     :return result of executed command
     """
-    cmd = "sudo mkdir -p %s && sudo mount -t tmpfs -o size=%s tmpfs " \
-          "%s && chmod 777 %s && sudo rm -rf %s/*" % (location, size, location, location, location)
+    cmd = "sudo mkdir -p %s && sudo mount -t tmpfs -o size=%s tmpfs %s && chmod 777 %s" % (location, size,
+                                                                                           location, location)
     return srv_msg.execute_shell_cmd(cmd, dest=dest)
 
 
@@ -42,7 +43,6 @@ def _destroy_ramdisk(location='/tmp/kea_ram_disk', dest=world.f_cfg.mgmt_address
     return srv_msg.execute_shell_cmd(cmd, dest=dest)
 
 
-# def _allocate_disk_space(size="`df -lh | grep kea_ram_disk | awk  \\'{ print $4 }\\'`",
 def _allocate_disk_space(size="full",
                          location='/tmp/kea_ram_disk/allocate_disk',
                          dest=world.f_cfg.mgmt_address):
@@ -186,6 +186,7 @@ def test_v6_full_disk_testing_pgsql():
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    # decide what you want to do:
     # set memfile and log location to created ramdisk
     # world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
     # or set pgsql as lease backend
@@ -205,6 +206,12 @@ def test_v6_full_disk_testing_pgsql():
     _allocate_disk_space(location='/tmp/kea_ram_disk_pgsql/allocate_disk')
     print _check_disk()
 
+    # we expected that kea will keep working properly, assigning addresses in memory,
+    # turned out that when it can't save lease to memfile/db it return NAK/NoAddrAvail code
+    # even if disk is reported with no empty space left kea is able to save multiple leases
+    # mostly it's 36.
+    # Kea will keep working when it can't write main logs
+    # Kea will keep working when it can't write forensic logs, and log error about this event in main logs
     generate_leases(leases_count=100, dhcp_version='v6', iapd=0, mac="01:02:0c:03:0a:00")
 
     _move_pgsql_back_to_default(full_current_location, pgsql_conf)
@@ -213,7 +220,7 @@ def test_v6_full_disk_testing_pgsql():
 @pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.disabled
-def test_v6_full_disk_testing():
+def test_v6_full_disk_testing_memfile():
     # check how kea6 behave when disk is full, using memfile and logs to file
     assert False, "this test may destroy your setup, remove this line if you really want to run it"
     misc.test_setup()
@@ -239,6 +246,12 @@ def test_v6_full_disk_testing():
     _allocate_disk_space()
     print _check_disk()
 
+    # we expected that kea will keep working properly, assigning addresses in memory,
+    # turned out that when it can't save lease to memfile/db it return NAK/NoAddrAvail code
+    # even if disk is reported with no empty space left kea is able to save multiple leases
+    # mostly it's 36.
+    # Kea will keep working when it can't write main logs
+    # Kea will keep working when it can't write forensic logs, and log error about this event in main logs
     generate_leases(leases_count=100, dhcp_version='v6', iapd=0, mac="01:02:0c:03:0a:00")
 
     send_command(cmd={"command": "lease6-get-all"})
@@ -274,6 +287,12 @@ def test_v4_full_disk_testing():
     _allocate_disk_space()
     print _check_disk()
 
+    # we expected that kea will keep working properly, assigning addresses in memory,
+    # turned out that when it can't save lease to memfile/db it return NAK/NoAddrAvail code
+    # even if disk is reported with no empty space left kea is able to save multiple leases
+    # mostly it's 36.
+    # Kea will keep working when it can't write main logs
+    # Kea will keep working when it can't write forensic logs, and log error about this event in main logs
     generate_leases(leases_count=100, dhcp_version='v4', iapd=0, mac="01:02:0c:03:0a:00")
 
     send_command(cmd={"command": "lease4-get-all"})

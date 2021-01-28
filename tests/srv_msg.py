@@ -559,9 +559,9 @@ def test_victory():
 
 
 @step('Execute command (\S+) with arguments: (.+)')
-def execute_shell_cmd(path, arguments='', dest=world.f_cfg.mgmt_address, save_results=True):
-    path, arg = test_define_value(path, arguments)
-    result = multi_protocol_functions.execute_shell_cmd(path, arguments, dest=dest, save_results=save_results)
+def execute_shell_cmd(path, dest=world.f_cfg.mgmt_address, save_results=True):
+    path = test_define_value(path)[0]
+    result = multi_protocol_functions.execute_shell_cmd(path, dest=dest, save_results=save_results)
     assert result.succeeded
     return result
 

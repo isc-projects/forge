@@ -320,8 +320,8 @@ def change_network_variables(value_name, value):
         assert False, "There is no possibility of configuration value named: {value_name}".format(**locals())
 
 
-def execute_shell_cmd(path, arguments='', save_results=True, dest=world.f_cfg.mgmt_address):
-    result = fabric_sudo_command(path + ' ' + arguments, hide_all=False, ignore_errors=True,
+def execute_shell_cmd(path, save_results=True, dest=world.f_cfg.mgmt_address):
+    result = fabric_sudo_command(path, hide_all=False, ignore_errors=True,
                                  destination_host=dest)
 
     if save_results:
@@ -334,9 +334,6 @@ def execute_shell_cmd(path, arguments='', save_results=True, dest=world.f_cfg.mg
 
         myfile = open(world.cfg["test_result_dir"] + '/' + file_name, 'w')
         myfile.write(unicode('Script: ' + path))
-        if arguments == '':
-            arguments = "no arguments used!"
-        myfile.write(unicode('\nwith arguments: ' + arguments + '\n'))
         if result.failed:
             myfile.write(unicode('\nStatus: FAILED\n'))
         else:
