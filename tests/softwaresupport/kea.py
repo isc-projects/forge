@@ -751,33 +751,33 @@ def _cfg_write():
         world.ddns_cfg = {"DhcpDdns": world.ddns_cfg}
         add_variable("DDNS_CONFIG", json.dumps(world.ddns_cfg), False)
         with open("kea-dhcp-ddns.conf", 'w') as conf_file:
-            conf_file.write(json.dumps(world.ddns_cfg, indent=4, sort_keys=True))
+            conf_file.write(json.dumps(world.ddns_cfg, indent=4, sort_keys=False))
 
     if world.ctrl_enable:
         add_variable("AGENT_CONFIG", json.dumps(world.ca_cfg), False)
         with open("kea-ctrl-agent.conf", 'w') as conf_file:
-            conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=True))
+            conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=False))
 
     add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
 
     with open("kea-dhcp%s.conf" % world.proto[1], 'w') as conf_file:
-        conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=True))
+        conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=False))
 
 
 def _write_cfg2(cfg):
     log.info('provisioned cfg:\n%s', cfg)
     if "Control-agent" in cfg:
         with open("kea-ctrl-agent.conf", 'w') as cfg_file:
-            json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=True,
+            json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=False,
                       indent=4, separators=(',', ': '))
     if "Dhcp%s" % world.proto[1] in cfg:
         with open("kea-dhcp%s.conf" % world.proto[1], 'w') as cfg_file:
             json.dump({"Dhcp%s" % world.proto[1]: cfg["Dhcp%s" % world.proto[1]]},
-                      cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
+                      cfg_file, sort_keys=False, indent=4, separators=(',', ': '))
 
     if "DhcpDdns" in cfg:
         with open("kea-dhcp-ddns.conf", 'w') as cfg_file:
-            json.dump({"DhcpDdns": cfg["DhcpDdns"]}, cfg_file, sort_keys=True, indent=4, separators=(',', ': '))
+            json.dump({"DhcpDdns": cfg["DhcpDdns"]}, cfg_file, sort_keys=False, indent=4, separators=(',', ': '))
 
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
     cfg_file.write(world.cfg["keactrl"])

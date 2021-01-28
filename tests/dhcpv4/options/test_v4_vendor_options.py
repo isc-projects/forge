@@ -329,3 +329,132 @@ def test_v4_options_vivso_suboptions_siemens():
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(125)
     srv_msg.response_check_option_content(125, 'value', 'HEX:000001531F02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_options_vivso_suboptions_siemens_defined_in_class():
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    option = [{"name": "vlanid", "code": 2, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "vendor-339", "type": "uint32"},
+              {"name": "dls", "code": 3, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "vendor-339", "type": "string"}]
+
+    my_class = [{"name": "VENDOR_CLASS_339",
+                 "option-def": option,
+                 "option-data": [
+                     {"name": "vivso-suboptions", "data": "339"},
+                     {"always-send": True, "data": "123",
+                      "name": "vlanid", "space": "vendor-339"},
+                     {"always-send": True, "data": "sdlp://192.0.2.11:18443",
+                      "name": "dls", "space": "vendor-339"}]}]
+
+    # world.dhcp_cfg["option-def"] = option
+    world.dhcp_cfg["client-classes"] = my_class
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(125)
+    srv_msg.client_does_include_with_value('vendor_class_id', '339')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(125)
+    srv_msg.response_check_option_content(125, 'value', 'HEX:000001531F02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_options_vendor_encapsulated_siemens_defined_in_class():
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    option = [{"name": "vlanid", "code": 2, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "339", "type": "uint32"},
+              {"name": "dls", "code": 3, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "339", "type": "string"}]
+
+    my_class = [{"name": "VENDOR_CLASS_339",
+                 "option-def": [{"name": "vendor-encapsulated-options", "code": 43,
+                                 "type": "empty", "encapsulate": "339"}] + option,
+                 "option-data": [{"name": "vendor-encapsulated-options"},
+                                 {"always-send": True, "data": "123",
+                                  "name": "vlanid", "space": "339"},
+                                 {"always-send": True, "data": "sdlp://192.0.2.11:18443",
+                                  "name": "dls", "space": "339"}]}]
+
+    world.dhcp_cfg["client-classes"] = my_class
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(43)
+    srv_msg.client_does_include_with_value('vendor_class_id', '339')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(43)
+    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_options_vendor_encapsulated_options_space_siemens():
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    option = [{"name": "vlanid", "code": 2, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "vendor-encapsulated-options-space", "type": "uint32"},
+              {"name": "dls", "code": 3, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "vendor-encapsulated-options-space", "type": "string"}]
+
+    my_class = [{"name": "VENDOR_CLASS_339",
+                 "option-def": [{"name": "vendor-encapsulated-options", "code": 43,
+                                 "type": "empty"}],
+                 "option-data": [{"name": "vendor-encapsulated-options"},
+                                 {"always-send": True, "data": "123", "name": "vlanid",
+                                  "space": "vendor-encapsulated-options-space"},
+                                 {"always-send": True, "data": "sdlp://192.0.2.11:18443", "name": "dls",
+                                  "space": "vendor-encapsulated-options-space"}]}]
+
+    world.dhcp_cfg["option-def"] = option
+    world.dhcp_cfg["client-classes"] = my_class
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(43)
+    srv_msg.client_does_include_with_value('vendor_class_id', '339')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(43)
+    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
