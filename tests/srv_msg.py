@@ -586,7 +586,7 @@ def execute_shell_cmd(path, dest=world.f_cfg.mgmt_address, save_results=True):
 def execute_kea_shell(args):
     args = test_define_value(args)[0]
     path = world.f_cfg.sbin_join('kea-shell')
-    result = multi_protocol_functions.execute_shell_cmd(path, args)
+    result = multi_protocol_functions.execute_shell_cmd(path + ' ' + args)
     result = json.loads(result)
     assert result[0]['result'] == 0
     return result
