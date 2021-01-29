@@ -335,6 +335,7 @@ def test_v4_options_vivso_suboptions_siemens():
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v4_options_vivso_suboptions_siemens_defined_in_class():
+    # kea gitlab #1683
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -377,7 +378,7 @@ def test_v4_options_vivso_suboptions_siemens_defined_in_class():
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v4_options_vendor_encapsulated_siemens_defined_in_class():
-
+    # kea gitlab #1683
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -419,7 +420,7 @@ def test_v4_options_vendor_encapsulated_siemens_defined_in_class():
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v4_options_vendor_encapsulated_options_space_siemens():
-
+    # kea gitlab #1682
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
