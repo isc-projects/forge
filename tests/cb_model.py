@@ -286,7 +286,7 @@ class ConfigModel(ConfigElem):
                 if param in self.cfg:
                     del self.cfg[param]
             if param == "server_tags":
-                # del kwargs["server_tags"]
+                del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
             else:
@@ -316,7 +316,7 @@ class ConfigModel(ConfigElem):
                 val = _to_list(val)
             if param == "server_tags":
                 server_tags = _to_list(val)
-                # del kwargs["server_tags"]
+                del kwargs["server_tags"]
                 continue
 
             param = param.replace('_', '-')
@@ -369,7 +369,7 @@ class ConfigModel(ConfigElem):
                 continue
             if param == "server_tags":
                 server_tags = val
-                # del kwargs["server_tags"]
+                del kwargs["server_tags"]
                 server_tags = _to_list(server_tags)
                 continue
             param = param.replace('_', '-')
@@ -393,7 +393,7 @@ class ConfigModel(ConfigElem):
                 continue
             if param == "server_tags":
                 server_tags = _to_list(val)
-                # del kwargs["server_tags"]
+                del kwargs["server_tags"]
                 continue
             param = param.replace('_', '-')
             option[param] = val
@@ -431,7 +431,7 @@ class ConfigModel(ConfigElem):
                 val = _to_list(val)
             if param == "server_tags":
                 # server_tags = val
-                # del kwargs["server_tags"] this is blowing up in python3
+                del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
             param = param.replace('_', '-')
