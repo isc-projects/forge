@@ -812,7 +812,7 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
 
-    # use mode=0666 to make config writable to enable config-wrtie tests
+    # use mode="0o666" to make config writable to enable config-wrtie tests
 
     # send to server
     if world.f_cfg.install_method == 'make':
@@ -823,19 +823,19 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     fabric_send_file("kea-dhcp%s.conf" % world.proto[1],
                      world.f_cfg.etc_join("kea-dhcp%s.conf" % world.proto[1]),
                      destination_host=destination_address,
-                     mode=0666)
+                     mode="0o666")
 
     if world.ctrl_enable:
         fabric_send_file("kea-ctrl-agent.conf",
                          world.f_cfg.etc_join("kea-ctrl-agent.conf"),
                          destination_host=destination_address,
-                         mode=0666)
+                         mode="0o666")
 
     if world.ddns_enable:
         fabric_send_file("kea-dhcp-ddns.conf",
                          world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
                          destination_host=destination_address,
-                         mode=0666)
+                         mode="0o666")
 
     # store files back to local for debug purposes
     if world.f_cfg.install_method == 'make':
