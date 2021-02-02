@@ -24,11 +24,11 @@ from forge_cfg import world, step
 #
 
 
-#@step('References: (\S+).')
+@step(r'References: (\S+).')
 def references_check(references):
     assert len(references), "References cannot be empty."
 
 
-#@step('Tags: (\S+)')
+@step(r'Tags: (\S+)')
 def tags_check(tags):
     assert len(tags), "Tags cannot be empty."

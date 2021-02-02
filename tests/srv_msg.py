@@ -51,7 +51,7 @@ def get_server_path():
 
 
 ##building DHCP messages
-@step('Client requests option (\d+).')
+@step(r'Client requests option (\d+).')
 def client_requests_option(opt_type):
     """
     Add Option: Request Option with requested option code
@@ -59,7 +59,7 @@ def client_requests_option(opt_type):
     dhcpmsg.client_requests_option(opt_type)
 
 
-@step('(Client|RelayAgent) sets (\w+) value to (\S+).')
+@step(r'(Client|RelayAgent) sets (\w+) value to (\S+).')
 def client_sets_value(sender_type, value_name, new_value):
     """
     User can set values like: address, T1 or DUID to make test scenario
@@ -73,7 +73,7 @@ def client_sets_value(sender_type, value_name, new_value):
     dhcpmsg.client_sets_value(value_name, new_value)
 
 
-@step('Through (\S+) interface to address (\S+) client sends (\w+) message.')
+@step(r'Through (\S+) interface to address (\S+) client sends (\w+) message.')
 def client_send_msg_via_interface(iface, addr, msgname):
     """
     This step actually build message (e.g. SOLICIT) with all details
@@ -87,7 +87,7 @@ def client_send_msg_via_interface(iface, addr, msgname):
     dhcpmsg.client_send_msg(msgname, iface, addr)
 
 
-@step('Client sends (\w+) message.')
+@step(r'Client sends (\w+) message.')
 def client_send_msg(msgname):
     """
     This step actually build message (e.g. SOLICIT) with all details
@@ -101,12 +101,12 @@ def client_send_msg(msgname):
     dhcpmsg.client_send_msg(msgname, None, None)
 
 
-@step('Send (\S+) with raw appending (.+)')
+@step(r'Send (\S+) with raw appending (.+)')
 def send_raw_message(msg_type="", raw_append=None):
     dhcpmsg.build_raw(msg=msg_type, append=raw_append)
 
 
-@step('Client adds to the message (\S+) with value (\S+).')
+@step(r'Client adds to the message (\S+) with value (\S+).')
 def client_does_include_with_value(opt_type, value):
     """
     You can choose to include options to message with proposed value. Mostly used only with
@@ -118,7 +118,7 @@ def client_does_include_with_value(opt_type, value):
     dhcpmsg.client_does_include(None, opt_type, value)
 
 
-@step('(\S+) does (NOT )?include (\S+).')
+@step(r'(\S+) does (NOT )?include (\S+).')
 def client_does_include(sender_type, opt_type):
     # add " option." to the end of the step - change all tests!
     """
@@ -128,7 +128,7 @@ def client_does_include(sender_type, opt_type):
     dhcpmsg.client_does_include(str(sender_type), opt_type, None)
 
 
-@step('Relay-agent does include (\S+).')
+@step(r'Relay-agent does include (\S+).')
 def relay_agent_does_include(opt_type):
     # add " option." to the end of the step - change all tests!
     """
@@ -136,7 +136,7 @@ def relay_agent_does_include(opt_type):
     #dhcpmsg.relay_agent_does_include(opt_type)
 
 
-@step('Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
+@step(r'Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
 def unicast_addres(addr_type, addr_type2):
     """
     Message can be send on 3 different addresses:
@@ -149,7 +149,7 @@ def unicast_addres(addr_type, addr_type2):
     dhcpmsg.unicast_addres(True if addr_type else False)
 
 
-@step('Generate new (\S+).')
+@step(r'Generate new (\S+).')
 def generate_new(opt):
     """
     For some test scenarios there is a need for multiple different users, in this step you can
@@ -162,7 +162,7 @@ def generate_new(opt):
     dhcpmsg.generate_new(opt)
 
 
-@step('RelayAgent forwards message encapsulated in (\d+) level(s)?.')
+@step(r'RelayAgent forwards message encapsulated in (\d+) level(s)?.')
 def create_relay_forward(level=1):
     """
     This step is strictly related to step: Client sends message.
@@ -175,7 +175,7 @@ def create_relay_forward(level=1):
     dhcpmsg.create_relay_forward(level)
 
 
-@step('(Client|RelayAgent) adds suboption for vendor specific information with code: (\d+) and data: (\S+).')
+@step(r'(Client|RelayAgent) adds suboption for vendor specific information with code: (\d+) and data: (\S+).')
 def add_vendor_suboption(sender_type, code, data):
     """
     After adding Vendor Specific Option we can decide to add suboptions to it. Please make sure which are
@@ -184,14 +184,14 @@ def add_vendor_suboption(sender_type, code, data):
     dhcpmsg.add_vendor_suboption(int(code), data)
 
 
-@step('Before sending a message set filed named (\S+) to (\S+) as type (\S+).')
+@step(r'Before sending a message set filed named (\S+) to (\S+) as type (\S+).')
 def change_message_filed(message_filed, value, value_type):
     message_filed, value, value_type = test_define_value(message_filed, value, value_type)
     dhcpmsg.change_message_field(message_filed, value, value_type)
 
 
 ##checking DHCP respond
-@step('Server MUST NOT respond.')
+@step(r'Server MUST NOT respond.')
 def send_dont_wait_for_message():
     """
     This step causes to send message in cases when we don't expect any response.
@@ -200,7 +200,7 @@ def send_dont_wait_for_message():
     dhcpmsg.send_wait_for_message("MUST", False, None)
 
 
-@step('Server (\S+) (NOT )?respond with (\w+) message.')
+@step(r'Server (\S+) (NOT )?respond with (\w+) message.')
 def send_wait_for_message(server_type, message, expect_response=True):
     """
     This step causes to send message to server and capture respond.
@@ -208,7 +208,7 @@ def send_wait_for_message(server_type, message, expect_response=True):
     return dhcpmsg.send_wait_for_message(server_type, expect_response, message)
 
 
-@step('(Response|Relayed Message) MUST (NOT )?include option (\d+).')
+@step(r'(Response|Relayed Message) MUST (NOT )?include option (\d+).')
 def response_check_include_option(opt_code, expect_include=True):
     """
     Use this step for parsing respond. For more details please read manual section "Parsing respond"
@@ -216,7 +216,7 @@ def response_check_include_option(opt_code, expect_include=True):
     dhcpmsg.response_check_include_option(expect_include, opt_code)
 
 
-@step('(Response|Relayed Message) MUST (NOT )?contain (\S+) (\S+).')
+@step(r'(Response|Relayed Message) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_content(data_type, value, expected=True):
     """
     """
@@ -224,7 +224,7 @@ def response_check_content(data_type, value, expected=True):
     dhcpmsg.response_check_content(expected, data_type, value)
 
 
-@step('(Response|Relayed Message) option (\d+) MUST (NOT )?contain (\S+) (\S+).')
+@step(r'(Response|Relayed Message) option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(opt_code, data_type, expected_value, expect_include=True):
     """
     Detailed parsing of received option. For more details please read manual section "Parsing respond"
@@ -236,7 +236,7 @@ def response_check_option_content(opt_code, data_type, expected_value, expect_in
         dhcpmsg.response_check_option_content(opt_code, expect_include, data_type, expected_value)
 
 
-@step('(Response|Relayed Message) sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
+@step(r'(Response|Relayed Message) sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_suboption_content(subopt_code, opt_code, data_type, value, expect_include=True):
     """
     Some options can include suboptions, we can test them too.
@@ -250,23 +250,23 @@ def get_suboption(opt_code, subopt_code):
 
 
 ##building DNS messages
-@step('Client for DNS Question Record uses address: (\S+) type (\S+) class (\S+).')
+@step(r'Client for DNS Question Record uses address: (\S+) type (\S+) class (\S+).')
 def dns_question_record(addr, qtype, qclass):
     dns.dns_question_record(str(addr), qtype, qclass)
 
 
-@step('For DNS query client sets (\w+) value to (\S+).')
+@step(r'For DNS query client sets (\w+) value to (\S+).')
 def dns_query_set_value(variable_name, value):
     dns.set_val()
 
 
-@step('Client sends DNS query.')
+@step(r'Client sends DNS query.')
 def client_send_dns_query():
     dns.prepare_query()
 
 
 ##checking DNS respond
-@step('DNS server (\S+) (NOT )?respond with DNS query.')
+@step(r'DNS server (\S+) (NOT )?respond with DNS query.')
 def send_wait_for_query(type, expect_include=True):
     """
     This step causes to send message to server and capture respond.
@@ -274,26 +274,26 @@ def send_wait_for_query(type, expect_include=True):
     dns.send_wait_for_query(type, expect_include)
 
 
-@step('Received DNS query MUST (NOT )?contain (\S+) with value (\S+).')
+@step(r'Received DNS query MUST (NOT )?contain (\S+) with value (\S+).')
 def dns_check(expect, data_type, expected_data_value):
     dns.check_dns_respond(expect, str(data_type), expected_data_value)
     # later probably we'll have to change MUST on (\S+) for sth like MAY
 
 
-@step('Received DNS query MUST include (NOT )?empty (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) part.')
+@step(r'Received DNS query MUST include (NOT )?empty (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) part.')
 def dns_option(part_name, expect_include=True):
     dns.check_dns_option(expect_include, str(part_name))
     # later probably we'll have to change MUST on (\S+) for sth like MAY
 
 
-@step('Received DNS part (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) MUST (NOT )?contain (\S+) with value (\S+).')
+@step(r'Received DNS part (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) MUST (NOT )?contain (\S+) with value (\S+).')
 def dns_option_content(part_name, value_name, value, expect_include=True):
     dns.dns_option_content(part_name, expect_include, str(value_name), str(value))
     # later probably we'll have to change MUST on (\S+) for sth like MAY
 
 
 ##save option from received message
-@step('Client copies (\S+) option from received message.')
+@step(r'Client copies (\S+) option from received message.')
 def client_copy_option(option_name):
     """
     When we need to send the same option back to server (e.g. Server ID) we can use this step.
@@ -303,7 +303,7 @@ def client_copy_option(option_name):
     dhcpmsg.client_copy_option(option_name)
 
 
-@step('Client saves (\S+) option from received message.')
+@step(r'Client saves (\S+) option from received message.')
 def client_save_option(option_name):
     """
     In time we need to include one option more then one time in different messages, we can
@@ -314,7 +314,7 @@ def client_save_option(option_name):
     dhcpmsg.client_save_option(option_name)
 
 
-@step('Client saves into set no. (\d+) (\S+) option from received message.')
+@step(r'Client saves into set no. (\d+) (\S+) option from received message.')
 def client_save_option_count(count, option_name):
     """
     """
@@ -322,7 +322,7 @@ def client_save_option_count(count, option_name):
     dhcpmsg.client_save_option(option_name, count)
 
 
-@step('Client adds saved options. And (DONT )?Erase.')
+@step(r'Client adds saved options. And (DONT )?Erase.')
 def client_add_saved_option(yes_or_no):
     """
     This step causes to include saved options to message. Also we can decide to keep or clear
@@ -333,7 +333,7 @@ def client_add_saved_option(yes_or_no):
     dhcpmsg.client_add_saved_option(erase)
 
 
-@step('Client adds saved options in set no. (\d+). And (DONT )?Erase.')
+@step(r'Client adds saved options in set no. (\d+). And (DONT )?Erase.')
 def client_add_saved_option_count(count, yes_or_no):
     """
     """
@@ -342,7 +342,7 @@ def client_add_saved_option_count(count, yes_or_no):
     dhcpmsg.client_add_saved_option(erase, count)
 
 
-@step('Save (\S+) value from (\d+) option.')
+@step(r'Save (\S+) value from (\d+) option.')
 def save_value_from_option(value_name, option_name):
     """
     This step can be used to save value of some option field for
@@ -352,7 +352,7 @@ def save_value_from_option(value_name, option_name):
     dhcpmsg.save_value_from_option(value_name, option_name)
 
 
-@step('Received (\S+) value in option (\d+) is the same as saved value.')
+@step(r'Received (\S+) value in option (\d+) is the same as saved value.')
 def compare_values(value_name, option_name):
     """
     If you have used step save_value_from_option, then this step will
@@ -364,13 +364,13 @@ def compare_values(value_name, option_name):
 
 
 ##other
-@step('Set network variable (\S+) with value (\S+).')
+@step(r'Set network variable (\S+) with value (\S+).')
 def network_variable(value_name, value):
     value_name, value = test_define_value(value_name, value)
     multi_protocol_functions.change_network_variables(value_name, value)
 
 
-@step('File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
+@step(r'File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
 def file_contains_line(file_path, condition, line):
     """
     Check if Log includes line.
@@ -380,7 +380,7 @@ def file_contains_line(file_path, condition, line):
     multi_protocol_functions.regular_file_contain(file_path, condition, line)
 
 
-@step('DNS log MUST (NOT )?contain line: (.+)')
+@step(r'DNS log MUST (NOT )?contain line: (.+)')
 def dns_log_contains(condition, line):
     """
     Check if DNS log includes line.
@@ -410,7 +410,7 @@ def lease_file_doesnt_contain(line):
     multi_protocol_functions.regular_file_contain(world.f_cfg.get_leases_path(), True, line)
 
 
-@step('Remote (\S+) file stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
+@step(r'Remote (\S+) file stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
 def remote_log_includes_line(destination, file_path, condition, line):
     """
     Check if Log includes line.
@@ -420,7 +420,7 @@ def remote_log_includes_line(destination, file_path, condition, line):
     multi_protocol_functions.regular_file_contain(file_path, condition, line, destination=destination)
 
 
-@step('Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
+@step(r'Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
 def table_contains_line(table_name, db_type, line, expect=True):
     """
     Check if in table X in database type Y include line.
@@ -430,13 +430,13 @@ def table_contains_line(table_name, db_type, line, expect=True):
     multi_protocol_functions.db_table_contain(table_name, db_type, line=line, expect=expect)
 
 
-@step('Remove all records from table (\S+) in (\S+) database.')
+@step(r'Remove all records from table (\S+) in (\S+) database.')
 def remove_from_db_table(table_name, db_type):
     table_name, db_type = test_define_value(table_name, db_type)
     multi_protocol_functions.remove_from_db_table(table_name, db_type)
 
 
-@step('(\S+) log contains (\d+) of line: (.+)')
+@step(r'(\S+) log contains (\d+) of line: (.+)')
 def log_includes_count(server_type, count, line):
     """
     Check if Log includes line.
@@ -446,7 +446,7 @@ def log_includes_count(server_type, count, line):
     multi_protocol_functions.log_contains_count(server_type, count, line)
 
 
-@step('Sleep for (\S+) (seconds|second|milliseconds|millisecond).')
+@step(r'Sleep for (\S+) (seconds|second|milliseconds|millisecond).')
 def forge_sleep(time_val, time_units):
     """
     Pause the test for selected amount of time counted in seconds or milliseconds.
@@ -455,7 +455,7 @@ def forge_sleep(time_val, time_units):
     multi_protocol_functions.forge_sleep(int(time_val), str(time_units))
 
 
-@step('Pause the Test.')
+@step(r'Pause the Test.')
 def test_pause():
     """
     Pause the test for any reason. Very good to debug problems. Checking server configuration
@@ -465,17 +465,17 @@ def test_pause():
     multi_protocol_functions.test_pause()
 
 
-@step('End test.')
+@step(r'End test.')
 def test_stop():
     assert False, "Test ended."
 
 
-@step('Fail test.')
+@step(r'Fail test.')
 def test_fail():
     assert False, "Test failed on purpose."
 
 
-@step('Client download file from server stored in: (\S+).')
+@step(r'Client download file from server stored in: (\S+).')
 def copy_remote(remote_path):
     """
     Download file from remote server. It is stored in test directory.
@@ -485,7 +485,7 @@ def copy_remote(remote_path):
     multi_protocol_functions.copy_file_from_server(remote_path)
 
 
-@step('Client compares downloaded file from server with local file stored in: (\S+).')
+@step(r'Client compares downloaded file from server with local file stored in: (\S+).')
 def compare_file(remote_path):
     """
     Compare two files, our local and "downloaded_file".
@@ -494,7 +494,7 @@ def compare_file(remote_path):
     multi_protocol_functions.compare_file(remote_path)
 
 
-@step('Downloaded file MUST (NOT )?contain line: (.+)')
+@step(r'Downloaded file MUST (NOT )?contain line: (.+)')
 def file_includes_line(condition, line):
     """
     Check if downloaded file includes line.
@@ -504,7 +504,7 @@ def file_includes_line(condition, line):
     multi_protocol_functions.file_includes_line(condition, line)
 
 
-@step('Client sends local file stored in: (\S+) to server, to location: (\S+).')
+@step(r'Client sends local file stored in: (\S+) to server, to location: (\S+).')
 def send_file_to_server(local_path, remote_path):
     """
     If you need send some file to server, use that step.
@@ -513,7 +513,7 @@ def send_file_to_server(local_path, remote_path):
     multi_protocol_functions.send_file_to_server(local_path, remote_path)
 
 
-@step('Client removes file from server located in: (\S+).')
+@step(r'Client removes file from server located in: (\S+).')
 def remove_file_from_server(remote_path):
     """
     If you need to remove file from a server, please do so.
@@ -522,12 +522,12 @@ def remove_file_from_server(remote_path):
     multi_protocol_functions.remove_file_from_server(remote_path)
 
 
-@step('Add environment variable named (\S+) to value (.+)')
+@step(r'Add environment variable named (\S+) to value (.+)')
 def set_env(env_name, env_value):
     multi_protocol_functions.set_value(env_name, env_value)
 
 
-@step('User define temporary variable: (\S+) with value (.+)')
+@step(r'User define temporary variable: (\S+) with value (.+)')
 def add_variable_temporary(variable_name, variable_val):
     """
     User can define his own variable, that can be called from any place in test scenario,
@@ -538,7 +538,7 @@ def add_variable_temporary(variable_name, variable_val):
     multi_protocol_functions.add_variable(variable_name, variable_val, 0)
 
 
-@step('User define permanent variable: (\S+) with value (\S+).')
+@step(r'User define permanent variable: (\S+) with value (\S+).')
 def add_variable_permanent(variable_name, variable_val):
     """
     User can define his own variable, that can be called from any place in test scenario,
@@ -550,7 +550,7 @@ def add_variable_permanent(variable_name, variable_val):
     multi_protocol_functions.add_variable(variable_name, variable_val, 1)
 
 
-@step('Let us celebrate this SUCCESS!')
+@step(r'Let us celebrate this SUCCESS!')
 def test_victory():
     """
     Use your imagination.
@@ -558,7 +558,7 @@ def test_victory():
     multi_protocol_functions.user_victory()
 
 
-@step('Execute command (\S+) with arguments: (.+)')
+@step(r'Execute command (\S+) with arguments: (.+)')
 def execute_shell_cmd(path, arg):
     path, arg = test_define_value(path, arg)
     result = multi_protocol_functions.execute_shell_cmd(path, arg)
@@ -566,7 +566,7 @@ def execute_shell_cmd(path, arg):
     return result
 
 
-@step('Execute command (\S+) with arguments: (.+)')
+@step(r'Execute command (\S+) with arguments: (.+)')
 def execute_kea_shell(args):
     args = test_define_value(args)[0]
     path = world.f_cfg.sbin_join('kea-shell')
@@ -576,17 +576,17 @@ def execute_kea_shell(args):
     return result
 
 
-@step('Check socket connectivity on address (\S+) and port (\S+).')
+@step(r'Check socket connectivity on address (\S+) and port (\S+).')
 def check_socket(socket_address, socket_port):
     pass
 
 
-@step('Check socket connectivity on server in path (\S+).')
+@step(r'Check socket connectivity on server in path (\S+).')
 def check_socket_server_site(socket_path):
     pass
 
 
-@step('Send ctrl cmd (.+) using UNIX socket (\S+) to server (.+).')
+@step(r'Send ctrl cmd (.+) using UNIX socket (\S+) to server (.+).')
 def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=world.f_cfg.mgmt_address,
                              exp_result=0, exp_failed=False):
     if isinstance(command, dict):
@@ -598,7 +598,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
                                                              exp_result, exp_failed)
 
 
-@step('Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
+@step(r'Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
 def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False):
     if isinstance(command, dict):
         substitute_vars(command)
@@ -628,23 +628,23 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0):
     return response
 
 
-@step('JSON response in (\S+) MUST (NOT )?include value: (.+)')
+@step(r'JSON response in (\S+) MUST (NOT )?include value: (.+)')
 def json_response_parsing(parameter_name, condition, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     multi_protocol_functions.parse_json_file(condition, str(parameter_name), str(parameter_value))
 
 
-@step('Loops config: Save leases details.')
+@step(r'Loops config: Save leases details.')
 def loops_config_sld():
     dhcpmsg.loops_config_sld()
 
 
-@step('Loops config: choose (\S+) from (file )?(.+)')
+@step(r'Loops config: choose (\S+) from (file )?(.+)')
 def values_for_loops(value_name, file_flag, values):
     dhcpmsg.values_for_loops(value_name, file_flag, values)
 
 
-@step('Exchange messages (\S+) - (\S+) (\d+) times.')
+@step(r'Exchange messages (\S+) - (\S+) (\d+) times.')
 def loops(message_type_1, message_type_2, repeat):
     tmp = world.f_cfg.show_packets_from
     world.f_cfg.show_packets_from = ""
