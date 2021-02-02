@@ -94,7 +94,7 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
             pgsql_version = pgsql_location.split("/")[0]
             break
     else:
-        print "location not found"
+        print("location not found")
         return 0
 
     cmd = 'sudo systemctl stop postgresql'
@@ -116,7 +116,7 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
 
     # change config, it have to point to new location
     new_location = os.path.join(location, 'postgresql', pgsql_version, "main")
-    print "new loc: %s" % new_location
+    print("new loc: %s" % new_location)
     cmd = "sudo sed -i 's/%s/%s/g' %s" % (full_current_location.replace("/", "\\/"),
                                           new_location.replace("/", "\\/"), pgsql_conf)
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
@@ -128,12 +128,12 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
     srv_msg.execute_shell_cmd(cmd, dest=dest)
 
     # all data from ramdisk will be dumped, so we need just copy backup files
-    print "\n\n---IMPORTANT DATA FOR MANUAL RECOVERY----"
-    print "STOP PGSQL:     sudo systemctl stop postgresql"
-    print "RESTORE DATA:   sudo mv %s.back %s" % (full_current_location, full_current_location)
-    print "RESTORE CONFIG: sudo cp %s_backup %s" % (pgsql_conf, pgsql_conf)
-    print "RESTART PGSQL:  sudo systemctl start postgresql"
-    print "-----------------------------------------\n\n"
+    print("\n\n---IMPORTANT DATA FOR MANUAL RECOVERY----")
+    print("STOP PGSQL:     sudo systemctl stop postgresql")
+    print("RESTORE DATA:   sudo mv %s.back %s" % (full_current_location, full_current_location))
+    print("RESTORE CONFIG: sudo cp %s_backup %s" % (pgsql_conf, pgsql_conf))
+    print("RESTART PGSQL:  sudo systemctl start postgresql")
+    print("-----------------------------------------\n\n")
     return full_current_location, pgsql_conf
 
 
@@ -204,7 +204,7 @@ def test_v6_full_disk_testing_pgsql():
     srv_control.start_srv('DHCP', 'started')
 
     _allocate_disk_space(location='/tmp/kea_ram_disk_pgsql/allocate_disk')
-    print _check_disk()
+    print(_check_disk())
 
     # we expected that kea will keep working properly, assigning addresses in memory,
     # turned out that when it can't save lease to memfile/db it return NAK/NoAddrAvail code
@@ -244,7 +244,7 @@ def test_v6_full_disk_testing_memfile():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     _allocate_disk_space()
-    print _check_disk()
+    print(_check_disk())
 
     # we expected that kea will keep working properly, assigning addresses in memory,
     # turned out that when it can't save lease to memfile/db it return NAK/NoAddrAvail code
@@ -285,7 +285,7 @@ def test_v4_full_disk_testing():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     _allocate_disk_space()
-    print _check_disk()
+    print(_check_disk())
 
     # we expected that kea will keep working properly, assigning addresses in memory,
     # turned out that when it can't save lease to memfile/db it return NAK/NoAddrAvail code
