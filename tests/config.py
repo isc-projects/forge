@@ -24,7 +24,7 @@ import sys
 from forge_cfg import world, step
 
 
-@step('stop process (\w+)')
+@step(r'stop process (\w+)')
 def stop_a_named_process(process_name):
     """
     Stop the process with the given name.
@@ -33,7 +33,7 @@ def stop_a_named_process(process_name):
     """
     world.processes.stop_process(process_name)
 
-@step('wait for (new )?(\w+) stderr message (\w+)(?: not (\w+))?')
+@step(r'wait for (new )?(\w+) stderr message (\w+)(?: not (\w+))?')
 def wait_for_err_message(new, process_name, message, not_message):
     """
     Block until the given message is printed to the given process's stderr
@@ -53,7 +53,7 @@ def wait_for_err_message(new, process_name, message, not_message):
     if not_message is not None:
         assert found != not_message, line
 
-@step('wait for (new )?(\w+) stdout message (\w+)(?: not (\w+))?')
+@step(r'wait for (new )?(\w+) stdout message (\w+)(?: not (\w+))?')
 def wait_for_out_message(process_name, message, not_message):
     """
     Block until the given message is printed to the given process's stdout
@@ -73,7 +73,7 @@ def wait_for_out_message(process_name, message, not_message):
     if not_message is not None:
         assert found != not_message, line
 
-@step('the file (\S+) should (not )?exist')
+@step(r'the file (\S+) should (not )?exist')
 def check_existence(file_name, should_not_exist):
     """
     Check the existence of the given file.

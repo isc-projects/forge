@@ -6,7 +6,7 @@ pcapy
 
 # required by forge
 PyCryptodome
-Fabric==1.14
+fabric3
 requests
 pytest
 netifaces

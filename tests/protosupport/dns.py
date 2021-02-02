@@ -262,6 +262,9 @@ def parsing_received_parts(query_part_list, length, expect, value_name, value):
         if isinstance(test, int):
             test = str(test)
 
+        if isinstance(test, bytes):
+            test = test.decode('utf-8')
+
         if test == value:
             return 1, test
         outcome = outcome + test + ' '

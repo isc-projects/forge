@@ -19,6 +19,7 @@
 # This file contains a number of common steps that are general and may be used
 # By a lot of feature files.
 #
+import codecs
 import random
 import os
 import logging
@@ -74,6 +75,8 @@ OPTIONS = {"client-id": 1,
 
 ## ======================================================================
 ## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
+
+decode_hex = codecs.getdecoder("hex_codec")
 
 
 def client_requests_option(opt_type):
@@ -304,11 +307,13 @@ def client_does_include(sender_type, opt_type, value):
 
     elif opt_type == "remote-id":
         add_client_option(dhcp6.DHCP6OptRemoteID(enterprisenum=world.cfg["values"]["enterprisenum"],
-                                                 remoteid=world.cfg["values"]["remote_id"].replace(':', '').decode('hex')))
+                                                 remoteid=decode_hex(world.cfg["values"]["remote_id"].replace(':', ''))[0]))
+                                                 # remoteid=world.cfg["values"]["remote_id"].replace(':', '').decode('hex')))
 
     elif opt_type == "subscriber-id":
-        add_client_option(dhcp6.DHCP6OptSubscriberID(subscriberid=world.cfg["values"]["subscriber_id"].
-                                                     replace(':', '').decode('hex')))
+        # add_client_option(dhcp6.DHCP6OptSubscriberID(subscriberid=world.cfg["values"]["subscriber_id"].
+        #                                              replace(':', '').decode('hex')))
+        add_client_option(dhcp6.DHCP6OptSubscriberID(subscriberid=decode_hex(world.cfg["values"]["subscriber_id"].replace(':', ''))[0]))
 
     elif opt_type == "interface-id":
         add_client_option(dhcp6.DHCP6OptIfaceId(ifaceid=world.cfg["values"]["ifaceid"]))
@@ -337,7 +342,7 @@ def change_message_field(message_filed, value, value_type):
     convert_type = {"int": int,
                     "string": str,
                     "str": str,
-                    "unicode": unicode}
+                    "unicode": str}
 
     convert = convert_type[value_type]
     world.message_fields.append([str(message_filed), convert(value)])
@@ -415,14 +420,14 @@ def client_add_saved_option(erase, count="all"):
     Add saved option to message, and erase.
     """
     if count == "all":
-        for each_key in world.savedmsg.keys():
+        for each_key in list(world.savedmsg.keys()):
             for every_opt in world.savedmsg[each_key]:
                 world.cliopts.append(every_opt)
             if erase:
                 world.savedmsg = {}
     else:
-        if not world.savedmsg.has_key(count):
-            assert False, "There is no set no. {count} in saved opotions".format(**locals())
+        if count not in world.savedmsg:
+            assert False, "There is no set no. {count} in saved options".format(**locals())
 
         for each in world.savedmsg[count]:
             world.cliopts.append(each)
@@ -438,7 +443,8 @@ def vendor_option_request_convert():
                 data_tmp += '\00' + str(chr(number))
             each[1] = data_tmp
         else:
-            each[1] = each[1].replace(':', '').decode('hex')
+            # each[1] = each[1].replace(':', '').decode('hex')
+            each[1] = decode_hex(each[1].replace(':', ''))[0]
 
 
 def convert_DUID_hwaddr(duid, threshold):
@@ -679,7 +685,7 @@ def get_msg_type(msg):
                  "RELAYREPLY": dhcp6.DHCP6_RelayReply}
 
     # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
-    for msg_name in msg_types.keys():
+    for msg_name in list(msg_types.keys()):
         if type(msg.getlayer(2)) == msg_types[msg_name]:
             return msg_name
 
@@ -912,7 +918,10 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
         if type(tmp_field) is list:
             received.append(",".join(tmp_field))
         else:
-            received.append(str(tmp_field))
+            if isinstance(tmp_field, bytes):
+                received.append(tmp_field.decode('utf-8'))
+            else:
+                received.append(str(tmp_field))
 
     opt_descr = _get_opt_descr(opt_code)
 
@@ -968,8 +977,10 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                 if type(tmp_field) is list:
                     received.append(",".join(tmp_field))
                 else:
-                    received.append(str(tmp_field))
-
+                    if isinstance(tmp_field, bytes):
+                        received.append(tmp_field.decode('utf-8'))
+                    else:
+                        received.append(str(tmp_field))
         # test if expected option/suboption/value is in all collected options/suboptions/values
         if received[0] == 'None':
             assert False, "Within option " + opt_descr + " there is no " + initial_data_type\

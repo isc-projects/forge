@@ -151,7 +151,11 @@ def test_v4_request_relay_initreboot_no_leases():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+<<<<<<< HEAD
     srv_control.build_and_send_config_files()
+=======
+    srv_control.build_and_send_config_files('SSH', 'config-file')
+>>>>>>> python3
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()

@@ -51,23 +51,23 @@ def set_world():
     world.configClass = KeaConfiguration()
 
 
-@step('Pass Criteria:')
+@step(r'Pass Criteria:')
 def pass_criteria():
     # Do nothing, "Pass criteria:" appears in the text as beautification only
     pass
 
 
-@step('Test Setup:')
+@step(r'Test Setup:')
 def test_setup():
     set_world()
 
 
-@step('Server reconfigure:')
+@step(r'Server reconfigure:')
 def reconfigure():
     set_world()
 
 
-@step('Test Procedure:')
+@step(r'Test Procedure:')
 def test_procedure():
     for each in world.f_cfg.software_under_test:
         if "server" in each:

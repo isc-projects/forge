@@ -163,17 +163,18 @@ class ForgeConfiguration:
             setattr(self, key.lower(), value)
 
     def gethwaddr(self, ifname):
-        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack('256s', ifname))
-        return ':'.join(['%02x' % ord(char) for char in info[18:24]])
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        info = fcntl.ioctl(s.fileno(), 0x8927, struct.pack('256s', bytes(ifname, 'utf-8')[:15]))
+        s.close()
+        return ':'.join('%02x' % b for b in info[18:24])
 
     def basic_validation(self):
         if self.software_install_path == "":
-            print "Configuration failure, software_install_path empty." \
-                  " Please use ./forge.py -T to validate configuration."
+            print ("Configuration failure, software_install_path empty. "
+                   "Please use ./forge.py -T to validate configuration.")
             sys.exit(-1)
         if self.mgmt_address == "":
-            print "Configuration failure, mgmt_address empty. Please use ./forge.py -T to validate configuration."
+            print ("Configuration failure, mgmt_address empty. Please use ./forge.py -T to validate configuration.")
             sys.exit(-1)
 
     def set_env_val(self, env_name, env_val):
@@ -248,7 +249,7 @@ world.f_cfg = ForgeConfiguration()
 
 
 def _conv_arg_to_txt(arg):
-    if isinstance(arg, basestring):
+    if isinstance(arg, str):
         return "'%s'" % arg
     else:
         return str(arg)

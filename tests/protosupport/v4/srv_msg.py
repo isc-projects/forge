@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
-import sys
+import codecs
 import logging
 from random import randint
 
@@ -148,7 +148,7 @@ options_formatted_by_forge = ["vendor_specific",  # code 43
 def client_does_include(sender_type, opt_type, value):
     if opt_type == 'client_id':
         # code - 61
-        world.cliopts += [(opt_type, convert_MAC(value))]
+        world.cliopts += [(opt_type, convert_to_hex(value))]
 #     elif opt_type =='vendor_class_id':
 #         world.cliopts += [(opt_type, str(value), "my-other-class")]
     elif opt_type == 'fqdn':
@@ -195,9 +195,9 @@ def response_check_content(expect, data_type, expected):
         tmp = struct.unpack('16B', world.srvmsg[0].chaddr)
         received = ':'.join("%.2x" % x for x in tmp[:6])
     elif data_type == 'sname':
-        received = world.srvmsg[0].sname.replace('\x00', '')
+        received = world.srvmsg[0].sname.decode('utf-8').rstrip('\x00')
     elif data_type == 'file':
-        received = world.srvmsg[0].file.replace('\x00', '')
+        received = world.srvmsg[0].file.decode('utf-8').rstrip('\x00')
 
     else:
         assert False, "Value %s is not supported" % data_type
@@ -208,7 +208,7 @@ def response_check_content(expect, data_type, expected):
 
     if expect:
         assert outcome, "Invalid {data_type} received {received}" \
-                        " but expected: {expected}.".format(**locals())
+                        " but expected: {expected}".format(**locals())
     else:
         assert not outcome, "Invalid {data_type} received {received}" \
                             " that value has been excluded from correct values.".format(**locals())
@@ -235,9 +235,8 @@ def client_copy_option(opt_name):
     world.cliopts.append(received)
 
 
-def convert_MAC(mac):
-    # convert MAC address to hex representation
-    return mac.replace(':', '').decode('hex')
+def convert_to_hex(mac):
+    return codecs.decode(mac.replace(":", ""), 'hex')
 
 
 def start_fuzzing():  # time_period, time_units):
@@ -246,23 +245,16 @@ def start_fuzzing():  # time_period, time_units):
 
 def build_msg(opts):
     conf.checkIPaddr = False
-    msg_flag = 0
-    import sys
-    if sys.platform != "darwin":
-        fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
-    else:
-        # TODO fix this for MAC OS, this is temporary quick fix just for my local system
-        hw = convert_MAC("0a:00:27:00:00:00")
-    tmp_hw = None
+    fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
 
     # we need to choose if we want to use chaddr, or client id.
     # also we can include both: client_id and chaddr
     if world.cfg["values"]["chaddr"] is None or world.cfg["values"]["chaddr"] == "default":
         tmp_hw = hw
     elif world.cfg["values"]["chaddr"] == "empty":
-        tmp_hw = convert_MAC("00:00:00:00:00:00")
+        tmp_hw = convert_to_hex("00:00:00:00:00:00")
     else:
-        tmp_hw = convert_MAC(world.cfg["values"]["chaddr"])
+        tmp_hw = convert_to_hex(world.cfg["values"]["chaddr"])
 
     if world.cfg["values"]["broadcastBit"]:
         # value for setting 1000 0000 0000 0000 in bootp message in field 'flags' for broadcast msg.
@@ -418,7 +410,9 @@ def test_option(opt_code, received, expected):
         received = received[0], ByteToHex(received[1])
 
     if expected[:4] == "HEX:":
-        expected = expected[4:]
+        # for this option we need a bit magic, and proper formatting at the end
+        tmp = struct.unpack('%dB' % len(received[1]), received[1])
+        received = (received[0], "".join("%.2x" % x for x in tmp).upper())
 
     for each in received:
         tmp += str(each) + ' '
@@ -454,6 +448,9 @@ def response_check_option_content(opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
+
+    if isinstance(received[1], bytes):
+        received=(received[0], received[1].decode('utf-8'))
 
     # FQDN is being parsed different way because of scapy imperfections
     if opt_code == 81:
