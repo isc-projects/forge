@@ -447,7 +447,7 @@ def response_check_option_content(opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
-    print (received, expected)
+
     # FQDN is being parsed different way because of scapy imperfections
     if opt_code == 81:
         tmp = received[0]
