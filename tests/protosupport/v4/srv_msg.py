@@ -171,7 +171,7 @@ def client_does_include(sender_type, opt_type, value):
     elif opt_type in options_formatted_by_forge:
         world.cliopts += [(opt_type, "".join(map(lambda z: chr(int(z, 16)), list(value))))]
     elif opt_type in ["vendor_specific_information", "vendor_class"]:
-        world.cliopts += [(opt_type, value.decode("hex"))]
+        world.cliopts += [(opt_type, convert_to_hex(value))]
     else:
         try:
             world.cliopts += [(opt_type, str(value))]
@@ -404,20 +404,19 @@ def ByteToHex(byteStr):
 def test_option(opt_code, received, expected):
     tmp = ""
 
-    decode_opts_byte_to_hex = [61]
-
+    decode_opts_byte_to_hex = [43, 125]
     if opt_code in decode_opts_byte_to_hex or expected[:4] == "HEX:":
-        received = received[0], ByteToHex(received[1])
-
-    if expected[:4] == "HEX:":
+        expected = expected[4:]
         # for this option we need a bit magic, and proper formatting at the end
         tmp = struct.unpack('%dB' % len(received[1]), received[1])
         received = (received[0], "".join("%.2x" % x for x in tmp).upper())
 
     for each in received:
-        tmp += str(each) + ' '
-        if str(each) == expected:
+        if str(each) == str(expected):
             return True, each
+        elif isinstance(each, bytes):
+            if str(each.decode("utf-8")) == str(expected):
+                return True, each
     return False, tmp
 
 
@@ -448,10 +447,7 @@ def response_check_option_content(opt_code, expect, data_type, expected):
 
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
-
-    if isinstance(received[1], bytes):
-        received=(received[0], received[1].decode('utf-8'))
-
+    print (received, expected)
     # FQDN is being parsed different way because of scapy imperfections
     if opt_code == 81:
         tmp = received[0]
@@ -461,8 +457,10 @@ def response_check_option_content(opt_code, expect, data_type, expected):
             received = tmp, received[1][3:]
         else:
             assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
-
-        # assert False, bytes(received[1][0])
+    elif opt_code == 61:
+        expected = convert_to_hex(expected)
+    elif isinstance(received[1], bytes):
+        received = (received[0], received[1])
 
     outcome, received = test_option(opt_code, received, expected)
 

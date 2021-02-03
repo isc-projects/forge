@@ -286,13 +286,15 @@ class ConfigModel(ConfigElem):
                 if param in self.cfg:
                     del self.cfg[param]
             if param == "server_tags":
-                del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
             else:
                 param = param.replace('_', '-')
                 parameters[param] = val
                 self.cfg[param] = val
+
+        if "server_tags" in kwargs:
+            del kwargs["server_tags"]
 
         response = global_parameter_set(parameters, server_tags=server_tags)
         assert response["result"] == 0
@@ -316,7 +318,6 @@ class ConfigModel(ConfigElem):
                 val = _to_list(val)
             if param == "server_tags":
                 server_tags = _to_list(val)
-                del kwargs["server_tags"]
                 continue
 
             param = param.replace('_', '-')
@@ -324,6 +325,9 @@ class ConfigModel(ConfigElem):
 
             if param == 'interface-id':
                 del network['interface']
+
+        if "server_tags" in kwargs:
+            del kwargs["server_tags"]
 
         # send command
         response = network_set(network, server_tags=server_tags)
@@ -368,13 +372,14 @@ class ConfigModel(ConfigElem):
             if val is None:
                 continue
             if param == "server_tags":
-                server_tags = val
-                del kwargs["server_tags"]
-                server_tags = _to_list(server_tags)
+                server_tags = _to_list(val)
                 continue
             param = param.replace('_', '-')
             option[param] = val
         self.cfg["option-data"] = [option]
+
+        if "server_tags" in kwargs:
+            del kwargs["server_tags"]
 
         # send command
         response = global_option_set([option], server_tags=server_tags)
@@ -430,8 +435,6 @@ class ConfigModel(ConfigElem):
             if param == 'option_data':
                 val = _to_list(val)
             if param == "server_tags":
-                # server_tags = val
-                del kwargs["server_tags"]
                 server_tags = _to_list(val)
                 continue
             param = param.replace('_', '-')

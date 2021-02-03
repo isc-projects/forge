@@ -338,7 +338,7 @@ def execute_shell_cmd(path, save_results=True, dest=world.f_cfg.mgmt_address):
             os.makedirs(world.cfg["test_result_dir"])
 
         myfile = open(world.cfg["test_result_dir"] + '/' + file_name, 'w')
-        myfile.write(unicode('Script: ' + path))
+        myfile.write('Script: ' + path)
         if result.failed:
             myfile.write('\nStatus: FAILED\n')
         else:
