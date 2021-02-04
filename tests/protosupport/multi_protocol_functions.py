@@ -25,7 +25,8 @@ import pprint
 import termios
 import shutil
 import logging
-
+import codecs
+import ipaddress
 import requests
 
 from forge_cfg import world
@@ -614,7 +615,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
         for lease in leases_list:
             if world.f_cfg.proto == 'v4':
                 table = 'lease4'
-                cmd = "grep -E -i %s /tmp/db_out | grep -E -i %s | grep -E  -c %s" % ('{:02X}{:02X}{:02X}{:02X}'.format(*map(int, lease["address"].split('.'))),
+                cmd = "grep -E -i %s /tmp/db_out | grep -E -i %s | grep -E  -c %s" % (convert_address_to_hex(lease["address"]),
                                                                                       lease["hwaddr"].replace(":",""),
                                                                                       lease["valid_lifetime"])
             elif world.f_cfg.proto == 'v6':
@@ -629,3 +630,14 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
     elif backend == 'cassandra':
         # TODO implement this sometime in the future
         pass
+
+
+def convert_address_to_hex(address):
+    '''Convert string address to hexadecimal representation.'''
+    address = test_define_value(address)[0]
+    if '.' in address:
+        return '{:02X}{:02X}{:02X}{:02X}'.format(*map(int, address.split('.')))
+    if ':' in address:
+        # TODO: support for abbreviated two-colon format e.g. 2001:db8::1
+        return codecs.decode(address.replace(':', ''), 'hex')
+    raise Exception('%s is not a valid IPv4 or IPv6 address' % address)
