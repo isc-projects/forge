@@ -139,10 +139,10 @@ def convert_flags_fqdn():
     return flag_filed
 
 
-options_formatted_by_forge = ["vendor_specific",  # code 43
-                              "pxe_client_machine_identifier",  # code 97
-                              "relay_agent_information"  # code 82
-                              ]
+options_formatted_by_forge = [
+    "vendor_specific",  # code 43
+    "pxe_client_machine_identifier",  # code 97
+]
 
 
 def client_does_include(sender_type, opt_type, value):
@@ -170,7 +170,11 @@ def client_does_include(sender_type, opt_type, value):
         world.cliopts += [(opt_type, chr(int(value[0])) + chr(int(value[1])) + chr(int(value[2])))]
     elif opt_type in options_formatted_by_forge:
         world.cliopts += [(opt_type, "".join(map(lambda z: chr(int(z, 16)), list(value))))]
-    elif opt_type in ["vendor_specific_information", "vendor_class"]:
+    elif opt_type in [
+        'relay_agent_information',
+        'vendor_class',
+        'vendor_specific_information',
+    ]:
         world.cliopts += [(opt_type, convert_to_hex(value))]
     else:
         try:

@@ -312,7 +312,7 @@ def test_v4_client_classification_relay_option_exists():
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
     # command below will add option 82 with calculated length and suboption code 3, length 1, value 1.
-    srv_msg.client_does_include_with_value('relay_agent_information', '311')
+    srv_msg.client_does_include_with_value('relay_agent_information', '030101')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
@@ -324,7 +324,7 @@ def test_v4_client_classification_relay_option_exists():
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_does_include_with_value('relay_agent_information', '311')
+    srv_msg.client_does_include_with_value('relay_agent_information', '030101')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
