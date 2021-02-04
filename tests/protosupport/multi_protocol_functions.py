@@ -356,7 +356,7 @@ def execute_shell_cmd(path, save_results=True, dest=world.f_cfg.mgmt_address):
 def test_define_value(*args):
     """Substitute variable references in a string.
 
-    Designed to use in test scenarios values from ini_all.py file. To makes them even more portable
+    Designed to use in test scenarios values from init_all.py file. To makes them even more portable
     Bash like define variables: $(variable_name)
     You can use steps like:
         Client download file from server stored in: $(SERVER_SETUP_DIR)/other_dir/my_file
@@ -640,4 +640,31 @@ def convert_address_to_hex(address):
     if ':' in address:
         # TODO: support for abbreviated two-colon format e.g. 2001:db8::1
         return codecs.decode(address.replace(':', ''), 'hex')
+    raise Exception('%s is not a valid IPv4 or IPv6 address' % address)
+
+
+def _increase_address_n(prefix):
+    '''Increment an IPv[46]Network address.'''
+    return prefix.network_address + \
+        (1 << (prefix.network_address.max_prefixlen - int(prefix.prefixlen)))
+
+
+def increase_address(address, prefix_length):
+    '''
+    Increment an IPv4 or IPv6 address belonging to a network with given prefix
+    length.
+    '''
+    address, prefix_length = test_define_value(address, prefix_length)
+    if '.' in address:
+        network = ipaddress.IPv4Network(address + '/' + prefix_length)
+        new_address = _increase_address_n(network)
+        new_network = ipaddress.IPv4Network(
+            new_address.compressed + '/' + prefix_length)
+        return str(new_network.network_address)
+    if ':' in address:
+        network = ipaddress.IPv6Network(address + '/' + prefix_length)
+        new_address = _increase_address_n(network)
+        new_network = ipaddress.IPv6Network(
+            new_address.compressed + '/' + prefix_length)
+        return str(new_network.network_address)
     raise Exception('%s is not a valid IPv4 or IPv6 address' % address)

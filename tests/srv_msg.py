@@ -143,7 +143,7 @@ def unicast_addres(addr_type, addr_type2):
     - multicast for DHCPv6
     - unicast global address of the server
     - unicast local address of the server
-    Proper configuration in ini_all.py required.
+    Proper configuration in init_all.py required.
     """
     # send true when GLOBAL and False when LINK_LOCAL
     dhcpmsg.unicast_addres(True if addr_type else False)
