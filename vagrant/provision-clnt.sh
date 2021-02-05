@@ -8,10 +8,10 @@ sudo systemctl disable apt-daily.service apt-daily-upgrade.service
 
 sudo apt update
 ps axf
-sudo apt install -y python python-virtualenv g++ python-dev libpcap-dev git
+sudo DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-all" -y python3 python3-venv g++ python3-dev libpcap-dev git
 
 rm -rf $HOME/venv
-python -m virtualenv $HOME/venv
+python3 -m venv $HOME/venv
 $HOME/venv/bin/pip install -U pip
 $HOME/venv/bin/pip install -r /forge/requirements.txt
 
