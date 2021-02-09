@@ -1149,9 +1149,9 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
 def db_setup(dest=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method != 'make':
         if world.server_system == 'redhat':
-            fabric_sudo_command("rpm -qa '*kea*'", destination_host=dest)
+            fabric_run_command("rpm -qa '*kea*'", destination_host=dest)
         else:
-            fabric_sudo_command("dpkg -l '*kea*'", destination_host=dest)
+            fabric_run_command("dpkg -l '*kea*'", destination_host=dest)
 
     if world.f_cfg.disable_db_setup:
         return

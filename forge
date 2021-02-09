@@ -12,6 +12,7 @@ import os
 import sys
 import time
 import json
+import shutil
 import string
 import logging
 import datetime
@@ -35,7 +36,7 @@ CLNT4_ADDR = "192.168.50.2"
 CLNT4_ADDR_2 = "192.168.51.2"
 SRV_IPV6_ADDR_GLOBAL = "3000::1000"
 MGMT_ADDRESS = "172.28.0.31"
-MGMT_ADDRESS_2 = ""
+MGMT_ADDRESS_2 = "172.28.0.32"
 MGMT_ADDRESS_3 = "172.28.0.33"
 DNS4_ADDR = SRV4_ADDR
 #DNS6_ADDR = "2001:db8:0:f101::1"
@@ -347,6 +348,7 @@ def setup(args):
     tpl = string.Template(txt)
     txt = tpl.safe_substitute(KEA_DIRS=cfg['Forge']['kea-dirs'],
                               MGMT_ADDRESS=MGMT_ADDRESS,
+                              MGMT_ADDRESS_2=MGMT_ADDRESS_2,
                               SRV4_ADDR=SRV4_ADDR,
                               CLNT4_ADDR=CLNT4_ADDR,
                               CLNT4_ADDR_2=CLNT4_ADDR_2,
@@ -409,15 +411,20 @@ def install_kea(args):
 
 
 def _install_kea_native(args):
+    _install_kea_native_on_server(args, 1)
+    _install_kea_native_on_server(args, 2)
+
+
+def _install_kea_native_on_server(args, server_idx):
     vagrant_dir = get_vagrant_dir(args)
-    server1_name = _get_server_name(args, 1)
-    cmd_tpl = 'vagrant ssh ' + server1_name + ' -c "%s"'
+    server_name = _get_server_name(args, server_idx)
+    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
 
     # copy hammer into vm and prepare system
     execute('rm -rf hammer.py', cwd=vagrant_dir)
     execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py', cwd=vagrant_dir)
     execute('chmod a+x hammer.py', cwd=vagrant_dir)
-    cmd = 'vagrant upload hammer.py %s' % server1_name
+    cmd = 'vagrant upload hammer.py %s' % server_name
     execute(cmd, cwd=vagrant_dir)
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -w mysql,pgsql,radius,forge'
@@ -583,11 +590,15 @@ def clean(args):
         _destroy_lxc_containers(args)
 
     # clean files
-    for path in ['tests/init_all.py', os.path.join(vagrant_dir, 'Vagrantfile')]:
+    files_to_del = ['tests/init_all.py',
+                    os.path.join(vagrant_dir, 'Vagrantfile'),
+                    os.path.join(vagrant_dir, 'hammer.py')]
+    for path in files_to_del:
         path = os.path.abspath(path)
         if os.path.exists(path):
             os.unlink(path)
             print('Deleted %s.' % path)
+    shutil.rmtree(os.path.join(vagrant_dir, '.vagrant'))
 
     # delete bridges
     if args.lxc:
