@@ -425,7 +425,7 @@ def _install_kea_native_on_server(args, server_idx):
     execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py', cwd=vagrant_dir)
     execute('chmod a+x hammer.py', cwd=vagrant_dir)
     cmd = 'vagrant upload hammer.py %s' % server_name
-    execute(cmd, cwd=vagrant_dir)
+    execute(cmd, cwd=vagrant_dir, attempts=3)
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -w mysql,pgsql,radius,forge'
     execute(cmd, cwd=vagrant_dir)
