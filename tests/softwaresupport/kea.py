@@ -931,6 +931,12 @@ def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
                      db_name=world.f_cfg.db_name)
     fabric_run_command(cmd, destination_host=destination_address)
 
+    # clear kea logs in journald (actually all logs)
+    if world.f_cfg.install_method != 'make':
+        cmd = 'journalctl --rotate'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd = 'journalctl --vacuum-time=1s'
+        fabric_sudo_command(cmd, destination_host=destination_address)
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
     v4 = False
@@ -1130,9 +1136,7 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
             service_name = 'kea-dhcp%s' % world.proto[1]
         else:
             service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
-        cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
-        cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
-        cmd += ' journalctl -u %s --since $ts > ' % service_name  # get logs since last start of kea service
+        cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
         cmd += ' /tmp/kea.log'
         result = fabric_sudo_command(cmd,
                                      destination_host=destination_address,

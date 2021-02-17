@@ -22,6 +22,7 @@ import functools
 import subprocess
 import configparser
 from urllib.parse import urljoin
+from collections import defaultdict
 try:
     import urllib.request
 except:
@@ -152,7 +153,7 @@ class ExecutionError(Exception):
 
 def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False, log_file_path=None,
             quiet=False, check_times=False, capture=False, interactive=False, attempts=1,
-            sleep_time_after_attempt=None):
+            sleep_time_after_attempt=None, log_prefix='{ts} '):
     """Execute a command in shell.
 
     :param str cmd: a command to be executed
@@ -201,7 +202,9 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
             while p.poll() is None and (timeout is None or t1 - t0 < timeout):
                 line = p.stdout.readline()
                 if line:
-                    line_decoded = line.decode(errors='ignore').rstrip() + '\r'
+                    now = datetime.datetime.now()
+                    lp = log_prefix.format_map(defaultdict(str, ts=now.strftime('%H:%M:%S.%f')))
+                    line_decoded = lp + line.decode(errors='ignore').rstrip() + '\r'
                     if not quiet:
                         print(line_decoded)
                     if capture:
@@ -270,20 +273,18 @@ def get_vagrant_dir(args):
 
 def ensure_lxc_bridges(args):
     mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
-    traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
-    traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
+    traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
 
-    for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
+    for bridge in [mgmt_brg, traffic_brg]:
         execute('sudo brctl addbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
         execute('sudo ip link set dev %s up' % bridge)
 
 
 def delete_lxc_bridges(args):
     mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
-    traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
-    traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
+    traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
 
-    for bridge in [mgmt_brg, traffic1_brg, traffic2_brg]:
+    for bridge in [mgmt_brg, traffic_brg]:
         execute('sudo ip link set dev %s down' % bridge, raise_error=False)
         execute('sudo brctl delbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
 
@@ -339,8 +340,7 @@ def setup(args):
     server1_name = _get_server_name(args, 1)
     server2_name = _get_server_name(args, 2)
     mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
-    traffic1_brg = 'lxcfgtrf1' + args.sid if args.sid else 'lxcfgtrf1'
-    traffic2_brg = 'lxcfgtrf2' + args.sid if args.sid else 'lxcfgtrf2'
+    traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
 
     # generate Vagrantfile
     with open(vagrant_tpl, 'r') as f_in:
@@ -359,8 +359,7 @@ def setup(args):
                               SERVER1_NAME=server1_name,
                               SERVER2_NAME=server2_name,
                               MGMT_BRG=mgmt_brg,
-                              TRAFFIC1_BRG=traffic1_brg,
-                              TRAFFIC2_BRG=traffic2_brg,
+                              TRAFFIC_BRG=traffic_brg,
                               SERVER_IMAGE=server_image,
                               PKG=pkg)
     vagrant_dir = get_vagrant_dir(args)
@@ -418,6 +417,7 @@ def _install_kea_native(args):
 def _install_kea_native_on_server(args, server_idx):
     vagrant_dir = get_vagrant_dir(args)
     server_name = _get_server_name(args, server_idx)
+    log_prefix = "|%s {ts}| " % server_name
     cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
 
     # copy hammer into vm and prepare system
@@ -425,10 +425,10 @@ def _install_kea_native_on_server(args, server_idx):
     execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py', cwd=vagrant_dir)
     execute('chmod a+x hammer.py', cwd=vagrant_dir)
     cmd = 'vagrant upload hammer.py %s' % server_name
-    execute(cmd, cwd=vagrant_dir, attempts=3)
+    execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -w mysql,pgsql,radius,forge'
-    execute(cmd, cwd=vagrant_dir)
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # prepare pkg source repo url
     repository_url = 'https://packages.isc.org'
@@ -440,14 +440,14 @@ def _install_kea_native_on_server(args, server_idx):
         # setup pkg source repo in vm
         subcmd = "echo 'deb %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
         cmd = cmd_tpl % subcmd
-        execute(cmd, cwd=vagrant_dir)
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
         key_url = "%s/repository/repo-keys/repo-key.gpg" % repository_url
         subcmd = 'wget -qO- %s | sudo apt-key add -' % key_url
         cmd = cmd_tpl % subcmd
-        execute(cmd, cwd=vagrant_dir)
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
         cmd = cmd_tpl % 'sudo apt update'
-        execute(cmd, cwd=vagrant_dir)
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
         # prepare packages list with versions
         pkgs = ["isc-kea-admin",
@@ -476,7 +476,7 @@ def _install_kea_native_on_server(args, server_idx):
         cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
         env = os.environ.copy()
         env['DEBIAN_FRONTEND'] = 'noninteractive'
-        execute(cmd, cwd=vagrant_dir, env=env)
+        execute(cmd, cwd=vagrant_dir, env=env, log_prefix=log_prefix)
 
     elif 'fedora' in args.system:
         # setup pkg source repo in vm
@@ -488,7 +488,7 @@ def _install_kea_native_on_server(args, server_idx):
         subcmd += 'gpgcheck=0\n'
         subcmd += 'EOF\n'
         cmd = cmd_tpl % subcmd
-        execute(cmd, cwd=vagrant_dir)
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
         # prepare packages list with versions
         pkgs = ["isc-kea",
@@ -518,8 +518,7 @@ def _install_kea_native_on_server(args, server_idx):
         # install packages
         cmd = cmd_tpl % 'sudo dnf install -y %s' % pkgs
         env = os.environ.copy()
-        env['DEBIAN_FRONTEND'] = 'noninteractive'
-        execute(cmd, cwd=vagrant_dir, env=env)
+        execute(cmd, cwd=vagrant_dir, env=env, log_prefix=log_prefix)
 
 
 def _install_kea_make(args):
@@ -570,7 +569,7 @@ def test(args, params):
     subcmd = 'cd /forge/; sudo ~/venv/bin/pytest ' + params
     cmd %= subcmd
     try:
-        execute(cmd, cwd=vagrant_dir)  # , raise_error=False)
+        execute(cmd, cwd=vagrant_dir, log_prefix='|%s {ts}| ' % client_name)  # , raise_error=False)
     except:
         # wait for all traces in executed command
         sys.stdout.flush()
