@@ -899,7 +899,9 @@ def clear_pid_leftovers(destination_address):
         assert False, "KEA PID FILE FOUND! POSSIBLE KEA CRASH"
 
 
-def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
+def clear_all(destination_address=world.f_cfg.mgmt_address,
+              software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
+              db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
     clear_logs(destination_address)
 
     # remove pid files
@@ -914,10 +916,10 @@ def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     cmd += ' `mysql -u{db_user} -p{db_passwd} {db_name} -N -B'
     cmd += '   -e "SELECT CONCAT_WS(\'.\', version, minor) FROM schema_version;" 2>/dev/null` -N -B'
     cmd += ' -u{db_user} -p{db_passwd} {db_name}'
-    cmd = cmd.format(software_install_path=world.f_cfg.software_install_path,
-                     db_user=world.f_cfg.db_user,
-                     db_passwd=world.f_cfg.db_passwd,
-                     db_name=world.f_cfg.db_name)
+    cmd = cmd.format(software_install_path=software_install_path,
+                     db_user=db_user,
+                     db_passwd=db_passwd,
+                     db_name=db_name)
     fabric_run_command(cmd, destination_host=destination_address)
 
     # use kea script for cleaning pgsql
@@ -925,10 +927,10 @@ def clear_all(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
     cmd += ' `PGPASSWORD={db_passwd} psql --set ON_ERROR_STOP=1 -A -t -h "localhost" '
     cmd += '   -q -U {db_user} -d {db_name} -c "SELECT version || \'.\' || minor FROM schema_version;" 2>/dev/null`'
     cmd += ' --set ON_ERROR_STOP=1 -A -t -h "localhost" -q -U {db_user} -d {db_name}'
-    cmd = cmd.format(software_install_path=world.f_cfg.software_install_path,
-                     db_user=world.f_cfg.db_user,
-                     db_passwd=world.f_cfg.db_passwd,
-                     db_name=world.f_cfg.db_name)
+    cmd = cmd.format(software_install_path=software_install_path,
+                     db_user=db_user,
+                     db_passwd=db_passwd,
+                     db_name=db_name)
     fabric_run_command(cmd, destination_host=destination_address)
 
     # clear kea logs in journald (actually all logs)
@@ -1150,19 +1152,17 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          destination_host=destination_address, ignore_errors=True)
 
 
-def db_setup(dest=world.f_cfg.mgmt_address):
+def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
+             db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+             init_db=True, disable=world.f_cfg.disable_db_setup):
+    if disable:
+        return
+
     if world.f_cfg.install_method != 'make':
         if world.server_system == 'redhat':
             fabric_run_command("rpm -qa '*kea*'", destination_host=dest)
         else:
             fabric_run_command("dpkg -l '*kea*'", destination_host=dest)
-
-    if world.f_cfg.disable_db_setup:
-        return
-
-    db_name = world.f_cfg.db_name
-    db_user = world.f_cfg.db_user
-    db_passwd = world.f_cfg.db_passwd
 
     kea_admin = world.f_cfg.sbin_join('kea-admin')
 
@@ -1170,6 +1170,13 @@ def db_setup(dest=world.f_cfg.mgmt_address):
     cmd = "mysql -u root -N -B -e \"DROP DATABASE IF EXISTS {db_name};\"".format(**locals())
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
+    cmd = "mysql -u root -N -B -e \"DROP USER IF EXISTS {db_user};\"".format(**locals())
+    result = fabric_sudo_command(cmd, destination_host=dest)
+    assert result.succeeded
+    cmd = "mysql -u root -N -B -e \"flush privileges;\"".format(**locals())
+    result = fabric_sudo_command(cmd, destination_host=dest)
+    assert result.succeeded
+
     cmd = "mysql -u root -e 'CREATE DATABASE {db_name};'".format(**locals())
     fabric_sudo_command(cmd, destination_host=dest)
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
@@ -1178,8 +1185,9 @@ def db_setup(dest=world.f_cfg.mgmt_address):
     fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
     fabric_sudo_command(cmd, destination_host=dest)
-    cmd = "{kea_admin} db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-    result = fabric_run_command(cmd, destination_host=dest)
+    if init_db:
+        cmd = "{kea_admin} db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        result = fabric_run_command(cmd, destination_host=dest)
     assert result.succeeded
 
     # POSTGRESQL
@@ -1193,6 +1201,7 @@ def db_setup(dest=world.f_cfg.mgmt_address):
     fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
     fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
-    cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-    result = fabric_run_command(cmd, destination_host=dest)
+    if init_db:
+        cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
+        result = fabric_run_command(cmd, destination_host=dest)
     assert result.succeeded

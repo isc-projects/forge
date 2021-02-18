@@ -268,6 +268,13 @@ def update_ha_hook_parameter(param):
     dhcp.update_ha_hook_parameter(param)
 
 
+def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
+                   db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                   init_db=True, disable=False):
+    dest, db_name, db_user, db_passwd = test_define_value(dest, db_name, db_user, db_passwd)
+    dhcp.db_setup(dest=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd, init_db=init_db, disable=disable)
+
+
 @step(r'Use (\S+) as lease database backend.')
 def define_temporary_lease_db_backend(lease_db_type):
     lease_db_type = test_define_value(lease_db_type)[0]
@@ -729,18 +736,22 @@ def add_remote_server(remote_address):
 
 
 @step(r'Clear (\S+).')
-def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address):
-    dest = test_define_value(dest)[0]
+def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
+                    software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
+                    db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
+    dest, db_name, db_user, db_passwd, install_path = test_define_value(dest, db_name, db_user,
+                                                                        db_passwd, software_install_path)
+
     if service == 'dhcp':
         if data_type == "leases":
-            dhcp.clear_leases(destination_address=dest)
+            dhcp.clear_leases(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
         elif data_type == "logs":
-            dhcp.clear_logs(destination_address=dest)
+            dhcp.clear_logs(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
         elif data_type == "all":
-            dhcp.clear_all(destination_address=dest)
+            dhcp.clear_all(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
     elif service.lower() == 'dns':
         # let's just dump all without logs
-        dns.clear_all(remove_logs=False)
+        dns.clear_all(remove_logs=False, destination_address=dest)
 
 ##DDNS server
 @step(r'DDNS server has control channel (\S+).')
