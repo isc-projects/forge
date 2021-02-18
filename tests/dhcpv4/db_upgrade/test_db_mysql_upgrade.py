@@ -1,4 +1,4 @@
-"""Test db upgrade"""
+"""Test mysql db upgrade"""
 
 # pylint: disable=invalid-name,line-too-long
 

@@ -1,4 +1,4 @@
-"""Test db upgrade"""
+"""Test pgsql db upgrade"""
 
 # pylint: disable=invalid-name,line-too-long
 
