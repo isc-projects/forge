@@ -398,10 +398,11 @@ class ConfigModel(ConfigElem):
                 continue
             if param == "server_tags":
                 server_tags = _to_list(val)
-                del kwargs["server_tags"]
                 continue
             param = param.replace('_', '-')
             option[param] = val
+        if "server_tags" in kwargs:
+            del kwargs["server_tags"]
         self.cfg["option-data"] = []
 
         # send command
@@ -565,11 +566,15 @@ def _compare_lists(rcvd_list, exp_list):
 
 
 def _normalize_keys(kwargs):
+    keys_to_del = []
     for k in kwargs:
         nk = k.replace('_', '-')
         if nk != k:
             kwargs[nk] = kwargs[k]
-            del kwargs[k]
+            keys_to_del.append(k)
+
+    for k in keys_to_del:
+        del kwargs[k]
 
 
 def setup_server(**kwargs):

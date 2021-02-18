@@ -401,8 +401,8 @@ def get_option(msg, opt_code):
     return None
 
 
-def ByteToHex(byteStr):
-    return ''.join(["%02X " % ord(x) for x in byteStr]).replace(" ", "")
+def byte_to_hex(byte_str):
+    return ''.join(["%02X " % ord(x) for x in byte_str]).replace(" ", "")
 
 
 def test_option(opt_code, received, expected):
@@ -456,7 +456,7 @@ def response_check_option_content(opt_code, expect, data_type, expected):
     if opt_code == 81:
         tmp = received[0]
         if data_type == 'flags':
-            received = tmp, int(ByteToHex(received[1][0]), 16)
+            received = tmp, int(byte_to_hex(received[1][0]), 16)
         elif data_type == 'fqdn':
             received = tmp, received[1][3:]
         else:
