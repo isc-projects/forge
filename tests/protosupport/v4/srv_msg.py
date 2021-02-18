@@ -456,9 +456,9 @@ def response_check_option_content(opt_code, expect, data_type, expected):
     if opt_code == 81:
         tmp = received[0]
         if data_type == 'flags':
-            received = tmp, int(byte_to_hex(received[1][0]), 16)
+            received = (tmp, received[1][0])
         elif data_type == 'fqdn':
-            received = tmp, received[1][3:]
+            received = (tmp, received[1][3:])
         else:
             assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
     elif opt_code == 61:
