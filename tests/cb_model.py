@@ -567,7 +567,7 @@ def _compare_lists(rcvd_list, exp_list):
 
 def _normalize_keys(kwargs):
     keys_to_del = []
-    for k in kwargs:
+    for k in list(kwargs.keys()):
         nk = k.replace('_', '-')
         if nk != k:
             kwargs[nk] = kwargs[k]
