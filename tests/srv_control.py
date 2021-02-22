@@ -746,7 +746,7 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
         if data_type == "leases":
             dhcp.clear_leases(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
         elif data_type == "logs":
-            dhcp.clear_logs(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
+            dhcp.clear_logs(destination_address=dest)
         elif data_type == "all":
             dhcp.clear_all(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
     elif service.lower() == 'dns':

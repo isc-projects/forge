@@ -566,15 +566,10 @@ def _compare_lists(rcvd_list, exp_list):
 
 
 def _normalize_keys(kwargs):
-    keys_to_del = []
     for k in kwargs:
         nk = k.replace('_', '-')
         if nk != k:
-            kwargs[nk] = kwargs[k]
-            keys_to_del.append(k)
-
-    for k in keys_to_del:
-        del kwargs[k]
+            kwargs[nk] = kwargs.pop(k)
 
 
 def setup_server(**kwargs):
