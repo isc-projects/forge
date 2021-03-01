@@ -733,7 +733,7 @@ def _cfg_write():
 
     dhcp = "Dhcp%s" % world.proto[1]
     # hooks that are not MT compatible (ever or at this moment)
-    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_legal_log.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
+    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
 
     # all configured hooks
     list_of_used_hooks = []
