@@ -522,8 +522,13 @@ def _install_kea_native_on_server(args, server_idx):
 
 
 def _install_kea_make(args):
-    server1_name = 'forge-srv1-u1804-' + args.sid if args.sid else 'forge-srv1-u1804'
-    cmd = 'vagrant ssh ' + server1_name + ' -c "%s"'
+    _install_kea_make_on_server(args, 1)
+    _install_kea_make_on_server(args, 2)
+
+
+def _install_kea_make_on_server(args, server_idx):
+    server_name = _get_server_name(args, server_idx)
+    cmd = 'vagrant ssh ' + server_name + ' -c "%s"'
     cfg = _load_config()
     kea_dirs = cfg['Forge']['kea-dirs']
     local_kea_path = os.path.join(kea_dirs, args.path)
