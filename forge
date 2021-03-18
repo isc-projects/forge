@@ -528,7 +528,9 @@ def _install_kea_make(args):
 
 def _install_kea_make_on_server(args, server_idx):
     server_name = _get_server_name(args, server_idx)
-    cmd = 'vagrant ssh ' + server_name + ' -c "%s"'
+    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
+    log_prefix = "|%s {ts}| " % server_name
+
     cfg = _load_config()
     kea_dirs = cfg['Forge']['kea-dirs']
     local_kea_path = os.path.join(kea_dirs, args.path)
@@ -545,17 +547,17 @@ def _install_kea_make_on_server(args, server_idx):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', args.path)
-    subcmd = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w forge mysql pgsql cql radius shell'
+    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w forge mysql pgsql cql radius shell'
 
     vagrant_dir = get_vagrant_dir(args)
 
-    subcmd1 = subcmd % (remote_path, 'prepare-system')
-    cmd1 = cmd % subcmd1
-    execute(cmd1, cwd=vagrant_dir)
+    subcmd1 = subcmd_tpl % (remote_path, 'prepare-system')
+    cmd1 = cmd_tpl % subcmd1
+    execute(cmd1, cwd=vagrant_dir, log_prefix=log_prefix)
 
-    subcmd2 = subcmd % (remote_path, 'build')
-    cmd2 = cmd % subcmd2
-    execute(cmd2, cwd=vagrant_dir)
+    subcmd2 = subcmd_tpl % (remote_path, 'build')
+    cmd2 = cmd_tpl % subcmd2
+    execute(cmd2, cwd=vagrant_dir, log_prefix=log_prefix)
 
 
 def test(args, params):
@@ -776,6 +778,8 @@ def main():
         level = logging.DEBUG
     fmt = '[FORGE]  %(asctime)-15s  %(message)s'
     logging.basicConfig(format=fmt, level=level)
+
+    log.info('args %s', args)
 
     # dispatch command
     if args.command == 'config':
