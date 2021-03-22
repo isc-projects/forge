@@ -424,7 +424,7 @@ def _install_kea_native_on_server(args, server_idx):
     execute('rm -rf hammer.py', cwd=vagrant_dir)
     # TODO: return back
     #execute('wget https://gitlab.isc.org/isc-projects/kea/raw/master/hammer.py', cwd=vagrant_dir)
-    execute('wget https://manu.cz/hammer.py', cwd=vagrant_dir)
+    execute('wget https://gitlab.isc.org/isc-projects/kea/raw/jenkins-migration-to-aws/hammer.py', cwd=vagrant_dir)
     execute('chmod a+x hammer.py', cwd=vagrant_dir)
     cmd = 'vagrant upload hammer.py %s' % server_name
     execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
