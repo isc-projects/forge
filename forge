@@ -549,6 +549,11 @@ def _install_kea_make_on_server(args, server_idx):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', args.path)
+    ## temporary WA begin
+    execute('rm -rf hammer.py', cwd=remote_path)
+    execute('wget https://gitlab.isc.org/isc-projects/kea/raw/jenkins-migration-to-aws/hammer.py', cwd=remote_path)
+    execute('chmod a+x hammer.py', cwd=remote_path)
+    ## temporary WA end
     subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell'
 
     vagrant_dir = get_vagrant_dir(args)
