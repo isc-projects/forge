@@ -550,7 +550,7 @@ def _install_kea_make_on_server(args, server_idx):
 
     remote_path = os.path.join('/kea-dirs', args.path)
     ## temporary WA begin
-    execute('rm -rf hammer.py', cwd=remote_path)
+    execute('rm -rf %s/hammer.py' % remote_path)
     execute('wget https://gitlab.isc.org/isc-projects/kea/raw/jenkins-migration-to-aws/hammer.py', cwd=remote_path)
     execute('chmod a+x hammer.py', cwd=remote_path)
     ## temporary WA end
