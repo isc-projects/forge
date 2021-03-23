@@ -15,9 +15,10 @@
 
 # Author: Wlodzimierz Wencel
 
-from locale import str
-import random
 import time
+import random
+import logging
+from locale import str
 
 from scapy.all import sr
 from scapy.layers import dns
@@ -25,6 +26,9 @@ from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
 
 from forge_cfg import world
+
+
+log = logging.getLogger('forge')
 
 
 dnstypes = {"ANY": 0,
@@ -84,9 +88,16 @@ def send_wait_for_query(choose_must, expect_include):
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
+    timeout = world.cfg["wait_interval"] + world.dns_send_query_time_out
+
+    log.info('sending DNS query, attempt %d/%d, timeout %.1f',
+             world.dns_send_query_counter,
+             world.f_cfg.dns_retry,
+             timeout)
+
     ans, unans = sr(world.climsg,
                     iface=world.cfg["dns_iface"],
-                    timeout=world.cfg["wait_interval"] + world.dns_send_query_time_out,
+                    timeout=timeout,
                     multi=True,
                     verbose=99)
 
