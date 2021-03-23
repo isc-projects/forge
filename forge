@@ -102,7 +102,7 @@ INSTALL_METHOD = "{INSTALL_METHOD}"
 """
 
 
-CONFIG_FIELDS = ['kea-dirs']
+CONFIG_FIELDS = ['kea-dirs', 'ccache-dir']
 
 
 def _load_config():
@@ -347,6 +347,7 @@ def setup(args):
         txt = f_in.read()
     tpl = string.Template(txt)
     txt = tpl.safe_substitute(KEA_DIRS=cfg['Forge']['kea-dirs'],
+                              CCACHE_DIR=cfg['Forge']['ccache-dir'],
                               MGMT_ADDRESS=MGMT_ADDRESS,
                               MGMT_ADDRESS_2=MGMT_ADDRESS_2,
                               SRV4_ADDR=SRV4_ADDR,
@@ -555,7 +556,7 @@ def _install_kea_make_on_server(args, server_idx):
     ## temporary WA end
 
     remote_path = os.path.join('/kea-dirs', args.path)
-    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell'
+    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell,ccache --ccache-dir /ccache'
 
     vagrant_dir = get_vagrant_dir(args)
 
