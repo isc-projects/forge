@@ -560,13 +560,21 @@ def _install_kea_make_on_server(args, server_idx):
 
     vagrant_dir = get_vagrant_dir(args)
 
+    # install any missing dependencies and prepare system
     subcmd1 = subcmd_tpl % (remote_path, 'prepare-system')
     cmd1 = cmd_tpl % subcmd1
     execute(cmd1, cwd=vagrant_dir, log_prefix=log_prefix)
 
+    # do kea build
     subcmd2 = subcmd_tpl % (remote_path, 'build')
     cmd2 = cmd_tpl % subcmd2
     execute(cmd2, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    # make clean to reclaim disk space
+    remote_kea_bld_dir = os.path.join(remote_path, 'kea-src/kea-0.0.1')
+    subcmd3 = 'cd %s && make clean' % remote_kea_bld_dir
+    cmd3 = cmd_tpl % subcmd3
+    execute(cmd3, cwd=vagrant_dir, log_prefix=log_prefix)
 
 
 def test(args, params):
