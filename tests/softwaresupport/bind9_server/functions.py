@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2021 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -15,8 +15,9 @@
 
 # Author: Wlodzimierz Wencel
 
-import sys
 import os
+import sys
+import time
 import string
 
 from forge_cfg import world
@@ -118,7 +119,9 @@ def use_config_set(number):
     world.cfg["dns_log_file"] = '/tmp/dns.log'
     make_file('bind.keys', keys)
 
-    fabric_sudo_command('mkdir -p %s' % os.path.join(world.f_cfg.dns_data_path, 'namedb'))
+    namedb_dir = os.path.join(world.f_cfg.dns_data_path, 'namedb')
+    fabric_sudo_command('mkdir -p %s' % namedb_dir)
+    fabric_sudo_command('chmod a+w %s' % namedb_dir)
 
     fabric_send_file('named.conf', os.path.join(world.f_cfg.dns_data_path, 'named.conf'))
     copy_configuration_file('named.conf', 'dns/DNS_named.conf')
@@ -128,28 +131,28 @@ def use_config_set(number):
     copy_configuration_file('rndc.conf', 'dns/DNS_rndc.conf')
     remove_local_file('rndc.conf')
 
-    fabric_send_file('fwd.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/fwd.db'))
+    fabric_send_file('fwd.db', os.path.join(namedb_dir, 'fwd.db'))
     copy_configuration_file('fwd.db', 'dns/DNS_fwd.db')
     remove_local_file('fwd.db')
 
-    fabric_send_file('rev.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/rev.db'))
+    fabric_send_file('rev.db', os.path.join(namedb_dir, 'rev.db'))
     copy_configuration_file('rev.db', 'dns/DNS_rev.db')
     remove_local_file('rev.db')
 
     if len(config_file_set[number]) == 8:
-        fabric_send_file('fwd2.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/fwd2.db'))
+        fabric_send_file('fwd2.db', os.path.join(namedb_dir, 'fwd2.db'))
         copy_configuration_file('fwd2.db', 'dns/DNS_fwd2.db')
         remove_local_file('fwd2.db')
 
-        fabric_send_file('rev2.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/rev2.db'))
+        fabric_send_file('rev2.db', os.path.join(namedb_dir, 'rev2.db'))
         copy_configuration_file('rev2.db', 'dns/DNS_rev2.db')
         remove_local_file('rev2.db')
 
-        fabric_send_file('fwd3.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/fwd3.db'))
+        fabric_send_file('fwd3.db', os.path.join(namedb_dir, 'fwd3.db'))
         copy_configuration_file('fwd3.db', 'dns/DNS_fwd3.db')
         remove_local_file('fwd3.db')
 
-        fabric_send_file('rev3.db', os.path.join(world.f_cfg.dns_data_path, 'namedb/rev3.db'))
+        fabric_send_file('rev3.db', os.path.join(namedb_dir, 'rev3.db'))
         copy_configuration_file('rev3.db', 'dns/DNS_rev3.db')
         remove_local_file('rev3.db')
 
@@ -159,8 +162,9 @@ def use_config_set(number):
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
-    fabric_sudo_command('(killall named & ); sleep ' + str(world.f_cfg.sleep_time_1),
+    fabric_sudo_command('systemctl stop bind9 || killall named',
                         hide_all=value, destination_host=destination_address)
+    time.sleep(world.f_cfg.sleep_time_1)
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
@@ -169,9 +173,22 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 
 def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
-    fabric_sudo_command('(' + os.path.join(world.f_cfg.dns_server_install_path, 'named') + ' -c ' +
-                        os.path.join(world.f_cfg.dns_data_path, 'named.conf') + ' & ); sleep ' + str(world.f_cfg.sleep_time_1+2),
-                        destination_host=destination_address)
+    if world.f_cfg.dns_data_path.startswith('/etc/bind'):
+        fabric_sudo_command('systemctl start bind9',
+                            destination_host=destination_address)
+    else:
+        fabric_sudo_command('(' + os.path.join(world.f_cfg.dns_server_install_path, 'named') + ' -c ' +
+                            os.path.join(world.f_cfg.dns_data_path, 'named.conf') + ' & )',
+                            destination_host=destination_address)
+
+    time.sleep(world.f_cfg.sleep_time_1 + 2)
+
+    if world.f_cfg.dns_data_path.startswith('/etc/bind'):
+        fabric_sudo_command("systemctl status bind9 | grep 'Active: active (running)'",
+                            destination_host=destination_address)
+    else:
+        fabric_sudo_command("ps ax | grep 'named -c'",
+                            destination_host=destination_address)
 
 
 def save_leases(destination_address=world.f_cfg.mgmt_address):
