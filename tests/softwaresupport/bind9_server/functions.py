@@ -162,8 +162,17 @@ def use_config_set(number):
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
-    fabric_sudo_command('systemctl stop bind9 || killall named',
-                        hide_all=value, destination_host=destination_address)
+    if world.server_system == 'redhat':
+        srv_name = 'named'
+    else:
+        srv_name = 'bind9'
+
+    if world.f_cfg.dns_data_path.startswith('/etc/bind'):
+        fabric_sudo_command('systemctl stop %s' % srv_name,
+                            hide_all=value, destination_host=destination_address)
+    else:
+        fabric_sudo_command('killall named',
+                            hide_all=value, destination_host=destination_address)
     time.sleep(world.f_cfg.sleep_time_1)
 
 
