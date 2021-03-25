@@ -173,8 +173,13 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 
 def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
+    if world.server_system = 'redhat':
+        srv_name = 'named'
+    else:
+        srv_name = 'bind9'
+
     if world.f_cfg.dns_data_path.startswith('/etc/bind'):
-        fabric_sudo_command('systemctl restart bind9',
+        fabric_sudo_command('systemctl restart %s' % srv_name,
                             destination_host=destination_address)
     else:
         fabric_sudo_command('(' + os.path.join(world.f_cfg.dns_server_install_path, 'named') + ' -c ' +
@@ -184,7 +189,7 @@ def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
     time.sleep(world.f_cfg.sleep_time_1 + 2)
 
     if world.f_cfg.dns_data_path.startswith('/etc/bind'):
-        fabric_sudo_command("systemctl status bind9 | grep 'Active: active (running)'",
+        fabric_sudo_command("systemctl status %s | grep 'Active: active (running)'" % srv_name,
                             destination_host=destination_address)
     else:
         fabric_sudo_command("ps ax | grep 'named -c'",
