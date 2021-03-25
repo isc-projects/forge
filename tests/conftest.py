@@ -12,6 +12,32 @@ def pytest_runtest_teardown(item, nextitem):
     terrain.cleanup(item)
 
 
+def pytest_runtest_logstart(nodeid, location):
+    banner = '\n\n************ START   %s ' % nodeid
+    banner += '*' * (140 - len(banner))
+    banner += '\n'
+    banner = '\u001b[36m' + banner + '\u001b[0m'
+    print(banner)
+
+
+def pytest_runtest_logfinish(nodeid, location):
+    banner = '\n************ END   %s ' % nodeid
+    banner += '*' * (140 - len(banner))
+    banner = '\u001b[36;1m' + banner + '\u001b[0m'
+    print(banner)
+
+
+def pytest_runtest_logreport(report):
+    if report.when == 'call':
+        banner = '\n************ RESULT %s   %s ' % (report.outcome.upper(), report.nodeid)
+        banner += '*' * (140 - len(banner))
+        if report.outcome == 'passed':
+            banner = '\u001b[32;1m' + banner + '\u001b[0m'
+        else:
+            banner = '\u001b[31;1m' + banner + '\u001b[0m'
+        print(banner)
+
+
 def pytest_generate_tests(metafunc):
     # If a test function has dhcp_version as fixtures ie. it has such argument
     # then generate 2 version of this test, for v4 and v6 ie. do automagically

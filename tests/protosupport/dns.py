@@ -85,6 +85,9 @@ def prepare_query():
 
 
 def send_wait_for_query(choose_must, expect_include):
+    world.dns_send_query_counter += 1
+    world.dns_send_query_time_out += 0.5
+
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
@@ -121,8 +124,6 @@ def send_wait_for_query(choose_must, expect_include):
     if expect_include:
         # if message was not received but expected, resend query with higher timeout
         if len(world.srvmsg) == 0 and world.dns_send_query_counter <= world.f_cfg.dns_retry:
-            world.dns_send_query_counter += 1
-            world.dns_send_query_time_out += 0.5
             time.sleep(1)
             send_wait_for_query(choose_must, expect_include)
         else:
@@ -131,20 +132,27 @@ def send_wait_for_query(choose_must, expect_include):
     elif not expect_include:
         assert len(world.srvmsg) == 0, "Response received, not expected"
 
-    if world.srvmsg[0].qd is not None:
-        for each in world.srvmsg[0].qd:
+
+    msg = world.srvmsg[0]
+
+    assert hasattr(msg, 'qd'), 'qd field not present in DNS response'
+    if msg.qd is not None:
+        for each in msg.qd:
             world.dns_qd.append(each.copy())
 
-    if world.srvmsg[0].an is not None:
-        for each in world.srvmsg[0].an:
+    assert hasattr(msg, 'an'), 'an field not present in DNS response'
+    if msg.an is not None:
+        for each in msg.an:
             world.dns_an.append(each.copy())
 
-    if world.srvmsg[0].ns is not None:
-        for each in world.srvmsg[0].ns:
+    assert hasattr(msg, 'ns'), 'ns field not present in DNS response'
+    if msg.ns is not None:
+        for each in msg.ns:
             world.dns_ns.append(each.copy())
 
-    if world.srvmsg[0].ar is not None:
-        for each in world.srvmsg[0].ar:
+    assert hasattr(msg, 'ar'), 'ar field not present in DNS response'
+    if msg.ar is not None:
+        for each in msg.ar:
             world.dns_ar.append(each.copy())
 
 
@@ -221,7 +229,8 @@ def check_dns_respond(expect, data_type, expected_data_value):
                       " value has been excluded from correct values.".format(**locals())
 
 
-def resend_query(exp, name):
+def _resend_query(exp, name):
+    time.sleep(3)
     send_wait_for_query('MUST', True)
     check_dns_option(exp, name)
 
@@ -229,14 +238,14 @@ def resend_query(exp, name):
 def report_dns_option(flag, expect_include, name):
     if flag and not expect_include:
         if world.dns_send_query_counter <= world.f_cfg.dns_retry:
-            resend_query(False, name)
+            _resend_query(False, name)
         else:
             assert False, 'In received DNS query part: "{name}" is NOT empty as we expected.'.format(**locals())
 
     elif not flag and expect_include:
         # this is where we had huge amount of failures on jenkins, let's bring here retries.
         if world.dns_send_query_counter <= world.f_cfg.dns_retry:
-            resend_query(True, name)
+            _resend_query(True, name)
         else:
             assert False, 'In received DNS query part: "{name}" is empty.'.format(**locals())
 

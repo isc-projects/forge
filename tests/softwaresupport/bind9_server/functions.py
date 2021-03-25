@@ -173,7 +173,7 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 
 def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
-    if world.server_system = 'redhat':
+    if world.server_system == 'redhat':
         srv_name = 'named'
     else:
         srv_name = 'bind9'
