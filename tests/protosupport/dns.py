@@ -85,9 +85,6 @@ def prepare_query():
 
 
 def send_wait_for_query(choose_must, expect_include):
-    world.dns_send_query_counter += 1
-    world.dns_send_query_time_out += 0.5
-
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
@@ -103,6 +100,9 @@ def send_wait_for_query(choose_must, expect_include):
                     timeout=timeout,
                     multi=True,
                     verbose=99)
+
+    world.dns_send_query_counter += 1
+    world.dns_send_query_time_out += 0.5
 
     world.dns_qd = []
     world.dns_an = []
