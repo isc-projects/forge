@@ -294,12 +294,13 @@ def test_start():
     logging_facility.logger_initialize(world.f_cfg.loglevel)
 
     # check remote system if it is redhat or debian based
-    result = fabric_run_command('ls -al /etc/redhat-release 2>/dev/null',
+    result = fabric_run_command('ls -al /etc/redhat-release',
                                 ignore_errors=True)
     if result.succeeded:
         world.server_system = 'redhat'
     else:
         world.server_system = 'debian'
+    print('server running on %s based system' % world.server_system)
 
     # stop any SUT running
     kea_under_test = False
