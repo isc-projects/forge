@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e -x
 
+# WA for missing /dev/ptmx on Ubuntu LXC in AWS Jenkins
+if [ ! -e /dev/ptmx ]; then
+    sudo ln -s /dev/pts/ptmx /dev/ptmx
+    sudo systemctl restart systemd-resolved
+fi
+
+# disable apt updates to not lock it
 sudo systemctl stop apt-daily-upgrade.timer apt-daily.timer
 sudo systemctl disable apt-daily-upgrade.timer apt-daily.timer
 sudo systemctl stop apt-daily.service apt-daily-upgrade.service
