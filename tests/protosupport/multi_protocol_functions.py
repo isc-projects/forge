@@ -368,11 +368,14 @@ def test_define_value(*args):
     You can use any variable form init_all in that way. Also you can add them using step:
     "Client defines new variable: (\S+) with value (\S+)." """
     tested_args = []
-    for i in range(len(args)):
+    for arg in args:
+        if arg is None:
+            tested_args.append(arg)
+            continue
         try:
-            tmp = str(args[i])
+            tmp = str(arg)
         except UnicodeEncodeError:
-            tmp = unicode(args[i])
+            tmp = unicode(arg)
         tmp_loop = ""
         while True:
             imported = None
