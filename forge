@@ -342,6 +342,14 @@ def setup(args):
     mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
     traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
 
+    # generate global addresses for servers
+    srv1_addr4 = SRV4_ADDR
+    parts = SRV4_ADDR.rsplit('.', 1)
+    srv2_addr4 = '%s.%d' % (parts[0], int(parts[1]) + 1)
+    srv1_addr6 = SRV_IPV6_ADDR_GLOBAL
+    parts = SRV_IPV6_ADDR_GLOBAL.rsplit(':', 1)
+    srv2_addr6 = '%s:%04d' % (parts[0], int(parts[1]) + 1)
+
     # generate Vagrantfile
     with open(vagrant_tpl, 'r') as f_in:
         txt = f_in.read()
@@ -350,10 +358,12 @@ def setup(args):
                               CCACHE_DIR=cfg['Forge']['ccache-dir'],
                               MGMT_ADDRESS=MGMT_ADDRESS,
                               MGMT_ADDRESS_2=MGMT_ADDRESS_2,
-                              SRV4_ADDR=SRV4_ADDR,
+                              SRV4_ADDR_1=srv1_addr4,
+                              SRV4_ADDR_2=srv2_addr4,
                               CLNT4_ADDR=CLNT4_ADDR,
                               CLNT4_ADDR_2=CLNT4_ADDR_2,
-                              SRV_IPV6_ADDR_GLOBAL=SRV_IPV6_ADDR_GLOBAL,
+                              SRV_IPV6_ADDR_GLOBAL_1=srv1_addr6,
+                              SRV_IPV6_ADDR_GLOBAL_2=srv2_addr6,
                               IFACE=IFACE,
                               SERVER_IFACE=SERVER_IFACE,
                               CLIENT_NAME=client_name,
