@@ -75,7 +75,7 @@ def client_sets_value(sender_type, value_name, new_value):
 
 @step(r'Through (\S+) interface to address (\S+) client sends (\w+) message.')
 def client_send_msg_via_interface(iface, addr, msgname):
-    """
+    r"""
     This step actually build message (e.g. SOLICIT) with all details
     specified in steps like:
     Client sets (\w+) value to (\S+).
@@ -89,7 +89,7 @@ def client_send_msg_via_interface(iface, addr, msgname):
 
 @step(r'Client sends (\w+) message.')
 def client_send_msg(msgname):
-    """
+    r"""
     This step actually build message (e.g. SOLICIT) with all details
     specified in steps like:
     Client sets (\w+) value to (\S+).
@@ -675,4 +675,3 @@ def get_all_leases():
 def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address):
     dest = test_define_value(dest)[0]
     multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest)
-

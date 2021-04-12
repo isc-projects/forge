@@ -320,16 +320,16 @@ def prepare_cfg_subnet(subnet, pool, eth=None):
         eth = world.f_cfg.server_iface
 
     sub = "subnet%s" % world.proto[1]
-    if sub not in world.dhcp_cfg.keys() and subnet is not "":
+    if sub not in world.dhcp_cfg.keys() and subnet:
         world.dhcp_cfg[sub] = [{}]
-    elif sub in world.dhcp_cfg.keys() and subnet is not "":
+    elif sub in world.dhcp_cfg.keys() and subnet:
         world.dhcp_cfg[sub].append({})
 
-    if subnet is not "":
+    if subnet:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
                                                          "interface": eth}
-    if pool is not "":
+    if pool:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
     add_interface(eth)
 
@@ -351,11 +351,11 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     if sub not in world.dhcp_cfg.keys():
         world.dhcp_cfg[sub] = [{}]
 
-    if subnet is not "":
+    if subnet:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
                                                          "interface": interface}
-    if pool is not "":
+    if pool:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
 
     add_interface(interface + "/" + address)

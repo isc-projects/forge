@@ -185,8 +185,8 @@ def test_control_channel_socket_config_set_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
@@ -231,8 +231,8 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel('control_socket2')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
@@ -1113,8 +1113,8 @@ def test_control_channel_socket_big_config_file():
     srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', 50)
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', 25)
     srv_control.configure_loggers('kea-dhcp6.options', 'INFO', 'None')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()

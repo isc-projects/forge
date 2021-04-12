@@ -194,9 +194,9 @@ def test_control_channel_http_config_set_basic():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    # Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: control_socket.
-    srv_control.generate_config_files()
 
+    # Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: control_socket.
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
 
@@ -254,9 +254,9 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_control.open_control_channel(socket_name='control_socket2')
     srv_control.agent_control_channel('$(SRV4_ADDR)',
                                       socket_name='control_socket2')
-    srv_control.generate_config_files()
 
     # reconfigure dhcp6 (new subnet, new socket)
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
     # reconfigure control-agent to switch to new dhcp4 socket
@@ -407,8 +407,8 @@ def test_control_channel_http_test_config():
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"],'
                                               ' "arguments":  $(DHCP_CONFIG) }', '$(SRV4_ADDR)', exp_result=1)
 
@@ -441,8 +441,8 @@ def test_control_channel_http_test_config():
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
                                               '$(SRV4_ADDR)',
                                               exp_result=1)
@@ -480,8 +480,8 @@ def test_control_channel_http_config_write():
                                    '$(SRV4_ADDR)')
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp6"],"arguments": {"filename": "/tmp/config-modified-2017-03-15.json"}}',  # TODO probably confing file location/name',
                                    '$(SRV4_ADDR)')
-    # TODO: it seems that the code here is not finished
 
+    # 1. check if configured subnet works and assigns addresses from 3000:
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')
@@ -496,15 +496,17 @@ def test_control_channel_http_config_write():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
+    # 2. change configuration, subnet addresses pool is from 2001:db8:1:
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.agent_control_channel('$(SRV4_ADDR)')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }')
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
+    # 3. check if configured subnet works and assigns addresses from 2001:db8:1:
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')
@@ -519,6 +521,9 @@ def test_control_channel_http_config_write():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+
+    # 4. restart the server, now it should revert to original configuration
+    # and serve addressed from 3000: pool
     srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()

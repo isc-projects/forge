@@ -266,8 +266,8 @@ def test_control_channel_keashell_test_config():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.5')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-test <<<\'$(DHCP_CONFIG)\'')
 
     misc.test_procedure()
@@ -291,8 +291,8 @@ def test_control_channel_keashell_test_config():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::1')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'$(DHCP_CONFIG)\'')
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
@@ -332,8 +332,8 @@ def test_control_channel_keashell_write_config():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.agent_control_channel('localhost')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-socket":{"socket-type":"unix","socket-name":"%s"}}\'' % world.f_cfg.run_join('control_socket'))
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 

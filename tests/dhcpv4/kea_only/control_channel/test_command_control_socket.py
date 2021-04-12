@@ -150,8 +150,8 @@ def test_control_channel_socket_config_get_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-get","arguments":  $(DHCP_CONFIG) }')
 
 
@@ -179,8 +179,8 @@ def test_control_channel_socket_config_set_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
@@ -218,8 +218,8 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel('control_socket2')
-    srv_control.generate_config_files()
 
+    srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
     misc.test_procedure()
