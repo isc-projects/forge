@@ -566,10 +566,11 @@ def _compare_lists(rcvd_list, exp_list):
 
 
 def _normalize_keys(kwargs):
-    for k in kwargs:
+    kwargs2 = {}
+    for k, v in kwargs.items():
         nk = k.replace('_', '-')
-        if nk != k:
-            kwargs[nk] = kwargs.pop(k)
+        kwargs2[nk] = v
+    return kwargs2
 
 
 def setup_server(**kwargs):
@@ -616,7 +617,7 @@ def setup_server_for_config_backend_cmds(**kwargs):
                                                            "password":"$(DB_PASSWD)",
                                                            "name":"$(DB_NAME)",
                                                            "type":"mysql"}]}}
-    _normalize_keys(kwargs)
+    kwargs = _normalize_keys(kwargs)
     if "server-tag" in kwargs:
         default_cfg["server-tag"] = kwargs["server-tag"]
         del kwargs["server-tag"]
@@ -660,7 +661,7 @@ def setup_server_with_radius(**kwargs):
         }
     }]}
 
-    _normalize_keys(kwargs)
+    kwargs = _normalize_keys(kwargs)
     init_cfg = _merge_configs(default_cfg, kwargs)
     result = setup_server(**init_cfg)
 
