@@ -694,23 +694,14 @@ def _package_box(lxc_name, vagrant_dir, box_name):
 
 
 def package_box_and_upload(args):
-    if args.system == 'client':
-        lxc_name = 'forge-client-' + args.sid
-    else:
-        if args.system == 'ubuntu-18.04':
-            sn = 'u1804'
-        elif args.system == 'fedora-30':
-            sn = 'f30'
-        else:
-            sn = 'u1804'
-        lxc_name = 'forge-srv1-%s-%s' % (sn, args.sid)
+    lxc_name = 'forge-client-' + args.sid
+    box_name = 'forge-clt-%s' % args.system
 
     vagrant_dir = get_vagrant_dir(args)
 
-    box_name = 'forge-%s-%s' % ('srv' if 'srv' in lxc_name else 'clt', args.system)
     box_path = _package_box(lxc_name, vagrant_dir, box_name)
 
-    image_tpl = 'godfryd/' + box_name
+    image_tpl = 'isc/' + box_name
     latest_version = _get_latest_cloud_version(image_tpl)
     new_version = latest_version + 1
     cmd = "vagrant cloud publish -f -r %s %s %s %s"
