@@ -166,6 +166,8 @@ def test_v4_upgrade_mysql_db():
     # switch interface and username to the one setup is using
     srv_msg.execute_shell_cmd("sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' /tmp/my_db_v4.sql")
     srv_msg.execute_shell_cmd("sed -i 's/!db_user!/%s/g' /tmp/my_db_v4.sql" % tmp_user_name)
+    # this solves the problem: "Variable 'sql_mode' can't be set to the value of 'NO_AUTO_CREATE_USER'"
+    srv_msg.execute_shell_cmd("sed -i 's/NO_AUTO_CREATE_USER,//g' /tmp/my_db_v4.sql")
     # create database without content with new name and user
     srv_control.build_database(db_name=tmp_db_name, db_user=tmp_user_name, init_db=False)
     # recreate db content in new db

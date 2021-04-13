@@ -166,6 +166,8 @@ def test_v6_upgrade_mysql_db():
     # switch interface and username to the one setup is using
     srv_msg.execute_shell_cmd("sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' /tmp/my_db_v6.sql")
     srv_msg.execute_shell_cmd("sed -i 's/!db_user!/%s/g' /tmp/my_db_v6.sql" % tmp_user_name)
+    # this solves the problem: "Variable 'sql_mode' can't be set to the value of 'NO_AUTO_CREATE_USER'"
+    srv_msg.execute_shell_cmd("sed -i 's/NO_AUTO_CREATE_USER,//g' /tmp/my_db_v6.sql")
     # recreate db content in new db
     srv_msg.execute_shell_cmd("mysql -u%s -p$(DB_PASSWD) %s < /tmp/my_db_v6.sql" % (tmp_user_name, tmp_db_name))
     # start kea, which should fail due to mismatch in db version
