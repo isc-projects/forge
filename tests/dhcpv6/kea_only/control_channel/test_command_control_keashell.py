@@ -2,6 +2,7 @@
 
 # pylint: disable=invalid-name,line-too-long
 
+import json
 import pytest
 
 import srv_msg
@@ -318,7 +319,6 @@ def test_control_channel_keashell_test_config():
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     srv_control.host_reservation_in_subnet('ip-address',
                                            '3000::1',
                                            0,
@@ -326,7 +326,14 @@ def test_control_channel_keashell_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
 
     srv_control.build_config_files()
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<\'$(DHCP_CONFIG)\'')
+
+    # break config so it is rejected by config-test
+    world.dhcp_cfg['bad-key'] = 'value'
+    dhcp_cfg = json.dumps(world.dhcp_cfg)
+    dhcp_cfg = dhcp_cfg[1:-1]  # strip outer curly brackets {} from config json content
+    result = srv_msg.execute_kea_shell("--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<'%s'" % dhcp_cfg,
+                                       exp_result=1)
+    assert result[0]['text'] == "Unsupported 'bad-key' parameter."
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -348,7 +355,6 @@ def test_control_channel_keashell_test_config():
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
-    srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
     # WRONG ADDRESS RESERVATION
     srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.0.5',
@@ -357,7 +363,15 @@ def test_control_channel_keashell_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
 
     srv_control.build_config_files()
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<\'$(DHCP_CONFIG)\'')
+
+    # break config so it is rejected by config-test
+    world.dhcp_cfg['bad-key'] = 'value'
+    dhcp_cfg = json.dumps(world.dhcp_cfg)
+    dhcp_cfg = dhcp_cfg[1:-1]  # strip outer curly brackets {} from config json content
+    result = srv_msg.execute_kea_shell("--host 127.0.0.1 --port 8000 --service dhcp6 config-test <<<'%s'" % dhcp_cfg,
+                                       exp_result=1)
+    assert result[0]['text'] == "Unsupported 'bad-key' parameter."
+
     srv_msg.forge_sleep(5, 'seconds')
 
     misc.test_procedure()
