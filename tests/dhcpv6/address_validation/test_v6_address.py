@@ -106,7 +106,7 @@ def test_v6_basic_message_unicast_global_confirm():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.unicast_addres('GLOBAL', None)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
@@ -115,7 +115,7 @@ def test_v6_basic_message_unicast_global_confirm():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
 
@@ -180,7 +180,7 @@ def test_v6_basic_message_unicast_global_rebind():
     misc.test_procedure()
     srv_msg.unicast_addres('GLOBAL', None)
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -188,7 +188,7 @@ def test_v6_basic_message_unicast_global_rebind():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -304,7 +304,7 @@ def test_v6_basic_message_unicast_global_request():
     misc.test_procedure()
     srv_msg.client_save_option('server-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.unicast_addres('GLOBAL', None)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
@@ -315,7 +315,7 @@ def test_v6_basic_message_unicast_global_request():
     srv_msg.response_check_option_content(13, 'statuscode', 5)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -387,7 +387,7 @@ def test_v6_basic_message_unicast_global_renew():
     srv_msg.unicast_addres('GLOBAL', None)
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -397,7 +397,7 @@ def test_v6_basic_message_unicast_global_renew():
     srv_msg.response_check_option_content(13, 'statuscode', 5)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -471,7 +471,7 @@ def test_v6_basic_message_unicast_global_release():
     srv_msg.unicast_addres('GLOBAL', None)
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -481,7 +481,7 @@ def test_v6_basic_message_unicast_global_release():
     srv_msg.response_check_option_content(13, 'statuscode', 5)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -582,7 +582,7 @@ def test_v6_basic_message_unicast_local_confirm():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.unicast_addres(None, 'LINK_LOCAL')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
@@ -591,7 +591,7 @@ def test_v6_basic_message_unicast_local_confirm():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
 
@@ -654,7 +654,7 @@ def test_v6_basic_message_unicast_local_rebind():
     misc.test_procedure()
     srv_msg.unicast_addres(None, 'LINK_LOCAL')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -662,7 +662,7 @@ def test_v6_basic_message_unicast_local_rebind():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -774,7 +774,7 @@ def test_v6_basic_message_unicast_local_request():
     misc.test_procedure()
     srv_msg.client_save_option('server-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.unicast_addres(None, 'LINK_LOCAL')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
@@ -785,7 +785,7 @@ def test_v6_basic_message_unicast_local_request():
     srv_msg.response_check_option_content(13, 'statuscode', 5)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -855,7 +855,7 @@ def test_v6_basic_message_unicast_local_renew():
     srv_msg.unicast_addres(None, 'LINK_LOCAL')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -865,7 +865,7 @@ def test_v6_basic_message_unicast_local_renew():
     srv_msg.response_check_option_content(13, 'statuscode', 5)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -936,7 +936,7 @@ def test_v6_basic_message_unicast_local_release():
     srv_msg.unicast_addres(None, 'LINK_LOCAL')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -946,7 +946,7 @@ def test_v6_basic_message_unicast_local_release():
     srv_msg.response_check_option_content(13, 'statuscode', 5)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 

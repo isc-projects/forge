@@ -439,7 +439,7 @@ def send_request_and_check_reply(duid=None,
         srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('server-id')
     #srv_msg.client_save_option('server-id')
-    #srv_msg.client_add_saved_option('DONT ')
+    #srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     if req_opts is not None:
         for opt in req_opts:

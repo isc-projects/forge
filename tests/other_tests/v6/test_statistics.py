@@ -244,7 +244,7 @@ def test_stats_6():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 

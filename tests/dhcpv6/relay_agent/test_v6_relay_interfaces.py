@@ -573,7 +573,7 @@ def test_v6_relay_interface_two_subnets_same_interface_id():
     srv_msg.client_sets_value('Client', 'IA_Address', '2001:db8:1::1')
     srv_msg.client_does_include('Client', 'IA_Address')
     srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 

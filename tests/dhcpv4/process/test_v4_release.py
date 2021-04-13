@@ -112,7 +112,7 @@ def test_v4_release_success_with_additional_offer():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_sets_value('Client', 'chaddr', 'default')
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.1')
     srv_msg.client_send_msg('RELEASE')

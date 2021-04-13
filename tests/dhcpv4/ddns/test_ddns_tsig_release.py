@@ -50,7 +50,7 @@ def test_ddns4_tsig_sha1_forw_and_rev_release():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'aa.four.example.com.')
@@ -89,7 +89,7 @@ def test_ddns4_tsig_sha1_forw_and_rev_release():
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_send_msg('RELEASE')
 
@@ -154,7 +154,7 @@ def test_ddns4_tsig_forw_and_rev_release_notenabled():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'aa.four.example.com.')
@@ -208,7 +208,7 @@ def test_ddns4_tsig_forw_and_rev_release_notenabled():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_send_msg('RELEASE')
 
@@ -276,7 +276,7 @@ def test_ddns4_tsig_sha1_rev_release():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'aa.four.example.com.')
@@ -311,7 +311,7 @@ def test_ddns4_tsig_sha1_rev_release():
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_send_msg('RELEASE')
 

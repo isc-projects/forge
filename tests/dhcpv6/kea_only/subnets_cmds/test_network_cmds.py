@@ -295,7 +295,7 @@ def test_hook_v6_network_cmds_add_conflict():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -322,7 +322,7 @@ def test_hook_v6_network_cmds_add_conflict():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
     srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 

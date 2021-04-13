@@ -41,7 +41,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_INFO():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('CONFIRM')
 
@@ -49,7 +49,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_INFO():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_requests_option(7)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
@@ -101,7 +101,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_FATAL():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('CONFIRM')
 
@@ -109,7 +109,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_FATAL():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_requests_option(7)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
@@ -161,7 +161,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_ERROR():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('CONFIRM')
 
@@ -169,7 +169,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_ERROR():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_requests_option(7)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
@@ -221,7 +221,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_WARN():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('CONFIRM')
 
@@ -229,7 +229,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_WARN():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_requests_option(7)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
@@ -281,7 +281,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_DEBUG():
 
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('CONFIRM')
 
@@ -289,7 +289,7 @@ def test_v6_CVE_2015_8373_confirm_with_empty_client_id_DEBUG():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_requests_option(7)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')
@@ -342,14 +342,14 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_DEBUG():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('DECLINE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 
@@ -400,14 +400,14 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_INFO():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('DECLINE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 
@@ -458,14 +458,14 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_FATAL():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('DECLINE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 
@@ -516,14 +516,14 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_ERROR():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('DECLINE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 
@@ -574,14 +574,14 @@ def test_v6_CVE_2015_8373_decline_with_empty_client_id_WARN():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('DECLINE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('DECLINE')
 
@@ -630,14 +630,14 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_():
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REBIND')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -689,14 +689,14 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_FATAL():
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REBIND')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -748,14 +748,14 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_ERROR():
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REBIND')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -807,14 +807,14 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_WARN():
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REBIND')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -866,14 +866,14 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_INFO():
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REBIND')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -925,14 +925,14 @@ def test_v6_CVE_2015_8373_rebind_with_empty_client_id_DEBUG():
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REBIND')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -985,14 +985,14 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_FATAL():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -1044,14 +1044,14 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_ERROR():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -1103,14 +1103,14 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_WARN():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -1162,14 +1162,14 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_INFO():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -1221,14 +1221,14 @@ def test_v6_CVE_2015_8373_release_with_empty_client_id_DEBUG():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -1280,14 +1280,14 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_FATAL():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RENEW')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -1339,14 +1339,14 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_ERROR():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RENEW')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -1399,14 +1399,14 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_WARN():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RENEW')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -1459,14 +1459,14 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_INFO():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RENEW')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -1519,14 +1519,14 @@ def test_v6_CVE_2015_8373_renew_with_empty_client_id_DEBUG():
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('RENEW')
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -1569,7 +1569,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_FATAL():
     misc.test_procedure()
     srv_msg.client_save_option('server-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1577,7 +1577,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_FATAL():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1620,7 +1620,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_ERROR():
     misc.test_procedure()
     srv_msg.client_save_option('server-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1628,7 +1628,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_ERROR():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1671,7 +1671,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_WARN():
     misc.test_procedure()
     srv_msg.client_save_option('server-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1679,7 +1679,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_WARN():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1722,7 +1722,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_INFO():
     misc.test_procedure()
     srv_msg.client_save_option('server-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1730,7 +1730,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_INFO():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1773,7 +1773,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_DEBUG():
     misc.test_procedure()
     srv_msg.client_save_option('server-id')
     srv_msg.client_save_option('IA_NA')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'empty-client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -1781,7 +1781,7 @@ def test_v6_CVE_2015_8373_request_with_empty_client_id_DEBUG():
     srv_msg.send_dont_wait_for_message()
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 

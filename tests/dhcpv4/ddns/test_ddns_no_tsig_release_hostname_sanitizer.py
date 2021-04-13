@@ -51,7 +51,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_replace_1():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_does_include_with_value('hostname', '*aa$(WHITE_SPACE).four.example.com')
@@ -87,7 +87,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_replace_1():
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_does_include_with_value('hostname', '*aa$(WHITE_SPACE).four.example.com')
     srv_msg.client_send_msg('RELEASE')
@@ -154,7 +154,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_replace_1():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*aa$(WHITE_SPACE).four.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -192,7 +192,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_replace_1():
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*aa$(WHITE_SPACE).four.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -252,7 +252,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_replace_2():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_does_include_with_value('hostname', '*a$(WHITE_SPACE).8723()+')
@@ -268,7 +268,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_replace_2():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_does_include_with_value('hostname', '*a$(WHITE_SPACE).8723()+')
     srv_msg.client_send_msg('RELEASE')
@@ -321,7 +321,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_replace_2():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*a$(WHITE_SPACE).8723()+.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -339,7 +339,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_replace_2():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*a$(WHITE_SPACE).8723()+.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -403,7 +403,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_1():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_does_include_with_value('hostname',
@@ -440,7 +440,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_1():
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_does_include_with_value('hostname',
                                            '$(WHITE_SPACE)*aa*.fo^ur.exa(mple.c)om$(WHITE_SPACE)')
@@ -508,7 +508,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_sets_value('Client',
                               'FQDN_domain_name',
@@ -549,7 +549,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_sets_value('Client',
                               'FQDN_domain_name',
@@ -654,7 +654,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_identical_
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_does_include_with_value('hostname', 'client1.four.example.com')
@@ -703,7 +703,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_identical_
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.11')
     srv_msg.client_requests_option(1)
     srv_msg.client_does_include_with_value('hostname', 'client2.four.example.com')
@@ -735,7 +735,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_identical_
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_does_include_with_value('hostname', 'client1.four.example.com')
     srv_msg.client_send_msg('RELEASE')
@@ -820,7 +820,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'client1.four.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -871,7 +871,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.11')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'client2.four.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -905,7 +905,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'client1.four.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -965,7 +965,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_2():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_does_include_with_value('hostname', '*a$(WHITE_SPACE).8723()+')
@@ -981,7 +981,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_2():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_does_include_with_value('hostname', '*a$(WHITE_SPACE).8723()+')
     srv_msg.client_send_msg('RELEASE')
@@ -1034,7 +1034,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_2():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*a$(WHITE_SPACE).8723()+com.pl.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -1052,7 +1052,7 @@ def test_ddns4_notsig_forw_and_rev_release_fqdn_sanitization_omit_2():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*a$(WHITE_SPACE).8723()+.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -1107,7 +1107,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_3():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_does_include_with_value('hostname', '*$(WHITE_SPACE).8723()+')
@@ -1122,7 +1122,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_3():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_does_include_with_value('hostname', '*$(WHITE_SPACE).8723()+')
     srv_msg.client_send_msg('RELEASE')
@@ -1175,7 +1175,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_4():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*$(WHITE_SPACE).8723()+.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -1192,7 +1192,7 @@ def test_ddns4_notsig_forw_and_rev_release_hostname_sanitization_omit_4():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*$(WHITE_SPACE).8723()+.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')

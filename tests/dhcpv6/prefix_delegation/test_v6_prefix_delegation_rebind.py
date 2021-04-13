@@ -35,7 +35,7 @@ def test_prefix_delegation_rebind_success():
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_save_option('IA_PD')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -46,7 +46,7 @@ def test_prefix_delegation_rebind_success():
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -83,7 +83,7 @@ def test_prefix_delegation_rebind_fail():
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_save_option('IA_PD')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()

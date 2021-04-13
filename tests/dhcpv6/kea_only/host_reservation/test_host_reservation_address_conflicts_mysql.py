@@ -387,7 +387,7 @@ def test_v6_host_reservation_mysql_conflicts_reconfigure_server_with_reservation
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 
@@ -515,7 +515,7 @@ def test_v6_host_reservation_mysql_conflicts_reconfigure_server_with_reservation
     srv_msg.client_sets_value('Client', 'ia_id', 666)
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 

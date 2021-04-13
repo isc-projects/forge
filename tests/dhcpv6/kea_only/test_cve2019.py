@@ -83,7 +83,7 @@ def test_2019_6472_client_id():
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
     srv_msg.send_raw_message(msg_type='REQUEST', raw_append=invalid_data)
@@ -92,7 +92,7 @@ def test_2019_6472_client_id():
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_send_msg('REQUEST')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
@@ -122,7 +122,7 @@ def test_2019_6472_client_id():
     srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'IA-PD')
 
     invalid_data = "\x00\x01\x01\x2C\x00\x04\x00\x01\x5d\x31\xce\x05\x08\x00\x27\x6d\xee\x67" + 800 * "\x12"
@@ -131,7 +131,7 @@ def test_2019_6472_client_id():
     srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('RENEW')
 

@@ -795,7 +795,7 @@ def test_v4_loggers_all():
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:31')
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.1')
     srv_msg.client_send_msg('RELEASE')
 
@@ -804,7 +804,7 @@ def test_v4_loggers_all():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.1')
     srv_msg.client_send_msg('RELEASE')
 
@@ -1071,7 +1071,7 @@ def test_ddns4_logging_all_types_debug():
 
     misc.test_procedure()
     srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
     srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'aa.four.example.com.')
@@ -1089,7 +1089,7 @@ def test_ddns4_logging_all_types_debug():
     srv_msg.response_check_option_content(81, 'fqdn', 'aa.four.example.com.')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
     srv_msg.client_send_msg('RELEASE')
 

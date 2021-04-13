@@ -105,7 +105,7 @@ def test_v6_message_rebind_reply_newtime():
     # 					IA-Address
     misc.test_setup()
     srv_control.set_time('renew-timer', 111)
-    srv_control.set_time('rebind-timer', '222')
+    srv_control.set_time('rebind-timer', 222)
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -141,6 +141,6 @@ def test_v6_message_rebind_reply_newtime():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_option_content(3, 'T1', 111)
-    srv_msg.response_check_option_content(3, 'T2', '222')
+    srv_msg.response_check_option_content(3, 'T2', 222)
 
     references.references_check('RFC3315')

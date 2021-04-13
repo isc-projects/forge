@@ -172,7 +172,7 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
                             hide_all=value, destination_host=destination_address)
     else:
         fabric_sudo_command('killall named',
-                            hide_all=value, destination_host=destination_address)
+                            hide_all=value, destination_host=destination_address, ignore_errors=True)
     time.sleep(world.f_cfg.sleep_time_1)
 
 

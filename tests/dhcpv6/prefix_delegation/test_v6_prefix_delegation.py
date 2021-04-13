@@ -430,7 +430,7 @@ def test_prefix_delegation_noprefixavail_release():
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 6)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
@@ -632,7 +632,7 @@ def test_prefix_delegation_release_nobinding2():
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_save_option('IA_PD')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -643,7 +643,7 @@ def test_prefix_delegation_release_nobinding2():
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -732,7 +732,7 @@ def test_prefix_delegation_assign_saved_iapd():
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_save_option('IA_PD')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     # 2nd prefix
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
@@ -750,7 +750,7 @@ def test_prefix_delegation_assign_saved_iapd():
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('SOLICIT')
 

@@ -73,7 +73,7 @@ def test_v6_statuscode_noaddravail_request():
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_save_option('server-id')
     srv_msg.client_requests_option(7)
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -84,7 +84,7 @@ def test_v6_statuscode_noaddravail_request():
     srv_msg.client_requests_option(7)
     srv_msg.generate_new('IA')
     srv_msg.generate_new('client')
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 

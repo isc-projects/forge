@@ -323,22 +323,20 @@ def client_save_option_count(count, option_name):
 
 
 @step(r'Client adds saved options. And (DONT )?Erase.')
-def client_add_saved_option(yes_or_no):
+def client_add_saved_option(erase=False):
     """
     This step causes to include saved options to message. Also we can decide to keep or clear
     memory.
     """
     assert len(world.savedmsg), "No options to add."
-    erase = True if yes_or_no is None else False
     dhcpmsg.client_add_saved_option(erase)
 
 
 @step(r'Client adds saved options in set no. (\d+). And (DONT )?Erase.')
-def client_add_saved_option_count(count, yes_or_no):
+def client_add_saved_option_count(count, erase=False):
     """
     """
     assert len(world.savedmsg), "No options to add."
-    erase = True if yes_or_no is None else False
     dhcpmsg.client_add_saved_option(erase, count)
 
 

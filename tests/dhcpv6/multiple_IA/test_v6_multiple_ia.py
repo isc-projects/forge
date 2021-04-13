@@ -73,7 +73,7 @@ def test_v6_multipleIA_addresses():
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -153,7 +153,7 @@ def test_v6_multipleIA_addresses_multiple_pools():
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -258,7 +258,7 @@ def test_v6_multipleIA_addresses_release_success():
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -379,7 +379,7 @@ def test_v6_multipleIA_addresses_release_partial_success():
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -500,7 +500,7 @@ def test_v6_multipleIA_addresses_rebind_partial_success():
     srv_msg.response_check_option_content(13, 'status-code', 0)
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REBIND')
 
@@ -577,7 +577,7 @@ def test_v6_multipleIA_addresses_noaddravail():
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 

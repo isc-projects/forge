@@ -54,7 +54,7 @@ def test_ddns6_tsig_sha1_forw_and_rev_release():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -93,7 +93,7 @@ def test_ddns6_tsig_sha1_forw_and_rev_release():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -166,7 +166,7 @@ def test_ddns6_tsig_forw_and_rev_release_notenabled():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -220,7 +220,7 @@ def test_ddns6_tsig_forw_and_rev_release_notenabled():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -307,7 +307,7 @@ def test_ddns6_tsig_sha1_rev_release():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_does_include('Client', 'client-id')
@@ -346,7 +346,7 @@ def test_ddns6_tsig_sha1_rev_release():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 

@@ -141,7 +141,7 @@ def test_v6_statuscode_notonlink_confirm():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     misc.test_procedure()
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     # add IA NA from beginning of the test. makes it NotOnlink
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('CONFIRM')

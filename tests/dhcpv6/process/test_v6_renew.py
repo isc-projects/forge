@@ -513,7 +513,7 @@ def test_v6_message_renew_reply_time_zero():
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option('DONT ')
+    srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RENEW')
 

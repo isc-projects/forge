@@ -154,7 +154,7 @@ def test_prefix_delegation_IA_and_PD_renew():
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_save_option('IA_PD')
-    srv_msg.client_add_saved_option(None)
+    srv_msg.client_add_saved_option(erase=True)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 

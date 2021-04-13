@@ -56,7 +56,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_replace_1():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client',
                               'FQDN_domain_name',
                               '*sth6$(WHITE_SPACE).six.example.com.')
@@ -97,7 +97,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_replace_1():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client',
                               'FQDN_domain_name',
@@ -166,7 +166,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_replace_2():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*a$(WHITE_SPACE).8723()+.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -183,7 +183,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_replace_2():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', '*a$(WHITE_SPACE).8723()+.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
@@ -243,7 +243,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client',
                               'FQDN_domain_name',
                               '$(WHITE_SPACE)*sth6*.si^x(')
@@ -284,7 +284,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -375,7 +375,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'client1.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -435,7 +435,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:11')
     srv_msg.client_save_option_count(2, 'IA_NA')
     srv_msg.client_save_option_count(2, 'server-id')
-    srv_msg.client_add_saved_option_count(2, 'DONT ')
+    srv_msg.client_add_saved_option_count(2)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'client2.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -482,7 +482,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_identical_name
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
