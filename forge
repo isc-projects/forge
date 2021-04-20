@@ -45,6 +45,7 @@ DNS6_ADDR = SRV_IPV6_ADDR_GLOBAL
 IFACE = "enp0s9"
 SERVER_IFACE = "enp0s9"
 INSTALL_METHOD = "make"
+DNS_DATA_PATH = '/etc/bind/'
 
 INIT_ALL = """
 LOGLEVEL = "info"
@@ -90,7 +91,7 @@ SAVE_LEASES = True
 DNS_IFACE = "enp0s9"
 DNS_PORT = 53
 DNS_SERVER_INSTALL_PATH = "/usr/sbin/"
-DNS_DATA_PATH = "/etc/bind/"
+DNS_DATA_PATH = "{DNS_DATA_PATH}"
 ISC_DHCP_LOG_FACILITY = "local7"
 ISC_DHCP_LOG_FILE = "/var/log/forge_dhcpd.log"
 DB_NAME = "keadb"
@@ -252,8 +253,12 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
 def set_init_all(args):
     # generate init_all.py
     my_vars = globals()
+
     if hasattr(args, 'native') and args.native:
         my_vars['INSTALL_METHOD'] = 'native'
+    if args.system.startswith('fedora'):
+        my_vars['DNS_DATA_PATH'] = '/etc/'
+
     txt = INIT_ALL.format(**my_vars)
 
     path = os.path.abspath('tests/init_all.py')

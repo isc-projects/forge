@@ -193,7 +193,7 @@ class ConfigModel(ConfigElem):
             subnets_key = 'subnet' + proto
             cfg[subnets_key] = []
             for sn in self.subnets.values():
-                if sn.cfg['shared-network-name'] is '':
+                if sn.cfg['shared-network-name'] == '':
                     cfg[subnets_key].append(sn.get_dict())
 
         if self.shared_networks:

@@ -18,6 +18,7 @@
 import os
 import sys
 import logging
+import tarfile
 import warnings
 from shutil import copy
 
@@ -100,7 +101,6 @@ def fabric_download_file(remote_path, local_path,
 
 
 def make_tarfile(output_filename, source_dir):
-    import tarfile
     with tarfile.open(output_filename, "w:gz") as tar:
         tar.add(source_dir)
 
@@ -120,7 +120,7 @@ def remove_local_file(file_local):
     try:
         os.remove(file_local)
     except OSError:
-        get_common_logger().error('File %s cannot be removed' % file_local)
+        print('File %s cannot be removed' % file_local)
 
 
 def save_local_file(value, value_type="string", local_file_name=None, local_location=None):
