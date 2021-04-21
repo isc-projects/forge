@@ -14,6 +14,7 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import os
+import glob
 import json
 import logging
 
@@ -1113,6 +1114,14 @@ def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
+
+        # save log (if required) and then remove it so start can work correctly
+        # (start checks in the log if there is expected pattern)
+        if world.f_cfg.save_logs:
+            save_logs(destination_address=destination_address)
+        fabric_sudo_command('rm -f %s' % world.f_cfg.log_join('kea.log'),
+                            destination_host=destination_address)
+
         result = _start_kea_with_keactrl(destination_address)
     else:
         _restart_kea_with_systemctl(destination_address)
@@ -1145,10 +1154,23 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                                      ignore_errors=True)
         log_path = '/tmp/kea.log'
 
+    local_dest_dir = check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
+                                                           '.',
+                                                           destination_address)
+
+    if glob.glob(os.path.join(local_dest_dir, 'kea.log*')):
+        for i in range(1, 100):
+            dir2 = os.path.join(local_dest_dir, 'kea-logs-%d' % i)
+            if not os.path.exists(dir2):
+                found = True
+                local_dest_dir = dir2
+                os.makedirs(local_dest_dir)
+                break
+        if not found:
+            raise Exception('cannot store log, there is already 100 files stored')
+
     fabric_download_file(log_path,
-                         check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
-                                                               '.',
-                                                               destination_address),
+                         local_dest_dir,
                          destination_host=destination_address, ignore_errors=True)
 
 

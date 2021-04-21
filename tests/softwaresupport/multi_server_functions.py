@@ -179,11 +179,3 @@ def copy_configuration_file(local_file, file_name='configuration_file', destinat
         if not os.path.exists(world.cfg["test_result_dir"]):
             os.makedirs(world.cfg["test_result_dir"])
         copy(local_file, check_local_path_for_downloaded_files(world.cfg["test_result_dir"], file_name, destination_host))
-
-
-def locate_entry(where_we_looking, what_we_looking, n):
-    start = where_we_looking.find(what_we_looking)
-    while start >= 0 and n > 1:
-        start = where_we_looking.find(what_we_looking, start+len(what_we_looking))
-        n -= 1
-    return start
