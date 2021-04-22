@@ -266,7 +266,7 @@ def test_v4_options_not_requested_options():
     # future tests:
     # vendor-class-identifier	60	binary	false
     # nwip-suboptions	63	binary	false
-    # user-class	77	binary	false
+    # user_class	77	binary	false
     # authenticate	90	binary	false
     # domain-search	119	binary	false
     # vivco-suboptions	124	binary	false

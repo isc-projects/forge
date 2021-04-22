@@ -147,7 +147,7 @@ world.kea_options4 = {
     "irc-server": 74,  # ipv4-address (array)
     "streettalk-server": 75,  # ipv4-address (array)
     "streettalk-directory-assistance-server": 76,  # ipv4-address (array)
-    "user-class": 77,  # binary
+    "user_class": 77,  # binary
     "fqdn": 81,  # record
     "dhcp-agent-options": 82,  # empty
     "authenticate": 90,  # binary
