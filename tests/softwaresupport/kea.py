@@ -1141,6 +1141,7 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
+        # download all logs, ie. kea.log, kea.log1, etc.
         log_path = world.f_cfg.log_join('kea.log*')
     else:
         if world.server_system == 'redhat':
@@ -1158,7 +1159,12 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                                                            '.',
                                                            destination_address)
 
+    # If there are already saved logs then the next ones save in separate folder.
+    # For subsequent logs create folder kea-logs-1. If it exists then kea-logs-2,
+    # and so on.
     if glob.glob(os.path.join(local_dest_dir, 'kea.log*')):
+        # Look for free subdir for logs, try at least 100 times and then give up.
+        # There should not be so many stored logs.
         for i in range(1, 100):
             dir2 = os.path.join(local_dest_dir, 'kea-logs-%d' % i)
             if not os.path.exists(dir2):
