@@ -177,7 +177,7 @@ def _check_value(value):
 def add_defaults4():
     eth = world.f_cfg.server_iface
     # TODO for now I will just change if condition but the way to go is remove pre-setting timers!
-    # although it could affect to many tests, at this point I wont do it
+    # although it could affect too many tests, at this point I wont do it
     if "renew-timer" not in world.dhcp_cfg:
         world.dhcp_cfg["renew-timer"] = world.cfg["server_times"]["renew-timer"]
     if "rebind-timer" not in world.dhcp_cfg:

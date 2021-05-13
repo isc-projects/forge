@@ -69,7 +69,7 @@ SERVER_IFACE = ''
 
 # When Forge sends a packet, it typically awaits for the server to respond.
 # Server typically does that promptly, but during debugging it is benefical for
-# the the test to wait a long time. If test concludes too early, it will remove
+# the test to wait a long time. If test concludes too early, it will remove
 # the configuration and kill the server (while the debugging still taking place)
 # PACKET_WAIT_INTERVAL = 1
 
