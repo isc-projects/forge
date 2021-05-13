@@ -1,18 +1,18 @@
-"""Kea6 User Check Hook Library"""
+"""Kea4 User Check Hook Library - Logging"""
 
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
 
-import srv_msg
 import misc
 import srv_control
+import srv_msg
 
 
 @pytest.mark.v4
 @pytest.mark.kea_only
 @pytest.mark.user_check
-def test_user_check_IA_NA_no_registry_logging():
+def test_user_check_hook_no_registry_logging():
     # Without a user registry and multiple subnets
     # Subnet selection will use subnet interface for subnet selection hint
 
@@ -26,6 +26,7 @@ def test_user_check_IA_NA_no_registry_logging():
     srv_control.configure_loggers('kea-dhcp4.hooks', 'ERROR', 'None')
     srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
+
     # DHCP server is started.
     #
     # Test Procedure:
@@ -56,7 +57,7 @@ def test_user_check_IA_NA_no_registry_logging():
 @pytest.mark.v4
 @pytest.mark.kea_only
 @pytest.mark.user_check
-def test_user_check_IA_NA_with_registry_unknown_user_logging():
+def test_user_check_hook_with_registry_unknown_user_logging():
     # With a user registry and multiple subnets
     # an unknown user should get last subnet
 
@@ -74,6 +75,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
+    # Send a query from an unregistered user
     srv_msg.client_sets_value('Client', 'chaddr', '0c:0e:0a:01:ff:01')
     srv_msg.client_send_msg('DISCOVER')
 
@@ -93,7 +95,7 @@ def test_user_check_IA_NA_with_registry_unknown_user_logging():
 @pytest.mark.v4
 @pytest.mark.kea_only
 @pytest.mark.user_check
-def test_user_check_IA_NA_with_registry_unknown_user_logging_2():
+def test_user_check_hook_with_registry_unknown_user_logging_2():
     # With a user registry and multiple subnets
     # an unknown user should get last subnet
 

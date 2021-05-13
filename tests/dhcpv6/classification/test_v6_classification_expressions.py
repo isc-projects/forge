@@ -4,9 +4,9 @@
 
 import pytest
 
-import srv_msg
 import misc
 import srv_control
+import srv_msg
 
 
 @pytest.mark.v6

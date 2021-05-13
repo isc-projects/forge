@@ -4,12 +4,13 @@
 
 import pytest
 
-import srv_control
 import misc
+import srv_control
 import srv_msg
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
@@ -46,6 +47,7 @@ def test_v4_client_classification_one_class_docsis3_boot_file_name():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
@@ -82,6 +84,7 @@ def test_v4_client_classification_one_class_docsis3_next_server():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
@@ -120,6 +123,7 @@ def test_v4_client_classification_one_class_eRouter1_global_next_server():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
@@ -158,6 +162,7 @@ def test_v4_client_classification_one_class_eRouter1_subnet_next_server():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
@@ -197,6 +202,7 @@ def test_v4_client_classification_one_class_eRouter1_two_next_servers():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled

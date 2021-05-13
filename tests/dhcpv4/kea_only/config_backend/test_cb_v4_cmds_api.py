@@ -1,7 +1,9 @@
 """Kea database config backend commands hook testing"""
 
 import pytest
+
 import srv_msg
+
 from cb_model import setup_server_for_config_backend_cmds
 
 pytestmark = [pytest.mark.v4,
@@ -21,8 +23,8 @@ def run_around_tests():
 
 
 def test_availability():
-    cmd = '{"command":"list-commands","arguments":{}}'
-    response = srv_msg.send_ctrl_cmd_via_socket(cmd)
+    cmd = dict(command='list-commands')
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     for cmd in ["remote-global-parameter4-del",
                 "remote-global-parameter4-get",
@@ -85,16 +87,17 @@ def test_remote_subnet4_set_missing_subnet():
                                                         "subnets": [{"interface": "$(SERVER_IFACE)", "id": 1}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured" in \
-           response["text"]
+    assert "subnet configuration failed: mandatory 'subnet' parameter " \
+           "is missing for a subnet being configured" in response["text"]
 
 
 def test_remote_subnet4_set_stateless():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "id": 1,
                                                                      "shared-network-name": "",
-                                                                     "interface": "$(SERVER_IFACE)", "id": 1}]})
+                                                                     "interface": "$(SERVER_IFACE)"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
@@ -209,8 +212,73 @@ def test_remote_subnet4_set_all_values():
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
+def test_remote_subnet4_get_all_values():
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"shared-network-name": "",
+                                                                     "require-client-classes": ["XYZ"],
+                                                                     "id": 2, "interface": "$(SERVER_IFACE)",
+                                                                     "pools": [{"pool": "192.168.50.0-192.168.50.255",
+                                                                                "option-data": [{"code": 7,
+                                                                                                 "data": "12",
+                                                                                                 "always-send": True,
+                                                                                                 "csv-format": True}]}],
+                                                                     "pd-pools": [{
+                                                                         "delegated-len": 91,
+                                                                         "prefix": "192.168.50.0",
+                                                                         "prefix-len": 90}],
+                                                                     "reservation-mode": "all",
+                                                                     "subnet": "192.168.50.0/24",
+                                                                     "valid-lifetime": 1000,
+                                                                     "rebind-timer": 500,
+                                                                     "renew-timer": 200,
+                                                                     "option-data": [{"code": 7,
+                                                                                      "data": "123",
+                                                                                      "always-send": True,
+                                                                                      "csv-format": True}]}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {
+        "count": 1,
+        "subnets": [{
+            "metadata": {"server-tags": ["abc"]},
+            "require-client-classes": ["XYZ"],
+            "shared-network-name": None,
+            "id": 2,
+            "interface": srv_msg.get_interface(),
+            "option-data": [{"always-send": True,
+                             "code": 7,
+                             "csv-format": True,
+                             "name": "preference",
+                             "space": "dhcp4",
+                             "data": "123"}],
+            "pools": [{
+                "option-data": [{"code": 7,
+                                 "data": "12",
+                                 "name": "preference",
+                                 "always-send": True,
+                                 "csv-format": True,
+                                 "space": "dhcp4"}],
+                "pool": "192.168.50.0-192.168.50.255"}],
+            "reservations-global": False,
+            "reservations-in-subnet": True,
+            "reservations-out-of-pool": False,
+            "subnet": "192.168.50.0/24",
+            "rebind-timer": 500,
+            "renew-timer": 200,
+            "relay": {"ip-addresses": []},
+            "valid-lifetime": 1000}]}, "result": 0, "text": "IPv4 subnet 192.168.50.0/24 found."}
+
+
 # reservation-mode is integer in db, so we need to check if it's converted correctly
-def test_remote_subnet4_set_reservation_mode_all():
+def test_remote_subnet4_set_reservation_mode_all_old():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
@@ -229,13 +297,41 @@ def test_remote_subnet4_set_reservation_mode_all():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert "reservation-mode" not in response["arguments"]["subnets"][0]   # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] is False      # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is False   # new since 1.9.1
-    assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]    # new since 1.9.1
+    subnet = response["arguments"]["subnets"][0]
+    assert "reservation-mode" not in subnet             # not anymore since 1.9.1
+    assert subnet["reservations-global"] is False       # new since 1.9.1
+    assert subnet["reservations-in-subnet"] is False    # new since 1.9.1
+    assert "reservations-out-of-pool" not in response   # new since 1.9.1
 
 
-def test_remote_subnet4_set_reservation_mode_global():
+# reservation-mode is integer in db, so we need to check if it's converted correctly
+def test_remote_subnet4_set_reservation_mode_all_new():
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "shared-network-name": "",
+                                                                     "id": 1,
+                                                                     "reservation-mode": "disabled",
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is True
+    if "reservations-out-of-pool" in subnet:
+        assert subnet["reservations-out-of-pool"] is False
+
+
+def test_remote_subnet4_set_reservation_mode_global_old():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
@@ -254,13 +350,40 @@ def test_remote_subnet4_set_reservation_mode_global():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert "reservation-mode" not in response["arguments"]["subnets"][0]   # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] is True       # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is False   # new since 1.9.1
-    assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]    # new since 1.9.1
+    subnet = response["arguments"]["subnets"][0]
+    assert "reservation-mode" not in subnet             # not anymore since 1.9.1
+    assert subnet["reservations-global"] is True       # new since 1.9.1
+    assert subnet["reservations-in-subnet"] is False    # new since 1.9.1
+    assert "reservations-out-of-pool" not in response   # new since 1.9.1
 
 
-def test_remote_subnet4_set_reservation_mode_out_pool():
+def test_remote_subnet4_set_reservation_mode_global_new():
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "shared-network-name": "",
+                                                                     "id": 1,
+                                                                     "reservation-mode": "global",
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is True
+    assert subnet["reservations-in-subnet"] is False
+    if "reservations-out-of-pool" in subnet:
+        assert subnet["reservations-out-of-pool"] is False
+
+
+def test_remote_subnet4_set_reservation_mode_out_pool_old():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
@@ -279,13 +402,39 @@ def test_remote_subnet4_set_reservation_mode_out_pool():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert "reservation-mode" not in response["arguments"]["subnets"][0]            # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] is False      # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is True    # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-out-of-pool"] is True  # new since 1.9.1
+    subnet = response["arguments"]["subnets"][0]
+    assert "reservation-mode" not in subnet             # not anymore since 1.9.1
+    assert subnet["reservations-global"] is False       # new since 1.9.1
+    assert subnet["reservations-in-subnet"] is True     # new since 1.9.1
+    assert subnet["reservations-out-of-pool"] is True   # new since 1.9.1
 
 
-def test_remote_subnet4_set_reservation_mode_disabled():
+def test_remote_subnet4_set_reservation_mode_out_pool_new():
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "shared-network-name": "",
+                                                                     "id": 1,
+                                                                     "reservation-mode": "out-of-pool",
+                                                                     "pools": [
+                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is True
+    assert subnet["reservations-out-of-pool"] is True
+
+
+def test_remote_subnet4_set_reservation_mode_disabled_old():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
@@ -302,10 +451,35 @@ def test_remote_subnet4_set_reservation_mode_disabled():
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert "reservation-mode" not in response["arguments"]["subnets"][0]           # not anymore since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-global"] is False     # new since 1.9.1
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is False  # new since 1.9.1
-    assert "reservations-out-of-pool" not in response["arguments"]["subnets"][0]   # new since 1.9.1
+    subnet = response["arguments"]["subnets"][0]
+    assert "reservation-mode" not in subnet             # not anymore since 1.9.1
+    assert subnet["reservations-global"] is False       # new since 1.9.1
+    assert subnet["reservations-in-subnet"] is False    # new since 1.9.1
+    assert "reservations-out-of-pool" not in subnet     # new since 1.9.1
+
+
+def test_remote_subnet4_set_reservation_mode_disabled_new():
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "shared-network-name": "",
+                                                                     "id": 1,
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "reservation-mode": "disabled"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
+
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    subnet = response["arguments"]["subnets"][0]
+    assert "reservation-mode" not in subnet             # not anymore since 1.9.1
+    assert subnet["reservations-global"] is False       # new since 1.9.1
+    assert subnet["reservations-in-subnet"] is False    # new since 1.9.1
+    assert "reservations-out-of-pool" not in subnet     # new since 1.9.1
 
 
 def _subnet_set(server_tag=None):
@@ -1686,20 +1860,22 @@ def test_remote_global_option4_global_get_missing_option():
 
 
 def test_remote_global_option4_global_get_csv_false():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
-                                                               "server-tags": ["abc"],
-                                                               "options": [{"code": 6,
-                                                                            "data": "C0000301C0000302",
-                                                                            "always-send": True,
-                                                                            "csv-format": False}]})
+    cmd = dict(command="remote-option4-global-set",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "options": [{"code": 6,
+                                       "data": "C0000301C0000302",
+                                       "always-send": True,
+                                       "csv-format": False}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
                         "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
 
-    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
-                                                               "server-tags": ["abc"],
-                                                               "options": [{"code": 6}]})
+    cmd = dict(command="remote-option4-global-get",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1, "options": [{"always-send": True, "code": 6, "csv-format": False,
                                                                "data": "C0000301C0000302",

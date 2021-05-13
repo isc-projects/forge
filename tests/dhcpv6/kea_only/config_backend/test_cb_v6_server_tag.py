@@ -1,6 +1,7 @@
 """Kea config backend testing server-tag."""
 
 import pytest
+
 import srv_control
 import srv_msg
 
@@ -156,7 +157,7 @@ def test_server_tag_global_option():
 
     # delete option with tag "xyz", kea should download tag "all"
     cfg_xyz.del_option(server_tags=["xyz"], code=22)
-    xyz = _get_server_config()
+    xyz = _get_server_config(reload_kea=True)
     assert len(xyz["arguments"]["Dhcp6"]["option-data"]) == 1
     assert xyz["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::1"
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::1"})

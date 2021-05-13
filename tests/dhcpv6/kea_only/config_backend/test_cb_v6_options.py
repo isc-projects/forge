@@ -30,24 +30,35 @@ def _get_server_config(reload_kea=False):
 
 
 def _subnet_set():
-    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 5,
-                                                                     "interface": "$(SERVER_IFACE)",
-                                                                     "shared-network-name": "",
-                                                                     "pools": [
-                                                                         {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
+    cmd = dict(command="remote-subnet6-set",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "subnets": [{"subnet": "2001:db8:1::/64",
+                                       "id": 5,
+                                       "interface": "$(SERVER_IFACE)",
+                                       "shared-network-name": "",
+                                       "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
+
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "2001:db8:1::/64"}]},
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
+def _set_network(channel='http'):
+    cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{"name": "floor13"}]})
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+
+    assert response == {"arguments": {"shared-networks": [{"name": "floor13"}]},
+                        "result": 0, "text": "IPv6 shared network successfully set."}
+
+
 def _set_global_parameter():
     cmd = dict(command="remote-global-parameter6-set", arguments={"remote": {"type": "mysql"},
                                                                   "server-tags": ["abc"],
-                                                                  "parameters": {
-                                                                      "decline-probation-period": 123456}})
+                                                                  "parameters": {"decline-probation-period": 123456}})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1, "parameters": {"decline-probation-period": 123456}},
@@ -67,23 +78,17 @@ def _set_global_option(channel='http'):
                         "arguments": {"options": [{"code": 7, "space": "dhcp6"}]}}
 
 
-def _set_network(channel='http'):
-    cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
-                                                         "server-tags": ["abc"],
-                                                         "shared-networks": [{"name": "floor13"}]})
-    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
-
-    assert response == {"arguments": {"shared-networks": [{"name": "floor13"}]},
-                        "result": 0, "text": "IPv6 shared network successfully set."}
-
-
 @pytest.mark.v6
 def test_subnet_option():
     _subnet_set()
     cmd = dict(command="remote-option6-subnet-set",
                arguments={"subnets": [{"id": 5}],
-                          "options": [{"always-send": False, "code": 23, "csv-format": True,
-                                       "data": "2001:db8:1::1", "name": "dns-servers", "space": "dhcp6"}],
+                          "options": [{"always-send": False,
+                                       "code": 23,
+                                       "csv-format": True,
+                                       "data": "2001:db8:1::1",
+                                       "name": "dns-servers",
+                                       "space": "dhcp6"}],
                           "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -106,18 +111,24 @@ def test_subnet_option():
 @pytest.mark.v6
 def test_subnet_in_network_option():
     _set_network()
-    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 5,
-                                                                     "interface": "$(SERVER_IFACE)",
-                                                                     "shared-network-name": "floor13",
-                                                                     "pools": [
-                                                                         {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
+    cmd = dict(command="remote-subnet6-set",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "subnets": [{"subnet": "2001:db8:1::/64",
+                                       "id": 5,
+                                       "interface": "$(SERVER_IFACE)",
+                                       "shared-network-name": "floor13",
+                                       "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
     cmd = dict(command="remote-option6-subnet-set",
                arguments={"subnets": [{"id": 5}],
-                          "options": [{"always-send": False, "code": 23, "csv-format": True,
-                                       "data": "2001:db8:1::1", "name": "dns-servers", "space": "dhcp6"}],
+                          "options": [{"always-send": False,
+                                       "code": 23,
+                                       "csv-format": True,
+                                       "data": "2001:db8:1::1",
+                                       "name": "dns-servers",
+                                       "space": "dhcp6"}],
                           "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -133,42 +144,58 @@ def test_option_on_all_levels():
     cmd = dict(command="remote-subnet6-set",
                arguments={"remote": {"type": "mysql"},
                           "server-tags": ["abc"],
-                          "subnets": [{"subnet": "2001:db8:1::/64", "id": 5,
-                                       "interface": "$(SERVER_IFACE)", "shared-network-name": "floor13",
+                          "subnets": [{"subnet": "2001:db8:1::/64",
+                                       "id": 5,
+                                       "interface": "$(SERVER_IFACE)",
+                                       "shared-network-name": "floor13",
                                        "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],
-                                       "pd-pools": [{"delegated-len": 91, "prefix": "2001:db8:2::",
+                                       "pd-pools": [{"delegated-len": 91,
+                                                     "prefix": "2001:db8:2::",
                                                      "prefix-len": 90}]}]})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     cmd_sub = dict(command="remote-option6-subnet-set",
                    arguments={"subnets": [{"id": 5}],
-                              "options": [{"always-send": False, "code": 23, "csv-format": True,
-                                           "name": "dns-servers", "space": "dhcp6", "data": "2001:db8:1::1"}],
+                              "options": [{"always-send": False,
+                                           "code": 23,
+                                           "csv-format": True,
+                                           "name": "dns-servers",
+                                           "space": "dhcp6",
+                                           "data": "2001:db8:1::1"}],
                               "remote": {"type": "mysql"}})
-
     srv_msg.send_ctrl_cmd(cmd_sub, exp_result=0)
 
     cmd_pool = dict(command="remote-option6-pool-set",
                     arguments={"pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],
-                               "options": [{"always-send": False, "code": 23, "csv-format": True,
-                                            "name": "dns-servers", "space": "dhcp6", "data": "2001:db8:1::2"}],
+                               "options": [{"always-send": False,
+                                            "code": 23,
+                                            "csv-format": True,
+                                            "name": "dns-servers",
+                                            "space": "dhcp6",
+                                            "data": "2001:db8:1::2"}],
                                "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd_pool, exp_result=0)
 
     cmd_net = dict(command="remote-option6-network-set",
                    arguments={"shared-networks": [{"name": "floor13"}],
-                              "options": [{"always-send": False, "code": 23, "csv-format": True,
-                                           "name": "dns-servers", "space": "dhcp6", "data": "2001:db8:1::3"}],
+                              "options": [{"always-send": False,
+                                           "code": 23,
+                                           "csv-format": True,
+                                           "name": "dns-servers",
+                                           "space": "dhcp6",
+                                           "data": "2001:db8:1::3"}],
                               "remote": {"type": "mysql"}})
-
     srv_msg.send_ctrl_cmd(cmd_net, exp_result=0)
 
     cmd_pd = dict(command="remote-option6-pd-pool-set",
                   arguments={"pd-pools": [{"prefix": "2001:db8:2::", "prefix-len": 90}],
-                             "options": [{"always-send": False, "code": 23, "csv-format": True,
-                                          "name": "dns-servers", "space": "dhcp6", "data": "2001:db8:1::3"}],
+                             "options": [{"always-send": False,
+                                          "code": 23,
+                                          "csv-format": True,
+                                          "name": "dns-servers",
+                                          "space": "dhcp6",
+                                          "data": "2001:db8:1::3"}],
                              "remote": {"type": "mysql"}})
-
     srv_msg.send_ctrl_cmd(cmd_pd, exp_result=0)
 
     srv_msg.forge_sleep(2, "seconds")
@@ -189,15 +216,14 @@ def test_network_option():
     _set_network()
 
     cmd = dict(command="remote-option6-network-set",
-               arguments={
-                   "shared-networks": [{"name": "floor13"}],
-                   "options": [{"always-send": False,
-                                "code": 23,
-                                "csv-format": True,
-                                "data": "2001:db8:1::1",
-                                "name": "dns-servers",
-                                "space": "dhcp6"}],
-                   "remote": {"type": "mysql"}})
+               arguments={"shared-networks": [{"name": "floor13"}],
+                          "options": [{"always-send": False,
+                                       "code": 23,
+                                       "csv-format": True,
+                                       "data": "2001:db8:1::1",
+                                       "name": "dns-servers",
+                                       "space": "dhcp6"}],
+                          "remote": {"type": "mysql"}})
 
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -205,10 +231,9 @@ def test_network_option():
     cfg = _get_server_config()
     assert cfg["arguments"]["Dhcp6"]["shared-networks"][0]["option-data"] == cmd["arguments"]["options"]
     cmd = dict(command="remote-option6-network-del",
-               arguments={
-                   "shared-networks": [{"name": "floor13"}],
-                   "options": [{"code": 23, "space": "dhcp6"}],
-                   "remote": {"type": "mysql"}})
+               arguments={"shared-networks": [{"name": "floor13"}],
+                          "options": [{"code": 23, "space": "dhcp6"}],
+                          "remote": {"type": "mysql"}})
 
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
     srv_msg.forge_sleep(3, "seconds")
@@ -221,15 +246,14 @@ def test_network_option():
 def test_pool_option():
     _subnet_set()
     cmd = dict(command="remote-option6-pool-set",
-               arguments={
-                   "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],
-                   "options": [{"always-send": False,
-                                "code": 23,
-                                "csv-format": True,
-                                "data": "2001:db8:1::1",
-                                "name": "dns-servers",
-                                "space": "dhcp6"}],
-                   "remote": {"type": "mysql"}})
+               arguments={"pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],
+                          "options": [{"always-send": False,
+                                       "code": 23,
+                                       "csv-format": True,
+                                       "data": "2001:db8:1::1",
+                                       "name": "dns-servers",
+                                       "space": "dhcp6"}],
+                          "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -238,11 +262,9 @@ def test_pool_option():
     assert cfg["arguments"]["Dhcp6"]["subnet6"][0]["pools"][0]["option-data"] == cmd["arguments"]["options"]
 
     cmd = dict(command="remote-option6-pool-del",
-               arguments={
-                   "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],
-                   "options": [{"code": 23,
-                                "space": "dhcp6"}],
-                   "remote": {"type": "mysql"}})
+               arguments={"pools": [{"pool": "2001:db8:1::1-2001:db8:1::10"}],
+                          "options": [{"code": 23, "space": "dhcp6"}],
+                          "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(4, "seconds")

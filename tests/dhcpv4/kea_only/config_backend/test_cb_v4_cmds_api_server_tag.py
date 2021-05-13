@@ -1,6 +1,7 @@
 """Kea database config backend commands hook testing"""
 
 import pytest
+
 import srv_msg
 from cb_model import setup_server_for_config_backend_cmds
 
@@ -22,7 +23,7 @@ def _set_server_tag(tag="abc"):
     cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
                                                         "servers": [{"server-tag": tag,
                                                                      "description": "some server"}]})
-    response = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"result": 0, "text": "DHCPv4 server successfully set.",
                         "arguments": {"servers": [{"server-tag": tag, "description": "some server"}]}}
@@ -68,7 +69,7 @@ def test_remote_server_tag_set_empty_tag():
 def test_remote_server_tag_set_missing_description():
     cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
                                                         "servers": [{"server-tag": "someserver"}]})
-    response = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"servers": [{"description": "", "server-tag": "someserver"}]},
                         "result": 0, "text": "DHCPv4 server successfully set."}
@@ -102,7 +103,7 @@ def test_remote_server_tag_get():
     _set_server_tag()
     cmd = dict(command="remote-server4-get", arguments={"remote": {"type": "mysql"},
                                                         "servers": [{"server-tag": "abc"}]})
-    response = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1, "servers": [{"description": "some server", "server-tag": "abc"}]},
                         "result": 0, "text": "DHCPv4 server 'abc' found."}
@@ -139,7 +140,7 @@ def test_remote_server_tag_del():
     _set_server_tag()
     cmd = dict(command="remote-server4-del", arguments={"remote": {"type": "mysql"},
                                                         "servers": [{"server-tag": "abc"}]})
-    response = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 server(s) deleted."}
 
@@ -160,12 +161,6 @@ def test_remote_server_tag_del_all():
     assert response == {"result": 1,
                         "text": "'all' is a name reserved for the server tag which associates the configuration "
                                 "elements with all servers connecting to the database and may not be deleted"}
-
-    # "all" can't be -get
-    # cmd = dict(command="remote-server4-get", arguments={"remote": {"type": "mysql"},
-    #                                                     "servers": [{"server-tag": "all"}]})
-    #
-    # srv_msg.send_ctrl_cmd(cmd)
 
 
 def test_remote_server_tag_del_non_existing_tag():
@@ -198,7 +193,7 @@ def test_remote_server_tag_get_all():
     _set_server_tag()
     _set_server_tag(tag="xyz")
     cmd = dict(command="remote-server4-get-all", arguments={"remote": {"type": "mysql"}})
-    response = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 2,
                                       "servers": [{"description": "some server", "server-tag": "abc"},
@@ -217,7 +212,7 @@ def test_remote_server_tag_get_all_one_tags():
     _set_server_tag()
 
     cmd = dict(command="remote-server4-get-all", arguments={"remote": {"type": "mysql"}})
-    response = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1,
                                       "servers": [{"description": "some server", "server-tag": "abc"}]},
@@ -227,7 +222,7 @@ def test_remote_server_tag_get_all_one_tags():
 def _add_server_tag(server_tag=None):
     cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
                                                         "servers": [{"server-tag": server_tag}]})
-    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    srv_msg.send_ctrl_cmd(cmd)
 
 
 def _subnet_set(server_tags, subnet_id, pool, exp_result=0, subnet="192.168.50.0/24", ):

@@ -1,6 +1,7 @@
 """Kea database config backend commands hook testing"""
 
 import pytest
+
 import srv_msg
 
 from cb_model import setup_server_for_config_backend_cmds
@@ -76,7 +77,7 @@ def test_remote_subnet6_set_empty_subnet():
                                                                      "interface": "$(SERVER_IFACE)"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert "subnet configuration failed: Invalid subnet syntax (prefix/len expected)" in response["text"]
+    assert "subnet configuration failed: Invalid subnet syntax (prefix/len expected):" in response["text"]
 
 
 def test_remote_subnet6_set_missing_subnet():
@@ -282,7 +283,8 @@ def test_remote_subnet6_get_all_values():
 def test_remote_subnet6_set_reservation_mode_all_old():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
+                                                        "subnets": [{"subnet": "2001:db8:1::/64",
+                                                                     "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
                                                                      "reservation-mode": "all",
@@ -297,9 +299,10 @@ def test_remote_subnet6_set_reservation_mode_all_old():
                                                                   "subnets": [{"subnet": "2001:db8:1::/64"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservations-global"] is False
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is True
-    assert response["arguments"]["subnets"][0]["reservations-out-of-pool"] is False
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is True
+    assert subnet["reservations-out-of-pool"] is False
 
 
 def test_remote_subnet6_set_reservation_mode_all_new():
@@ -1081,6 +1084,30 @@ def test_remote_network6_del_subnet_keep():
                         "result": 0, "text": "2 IPv6 subnet(s) found."}
 
 
+def test_remote_network6_del_subnet_delete_simple():
+    # the v6 counterpart of ticket #738
+    cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"],
+                                                         "shared-networks": [{
+                                                             "name": "net1",
+                                                             "interface": "$(SERVER_IFACE)"}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
+                                                        "server-tags": ["abc"],
+                                                        "subnets": [{"subnet": "2001:db8:1::/64",
+                                                                     "id": 1,
+                                                                     "interface": "$(SERVER_IFACE)",
+                                                                     "shared-network-name": "net1",
+                                                                     "pools": [
+                                                                         {"pool": "2001:db8:1::0-2001:db8:1::100"}]}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    cmd = dict(command="remote-network6-del", arguments={"remote": {"type": "mysql"}, "subnets-action": "delete",
+                                                         "shared-networks": [{"name": "net1"}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+
 def test_remote_network6_del_subnet_delete():
     # add networks
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
@@ -1701,6 +1728,19 @@ def test_remote_global_option6_global_set_csv_false_incorrect():
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert "option data is not a valid string of hexadecimal digits: 12Z3" in response["text"]
+
+
+def test_remote_global_option6_global_set_csv_false_correct():
+    cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 7,
+                                                                            "data": "C0000201",  # 192.0.2.1
+                                                                            "always-send": True,
+                                                                            "csv-format": False}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"result": 0, "text": "DHCPv6 option successfully set.",
+                        "arguments": {"options": [{"code": 6, "space": "dhcp6"}]}}
 
 
 def test_remote_global_option6_global_set_csv_false_incorrect_hex():

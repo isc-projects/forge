@@ -1,4 +1,4 @@
-"""DHCPv6 Release"""
+"""DHCPv6 release process"""
 
 # pylint: disable=invalid-name,line-too-long
 

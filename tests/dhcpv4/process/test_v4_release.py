@@ -1,11 +1,11 @@
-"""DHCPv4 address release process"""
+"""DHCPv4 release process"""
 
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
 
-import srv_control
 import misc
+import srv_control
 import srv_msg
 
 
