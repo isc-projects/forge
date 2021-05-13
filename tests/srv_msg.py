@@ -378,6 +378,15 @@ def file_contains_line(file_path, condition, line):
     multi_protocol_functions.regular_file_contain(file_path, condition, line)
 
 
+def file_contains_line_n_times(file_path, n, line):
+    """
+    Check if Log includes line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    file_path, line = test_define_value(file_path, line)
+    multi_protocol_functions.regular_file_contains_n_lines(file_path, n, line)
+
+
 @step(r'DNS log MUST (NOT )?contain line: (.+)')
 def dns_log_contains(condition, line):
     """
@@ -425,7 +434,16 @@ def table_contains_line(table_name, db_type, line, expect=True):
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     table_name, db_type, line = test_define_value(table_name, db_type, line)
-    multi_protocol_functions.db_table_contain(table_name, db_type, line=line, expect=expect)
+    multi_protocol_functions.db_table_contains_line(table_name, db_type, line=line, expect=expect)
+
+
+def table_contains_line_n_times(table_name, db_type, n, line):
+    """
+    Check if in table X in database type Y include line.
+    Be aware that tested line is every thing after "line: " until end of the line.
+    """
+    table_name, db_type, line = test_define_value(table_name, db_type, line)
+    multi_protocol_functions.db_table_contains_line_n_times(table_name, db_type, n=n, line=line)
 
 
 @step(r'Remove all records from table (\S+) in (\S+) database.')

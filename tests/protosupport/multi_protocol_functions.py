@@ -234,6 +234,16 @@ def regular_file_contain(file_name, condition, line, destination=None):
             assert False, 'File {0} does NOT contain line/phrase: {1} .'.format(file_name, line)
 
 
+def regular_file_contains_n_lines(file_name, n, line, destination=None):
+    if destination is None:
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), ignore_errors=True)
+    else:
+        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), destination_host=destination, ignore_errors=True)
+
+    if int(result) != n:
+        assert False, 'Expected file {} to contain line/phrase "{}" a number of {} times. Found {} time{}.'.format(file_name, line, n, result, '' if result == 1 else 's')
+
+
 def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
                          db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd):
 
@@ -254,10 +264,9 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
         assert False, "db type {db_type} not recognized/not supported".format(**locals())
 
 
-def db_table_contain(table_name, db_type, line="", grep_cmd=None, expect=True, db_name=world.f_cfg.db_name,
-                     db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                     destination=world.f_cfg.mgmt_address):
-    # TODO add checking count of records
+def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=world.f_cfg.db_name,
+                          db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                          destination=world.f_cfg.mgmt_address):
     if db_type.lower() == "mysql":
         if table_name == 'lease6':
             select = 'select hex(duid), address, iaid, valid_lifetime'
@@ -285,15 +294,36 @@ def db_table_contain(table_name, db_type, line="", grep_cmd=None, expect=True, d
         cmd = grep_cmd
 
     result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
+    return int(result)
 
-    if not expect:
-        if int(result) > 0:
-            assert False, 'In database {0} table name "{1}" has {2} of: "{3}".' \
-                          ' That is to much.'.format(db_type, table_name, result, line)
-    else:
-        if int(result) < 1:
+
+def db_table_contains_line(table_name, db_type, line="", grep_cmd=None, expect=True, db_name=world.f_cfg.db_name,
+                           db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                           destination=world.f_cfg.mgmt_address):
+    result = db_table_record_count(table_name, db_type, line,
+                                   grep_cmd, db_name, db_user, db_passwd,
+                                   destination)
+
+    if expect:
+        if result < 1:
             assert False, 'In database {0} table name "{1}" has {2} of: "{3}".'.format(db_type,
-                                                                                       table_name, result, line)
+                                                                                        table_name, result, line)
+    else:
+        if result > 0:
+            assert False, 'In database {0} table name "{1}" has {2} of: "{3}".' \
+                          ' That is too much.'.format(db_type, table_name, result, line)
+
+
+def db_table_contains_line_n_times(table_name, db_type, n, line="", grep_cmd=None, db_name=world.f_cfg.db_name,
+                             db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                             destination=world.f_cfg.mgmt_address):
+    result = db_table_record_count(table_name, db_type, line,
+                                   grep_cmd, db_name, db_user, db_passwd,
+                                   destination)
+
+    if result != n:
+        assert False, 'Expected {} database table "{}" to contain line/phrase "{}" a number of {} times. Found {} time{}.' \
+            .format(db_type, table_name, line, n, result, '' if result == 1 else 's')
 
 
 def log_contains_count(server_type, count, line):
@@ -631,7 +661,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
                                                                                   lease["idid"])
             else:
                 assert False, "There is something bad, you should never see this :)"
-            db_table_contain(table, backend, grep_cmd=cmd, destination=destination)
+            db_table_contains_line(table, backend, grep_cmd=cmd, destination=destination)
 
     elif backend == 'cassandra':
         # TODO implement this sometime in the future
