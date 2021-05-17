@@ -511,6 +511,7 @@ def _install_kea_native_on_server(args, server_idx):
                 "isc-kea-devel",
                 "isc-kea-hooks",
                 "isc-kea-libs",
+                "isc-kea-shell",
                 "isc-kea-premium-cb-cmds",
                 "isc-kea-premium-class-cmds",
                 "isc-kea-premium-flex-id",
