@@ -538,7 +538,7 @@ def test_v6_legal_log_address_assigned_relay():
                                        'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 '
                                        'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) '
                                        'connected via relay at address:')
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
                                        'for client on link address: 3000::1005, hop count: 4')
 
 
@@ -573,8 +573,46 @@ def test_v6_legal_log_address_assigned_relay_db(backend):
                                         'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) '
                                         'connected via relay at address:')
-    srv_msg.table_contains_line_n_times('logs', backend, 1,
+    srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
                                         'for client on link address: 3000::1005, hop count: 4')
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.legal_logging
+def test_v6_legal_log_with_flex_id_address_assigned():
+    misc.test_procedure()
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 100)
+    srv_control.set_time('rebind-timer', 200)
+    srv_control.set_time('preferred-lifetime', 400)
+    srv_control.set_time('valid-lifetime', 600)
+    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname',
+                                           0,
+                                           'flex-id',
+                                           '01:02:03:04:05:06')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    srv_control.add_hooks('libdhcp_flex_id.so')
+    srv_control.add_parameter_to_hook(2,
+                                      'identifier-expression',
+                                      'vendor[4491].option[1026].hex')
+    srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _send_client_requests_for_flex_id(MESSAGE_COUNT)
+
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                                       'Address: 3000::f has been assigned for 0 hrs 10 mins 0 secs '
+                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
 @pytest.mark.v6
