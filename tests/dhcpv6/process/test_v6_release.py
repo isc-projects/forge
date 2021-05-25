@@ -354,7 +354,8 @@ def test_v6_statuscode_nobinding_release_nobinding():
 @pytest.mark.v6
 @pytest.mark.status_code
 @pytest.mark.release
-def test_v6_statuscode_success_release():
+@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+def test_v6_statuscode_success_release(backend):
     #  Testing server ability server ability perform RELEASE - REPLY message exchange.
     #  Message details 		Client		Server
     #  						SOLICIT -->
@@ -372,6 +373,7 @@ def test_v6_statuscode_success_release():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.define_temporary_lease_db_backend(backend)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -398,6 +400,10 @@ def test_v6_statuscode_success_release():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
+
+    # check leases
+    my_lease = srv_msg.get_all_leases()
+    srv_msg.check_leases(my_lease, backend=backend)
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
