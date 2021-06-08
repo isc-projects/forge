@@ -41,6 +41,7 @@ def add_ddns_server(address, port):
                       "dns-server-timeout": 2000,
                       "reverse-ddns": {'ddns-domains': []},
                       "forward-ddns": {'ddns-domains': []},
+                      "hooks-libraries": [],
                       "tsig-keys": [],
                       "ncr-format": "JSON",  # default value
                       "ncr-protocol": "UDP",
