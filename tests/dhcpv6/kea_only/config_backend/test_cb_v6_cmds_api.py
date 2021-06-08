@@ -1161,6 +1161,61 @@ def test_remote_network6_del_subnet_keep():
                         "result": 0, "text": "2 IPv6 subnet(s) found."}
 
 
+def test_remote_network6_del_subnet_delete_simple():
+    # the v6 counterpart of ticket #738
+    cmd = dict(command='remote-network6-set', arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'server-tags': [
+            'abc'
+        ],
+        'shared-networks': [
+            {
+                'interface': '$(SERVER_IFACE)',
+                'name': 'net1'
+            }
+        ]
+    })
+    srv_msg.send_ctrl_cmd(cmd)
+
+    cmd = dict(command='remote-subnet6-set', arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'server-tags': [
+            'abc'
+        ],
+        'subnets': [
+            {
+                'id': 1,
+                'interface': '$(SERVER_IFACE)',
+                'pools': [
+                    {
+                        'pool': '2001:db8:1::0-2001:db8:1::100'
+                    }
+                ],
+                'shared-network-name': 'net1',
+                'subnet': '2001:db8:1::/64'
+            }
+        ]
+    })
+    srv_msg.send_ctrl_cmd(cmd)
+
+    cmd = dict(command='remote-network6-del', arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'shared-networks': [
+            {
+                'name': 'net1'
+            }
+        ],
+        'subnets-action': 'delete'
+    })
+    srv_msg.send_ctrl_cmd(cmd)
+
+
 def test_remote_network6_del_subnet_delete():
     # add networks
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"},
@@ -1781,6 +1836,19 @@ def test_remote_global_option6_global_set_csv_false_incorrect():
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert "option data is not a valid string of hexadecimal digits: 12Z3" in response["text"]
+
+
+def test_remote_global_option6_global_set_csv_false_correct():
+    cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
+                                                               "server-tags": ["abc"],
+                                                               "options": [{"code": 7,
+                                                                            "data": "C0000201",  # 192.0.2.1
+                                                                            "always-send": True,
+                                                                            "csv-format": False}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"result": 0, "text": "DHCPv6 option successfully set.",
+                        "arguments": {"options": [{"code": 7, "space": "dhcp6"}]}}
 
 
 def test_remote_global_option6_global_set_csv_false_incorrect_hex():

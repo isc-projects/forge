@@ -31,17 +31,28 @@ def _get_server_config(reload_kea=False):
 
 def _subnet_set():
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
-                          "subnets": [{"subnet": "10.0.0.0/24", "id": 5, "interface": "$(SERVER_IFACE)",
-                                       "shared-network-name": "", "pools": [{"pool": "10.0.0.1-10.0.0.100"}]}]})
-    srv_msg.send_ctrl_cmd(cmd)
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "subnets": [{"subnet": "10.0.0.0/24",
+                                       "id": 5,
+                                       "interface": "$(SERVER_IFACE)",
+                                       "shared-network-name": "",
+                                       "pools": [{"pool": "10.0.0.1-10.0.0.100"}]}]})
+
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "10.0.0.0/24"}]},
+                        "result": 0, "text": "IPv4 subnet successfully set."}
 
 
 def _set_network(channel='http'):
     cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{"name": "floor13"}]})
-    return srv_msg.send_ctrl_cmd(cmd, channel=channel)
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
+
+    assert response == {"arguments": {"shared-networks": [{"name": "floor13"}]},
+                        "result": 0, "text": "IPv4 shared network successfully set."}
 
 
 @pytest.mark.v4
@@ -49,9 +60,13 @@ def test_subnet_option():
     _subnet_set()
     cmd = dict(command="remote-option4-subnet-set",
                arguments={"subnets": [{"id": 5}],
-                          "options": [{"always-send": False, "code": 6, "csv-format": True,
-                                       "data": "10.0.0.1", "name": "domain-name-servers",
-                                       "space": "dhcp4"}], "remote": {"type": "mysql"}})
+                          "options": [{"always-send": False,
+                                       "code": 6,
+                                       "csv-format": True,
+                                       "data": "10.0.0.1",
+                                       "name": "domain-name-servers",
+                                       "space": "dhcp4"}],
+                          "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -75,16 +90,24 @@ def test_multiple_subnet_option():
     _subnet_set()
 
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
-                          "subnets": [{"subnet": "10.10.0.0/24", "id": 9, "interface": "$(SERVER_IFACE)",
-                                       "shared-network-name": "", "pools": [{"pool": "10.10.0.1-10.10.0.100"}]}]})
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "subnets": [{"subnet": "10.10.0.0/24",
+                                       "id": 9,
+                                       "interface": "$(SERVER_IFACE)",
+                                       "shared-network-name": "",
+                                       "pools": [{"pool": "10.10.0.1-10.10.0.100"}]}]})
     srv_msg.send_ctrl_cmd(cmd)
 
     cmd = dict(command="remote-option4-subnet-set",
                arguments={"subnets": [{"id": 5}],
-                          "options": [{"always-send": False, "code": 6, "csv-format": True,
-                                       "data": "10.0.0.1", "name": "domain-name-servers",
-                                       "space": "dhcp4"}], "remote": {"type": "mysql"}})
+                          "options": [{"always-send": False,
+                                       "code": 6,
+                                       "csv-format": True,
+                                       "data": "10.0.0.1",
+                                       "name": "domain-name-servers",
+                                       "space": "dhcp4"}],
+                          "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     cmd = dict(command="remote-option4-subnet-set",
@@ -126,16 +149,24 @@ def test_multiple_subnet_option():
 def test_subnet_in_network_option():
     _set_network()
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
-                          "subnets": [{"subnet": "10.0.0.0/24", "id": 5, "interface": "$(SERVER_IFACE)",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "subnets": [{"subnet": "10.0.0.0/24",
+                                       "id": 5,
+                                       "interface": "$(SERVER_IFACE)",
                                        "shared-network-name": "floor13",
                                        "pools": [{"pool": "10.0.0.1-10.0.0.10"}]}]})
-
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
     cmd = dict(command="remote-option4-subnet-set",
                arguments={"subnets": [{"id": 5}],
-                          "options": [{"always-send": False, "code": 6, "csv-format": True, "data": "10.0.0.1",
-                                       "name": "domain-name-servers", "space": "dhcp4"}], "remote": {"type": "mysql"}})
+                          "options": [{"always-send": False,
+                                       "code": 6,
+                                       "csv-format": True,
+                                       "data": "10.0.0.1",
+                                       "name": "domain-name-servers",
+                                       "space": "dhcp4"}],
+                          "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(2, "seconds")
@@ -148,30 +179,45 @@ def test_subnet_in_network_option():
 def test_option_on_all_levels():
     _set_network()
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
-                          "subnets": [{"subnet": "10.0.0.0/24", "id": 5, "interface": "$(SERVER_IFACE)",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "subnets": [{"subnet": "10.0.0.0/24",
+                                       "id": 5,
+                                       "interface": "$(SERVER_IFACE)",
                                        "shared-network-name": "floor13",
                                        "pools": [{"pool": "10.0.0.1-10.0.0.10"}]}]})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     cmd_sub = dict(command="remote-option4-subnet-set",
                    arguments={"subnets": [{"id": 5}],
-                              "options": [{"always-send": False, "code": 6, "csv-format": True,
-                                           "name": "domain-name-servers", "space": "dhcp4", "data": "10.0.0.1"}],
+                              "options": [{"always-send": False,
+                                           "code": 6,
+                                           "csv-format": True,
+                                           "name": "domain-name-servers",
+                                           "space": "dhcp4",
+                                           "data": "10.0.0.1"}],
                               "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd_sub, exp_result=0)
 
     cmd_pool = dict(command="remote-option4-pool-set",
                     arguments={"pools": [{"pool": "10.0.0.1-10.0.0.10"}],
-                               "options": [{"always-send": False, "code": 6, "csv-format": True,
-                                            "name": "domain-name-servers", "space": "dhcp4", "data": "10.0.0.2"}],
+                               "options": [{"always-send": False,
+                                            "code": 6,
+                                            "csv-format": True,
+                                            "name": "domain-name-servers",
+                                            "space": "dhcp4",
+                                            "data": "10.0.0.2"}],
                                "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd_pool, exp_result=0)
 
     cmd_net = dict(command="remote-option4-network-set",
                    arguments={"shared-networks": [{"name": "floor13"}],
-                              "options": [{"always-send": False, "code": 6, "csv-format": True,
-                                           "name": "domain-name-servers", "space": "dhcp4", "data": "10.0.0.3"}],
+                              "options": [{"always-send": False,
+                                           "code": 6,
+                                           "csv-format": True,
+                                           "name": "domain-name-servers",
+                                           "space": "dhcp4",
+                                           "data": "10.0.0.3"}],
                               "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd_net, exp_result=0)
 
@@ -192,8 +238,13 @@ def test_network_option():
 
     cmd = dict(command="remote-option4-network-set",
                arguments={"shared-networks": [{"name": "floor13"}],
-                          "options": [{"always-send": False, "code": 6, "csv-format": True, "data": "10.0.0.1",
-                                       "name": "domain-name-servers", "space": "dhcp4"}], "remote": {"type": "mysql"}})
+                          "options": [{"always-send": False,
+                                       "code": 6,
+                                       "csv-format": True,
+                                       "data": "10.0.0.1",
+                                       "name": "domain-name-servers",
+                                       "space": "dhcp4"}],
+                          "remote": {"type": "mysql"}})
 
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -217,8 +268,13 @@ def test_pool_option():
     _subnet_set()
     cmd = dict(command="remote-option4-pool-set",
                arguments={"pools": [{"pool": "10.0.0.1-10.0.0.100"}],
-                          "options": [{"always-send": False, "code": 6, "csv-format": True, "data": "10.0.0.1",
-                                       "name": "domain-name-servers", "space": "dhcp4"}], "remote": {"type": "mysql"}})
+                          "options": [{"always-send": False,
+                                       "code": 6,
+                                       "csv-format": True,
+                                       "data": "10.0.0.1",
+                                       "name": "domain-name-servers",
+                                       "space": "dhcp4"}],
+                          "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -228,7 +284,8 @@ def test_pool_option():
 
     cmd = dict(command="remote-option4-pool-del",
                arguments={"pools": [{"pool": "10.0.0.1-10.0.0.100"}],
-                          "options": [{"code": 6, "space": "dhcp4"}], "remote": {"type": "mysql"}})
+                          "options": [{"code": 6, "space": "dhcp4"}],
+                          "remote": {"type": "mysql"}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(4, "seconds")
