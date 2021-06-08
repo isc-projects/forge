@@ -5,11 +5,12 @@
 import pytest
 
 import misc
-import srv_msg
 import srv_control
+import srv_msg
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_one_class_one_subnet():
 
@@ -57,6 +58,7 @@ def test_v4_client_classification_one_class_one_subnet():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_one_class_two_subnets_same_values():
 
@@ -137,6 +139,7 @@ def test_v4_client_classification_one_class_two_subnets_same_values():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_one_class_two_subnets_different_class_id_included():
 
@@ -167,6 +170,7 @@ def test_v4_client_classification_one_class_two_subnets_different_class_id_inclu
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_one_class_two_subnets_different_chaddr():
 
@@ -238,6 +242,7 @@ def test_v4_client_classification_one_class_two_subnets_different_chaddr():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_one_class_empty_pool_with_classification():
 
@@ -298,6 +303,7 @@ def test_v4_client_classification_one_class_empty_pool_with_classification():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_one_class_empty_pool_without_classification():
 
@@ -355,6 +361,7 @@ def test_v4_client_classification_one_class_empty_pool_without_classification():
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_multiple_classes_two_subnets_different_chaddr():
 
@@ -429,6 +436,7 @@ def test_v4_client_classification_multiple_classes_two_subnets_different_chaddr(
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_multiple_classes_three_subnets_different_chaddr():
 
@@ -505,6 +513,7 @@ def test_v4_client_classification_multiple_classes_three_subnets_different_chadd
 
 
 @pytest.mark.v4
+@pytest.mark.kea_only
 @pytest.mark.classification
 def test_v4_client_classification_multiple_classes_three_subnets_different_values():
 

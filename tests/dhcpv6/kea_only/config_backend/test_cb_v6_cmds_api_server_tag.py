@@ -1,6 +1,7 @@
 """Kea database config backend commands hook testing"""
 
 import pytest
+
 import srv_msg
 from cb_model import setup_server_for_config_backend_cmds
 
@@ -44,7 +45,7 @@ def test_remote_server_tag_set_any():
 def test_remote_server_tag_set_missing_tag(channel):
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
                                                         "servers": [{"description": "some server"}]})
-    response = srv_msg.send_ctrl_cmd(cmd, exp_result=1, channel=channel)
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=1)
 
     assert response == {"result": 1, "text": "missing 'server-tag' parameter"}
 
@@ -221,7 +222,7 @@ def test_remote_server_tag_get_all_one_tags():
 def _add_server_tag(server_tag=None):
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
                                                         "servers": [{"server-tag": server_tag}]})
-    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    srv_msg.send_ctrl_cmd(cmd)
 
 
 def _subnet_set(server_tags, subnet_id, pool, exp_result=0, subnet="2001:db8:1::/64", ):
@@ -264,7 +265,34 @@ def _check_subnet_result(resp, server_tags, count=1, subnet_id=5, subnet="2001:d
     assert resp["arguments"]["subnets"][0]["id"] == subnet_id
 
 
-def test_remote_subnet4_get_server_tags():
+def test_remote_subnet6_server_tags_delete_server_tag_keep_data():
+    _add_server_tag("abc")
+    _add_server_tag("xyz")
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
+    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10", subnet="2001:db8:3::/64")
+
+    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
+
+    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
+
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+                                                        "servers": [{"server-tag": "abc"}]})
+    srv_msg.send_ctrl_cmd(cmd)
+
+    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="2001:db8:1::/64")
+
+    _add_server_tag("abc")
+    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="2001:db8:1::/64")
+
+    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
+    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
+
+
+def test_remote_subnet6_get_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
     _subnet_set(server_tags=["abc", "xyz"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
@@ -297,7 +325,7 @@ def test_remote_subnet4_get_server_tags():
     assert resp["arguments"]["subnets"][2]["id"] == 7
 
 
-def test_remote_subnet4_get_server_tags_all_incorrect_setup():
+def test_remote_subnet6_get_server_tags_all_incorrect_setup():
     # Configure 2 subnet with the same id but different tags will result with just one subnet in configuration
     # the first one will be overwritten
     _add_server_tag("abc")
@@ -309,34 +337,7 @@ def test_remote_subnet4_get_server_tags_all_incorrect_setup():
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=5)
 
 
-def test_remote_subnet4_server_tags_delete_server_tag_keep_data():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
-    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10", subnet="2001:db8:3::/64")
-
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
-
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
-    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
-
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
-                                                        "servers": [{"server-tag": "abc"}]})
-    srv_msg.send_ctrl_cmd(cmd)
-
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="2001:db8:1::/64")
-
-    _add_server_tag("abc")
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
-    _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="2001:db8:1::/64")
-
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
-    _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
-
-
-def test_remote_subnet4_del_server_tags():
+def test_remote_subnet6_del_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
     _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
@@ -415,39 +416,7 @@ def _network_check_res(resp, server_tags, count=1, network_name="florX"):
     assert resp["arguments"]["shared-networks"][0]["name"] == network_name
 
 
-def test_remote_network4_get_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xyz"], network_name="flor1")
-    _network_set(server_tags=["all"], network_name="top_flor")
-
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
-    _network_check_res(resp, server_tags=["abc"], network_name="florX")
-
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "flor1"})
-    _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
-
-    resp = _network_list(command="remote-network6-list", server_tags=["xyz"])
-    _network_check_res(resp, server_tags=["xyz"], count=2, network_name="flor1")
-
-    assert resp["arguments"]["shared-networks"][1]["metadata"] == {"server-tags": ["all"]}
-    assert resp["arguments"]["shared-networks"][1]["name"] == "top_flor"
-
-
-def test_remote_network4_get_server_tags_all_incorrect_setup():
-    # Configure 2 networks with the same name but different tags will result with just one network in configuration
-    # the first one will be overwritten
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xyz"])
-
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
-    _network_check_res(resp, server_tags=["xyz"], network_name="florX")
-
-
-def test_remote_network4_server_tags_remove_server_tag_keep_data():
+def test_remote_network6_server_tags_remove_server_tag_keep_data():
     _add_server_tag("abc")
     _add_server_tag("xyz")
     _network_set(server_tags=["abc"])
@@ -478,7 +447,39 @@ def test_remote_network4_server_tags_remove_server_tag_keep_data():
     _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
 
-def test_remote_network4_del_server_tags():
+def test_remote_network6_get_server_tags():
+    _add_server_tag("abc")
+    _add_server_tag("xyz")
+    _network_set(server_tags=["abc"])
+    _network_set(server_tags=["xyz"], network_name="flor1")
+    _network_set(server_tags=["all"], network_name="top_flor")
+
+    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    _network_check_res(resp, server_tags=["abc"], network_name="florX")
+
+    resp = _network_get(command="remote-network6-get", network_parameter={"name": "flor1"})
+    _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
+
+    resp = _network_list(command="remote-network6-list", server_tags=["xyz"])
+    _network_check_res(resp, server_tags=["xyz"], count=2, network_name="flor1")
+
+    assert resp["arguments"]["shared-networks"][1]["metadata"] == {"server-tags": ["all"]}
+    assert resp["arguments"]["shared-networks"][1]["name"] == "top_flor"
+
+
+def test_remote_network6_get_server_tags_all_incorrect_setup():
+    # Configure 2 networks with the same name but different tags will result with just one network in configuration
+    # the first one will be overwritten
+    _add_server_tag("abc")
+    _add_server_tag("xyz")
+    _network_set(server_tags=["abc"])
+    _network_set(server_tags=["xyz"])
+
+    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    _network_check_res(resp, server_tags=["xyz"], network_name="florX")
+
+
+def test_remote_network6_del_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
     _network_set(server_tags=["abc"])
@@ -556,6 +557,14 @@ def _check_option_result(resp, server_tags, count=1, opt_name=None, opt_data=Non
     assert resp["arguments"]["options"][0]["data"] == opt_data
 
 
+def test_remote_option6_get_server_tags_all():
+    # simple test for one ticket https://gitlab.isc.org/isc-projects/kea/issues/737
+    _add_server_tag("abc")
+    _option_set(server_tags=["all"], opt_data='2001::3')
+    resp = _option_get(command="remote-option6-global-get-all", server_tags=["abc"], opt_code=23)
+    _check_option_result(resp, count=1, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
+
+
 def test_remote_option_get_server_tags_get_non_existing_tag():
     # we will request option 23 from tag "abc" but it's was just configured for "all" which should be returned instead
     _add_server_tag("abc")
@@ -581,15 +590,7 @@ def test_remote_option_remove_server_tag_and_data():
     _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23, exp_result=3)
 
 
-def test_remote_option4_get_server_tags_all():
-    # simple test for one ticket https://gitlab.isc.org/isc-projects/kea/issues/737
-    _add_server_tag("abc")
-    _option_set(server_tags=["all"], opt_data='2001::3')
-    resp = _option_get(command="remote-option6-global-get-all", server_tags=["abc"], opt_code=23)
-    _check_option_result(resp, count=1, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
-
-
-def test_remote_option4_get_server_tags():
+def test_remote_option6_get_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
     _option_set(server_tags=["abc"])
@@ -617,7 +618,7 @@ def test_remote_option4_get_server_tags():
     _check_option_result(resp, count=1, server_tags=["xyz"], opt_name="dns-servers", opt_data="2001::2")
 
 
-def test_remote_option4_del_server_tags():
+def test_remote_option6_del_server_tags():
     _add_server_tag("abc")
     _add_server_tag("xyz")
     _option_set(server_tags=["abc"])

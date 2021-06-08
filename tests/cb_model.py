@@ -3,14 +3,14 @@ import json
 import logging
 import pprint
 
-import srv_msg
-import srv_control
-from protosupport.multi_protocol_functions import substitute_vars
 import misc
-from cb_api import global_parameter_set, subnet_set, network_set, subnet_del_by_prefix, global_option_set, \
-    global_option_del
+import srv_control
+import srv_msg
 
+from cb_api import global_parameter_set, subnet_set, network_set, \
+                   subnet_del_by_prefix, global_option_set, global_option_del
 from forge_cfg import world
+from protosupport.multi_protocol_functions import substitute_vars
 
 
 log = logging.getLogger('forge')

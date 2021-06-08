@@ -1921,11 +1921,8 @@ DELIMITER ;;
     FOR EACH ROW
     BEGIN
         IF NEW.state = 0 OR NEW.state = 1 THEN
-            
             UPDATE lease4_stat SET leases = leases + 1
             WHERE subnet_id = NEW.subnet_id AND state = NEW.state;
-
-            
             IF ROW_COUNT() <= 0 THEN
                 INSERT INTO lease4_stat VALUES (NEW.subnet_id, NEW.state, 1);
             END IF;
@@ -1950,17 +1947,12 @@ DELIMITER ;;
     BEGIN
         IF OLD.state != NEW.state THEN
             IF OLD.state = 0 OR OLD.state = 1 THEN
-                
                 UPDATE lease4_stat SET leases = leases - 1
                 WHERE subnet_id = OLD.subnet_id AND state = OLD.state;
             END IF;
-
             IF NEW.state = 0 OR NEW.state = 1 THEN
-                
                 UPDATE lease4_stat SET leases = leases + 1
                 WHERE subnet_id = NEW.subnet_id AND state = NEW.state;
-
-                
                 IF ROW_COUNT() <= 0 THEN
                     INSERT INTO lease4_stat VALUES (NEW.subnet_id, NEW.state, 1);
                 END IF;
@@ -1985,7 +1977,6 @@ DELIMITER ;;
     FOR EACH ROW
     BEGIN
         IF OLD.state = 0 OR OLD.state = 1 THEN
-            
             UPDATE lease4_stat SET leases = leases - 1
             WHERE subnet_id = OLD.subnet_id AND OLD.state = state;
         END IF;
@@ -2079,13 +2070,10 @@ DELIMITER ;;
     FOR EACH ROW
     BEGIN
         IF NEW.state = 0 OR NEW.state = 1 THEN
-            
             UPDATE lease6_stat SET leases = leases + 1
             WHERE
                 subnet_id = NEW.subnet_id AND lease_type = NEW.lease_type
                 AND state = NEW.state;
-
-            
             IF ROW_COUNT() <= 0 THEN
                 INSERT INTO lease6_stat
                 VALUES (NEW.subnet_id, NEW.lease_type, NEW.state, 1);
@@ -2111,19 +2099,14 @@ DELIMITER ;;
     BEGIN
         IF OLD.state != NEW.state THEN
             IF OLD.state = 0 OR OLD.state = 1 THEN
-                
                 UPDATE lease6_stat SET leases = leases - 1
                 WHERE subnet_id = OLD.subnet_id AND lease_type = OLD.lease_type
                 AND state = OLD.state;
             END IF;
-
             IF NEW.state = 0 OR NEW.state = 1 THEN
-                
                 UPDATE lease6_stat SET leases = leases + 1
                 WHERE subnet_id = NEW.subnet_id AND lease_type = NEW.lease_type
                 AND state = NEW.state;
-
-                
                 IF ROW_COUNT() <= 0 THEN
                     INSERT INTO lease6_stat
                     VALUES (NEW.subnet_id, NEW.lease_type, NEW.state, 1);
@@ -2149,7 +2132,6 @@ DELIMITER ;;
     FOR EACH ROW
     BEGIN
         IF OLD.state = 0 OR OLD.state = 1 THEN
-            
             UPDATE lease6_stat SET leases = leases - 1
             WHERE subnet_id = OLD.subnet_id AND lease_type = OLD.lease_type
             AND state = OLD.state;
@@ -2377,8 +2359,8 @@ CREATE DEFINER=`!db_user!`@`localhost` PROCEDURE `createAuditEntryDHCP4`(IN obje
 BEGIN
     IF @disable_audit IS NULL OR @disable_audit = 0 THEN
         INSERT INTO dhcp4_audit (object_type, object_id, modification_type, revision_id)
-            VALUES (object_type_val, object_id_val, 
-               (SELECT id FROM modification WHERE modification_type = modification_type_val), 
+            VALUES (object_type_val, object_id_val,
+               (SELECT id FROM modification WHERE modification_type = modification_type_val),
                 @audit_revision_id);
     END IF;
 END ;;
@@ -2403,8 +2385,8 @@ CREATE DEFINER=`!db_user!`@`localhost` PROCEDURE `createAuditEntryDHCP6`(IN obje
 BEGIN
     IF @disable_audit IS NULL OR @disable_audit = 0 THEN
         INSERT INTO dhcp6_audit (object_type, object_id, modification_type, revision_id)
-            VALUES (object_type_val, object_id_val, 
-               (SELECT id FROM modification WHERE modification_type = modification_type_val), 
+            VALUES (object_type_val, object_id_val,
+               (SELECT id FROM modification WHERE modification_type = modification_type_val),
                 @audit_revision_id);
     END IF;
 END ;;
@@ -2490,49 +2472,19 @@ CREATE DEFINER=`!db_user!`@`localhost` PROCEDURE `createOptionAuditDHCP4`(IN mod
                                         IN pool_id BIGINT(20),
                                         IN modification_ts TIMESTAMP)
 BEGIN
-    
-    
     DECLARE snid VARCHAR(128);
     DECLARE sid INT(10) UNSIGNED;
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     IF @cascade_transaction IS NULL OR @cascade_transaction = 0 THEN
-        
-        
         IF scope_id = 0 THEN
-            
-            
             CALL createAuditEntryDHCP4('dhcp4_options', option_id, modification_type);
         ELSEIF scope_id = 1 THEN
-            
-            
-            
-            
             UPDATE dhcp4_subnet AS s SET s.modification_ts = modification_ts
                 WHERE s.subnet_id = subnet_id;
         ELSEIF scope_id = 4 THEN
-            
-            
-            
-            
-            
            SELECT id INTO snid FROM dhcp4_shared_network WHERE name = network_name LIMIT 1;
            UPDATE dhcp4_shared_network AS n SET n.modification_ts = modification_ts
                 WHERE n.id = snid;
         ELSEIF scope_id = 5 THEN
-            
-            
             SELECT dhcp4_pool.subnet_id INTO sid FROM dhcp4_pool WHERE id = pool_id;
             UPDATE dhcp4_subnet AS s SET s.modification_ts = modification_ts
                 WHERE s.subnet_id = sid;
@@ -2564,55 +2516,23 @@ CREATE DEFINER=`!db_user!`@`localhost` PROCEDURE `createOptionAuditDHCP6`(IN mod
                                         IN pd_pool_id BIGINT(20),
                                         IN modification_ts TIMESTAMP)
 BEGIN
-    
-    
     DECLARE snid VARCHAR(128);
     DECLARE sid INT(10) UNSIGNED;
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     IF @cascade_transaction IS NULL OR @cascade_transaction = 0 THEN
-        
-        
         IF scope_id = 0 THEN
-            
-            
             CALL createAuditEntryDHCP6('dhcp6_options', option_id, modification_type);
         ELSEIF scope_id = 1 THEN
-            
-            
-            
-            
             UPDATE dhcp6_subnet AS s SET s.modification_ts = modification_ts
                 WHERE s.subnet_id = subnet_id;
         ELSEIF scope_id = 4 THEN
-            
-            
-            
-            
-            
            SELECT id INTO snid FROM dhcp6_shared_network WHERE name = network_name LIMIT 1;
            UPDATE dhcp6_shared_network AS n SET n.modification_ts = modification_ts
                WHERE n.id = snid;
         ELSEIF scope_id = 5 THEN
-            
-            
             SELECT dhcp6_pool.subnet_id INTO sid FROM dhcp6_pool WHERE id = pool_id;
             UPDATE dhcp6_subnet AS s SET s.modification_ts = modification_ts
                 WHERE s.subnet_id = sid;
         ELSEIF scope_id = 6 THEN
-            
-            
             SELECT dhcp6_pd_pool.subnet_id INTO sid FROM dhcp6_pd_pool WHERE id = pd_pool_id;
             UPDATE dhcp6_subnet AS s SET s.modification_ts = modification_ts
                 WHERE s.subnet_id = sid;

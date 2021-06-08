@@ -3,9 +3,10 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
-import srv_msg
+
 import misc
 import srv_control
+import srv_msg
 
 from forge_cfg import world
 

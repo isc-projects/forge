@@ -1,7 +1,9 @@
 """Kea database config backend commands hook testing"""
 
 import pytest
+
 import srv_msg
+
 from cb_model import setup_server_for_config_backend_cmds
 
 pytestmark = [pytest.mark.v4,
@@ -93,8 +95,9 @@ def test_remote_subnet4_set_stateless():
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
+                                                                     "id": 1,
                                                                      "shared-network-name": "",
-                                                                     "interface": "$(SERVER_IFACE)", "id": 1}]})
+                                                                     "interface": "$(SERVER_IFACE)"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
@@ -951,25 +954,56 @@ def test_remote_network4_del_subnet_keep():
 
 def test_remote_network4_del_subnet_delete_simple():
     # for ticket #738
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
-                                                         "server-tags": ["abc"],
-                                                         "shared-networks": [{
-                                                             "name": "net1",
-                                                             "interface": "$(SERVER_IFACE)"}]})
+    cmd = dict(command="remote-network4-set", arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'server-tags': [
+            'abc'
+        ],
+        'shared-networks': [
+            {
+                'interface': '$(SERVER_IFACE)',
+                'name': 'net1'
+            }
+        ]
+    })
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "192.8.0.0/24",
-                                                                     "id": 1,
-                                                                     "interface": "$(SERVER_IFACE)",
-                                                                     "shared-network-name": "net1",
-                                                                     "pools": [
-                                                                         {"pool": "192.8.0.1-192.8.0.100"}]}]})
+    cmd = dict(command="remote-subnet4-set", arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'server-tags': [
+            'abc'
+        ],
+        'subnets': [
+            {
+                'id': 1,
+                'interface': '$(SERVER_IFACE)',
+                'pools': [
+                    {
+                        'pool': '192.8.0.1-192.8.0.100'
+                    }
+                ],
+                'shared-network-name': 'net1',
+                'subnet': '192.8.0.0/24'
+            }
+        ]
+    })
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": "mysql"}, "subnets-action": "delete",
-                                                         "shared-networks": [{"name": "net1"}]})
+    cmd = dict(command="remote-network4-del", arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'shared-networks': [
+            {
+                'name': 'net1'
+            }
+        ],
+        'subnets-action': 'delete'
+    })
     srv_msg.send_ctrl_cmd(cmd)
 
 
@@ -1686,20 +1720,22 @@ def test_remote_global_option4_global_get_missing_option():
 
 
 def test_remote_global_option4_global_get_csv_false():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
-                                                               "server-tags": ["abc"],
-                                                               "options": [{"code": 6,
-                                                                            "data": "C0000301C0000302",
-                                                                            "always-send": True,
-                                                                            "csv-format": False}]})
+    cmd = dict(command="remote-option4-global-set",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "options": [{"code": 6,
+                                       "data": "C0000301C0000302",
+                                       "always-send": True,
+                                       "csv-format": False}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
                         "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
 
-    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
-                                                               "server-tags": ["abc"],
-                                                               "options": [{"code": 6}]})
+    cmd = dict(command="remote-option4-global-get",
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1, "options": [{"always-send": True, "code": 6, "csv-format": False,
                                                                "data": "C0000301C0000302",

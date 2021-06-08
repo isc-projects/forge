@@ -1,6 +1,7 @@
 """Kea database config backend commands hook testing"""
 
 import pytest
+
 import srv_msg
 
 from cb_model import setup_server_for_config_backend_cmds
@@ -76,7 +77,7 @@ def test_remote_subnet6_set_empty_subnet():
                                                                      "interface": "$(SERVER_IFACE)"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
-    assert "subnet configuration failed: Invalid subnet syntax (prefix/len expected)" in response["text"]
+    assert "subnet configuration failed: Invalid subnet syntax (prefix/len expected):" in response["text"]
 
 
 def test_remote_subnet6_set_missing_subnet():
@@ -209,80 +210,158 @@ def test_remote_subnet6_set_all_values():
 
 
 def test_remote_subnet6_get_all_values():
-    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"shared-network-name": "",
-                                                                     "require-client-classes": ["XYZ"],
-                                                                     "id": 2, "interface": "$(SERVER_IFACE)",
-                                                                     "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10",
-                                                                                "option-data": [{"code": 7,
-                                                                                                 "data": "12",
-                                                                                                 "always-send": True,
-                                                                                                 "csv-format": True}]}],
-                                                                     "pd-pools": [{
-                                                                         "delegated-len": 91,
-                                                                         "prefix": "2001:db8:2::",
-                                                                         "prefix-len": 90}],
-                                                                     "reservation-mode": "all",
-                                                                     "subnet": "2001:db8:1::/64",
-                                                                     "valid-lifetime": 1000,
-                                                                     "rebind-timer": 500,
-                                                                     "renew-timer": 200,
-                                                                     "option-data": [{"code": 7,
-                                                                                      "data": "123",
-                                                                                      "always-send": True,
-                                                                                      "csv-format": True}]}]})
+    cmd = dict(command='remote-subnet6-set', arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'server-tags': [
+            'abc'
+        ],
+        'subnets': [
+            {
+                'id': 2,
+                'interface': '$(SERVER_IFACE)',
+                'option-data': [
+                    {
+                        'always-send': True,
+                        'code': 7,
+                        'csv-format': True,
+                        'data': '123'
+                    }
+                ],
+                'pd-pools': [
+                    {
+                        'delegated-len': 91,
+                        'prefix': '2001:db8:2::',
+                        'prefix-len': 90
+                    }
+                ],
+                'pools': [
+                    {
+                        'option-data': [
+                            {
+                                'always-send': True,
+                                'code': 7,
+                                'csv-format': True,
+                                'data': '12'
+                            }
+                        ],
+                        'pool': '2001:db8:1::1-2001:db8:1::10'
+                    }
+                ],
+                'rebind-timer': 500,
+                'renew-timer': 200,
+                'require-client-classes': [
+                    'XYZ'
+                ],
+                'reservation-mode': 'all',
+                'shared-network-name': '',
+                'subnet': '2001:db8:1::/64',
+                'valid-lifetime': 1000
+            }
+        ]
+    })
+
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "2001:db8:1::/64"}]},
-                        "result": 0, "text": "IPv6 subnet successfully set."}
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 2,
+                    'subnet': '2001:db8:1::/64'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv6 subnet successfully set.'
+    }
 
-    cmd = dict(command="remote-subnet6-get-by-prefix", arguments={"remote": {"type": "mysql"},
-                                                                  "subnets": [{"subnet": "2001:db8:1::/64"}]})
+    cmd = dict(command='remote-subnet6-get-by-prefix', arguments={
+        'remote': {
+            'type': 'mysql'
+        },
+        'subnets': [
+            {
+                'subnet': '2001:db8:1::/64'
+            }
+        ]
+    })
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response == {"arguments": {
-        "count": 1,
-        "subnets": [{
-            "metadata": {"server-tags": ["abc"]},
-            "require-client-classes": ["XYZ"],
-            "shared-network-name": None,
-            "id": 2,
-            "interface": srv_msg.get_interface(),
-            "option-data": [{"always-send": True,
-                             "code": 7,
-                             "csv-format": True,
-                             "name": "preference",
-                             "space": "dhcp6",
-                             "data": "123"}],
-            "pools": [{
-                "option-data": [{"code": 7,
-                                 "data": "12",
-                                 "name": "preference",
-                                 "always-send": True,
-                                 "csv-format": True,
-                                 "space": "dhcp6"}],
-                "pool": "2001:db8:1::1-2001:db8:1::10"}],
-            "pd-pools": [{
-                "option-data": [],
-                "delegated-len": 91,
-                "prefix": "2001:db8:2::",
-                "prefix-len": 90}],
-            "reservations-global": False,
-            "reservations-in-subnet": True,
-            "reservations-out-of-pool": False,
-            "subnet": "2001:db8:1::/64",
-            "rebind-timer": 500,
-            "renew-timer": 200,
-            "relay": {"ip-addresses": []},
-            "valid-lifetime": 1000}]}, "result": 0, "text": "IPv6 subnet 2001:db8:1::/64 found."}
+    assert response == {
+        'arguments': {
+            'count': 1,
+            'subnets': [
+                {
+                    'id': 2,
+                    'interface': srv_msg.get_interface(),
+                    'metadata': {
+                        'server-tags': [
+                            'abc'
+                        ]
+                    },
+                    'option-data': [
+                        {
+                            'always-send': True,
+                            'code': 7,
+                            'csv-format': True,
+                            'data': '123',
+                            'name': 'preference',
+                            'space': 'dhcp6'
+                        }
+                    ],
+                    'pd-pools': [
+                        {
+                            'delegated-len': 91,
+                            'option-data': [],
+                            'prefix': '2001:db8:2::',
+                            'prefix-len': 90
+                        }
+                    ],
+                    'pools': [
+                        {
+                            'option-data': [
+                                {
+                                    'always-send': True,
+                                    'code': 7,
+                                    'csv-format': True,
+                                    'data': '12',
+                                    'name': 'preference',
+                                    'space': 'dhcp6'
+                                }
+                            ],
+                            'pool': '2001:db8:1::1-2001:db8:1::10'
+                        }
+                    ],
+                    'rebind-timer': 500,
+                    'relay': {
+                        'ip-addresses': []
+                    },
+                    'renew-timer': 200,
+                    'require-client-classes': [
+                        'XYZ'
+                    ],
+                    'reservations-global': False,
+                    'reservations-in-subnet': True,
+                    'reservations-out-of-pool': False,
+                    'shared-network-name': None,
+                    'subnet': '2001:db8:1::/64',
+                    'valid-lifetime': 1000
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv6 subnet 2001:db8:1::/64 found.'
+    }
 
 
 # reservation-mode is integer in db, so we need to check if it's converted correctly
 def test_remote_subnet6_set_reservation_mode_all_old():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
                                                         "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
+                                                        "subnets": [{"subnet": "2001:db8:1::/64",
+                                                                     "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
                                                                      "reservation-mode": "all",
@@ -297,9 +376,10 @@ def test_remote_subnet6_set_reservation_mode_all_old():
                                                                   "subnets": [{"subnet": "2001:db8:1::/64"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    assert response["arguments"]["subnets"][0]["reservations-global"] is False
-    assert response["arguments"]["subnets"][0]["reservations-in-subnet"] is True
-    assert response["arguments"]["subnets"][0]["reservations-out-of-pool"] is False
+    subnet = response["arguments"]["subnets"][0]
+    assert subnet["reservations-global"] is False
+    assert subnet["reservations-in-subnet"] is True
+    assert subnet["reservations-out-of-pool"] is False
 
 
 def test_remote_subnet6_set_reservation_mode_all_new():

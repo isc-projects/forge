@@ -4,9 +4,9 @@
 
 import pytest
 
+import misc
 import srv_control
 import srv_msg
-import misc
 
 
 @pytest.mark.v6
@@ -23,9 +23,9 @@ def test_user_check_hook_IA_NA_no_registry_logging():
     srv_msg.remove_file_from_server('/tmp/user_chk_outcome.txt')
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::5')
     srv_control.config_srv_another_subnet_no_interface('1000::/64', '1000::5-1000::5')
+    srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.configure_loggers('kea-dhcp6.callouts', 'ERROR', 'None')
     srv_control.configure_loggers('kea-dhcp6.hooks', 'ERROR', 'None')
-    srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')
 
@@ -104,10 +104,11 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_control.config_srv_subnet('3000::/64', '3000::5-3000::5')
     srv_control.config_srv_another_subnet_no_interface('1000::/64', '1000::5-1000::5')
     srv_control.add_hooks('libdhcp_user_chk.so')
+    # Server logging system is configured with logger type kea-dhcp4.callouts, severity DEBUG, severity level 99 and log file kea.log.
+    # Server logging system is configured with logger type kea-dhcp4.hooks, severity INFO, severity level None and log file kea.log.
     srv_control.configure_loggers('kea-dhcp6.callouts', 'DEBUG', 99)
     srv_control.configure_loggers('kea-dhcp6.hooks', 'DEBUG', 99)
     srv_control.build_and_send_config_files()
-    # DHCP server failed to start. During configuration process.
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -125,6 +126,8 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     srv_msg.response_check_suboption_content(5, 3, 'addr', '1000::5')
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
+    # File stored in kea.log MUST contain line or phrase: INFO  \[kea-dhcp6.hooks
+    # File stored in kea.log MUST contain line or phrase: DEBUG \[kea-dhcp6.callouts
     srv_msg.compare_file('tests/dhcpv6/kea_only/user_chk/outcome_1.txt')
 
     srv_msg.forge_sleep(10, 'seconds')

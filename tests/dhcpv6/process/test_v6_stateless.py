@@ -4,8 +4,8 @@
 
 import pytest
 
-import srv_control
 import misc
+import srv_control
 import srv_msg
 
 

@@ -3,11 +3,12 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
-from forge_cfg import world
-import srv_msg
+
 import misc
 import srv_control
+import srv_msg
 
+from forge_cfg import world
 from HA.steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
 from HA.steps import HOT_STANDBY, LOAD_BALANCING
 
