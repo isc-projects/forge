@@ -206,9 +206,7 @@ def response_check_content(expect, data_type, expected):
     else:
         assert False, "Value %s is not supported" % data_type
 
-    # because we are using function to parse full option not just value
-    # I did little hack, added 'value:' as option code, and changed assertion message
-    outcome, received = test_option(0, ['value:', received], expected)
+    outcome, received = test_option(0, received, expected)
 
     if expect:
         assert outcome, "Invalid {data_type} received {received}" \
@@ -406,8 +404,13 @@ def byte_to_hex(byte_str):
 
 
 def test_option(opt_code, received, expected):
-    tmp = ""
+    if isinstance(received, str):
+        if received == str(expected):
+            return True, received
+        else:
+            return False, received
 
+    tmp = ""
     decode_opts_byte_to_hex = [43, 125]
     if opt_code in decode_opts_byte_to_hex or expected[:4] == "HEX:":
         expected = expected[4:]
