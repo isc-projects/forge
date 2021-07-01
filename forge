@@ -303,6 +303,8 @@ def _get_server_name(args, idx):
         short_sys = 'f30'
     elif args.system == 'fedora-32':
         short_sys = 'f32'
+    elif args.system == 'fedora-34':
+        short_sys = 'f34'
     else:
         raise Exception('unsupported system %s' % args.system)
 
@@ -525,6 +527,8 @@ def _install_kea_native_on_server(args, server_idx):
             suffix = 'fc30'
         elif args.system == 'fedora-32':
             suffix = 'fc32'
+        elif args.system == 'fedora-34':
+            suffix = 'fc34'
         else:
             raise NotImplementedError("System %s not supported" % args.system)
 
