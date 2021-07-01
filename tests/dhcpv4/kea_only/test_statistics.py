@@ -44,7 +44,7 @@ class StatsState4:
 
         s = result['arguments']
 
-        for key in self.s:
+        for key in self.s.items():
             assert s[key][0][0] == self.s[key], 'Stat %s = %s is not as expected %s' % (key, s[key][0][0], self.s[key])
 
 

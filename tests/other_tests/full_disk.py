@@ -91,7 +91,7 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
             # this is correct only if pgsql is installed in default path
             current_location = "/".join(line.split("/")[:4])
             pgsql_location = "/".join(line.split("/")[4:])
-            pgsql_version = pgsql_location.split("/")[0]
+            pgsql_version = pgsql_location.split("/", maxsplit=1)[0]
             break
     else:
         print("location not found")
