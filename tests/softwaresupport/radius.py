@@ -1,20 +1,8 @@
 import os
 
-from .multi_server_functions import fabric_sudo_command, fabric_send_file
+from .multi_server_functions import fabric_sudo_command, fabric_send_file, TemporaryFile
 from forge_cfg import world
 
-# Open file, write content and at the end of the context delete the file.
-class TemporaryFile(object):
-    def __init__(self, file_name, content):
-        self.file_name = file_name
-        self.content = content
-
-    def __enter__(self):
-        with open(self.file_name, 'w') as f:
-            f.write(self.content)
-
-    def __exit__(self, exception_type, exception_value, traceback):
-        os.unlink(self.file_name)
 
 def _init_radius():
     # authorize config file

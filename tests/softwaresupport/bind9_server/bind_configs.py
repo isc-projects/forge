@@ -2090,7 +2090,109 @@ dns			A	192.168.52.1
 $ORIGIN 52.168.192.in-addr.arpa.
 
 1 	IN	PTR      dns1.three.example.com.
-"""]}
+"""],
+    # config for GSS-TSIG
+    33:[
+        # named.conf
+        """
+options {
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+    tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
+};
+
+zone "50.168.192.in-addr.arpa." {
+    type master;
+    file "rev.db";
+    notify no;
+    update-policy {
+        grant "forge@EXAMPLE.COM" zonesub any;
+    };
+    allow-query { any; };              // This is the default
+};
+
+zone "four.example.com" {
+    type master;
+    file "fwd.db";
+    notify no;
+    update-policy {
+        grant "forge@EXAMPLE.COM" zonesub any;
+    };
+    allow-transfer { any; };
+    allow-query { any; };              // This is the default
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+controls {
+    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""",  # rndc.conf
+        """
+key "rndc-key" {
+	algorithm hmac-md5;
+	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+};
+
+options {
+	default-key "rndc-key";
+	default-server 127.0.0.1;
+	default-port 953;
+};
+""", # fwd.db
+        """$ORIGIN .
+$TTL 86400	; 1 day
+four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+				106        ; serial
+				3600       ; refresh (1 hour)
+				900        ; retry (15 minutes)
+				2592000    ; expire (4 weeks 2 days)
+				3600       ; minimum (1 hour)
+				)
+			NS	dns.four.example.com.
+$ORIGIN four.example.com.
+dns			A	172.16.1.1
+""", # rev.db
+        """$TTL 1h	; Default TTL
+@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+	100	; serial
+	1h		; slave refresh interval
+	15m		; slave retry interval
+	1w		; slave copy expire time
+	1h		; NXDOMAIN cache time
+	)
+
+	NS	dns1.four.example.com.
+
+$ORIGIN 50.168.192.in-addr.arpa.
+
+1 	IN	PTR      dns1.four.example.com.
+"""
+    ]}
 
 keys = '''/* $Id: bind.keys,v 1.7 2011/01/03 23:45:07 each Exp $ */
 # The bind.keys file is used to override the built-in DNSSEC trust anchors

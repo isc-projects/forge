@@ -18,13 +18,14 @@
 import os
 import sys
 import time
+import base64
 import string
 
 from forge_cfg import world
 from softwaresupport.bind9_server.bind_configs import config_file_set, keys
 from softwaresupport.multi_server_functions import fabric_send_file, remove_local_file, \
     copy_configuration_file, fabric_sudo_command, fabric_download_file, fabric_remove_file_command,\
-    check_local_path_for_downloaded_files
+    check_local_path_for_downloaded_files, send_content
 
 
 def make_file(name, content):
@@ -107,58 +108,59 @@ def _patch_config(cfg):
 def use_config_set(number):
     if number not in config_file_set:
         assert False, "There is no such config file set"
-    make_file('named.conf', _patch_config(config_file_set[number][0]))
-    make_file('rndc.conf', config_file_set[number][1])
-    make_file('fwd.db', config_file_set[number][2])
-    make_file('rev.db', config_file_set[number][3])
-    if len(config_file_set[number]) == 8:
-        make_file('fwd2.db', config_file_set[number][4])
-        make_file('rev2.db', config_file_set[number][5])
-        make_file('fwd3.db', config_file_set[number][6])
-        make_file('rev3.db', config_file_set[number][7])
+
     world.cfg["dns_log_file"] = '/tmp/dns.log'
-    make_file('bind.keys', keys)
 
     namedb_dir = os.path.join(world.f_cfg.dns_data_path, 'namedb')
     fabric_sudo_command('mkdir -p %s' % namedb_dir)
     fabric_sudo_command('chmod a+w %s' % namedb_dir)
 
-    fabric_send_file('named.conf', os.path.join(world.f_cfg.dns_data_path, 'named.conf'))
-    copy_configuration_file('named.conf', 'dns/DNS_named.conf')
-    remove_local_file('named.conf')
+    send_content('named.conf', os.path.join(world.f_cfg.dns_data_path, 'named.conf'),
+                 _patch_config(config_file_set[number][0]), 'dns')
 
-    fabric_send_file('rndc.conf', os.path.join(world.f_cfg.dns_data_path, 'rndc.conf'))
-    copy_configuration_file('rndc.conf', 'dns/DNS_rndc.conf')
-    remove_local_file('rndc.conf')
+    send_content('rndc.conf', os.path.join(world.f_cfg.dns_data_path, 'rndc.conf'),
+                 config_file_set[number][1], 'dns')
 
-    fabric_send_file('fwd.db', os.path.join(namedb_dir, 'fwd.db'))
-    copy_configuration_file('fwd.db', 'dns/DNS_fwd.db')
-    remove_local_file('fwd.db')
+    send_content('fwd.db', os.path.join(namedb_dir, 'fwd.db'),
+                 config_file_set[number][2], 'dns')
 
-    fabric_send_file('rev.db', os.path.join(namedb_dir, 'rev.db'))
-    copy_configuration_file('rev.db', 'dns/DNS_rev.db')
-    remove_local_file('rev.db')
+    send_content('rev.db', os.path.join(namedb_dir, 'rev.db'),
+                 config_file_set[number][3], 'dns')
 
     if len(config_file_set[number]) == 8:
-        fabric_send_file('fwd2.db', os.path.join(namedb_dir, 'fwd2.db'))
-        copy_configuration_file('fwd2.db', 'dns/DNS_fwd2.db')
-        remove_local_file('fwd2.db')
+        send_content('fwd2.db', os.path.join(namedb_dir, 'fwd2.db'),
+                     config_file_set[number][4], 'dns')
 
-        fabric_send_file('rev2.db', os.path.join(namedb_dir, 'rev2.db'))
-        copy_configuration_file('rev2.db', 'dns/DNS_rev2.db')
-        remove_local_file('rev2.db')
+        send_content('rev2.db', os.path.join(namedb_dir, 'rev2.db'),
+                     config_file_set[number][5], 'dns')
 
-        fabric_send_file('fwd3.db', os.path.join(namedb_dir, 'fwd3.db'))
-        copy_configuration_file('fwd3.db', 'dns/DNS_fwd3.db')
-        remove_local_file('fwd3.db')
+        send_content('fwd3.db', os.path.join(namedb_dir, 'fwd3.db'),
+                     config_file_set[number][6], 'dns')
 
-        fabric_send_file('rev3.db', os.path.join(namedb_dir, 'rev3.db'))
-        copy_configuration_file('rev3.db', 'dns/DNS_rev3.db')
-        remove_local_file('rev3.db')
+        send_content('rev3.db', os.path.join(namedb_dir, 'rev3.db'),
+                     config_file_set[number][7], 'dns')
 
-    fabric_send_file('bind.keys', os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'))
-    copy_configuration_file('bind.keys', 'dns/DNS_managed-keys.bind')
-    remove_local_file('bind.keys')
+    send_content('managed-keys.bind', os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'),
+                 keys, 'dns')
+
+
+def upload_dns_keytab(dns_keytab):
+    content = base64.decodebytes(bytes(dns_keytab, 'ascii'))
+    namedb_dir = os.path.join(world.f_cfg.dns_data_path, 'namedb')
+    p = os.path.join(namedb_dir, 'dns.keytab')
+    send_content('dns.keytab', p, content, 'dns')
+    if world.f_cfg.dns_data_path.startswith('/etc'):
+        # when installed from pkg
+        fabric_sudo_command('chmod 440 %s' % p)
+        if world.server_system == 'redhat':
+            fabric_sudo_command('chown root:named %s' % p)
+        else:
+            fabric_sudo_command('chown root:bind %s' % p)
+    else:
+        # when compiled and installed from sources
+        fabric_sudo_command('chmod 400 %s' % p)
+        fabric_sudo_command('chown root:root %s' % p)
+
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):

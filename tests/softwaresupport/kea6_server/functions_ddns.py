@@ -119,3 +119,28 @@ def ddns_open_control_channel_socket(socket_name=None):
         socket_path = world.f_cfg.run_join('ddns_control_socket')
 
     world.ddns_cfg["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
+
+
+def ddns_add_gss_tsig():
+    gss_tsig_cfg = {
+        "library": world.f_cfg.hooks_join("libdhcp_gss_tsig.so"),
+        "parameters": {
+            "server-principal": "DNS/server.example.org@REALM",
+            "client-principal": "DHCP/admin.example.org@REALM",
+            "client-keytab": "FILE:/etc/krb5.keytab",
+            "credentials-cache": "FILE:/etc/ccache",
+            "tkey-lifetime": 3600,
+            "tkey-protocol": "TCP",
+
+            "servers": [{
+                "domain-names": [ ],
+                "ip-address": "192.0.2.1",
+                "port": 53,
+                "server-principal": "DNS/server1.example.org@REALM",
+                "client-principal": "DHCP/admin1.example.org@REALM",
+                "tkey-lifetime": 86400,
+                "tkey-protocol": "TCP"
+            }]
+        }
+    }
+    # world.ddns_cfg["hooks-libraries"] = [gss_tsig_cfg] TODO: this is not supported by kea yet

@@ -15,6 +15,7 @@ import json
 import shutil
 import string
 import logging
+import tempfile
 import datetime
 import argparse
 import textwrap
@@ -433,6 +434,115 @@ def _install_kea_native(args):
     _install_kea_native_on_server(args, 2)
 
 
+def _upload_content(content, server_name, path, vagrant_dir, log_prefix):
+    fp = tempfile.NamedTemporaryFile(mode='w', delete=False)
+    fp.write(content)
+    fp.close()
+    tp = '/tmp/aaa-%s' % time.time()
+    cmd = 'vagrant upload %s %s %s' % (fp.name, tp, server_name)
+    execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
+    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
+    cmd = cmd_tpl % ('sudo cp %s %s' % (tp, path))
+    execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
+    os.unlink(fp.name)
+
+
+def _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix):
+    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
+
+    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server dnsutils'
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    # /etc/krb5.conf
+    krb5_conf = """[libdefaults]
+        default_realm = EXAMPLE.COM
+        kdc_timesync = 1
+        ccache_type = 4
+        forwardable = true
+        proxiable = true
+[realms]
+        EXAMPLE.COM = {
+                kdc = 192.168.50.252
+                admin_server = 192.168.50.252
+        }
+"""
+    _upload_content(krb5_conf, server_name, '/etc/krb5.conf', vagrant_dir, log_prefix)
+
+    # /etc/krb5kdc/kdc.conf
+    kdc_conf = """[kdcdefaults]
+    kdc_ports = 750,88
+
+[realms]
+    EXAMPLE.COM = {
+        database_name = /var/lib/krb5kdc/principal
+        admin_keytab = FILE:/etc/krb5kdc/kadm5.keytab
+        acl_file = /etc/krb5kdc/kadm5.acl
+        key_stash_file = /etc/krb5kdc/stash
+        kdc_ports = 750,88
+        max_life = 10h 0m 0s
+        max_renewable_life = 7d 0h 0m 0s
+        master_key_type = des3-hmac-sha1
+        #supported_enctypes = aes256-cts:normal aes128-cts:normal
+        default_principal_flags = +preauth
+    }
+        """
+    _upload_content(kdc_conf, server_name, '/etc/krb5kdc/kdc.conf', vagrant_dir, log_prefix)
+
+    subcmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    subcmd = "sudo systemctl restart krb5-kdc.service"
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+
+def _install_krb_on_fedora(server_name, vagrant_dir, log_prefix):
+    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
+
+    subcmd = 'sudo dnf install -y krb5-server krb5-workstation'
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    # /etc/krb5.conf
+    krb5_conf = """includedir /etc/krb5.conf.d/
+
+[logging]
+    default = FILE:/var/log/krb5libs.log
+    kdc = FILE:/var/log/krb5kdc.log
+    admin_server = FILE:/var/log/kadmind.log
+
+[libdefaults]
+    dns_lookup_realm = false
+    ticket_lifetime = 24h
+    renew_lifetime = 7d
+    forwardable = true
+    rdns = false
+    pkinit_anchors = FILE:/etc/pki/tls/certs/ca-bundle.crt
+    spake_preauth_groups = edwards25519
+    dns_canonicalize_hostname = fallback
+    qualify_shortname = ""
+    default_realm = EXAMPLE.COM
+    default_ccache_name = KEYRING:persistent:%{uid}
+
+[realms]
+    EXAMPLE.COM = {
+        kdc = 192.168.50.252
+        admin_server = 192.168.50.252
+    }
+"""
+    _upload_content(krb5_conf, server_name, '/etc/krb5.conf', vagrant_dir, log_prefix)
+
+    subcmd = "sudo test -e /var/kerberos/krb5kdc/principal || printf '123\\n123' | sudo kdb5_util create -s"
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    subcmd = "sudo systemctl restart krb5kdc kadmin"
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+
 def _install_kea_native_on_server(args, server_idx):
     vagrant_dir = get_vagrant_dir(args)
     server_name = _get_server_name(args, server_idx)
@@ -448,6 +558,12 @@ def _install_kea_native_on_server(args, server_idx):
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell'
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    if server_idx == 1:
+        if 'ubuntu' in args.system:
+            _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
+        else:
+            _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
 
     # prepare pkg source repo url
     repository_url = 'https://packages.aws.isc.org'
@@ -577,6 +693,9 @@ def _install_kea_make_on_server(args, server_idx):
     subcmd1 = subcmd_tpl % (remote_path, 'prepare-system')
     cmd1 = cmd_tpl % subcmd1
     execute(cmd1, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    #if server_idx == 1:
+    #    cmd = ''
 
     # do kea build
     subcmd2 = subcmd_tpl % (remote_path, 'build')

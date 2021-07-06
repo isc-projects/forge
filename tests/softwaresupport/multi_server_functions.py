@@ -178,4 +178,31 @@ def copy_configuration_file(local_file, file_name='configuration_file', destinat
         file_name = generate_file_name(1, file_name)
         if not os.path.exists(world.cfg["test_result_dir"]):
             os.makedirs(world.cfg["test_result_dir"])
-        copy(local_file, check_local_path_for_downloaded_files(world.cfg["test_result_dir"], file_name, destination_host))
+        dest_path = check_local_path_for_downloaded_files(world.cfg["test_result_dir"], file_name, destination_host)
+        dest_dir = os.path.dirname(dest_path)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        copy(local_file, dest_path)
+
+
+# Open file, write content and at the end of the context delete the file.
+class TemporaryFile(object):
+    def __init__(self, file_name, content):
+        self.file_name = file_name
+        self.content = content
+
+    def __enter__(self):
+        mode = 'w'
+        if isinstance(self.content, bytes):
+            mode = 'wb'
+        with open(self.file_name, mode) as f:
+            f.write(self.content)
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        os.unlink(self.file_name)
+
+
+def send_content(local_path, remote_path, content, subdir):
+    with TemporaryFile(local_path, content):
+        fabric_send_file(local_path, remote_path)
+        copy_configuration_file(local_path, os.path.join(subdir, local_path))

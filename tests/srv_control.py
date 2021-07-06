@@ -780,6 +780,11 @@ def add_keys(name, algorithm, secret):
     ddns.add_keys(secret, name, algorithm)
 
 
+@step(r'DDNS server is configured with GSS-TSIG.')
+def ddns_add_gss_tsig():
+    ddns.ddns_add_gss_tsig()
+
+
 @step(r'Use DNS set no. (\d+).')
 def use_dns_set_number(number):
     dns.use_config_set(int(number))
