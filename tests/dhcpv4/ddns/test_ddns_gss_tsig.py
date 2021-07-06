@@ -2,8 +2,6 @@
 
 # pylint: disable=invalid-name,line-too-long
 
-import subprocess
-
 import pytest
 
 import misc
@@ -11,11 +9,8 @@ import srv_msg
 import srv_control
 from forge_cfg import world
 from softwaresupport import krb
-from softwaresupport.multi_server_functions import fabric_sudo_command, fabric_run_command
+from softwaresupport.multi_server_functions import fabric_run_command
 from softwaresupport.bind9_server.functions import upload_dns_keytab
-
-def run(cmd, input=None):
-    subprocess.run(cmd, shell=True, check=True, timeout=60, input=input)
 
 
 @pytest.mark.v4
