@@ -18,7 +18,16 @@ from softwaresupport.bind9_server.functions import upload_dns_keytab
 @pytest.mark.tsig
 @pytest.mark.gss
 @pytest.mark.forward_reverse_add
-def test_ddns4_gss_tsig_sha1_forw_and_rev():
+@pytest.mark.parametrize("dns_system", ['linux', 'windows'])
+def test_ddns4_gss_tsig_sha1_forw_and_rev(dns_system):
+    if dns_system == 'windows':
+        if not world.f_cfg.win_dns_addr:
+            pytest.skip("skipped test as there is no Windows machine")
+            return
+        dns_addr = world.f_cfg.win_dns_addr
+    else:
+        dns_addr = world.f_cfg.dns4_addr
+
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
@@ -32,11 +41,12 @@ def test_ddns4_gss_tsig_sha1_forw_and_rev():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    dns_keytab = krb.init_and_start_krb()
+    dns_keytab = krb.init_and_start_krb(dns_addr)
 
-    srv_control.use_dns_set_number(33)
-    upload_dns_keytab(dns_keytab)
-    srv_control.start_srv('DNS', 'started')
+    if dns_system == 'linux':
+        srv_control.use_dns_set_number(33)
+        upload_dns_keytab(dns_keytab)
+        srv_control.start_srv('DNS', 'started')
 
     misc.test_procedure()
     srv_msg.dns_question_record('aa.four.example.com', 'A', 'IN')
@@ -97,5 +107,5 @@ def test_ddns4_gss_tsig_sha1_forw_and_rev():
     fabric_run_command('kdestroy -A')
     fabric_run_command('bash -c "printf DdU3Hjb2 | kinit forge@EXAMPLE.COM"')
 
-    script = 'gsstsig\\nserver %s\\nupdate add four.example.com. 120 TXT "Hello from Kerberos"\\nsend\\n' % world.f_cfg.dns4_addr
+    script = 'gsstsig\\nserver %s\\nupdate add four.example.com. 120 TXT "Hello from Kerberos"\\nsend\\n' % dns_addr
     fabric_run_command("printf '%s' | nsupdate -g" % script)

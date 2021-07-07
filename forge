@@ -261,6 +261,13 @@ def set_init_all(args):
     if args.system.startswith('fedora'):
         my_vars['DNS_DATA_PATH'] = '/etc/'
 
+    my_vars['WIN_DNS_ADDR'] = ''
+    if os.path.exists('aws-win-ad-dns-vm.txt'):
+        with open('aws-win-ad-dns-vm.txt', 'r') as f:
+            for line in f.readlines():
+                if line.startswith('ip-address='):
+                    my_vars['WIN_DNS_ADDR'] = line[11:].strip()
+
     txt = INIT_ALL.format(**my_vars)
 
     path = os.path.abspath('tests/init_all.py')
@@ -329,6 +336,7 @@ def _destroy_lxc_containers(args):
 
 def _setup_win_ad_dns():
     import boto3
+    print('creating windows vm for gss-tsig testing')
     ec2 = boto3.resource('ec2', region_name='us-east-1')
     params = dict(MaxCount=1,
                   MinCount=1,
@@ -339,7 +347,8 @@ def _setup_win_ad_dns():
 
     i = list(ec2.create_instances(**params))[0]
     with open('aws-win-ad-dns-vm.txt', 'w') as f:
-        f.write(i.id)
+        f.write('instance-id=%s\n' % i.id)
+    print('windows vm instance-id: %s' % i.id)
     return i
 
 
@@ -349,7 +358,6 @@ def setup(args):
 
     set_init_all(args)
 
-    print('WIN: args.win_gss_tsig', args.win_gss_tsig)
     if args.win_gss_tsig:
         win_vm = _setup_win_ad_dns()
 
@@ -440,6 +448,9 @@ def setup(args):
         win_vm.wait_until_running()
         win_vm.reload()
         win_dns_addr = win_vm.private_ip_address
+        with open('aws-win-ad-dns-vm.txt', 'a') as f:
+            f.write('ip-address=%s\n' % win_dns_addr)
+        print('windows vm ip-address: %s' % win_dns_addr)
 
 
 def install_kea(args):

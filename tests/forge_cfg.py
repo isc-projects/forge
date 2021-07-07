@@ -70,6 +70,7 @@ SETTINGS = {
     'DNS_IFACE': None,
     'DNS4_ADDR': None,
     'DNS6_ADDR': None,
+    'WIN_DNS_ADDR': '',
     'DNS_PORT': 53,
     'DNS_SERVER_INSTALL_PATH': '/opt/bind/sbin',
     'DNS_DATA_PATH': '/opt/bind/data',
