@@ -327,11 +327,31 @@ def _destroy_lxc_containers(args):
         execute('sudo lxc-destroy --name %s' % cntr, raise_error=False)
 
 
+def _setup_win_ad_dns():
+    import boto3
+    ec2 = boto3.resource('ec2', region_name='us-east-1')
+    params = dict(MaxCount=1,
+                  MinCount=1,
+                  InstanceType='t2.micro',
+                  ImageId='ami-098cbd94ecb96974e',
+                  SubnetId='subnet-0efca44a30c0a40c0',
+                  TagSpecifications=[{'ResourceType': 'instance','Tags': [{'Key': 'godfryd', 'Value': 'yes'}]}])
+
+    i = list(ec2.create_instances(**params))[0]
+    with open('aws-win-ad-dns-vm.txt', 'w') as f:
+        f.write(i.id)
+    return i
+
+
 def setup(args):
     # load config
     cfg = _load_config()
 
     set_init_all(args)
+
+    print('WIN: args.win_gss_tsig', args.win_gss_tsig)
+    if args.win_gss_tsig:
+        win_vm = _setup_win_ad_dns()
 
     if args.lxc:
         vagrant_tpl = 'vagrant/Vagrantfile.lxc.in'
@@ -415,6 +435,11 @@ def setup(args):
             execute('vagrant reload', cwd=vagrant_dir)
         if provision:
             execute('vagrant provision', cwd=vagrant_dir)
+
+    if args.win_gss_tsig:
+        win_vm.wait_until_running()
+        win_vm.reload()
+        win_dns_addr = win_vm.private_ip_address
 
 
 def install_kea(args):
@@ -883,6 +908,8 @@ def parse_args():
                         help='Value for indicated parameter.')
     parser = subparsers.add_parser('setup',
                                    help="Create VMs where testing happens.")
+    parser.add_argument('--win-gss-tsig', action='store_true',
+                        help='Enable setup of Windows machine with AD/DNS for testing GSS-TSIG.')
     parser = subparsers.add_parser('refresh',
                                    help="Refresh VMs ie. restart and re-provision")
     parser.add_argument('--reload', action='store_true',
@@ -903,7 +930,6 @@ def parse_args():
     parser = subparsers.add_parser('box',
                                    help="Package LXC box and upload to cloud")
 
-    #args = main_parser.parse_args()
     args, rest = main_parser.parse_known_args()
     return args, rest, main_parser
 
