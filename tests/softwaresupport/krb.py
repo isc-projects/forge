@@ -4,11 +4,8 @@ from forge_cfg import world
 
 def init_and_start_krb(dns_addr):
 
-    if dns_addr == world.f_cfg.win_dns_addr:
-        dns_keytab = ''
-    else:
-        # /etc/krb5.conf
-        ubuntu_krb5_conf = """[libdefaults]
+    # /etc/krb5.conf
+    ubuntu_krb5_conf = """[libdefaults]
 	default_realm = EXAMPLE.COM
 	kdc_timesync = 1
 	ccache_type = 4
@@ -20,7 +17,7 @@ def init_and_start_krb(dns_addr):
 		admin_server = {dns_addr}
 	}}
 """
-        fedora_krb5_conf = """includedir /etc/krb5.conf.d/
+    fedora_krb5_conf = """includedir /etc/krb5.conf.d/
 
 [logging]
     default = FILE:/var/log/krb5libs.log
@@ -46,13 +43,16 @@ def init_and_start_krb(dns_addr):
         admin_server = {dns_addr}
     }}
 """
-        if world.server_system == 'redhat':
-            krb5_conf = fedora_krb5_conf
-        else:
-            krb5_conf = ubuntu_krb5_conf
-        krb5_conf = krb5_conf.format(dns_addr=dns_addr)
-        send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
+    if world.server_system == 'redhat':
+        krb5_conf = fedora_krb5_conf
+    else:
+        krb5_conf = ubuntu_krb5_conf
+    krb5_conf = krb5_conf.format(dns_addr=dns_addr)
+    send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
+    if dns_addr == world.f_cfg.win_dns_addr:
+        dns_keytab = ''
+    else:
         # clean principals
         result = fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
         if result.succeeded:
@@ -69,9 +69,9 @@ def init_and_start_krb(dns_addr):
         dns_keytab = result.stdout
         fabric_sudo_command('rm /tmp/aaa.keytab')
 
-        if world.server_system == 'redhat':
-            fabric_sudo_command('systemctl restart krb5kdc kadmin')
-        else:
-            fabric_sudo_command('systemctl restart krb5-admin-server.service')
+    if world.server_system == 'redhat':
+        fabric_sudo_command('systemctl restart krb5kdc kadmin')
+    else:
+        fabric_sudo_command('systemctl restart krb5-admin-server.service')
 
     return dns_keytab
