@@ -345,6 +345,7 @@ def _setup_win_ad_dns():
                   InstanceType='t2.micro',
                   ImageId='ami-098cbd94ecb96974e',
                   SubnetId='subnet-0efca44a30c0a40c0',
+                  SecurityGroupIds=['sg-04a74236a5389e87f'],
                   TagSpecifications=[{'ResourceType': 'instance','Tags': [{'Key': 'godfryd', 'Value': 'yes'}]}])
 
     i = list(ec2.create_instances(**params))[0]
