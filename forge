@@ -267,6 +267,7 @@ def set_init_all(args):
             for line in f.readlines():
                 if line.startswith('ip-address='):
                     my_vars['WIN_DNS_ADDR'] = line[11:].strip()
+    print('WIN_DNS_ADDR: ', my_vars['WIN_DNS_ADDR'])
 
     txt = INIT_ALL.format(**my_vars)
 
