@@ -56,6 +56,7 @@ SERVER_IFACE = "{SERVER_IFACE}"
 #SERVER_IFACE = "eth2"
 DNS4_ADDR = "{DNS4_ADDR}"
 DNS6_ADDR = "{DNS6_ADDR}"
+WIN_DNS_ADDR = "{WIN_DNS_ADDR}"
 SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",
 SOFTWARE_INSTALL_PATH = "/usr/local"
 DB_TYPE = "memfile"
