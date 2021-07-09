@@ -339,15 +339,26 @@ def _destroy_lxc_containers(args):
 def _setup_win_ad_dns():
     import boto3
     print('creating windows vm for gss-tsig testing')
+    init_script="""<script>
+shutdown /s /t 10
+</script>
+"""
     ec2 = boto3.resource('ec2', region_name='us-east-1')
     params = dict(MaxCount=1,
                   MinCount=1,
                   InstanceType='t2.micro',
-                  ImageId='ami-098cbd94ecb96974e',
+                  ImageId='ami-06107cfc9b25c67ce',  # win2016-forge-05
                   SubnetId='subnet-0efca44a30c0a40c0',
                   KeyName='godfryd',
-                  SecurityGroupIds=['sg-04a74236a5389e87f'],
-                  TagSpecifications=[{'ResourceType': 'instance','Tags': [{'Key': 'godfryd', 'Value': 'yes'}]}])
+                  SecurityGroupIds=['sg-04a74236a5389e87f'],  # DomainController
+                  TagSpecifications=[{'ResourceType': 'instance','Tags': [
+                      {'Key': 'godfryd', 'Value': 'yes'},
+                      {'Key': 'isc:owner', 'Value': 'godfryd'},
+                      {'Key': 'isc:group', 'Value': 'kea'},
+                      {'Key': 'isc:stack', 'Value': 'jenkins'},
+                  ]}],
+                  InstanceInitiatedShutdownBehavior='terminate',
+                  UserData=init_script)
 
     i = list(ec2.create_instances(**params))[0]
     with open('aws-win-ad-dns-vm.txt', 'w') as f:
