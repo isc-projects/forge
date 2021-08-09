@@ -347,7 +347,7 @@ shutdown /s /t 10
     params = dict(MaxCount=1,
                   MinCount=1,
                   InstanceType='t2.micro',
-                  ImageId='ami-06107cfc9b25c67ce',  # win2016-forge-05
+                  ImageId='ami-094063ddb5e0250b1',  # win2016-forge-06
                   SubnetId='subnet-0efca44a30c0a40c0',
                   KeyName='godfryd',
                   SecurityGroupIds=['sg-04a74236a5389e87f'],  # DomainController
