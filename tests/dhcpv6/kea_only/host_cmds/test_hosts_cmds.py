@@ -8,6 +8,8 @@ import srv_msg
 import misc
 import srv_control
 
+from forge_cfg import world
+
 
 @pytest.mark.v6
 @pytest.mark.hosts_cmds
@@ -1088,3 +1090,133 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(hosts_db):
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
+
+
+def _check_client_response(address, exchange):
+    if exchange:
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_send_msg('SOLICIT')
+
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+        srv_msg.response_check_include_option(3)
+        srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('REQUEST')
+
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.response_check_suboption_content(5, 3, 'addr', address)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('RENEW')
+
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', address)
+
+
+# Test that the same client can migrate from a global reservation to an
+# in-subnet reservation after only a simple Kea reconfiguration.
+@pytest.mark.v6
+@pytest.mark.hosts_cmds
+@pytest.mark.kea_only
+@pytest.mark.parametrize('hosts_database', ['MySQL', 'PostgreSQL'])
+@pytest.mark.parametrize('exchange', [False, True])
+def test_v6_hosts_cmds_global_to_in_subnet(hosts_database, exchange):
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    srv_control.open_control_channel()
+
+    srv_control.enable_db_backend_reservation(hosts_database)
+
+    # Enable both global and in-subnet reservations because we test both.
+    world.dhcp_cfg.update({
+        "reservations-global": True,
+        "reservations-in-subnet": True,
+        "reservations-out-of-pool": False,
+    })
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Add a subnet.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "subnet6-add",
+        "arguments": {
+          "subnet6": [
+            {
+              "id": 1,
+              "interface": "$(SERVER_IFACE)",
+              "pools": [
+                {
+                  "pool": "2001:db8:a::50-2001:db8:a::50"
+                }
+              ],
+              "subnet": "2001:db8:a::/64"
+            }
+          ]
+        }
+      }
+    ''')
+
+    # First do the full exchange and expect an address from the pool.
+    _check_client_response('2001:db8:a::50', 'full')
+
+    # Add a global reservation.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "reservation-add",
+        "arguments": {
+          "reservation": {
+            "subnet-id": 0,
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "ip-addresses": [
+              "2001:db8:a::100"
+            ]
+          }
+        }
+      }
+    ''')
+
+    # Check that Kea leases the globally reserved address.
+    _check_client_response('2001:db8:a::100', exchange)
+
+    # Remove the global reservation.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "reservation-del",
+        "arguments": {
+          "subnet-id": 0,
+          "ip-address": "2001:db8:a::100"
+        }
+      }
+    ''')
+
+    # Check that Kea has reverted to the default behavior.
+    _check_client_response('2001:db8:a::50', exchange)
+
+    # Add an in-subnet reservation.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "reservation-add",
+        "arguments": {
+          "reservation": {
+            "subnet-id": 1,
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "ip-addresses": [
+              "2001:db8:a::150"
+            ]
+          }
+        }
+      }
+    ''')
+
+    # Check that Kea leases the in-subnet reserved address.
+    _check_client_response('2001:db8:a::150', exchange)

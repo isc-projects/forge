@@ -8,6 +8,8 @@ import srv_control
 import misc
 import srv_msg
 
+from forge_cfg import world
+
 
 @pytest.mark.v4
 @pytest.mark.hosts_cmds
@@ -995,3 +997,126 @@ def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(hosts_db):
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+
+def _check_client_response(address, exchange):
+    if exchange == 'full':
+        srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+        srv_msg.client_send_msg('DISCOVER')
+
+        srv_msg.send_wait_for_message('MUST', 'OFFER')
+        srv_msg.response_check_content('yiaddr', address)
+
+        srv_msg.client_copy_option('server_id')
+        srv_msg.client_does_include_with_value('requested_addr', address)
+        srv_msg.client_requests_option(1)
+        srv_msg.client_send_msg('REQUEST')
+
+        srv_msg.send_wait_for_message('MUST', 'ACK')
+        srv_msg.response_check_content('yiaddr', address)
+
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', address)
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', address)
+
+
+# Test that the same client can migrate from a global reservation to an
+# in-subnet reservation after only a simple Kea reconfiguration.
+@pytest.mark.v4
+@pytest.mark.hosts_cmds
+@pytest.mark.kea_only
+@pytest.mark.parametrize('exchange', ['full', 'renew-only'])
+@pytest.mark.parametrize('hosts_database', ['MySQL', 'PostgreSQL'])
+def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    srv_control.open_control_channel()
+
+    srv_control.enable_db_backend_reservation(hosts_database)
+
+    # Enable both global and in-subnet reservations because we test both.
+    world.dhcp_cfg.update({
+        "reservations-global": True,
+        "reservations-in-subnet": True,
+        "reservations-out-of-pool": False,
+    })
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Add a subnet.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "subnet4-add",
+        "arguments": {
+          "subnet4": [
+            {
+              "id": 1,
+              "interface": "$(SERVER_IFACE)",
+              "pools": [
+                {
+                  "pool": "192.168.50.50-192.168.50.50"
+                }
+              ],
+              "subnet": "192.168.50.0/24"
+            }
+          ]
+        }
+      }
+    ''')
+
+    # First do the full exchange and expect an address from the pool.
+    _check_client_response('192.168.50.50', 'full')
+
+    # Add a global reservation.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "reservation-add",
+        "arguments": {
+          "reservation": {
+            "subnet-id": 0,
+            "hw-address": "ff:01:02:03:ff:04",
+            "ip-address": "192.168.50.100"
+          }
+        }
+      }
+    ''')
+
+    # Check that Kea leases the globally reserved address.
+    _check_client_response('192.168.50.100', exchange)
+
+    # Remove the global reservation.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "reservation-del",
+        "arguments": {
+          "subnet-id": 0,
+          "ip-address": "192.168.50.100"
+        }
+      }
+    ''')
+
+    # Check that Kea has reverted to the default behavior.
+    _check_client_response('192.168.50.50', exchange)
+
+    # Add an in-subnet reservation.
+    srv_msg.send_ctrl_cmd_via_socket('''
+      {
+        "command": "reservation-add",
+        "arguments": {
+          "reservation": {
+            "subnet-id": 1,
+            "hw-address": "ff:01:02:03:ff:04",
+            "ip-address": "192.168.50.150"
+          }
+        }
+      }
+    ''')
+
+    # Check that Kea leases the in-subnet reserved address.
+    _check_client_response('192.168.50.150', exchange)
