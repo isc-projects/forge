@@ -13,6 +13,7 @@ import srv_control
 class StatsState4:
     def __init__(self):
         self.s = {}
+        self.s["cumulative-assigned-addresses"] = 0
         self.s["declined-addresses"] = 0
         self.s["pkt4-ack-received"] = 0
         self.s["pkt4-ack-sent"] = 0
@@ -33,6 +34,7 @@ class StatsState4:
         self.s["reclaimed-declined-addresses"] = 0
         self.s["reclaimed-leases"] = 0
         self.s["subnet[1].assigned-addresses"] = 0
+        self.s["subnet[1].cumulative-assigned-addresses"] = 0
         self.s["subnet[1].declined-addresses"] = 0
         self.s["subnet[1].reclaimed-declined-addresses"] = 0
         self.s["subnet[1].reclaimed-leases"] = 0
@@ -40,12 +42,24 @@ class StatsState4:
 
     def compare(self):
         result = srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
-        assert len(result['arguments']) == 26
+        statistics_from_kea = result['arguments']
+        assert len(statistics_from_kea) == 26
 
-        s = result['arguments']
+        statistics_not_found = []
+        for key, _ in self.s.items():
+            if key not in statistics_from_kea:
+                statistics_not_found.append(key)
+        assert len(statistics_not_found) == 0, 'The following statistics were expected, but not received: %s' % statistics_not_found
 
-        for key in self.s.items():
-            assert s[key][0][0] == self.s[key], 'Stat %s = %s is not as expected %s' % (key, s[key][0][0], self.s[key])
+        statistics_not_found = []
+        for key in statistics_from_kea:
+            if key not in self.s:
+                statistics_not_found.append(key)
+        assert len(statistics_not_found) == 0, 'The following statistics were received, but not expected: %s' % statistics_not_found
+
+        for key, expected in self.s.items():
+            received = statistics_from_kea[key][0][0]
+            assert expected == received, 'stat %s: expected %s, received %s' % (key, expected, received)
 
 
 def get_stat(name):
@@ -112,11 +126,13 @@ def test_stats_basic():
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    stats.s['cumulative-assigned-addresses'] += 1
     stats.s['pkt4-ack-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
     stats.s['pkt4-request-received'] += 1
     stats.s['subnet[1].assigned-addresses'] += 1
+    stats.s['subnet[1].cumulative-assigned-addresses'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -156,11 +172,13 @@ def test_stats_basic():
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    stats.s['cumulative-assigned-addresses'] += 1
     stats.s['pkt4-ack-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
     stats.s['pkt4-request-received'] += 1
     stats.s['subnet[1].assigned-addresses'] += 1
+    stats.s['subnet[1].cumulative-assigned-addresses'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -195,11 +213,13 @@ def test_stats_basic():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    stats.s['cumulative-assigned-addresses'] += 1
     stats.s['pkt4-ack-sent'] += 1
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
     stats.s['pkt4-request-received'] += 1
     stats.s['subnet[1].assigned-addresses'] += 1
+    stats.s['subnet[1].cumulative-assigned-addresses'] += 1
     stats.compare()
 
     misc.test_procedure()

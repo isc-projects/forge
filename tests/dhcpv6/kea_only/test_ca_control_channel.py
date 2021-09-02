@@ -312,7 +312,7 @@ def test_ca_control_channel_config_write():
     srv_msg.copy_remote(world.f_cfg.data_join("new_CA_config_file"))
 
     # let's load json from downloaded file and check if it is the same what we configured kea with
-    with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r') as f:
+    with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r', encoding='utf-8') as f:
         downloaded_config = json.load(f)
     del downloaded_config["Control-agent"]["loggers"]
     del world.ca_cfg["Control-agent"]["loggers"]
