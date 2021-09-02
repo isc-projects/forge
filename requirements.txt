@@ -1,5 +1,4 @@
-# bleeding edge scapy with our dhcp6 patches and user class option for dhcp4
--e git://github.com/secdev/scapy/@fa6322939b668b3cf6baf57a6720fa2920faf698#egg=scapy
+scapy
 
 # required by scapy
 pcapy
