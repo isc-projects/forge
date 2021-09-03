@@ -1148,23 +1148,23 @@ def test_v6_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
 
     # Add a subnet.
     srv_msg.send_ctrl_cmd(
-      {
-        "command": "subnet6-add",
-        "arguments": {
-          "subnet6": [
-            {
-              "id": 1,
-              "interface": "$(SERVER_IFACE)",
-              "pools": [
-                {
-                  "pool": "2001:db8:a::50-2001:db8:a::50"
-                }
-              ],
-              "subnet": "2001:db8:a::/64"
+        {
+            "command": "subnet6-add",
+            "arguments": {
+                "subnet6": [
+                    {
+                        "id": 1,
+                        "interface": "$(SERVER_IFACE)",
+                        "pools": [
+                            {
+                                "pool": "2001:db8:a::50-2001:db8:a::50"
+                            }
+                        ],
+                        "subnet": "2001:db8:a::/64"
+                    }
+                ]
             }
-          ]
         }
-      }
     )
 
     # First do the full exchange and expect an address from the pool.
@@ -1172,18 +1172,18 @@ def test_v6_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
 
     # Add a global reservation.
     srv_msg.send_ctrl_cmd(
-      {
-        "command": "reservation-add",
-        "arguments": {
-          "reservation": {
-            "subnet-id": 0,
-            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-            "ip-addresses": [
-              "2001:db8:a::100"
-            ]
-          }
+        {
+            "command": "reservation-add",
+            "arguments": {
+                "reservation": {
+                    "subnet-id": 0,
+                    "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [
+                        "2001:db8:a::100"
+                    ]
+                }
+            }
         }
-      }
     )
 
     # Check that Kea leases the globally reserved address.
@@ -1191,13 +1191,13 @@ def test_v6_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
 
     # Remove the global reservation.
     srv_msg.send_ctrl_cmd(
-      {
-        "command": "reservation-del",
-        "arguments": {
-          "subnet-id": 0,
-          "ip-address": "2001:db8:a::100"
+        {
+            "command": "reservation-del",
+            "arguments": {
+                "subnet-id": 0,
+                "ip-address": "2001:db8:a::100"
+            }
         }
-      }
     )
 
     # Check that Kea has reverted to the default behavior.
@@ -1205,18 +1205,18 @@ def test_v6_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
 
     # Add an in-subnet reservation.
     srv_msg.send_ctrl_cmd(
-      {
-        "command": "reservation-add",
-        "arguments": {
-          "reservation": {
-            "subnet-id": 1,
-            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-            "ip-addresses": [
-              "2001:db8:a::150"
-            ]
-          }
+        {
+            "command": "reservation-add",
+            "arguments": {
+                "reservation": {
+                    "subnet-id": 1,
+                    "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [
+                        "2001:db8:a::150"
+                    ]
+                }
+            }
         }
-      }
     )
 
     # Check that Kea leases the in-subnet reserved address.
