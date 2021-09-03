@@ -1035,6 +1035,7 @@ def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    srv_control.agent_control_channel()
     srv_control.open_control_channel()
 
     srv_control.enable_db_backend_reservation(hosts_database)
@@ -1050,7 +1051,7 @@ def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
     srv_control.start_srv('DHCP', 'started')
 
     # Add a subnet.
-    srv_msg.send_ctrl_cmd_via_socket('''
+    srv_msg.send_ctrl_cmd(
       {
         "command": "subnet4-add",
         "arguments": {
@@ -1068,13 +1069,13 @@ def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
           ]
         }
       }
-    ''')
+    )
 
     # First do the full exchange and expect an address from the pool.
     _check_client_response('192.168.50.50', 'full')
 
     # Add a global reservation.
-    srv_msg.send_ctrl_cmd_via_socket('''
+    srv_msg.send_ctrl_cmd(
       {
         "command": "reservation-add",
         "arguments": {
@@ -1085,13 +1086,13 @@ def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
           }
         }
       }
-    ''')
+    )
 
     # Check that Kea leases the globally reserved address.
     _check_client_response('192.168.50.100', exchange)
 
     # Remove the global reservation.
-    srv_msg.send_ctrl_cmd_via_socket('''
+    srv_msg.send_ctrl_cmd(
       {
         "command": "reservation-del",
         "arguments": {
@@ -1099,13 +1100,13 @@ def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
           "ip-address": "192.168.50.100"
         }
       }
-    ''')
+    )
 
     # Check that Kea has reverted to the default behavior.
     _check_client_response('192.168.50.50', exchange)
 
     # Add an in-subnet reservation.
-    srv_msg.send_ctrl_cmd_via_socket('''
+    srv_msg.send_ctrl_cmd(
       {
         "command": "reservation-add",
         "arguments": {
@@ -1116,7 +1117,7 @@ def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
           }
         }
       }
-    ''')
+    )
 
     # Check that Kea leases the in-subnet reserved address.
     _check_client_response('192.168.50.150', exchange)

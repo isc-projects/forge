@@ -224,6 +224,7 @@ def add_logger(log_type, severity, severity_level, logging_file=None):
     world.dhcp_cfg["loggers"].append(logger)
 
 
+# Configure a control socket.
 def open_control_channel_socket(socket_name=None):
     if socket_name is not None:
         socket_path = world.f_cfg.run_join(socket_name)
@@ -615,6 +616,7 @@ def update_ha_hook_parameter(param):
             hook["parameters"]["high-availability"][0].update(param)
 
 
+# Start kea-ctrl-agent.
 def agent_control_channel(host_address, host_port, socket_name='control_socket'):
     if world.f_cfg.install_method == 'make':
         logging_file = 'kea.log-CA'
