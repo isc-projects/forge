@@ -27,6 +27,7 @@ from Crypto.Random.random import randint
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 
+import dependencies
 from forge_cfg import world, step
 from softwaresupport.multi_server_functions import make_tarfile, archive_file_name,\
     fabric_run_command
@@ -279,7 +280,8 @@ def declare_all(dhcp_version=None):
 #@before.all
 def test_start():
     """
-    Server starting before testing
+    Server starting before testing.
+    Runs once per forge invocation.
     """
     # clear tests results
     if os.path.exists('tests_results'):
@@ -289,6 +291,9 @@ def test_start():
         os.makedirs('tests_results_archive')
 
     world.result = []
+
+    # Print scapy version.
+    dependencies.print_versions()
 
     # Initialize the common logger.
     logging_facility.logger_initialize(world.f_cfg.loglevel)

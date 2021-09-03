@@ -4,8 +4,8 @@ scapy
 pcapy
 
 # required by forge
-PyCryptodome
 fabric3
-requests
-pytest
 netifaces
+pytest
+PyCryptodome
+requests
