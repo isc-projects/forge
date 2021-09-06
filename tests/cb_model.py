@@ -594,7 +594,6 @@ def setup_server(**kwargs):
         param = param.replace('_', '-')
         init_cfg[param] = val
 
-
     cfg = ConfigModel(init_cfg, **config_model_args)
 
     srv_control.agent_control_channel()  # to force enabling ctrl-agent
@@ -613,10 +612,10 @@ def setup_server_for_config_backend_cmds(**kwargs):
     default_cfg = {"hooks-libraries": [{"library": world.f_cfg.hooks_join("libdhcp_cb_cmds.so")},
                                        {"library": world.f_cfg.hooks_join("libdhcp_mysql_cb.so")}],
                    "server-tag": "abc",
-                   "config-control": {"config-databases":[{"user":"$(DB_USER)",
-                                                           "password":"$(DB_PASSWD)",
-                                                           "name":"$(DB_NAME)",
-                                                           "type":"mysql"}]}}
+                   "config-control": {"config-databases": [{"user": "$(DB_USER)",
+                                                            "password": "$(DB_PASSWD)",
+                                                            "name": "$(DB_NAME)",
+                                                            "type": "mysql"}]}}
     kwargs = _normalize_keys(kwargs)
     if "server-tag" in kwargs:
         default_cfg["server-tag"] = kwargs["server-tag"]

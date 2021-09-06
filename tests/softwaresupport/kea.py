@@ -718,6 +718,26 @@ def _set_kea_ctrl_config():
     '''.format(**locals())
 
 
+def add_mt_if_we_can(cfg):
+    log.debug("Checking if we can add MT.")
+    # hooks that are not MT compatible (ever or at this moment)
+    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
+
+    # all configured hooks
+    list_of_used_hooks = []
+    for hooks in cfg["Dhcp%s" % world.proto[1]]["hooks-libraries"]:
+        list_of_used_hooks.append(hooks["library"].split("/")[-1])
+
+    # if any of configured hooks is not working with multi-threading then do NOT enable multi-threading in kea config
+    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0 and world.f_cfg.multi_threading_enabled:
+        if "multi-threading" not in cfg["Dhcp%s" % world.proto[1]]:
+            log.debug("Adding MT configuration.")
+            cfg["Dhcp%s" % world.proto[1]].update({"multi-threading": {"enable-multi-threading": True,
+                                                                       "thread-pool-size": 2,
+                                                                       "packet-queue-size": 16}})
+    return cfg
+
+
 def _cfg_write():
     # For now let's keep to old system of sending config file
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
@@ -734,20 +754,10 @@ def _cfg_write():
     _config_db_backend()
 
     dhcp = "Dhcp%s" % world.proto[1]
-    # hooks that are not MT compatible (ever or at this moment)
-    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
-
-    # all configured hooks
-    list_of_used_hooks = []
-    for hooks in world.dhcp_cfg["hooks-libraries"]:
-        list_of_used_hooks.append(hooks["library"].split("/")[-1])
-
-    # if any of configured hooks is not working with multi-threading then do NOT enable multi-threading in kea config
-    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0 and world.f_cfg.multi_threading_enabled:
-        world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": True, "thread-pool-size": 2,
-                                                   "packet-queue-size": 16}})
 
     world.dhcp_cfg = {dhcp: world.dhcp_cfg}
+
+    world.dhcp_cfg = add_mt_if_we_can(world.dhcp_cfg)
 
     if world.ddns_enable:
         world.ddns_cfg = {"DhcpDdns": world.ddns_cfg}
@@ -761,7 +771,7 @@ def _cfg_write():
             conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=False))
 
     add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
-
+    log.info('provisioned cfg:\n%s', world.dhcp_cfg)
     with open("kea-dhcp%s.conf" % world.proto[1], 'w') as conf_file:
         conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=False))
 
@@ -773,6 +783,7 @@ def _write_cfg2(cfg):
             json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=False,
                       indent=4, separators=(',', ': '))
     if "Dhcp%s" % world.proto[1] in cfg:
+        cfg = add_mt_if_we_can(cfg)
         with open("kea-dhcp%s.conf" % world.proto[1], 'w') as cfg_file:
             json.dump({"Dhcp%s" % world.proto[1]: cfg["Dhcp%s" % world.proto[1]]},
                       cfg_file, sort_keys=False, indent=4, separators=(',', ': '))
@@ -799,6 +810,7 @@ def build_config_files(cfg=None):
         _cfg_write()
     else:
         _write_cfg2(cfg)
+
 
 def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
     """
@@ -941,6 +953,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
         fabric_sudo_command(cmd, destination_host=destination_address)
         cmd = 'journalctl --vacuum-time=1s'
         fabric_sudo_command(cmd, destination_host=destination_address)
+
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
     v4 = False
