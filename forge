@@ -209,6 +209,7 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
                     now = datetime.datetime.now()
                     lp = log_prefix.format_map(defaultdict(str, ts=now.strftime('%H:%M:%S.%f')))
                     line_decoded = lp + line.decode(errors='ignore').rstrip() + '\r'
+                    line_decoded = line_decoded.replace(r'\n', '\n')
                     if not quiet:
                         print(line_decoded)
                     if capture:
@@ -268,7 +269,6 @@ def set_init_all(args):
             for line in f.readlines():
                 if line.startswith('ip-address='):
                     my_vars['WIN_DNS_ADDR'] = line[11:].strip()
-    print('WIN_DNS_ADDR: ', my_vars['WIN_DNS_ADDR'])
 
     txt = INIT_ALL.format(**my_vars)
 
@@ -292,7 +292,8 @@ def ensure_lxc_bridges(args):
     traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
 
     for bridge in [mgmt_brg, traffic_brg]:
-        execute('sudo brctl addbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
+        if execute('sudo ip link show dev %s' % bridge, raise_error=False):
+            execute('sudo ip link add dev %s type bridge' % bridge)
         execute('sudo ip link set dev %s up' % bridge)
 
 
@@ -301,8 +302,9 @@ def delete_lxc_bridges(args):
     traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
 
     for bridge in [mgmt_brg, traffic_brg]:
-        execute('sudo ip link set dev %s down' % bridge, raise_error=False)
-        execute('sudo brctl delbr %s' % bridge, raise_error=False)  # TODO: add detection if already exists
+        if not execute('sudo ip link show dev %s' % bridge, raise_error=False):
+            execute('sudo ip link set dev %s down' % bridge)
+            execute('sudo ip link del dev %s' % bridge)
 
 
 def _get_server_name(args, idx):
