@@ -18,7 +18,6 @@ def _send_client_requests(count, client_id=True):
     for _ in range(count):
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-        srv_msg.client_does_include_with_value('client_id', '00010203040506')
         if client_id:
             srv_msg.client_does_include_with_value('client_id', '00010203040506')
         srv_msg.client_requests_option(1)
@@ -70,7 +69,7 @@ def _send_client_requests_via_relay(count):
         misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', 'OFFER')
         srv_msg.response_check_include_option(1)
-        srv_msg.response_check_content('yiaddr', '192.168.50.2')
+        srv_msg.response_check_content('yiaddr', '192.168.50.1')
         srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
         misc.test_procedure()
@@ -79,13 +78,13 @@ def _send_client_requests_via_relay(count):
         srv_msg.client_sets_value('Client', 'giaddr', '$(GIADDR4)')
         srv_msg.client_sets_value('Client', 'hops', 1)
         srv_msg.client_copy_option('server_id')
-        srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
+        srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
         srv_msg.client_requests_option(1)
         srv_msg.client_send_msg('REQUEST')
 
         misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', 'ACK')
-        srv_msg.response_check_content('yiaddr', '192.168.50.2')
+        srv_msg.response_check_content('yiaddr', '192.168.50.1')
         srv_msg.response_check_include_option(1)
         srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
