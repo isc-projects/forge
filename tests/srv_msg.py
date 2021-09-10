@@ -15,6 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
+import datetime
 import sys
 import json
 import importlib
@@ -463,19 +464,20 @@ def log_includes_count(server_type, count, line):
 
 
 @step(r'(\S+) log contains (\d+) of line: (.+)')
-def wait_for_message_count_in_log(count, line, timeout=4, log_file=None):
+def wait_for_message_in_log(line, count=1, timeout=4, log_file=None):
     """
     Wait until a line appears a certain number of times in a log.
     """
+    started_at = datetime.datetime.now()
     log_file, count, line = test_define_value(log_file, count, line)
-    for i in range(timeout + 1):
+    while True:
         result = multi_protocol_functions.get_line_count_in_log(line, log_file)
         if count <= result:
-            return
-        if i != timeout:
-            forge_sleep(1, 'second')
-
-    assert False, 'Timeout reached while waiting for {} x "{}"'.format(count, line)
+            break
+        assert started_at + timeout < datetime.datetime.now(), \
+            'Timeout {}s exceeded while waiting for {} line{} "{}" in log file {}' \
+            .format(timeout, count, '' if count == 1 else 's', line, log_file)
+        forge_sleep(100, 'milliseconds')
 
 
 @step(r'Sleep for (\S+) (seconds|second|milliseconds|millisecond).')

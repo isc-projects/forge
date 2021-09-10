@@ -19,6 +19,8 @@ import json
 import logging
 import time
 
+import srv_msg
+
 from forge_cfg import world
 from protosupport.multi_protocol_functions import add_variable, execute_shell_cmd, substitute_vars
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
@@ -1123,11 +1125,7 @@ def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
         _check_kea_process_result(True, result, 'reconfigure')
     else:
         _reload_kea_with_systemctl(destination_address)
-    # There is some delay between reload command and kea being ready to receive traffic
-    # unfortunately there is no log message to indicated successful reconfigure,
-    # inspecting logs I concluded that 1.5 seconds should be enough
-    # opened kea #1893 to cover new log message
-    time.sleep(1.5)
+    srv_msg.wait_for_message_in_log('dynamic server reconfiguration succeeded with file')
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
