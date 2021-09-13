@@ -5,6 +5,8 @@ import pytest
 import srv_msg
 
 from cb_model import setup_server_for_config_backend_cmds
+from forge_cfg import world
+
 
 pytestmark = [pytest.mark.v4,
               pytest.mark.kea_only,
@@ -14,19 +16,38 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.cb_cmds]
 
 
+def _set_server_tag(tag):
+    cmd = dict(command="remote-server%s-set" % world.proto[-1], arguments={"remote": {"type": "mysql"},
+                                                                           "servers": [{"server-tag": tag}]})
+    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+
 @pytest.fixture(autouse=True)
 def run_around_tests():
     setup_server_for_config_backend_cmds()
-    cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
-                                                        "servers": [{"server-tag": "abc"}]})
-    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    _set_server_tag("abc")
+
+
+def _send_cmd(cmd, remote="mysql", tag=None, channel='http', exp_result=0):
+    if "remote" not in cmd["arguments"]:
+        cmd["arguments"].update({"remote": {"type": remote}})
+    if "server-tags" not in cmd["arguments"] and tag is not None:
+        if not isinstance(tag, list):
+            tag = [tag]
+        cmd["arguments"].update({"server-tags": tag})
+
+    return srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=exp_result)
 
 
 def test_availability():
     cmd = dict(command='list-commands')
     response = srv_msg.send_ctrl_cmd(cmd)
 
-    for cmd in ["remote-global-parameter4-del",
+    for cmd in ["remote-class4-del",
+                "remote-class4-get",
+                "remote-class4-get-all",
+                "remote-class4-set",
+                "remote-global-parameter4-del",
                 "remote-global-parameter4-get",
                 "remote-global-parameter4-get-all",
                 "remote-global-parameter4-set",
@@ -42,12 +63,23 @@ def test_availability():
                 "remote-option4-global-get",
                 "remote-option4-global-get-all",
                 "remote-option4-global-set",
+                "remote-option4-network-del",
+                "remote-option4-network-set",
+                "remote-option4-pool-del",
+                "remote-option4-pool-set",
+                "remote-option4-subnet-del",
+                "remote-option4-subnet-set",
+                "remote-server4-del",
+                "remote-server4-get",
+                "remote-server4-get-all",
+                "remote-server4-set",
                 "remote-subnet4-del-by-id",
                 "remote-subnet4-del-by-prefix",
                 "remote-subnet4-get-by-id",
                 "remote-subnet4-get-by-prefix",
                 "remote-subnet4-list",
-                "remote-subnet4-set"]:
+                "remote-subnet4-set",
+                "server-tag-get"]:
         assert cmd in response['arguments']
 
 
@@ -2056,3 +2088,434 @@ def test_remote_global_option4_global_get_all():
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
     assert response == {"arguments": {"count": 0, "options": []}, "result": 3, "text": "0 DHCPv4 option(s) found."}
+
+
+def _set_class(args=None, res=0, resp_text="DHCPv4 client class successfully set.", tag='abc'):
+    if world.proto == 'v6':
+        resp_text = resp_text.replace("v4", "v6")
+
+    if args is None:
+        args = {"client-classes": [{"name": "foo",
+                                    "test": "member('KNOWN')"}]}
+
+    cmd = dict(command="remote-class%s-set" % world.proto[-1], arguments=args)
+    response = _send_cmd(cmd, tag=tag, exp_result=res)
+
+    if res == 1:
+        assert response == {"result": 1, "text": resp_text}
+    else:
+        cls_name = args["client-classes"][0]["name"]
+        assert response == {"result": 0, "text": resp_text, "arguments": {"client-classes": [{"name": cls_name}]}}
+
+
+def _del_class(args=None, res=0, resp_text="1 DHCPv4 client class(es) deleted.", tag=None, count=1):
+    if world.proto == 'v6':
+        resp_text = resp_text.replace("v4", "v6")
+    if args is None:
+        args = {"client-classes": [{"name": "foo"}]}
+    cmd = dict(command="remote-class%s-del" % world.proto[-1], arguments=args)
+    response = _send_cmd(cmd, tag=tag, exp_result=res)
+    if res == 1:
+        assert response == {"result": res, "text": resp_text}
+    else:
+        assert response == {"result": res, "text": resp_text, "arguments": {"count": count}}
+
+
+def _get_class(args=None, args_rec=None, res=0, resp_text="DHCPv4 client class 'foo' found.", tag=None):
+    if world.proto == 'v6':
+        resp_text = resp_text.replace("v4", "v6")
+    if args is None:
+        args = {"client-classes": [{"name": "foo"}]}
+    if args_rec is None:
+        args_rec = {
+            "client-classes": [
+                {"boot-file-name": "",
+                 "metadata": {"server-tags": ["abc"]},
+                 "name": "foo",
+                 "next-server": "0.0.0.0",
+                 "option-data": [],
+                 "option-def": [],
+                 "server-hostname": "", "test": "member('KNOWN')",
+                 "valid-lifetime": 0}],
+            "count": 1}
+        if world.proto == 'v6':
+            # in v6 we save a bit different data
+            del args_rec["client-classes"][0]["next-server"]
+            del args_rec["client-classes"][0]["boot-file-name"]
+            del args_rec["client-classes"][0]["server-hostname"]
+            del args_rec["client-classes"][0]["option-def"]
+            args_rec["client-classes"][0].update({'preferred-lifetime': 0})
+
+    cmd = dict(command="remote-class%s-get" % world.proto[-1], arguments=args)
+    response = _send_cmd(cmd, tag=tag, exp_result=res)
+    if res == 1:
+        assert response == {"result": res, "text": resp_text}
+    else:
+        # resp_text
+        assert response == {"result": res, "text": resp_text.replace("foo", args["client-classes"][0]["name"]),
+                            "arguments": args_rec}
+
+
+def _get_all_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
+    if world.proto == 'v6':
+        resp_text = resp_text.replace("vX", "v6")
+    else:
+        resp_text = resp_text.replace("vX", "v4")
+    cmd = dict(command="remote-class%s-get-all" % world.proto[-1], arguments=args)
+    response = _send_cmd(cmd, tag=tag, exp_result=res)
+    if res == 1:
+        assert response == {"result": res, "text": resp_text}
+    else:
+        assert response == {"result": res, "text": resp_text, "arguments": args_rec}
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+def test_remote_class_set(dhcp_version):
+    # I think there is too many test cases in this single test, but splitting them to separate test will result
+    # in much longer testing time, and we should start saving time
+    # let's start with default
+    _set_class()
+    # just name
+    _set_class({"client-classes": [{"name": "aaa"}]})
+    # empty class should fail
+    _set_class(args={"client-classes": [{}]}, res=1, resp_text="missing parameter 'name' (<wire>:0:38)")
+    # empty class list should fail
+    _set_class(args={"client-classes": []}, res=1, resp_text="'client-classes' list must include exactly one element")
+    # multiple classes, also should fail
+    _set_class(args={"client-classes": [{"name": "aaa"}, {"name": "xyz"}]}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # the same class twice, should fail
+    _set_class(args={"client-classes": [{"name": "aaa"}, {"name": "aaa"}]}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # client-classes not list
+    _set_class(args={"client-classes": {"name": "aaa"}}, res=1,
+               resp_text="'client-classes' parameter must be specified and must be a list")
+    # client-classes missing
+    _set_class(args={}, res=1, resp_text="'client-classes' parameter must be specified and must be a list")
+    # send without server tag
+    _set_class({"client-classes": [{"name": "something"}]}, res=1,
+               resp_text="'server-tags' parameter is mandatory", tag=None)
+
+    # option-def is only supported by v4
+    # set class with custom option with code that is not defined
+    arg = {"client-classes": [{"name": "my_weird_name",
+                               "test": "member('KNOWN')",
+                               "option-data": [{"name": "configfile123", "data": "1APC"}]}]}
+    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.configfile123' does not exist (<wire>:0:107)" % world.proto[-1])
+    # set class with custom option with name that is not defined
+    arg = {"client-classes": [{"name": "my_weird_name",
+                               "test": "member('KNOWN')",
+                               "option-data": [{"code": 222, "data": ""}]}]}
+    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.222' does not exist (<wire>:0:107)" % world.proto[-1])  # bug
+
+    # set class with custom option that is already defined in the database
+    _set_option_def()
+    # # this will give us option 222/foo with uint32 value
+    _set_class({"client-classes": [{"name": "my_weird_name", "option-data": [{"code": 222, "data": "123"}]}]})
+    _set_class({"client-classes": [{"name": "my_weird_name_2", "option-data": [{"name": "foo", "data": "123"}]}]})  # bug
+    # set class that is relaying on different already configured
+    _set_class({"client-classes": [{"name": "next_pointless_class", "test": "member('aaa')"}]})
+    # set class that is relaying on different not configured class
+    _set_class({"client-classes": [{"name": "next_pointless_class_3", "test": "member('not_existing_name')"}]},
+               res=1, resp_text="unmet dependency on client class: not_existing_name")
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+def test_remote_class_set_non_existing_params(dhcp_version):
+    # add to many, not allowed parameters
+    # it might and up disabled
+    # bug, don't know what error should be here
+    # https://gitlab.isc.org/isc-projects/kea/-/issues/290
+    _set_class({"client-classes": [{"name": "aaa", "something": [{"more": 123}]}]}, res=1)
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+def remote_class_set_all_parameters(dhcp_version):
+    # let's first set simple class
+    _set_class({"client-classes": [{"name": "foo"}]})
+    # and now we will overwrite this with another one, with all parameters
+    send_arg = {"client-classes": [{"name": "foo",
+                                    "only-if-required": True,
+                                    "option-data": [{"code": 7, "data": "123", "always-send": True}],
+                                    "test": "member('UNKNOWN')",
+                                    "min-valid-lifetime": 100,
+                                    "max-valid-lifetime": 1200,
+                                    "max-preferred-lifetime": 900,
+                                    "min-preferred-lifetime": 789,
+                                    "valid-lifetime": 1000,
+                                    "preferred-lifetime": 850}]}
+    receive_arg = {"client-classes": [{"metadata": {"server-tags": ["abc"]},
+                                       "name": "foo",
+                                       "only-if-required": True,
+                                       "option-data": [{"always-send": True, "code": 7, "csv-format": True,
+                                                        "data": "123", "name": "preference", "space": "dhcp6"}],
+                                       "test": "member('UNKNOWN')",
+                                       "valid-lifetime": 1000,
+                                       "min-valid-lifetime": 100,
+                                       "max-valid-lifetime": 1200,
+                                       "max-preferred-lifetime": 900,
+                                       "min-preferred-lifetime": 789,
+                                       "preferred-lifetime": 850}],
+                   "count": 1}
+    if dhcp_version == 'v4':
+        send_arg = {"client-classes": [{"boot-file-name": "/var/something",
+                                        "name": "foo",
+                                        "only-if-required": True,
+                                        "next-server": "10.11.12.13",
+                                        "option-data": [{"code": 6, "data": "192.0.2.1, 192.0.2.2",
+                                                         "always-send": True, "csv-format": True},
+                                                        {"name": "foooption", "data": "22"}],
+                                        "option-def": [{"array": False, "code": 222, "encapsulate": "",
+                                                        "name": "foooption", "record-types": "", "space": "myspace",
+                                                        "type": "uint32"}],
+                                        "server-hostname": "abc.com",
+                                        "min-valid-lifetime": 100,
+                                        "max-valid-lifetime": 1200,
+                                        "test": "member('UNKNOWN')",
+                                        "valid-lifetime": 1000}]}
+        receive_arg = {"client-classes": [{"boot-file-name": "/var/something",
+                                           "metadata": {"server-tags": ["abc"]},
+                                           "name": "foo",
+                                           "only-if-required": True,
+                                           "next-server": "10.11.12.13",
+                                           "option-data": [{"always-send": True, "code": 6, "csv-format": True,
+                                                            "data": "192.0.2.1, 192.0.2.2",
+                                                            "name": "domain-name-servers", "space": "dhcp4"},
+                                                           {"always-send": True, "code": 222, "csv-format": True,
+                                                            "data": "22", "name": "foooption", "space": "myspace"}],
+                                           "option-def": [{"array": False, "code": 222, "encapsulate": "",
+                                                           "name": "foooption", "record-types": "",
+                                                           "space": "myspace", "type": "uint32"}],
+                                           "server-hostname": "abc.com",
+                                           "min-valid-lifetime": 100,
+                                           "max-valid-lifetime": 1200,
+                                           "test": "member('UNKNOWN')",
+                                           "valid-lifetime": 1000}],
+                       "count": 1}
+    _set_class(send_arg)
+    _get_class(args_rec=receive_arg)
+    # and now again set simple class with the same name and check if this was overwritten correctly
+    _set_class()
+    # get existing class
+    _get_class()
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+def test_remote_class_del(dhcp_version):
+    _set_class()
+    _set_class({"client-classes": [{"name": "bar"}]})
+    # remove existing class
+    _del_class()
+    # try to remove non existing class
+    _del_class(res=3, resp_text="0 DHCPv4 client class(es) deleted.", count=0)
+    # let's add once again class
+    _set_class()
+    # empty class list
+    _del_class({"client-classes": []}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # empty class in the list
+    _del_class({"client-classes": [{}]}, res=1,
+               resp_text="missing 'name' parameter")
+    # try to remove multiple classes
+    _del_class({"client-classes": [{"name": "foo"}, {"name": "bar"}]}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # try to remove one class twice
+    _del_class({"client-classes": [{"name": "foo"}, {"name": "foo"}]}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # client-classes empty
+    _del_class(args={"client-classes": []}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # client-classes missing
+    _del_class(args={}, res=1, resp_text="'client-classes' parameter must be specified and must be a list")
+    # try to remove existing class but with different server tag, should fail
+    _del_class({"client-classes": [{"name": "foo"}]}, res=1, tag='abc',
+               resp_text="'server-tags' parameter is forbidden")
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+def test_remote_class_get(dhcp_version):
+    _set_class()
+    # get existing class
+    _get_class()
+    # delete existing class
+    _del_class()
+    # get non existing class
+    _get_class(res=3, resp_text="DHCPv4 client class 'foo' not found.",
+               args_rec={"client-classes": [], "count": 0})
+    # empty class list
+    _get_class({"client-classes": []}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # empty class in the list
+    _get_class({"client-classes": [{}]}, res=1,
+               resp_text="missing 'name' parameter")
+    # try to get multiple classes
+    _get_class({"client-classes": [{"name": "foo"}, {"name": "bar"}]}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # try to get the same classes twice
+    _get_class({"client-classes": [{"name": "foo"}, {"name": "foo"}]}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
+    # try to get exiting class with tag
+    _get_class({"client-classes": [{"name": "foo"}]}, res=1, tag='abc',
+               resp_text="'server-tags' parameter is forbidden")
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+def test_remote_class4_get_all(dhcp_version):
+    # non existing tag
+    _get_all_class({"server-tags": ["some-name-that-do-not-exist"]},
+                   resp_text="0 DHCPv%s client class(es) found." % world.proto[-1],
+                   args_rec={"client-classes": [], "count": 0}, res=3)
+    # check existing tag but no classes defined:
+    _get_all_class({"server-tags": ["abc"]}, resp_text="0 DHCPvX client class(es) found.",
+                   args_rec={"client-classes": [], "count": 0}, res=3)
+
+    _set_server_tag("xyz")
+    # set class, get just one
+    _set_class()
+    args_rec = {"client-classes": [{"boot-file-name": "",
+                                    "metadata": {"server-tags": ["abc"]},
+                                    "name": "foo",
+                                    "next-server": "0.0.0.0",
+                                    "option-data": [],
+                                    "option-def": [],
+                                    "server-hostname": "",
+                                    "test": "member('KNOWN')",
+                                    "valid-lifetime": 0}],
+                "count": 1}
+
+    if world.proto == 'v6':
+        args_rec = {"client-classes": [{"metadata": {"server-tags": ["abc"]},
+                                        "name": "foo",
+                                        "option-data": [],
+                                        "preferred-lifetime": 0,
+                                        "test": "member('KNOWN')",
+                                        "valid-lifetime": 0}],
+                    "count": 1}
+
+    _get_all_class({"server-tags": ["abc"]}, resp_text="1 DHCPvX client class(es) found.", args_rec=args_rec)
+
+    # set another class, get two
+    _set_class({"client-classes": [{"name": "bar"}]})  # this is without test parameter
+    if world.proto == 'v6':
+        args_rec["client-classes"].append({"metadata": {"server-tags": ["abc"]},
+                                           "name": "bar",
+                                           "option-data": [],
+                                           "preferred-lifetime": 0,
+                                           "valid-lifetime": 0})
+        args_rec["count"] = 2
+    else:
+        args_rec["client-classes"].append({"boot-file-name": "",
+                                           "metadata": {"server-tags": ["abc"]},
+                                           "name": "bar",
+                                           "next-server": "0.0.0.0",
+                                           "option-data": [],
+                                           "option-def": [],
+                                           "server-hostname": "",
+                                           "valid-lifetime": 0})
+        args_rec["count"] = 2
+
+    _get_all_class({"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec)
+
+    # set 3rd class with different server tag
+    _set_class({"client-classes": [{"name": "3rd-class", "test": "member('UNKNOWN')"}]}, tag="xyz")
+    # get all for tag abs should be the same as above
+    _get_all_class({"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec)
+
+    # get all for tag xyz, should be just one
+    args_rec_2 = {"client-classes": [{"boot-file-name": "",
+                                      "metadata": {"server-tags": ["xyz"]},
+                                      "name": "3rd-class",
+                                      "next-server": "0.0.0.0",
+                                      "option-data": [],
+                                      "option-def": [],
+                                      "server-hostname": "",
+                                      "test": "member('UNKNOWN')",
+                                      "valid-lifetime": 0}],
+                  "count": 1}
+    if world.proto == 'v6':
+        args_rec_2 = {"client-classes": [{"metadata": {"server-tags": ["xyz"]},
+                                          "name": "3rd-class",
+                                          "option-data": [],
+                                          "preferred-lifetime": 0,
+                                          "test": "member('UNKNOWN')",
+                                          "valid-lifetime": 0}],
+                      "count": 1}
+
+    _get_all_class({"server-tags": ["xyz"]}, resp_text="1 DHCPvX client class(es) found.", args_rec=args_rec_2)
+    # get abc, still should be just 2 classes
+    _get_all_class({"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec)
+    # set anther class with tag all, it should be in requests for abc and xyz
+    _set_class({"client-classes": [{"name": "4th-class", "test": "member('UNKNOWN')"}]}, tag="all")
+
+    if world.proto == 'v6':
+        args_rec["client-classes"].append({"metadata": {"server-tags": ["all"]},
+                                           "name": "4th-class",
+                                           "option-data": [],
+                                           "preferred-lifetime": 0,
+                                           "test": "member('UNKNOWN')",
+                                           "valid-lifetime": 0})
+        args_rec["count"] = 3
+        args_rec_2["client-classes"].append({"metadata": {"server-tags": ["all"]},
+                                             "name": "4th-class",
+                                             "option-data": [],
+                                             "preferred-lifetime": 0,
+                                             "test": "member('UNKNOWN')",
+                                             "valid-lifetime": 0})
+        args_rec_2["count"] = 2
+
+    else:
+        args_rec["client-classes"].append({"boot-file-name": "",
+                                           "metadata": {"server-tags": ["all"]},
+                                           "name": "4th-class",
+                                           "next-server": "0.0.0.0",
+                                           "option-data": [],
+                                           "option-def": [],
+                                           "server-hostname": "",
+                                           "test": "member('UNKNOWN')",
+                                           "valid-lifetime": 0})
+        args_rec["count"] = 3
+        args_rec_2["client-classes"].append({"boot-file-name": "",
+                                             "metadata": {"server-tags": ["all"]},
+                                             "name": "4th-class",
+                                             "next-server": "0.0.0.0",
+                                             "option-data": [],
+                                             "option-def": [],
+                                             "server-hostname": "",
+                                             "test": "member('UNKNOWN')",
+                                             "valid-lifetime": 0})
+        args_rec_2["count"] = 2
+
+    _get_all_class({"server-tags": ["abc", "all"]}, resp_text="3 DHCPvX client class(es) found.", args_rec=args_rec)
+    _get_all_class({"server-tags": ["xyz", "all"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec_2)
+
+    # check tag just all
+    args_rec_all = {"client-classes": [{"boot-file-name": "",
+                                        "metadata": {"server-tags": ["all"]},
+                                        "name": "4th-class",
+                                        "next-server": "0.0.0.0",
+                                        "option-data": [],
+                                        "option-def": [],
+                                        "server-hostname": "",
+                                        "test": "member('UNKNOWN')",
+                                        "valid-lifetime": 0}],
+                    "count": 1}
+    if world.proto == 'v6':
+        args_rec_all = {"client-classes": [{"metadata": {"server-tags": ["all"]},
+                                            "name": "4th-class",
+                                            "option-data": [],
+                                            "preferred-lifetime": 0,
+                                            "test": "member('UNKNOWN')",
+                                            "valid-lifetime": 0}],
+                        "count": 1}
+
+    _get_all_class({"server-tags": ["all"]}, resp_text="1 DHCPvX client class(es) found.", args_rec=args_rec_all)
+
+    _get_all_class({"server-tags": [""]}, resp_text="server-tag must not be empty", res=1)
+    _get_all_class({"server-tags": []}, resp_text="'server-tags' list must not be empty", res=1)
+    _get_all_class({}, resp_text="'server-tags' parameter is mandatory", res=1)
