@@ -2171,7 +2171,7 @@ def _get_all_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class_set(dhcp_version):
+def test_remote_class_set(dhcp_version):  # pylint: disable=unused-argument
     # I think there is too many test cases in this single test, but splitting them to separate test will result
     # in much longer testing time, and we should start saving time
     # let's start with default
@@ -2202,18 +2202,20 @@ def test_remote_class_set(dhcp_version):
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",
                                "option-data": [{"name": "configfile123", "data": "1APC"}]}]}
-    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.configfile123' does not exist (<wire>:0:107)" % world.proto[-1])
+    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.configfile123'"
+                                     " does not exist (<wire>:0:107)" % world.proto[-1])
     # set class with custom option with name that is not defined
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",
                                "option-data": [{"code": 222, "data": ""}]}]}
-    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.222' does not exist (<wire>:0:107)" % world.proto[-1])  # bug
+    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.222'"
+                                     " does not exist (<wire>:0:107)" % world.proto[-1])  # bug
 
     # set class with custom option that is already defined in the database
     _set_option_def()
     # # this will give us option 222/foo with uint32 value
     _set_class({"client-classes": [{"name": "my_weird_name", "option-data": [{"code": 222, "data": "123"}]}]})
-    _set_class({"client-classes": [{"name": "my_weird_name_2", "option-data": [{"name": "foo", "data": "123"}]}]})  # bug
+    _set_class({"client-classes": [{"name": "my_weird_name_2", "option-data": [{"name": "foo", "data": "123"}]}]})
     # set class that is relaying on different already configured
     _set_class({"client-classes": [{"name": "next_pointless_class", "test": "member('aaa')"}]})
     # set class that is relaying on different not configured class
@@ -2223,7 +2225,7 @@ def test_remote_class_set(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class_set_non_existing_params(dhcp_version):
+def test_remote_class_set_non_existing_params(dhcp_version):  # pylint: disable=unused-argument
     # add to many, not allowed parameters
     # it might and up disabled
     # bug, don't know what error should be here
@@ -2305,7 +2307,7 @@ def remote_class_set_all_parameters(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class_del(dhcp_version):
+def test_remote_class_del(dhcp_version):  # pylint: disable=unused-argument
     _set_class()
     _set_class({"client-classes": [{"name": "bar"}]})
     # remove existing class
@@ -2338,7 +2340,7 @@ def test_remote_class_del(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class_get(dhcp_version):
+def test_remote_class_get(dhcp_version):  # pylint: disable=unused-argument
     _set_class()
     # get existing class
     _get_class()
@@ -2389,7 +2391,7 @@ def test_remote_class4_get_all(dhcp_version):
                                     "valid-lifetime": 0}],
                 "count": 1}
 
-    if world.proto == 'v6':
+    if dhcp_version == 'v6':
         args_rec = {"client-classes": [{"metadata": {"server-tags": ["abc"]},
                                         "name": "foo",
                                         "option-data": [],
@@ -2402,7 +2404,7 @@ def test_remote_class4_get_all(dhcp_version):
 
     # set another class, get two
     _set_class({"client-classes": [{"name": "bar"}]})  # this is without test parameter
-    if world.proto == 'v6':
+    if dhcp_version == 'v6':
         args_rec["client-classes"].append({"metadata": {"server-tags": ["abc"]},
                                            "name": "bar",
                                            "option-data": [],
@@ -2438,7 +2440,7 @@ def test_remote_class4_get_all(dhcp_version):
                                       "test": "member('UNKNOWN')",
                                       "valid-lifetime": 0}],
                   "count": 1}
-    if world.proto == 'v6':
+    if dhcp_version == 'v6':
         args_rec_2 = {"client-classes": [{"metadata": {"server-tags": ["xyz"]},
                                           "name": "3rd-class",
                                           "option-data": [],
@@ -2453,7 +2455,7 @@ def test_remote_class4_get_all(dhcp_version):
     # set anther class with tag all, it should be in requests for abc and xyz
     _set_class({"client-classes": [{"name": "4th-class", "test": "member('UNKNOWN')"}]}, tag="all")
 
-    if world.proto == 'v6':
+    if dhcp_version == 'v6':
         args_rec["client-classes"].append({"metadata": {"server-tags": ["all"]},
                                            "name": "4th-class",
                                            "option-data": [],
@@ -2505,7 +2507,7 @@ def test_remote_class4_get_all(dhcp_version):
                                         "test": "member('UNKNOWN')",
                                         "valid-lifetime": 0}],
                     "count": 1}
-    if world.proto == 'v6':
+    if dhcp_version == 'v6':
         args_rec_all = {"client-classes": [{"metadata": {"server-tags": ["all"]},
                                             "name": "4th-class",
                                             "option-data": [],
