@@ -61,12 +61,12 @@ SELECT LASTVAL() INTO lastval;"""
         self.identifier_value = ""
         self.dhcp4_subnet_id = ""
         self.dhcp6_subnet_id = ""
-        self.ipv4_address = ""
+        self.ipv4_address = "0.0.0.0"  # this is being set because script fails without that value.
         self.dhcp4_client_classes = ""
         self.dhcp6_client_classes = ""
         self.server_hostname = ""
         self.boot_file_name = ""
-        self.next_server = "0.0.0.0"  # this is being set because script fail without that value.
+        self.next_server = "0.0.0.0"  # this is being set because script fails without that value.
         # to ipv6_reservations list please add just dicts:
         #     {"ipv6_address_reservation": "2001::1"}
         #  or {"ipv6_prefix_reservation": "2220::", "ipv6_prefix_len_reservation": 3}
