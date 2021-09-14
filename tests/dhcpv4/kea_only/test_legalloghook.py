@@ -271,7 +271,7 @@ def test_v4_legal_log_assigned_address_via_relay():
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
                                        'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
-                                       'client-id: 00:01:02:03:04:05:06 '
+                                       'client-id: 00:01:02:03:04:05:77 '
                                        'connected via relay at address: $(GIADDR4)')
 
 
@@ -298,7 +298,7 @@ def test_v4_legal_log_assigned_address_via_relay_one_address():
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
                                        'Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
-                                       'client-id: 00:01:02:03:04:05:06 '
+                                       'client-id: 00:01:02:03:04:05:77 '
                                        'connected via relay at address: $(GIADDR4)')
 
 
@@ -329,7 +329,7 @@ def test_v4_legal_log_assigned_address_via_relay_db(backend):
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
                                         'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
-                                        'client-id: 00:01:02:03:04:05:06 '
+                                        'client-id: 00:01:02:03:04:05:77 '
                                         'connected via relay at address: $(GIADDR4)')
 
 
