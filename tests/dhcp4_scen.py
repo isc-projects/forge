@@ -227,7 +227,8 @@ DHCPv6_STATUS_CODES = {
     'NoAddrsAvail': 2,
     'NoBinding': 3,
     'NotOnLink': 4,
-    'UseMulticast': 5
+    'UseMulticast': 5,
+    'NoPrefixAvail': 6,
 }
 
 def _check_ia_na_options(exp_ia_na_t1,
