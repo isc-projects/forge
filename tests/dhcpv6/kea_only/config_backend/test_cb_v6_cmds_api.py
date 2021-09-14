@@ -178,6 +178,16 @@ def test_remote_subnet6_set_duplicated_subnet():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
+    cmd = dict(command="remote-subnet6-list", arguments={"remote": {"type": "mysql"},
+                                                         "server-tags": ["abc"]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+
+    # Check that the subnet ID has changed.
+    assert response == {"arguments": {"count": 1,
+                                      "subnets": [{"id": 1, "metadata": {"server-tags": ["abc"]},
+                                                   "shared-network-name": None, "subnet": "2001:db8:1::/64"}]},
+                        "result": 0, "text": "1 IPv6 subnet(s) found."}
+
 
 def test_remote_subnet6_set_all_values():
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
