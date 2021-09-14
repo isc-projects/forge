@@ -29,6 +29,7 @@ def run_around_tests():
 
 
 def _send_cmd(cmd, remote="mysql", tag=None, channel='http', exp_result=0):
+    # remote and tag in cmd have priority over the ones in the parameters.
     if "remote" not in cmd["arguments"]:
         cmd["arguments"].update({"remote": {"type": remote}})
     if "server-tags" not in cmd["arguments"] and tag is not None:
@@ -2100,13 +2101,13 @@ def test_remote_global_option4_global_get_all():
     assert response == {"arguments": {"count": 0, "options": []}, "result": 3, "text": "0 DHCPv4 option(s) found."}
 
 
-def _set_class(args=None, res=0, resp_text="DHCPv4 client class successfully set.", tag='abc'):
-    if world.proto == 'v6':
-        resp_text = resp_text.replace("v4", "v6")
-
+def _set_class(args=None, res=0, resp_text=None, tag='abc'):
     if args is None:
         args = {"client-classes": [{"name": "foo",
                                     "test": "member('KNOWN')"}]}
+    if resp_text is None:
+        resp_text = "DHCP%s client class successfully set." % world.proto
+    resp_text = resp_text.replace("vX", world.proto)
 
     cmd = dict(command="remote-class%s-set" % world.proto[-1], arguments=args)
     response = _send_cmd(cmd, tag=tag, exp_result=res)
@@ -2118,11 +2119,13 @@ def _set_class(args=None, res=0, resp_text="DHCPv4 client class successfully set
         assert response == {"result": 0, "text": resp_text, "arguments": {"client-classes": [{"name": cls_name}]}}
 
 
-def _del_class(args=None, res=0, resp_text="1 DHCPv4 client class(es) deleted.", tag=None, count=1):
-    if world.proto == 'v6':
-        resp_text = resp_text.replace("v4", "v6")
+def _del_class(args=None, res=0, resp_text=None, tag=None, count=1):
     if args is None:
         args = {"client-classes": [{"name": "foo"}]}
+    if resp_text is None:
+        resp_text = "1 DHCP%s client class(es) deleted." % world.proto
+    resp_text = resp_text.replace("vX", world.proto)
+
     cmd = dict(command="remote-class%s-del" % world.proto[-1], arguments=args)
     response = _send_cmd(cmd, tag=tag, exp_result=res)
     if res == 1:
@@ -2131,11 +2134,12 @@ def _del_class(args=None, res=0, resp_text="1 DHCPv4 client class(es) deleted.",
         assert response == {"result": res, "text": resp_text, "arguments": {"count": count}}
 
 
-def _get_class(args=None, args_rec=None, res=0, resp_text="DHCPv4 client class 'foo' found.", tag=None):
-    if world.proto == 'v6':
-        resp_text = resp_text.replace("v4", "v6")
+def _get_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
     if args is None:
         args = {"client-classes": [{"name": "foo"}]}
+    if resp_text is None:
+        resp_text = "DHCP%s client class 'foo' found." % world.proto
+    resp_text = resp_text.replace("vX", world.proto)
     if args_rec is None:
         args_rec = {
             "client-classes": [
@@ -2167,10 +2171,7 @@ def _get_class(args=None, args_rec=None, res=0, resp_text="DHCPv4 client class '
 
 
 def _get_all_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
-    if world.proto == 'v6':
-        resp_text = resp_text.replace("vX", "v6")
-    else:
-        resp_text = resp_text.replace("vX", "v4")
+    resp_text = resp_text.replace("vX", world.proto)
     cmd = dict(command="remote-class%s-get-all" % world.proto[-1], arguments=args)
     response = _send_cmd(cmd, tag=tag, exp_result=res)
     if res == 1:
@@ -2323,7 +2324,7 @@ def test_remote_class_del(dhcp_version):  # pylint: disable=unused-argument
     # remove existing class
     _del_class()
     # try to remove non existing class
-    _del_class(res=3, resp_text="0 DHCPv4 client class(es) deleted.", count=0)
+    _del_class(res=3, resp_text="0 DHCPvX client class(es) deleted.", count=0)
     # let's add once again class
     _set_class()
     # empty class list
@@ -2357,7 +2358,7 @@ def test_remote_class_get(dhcp_version):  # pylint: disable=unused-argument
     # delete existing class
     _del_class()
     # get non existing class
-    _get_class(res=3, resp_text="DHCPv4 client class 'foo' not found.",
+    _get_class(res=3, resp_text="DHCPvX client class 'foo' not found.",
                args_rec={"client-classes": [], "count": 0})
     # empty class list
     _get_class({"client-classes": []}, res=1,
@@ -2381,7 +2382,7 @@ def test_remote_class_get(dhcp_version):  # pylint: disable=unused-argument
 def test_remote_class4_get_all(dhcp_version):
     # non existing tag
     _get_all_class({"server-tags": ["some-name-that-do-not-exist"]},
-                   resp_text="0 DHCPv%s client class(es) found." % world.proto[-1],
+                   resp_text="0 DHCPvX client class(es) found.",
                    args_rec={"client-classes": [], "count": 0}, res=3)
     # check existing tag but no classes defined:
     _get_all_class({"server-tags": ["abc"]}, resp_text="0 DHCPvX client class(es) found.",
