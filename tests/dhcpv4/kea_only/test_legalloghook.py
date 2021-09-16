@@ -53,7 +53,7 @@ def _send_client_requests(count, client_id=True):
             srv_msg.response_check_option_content(61, 'value', '00010203040506')
 
 
-def _send_client_requests_via_relay(count):
+def _send_client_requests_via_relay(count, address='192.168.50.1'):
     for _ in range(count):
         misc.test_procedure()
         srv_msg.client_does_include_with_value('client_id', '00010203040577')
@@ -69,7 +69,7 @@ def _send_client_requests_via_relay(count):
         misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', 'OFFER')
         srv_msg.response_check_include_option(1)
-        srv_msg.response_check_content('yiaddr', '192.168.50.1')
+        srv_msg.response_check_content('yiaddr', address)
         srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
         misc.test_procedure()
@@ -78,13 +78,13 @@ def _send_client_requests_via_relay(count):
         srv_msg.client_sets_value('Client', 'giaddr', '$(GIADDR4)')
         srv_msg.client_sets_value('Client', 'hops', 1)
         srv_msg.client_copy_option('server_id')
-        srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+        srv_msg.client_does_include_with_value('requested_addr', address)
         srv_msg.client_requests_option(1)
         srv_msg.client_send_msg('REQUEST')
 
         misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', 'ACK')
-        srv_msg.response_check_content('yiaddr', '192.168.50.1')
+        srv_msg.response_check_content('yiaddr', address)
         srv_msg.response_check_include_option(1)
         srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
@@ -292,7 +292,7 @@ def test_v4_legal_log_assigned_address_via_relay_one_address():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _send_client_requests_via_relay(MESSAGE_COUNT)
+    _send_client_requests_via_relay(MESSAGE_COUNT, '192.168.50.2')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
