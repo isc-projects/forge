@@ -305,7 +305,7 @@ def test_remote_subnet6_get_all_values():
             'subnets': [
                 {
                     'id': 2,
-                    'interface': srv_msg.get_interface(),
+                    'interface': srv_msg.get_server_interface(),
                     'metadata': {
                         'server-tags': [
                             'abc'
@@ -683,7 +683,7 @@ def test_remote_subnet6_get_by_id():
     assert response == {"arguments": {"count": 1,
                                       "subnets": [{"metadata": {"server-tags": ["abc"]},
                                                    "shared-network-name": None,
-                                                   "id": 2, "interface": srv_msg.get_interface(),
+                                                   "id": 2, "interface": srv_msg.get_server_interface(),
                                                    "option-data": [{"always-send": True, "code": 7, "csv-format": True,
                                                                     "data": "12", "name": "preference",
                                                                     "space": "dhcp6"}],
@@ -750,7 +750,7 @@ def test_remote_subnet6_get_by_prefix():
             "require-client-classes": ["XYZ"],
             "shared-network-name": None,
             "id": 1,
-            "interface": srv_msg.get_interface(),
+            "interface": srv_msg.get_server_interface(),
             "option-data": [],
             "pools": [{
                 "option-data": [],
@@ -881,7 +881,7 @@ def test_remote_network6_get_basic(channel):
 
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1,
-                                      "shared-networks": [{"interface": srv_msg.get_interface(), "name": "net1",
+                                      "shared-networks": [{"interface": srv_msg.get_server_interface(), "name": "net1",
                                                            "metadata": {"server-tags": ["abc"]},
                                                            "option-data": [], "relay": {"ip-addresses": []}}]},
                         "result": 0, "text": "IPv6 shared network 'net1' found."}
@@ -920,7 +920,7 @@ def test_remote_network6_get_all_values():
                                                            "valid-lifetime": 300,
                                                            "reservations-global": True,
                                                            "reservations-in-subnet": False,
-                                                           "interface": srv_msg.get_interface(),
+                                                           "interface": srv_msg.get_server_interface(),
                                                            "metadata": {"server-tags": ["abc"]},
                                                            "require-client-classes": ["XYZ"],
                                                            "calculate-tee-times": True,
