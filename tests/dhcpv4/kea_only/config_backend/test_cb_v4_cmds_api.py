@@ -2215,16 +2215,18 @@ def test_remote_class_set(dhcp_version):  # pylint: disable=unused-argument
                                "option-data": [{"name": "configfile123", "data": "1APC"}]}]}
     _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.configfile123'"
                                      " does not exist (<wire>:0:107)" % world.proto[-1])
-    # set class with custom option with name that is not defined
+    # set class with custom option with name that is not defined, but it will be accepted as hex
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",
-                               "option-data": [{"code": 222, "data": ""}]}]}
-    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.222'"
-                                     " does not exist (<wire>:0:107)" % world.proto[-1])  # bug
-
+                               "option-data": [{"code": 222, "data": "123"}]}]}
+    _set_class(arg)
     # set class with custom option that is already defined in the database
-    _set_option_def()
-    # # this will give us option 222/foo with uint32 value
+    cmd = dict(command="remote-option-def%s-set" % world.proto[-1],
+               arguments={"remote": {"type": "mysql"},
+                          "server-tags": ["abc"],
+                          "option-defs": [{"name": "foo", "code": 222, "type": "uint32"}]})
+    response = srv_msg.send_ctrl_cmd(cmd)
+    # this will give us option 222/foo with uint32 value
     _set_class({"client-classes": [{"name": "my_weird_name", "option-data": [{"code": 222, "data": "123"}]}]})
     _set_class({"client-classes": [{"name": "my_weird_name_2", "option-data": [{"name": "foo", "data": "123"}]}]})
     # set class that is relaying on different already configured
@@ -2236,6 +2238,7 @@ def test_remote_class_set(dhcp_version):  # pylint: disable=unused-argument
 
 @pytest.mark.v4
 @pytest.mark.v6
+@pytest.mark.disabled
 def test_remote_class_set_non_existing_params(dhcp_version):  # pylint: disable=unused-argument
     # add to many, not allowed parameters
     # it might and up disabled
