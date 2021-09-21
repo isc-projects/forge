@@ -2225,7 +2225,7 @@ def test_remote_class_set(dhcp_version):  # pylint: disable=unused-argument
                arguments={"remote": {"type": "mysql"},
                           "server-tags": ["abc"],
                           "option-defs": [{"name": "foo", "code": 222, "type": "uint32"}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
+    srv_msg.send_ctrl_cmd(cmd)
     # this will give us option 222/foo with uint32 value
     _set_class({"client-classes": [{"name": "my_weird_name", "option-data": [{"code": 222, "data": "123"}]}]})
     _set_class({"client-classes": [{"name": "my_weird_name_2", "option-data": [{"name": "foo", "data": "123"}]}]})
