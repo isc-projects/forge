@@ -8,7 +8,8 @@ import srv_control
 import srv_msg
 
 from cb_api import global_parameter_set, subnet_set, network_set, \
-                   subnet_del_by_prefix, global_option_set, global_option_del
+                   subnet_del_by_prefix, global_option_set, global_option_del,\
+                   client_class_set, client_class_del
 from forge_cfg import world
 from protosupport.multi_protocol_functions import substitute_vars
 
@@ -177,6 +178,7 @@ class ConfigModel(ConfigElem):
         self.subnet_id = 0
         self.shared_networks = {}
         self.options = {}
+        self.client_classes = []
 
         if 'subnets' in init_cfg:
             for sn in init_cfg['subnets']:
@@ -217,7 +219,6 @@ class ConfigModel(ConfigElem):
         cfg['ddns-generated-prefix'] = 'myhost'
         cfg['ddns-send-updates'] = True
         cfg['ddns-use-conflict-resolution'] = True
-
 
         # combining whole config
         dhcp_key = 'Dhcp' + proto
@@ -500,6 +501,65 @@ class ConfigModel(ConfigElem):
                 subnets.append(sn)
         return subnets
 
+    def add_class(self, **kwargs):
+        if "client-classes" not in self.cfg:
+            self.cfg["client-classes"] = []
+        server_tags = None
+        client_class = {'boot-file-name': '',
+                        'next-server': '0.0.0.0',
+                        'option-data': [],
+                        'option-def': [],
+                        'server-hostname': '',
+                        'valid-lifetime': 7200}
+        if world.proto == 'v6':
+            client_class = {'option-data': [],
+                            'valid-lifetime': 7200,
+                            'preferred-lifetime': 3600}
+        for param, val in kwargs.items():
+            if val is None:
+                continue
+            if param == "server_tags":
+                server_tags = _to_list(val)
+                continue
+            param = param.replace('_', '-')
+            client_class[param] = val
+        self.cfg["client-classes"].append(client_class)
+        self.client_classes.append(client_class)
+
+        if "server_tags" in kwargs:
+            del kwargs["server_tags"]
+
+        # send command
+        response = client_class_set([client_class], server_tags=server_tags)
+        assert response["result"] == 0
+
+        # request config reloading and check result
+        config = self.reload_and_check()
+
+        return client_class, config
+
+    def del_class(self, class_name=None):
+        # find subnet
+        my_class = None
+        idx = None
+        print(self.client_classes)
+        for singe_class in self.client_classes:
+            if singe_class['name'] == class_name:
+                my_class = singe_class
+                idx = self.client_classes.index(my_class)
+
+        if my_class is None:
+            raise Exception('Cannot find class %s to delete' % class_name)
+        if my_class is not None:
+            del self.client_classes[idx]
+            del self.cfg["client-classes"][idx]
+
+        response = client_class_del(class_name)
+        assert response["result"] == 0
+
+        config = self.get_root().reload_and_check()
+        return config
+
 
 def _merge_configs(a, b, path=None):
     if path is None:
@@ -612,6 +672,7 @@ def setup_server_for_config_backend_cmds(**kwargs):
     default_cfg = {"hooks-libraries": [{"library": world.f_cfg.hooks_join("libdhcp_cb_cmds.so")},
                                        {"library": world.f_cfg.hooks_join("libdhcp_mysql_cb.so")}],
                    "server-tag": "abc",
+                   "parked-packet-limit": 256,
                    "config-control": {"config-databases": [{"user": "$(DB_USER)",
                                                             "password": "$(DB_PASSWD)",
                                                             "name": "$(DB_NAME)",

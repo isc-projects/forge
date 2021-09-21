@@ -14,15 +14,24 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.config_backend]
 
 
-def test_class_in_subnet(dhcp_version):
+@pytest.mark.parametrize("classes_kept_in", ["db", "config"])
+def test_class_in_subnet(dhcp_version, classes_kept_in):
     # prepare initial config with 1 class 'modem' for 1 client with specificed MAC address
-    init_cfg = {'client-classes': [{'name': 'modem'}]}
-    if dhcp_version == 'v4':
-        init_cfg['client-classes'][0]['test'] = "hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'"
+    if classes_kept_in == 'config':
+        init_cfg = {'client-classes': [{'name': 'modem'}]}
+        if dhcp_version == 'v4':
+            init_cfg['client-classes'][0]['test'] = "hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'"
+        else:
+            init_cfg['client-classes'][0]['test'] = "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'"
     else:
-        init_cfg['client-classes'][0]['test'] = "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'"
-
+        init_cfg = {}
     cfg = setup_server_for_config_backend_cmds(**init_cfg)
+
+    if classes_kept_in == 'db':
+        if dhcp_version == 'v4':
+            cfg.add_class(name="modem", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'")
+        else:
+            cfg.add_class(name="modem", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'")
 
     # add 1 subnet that permits only client from 'modem' class
     subnet_cfg, _ = cfg.add_subnet(client_class='modem')
@@ -44,33 +53,48 @@ def test_class_in_subnet(dhcp_version):
     get_address(mac_addr="00:00:00:00:00:03", exp_addr='192.168.50.2' if dhcp_version == 'v4' else '2001:db8:1::2')
 
 
-def test_class_in_network(dhcp_version):
+@pytest.mark.parametrize("classes_kept_in", ["db", "config"])
+def test_class_in_network(dhcp_version, classes_kept_in):
     # prepare initial config with 3 class: modem, user, other
-    # each class is assigned to 1 client with specificed MAC address
-    if dhcp_version == 'v4':
-        init_cfg = {'client-classes': [{
-            'name': 'modem',
-            'test': "hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'"
-        }, {
-            'name': 'user',
-            'test': "hexstring(pkt4.mac, ':') == '00:00:00:00:00:02'"
-        }, {
-            'name': 'other',
-            'test': "hexstring(pkt4.mac, ':') == '00:00:00:00:00:03'"
-        }]}
-    else:
-        init_cfg = {'client-classes': [{
-            'name': 'modem',
-            'test': "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'"
-        }, {
-            'name': 'user',
-            'test': "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:02'"
-        }, {
-            'name': 'other',
-            'test': "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:03'"
-        }]}
+    # each class is assigned to 1 client with specified MAC address
 
+    if classes_kept_in == "config":
+        if dhcp_version == 'v4':
+            # cfg.add_class()
+            init_cfg = {'client-classes': [{
+                'name': 'modem',
+                'test': "hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'"
+            }, {
+                'name': 'user',
+                'test': "hexstring(pkt4.mac, ':') == '00:00:00:00:00:02'"
+            }, {
+                'name': 'other',
+                'test': "hexstring(pkt4.mac, ':') == '00:00:00:00:00:03'"
+            }]}
+        else:
+            init_cfg = {'client-classes': [{
+                'name': 'modem',
+                'test': "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'"
+            }, {
+                'name': 'user',
+                'test': "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:02'"
+            }, {
+                'name': 'other',
+                'test': "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:03'"
+            }]}
+    else:
+        init_cfg = {}
     cfg = setup_server_for_config_backend_cmds(**init_cfg)
+
+    if classes_kept_in == 'db':
+        if dhcp_version == 'v4':
+            cfg.add_class(name="modem", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'")
+            cfg.add_class(name="user", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:02'")
+            cfg.add_class(name="other", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:03'")
+        else:
+            cfg.add_class(name="modem", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'")
+            cfg.add_class(name="user", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:02'")
+            cfg.add_class(name="other", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:03'")
 
     # add 2 subnets
 
@@ -102,17 +126,3 @@ def test_class_in_network(dhcp_version):
     # and now unclassified client 4 should be given a lease from subnet 2
     network_cfg.update(client_class='')
     get_address(mac_addr="00:00:00:00:00:04", exp_addr='2.2.2.3' if dhcp_version == 'v4' else '2:2:2::3')
-
-
-# TODO
-# def test_interface():
-#     cfg = setup_server_for_config_backend_cmds()
-
-#     # add 1 subnet that permits only client from 'modem' class
-#     subnet_cfg, _ = cfg.add_subnet()
-
-#     # client from 'modem' class with specific MAC address should get lease
-#     get_address()
-
-#     subnet_cfg.update(interface='ethXX')
-#     get_address()

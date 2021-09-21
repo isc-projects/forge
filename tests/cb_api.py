@@ -20,6 +20,23 @@ def global_option_set(options, db_type='mysql', server_tags=None):
     return response
 
 
+def client_class_set(classes, db_type='mysql', server_tags=None):
+    if not isinstance(classes, list):
+        classes = [classes]
+    kwargs = {"client-classes": classes}
+    cmd = 'remote-class%s-set' % world.proto[1]
+    response = send_cmd(cmd, db_type, server_tags, **kwargs)
+    return response
+
+
+def client_class_del(class_name, db_type='mysql'):
+    server_tags = "forbidden"
+    kwargs = {"client-classes": [{"name": class_name}]}
+    cmd = 'remote-class%s-del' % world.proto[1]
+    response = send_cmd(cmd, db_type, server_tags, **kwargs)
+    return response
+
+
 def global_option_del(options, db_type='mysql', server_tags=None):
     cmd = 'remote-option%s-global-del' % world.proto[1]
     response = send_cmd(cmd, db_type, server_tags, options=options)

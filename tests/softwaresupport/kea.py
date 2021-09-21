@@ -773,13 +773,11 @@ def _cfg_write():
             conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=False))
 
     add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
-    log.info('provisioned cfg:\n%s', world.dhcp_cfg)
     with open("kea-dhcp%s.conf" % world.proto[1], 'w') as conf_file:
         conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=False))
 
 
 def _write_cfg2(cfg):
-    log.info('provisioned cfg:\n%s', cfg)
     if "Control-agent" in cfg:
         with open("kea-ctrl-agent.conf", 'w') as cfg_file:
             json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=False,
