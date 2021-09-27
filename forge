@@ -501,7 +501,7 @@ def _upload_content(content, server_name, path, vagrant_dir, log_prefix):
 def _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
 
-    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server dnsutils'
+    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server dnsutils libkrb5-dev'
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
@@ -618,7 +618,7 @@ def _install_kea_native_on_server(args, server_idx):
 
     # prepare pkg source repo url
     repository_url = 'https://packages.aws.isc.org'
-    repo_name = 'kea-%s-%s' % ('1.9', args.system)
+    repo_name = 'kea-%s-%s' % ('2.0', args.system)
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
