@@ -50,11 +50,14 @@ def _dora(address, options=None, exchange='full', response_type='ACK'):
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_libreload():
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_v4_hosts_cmds_libreload(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -63,15 +66,30 @@ def test_v4_hosts_cmds_libreload():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "libreload","arguments": {}}')
+    srv_msg.send_ctrl_cmd({"command": "libreload", "arguments": {}}, channel=channel)
     srv_msg.log_contains('HOST_CMDS_DEINIT_OK unloading Host Commands hooks library successful')
     srv_msg.log_contains('HOST_CMDS_INIT_OK loading Host Commands hooks library successful')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "ip-address": "192.168.50.100",
+            "subnet-id": 1
+        },
+        "command": "reservation-del"
+    }, channel=channel)
 
     _dora('192.168.50.50')
 
@@ -80,11 +98,14 @@ def test_v4_hosts_cmds_libreload():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_reconfigure():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reconfigure(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -93,7 +114,16 @@ def test_v4_hosts_cmds_reconfigure():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -101,6 +131,8 @@ def test_v4_hosts_cmds_reconfigure():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -108,7 +140,16 @@ def test_v4_hosts_cmds_reconfigure():
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -117,11 +158,14 @@ def test_v4_hosts_cmds_reconfigure():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_mysql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_mysql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -130,7 +174,16 @@ def test_v4_hosts_cmds_add_reservation_mysql():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -139,11 +192,14 @@ def test_v4_hosts_cmds_add_reservation_mysql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_del_reservation_mysql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_del_reservation_mysql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -152,11 +208,26 @@ def test_v4_hosts_cmds_del_reservation_mysql():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "ip-address": "192.168.50.100",
+            "subnet-id": 1
+        },
+        "command": "reservation-del"
+    }, channel=channel)
 
     _dora('192.168.50.50')
 
@@ -165,11 +236,14 @@ def test_v4_hosts_cmds_del_reservation_mysql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_del_reservation_mysql_2():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_del_reservation_mysql_2(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     # address reserved without using command
     srv_control.enable_db_backend_reservation('MySQL')
@@ -184,7 +258,13 @@ def test_v4_hosts_cmds_del_reservation_mysql_2():
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "ip-address": "192.168.50.100",
+            "subnet-id": 1
+        },
+        "command": "reservation-del"
+    }, channel=channel)
 
     _dora('192.168.50.50')
 
@@ -193,11 +273,14 @@ def test_v4_hosts_cmds_del_reservation_mysql_2():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_del_reservation_pgsql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_del_reservation_pgsql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
@@ -206,11 +289,26 @@ def test_v4_hosts_cmds_del_reservation_pgsql():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "ip-address": "192.168.50.100",
+            "subnet-id": 1
+        },
+        "command": "reservation-del"
+    }, channel=channel)
 
     _dora('192.168.50.50')
 
@@ -219,11 +317,14 @@ def test_v4_hosts_cmds_del_reservation_pgsql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_del_reservation_pgsql_2():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_del_reservation_pgsql_2(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     # address reserved without using command
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -238,7 +339,13 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-del","arguments":{"subnet-id":1,"ip-address":"192.168.50.100"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "ip-address": "192.168.50.100",
+            "subnet-id": 1
+        },
+        "command": "reservation-del"
+    }, channel=channel)
 
     _dora('192.168.50.50')
 
@@ -247,11 +354,14 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_pgsql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_pgsql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
@@ -260,7 +370,16 @@ def test_v4_hosts_cmds_add_reservation_pgsql():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -269,11 +388,14 @@ def test_v4_hosts_cmds_add_reservation_pgsql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_get_reservation_mysql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_get_reservation_mysql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -282,11 +404,27 @@ def test_v4_hosts_cmds_get_reservation_mysql():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "identifier": "ff:01:02:03:ff:04",
+            "identifier-type": "hw-address",
+            "subnet-id": 1
+        },
+        "command": "reservation-get"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -295,11 +433,14 @@ def test_v4_hosts_cmds_get_reservation_mysql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_get_reservation_mysql_2():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_get_reservation_mysql_2(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     # address reserved without using command
     srv_control.enable_db_backend_reservation('MySQL')
@@ -314,7 +455,14 @@ def test_v4_hosts_cmds_get_reservation_mysql_2():
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "identifier": "ff:01:02:03:ff:04",
+            "identifier-type": "hw-address",
+            "subnet-id": 1
+        },
+        "command": "reservation-get"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -323,11 +471,14 @@ def test_v4_hosts_cmds_get_reservation_mysql_2():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_get_reservation_pgsql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_get_reservation_pgsql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
@@ -336,11 +487,27 @@ def test_v4_hosts_cmds_get_reservation_pgsql():
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"hw-address":"ff:01:02:03:ff:04","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "identifier": "ff:01:02:03:ff:04",
+            "identifier-type": "hw-address",
+            "subnet-id": 1
+        },
+        "command": "reservation-get"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -349,11 +516,14 @@ def test_v4_hosts_cmds_get_reservation_pgsql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_get_reservation_pgsql_2():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_get_reservation_pgsql_2(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'ff:01:02:03:ff:04')
@@ -367,7 +537,14 @@ def test_v4_hosts_cmds_get_reservation_pgsql_2():
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "reservation-get","arguments":{"subnet-id":1,"identifier-type": "hw-address","identifier":"ff:01:02:03:ff:04"}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "identifier": "ff:01:02:03:ff:04",
+            "identifier-type": "hw-address",
+            "subnet-id": 1
+        },
+        "command": "reservation-get"
+    }, channel=channel)
 
     _dora('192.168.50.100')
 
@@ -376,10 +553,13 @@ def test_v4_hosts_cmds_get_reservation_pgsql_2():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_mysql_flex_id(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
@@ -393,7 +573,16 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "flex-id": "'docsis3.0'",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100', {'vendor_class_id': 'docsis3.0'})
 
@@ -402,10 +591,13 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
@@ -419,7 +611,16 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "flex-id": "'docsis3.0'",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100', {'requested_addr': '192.168.50.200',
                              'vendor_class_id': 'docsis3.0'},
@@ -430,10 +631,13 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_pgsql_flex_id(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
@@ -447,7 +651,16 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "flex-id": "'docsis3.0'",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100', {'vendor_class_id': 'docsis3.0'})
 
@@ -456,10 +669,13 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
@@ -473,7 +689,16 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"flex-id":"\'docsis3.0\'","ip-address":"192.168.50.100"}}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "flex-id": "'docsis3.0'",
+                "ip-address": "192.168.50.100",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     _dora('192.168.50.100', {'requested_addr': '192.168.50.200',
                              'vendor_class_id': 'docsis3.0'},
@@ -484,11 +709,14 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_complex_mysql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_complex_mysql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('MySQL')
 
@@ -497,7 +725,29 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
 
     _dora('192.168.50.50')
 
-    result = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.168.50.205","next-server":"192.168.50.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
+    result = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "boot-file-name": "/dev/null",
+                "client-classes": [
+                    "special_snowflake",
+                    "office"
+                ],
+                "client-id": "01:0a:0b:0c:0d:0e:0f",
+                "ip-address": "192.168.50.205",
+                "next-server": "192.168.50.1",
+                "option-data": [
+                    {
+                        "data": "10.1.1.202,10.1.1.203",
+                        "name": "domain-name-servers"
+                    }
+                ],
+                "server-hostname": "hal9000",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
     assert result['result'] == 0
 
     misc.test_procedure()
@@ -534,11 +784,14 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_add_reservation_complex_pgsql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_add_reservation_complex_pgsql(channel):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
 
@@ -547,7 +800,29 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
 
     _dora('192.168.50.50')
 
-    response = srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-add","arguments":{"reservation":{"subnet-id":1,"client-id":"01:0a:0b:0c:0d:0e:0f","ip-address":"192.168.50.205","next-server":"192.168.50.1","server-hostname":"hal9000","boot-file-name":"/dev/null","option-data":[{"name":"domain-name-servers","data":"10.1.1.202,10.1.1.203"}],"client-classes":["special_snowflake","office"]}}}')
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "boot-file-name": "/dev/null",
+                "client-classes": [
+                    "special_snowflake",
+                    "office"
+                ],
+                "client-id": "01:0a:0b:0c:0d:0e:0f",
+                "ip-address": "192.168.50.205",
+                "next-server": "192.168.50.1",
+                "option-data": [
+                    {
+                        "data": "10.1.1.202,10.1.1.203",
+                        "name": "domain-name-servers"
+                    }
+                ],
+                "server-hostname": "hal9000",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
     assert response['result'] == 0
 
     misc.test_procedure()
@@ -584,11 +859,14 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_reservation_get_all():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_all(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname1',
@@ -618,7 +896,12 @@ def test_v4_hosts_cmds_reservation_get_all():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "subnet-id": 1
+        },
+        "command": "reservation-get-all"
+    }, channel=channel)
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -631,11 +914,14 @@ def test_v4_hosts_cmds_reservation_get_all():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_reservation_get_all_mysql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_all_mysql(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
 
     srv_control.enable_db_backend_reservation('MySQL')
@@ -658,7 +944,12 @@ def test_v4_hosts_cmds_reservation_get_all_mysql():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "subnet-id": 1
+        },
+        "command": "reservation-get-all"
+    }, channel=channel)
 
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
@@ -672,11 +963,14 @@ def test_v4_hosts_cmds_reservation_get_all_mysql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_reservation_get_all_pgsql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_all_pgsql(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -699,7 +993,12 @@ def test_v4_hosts_cmds_reservation_get_all_pgsql():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-all","arguments":{"subnet-id":1}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "subnet-id": 1
+        },
+        "command": "reservation-get-all"
+    }, channel=channel)
 
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
@@ -713,11 +1012,14 @@ def test_v4_hosts_cmds_reservation_get_all_pgsql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_reservation_get_page():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_page(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
 
     srv_control.host_reservation_in_subnet('hostname',
@@ -758,7 +1060,13 @@ def test_v4_hosts_cmds_reservation_get_page():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "limit": 3,
+            "subnet-id": 1
+        },
+        "command": "reservation-get-page"
+    }, channel=channel)
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -768,7 +1076,14 @@ def test_v4_hosts_cmds_reservation_get_page():
     srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname7')
     srv_msg.json_response_parsing('text', None, '3 IPv4 host(s) found.')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3,"from":3}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "from": 3,
+            "limit": 3,
+            "subnet-id": 1
+        },
+        "command": "reservation-get-page"
+    }, channel=channel)
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
     srv_msg.json_response_parsing('text', None, '2 IPv4 host(s) found.')
@@ -778,11 +1093,14 @@ def test_v4_hosts_cmds_reservation_get_page():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_reservation_get_all_page_mysql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_all_page_mysql(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
 
     srv_control.enable_db_backend_reservation('MySQL')
@@ -813,7 +1131,13 @@ def test_v4_hosts_cmds_reservation_get_all_page_mysql():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "limit": 3,
+            "subnet-id": 1
+        },
+        "command": "reservation-get-page"
+    }, channel=channel)
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -828,11 +1152,14 @@ def test_v4_hosts_cmds_reservation_get_all_page_mysql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-def test_v4_hosts_cmds_reservation_get_all_page_pgsql():
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_all_page_pgsql(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
 
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -863,7 +1190,13 @@ def test_v4_hosts_cmds_reservation_get_all_page_pgsql():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"reservation-get-page","arguments":{"subnet-id":1,"limit":3}}')
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "limit": 3,
+            "subnet-id": 1
+        },
+        "command": "reservation-get-page"
+    }, channel=channel)
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
     srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
@@ -878,73 +1211,94 @@ def test_v4_hosts_cmds_reservation_get_all_page_pgsql():
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
 @pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
-def test_v4_hosts_cmds_conflicts_duplicate_mac_reservations(hosts_db):
+def test_v4_hosts_cmds_conflicts_duplicate_mac_reservations(channel, hosts_db):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation(hosts_db)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket(
-        {"command": "reservation-add",
-         "arguments": {"reservation": {
-             "subnet-id": 1,
-             "hw-address": "ff:01:02:03:ff:01",
-             "ip-address": "192.168.50.10"}}})
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:01",
+                "ip-address": "192.168.50.10",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     # the same DUID - it should fail
-    srv_msg.send_ctrl_cmd_via_socket(
-        {"command": "reservation-add",
-         "arguments": {"reservation": {
-             "subnet-id": 1,
-             "hw-address": "ff:01:02:03:ff:01",
-             "ip-address": "192.168.50.11"}}},
-        exp_result=1)
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:01",
+                "ip-address": "192.168.50.11",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel, exp_result=1)
 
 
 @pytest.mark.v4
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
 @pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
-def test_v4_hosts_cmds_conflicts_duplicate_ip_reservations(hosts_db):
+def test_v4_hosts_cmds_conflicts_duplicate_ip_reservations(channel, hosts_db):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation(hosts_db)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket(
-        {"command": "reservation-add",
-         "arguments": {"reservation": {
-             "subnet-id": 1,
-             "hw-address": "ff:01:02:03:ff:01",
-             "ip-address": "192.168.50.10"}}})
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:01",
+                "ip-address": "192.168.50.10",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     # the same IP - it should fail
-    srv_msg.send_ctrl_cmd_via_socket(
-        {"command": "reservation-add",
-         "arguments": {"reservation": {
-             "subnet-id": 1,
-             "hw-address": "ff:01:02:03:ff:02",
-             "ip-address": "192.168.50.10"}}},
-        exp_result=1)
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "ff:01:02:03:ff:02",
+                "ip-address": "192.168.50.10",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel, exp_result=1)
 
 
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
 @pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
-def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(hosts_db):
+def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(channel, hosts_db):
     the_same_ip_address = '192.168.50.10'
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -953,25 +1307,35 @@ def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(hosts_db):
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
 
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation(hosts_db)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_socket(
-        {"command": "reservation-add",
-         "arguments": {"reservation": {
-             "subnet-id": 1,
-             "hw-address": "aa:aa:aa:aa:aa:aa",
-             "ip-address": the_same_ip_address}}})
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "aa:aa:aa:aa:aa:aa",
+                "ip-address": the_same_ip_address,
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
-    srv_msg.send_ctrl_cmd_via_socket(
-        {"command": "reservation-add",
-         "arguments": {"reservation": {
-             "subnet-id": 1,
-             "hw-address": "bb:bb:bb:bb:bb:bb",
-             "ip-address": the_same_ip_address}}})
+    srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "hw-address": "bb:bb:bb:bb:bb:bb",
+                "ip-address": the_same_ip_address,
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
 
     # first request address by aa:aa:aa:aa:aa:aa
     misc.test_procedure()
@@ -1053,14 +1417,17 @@ def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(hosts_db):
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
 @pytest.mark.parametrize('exchange', ['full', 'renew-only'])
 @pytest.mark.parametrize('hosts_database', ['MySQL', 'PostgreSQL'])
-def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
+def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.agent_control_channel()
     srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
 
     srv_control.enable_db_backend_reservation(hosts_database)
 
@@ -1075,73 +1442,65 @@ def test_v4_hosts_cmds_global_to_in_subnet(exchange, hosts_database):
     srv_control.start_srv('DHCP', 'started')
 
     # Add a subnet.
-    srv_msg.send_ctrl_cmd(
-        {
-            "command": "subnet4-add",
-            "arguments": {
-                "subnet4": [
-                    {
-                        "id": 1,
-                        "interface": "$(SERVER_IFACE)",
-                        "pools": [
-                            {
-                                "pool": "192.168.50.50-192.168.50.50"
-                            }
-                        ],
-                        "subnet": "192.168.50.0/24"
-                    }
-                ]
-            }
+    srv_msg.send_ctrl_cmd({
+        "command": "subnet4-add",
+        "arguments": {
+            "subnet4": [
+                {
+                    "id": 1,
+                    "interface": "$(SERVER_IFACE)",
+                    "pools": [
+                        {
+                            "pool": "192.168.50.50-192.168.50.50"
+                        }
+                    ],
+                    "subnet": "192.168.50.0/24"
+                }
+            ]
         }
-    )
+    }, channel=channel)
 
     # First do the full exchange and expect an address from the pool.
     _dora('192.168.50.50', exchange='full')
 
     # Add a global reservation.
-    srv_msg.send_ctrl_cmd(
-        {
-            "command": "reservation-add",
-            "arguments": {
-                "reservation": {
-                    "subnet-id": 0,
-                    "hw-address": "ff:01:02:03:ff:04",
-                    "ip-address": "192.168.50.100"
-                }
+    srv_msg.send_ctrl_cmd({
+        "command": "reservation-add",
+        "arguments": {
+            "reservation": {
+                "subnet-id": 0,
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.100"
             }
         }
-    )
+    }, channel=channel)
 
     # Check that Kea leases the globally reserved address.
     _dora('192.168.50.100', exchange=exchange)
 
     # Remove the global reservation.
-    srv_msg.send_ctrl_cmd(
-        {
-            "command": "reservation-del",
-            "arguments": {
-                "subnet-id": 0,
-                "ip-address": "192.168.50.100"
-            }
+    srv_msg.send_ctrl_cmd({
+        "command": "reservation-del",
+        "arguments": {
+            "subnet-id": 0,
+            "ip-address": "192.168.50.100"
         }
-    )
+    }, channel=channel)
 
     # Check that Kea has reverted to the default behavior.
     _dora('192.168.50.50', exchange=exchange)
 
     # Add an in-subnet reservation.
-    srv_msg.send_ctrl_cmd(
-        {
-            "command": "reservation-add",
-            "arguments": {
-                "reservation": {
-                    "subnet-id": 1,
-                    "hw-address": "ff:01:02:03:ff:04",
-                    "ip-address": "192.168.50.150"
-                }
+    srv_msg.send_ctrl_cmd({
+        "command": "reservation-add",
+        "arguments": {
+            "reservation": {
+                "subnet-id": 1,
+                "hw-address": "ff:01:02:03:ff:04",
+                "ip-address": "192.168.50.150"
             }
         }
-    )
+    }, channel=channel)
 
     # Check that Kea leases the in-subnet reserved address.
     _dora('192.168.50.150', exchange=exchange)
