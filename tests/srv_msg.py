@@ -662,12 +662,6 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0):
     return response
 
 
-@step(r'JSON response in (\S+) MUST (NOT )?include value: (.+)')
-def json_response_parsing(parameter_name, condition, parameter_value):
-    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
-    multi_protocol_functions.parse_json_file(condition, str(parameter_name), str(parameter_value))
-
-
 @step(r'Loops config: Save leases details.')
 def loops_config_sld():
     dhcpmsg.loops_config_sld()

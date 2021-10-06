@@ -45,6 +45,17 @@ def forge_sleep(duration, time_units):
     time.sleep(duration * 1.0 / divide)
 
 
+def is_superset_of(superset, subset):
+    if isinstance(subset, dict):
+        return all(key in superset and is_superset_of(superset[key], val) for key, val in subset.items())
+
+    if isinstance(subset, list) or isinstance(subset, set):
+        return all(any(is_superset_of(superitem, subitem) for superitem in superset) for subitem in subset)
+
+    # Assume that subset is a plain value if none of the above match.
+    return superset == subset
+
+
 def test_pause():
     """
     Pause the test for any reason. Press any key to continue.

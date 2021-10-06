@@ -10,6 +10,7 @@ import srv_msg
 
 from dhcp4_scen import DHCPv6_STATUS_CODES
 from forge_cfg import world
+from protosupport.multi_protocol_functions import is_superset_of
 
 
 def _check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
@@ -954,18 +955,45 @@ def test_v6_hosts_cmds_reservation_get_all(channel):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "subnet-id": 1
         },
         "command": "reservation-get-all"
     }, channel=channel)
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname4')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname5')
-    srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
+
+    assert response == {
+        "arguments": {
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname1",
+                    "hw-address": "f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname2",
+                    "hw-address": "f6:f5:f4:f3:f2:02",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ]
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    }
 
 
 @pytest.mark.v6
@@ -1002,18 +1030,45 @@ def test_v6_hosts_cmds_reservation_get_all_mysql(channel):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "subnet-id": 1
         },
         "command": "reservation-get-all"
     }, channel=channel)
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname4')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname5')
-    srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
+
+    assert response == {
+        "arguments": {
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname2",
+                    "hw-address": "f6:f5:f4:f3:f2:02",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname1",
+                    "hw-address": "f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ]
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    }
 
 
 @pytest.mark.v6
@@ -1050,19 +1105,45 @@ def test_v6_hosts_cmds_reservation_get_all_pgsql(channel):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "subnet-id": 1
         },
         "command": "reservation-get-all"
     }, channel=channel)
 
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname4')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname5')
-    srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
+    assert response == {
+        "arguments": {
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname2",
+                    "hw-address": "f6:f5:f4:f3:f2:02",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname1",
+                    "hw-address": "f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ]
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    }
 
 
 @pytest.mark.v6
@@ -1116,23 +1197,53 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "limit": 3,
             "subnet-id": 1
         },
         "command": "reservation-get-page"
     }, channel=channel)
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname1')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname2')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname4')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname5')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname6')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname7')
-    srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
 
-    srv_msg.send_ctrl_cmd({
+    assert response == {
+        "arguments": {
+            "count": 3,
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname1",
+                    "hw-address": "f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname2",
+                    "hw-address": "f6:f5:f4:f3:f2:02",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ],
+            "next": {
+                "from": 3,
+                "source-index": 0
+            }
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    }
+
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "from": 3,
             "limit": 3,
@@ -1140,9 +1251,36 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
         },
         "command": "reservation-get-page"
     }, channel=channel)
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
-    srv_msg.json_response_parsing('text', None, '2 IPv6 host(s) found.')
+
+    assert response == {
+        "arguments": {
+            "count": 2,
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname6",
+                    "hw-address": "f6:f5:f4:f3:f2:06",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname7",
+                    "hw-address": "f6:f5:f4:f3:f2:07",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ],
+            "next": {
+                "from": 5,
+                "source-index": 0
+            }
+        },
+        "result": 0,
+        "text": "2 IPv6 host(s) found."
+    }
 
 
 @pytest.mark.v6
@@ -1187,21 +1325,50 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql(channel):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "limit": 3,
             "subnet-id": 1
         },
         "command": "reservation-get-page"
     }, channel=channel)
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname4')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname5')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname1')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname2')
-    srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
+
+    assert is_superset_of(response, {
+        "arguments": {
+            "count": 3,
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname7",
+                    "hw-address": "f6:f5:f4:f3:f2:07",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname6",
+                    "hw-address": "f6:f5:f4:f3:f2:06",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ],
+            "next": {
+                "source-index": 1
+            }
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    })
 
 
 @pytest.mark.v6
@@ -1246,21 +1413,50 @@ def test_v6_hosts_cmds_reservation_get_all_page_pgsql(channel):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "limit": 3,
             "subnet-id": 1
         },
         "command": "reservation-get-page"
     }, channel=channel)
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname6')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname7')
-    srv_msg.json_response_parsing('arguments', None, 'reserved-hostname3')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname4')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname5')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname1')
-    srv_msg.json_response_parsing('arguments', 'NOT ', 'reserved-hostname2')
-    srv_msg.json_response_parsing('text', None, '3 IPv6 host(s) found.')
+
+    assert is_superset_of(response, {
+        "arguments": {
+            "count": 3,
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname7",
+                    "hw-address": "f6:f5:f4:f3:f2:07",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname6",
+                    "hw-address": "f6:f5:f4:f3:f2:06",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ],
+            "next": {
+                "source-index": 1
+            }
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    })
 
 
 @pytest.mark.v6

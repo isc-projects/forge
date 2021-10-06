@@ -251,9 +251,8 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     # this should fail as socket has been changed
     srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}', exp_failed=True)
     # this should pass (with new socket)
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}',
-                                     socket_name='control_socket2')
-    srv_msg.json_response_parsing('arguments', None, 'leases-reclaim')
+    response = srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands", "arguments": {}}', socket_name='control_socket2')
+    assert 'leases-reclaim' in response['arguments']
 
 
 @pytest.mark.v6
