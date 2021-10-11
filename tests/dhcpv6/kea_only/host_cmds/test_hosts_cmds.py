@@ -105,7 +105,7 @@ def test_v6_hosts_cmds_libreload(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -117,20 +117,33 @@ def test_v6_hosts_cmds_libreload(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({"command": "libreload", "arguments": {}}, channel=channel)
+    response = srv_msg.send_ctrl_cmd({"command": "libreload", "arguments": {}}, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Hooks libraries successfully reloaded."
+    }
+
     srv_msg.log_contains('HOST_CMDS_DEINIT_OK unloading Host Commands hooks library successful')
     srv_msg.log_contains('HOST_CMDS_INIT_OK loading Host Commands hooks library successful')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "2001:db8:1::100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _sarr('2001:db8:1::50')
 
@@ -155,7 +168,7 @@ def test_v6_hosts_cmds_reconfigure(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -167,6 +180,10 @@ def test_v6_hosts_cmds_reconfigure(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -183,7 +200,7 @@ def test_v6_hosts_cmds_reconfigure(channel):
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -195,6 +212,10 @@ def test_v6_hosts_cmds_reconfigure(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -219,7 +240,7 @@ def test_v6_hosts_cmds_add_reservation_mysql(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -231,6 +252,10 @@ def test_v6_hosts_cmds_add_reservation_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -255,7 +280,7 @@ def test_v6_hosts_cmds_del_reservation_mysql(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -267,16 +292,24 @@ def test_v6_hosts_cmds_del_reservation_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "2001:db8:1::100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _sarr('2001:db8:1::50')
 
@@ -307,13 +340,17 @@ def test_v6_hosts_cmds_del_reservation_mysql_2(channel):
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "2001:db8:1::100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _sarr('2001:db8:1::50')
 
@@ -338,7 +375,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -350,16 +387,24 @@ def test_v6_hosts_cmds_del_reservation_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "2001:db8:1::100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _sarr('2001:db8:1::50')
 
@@ -390,13 +435,17 @@ def test_v6_hosts_cmds_del_reservation_pgsql_2(channel):
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "2001:db8:1::100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _sarr('2001:db8:1::50')
 
@@ -421,7 +470,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -433,6 +482,10 @@ def test_v6_hosts_cmds_add_reservation_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -457,7 +510,7 @@ def test_v6_hosts_cmds_get_reservation_mysql(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -469,10 +522,14 @@ def test_v6_hosts_cmds_get_reservation_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
             "identifier-type": "duid",
@@ -480,6 +537,18 @@ def test_v6_hosts_cmds_get_reservation_mysql(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "client-classes": [],
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "hostname": "",
+            "ip-addresses": ["2001:db8:1::100"],
+            "option-data": [],
+            "prefixes": []
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -510,7 +579,7 @@ def test_v6_hosts_cmds_get_reservation_mysql_2(channel):
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
             "identifier-type": "duid",
@@ -518,6 +587,18 @@ def test_v6_hosts_cmds_get_reservation_mysql_2(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "client-classes": [],
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "hostname": "reserved-hostname",
+            "ip-addresses": ["2001:db8:1::100"],
+            "option-data": [],
+            "prefixes": []
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -542,7 +623,7 @@ def test_v6_hosts_cmds_get_reservation_pgsql(channel):
 
     _sarr('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -554,10 +635,14 @@ def test_v6_hosts_cmds_get_reservation_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
             "identifier-type": "duid",
@@ -565,6 +650,18 @@ def test_v6_hosts_cmds_get_reservation_pgsql(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "client-classes": [],
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "hostname": "",
+            "ip-addresses": ["2001:db8:1::100"],
+            "option-data": [],
+            "prefixes": []
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -595,7 +692,7 @@ def test_v6_hosts_cmds_get_reservation_pgsql_2(channel):
 
     _sarr('2001:db8:1::100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
             "identifier-type": "duid",
@@ -603,6 +700,18 @@ def test_v6_hosts_cmds_get_reservation_pgsql_2(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "client-classes": [],
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "hostname": "reserved-hostname",
+            "ip-addresses": ["2001:db8:1::100"],
+            "option-data": [],
+            "prefixes": []
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _sarr('2001:db8:1::100')
 
@@ -631,7 +740,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id(channel):
 
     _sarr('2001:db8:1::50', relay_information=True)
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'port1234'",
@@ -643,6 +752,10 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100', relay_information=True)
 
@@ -671,7 +784,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id_NoAddressAvail(channel):
 
     _sarr('2001:db8:1::50', relay_information=True)
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'port1234'",
@@ -683,6 +796,10 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id_NoAddressAvail(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100', relay_information=True, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
 
@@ -711,7 +828,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id(channel):
 
     _sarr('2001:db8:1::50', relay_information=True)
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'port1234'",
@@ -723,6 +840,10 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100', relay_information=True)
 
@@ -751,7 +872,7 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id_NoAddressAvail(channel):
 
     _sarr('2001:db8:1::50', relay_information=True)
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'port1234'",
@@ -763,6 +884,10 @@ def test_v6_hosts_cmds_add_reservation_pgsql_flex_id_NoAddressAvail(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _sarr('2001:db8:1::100', relay_information=True, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
 
@@ -797,7 +922,7 @@ def test_v6_hosts_cmds_add_reservation_complex_mysql(channel):
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     _check_IA_NA('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -824,6 +949,10 @@ def test_v6_hosts_cmds_add_reservation_complex_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -871,7 +1000,7 @@ def test_v6_hosts_cmds_add_reservation_complex_pgsql(channel):
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     _check_IA_NA('2001:db8:1::50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -898,6 +1027,11 @@ def test_v6_hosts_cmds_add_reservation_complex_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
+
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', 'client-id')
@@ -1482,7 +1616,7 @@ def test_v6_host_reservation_conflicts_duplicate_duid_reservations(channel, host
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -1494,9 +1628,13 @@ def test_v6_host_reservation_conflicts_duplicate_duid_reservations(channel, host
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # the same DUID - it should fail
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -1508,6 +1646,10 @@ def test_v6_host_reservation_conflicts_duplicate_duid_reservations(channel, host
         },
         "command": "reservation-add"
     }, channel=channel, exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "Database duplicate entry error"
+    }
 
 
 @pytest.mark.v6
@@ -1528,7 +1670,7 @@ def test_v6_host_reservation_conflicts_duplicate_ip_reservations(channel, hosts_
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -1540,9 +1682,13 @@ def test_v6_host_reservation_conflicts_duplicate_ip_reservations(channel, hosts_
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # the same IP - it should fail
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
@@ -1554,6 +1700,10 @@ def test_v6_host_reservation_conflicts_duplicate_ip_reservations(channel, hosts_
         },
         "command": "reservation-add"
     }, channel=channel, exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "Database duplicate entry error"
+    }
 
 
 @pytest.mark.v6
@@ -1578,7 +1728,7 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, hosts_db
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
@@ -1590,9 +1740,13 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, hosts_db
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # the same IP - it should fail
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
@@ -1604,6 +1758,10 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, hosts_db
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # first request address by 00:03:00:01:f6:f5:f4:f3:f2:01
     misc.test_procedure()
@@ -1710,7 +1868,7 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
     srv_control.start_srv('DHCP', 'started')
 
     # Add a subnet.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "subnet6": [
                 {
@@ -1727,12 +1885,24 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
         },
         "command": "subnet6-add"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 1,
+                    "subnet": "2001:db8:a::/64"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv6 subnet added"
+    }
 
     # First do the full exchange and expect an address from the pool.
     _sarr('2001:db8:a::50', exchange='full')
 
     # Add a global reservation.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "subnet-id": 0,
@@ -1744,24 +1914,32 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # Check that Kea leases the globally reserved address.
     _sarr('2001:db8:a::100', exchange=exchange)
 
     # Remove the global reservation.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "subnet-id": 0,
             "ip-address": "2001:db8:a::100"
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     # Check that Kea has reverted to the default behavior.
     _sarr('2001:db8:a::50', exchange=exchange)
 
     # Add an in-subnet reservation.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "subnet-id": 1,
@@ -1773,6 +1951,10 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # Check that Kea leases the in-subnet reserved address.
     _sarr('2001:db8:a::150', exchange=exchange)

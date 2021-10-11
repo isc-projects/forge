@@ -67,7 +67,7 @@ def test_v4_hosts_cmds_libreload(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -77,20 +77,33 @@ def test_v4_hosts_cmds_libreload(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({"command": "libreload", "arguments": {}}, channel=channel)
+    response = srv_msg.send_ctrl_cmd({"command": "libreload", "arguments": {}}, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Hooks libraries successfully reloaded."
+    }
+
     srv_msg.log_contains('HOST_CMDS_DEINIT_OK unloading Host Commands hooks library successful')
     srv_msg.log_contains('HOST_CMDS_INIT_OK loading Host Commands hooks library successful')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "192.168.50.100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _dora('192.168.50.50')
 
@@ -115,7 +128,7 @@ def test_v4_hosts_cmds_reconfigure(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -125,6 +138,10 @@ def test_v4_hosts_cmds_reconfigure(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
@@ -141,7 +158,7 @@ def test_v4_hosts_cmds_reconfigure(channel):
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -151,6 +168,10 @@ def test_v4_hosts_cmds_reconfigure(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
@@ -175,7 +196,7 @@ def test_v4_hosts_cmds_add_reservation_mysql(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -185,6 +206,10 @@ def test_v4_hosts_cmds_add_reservation_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
@@ -209,7 +234,7 @@ def test_v4_hosts_cmds_del_reservation_mysql(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -219,16 +244,24 @@ def test_v4_hosts_cmds_del_reservation_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "192.168.50.100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _dora('192.168.50.50')
 
@@ -259,13 +292,17 @@ def test_v4_hosts_cmds_del_reservation_mysql_2(channel):
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "192.168.50.100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _dora('192.168.50.50')
 
@@ -290,7 +327,7 @@ def test_v4_hosts_cmds_del_reservation_pgsql(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -300,16 +337,24 @@ def test_v4_hosts_cmds_del_reservation_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "192.168.50.100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _dora('192.168.50.50')
 
@@ -340,13 +385,17 @@ def test_v4_hosts_cmds_del_reservation_pgsql_2(channel):
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "ip-address": "192.168.50.100",
             "subnet-id": 1
         },
         "command": "reservation-del"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     _dora('192.168.50.50')
 
@@ -371,7 +420,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -381,6 +430,10 @@ def test_v4_hosts_cmds_add_reservation_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
@@ -405,7 +458,7 @@ def test_v4_hosts_cmds_get_reservation_mysql(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -415,10 +468,14 @@ def test_v4_hosts_cmds_get_reservation_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "ff:01:02:03:ff:04",
             "identifier-type": "hw-address",
@@ -426,6 +483,20 @@ def test_v4_hosts_cmds_get_reservation_mysql(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "boot-file-name": "",
+            "client-classes": [],
+            "hostname": "",
+            "hw-address": "ff:01:02:03:ff:04",
+            "ip-address": "192.168.50.100",
+            "next-server": "0.0.0.0",
+            "option-data": [],
+            "server-hostname": ""
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _dora('192.168.50.100')
 
@@ -456,7 +527,7 @@ def test_v4_hosts_cmds_get_reservation_mysql_2(channel):
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "ff:01:02:03:ff:04",
             "identifier-type": "hw-address",
@@ -464,6 +535,20 @@ def test_v4_hosts_cmds_get_reservation_mysql_2(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "boot-file-name": "",
+            "client-classes": [],
+            "hostname": "reserved-hostname",
+            "hw-address": "ff:01:02:03:ff:04",
+            "ip-address": "192.168.50.100",
+            "next-server": "0.0.0.0",
+            "option-data": [],
+            "server-hostname": ""
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _dora('192.168.50.100')
 
@@ -488,7 +573,7 @@ def test_v4_hosts_cmds_get_reservation_pgsql(channel):
 
     _dora('192.168.50.50')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:04",
@@ -498,10 +583,14 @@ def test_v4_hosts_cmds_get_reservation_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "ff:01:02:03:ff:04",
             "identifier-type": "hw-address",
@@ -509,6 +598,20 @@ def test_v4_hosts_cmds_get_reservation_pgsql(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "boot-file-name": "",
+            "client-classes": [],
+            "hostname": "",
+            "hw-address": "ff:01:02:03:ff:04",
+            "ip-address": "192.168.50.100",
+            "next-server": "0.0.0.0",
+            "option-data": [],
+            "server-hostname": ""
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _dora('192.168.50.100')
 
@@ -538,7 +641,7 @@ def test_v4_hosts_cmds_get_reservation_pgsql_2(channel):
 
     _dora('192.168.50.100')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "identifier": "ff:01:02:03:ff:04",
             "identifier-type": "hw-address",
@@ -546,6 +649,20 @@ def test_v4_hosts_cmds_get_reservation_pgsql_2(channel):
         },
         "command": "reservation-get"
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "boot-file-name": "",
+            "client-classes": [],
+            "hostname": "reserved-hostname",
+            "hw-address": "ff:01:02:03:ff:04",
+            "ip-address": "192.168.50.100",
+            "next-server": "0.0.0.0",
+            "option-data": [],
+            "server-hostname": ""
+        },
+        "result": 0,
+        "text": "Host found."
+    }
 
     _dora('192.168.50.100')
 
@@ -574,7 +691,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id(channel):
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'docsis3.0'",
@@ -584,6 +701,10 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100', {'vendor_class_id': 'docsis3.0'})
 
@@ -612,7 +733,7 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak(channel):
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'docsis3.0'",
@@ -622,6 +743,10 @@ def test_v4_hosts_cmds_add_reservation_mysql_flex_id_nak(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100', {'requested_addr': '192.168.50.200',
                              'vendor_class_id': 'docsis3.0'},
@@ -652,7 +777,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id(channel):
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'docsis3.0'",
@@ -662,6 +787,10 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100', {'vendor_class_id': 'docsis3.0'})
 
@@ -690,7 +819,7 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak(channel):
 
     _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "flex-id": "'docsis3.0'",
@@ -700,6 +829,10 @@ def test_v4_hosts_cmds_add_reservation_pgsql_flex_id_nak(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     _dora('192.168.50.100', {'requested_addr': '192.168.50.200',
                              'vendor_class_id': 'docsis3.0'},
@@ -726,7 +859,7 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql(channel):
 
     _dora('192.168.50.50')
 
-    result = srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "boot-file-name": "/dev/null",
@@ -749,7 +882,10 @@ def test_v4_hosts_cmds_add_reservation_complex_mysql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
-    assert result['result'] == 0
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
@@ -824,7 +960,10 @@ def test_v4_hosts_cmds_add_reservation_complex_pgsql(channel):
         },
         "command": "reservation-add"
     }, channel=channel)
-    assert response['result'] == 0
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
@@ -1445,7 +1584,7 @@ def test_v4_hosts_cmds_conflicts_duplicate_mac_reservations(channel, hosts_db):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:01",
@@ -1455,9 +1594,13 @@ def test_v4_hosts_cmds_conflicts_duplicate_mac_reservations(channel, hosts_db):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # the same DUID - it should fail
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:01",
@@ -1467,6 +1610,10 @@ def test_v4_hosts_cmds_conflicts_duplicate_mac_reservations(channel, hosts_db):
         },
         "command": "reservation-add"
     }, channel=channel, exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "Database duplicate entry error"
+    }
 
 
 @pytest.mark.v4
@@ -1487,7 +1634,7 @@ def test_v4_hosts_cmds_conflicts_duplicate_ip_reservations(channel, hosts_db):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:01",
@@ -1497,9 +1644,13 @@ def test_v4_hosts_cmds_conflicts_duplicate_ip_reservations(channel, hosts_db):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # the same IP - it should fail
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "ff:01:02:03:ff:02",
@@ -1509,6 +1660,10 @@ def test_v4_hosts_cmds_conflicts_duplicate_ip_reservations(channel, hosts_db):
         },
         "command": "reservation-add"
     }, channel=channel, exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "Database duplicate entry error"
+    }
 
 
 @pytest.mark.v4
@@ -1534,7 +1689,7 @@ def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(channel, hosts_db):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "aa:aa:aa:aa:aa:aa",
@@ -1544,8 +1699,12 @@ def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(channel, hosts_db):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
                 "hw-address": "bb:bb:bb:bb:bb:bb",
@@ -1555,6 +1714,10 @@ def test_v4_hosts_cmds_duplicate_ip_reservations_allowed(channel, hosts_db):
         },
         "command": "reservation-add"
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # first request address by aa:aa:aa:aa:aa:aa
     misc.test_procedure()
@@ -1661,7 +1824,7 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
     srv_control.start_srv('DHCP', 'started')
 
     # Add a subnet.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "command": "subnet4-add",
         "arguments": {
             "subnet4": [
@@ -1678,12 +1841,24 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
             ]
         }
     }, channel=channel)
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 1,
+                    "subnet": "192.168.50.0/24"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv4 subnet added"
+    }
 
     # First do the full exchange and expect an address from the pool.
     _dora('192.168.50.50', exchange='full')
 
     # Add a global reservation.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "command": "reservation-add",
         "arguments": {
             "reservation": {
@@ -1693,24 +1868,32 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
             }
         }
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # Check that Kea leases the globally reserved address.
     _dora('192.168.50.100', exchange=exchange)
 
     # Remove the global reservation.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "command": "reservation-del",
         "arguments": {
             "subnet-id": 0,
             "ip-address": "192.168.50.100"
         }
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
 
     # Check that Kea has reverted to the default behavior.
     _dora('192.168.50.50', exchange=exchange)
 
     # Add an in-subnet reservation.
-    srv_msg.send_ctrl_cmd({
+    response = srv_msg.send_ctrl_cmd({
         "command": "reservation-add",
         "arguments": {
             "reservation": {
@@ -1720,6 +1903,10 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
             }
         }
     }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
 
     # Check that Kea leases the in-subnet reserved address.
     _dora('192.168.50.150', exchange=exchange)
