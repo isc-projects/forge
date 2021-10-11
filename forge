@@ -625,9 +625,9 @@ def _install_kea_native_on_server(args, server_idx):
 
     if 'ubuntu' in args.system:
         # fix certificate issue
-        cmd = "sudo apt-get install -y ca-certificates openssl"
+        cmd = cmd_tpl % "sudo apt-get install -y ca-certificates openssl"
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
-        cmd = "sudo update-ca-certificates --fresh"
+        cmd = cmd_tpl % "sudo update-ca-certificates --fresh"
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
         # setup pkg source repo in vm
         subcmd = "echo 'deb [trusted=yes] %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
