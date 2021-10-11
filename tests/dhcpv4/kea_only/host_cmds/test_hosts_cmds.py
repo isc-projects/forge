@@ -1290,6 +1290,8 @@ def test_v4_hosts_cmds_reservation_get_all_page_mysql(channel):
         "command": "reservation-get-page"
     }, channel=channel)
 
+    # is_superset_of is used instead of equality because the next.from field
+    # varies varies between test runs.
     assert is_superset_of(response, {
         "arguments": {
             "count": 3,
@@ -1381,6 +1383,8 @@ def test_v4_hosts_cmds_reservation_get_all_page_pgsql(channel):
         "command": "reservation-get-page"
     }, channel=channel)
 
+    # is_superset_of is used instead of equality because the next.from field
+    # varies between test runs.
     assert is_superset_of(response, {
         "arguments": {
             "count": 3,
