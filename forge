@@ -624,7 +624,7 @@ def _install_kea_native_on_server(args, server_idx):
 
     if 'ubuntu' in args.system:
         # setup pkg source repo in vm
-        subcmd = "echo 'deb %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
+        subcmd = "echo 'deb [trusted=yes] %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
         cmd = cmd_tpl % subcmd
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
         key_url = "%s/repository/repo-keys/repo-key.gpg" % repository_url
