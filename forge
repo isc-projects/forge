@@ -617,12 +617,18 @@ def _install_kea_native_on_server(args, server_idx):
             _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
 
     # prepare pkg source repo url
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
     repository_url = 'https://packages.aws.isc.org'
     repo_name = 'kea-%s-%s' % ('2.0', args.system)
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
     if 'ubuntu' in args.system:
+        # fix certificate issue
+        cmd = "sudo apt-get install -y ca-certificates openssl"
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+        cmd = "sudo update-ca-certificates --fresh"
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
         # setup pkg source repo in vm
         subcmd = "echo 'deb [trusted=yes] %s kea main' | sudo tee /etc/apt/sources.list.d/isc.list" % repo_url
         cmd = cmd_tpl % subcmd
