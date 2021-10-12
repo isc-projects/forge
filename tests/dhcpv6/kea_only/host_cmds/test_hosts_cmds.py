@@ -10,7 +10,6 @@ import srv_msg
 
 from dhcp4_scen import DHCPv6_STATUS_CODES
 from forge_cfg import world
-from protosupport.multi_protocol_functions import is_superset_of
 
 
 def _check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
@@ -1467,9 +1466,11 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql(channel):
         "command": "reservation-get-page"
     }, channel=channel)
 
-    # is_superset_of is used instead of equality because the next.from field
-    # varies between test runs.
-    assert is_superset_of(response, {
+    # Delete the "from" entry because its value is inconsistent
+    # between test runs and we can't use it in the assert that follows.
+    del response["arguments"]["next"]["from"]
+
+    assert response == {
         "arguments": {
             "count": 3,
             "hosts": [
@@ -1504,7 +1505,7 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql(channel):
         },
         "result": 0,
         "text": "3 IPv6 host(s) found."
-    })
+    }
 
 
 @pytest.mark.v6
@@ -1557,9 +1558,11 @@ def test_v6_hosts_cmds_reservation_get_all_page_pgsql(channel):
         "command": "reservation-get-page"
     }, channel=channel)
 
-    # is_superset_of is used instead of equality because the next.from field
-    # varies between test runs.
-    assert is_superset_of(response, {
+    # Delete the "from" entry because its value is inconsistent
+    # between test runs and we can't use it in the assert that follows.
+    del response["arguments"]["next"]["from"]
+
+    assert response == {
         "arguments": {
             "count": 3,
             "hosts": [
@@ -1594,7 +1597,7 @@ def test_v6_hosts_cmds_reservation_get_all_page_pgsql(channel):
         },
         "result": 0,
         "text": "3 IPv6 host(s) found."
-    })
+    }
 
 
 @pytest.mark.v6
