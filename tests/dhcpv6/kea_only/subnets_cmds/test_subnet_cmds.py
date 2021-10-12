@@ -8,6 +8,8 @@ import srv_msg
 import srv_control
 import misc
 
+from cb_model import setup_server_for_config_backend_cmds
+
 
 @pytest.mark.v6
 @pytest.mark.kea_only
@@ -457,3 +459,232 @@ def test_hook_v6_subnet_cmds_add_and_del():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
+
+
+# Test that an user can increase a fully-allocated subnet through the use of
+# subnet commands.
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize("channel", ['http', 'socket'])
+def test_hook_v6_subnet_grow_subnet_command(channel):
+    misc.test_setup()
+    srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "subnet6": [
+                {
+                    "id": 42,
+                    "interface": "$(SERVER_IFACE)",
+                    "pools": [
+                        {
+                            "pool": "2001:db8:1::1-2001:db8:1::1"
+                        }
+                    ],
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        "command": "subnet6-add"
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '2001:db8:1::/64'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv6 subnet added'
+    }
+
+    srv_msg.SARR('2001:db8:1::1')
+
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "id": 42
+        },
+        "command": "subnet6-del"
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '2001:db8:1::/64'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv6 subnet 2001:db8:1::/64 (id 42) deleted'
+    }
+
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "subnet6": [
+                {
+                    "id": 42,
+                    "interface": "$(SERVER_IFACE)",
+                    "pools": [
+                        {
+                            "pool": "2001:db8:1::1-2001:db8:1::2"
+                        }
+                    ],
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        "command": "subnet6-add"
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv6 subnet added'
+    }
+
+    srv_msg.SARR('2001:db8:1::1', exchange='renew-only')
+
+    srv_msg.SARR('2001:db8:1::2', duid='00:03:00:01:f6:f5:f4:f3:f2:11')
+
+
+# Test that an user can increase a fully-allocated subnet through the use of
+# config backend commands.
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_hook_v6_subnet_grow_cb_command(channel):
+    misc.test_setup()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+
+    setup_server_for_config_backend_cmds(config_control={'config-fetch-wait-time': 1}, force_reload=False)
+
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 2)
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'remote': {
+                'type': 'mysql'
+            },
+            'server-tags': ['all'],
+            'subnets': [
+                {
+                    'id': 42,
+                    'interface': '$(SERVER_IFACE)',
+                    'pools': [
+                        {
+                            'pool': '2001:db8:1::1-2001:db8:1::1'
+                        }
+                    ],
+                    'shared-network-name': None,
+                    'subnet': '2001:db8:1::/64'
+                }
+            ]
+        },
+        'command': 'remote-subnet6-set'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '2001:db8:1::/64'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv6 subnet successfully set.'
+    }
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 3)
+
+    srv_msg.SARR('2001:db8:1::1')
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'remote': {
+                'type': 'mysql'
+            },
+            'subnets': [
+                {
+                    'id': 42
+                }
+            ]
+        },
+        'command': 'remote-subnet6-del-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'count': 1
+        },
+        'result': 0,
+        'text': '1 IPv6 subnet(s) deleted.'
+    }
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 4)
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'remote': {
+                'type': 'mysql'
+            },
+            'server-tags': ['all'],
+            'subnets': [
+                {
+                    'id': 42,
+                    'interface': '$(SERVER_IFACE)',
+                    'pools': [
+                        {
+                            'pool': '2001:db8:1::1-2001:db8:1::2'
+                        }
+                    ],
+                    'shared-network-name': None,
+                    'subnet': '2001:db8:1::/64'
+                }
+            ]
+        },
+        'command': 'remote-subnet6-set'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '2001:db8:1::/64'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv6 subnet successfully set.'
+    }
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 5)
+
+    srv_msg.SARR('2001:db8:1::1', exchange='renew-only')
+
+    srv_msg.SARR('2001:db8:1::2', duid='00:03:00:01:f6:f5:f4:f3:f2:11')
