@@ -540,7 +540,7 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
         send_wait_for_message('MUST', True, 'OFFER')
         response_check_content(True, 'yiaddr', address)
 
-        ra(address, options, response_type)
+        RA(address, options, response_type)
 
     # This is supposed to be the renew scenario after DORA.
-    ra(address, options, response_type)
+    RA(address, options, response_type)

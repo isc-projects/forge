@@ -12,41 +12,6 @@ import srv_msg
 from forge_cfg import world
 
 
-def _ra(address, options=None, response_type='ACK'):
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_copy_option('server_id')
-    if not options or 'requested_addr' not in options:
-        srv_msg.client_does_include_with_value('requested_addr', address)
-    if options:
-        for k, v in options.items():
-            srv_msg.client_does_include_with_value(k, v)
-    srv_msg.client_send_msg('REQUEST')
-
-    srv_msg.send_wait_for_message('MUST', response_type)
-    if response_type == 'ACK':
-        srv_msg.response_check_content('yiaddr', address)
-        srv_msg.response_check_include_option(1)
-        srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-
-
-def _dora(address, options=None, exchange='full', response_type='ACK'):
-    misc.test_procedure()
-    if exchange == 'full':
-        srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-        if options:
-            for k, v in options.items():
-                srv_msg.client_does_include_with_value(k, v)
-        srv_msg.client_send_msg('DISCOVER')
-
-        srv_msg.send_wait_for_message('MUST', 'OFFER')
-        srv_msg.response_check_content('yiaddr', address)
-
-        _ra(address, options, response_type)
-
-    # This is supposed to be the renew scenario after DORA.
-    _ra(address, options, response_type)
-
-
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
@@ -66,7 +31,7 @@ def test_v4_hosts_cmds_libreload(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -83,7 +48,7 @@ def test_v4_hosts_cmds_libreload(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
     response = srv_msg.send_ctrl_cmd({"command": "libreload", "arguments": {}}, channel=channel)
     assert response == {
@@ -106,7 +71,7 @@ def test_v4_hosts_cmds_libreload(channel, host_database):
         "text": "Host deleted."
     }
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
 
 @pytest.mark.v4
@@ -128,7 +93,7 @@ def test_v4_hosts_cmds_reconfigure(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -145,7 +110,7 @@ def test_v4_hosts_cmds_reconfigure(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -175,7 +140,7 @@ def test_v4_hosts_cmds_reconfigure(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
 
 @pytest.mark.v4
@@ -197,7 +162,7 @@ def test_v4_hosts_cmds_add_reservation(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -214,7 +179,7 @@ def test_v4_hosts_cmds_add_reservation(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
 
 @pytest.mark.v4
@@ -236,7 +201,7 @@ def test_v4_hosts_cmds_del_reservation(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -253,7 +218,7 @@ def test_v4_hosts_cmds_del_reservation(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -267,7 +232,7 @@ def test_v4_hosts_cmds_del_reservation(channel, host_database):
         "text": "Host deleted."
     }
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
 
 @pytest.mark.v4
@@ -295,7 +260,7 @@ def test_v4_hosts_cmds_del_reservation_2(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -309,7 +274,7 @@ def test_v4_hosts_cmds_del_reservation_2(channel, host_database):
         "text": "Host deleted."
     }
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
 
 @pytest.mark.v4
@@ -331,7 +296,7 @@ def test_v4_hosts_cmds_get_reservation(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -348,7 +313,7 @@ def test_v4_hosts_cmds_get_reservation(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -373,7 +338,7 @@ def test_v4_hosts_cmds_get_reservation(channel, host_database):
         "text": "Host found."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
 
 @pytest.mark.v4
@@ -401,7 +366,7 @@ def test_v4_hosts_cmds_get_reservation_2(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -426,7 +391,7 @@ def test_v4_hosts_cmds_get_reservation_2(channel, host_database):
         "text": "Host found."
     }
 
-    _dora('192.168.50.100')
+    srv_msg.DORA('192.168.50.100')
 
 
 @pytest.mark.v4
@@ -452,7 +417,7 @@ def test_v4_hosts_cmds_add_reservation_flex_id(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
+    srv_msg.DORA('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -469,7 +434,7 @@ def test_v4_hosts_cmds_add_reservation_flex_id(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100', {'vendor_class_id': 'docsis3.0'})
+    srv_msg.DORA('192.168.50.100', {'vendor_class_id': 'docsis3.0'})
 
 
 @pytest.mark.v4
@@ -495,7 +460,7 @@ def test_v4_hosts_cmds_add_reservation_flex_id_nak(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
+    srv_msg.DORA('192.168.50.50', {'vendor_class_id': 'docsis3.0'})
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -512,9 +477,9 @@ def test_v4_hosts_cmds_add_reservation_flex_id_nak(channel, host_database):
         "text": "Host added."
     }
 
-    _dora('192.168.50.100', {'requested_addr': '192.168.50.200',
-                             'vendor_class_id': 'docsis3.0'},
-          response_type='NAK')
+    srv_msg.DORA('192.168.50.100', {'requested_addr': '192.168.50.200',
+                                    'vendor_class_id': 'docsis3.0'},
+                 response_type='NAK')
 
 
 @pytest.mark.v4
@@ -536,7 +501,7 @@ def test_v4_hosts_cmds_add_reservation_complex(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dora('192.168.50.50')
+    srv_msg.DORA('192.168.50.50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -1288,7 +1253,7 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # First do the full exchange and expect an address from the pool.
-    _dora('192.168.50.50', exchange='full')
+    srv_msg.DORA('192.168.50.50', exchange='full')
 
     # Add a global reservation.
     response = srv_msg.send_ctrl_cmd({
@@ -1307,7 +1272,7 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # Check that Kea leases the globally reserved address.
-    _dora('192.168.50.100', exchange=exchange)
+    srv_msg.DORA('192.168.50.100', exchange=exchange)
 
     # Remove the global reservation.
     response = srv_msg.send_ctrl_cmd({
@@ -1323,7 +1288,7 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # Check that Kea has reverted to the default behavior.
-    _dora('192.168.50.50', exchange=exchange)
+    srv_msg.DORA('192.168.50.50', exchange=exchange)
 
     # Add an in-subnet reservation.
     response = srv_msg.send_ctrl_cmd({
@@ -1342,4 +1307,4 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # Check that Kea leases the in-subnet reserved address.
-    _dora('192.168.50.150', exchange=exchange)
+    srv_msg.DORA('192.168.50.150', exchange=exchange)
