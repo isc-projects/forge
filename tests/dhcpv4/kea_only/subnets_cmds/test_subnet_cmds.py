@@ -8,6 +8,8 @@ import srv_control
 import srv_msg
 import misc
 
+from cb_model import setup_server_for_config_backend_cmds
+
 
 @pytest.mark.v4
 @pytest.mark.kea_only
@@ -390,3 +392,232 @@ def test_hook_v4_subnet_cmds_add_and_del():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
+
+
+# Test that an user can increase a fully-allocated subnet through the use of
+# subnet commands.
+@pytest.mark.v4
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_hook_v4_subnet_grow_subnet_command(channel):
+    misc.test_setup()
+    srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'subnet4': [
+                {
+                    'id': 42,
+                    'interface': '$(SERVER_IFACE)',
+                    'pools': [
+                        {
+                            'pool': '192.168.50.1-192.168.50.1'
+                        }
+                    ],
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'command': 'subnet4-add'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv4 subnet added'
+    }
+
+    srv_msg.DORA('192.168.50.1')
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'id': 42
+        },
+        'command': 'subnet4-del'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv4 subnet 192.168.50.0/24 (id 42) deleted'
+    }
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'subnet4': [
+                {
+                    'id': 42,
+                    'interface': '$(SERVER_IFACE)',
+                    'pools': [
+                        {
+                            'pool': '192.168.50.1-192.168.50.2'
+                        }
+                    ],
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'command': 'subnet4-add'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv4 subnet added'
+    }
+
+    srv_msg.DORA('192.168.50.1', exchange='renew-only')
+
+    srv_msg.DORA('192.168.50.2', chaddr='ff:01:02:03:ff:11')
+
+
+# Test that an user can increase a fully-allocated subnet through the use of
+# config backend commands.
+@pytest.mark.v4
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_hook_v4_subnet_grow_cb_command(channel):
+    misc.test_setup()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+
+    setup_server_for_config_backend_cmds(config_control={'config-fetch-wait-time': 1}, force_reload=False)
+
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 2)
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'remote': {
+                'type': 'mysql'
+            },
+            'server-tags': ['all'],
+            'subnets': [
+                {
+                    'id': 42,
+                    'interface': '$(SERVER_IFACE)',
+                    'pools': [
+                        {
+                            'pool': '192.168.50.1-192.168.50.1'
+                        }
+                    ],
+                    'shared-network-name': None,
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'command': 'remote-subnet4-set'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv4 subnet successfully set.'
+    }
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 3)
+
+    srv_msg.DORA('192.168.50.1')
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'remote': {
+                'type': 'mysql'
+            },
+            'subnets': [
+                {
+                    'id': 42
+                }
+            ]
+        },
+        'command': 'remote-subnet4-del-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'count': 1
+        },
+        'result': 0,
+        'text': '1 IPv4 subnet(s) deleted.'
+    }
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 4)
+
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'remote': {
+                'type': 'mysql'
+            },
+            'server-tags': ['all'],
+            'subnets': [
+                {
+                    'id': 42,
+                    'interface': '$(SERVER_IFACE)',
+                    'pools': [
+                        {
+                            'pool': '192.168.50.1-192.168.50.2'
+                        }
+                    ],
+                    'shared-network-name': None,
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'command': 'remote-subnet4-set'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'subnets': [
+                {
+                    'id': 42,
+                    'subnet': '192.168.50.0/24'
+                }
+            ]
+        },
+        'result': 0,
+        'text': 'IPv4 subnet successfully set.'
+    }
+
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 5)
+
+    srv_msg.DORA('192.168.50.1', exchange='renew-only')
+
+    srv_msg.DORA('192.168.50.2', chaddr='ff:01:02:03:ff:11')
