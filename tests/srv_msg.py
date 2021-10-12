@@ -20,6 +20,7 @@ import sys
 import json
 import importlib
 
+from dhcp4_scen import DHCPv6_STATUS_CODES
 from forge_cfg import world, step
 from protosupport import dns, multi_protocol_functions
 from protosupport.multi_protocol_functions import test_define_value, substitute_vars
@@ -687,3 +688,19 @@ def get_all_leases():
 def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address):
     dest = test_define_value(dest)[0]
     multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest)
+
+
+def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+     return dhcpmsg.RA(address, options, response_type, chaddr)
+
+
+def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr)
+
+
+def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
+     return dhcpmsg.check_IA_NA(address, status_code)
+
+
+def SARR(address, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+    return dhcpmsg.SARR(address, relay_information, status_code, exchange, duid)

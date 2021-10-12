@@ -30,11 +30,17 @@ from scapy.sendrecv import send, sendp, sniff
 
 from forge_cfg import world
 from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
+
+import misc
 import struct
 import os
 
 log = logging.getLogger('forge')
 
+# DHCPv4 option codes indexed by name
+OPTIONS = {
+    "subnet-mask": 1,
+}
 
 def client_requests_option(opt_type):
     if not hasattr(world, 'prl'):
@@ -438,6 +444,11 @@ def _get_opt_descr(opt_code):
 
 def response_check_include_option(expected, opt_code):
     assert len(world.srvmsg) != 0, "No response received."
+
+    # if opt_code is actually a opt name then convert it to code
+    if isinstance(opt_code, str) and not opt_code.isdigit():
+        opt_code = OPTIONS[opt_code]
+
     opt = get_option(world.srvmsg[0], opt_code)
 
     opt_descr = _get_opt_descr(opt_code)
@@ -451,6 +462,10 @@ def response_check_include_option(expected, opt_code):
 def response_check_option_content(opt_code, expect, data_type, expected):
     # expect == None when we want that content and NOT when we dont want! that's messy correct that!
     assert len(world.srvmsg) != 0, "No response received."
+
+    # if opt_code is actually a opt name then convert it to code
+    if isinstance(opt_code, str):
+        opt_code = OPTIONS[opt_code]
 
     opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
@@ -494,3 +509,38 @@ def get_all_leases(decode_duid=True):
     lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})
 
     return lease
+
+
+def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+    client_sets_value('chaddr', chaddr)
+    client_copy_option('server_id')
+    if not options or 'requested_addr' not in options:
+        client_does_include(None, 'requested_addr', address)
+    if options:
+        for k, v in options.items():
+            client_does_include(None, k, v)
+    client_send_msg('REQUEST', None, None)
+
+    send_wait_for_message('MUST', True, response_type)
+    if response_type == 'ACK':
+        response_check_content(True, 'yiaddr', address)
+        response_check_include_option(True, 'subnet-mask')
+        response_check_option_content('subnet-mask', True, 'value', '255.255.255.0')
+
+
+def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+    misc.test_procedure()
+    if exchange == 'full':
+        client_sets_value('chaddr', chaddr)
+        if options:
+            for k, v in options.items():
+                client_does_include(None, k, v)
+        client_send_msg('DISCOVER', None, None)
+
+        send_wait_for_message('MUST', True, 'OFFER')
+        response_check_content(True, 'yiaddr', address)
+
+        ra(address, options, response_type)
+
+    # This is supposed to be the renew scenario after DORA.
+    ra(address, options, response_type)

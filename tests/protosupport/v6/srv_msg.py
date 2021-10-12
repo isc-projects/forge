@@ -24,16 +24,18 @@ import random
 import os
 import logging
 
+import misc
+from dhcp4_scen import DHCPv6_STATUS_CODES
+from forge_cfg import world
+from terrain import client_id, ia_id, ia_pd
+
+import scapy
 from scapy.sendrecv import sr
 from scapy.layers import dhcp6
 from scapy.layers.inet6 import IPv6, UDP
 from scapy.config import conf
 from scapy.volatile import RandMAC
 from scapy.all import Raw
-import scapy
-
-from forge_cfg import world
-from terrain import client_id, ia_id, ia_pd
 
 log = logging.getLogger('forge')
 
@@ -1200,3 +1202,74 @@ def loops(message_type_1, message_type_2, repeat):
 
 def save_info():
     pass
+
+
+def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
+    response_check_include_option(True, 'IA_NA')
+    # RFC 8415: If the Status Code option does not appear in a
+    # message in which the option could appear, the status of the message
+    # is assumed to be Success.
+    if get_suboption('status-code', 'IA_NA'):
+        response_check_suboption_content('status-code', 'IA_NA', 'statuscode', status_code)
+    else:
+        assert status_code == DHCPv6_STATUS_CODES['Success'], \
+            'status code missing so implied Success, but expected {}'.format(status_code)
+
+    if status_code == DHCPv6_STATUS_CODES['Success']:
+        response_check_suboption_content('IA_address', 'IA_NA', True, 'addr', address)
+
+
+def SARR(address, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+    if exchange == 'full':
+        misc.test_procedure()
+        client_sets_value('DUID', duid)
+        client_does_include('Client', 'client-id', None)
+        client_does_include('Client', 'IA_Address', None)
+        client_does_include('Client', 'IA-NA', None)
+        client_send_msg('SOLICIT', None, None)
+
+        if relay_information:
+            client_sets_value('linkaddr', '2001:db8:1::1000')
+            client_sets_value('ifaceid', 'port1234')
+            client_does_include('RelayAgent', 'interface-id', None)
+            create_relay_forward()
+
+            misc.pass_criteria()
+            send_wait_for_message('MUST', True, 'RELAYREPLY')
+            response_check_include_option(True, 'interface-id')
+            response_check_include_option(True, 'relay-msg')
+            response_check_option_content('relay-msg', True, 'Relayed', 'Message')
+            response_check_include_option(True, 'client-id')
+            response_check_include_option(True, 'server-id')
+            check_IA_NA(address)
+        else:
+            misc.pass_criteria()
+            send_wait_for_message('MUST', True, 'ADVERTISE')
+            check_IA_NA(address, status_code)
+
+            client_copy_option('server-id')
+            client_copy_option('IA_NA')
+            client_sets_value('DUID', duid)
+            client_does_include('Client', 'client-id', None)
+            if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
+                client_sets_value('IA_Address', '3000::1')
+            client_send_msg('REQUEST', None, None)
+
+            misc.pass_criteria()
+            send_wait_for_message('MUST', True, 'REPLY')
+            check_IA_NA(address, status_code)
+
+    # @todo: Investigate why Kea doesn't respond to renews when RelayAgent is
+    # used.
+    if not relay_information:
+        client_sets_value('DUID', duid)
+        client_copy_option('IA_NA')
+        client_copy_option('server-id')
+        client_does_include('Client', 'client-id', None)
+        client_add_saved_option(False)
+        if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
+            client_sets_value('IA_Address', '3000::1')
+        client_send_msg('RENEW', None, None)
+
+        send_wait_for_message('MUST', True, 'REPLY')
+        check_IA_NA(address, status_code)
