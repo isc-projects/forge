@@ -471,13 +471,21 @@ def wait_for_message_in_log(line, count=1, timeout=4, log_file=None):
     """
     started_at = datetime.datetime.now()
     log_file, count, line = test_define_value(log_file, count, line)
+    timeout_delta = datetime.timedelta(seconds=timeout)
     while True:
+        # Get the number of line occurrences in the log.
         result = multi_protocol_functions.get_line_count_in_log(line, log_file)
+
+        # If enough lines have been logged, we are done waiting.
         if count <= result:
             break
-        assert started_at + timeout < datetime.datetime.now(), \
-            'Timeout {}s exceeded while waiting for {} line{} "{}" in log file {}' \
+
+        # Assert that the timeout hasn't passed yet.
+        assert datetime.datetime.now() < started_at + timeout_delta, \
+            'Timeout {}s exceeded while waiting for {} line{} of "{}" in log file {}' \
             .format(timeout, count, '' if count == 1 else 's', line, log_file)
+
+        # Sleep a bit to avoid busy waiting.
         forge_sleep(100, 'milliseconds')
 
 
