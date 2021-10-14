@@ -89,7 +89,8 @@ def _sarr(address, relay_information=False, status_code=DHCPv6_STATUS_CODES['Suc
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_libreload(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_libreload(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -97,7 +98,7 @@ def test_v6_hosts_cmds_libreload(channel):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -152,7 +153,8 @@ def test_v6_hosts_cmds_libreload(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_reconfigure(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_reconfigure(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -160,7 +162,7 @@ def test_v6_hosts_cmds_reconfigure(channel):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -193,7 +195,7 @@ def test_v6_hosts_cmds_reconfigure(channel):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
 
@@ -224,7 +226,8 @@ def test_v6_hosts_cmds_reconfigure(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_mysql(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_add_reservation(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -232,7 +235,7 @@ def test_v6_hosts_cmds_add_reservation_mysql(channel):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -264,7 +267,8 @@ def test_v6_hosts_cmds_add_reservation_mysql(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_del_reservation_mysql(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_del_reservation(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -272,7 +276,7 @@ def test_v6_hosts_cmds_del_reservation_mysql(channel):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -318,7 +322,8 @@ def test_v6_hosts_cmds_del_reservation_mysql(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_del_reservation_mysql_2(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_del_reservation_2(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -327,12 +332,12 @@ def test_v6_hosts_cmds_del_reservation_mysql_2(channel):
         srv_control.agent_control_channel()
 
     # address reserved without using command
-    srv_control.enable_db_backend_reservation('MySQL')
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', 'MySQL', 1)
-    srv_control.upload_db_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:01')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', host_database, 1)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', host_database, 1)
+    srv_control.upload_db_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -359,7 +364,8 @@ def test_v6_hosts_cmds_del_reservation_mysql_2(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_del_reservation_pgsql(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_get_reservation(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -367,142 +373,7 @@ def test_v6_hosts_cmds_del_reservation_pgsql(channel):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    _sarr('2001:db8:1::50')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "reservation": {
-                "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-                "ip-addresses": [
-                    "2001:db8:1::100"
-                ],
-                "subnet-id": 1
-            }
-        },
-        "command": "reservation-add"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host added."
-    }
-
-    _sarr('2001:db8:1::100')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "ip-address": "2001:db8:1::100",
-            "subnet-id": 1
-        },
-        "command": "reservation-del"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host deleted."
-    }
-
-    _sarr('2001:db8:1::50')
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_del_reservation_pgsql_2(channel):
-    misc.test_setup()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    # address reserved without using command
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', 'PostgreSQL', 1)
-    srv_control.upload_db_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    _sarr('2001:db8:1::100')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "ip-address": "2001:db8:1::100",
-            "subnet-id": 1
-        },
-        "command": "reservation-del"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host deleted."
-    }
-
-    _sarr('2001:db8:1::50')
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_pgsql(channel):
-    misc.test_setup()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    _sarr('2001:db8:1::50')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "reservation": {
-                "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-                "ip-addresses": [
-                    "2001:db8:1::100"
-                ],
-                "subnet-id": 1
-            }
-        },
-        "command": "reservation-add"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host added."
-    }
-
-    _sarr('2001:db8:1::100')
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_get_reservation_mysql(channel):
-    misc.test_setup()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -557,7 +428,8 @@ def test_v6_hosts_cmds_get_reservation_mysql(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_get_reservation_mysql_2(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_get_reservation_2(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -566,12 +438,12 @@ def test_v6_hosts_cmds_get_reservation_mysql_2(channel):
         srv_control.agent_control_channel()
 
     # address reserved without using command
-    srv_control.enable_db_backend_reservation('MySQL')
-    srv_control.new_db_backend_reservation('MySQL', 'duid', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', 'MySQL', 1)
-    srv_control.upload_db_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
+    srv_control.new_db_backend_reservation(host_database, 'duid', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', host_database, 1)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', host_database, 1)
+    srv_control.upload_db_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -607,120 +479,8 @@ def test_v6_hosts_cmds_get_reservation_mysql_2(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_get_reservation_pgsql(channel):
-    misc.test_setup()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    _sarr('2001:db8:1::50')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "reservation": {
-                "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-                "ip-addresses": [
-                    "2001:db8:1::100"
-                ],
-                "subnet-id": 1
-            }
-        },
-        "command": "reservation-add"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host added."
-    }
-
-    _sarr('2001:db8:1::100')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
-            "identifier-type": "duid",
-            "subnet-id": 1
-        },
-        "command": "reservation-get"
-    }, channel=channel)
-    assert response == {
-        "arguments": {
-            "client-classes": [],
-            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-            "hostname": "",
-            "ip-addresses": ["2001:db8:1::100"],
-            "option-data": [],
-            "prefixes": []
-        },
-        "result": 0,
-        "text": "Host found."
-    }
-
-    _sarr('2001:db8:1::100')
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_get_reservation_pgsql_2(channel):
-    misc.test_setup()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    # address reserved without using command
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-    srv_control.new_db_backend_reservation('PostgreSQL', 'duid', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', 'PostgreSQL', 1)
-    srv_control.upload_db_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    _sarr('2001:db8:1::100')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
-            "identifier-type": "duid",
-            "subnet-id": 1
-        },
-        "command": "reservation-get"
-    }, channel=channel)
-    assert response == {
-        "arguments": {
-            "client-classes": [],
-            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-            "hostname": "reserved-hostname",
-            "ip-addresses": ["2001:db8:1::100"],
-            "option-data": [],
-            "prefixes": []
-        },
-        "result": 0,
-        "text": "Host found."
-    }
-
-    _sarr('2001:db8:1::100')
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_mysql_flex_id(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_add_reservation_flex_id(channel, host_database):
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
@@ -732,7 +492,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id(channel):
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_parameter_to_hook(2, 'identifier-expression', 'relay6[0].option[18].hex')
 
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -764,7 +524,8 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_mysql_flex_id_NoAddressAvail(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_add_reservation_flex_id_NoAddressAvail(channel, host_database):
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
@@ -776,7 +537,7 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id_NoAddressAvail(channel):
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_parameter_to_hook(2, 'identifier-expression', 'relay6[0].option[18].hex')
 
-    srv_control.enable_db_backend_reservation('MySQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -808,95 +569,8 @@ def test_v6_hosts_cmds_add_reservation_mysql_flex_id_NoAddressAvail(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_pgsql_flex_id(channel):
-    misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
-    srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'relay6[0].option[18].hex')
-
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    _sarr('2001:db8:1::50', relay_information=True)
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "reservation": {
-                "flex-id": "'port1234'",
-                "ip-addresses": [
-                    "2001:db8:1::100"
-                ],
-                "subnet-id": 1
-            }
-        },
-        "command": "reservation-add"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host added."
-    }
-
-    _sarr('2001:db8:1::100', relay_information=True)
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_pgsql_flex_id_NoAddressAvail(channel):
-    misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
-    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'relay6[0].option[18].hex')
-
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    _sarr('2001:db8:1::50', relay_information=True)
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "reservation": {
-                "flex-id": "'port1234'",
-                "ip-addresses": [
-                    "2001:db8:1::100"
-                ],
-                "subnet-id": 1
-            }
-        },
-        "command": "reservation-add"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host added."
-    }
-
-    _sarr('2001:db8:1::100', relay_information=True, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_complex_mysql(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_add_reservation_complex(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -904,85 +578,7 @@ def test_v6_hosts_cmds_add_reservation_complex_mysql(channel):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA_Address')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    _check_IA_NA('2001:db8:1::50')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "reservation": {
-                "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-                "hostname": "foo.example.com",
-                "ip-addresses": [
-                    "2001:db8:1:0:cafe::1"
-                ],
-                "option-data": [
-                    {
-                        "data": "4491",
-                        "name": "vendor-opts"
-                    },
-                    {
-                        "data": "3000:1::234",
-                        "name": "tftp-servers",
-                        "space": "vendor-4491"
-                    }
-                ],
-                "prefixes": [
-                    "2001:db8:2:abcd::/64"
-                ],
-                "subnet-id": 1
-            }
-        },
-        "command": "reservation-add"
-    }, channel=channel)
-    assert response == {
-        "result": 0,
-        "text": "Host added."
-    }
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA_Address')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    _check_IA_NA('2001:db8:1:0:cafe::1')
-
-    srv_msg.response_check_include_option(25)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:2:abcd::')
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_add_reservation_complex_pgsql(channel):
-    misc.test_setup()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-
-    srv_control.enable_db_backend_reservation('PostgreSQL')
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1134,7 +730,8 @@ def test_v6_hosts_cmds_reservation_get_all(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_reservation_get_all_mysql(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_reservation_get_all_database(channel, host_database):
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
@@ -1143,98 +740,23 @@ def test_v6_hosts_cmds_reservation_get_all_mysql(channel):
         srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
 
-    srv_control.enable_db_backend_reservation('MySQL')
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'MySQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:02')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname2', 'MySQL', 2)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 2)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:03')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname3', 'MySQL', 3)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 3)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname4', 'MySQL', 4)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'MySQL', 4)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:05')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname5', 'MySQL', 5)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'MySQL', 5)
-    srv_control.upload_db_reservation('MySQL')
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "subnet-id": 1
-        },
-        "command": "reservation-get-all"
-    }, channel=channel)
-
-    assert response == {
-        "arguments": {
-            "hosts": [
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname3",
-                    "hw-address": "f6:f5:f4:f3:f2:03",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname2",
-                    "hw-address": "f6:f5:f4:f3:f2:02",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname1",
-                    "hw-address": "f6:f5:f4:f3:f2:01",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                }
-            ]
-        },
-        "result": 0,
-        "text": "3 IPv6 host(s) found."
-    }
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_reservation_get_all_pgsql(channel):
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'PostgreSQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:02')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname2', 'PostgreSQL', 2)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 2)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:03')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname3', 'PostgreSQL', 3)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 3)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname4', 'PostgreSQL', 4)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'PostgreSQL', 4)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:05')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname5', 'PostgreSQL', 5)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'PostgreSQL', 5)
-    srv_control.upload_db_reservation('PostgreSQL')
+    srv_control.enable_db_backend_reservation(host_database)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:01')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', host_database, 1)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 1)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:02')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname2', host_database, 2)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 2)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:03')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname3', host_database, 3)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 3)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:04')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname4', host_database, 4)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, host_database, 4)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:05')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname5', host_database, 5)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, host_database, 5)
+    srv_control.upload_db_reservation(host_database)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1421,7 +943,8 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_reservation_get_all_page_mysql(channel):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_reservation_get_all_page_database(channel, host_database):
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
@@ -1430,31 +953,31 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql(channel):
         srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_host_cmds.so')
 
-    srv_control.enable_db_backend_reservation('MySQL')
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'MySQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:02')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname2', 'MySQL', 2)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 2)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:03')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname3', 'MySQL', 3)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 3)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname4', 'MySQL', 4)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'MySQL', 4)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:05')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname5', 'MySQL', 5)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'MySQL', 5)
+    srv_control.enable_db_backend_reservation(host_database)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:01')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', host_database, 1)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 1)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:02')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname2', host_database, 2)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 2)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:03')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname3', host_database, 3)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 3)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:04')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname4', host_database, 4)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, host_database, 4)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:05')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname5', host_database, 5)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, host_database, 5)
 
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:06')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname6', 'MySQL', 6)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 6)
-    srv_control.new_db_backend_reservation('MySQL', 'hw-address', 'f6:f5:f4:f3:f2:07')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname7', 'MySQL', 7)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 7)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:06')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname6', host_database, 6)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 6)
+    srv_control.new_db_backend_reservation(host_database, 'hw-address', 'f6:f5:f4:f3:f2:07')
+    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname7', host_database, 7)
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, host_database, 7)
 
-    srv_control.upload_db_reservation('MySQL')
+    srv_control.upload_db_reservation(host_database)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1513,100 +1036,8 @@ def test_v6_hosts_cmds_reservation_get_all_page_mysql(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_reservation_get_all_page_pgsql(channel):
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
-    srv_control.open_control_channel()
-    if channel == 'http':
-        srv_control.agent_control_channel()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
-
-    srv_control.enable_db_backend_reservation('PostgreSQL')
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:01')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname1', 'PostgreSQL', 1)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:02')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname2', 'PostgreSQL', 2)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 2)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:03')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname3', 'PostgreSQL', 3)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 3)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:04')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname4', 'PostgreSQL', 4)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'PostgreSQL', 4)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:05')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname5', 'PostgreSQL', 5)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 2, 'PostgreSQL', 5)
-
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:06')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname6', 'PostgreSQL', 6)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 6)
-    srv_control.new_db_backend_reservation('PostgreSQL', 'hw-address', 'f6:f5:f4:f3:f2:07')
-    srv_control.update_db_backend_reservation('hostname', 'reserved-hostname7', 'PostgreSQL', 7)
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 7)
-
-    srv_control.upload_db_reservation('PostgreSQL')
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "limit": 3,
-            "subnet-id": 1
-        },
-        "command": "reservation-get-page"
-    }, channel=channel)
-
-    # Delete the "from" entry because its value is inconsistent
-    # between test runs and we can't use it in the assert that follows.
-    del response["arguments"]["next"]["from"]
-
-    assert response == {
-        "arguments": {
-            "count": 3,
-            "hosts": [
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname7",
-                    "hw-address": "f6:f5:f4:f3:f2:07",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname6",
-                    "hw-address": "f6:f5:f4:f3:f2:06",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname3",
-                    "hw-address": "f6:f5:f4:f3:f2:03",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                }
-            ],
-            "next": {
-                "source-index": 1
-            }
-        },
-        "result": 0,
-        "text": "3 IPv6 host(s) found."
-    }
-
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.kea_only
-@pytest.mark.parametrize('channel', ['http', 'socket'])
-@pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
-def test_v6_host_reservation_conflicts_duplicate_duid_reservations(channel, hosts_db):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_host_reservation_conflicts_duplicate_duid_reservations(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
@@ -1614,7 +1045,7 @@ def test_v6_host_reservation_conflicts_duplicate_duid_reservations(channel, host
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation(hosts_db)
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1659,8 +1090,8 @@ def test_v6_host_reservation_conflicts_duplicate_duid_reservations(channel, host
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-@pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
-def test_v6_host_reservation_conflicts_duplicate_ip_reservations(channel, hosts_db):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_host_reservation_conflicts_duplicate_ip_reservations(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
@@ -1668,7 +1099,7 @@ def test_v6_host_reservation_conflicts_duplicate_ip_reservations(channel, hosts_
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation(hosts_db)
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1714,8 +1145,8 @@ def test_v6_host_reservation_conflicts_duplicate_ip_reservations(channel, hosts_
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-@pytest.mark.parametrize("hosts_db", ['MySQL', 'PostgreSQL'])
-def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, hosts_db):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, host_database):
     the_same_ip_address = '3000::5'
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -1726,7 +1157,7 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, hosts_db
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation(hosts_db)
+    srv_control.enable_db_backend_reservation(host_database)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1849,8 +1280,8 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, hosts_db
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
 @pytest.mark.parametrize('exchange', ['full', 'renew-only'])
-@pytest.mark.parametrize('hosts_database', ['MySQL', 'PostgreSQL'])
-def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
@@ -1858,7 +1289,7 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, hosts_database):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    srv_control.enable_db_backend_reservation(hosts_database)
+    srv_control.enable_db_backend_reservation(host_database)
 
     # Enable both global and in-subnet reservations because we test both.
     world.dhcp_cfg.update({
