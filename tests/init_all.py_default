@@ -54,9 +54,13 @@ CIADDR = ''
 # Defines name of the DUT-facing network interface
 IFACE = ''
 
-# For all servers, choose ethernet interface on which server will be configured
-# to listen and respond.
+# For primary servers, choose ethernet interface on which server will be
+# configured to listen and respond.
 SERVER_IFACE = ''
+
+# For the second HA node, choose ethernet interface on which server will be
+# configured to listen and respond.
+SERVER_IFACE_2 = ''
 
 # Specifies path to the server installation directory on DUT. This must
 # point to root directory of server installation and must end with /.

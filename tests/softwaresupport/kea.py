@@ -742,7 +742,15 @@ def add_mt_if_we_can(cfg):
     return cfg
 
 
-def _cfg_write():
+def override_config(cfg, overrides):
+    d = cfg
+    for o in overrides:
+        for key in o['keys'][:-1]:
+            d = d.setdefault(key, {})
+        d[o['keys'][-1]] = o['value']
+
+
+def _cfg_write(overrides=[]):
     # For now let's keep to old system of sending config file
     cfg_file = open(world.cfg["cfg_file_2"], 'w')
     cfg_file.write(world.cfg["keactrl"])
@@ -763,6 +771,9 @@ def _cfg_write():
 
     world.dhcp_cfg = add_mt_if_we_can(world.dhcp_cfg)
 
+    override_config(world.dhcp_cfg, overrides)
+    print(world.dhcp_cfg)
+
     if world.ddns_enable:
         world.ddns_cfg = {"DhcpDdns": world.ddns_cfg}
         add_variable("DDNS_CONFIG", json.dumps(world.ddns_cfg), False)
@@ -779,13 +790,14 @@ def _cfg_write():
         conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=False))
 
 
-def _write_cfg2(cfg):
+def _write_cfg2(cfg, overrides=[]):
     if "Control-agent" in cfg:
         with open("kea-ctrl-agent.conf", 'w') as cfg_file:
             json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=False,
                       indent=4, separators=(',', ': '))
     if "Dhcp%s" % world.proto[1] in cfg:
         cfg = add_mt_if_we_can(cfg)
+        override_config(cfg, overrides)
         with open("kea-dhcp%s.conf" % world.proto[1], 'w') as cfg_file:
             json.dump({"Dhcp%s" % world.proto[1]: cfg["Dhcp%s" % world.proto[1]]},
                       cfg_file, sort_keys=False, indent=4, separators=(',', ': '))
@@ -799,7 +811,7 @@ def _write_cfg2(cfg):
     cfg_file.close()
 
 
-def build_config_files(cfg=None):
+def build_config_files(cfg=None, overrides=[]):
     substitute_vars(world.dhcp_cfg)
     if world.proto == 'v4':
         add_defaults4()
@@ -809,12 +821,12 @@ def build_config_files(cfg=None):
     _set_kea_ctrl_config()
 
     if cfg is None:
-        _cfg_write()
+        _cfg_write(overrides)
     else:
-        _write_cfg2(cfg)
+        _write_cfg2(cfg, overrides)
 
 
-def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
+def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None, overrides=[]):
     """
     Generate final config file, save it to test result directory
     and send it to remote system unless testing step will define differently.
@@ -823,7 +835,7 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     """
 
     # generate config files content
-    build_config_files(cfg)
+    build_config_files(cfg, overrides)
 
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)

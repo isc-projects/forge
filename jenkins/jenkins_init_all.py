@@ -42,6 +42,7 @@ SLEEP_TIME_1=2
 SLEEP_TIME_2=2
 # For all servers, choose ethernet interface on which server will be configured
 SERVER_IFACE = "ens224"
+SERVER_IFACE_2 = "ens224"
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
 # files, and removing generated data files.

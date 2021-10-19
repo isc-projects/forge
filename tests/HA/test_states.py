@@ -81,9 +81,13 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
     misc.test_setup()
 
     if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::1',
+                                      world.f_cfg.server_iface_2)
     else:
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.1',
+                                      world.f_cfg.server_iface_2)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -96,7 +100,8 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     srv_msg.forge_sleep(3, 'seconds')
@@ -222,9 +227,13 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
     if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::1',
+                                      world.f_cfg.server_iface_2)
     else:
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.1',
+                                      world.f_cfg.server_iface_2)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -238,7 +247,8 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
 
@@ -374,9 +384,13 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
     if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::1',
+                                      world.f_cfg.server_iface_2)
     else:
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.1',
+                                      world.f_cfg.server_iface_2)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
 
@@ -391,7 +405,8 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
 
@@ -507,9 +522,13 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
     if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::1',
+                                      world.f_cfg.server_iface_2)
     else:
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.1',
+                                      world.f_cfg.server_iface_2)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
 
@@ -523,7 +542,8 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     srv_msg.forge_sleep(3, 'seconds')

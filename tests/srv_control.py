@@ -59,7 +59,7 @@ cql_reservation = Dispatcher('cql_reservation')
 
 ##DHCP server configurations
 @step(r'Server is configured with (\S+) subnet with (\S+) pool.')
-def config_srv_subnet(subnet, pool):
+def config_srv_subnet(subnet, pool, eth=None):
     """
     Adds server configuration with specified subnet and pool.
     subnet may define specific subnet or use the word "default"
@@ -69,8 +69,8 @@ def config_srv_subnet(subnet, pool):
     init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set
     interface.
     """
-    subnet, pool = test_define_value(subnet, pool)
-    dhcp.prepare_cfg_subnet(subnet, pool)
+    subnet, pool, eth = test_define_value(subnet, pool, eth)
+    dhcp.prepare_cfg_subnet(subnet, pool, eth=eth)
 
 
 @step(r'Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
@@ -585,15 +585,15 @@ def configure_loggers(log_type, severity, severity_level, logging_file=None):
 
 ##servers management
 @step(r'Create server configuration.')
-def build_config_files(cfg=None):
-    dhcp.build_config_files(cfg=cfg)
+def build_config_files(cfg=None, overrides=[]):
+    dhcp.build_config_files(cfg=cfg, overrides=overrides)
 
 
 @step(r'Create and send server configuration.')
-def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
+def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address, overrides=[]):
     dest = test_define_value(dest)[0]
     check_remote_address(dest)
-    dhcp.build_and_send_config_files(cfg=cfg, destination_address=dest)
+    dhcp.build_and_send_config_files(cfg=cfg, destination_address=dest, overrides=overrides)
 
 
 @step(r'(\S+) server is (started|stopped|restarted|reconfigured).')

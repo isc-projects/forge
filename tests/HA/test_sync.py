@@ -53,7 +53,9 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
 
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
+    srv_control.config_srv_subnet('2001:db8:1::/64',
+                                  '2001:db8:1::1-2001:db8:1::ffff',
+                                  world.f_cfg.server_iface_2)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     srv_control.open_control_channel()
@@ -69,7 +71,8 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
                                           'sync-page-limit': 2,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': ['Dhcp6', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby')
@@ -135,9 +138,13 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::ffff',
+                                      world.f_cfg.server_iface_2)
     elif dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.200',
+                                      world.f_cfg.server_iface_2)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
@@ -155,7 +162,8 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
                                           "sync-page-limit": 15,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
@@ -255,9 +263,13 @@ def test_HA_passive_backup_sync(dhcp_version, backend):
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
     if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::ffff',
+                                      world.f_cfg.server_iface_2)
     elif dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.200',
+                                      world.f_cfg.server_iface_2)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
 
@@ -267,7 +279,8 @@ def test_HA_passive_backup_sync(dhcp_version, backend):
     world.dhcp_cfg["hooks-libraries"][1].update(PASSIVE_BACKUP)
     srv_control.update_ha_hook_parameter({"this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('passive-backup', dhcp_version=dhcp_version)
@@ -321,12 +334,16 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == "v6":
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::5',
+                                      world.f_cfg.server_iface_2)
         world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
         world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::110",
                                                       "client-class": "HA_server2"})
     else:
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.5',
+                                      world.f_cfg.server_iface_2)
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.20-192.168.50.30",
                                                       "client-class": "HA_server2"})
@@ -342,7 +359,8 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
@@ -471,12 +489,16 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == "v6":
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::20')
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::20',
+                                      world.f_cfg.server_iface_2)
         world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
         world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::120",
                                                       "client-class": "HA_server2"})
     else:
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.20')
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.20',
+                                      world.f_cfg.server_iface_2)
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.120",
                                                       "client-class": "HA_server2"})
@@ -492,7 +514,8 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2"})  # this is now secondary!
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
+                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
