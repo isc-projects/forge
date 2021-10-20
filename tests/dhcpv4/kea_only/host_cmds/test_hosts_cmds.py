@@ -51,7 +51,7 @@ def _dora(address, options=None, exchange='full', response_type='ACK'):
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
-@pytest.mark.parametrize("channel", ['http', 'socket'])
+@pytest.mark.parametrize('channel', ['http', 'socket'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v4_hosts_cmds_libreload(channel, host_database):
     misc.test_setup()

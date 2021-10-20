@@ -48,7 +48,7 @@ def test_availability(dhcp_version):  # pylint: disable=unused-argument
         assert cmd in response['arguments']
 
 
-@pytest.mark.parametrize("channel", ['http', 'socket'])
+@pytest.mark.parametrize('channel', ['http', 'socket'])
 def test_basic(channel, dhcp_version):
     # check that at the beginning there is no class
     cmd = dict(command='class-list')
