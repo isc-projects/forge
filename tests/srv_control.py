@@ -585,15 +585,15 @@ def configure_loggers(log_type, severity, severity_level, logging_file=None):
 
 ##servers management
 @step(r'Create server configuration.')
-def build_config_files(cfg=None, overrides=[]):
-    dhcp.build_config_files(cfg=cfg, overrides=overrides)
+def build_config_files(cfg=None):
+    dhcp.build_config_files(cfg=cfg)
 
 
 @step(r'Create and send server configuration.')
-def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address, overrides=[]):
+def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
     dest = test_define_value(dest)[0]
     check_remote_address(dest)
-    dhcp.build_and_send_config_files(cfg=cfg, destination_address=dest, overrides=overrides)
+    dhcp.build_and_send_config_files(cfg=cfg, destination_address=dest)
 
 
 @step(r'(\S+) server is (started|stopped|restarted|reconfigured).')

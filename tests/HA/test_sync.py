@@ -1,6 +1,8 @@
 """Kea HA syncing"""
 
 # pylint: disable=invalid-name,line-too-long
+
+import copy
 import pytest
 
 import misc
@@ -71,8 +73,9 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
                                           'sync-page-limit': 2,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
-                                            overrides=[{'keys': ['Dhcp6', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
+    cfg = copy.deepcopy(world.dhcp_cfg)
+    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby')
@@ -162,8 +165,9 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
                                           "sync-page-limit": 15,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
-                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
+    cfg = copy.deepcopy(world.dhcp_cfg)
+    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
@@ -279,8 +283,9 @@ def test_HA_passive_backup_sync(dhcp_version, backend):
     world.dhcp_cfg["hooks-libraries"][1].update(PASSIVE_BACKUP)
     srv_control.update_ha_hook_parameter({"this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
-                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
+    cfg = copy.deepcopy(world.dhcp_cfg)
+    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('passive-backup', dhcp_version=dhcp_version)
@@ -359,8 +364,9 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2"})
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
-                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
+    cfg = copy.deepcopy(world.dhcp_cfg)
+    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
@@ -514,8 +520,9 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2"})  # this is now secondary!
 
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2,
-                                            overrides=[{'keys': [f'Dhcp{dhcp_version[-1]}', 'interfaces-config', 'interfaces'], 'value': [world.f_cfg.server_iface_2]}])
+    cfg = copy.deepcopy(world.dhcp_cfg)
+    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
