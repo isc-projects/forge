@@ -2,7 +2,6 @@
 
 # pylint: disable=invalid-name,line-too-long
 
-import copy
 import pytest
 
 import misc
@@ -82,9 +81,8 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2"})
 
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
@@ -195,10 +193,8 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2"})
-
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
@@ -302,10 +298,8 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server2"})
-
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
@@ -422,10 +416,8 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server2"})
-
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)

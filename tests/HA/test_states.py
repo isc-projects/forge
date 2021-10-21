@@ -2,7 +2,6 @@
 
 # pylint: disable=invalid-name,line-too-long
 
-import copy
 import pytest
 
 import misc
@@ -100,10 +99,8 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     srv_msg.forge_sleep(3, 'seconds')
@@ -248,10 +245,8 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
 
@@ -407,10 +402,8 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
 
@@ -545,10 +538,8 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-
-    cfg = copy.deepcopy(world.dhcp_cfg)
-    cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
-    srv_control.build_and_send_config_files(cfg=cfg, dest=world.f_cfg.mgmt_address_2)
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     srv_msg.forge_sleep(3, 'seconds')

@@ -178,7 +178,6 @@ def _check_value(value):
 
 
 def add_defaults4():
-    eth = world.f_cfg.server_iface
     # TODO for now I will just change if condition but the way to go is remove pre-setting timers!
     # although it could affect too many tests, at this point I wont do it
     if "renew-timer" not in world.dhcp_cfg:
@@ -188,7 +187,8 @@ def add_defaults4():
     if "valid-lifetime" not in world.dhcp_cfg:
         world.dhcp_cfg["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
 
-    add_interface(eth)
+    eth = world.f_cfg.server_iface
+    add_interface(eth, add_to_existing=False)
 
 
 def add_defaults6():
@@ -200,8 +200,9 @@ def add_defaults6():
         world.dhcp_cfg["preferred-lifetime"] = world.cfg["server_times"]["preferred-lifetime"]
     if "valid-lifetime" not in world.dhcp_cfg:
         world.dhcp_cfg["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
+
     eth = world.f_cfg.server_iface
-    add_interface(eth)
+    add_interface(eth, add_to_existing=False)
 
 
 def add_logger(log_type, severity, severity_level, logging_file=None):
@@ -377,12 +378,13 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
                                          "array": False, "type": opt_type})
 
 
-def add_interface(eth):
+def add_interface(eth, add_to_existing=True):
     if "interfaces-config" not in world.dhcp_cfg.keys():
         world.dhcp_cfg["interfaces-config"] = {"interfaces": []}
 
     if eth is not None and eth not in world.dhcp_cfg["interfaces-config"]["interfaces"]:
-        world.dhcp_cfg["interfaces-config"]["interfaces"].append(eth)
+        if add_to_existing or len(world.dhcp_cfg["interfaces-config"]["interfaces"]) == 0:
+            world.dhcp_cfg["interfaces-config"]["interfaces"].append(eth)
 
 
 def add_pool_to_subnet(pool, subnet):
@@ -744,9 +746,8 @@ def add_mt_if_we_can(cfg):
 
 def _cfg_write():
     # For now let's keep to old system of sending config file
-    cfg_file = open(world.cfg["cfg_file_2"], 'w')
-    cfg_file.write(world.cfg["keactrl"])
-    cfg_file.close()
+    with open(world.cfg["cfg_file_2"], 'w') as cfg_file:
+        cfg_file.write(world.cfg["keactrl"])
 
     if world.f_cfg.install_method == 'make':
         logging_file = world.f_cfg.log_join('kea.log')
@@ -784,6 +785,7 @@ def _write_cfg2(cfg):
         with open("kea-ctrl-agent.conf", 'w') as cfg_file:
             json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=False,
                       indent=4, separators=(',', ': '))
+
     if "Dhcp%s" % world.proto[1] in cfg:
         cfg = add_mt_if_we_can(cfg)
         with open("kea-dhcp%s.conf" % world.proto[1], 'w') as cfg_file:
@@ -794,9 +796,8 @@ def _write_cfg2(cfg):
         with open("kea-dhcp-ddns.conf", 'w') as cfg_file:
             json.dump({"DhcpDdns": cfg["DhcpDdns"]}, cfg_file, sort_keys=False, indent=4, separators=(',', ': '))
 
-    cfg_file = open(world.cfg["cfg_file_2"], 'w')
-    cfg_file.write(world.cfg["keactrl"])
-    cfg_file.close()
+    with open(world.cfg["cfg_file_2"], 'w') as cfg_file:
+        cfg_file.write(world.cfg["keactrl"])
 
 
 def build_config_files(cfg=None):
@@ -828,7 +829,7 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
 
-    # use mode="0o666" to make config writable to enable config-wrtie tests
+    # use mode="0o666" to make config writable to enable config-write tests
 
     # send to server
     if world.f_cfg.install_method == 'make':
