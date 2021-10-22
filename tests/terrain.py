@@ -228,6 +228,9 @@ def declare_all(dhcp_version=None):
     world.define = []  # temporary define variables
 
     proto = dhcp_version if dhcp_version else world.f_cfg.proto
+    # Most of the time, treat bootp as v4. Use dhcp_version to differentiate between them.
+    if proto == 'bootp':
+        proto = 'v4'
     world.proto = world.f_cfg.proto = proto
     world.oro = None
     world.vendor = []
