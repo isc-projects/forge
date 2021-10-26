@@ -12,78 +12,6 @@ from dhcp4_scen import DHCPv6_STATUS_CODES
 from forge_cfg import world
 
 
-def _check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
-    srv_msg.response_check_include_option('IA_NA')
-    # RFC 8415: If the Status Code option does not appear in a
-    # message in which the option could appear, the status of the message
-    # is assumed to be Success.
-    if srv_msg.get_suboption('status-code', 'IA_NA'):
-        srv_msg.response_check_suboption_content('status-code', 'IA_NA', 'statuscode', status_code)
-    else:
-        assert status_code == DHCPv6_STATUS_CODES['Success'], \
-            'status code missing so implied Success, but expected {}'.format(status_code)
-
-    if status_code == DHCPv6_STATUS_CODES['Success']:
-        srv_msg.response_check_option_content('IA_NA', 'sub-option', 'IA_address')
-        srv_msg.response_check_suboption_content('IA_address', 'IA_NA', 'addr', address)
-
-
-def _sarr(address, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full'):
-    if exchange == 'full':
-        misc.test_procedure()
-        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-        srv_msg.client_does_include('Client', 'client-id')
-        srv_msg.client_does_include('Client', 'IA_Address')
-        srv_msg.client_does_include('Client', 'IA-NA')
-        srv_msg.client_send_msg('SOLICIT')
-
-        if relay_information:
-            srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
-            srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
-            srv_msg.client_does_include('RelayAgent', 'interface-id')
-            srv_msg.create_relay_forward()
-
-            misc.pass_criteria()
-            srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
-            srv_msg.response_check_include_option('interface-id')
-            srv_msg.response_check_include_option('relay-msg')
-            srv_msg.response_check_option_content('relay-msg', 'Relayed', 'Message')
-            srv_msg.response_check_include_option('client-id')
-            srv_msg.response_check_include_option('server-id')
-            _check_IA_NA(address)
-        else:
-            misc.pass_criteria()
-            srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-            _check_IA_NA(address, status_code)
-
-            srv_msg.client_copy_option('server-id')
-            srv_msg.client_copy_option('IA_NA')
-            srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-            srv_msg.client_does_include('Client', 'client-id')
-            if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
-                srv_msg.client_sets_value('Client', 'IA_Address', '3000::1')
-            srv_msg.client_send_msg('REQUEST')
-
-            misc.pass_criteria()
-            srv_msg.send_wait_for_message('MUST', 'REPLY')
-            _check_IA_NA(address, status_code)
-
-    # @todo: Investigate why Kea doesn't respond to renews when RelayAgent is
-    # used.
-    if not relay_information:
-        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('server-id')
-        srv_msg.client_does_include('Client', 'client-id')
-        srv_msg.client_add_saved_option()
-        if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
-            srv_msg.client_sets_value('Client', 'IA_Address', '3000::1')
-        srv_msg.client_send_msg('RENEW')
-
-        srv_msg.send_wait_for_message('MUST', 'REPLY')
-        _check_IA_NA(address, status_code)
-
-
 @pytest.mark.v6
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
@@ -103,7 +31,7 @@ def test_v6_hosts_cmds_libreload(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -122,7 +50,7 @@ def test_v6_hosts_cmds_libreload(channel, host_database):
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
     response = srv_msg.send_ctrl_cmd({"command": "libreload", "arguments": {}}, channel=channel)
     assert response == {
@@ -145,7 +73,7 @@ def test_v6_hosts_cmds_libreload(channel, host_database):
         "text": "Host deleted."
     }
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
 
 @pytest.mark.v6
@@ -167,7 +95,7 @@ def test_v6_hosts_cmds_reconfigure(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -186,7 +114,7 @@ def test_v6_hosts_cmds_reconfigure(channel, host_database):
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -218,7 +146,7 @@ def test_v6_hosts_cmds_reconfigure(channel, host_database):
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
 
 @pytest.mark.v6
@@ -240,7 +168,7 @@ def test_v6_hosts_cmds_add_reservation(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -259,7 +187,7 @@ def test_v6_hosts_cmds_add_reservation(channel, host_database):
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
 
 @pytest.mark.v6
@@ -281,7 +209,7 @@ def test_v6_hosts_cmds_del_reservation(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -300,7 +228,7 @@ def test_v6_hosts_cmds_del_reservation(channel, host_database):
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -314,7 +242,7 @@ def test_v6_hosts_cmds_del_reservation(channel, host_database):
         "text": "Host deleted."
     }
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
 
 @pytest.mark.v6
@@ -342,7 +270,7 @@ def test_v6_hosts_cmds_del_reservation_2(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -356,7 +284,7 @@ def test_v6_hosts_cmds_del_reservation_2(channel, host_database):
         "text": "Host deleted."
     }
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
 
 @pytest.mark.v6
@@ -378,7 +306,7 @@ def test_v6_hosts_cmds_get_reservation(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -397,7 +325,7 @@ def test_v6_hosts_cmds_get_reservation(channel, host_database):
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -420,7 +348,7 @@ def test_v6_hosts_cmds_get_reservation(channel, host_database):
         "text": "Host found."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
 
 @pytest.mark.v6
@@ -448,7 +376,7 @@ def test_v6_hosts_cmds_get_reservation_2(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -471,7 +399,7 @@ def test_v6_hosts_cmds_get_reservation_2(channel, host_database):
         "text": "Host found."
     }
 
-    _sarr('2001:db8:1::100')
+    srv_msg.SARR('2001:db8:1::100')
 
 
 @pytest.mark.v6
@@ -497,7 +425,7 @@ def test_v6_hosts_cmds_add_reservation_flex_id(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::50', relay_information=True)
+    srv_msg.SARR('2001:db8:1::50', relay_information=True)
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -516,7 +444,7 @@ def test_v6_hosts_cmds_add_reservation_flex_id(channel, host_database):
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100', relay_information=True)
+    srv_msg.SARR('2001:db8:1::100', relay_information=True)
 
 
 @pytest.mark.v6
@@ -542,7 +470,7 @@ def test_v6_hosts_cmds_add_reservation_flex_id_NoAddressAvail(channel, host_data
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarr('2001:db8:1::50', relay_information=True)
+    srv_msg.SARR('2001:db8:1::50', relay_information=True)
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -561,7 +489,7 @@ def test_v6_hosts_cmds_add_reservation_flex_id_NoAddressAvail(channel, host_data
         "text": "Host added."
     }
 
-    _sarr('2001:db8:1::100', relay_information=True, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SARR('2001:db8:1::100', relay_information=True, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
 
 
 @pytest.mark.v6
@@ -593,7 +521,7 @@ def test_v6_hosts_cmds_add_reservation_complex(channel, host_database):
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    _check_IA_NA('2001:db8:1::50')
+    srv_msg.check_IA_NA('2001:db8:1::50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -637,7 +565,7 @@ def test_v6_hosts_cmds_add_reservation_complex(channel, host_database):
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    _check_IA_NA('2001:db8:1:0:cafe::1')
+    srv_msg.check_IA_NA('2001:db8:1:0:cafe::1')
 
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:2:abcd::')
@@ -1216,7 +1144,7 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, host_dat
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    _check_IA_NA(the_same_ip_address)
+    srv_msg.check_IA_NA(the_same_ip_address)
 
     # release taken IP address
     misc.test_procedure()
@@ -1247,7 +1175,7 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, host_dat
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    _check_IA_NA(the_same_ip_address)
+    srv_msg.check_IA_NA(the_same_ip_address)
 
     # try to request address by 00:03:00:01:f6:f5:f4:f3:f2:01 again, the IP address should be just
     # from the pool (ie. 3000::1) as 3000::5 is already taken by 00:03:00:01:f6:f5:f4:f3:f2:02
@@ -1269,7 +1197,7 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, host_dat
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    _check_IA_NA('3000::1')
+    srv_msg.check_IA_NA('3000::1')
 
 
 # Test that the same client can migrate from a global reservation to an
@@ -1333,7 +1261,7 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # First do the full exchange and expect an address from the pool.
-    _sarr('2001:db8:a::50', exchange='full')
+    srv_msg.SARR('2001:db8:a::50', exchange='full')
 
     # Add a global reservation.
     response = srv_msg.send_ctrl_cmd({
@@ -1354,7 +1282,7 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # Check that Kea leases the globally reserved address.
-    _sarr('2001:db8:a::100', exchange=exchange)
+    srv_msg.SARR('2001:db8:a::100', exchange=exchange)
 
     # Remove the global reservation.
     response = srv_msg.send_ctrl_cmd({
@@ -1370,7 +1298,7 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # Check that Kea has reverted to the default behavior.
-    _sarr('2001:db8:a::50', exchange=exchange)
+    srv_msg.SARR('2001:db8:a::50', exchange=exchange)
 
     # Add an in-subnet reservation.
     response = srv_msg.send_ctrl_cmd({
@@ -1391,4 +1319,172 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     }
 
     # Check that Kea leases the in-subnet reserved address.
-    _sarr('2001:db8:a::150', exchange=exchange)
+    srv_msg.SARR('2001:db8:a::150', exchange=exchange)
+
+
+# TODO
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v6_hosts_cmds_reservation_get_by_hostname(channel):
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname1',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:01')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname2',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:02')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname3',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:03')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname4',
+                                           1,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:04')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname5',
+                                           1,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:05')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "subnet-id": 1
+        },
+        "command": "reservation-get-by-hostname"
+    }, channel=channel)
+
+    assert response == {
+        "arguments": {
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname1",
+                    "hw-address": "f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname2",
+                    "hw-address": "f6:f5:f4:f3:f2:02",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ]
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    }
+
+
+# TODO
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v6_hosts_cmds_reservation_get_by_id(channel):
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname1',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:01')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname2',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:02')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname3',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:03')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname4',
+                                           1,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:04')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname5',
+                                           1,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:05')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "subnet-id": 1
+        },
+        "command": "reservation-get-by-id"
+    }, channel=channel)
+
+    assert response == {
+        "arguments": {
+            "hosts": [
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname1",
+                    "hw-address": "f6:f5:f4:f3:f2:01",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname2",
+                    "hw-address": "f6:f5:f4:f3:f2:02",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                },
+                {
+                    "client-classes": [],
+                    "hostname": "reserved-hostname3",
+                    "hw-address": "f6:f5:f4:f3:f2:03",
+                    "ip-addresses": [],
+                    "option-data": [],
+                    "prefixes": []
+                }
+            ]
+        },
+        "result": 0,
+        "text": "3 IPv6 host(s) found."
+    }
+
+
