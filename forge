@@ -45,7 +45,7 @@ DNS4_ADDR = SRV4_ADDR
 DNS6_ADDR = SRV_IPV6_ADDR_GLOBAL
 IFACE = "enp0s9"
 SERVER_IFACE = "enp0s9"
-SERVER_IFACE_2 = "enp0s9"
+SERVER2_IFACE = "enp0s9"
 INSTALL_METHOD = "make"
 DNS_DATA_PATH = '/etc/bind/'
 
@@ -53,7 +53,7 @@ INIT_ALL = """
 LOGLEVEL = "info"
 IFACE = "{IFACE}"
 SERVER_IFACE = "{SERVER_IFACE}"
-SERVER_IFACE_2 = "{SERVER_IFACE_2}"
+SERVER2_IFACE = "{SERVER2_IFACE}"
 DNS4_ADDR = "{DNS4_ADDR}"
 DNS6_ADDR = "{DNS6_ADDR}"
 WIN_DNS_ADDR = "{WIN_DNS_ADDR}"
@@ -420,7 +420,7 @@ def setup(args):
                               SRV_IPV6_ADDR_GLOBAL_2=srv2_addr6,
                               IFACE=IFACE,
                               SERVER_IFACE=SERVER_IFACE,
-                              SERVER_IFACE_2=SERVER_IFACE_2,
+                              SERVER2_IFACE=SERVER2_IFACE,
                               CLIENT_NAME=client_name,
                               SERVER1_NAME=server1_name,
                               SERVER2_NAME=server2_name,

@@ -181,7 +181,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
         srv_control.shared_subnet('2001:db8:b::/64', 0)
 
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE_2)"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER2_IFACE)"', 0)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')

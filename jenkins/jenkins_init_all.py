@@ -40,9 +40,17 @@ CLI_LINK_LOCAL="fe80::250:56ff:fe87:28b6"
 
 SLEEP_TIME_1=2
 SLEEP_TIME_2=2
-# For all servers, choose ethernet interface on which server will be configured
+
+# The interface name for the first server. The first server is always tested
+# and has the primary role in tests involving Kea with High Availability (HA).
 SERVER_IFACE = "ens224"
-SERVER_IFACE_2 = "ens224"
+
+# The interface name for the second server. The second server is used sparingly
+# in tests and can have the secondary, standy or backup role in tests involving
+# Kea with High Availability (HA). It can also be used as a second standalone
+# server connected to a database backend that is shared by the first server.
+SERVER2_IFACE = "ens224"
+
 # In order to make sure we start all tests with a 'clean' environment,
 # We perform a number of initialization steps, like restoring configuration
 # files, and removing generated data files.
