@@ -59,30 +59,31 @@ cql_reservation = Dispatcher('cql_reservation')
 
 ##DHCP server configurations
 @step(r'Server is configured with (\S+) subnet with (\S+) pool.')
-def config_srv_subnet(subnet, pool, eth=None):
-    """
-    Adds server configuration with specified subnet and pool.
-    subnet may define specific subnet or use the word "default"
-    pool may define specific pool range or use the word "default"
+def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface):
+    """Adds server configuration with specified subnet and pool.
 
-    Setting subnet in that way, will cause to set in on interface you set in
-    init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set
-    interface.
+    Arguments:
+    subnet -- the value for "subnet". If None, then continue with configuring an
+        already existing subnet element.
+    pool -- the value appended to "pools". If None, then leave "pools" alone.
+    iface -- the interface to be configured on the subnet element
+        (default: SERVER_IFACE)
     """
-    subnet, pool, eth = test_define_value(subnet, pool, eth)
-    dhcp.prepare_cfg_subnet(subnet, pool, eth=eth)
+    subnet, pool, iface = test_define_value(subnet, pool, iface)
+    dhcp.prepare_cfg_subnet(subnet, pool, iface=iface)
 
 
 @step(r'Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet_with_iface(interface, address, subnet, pool):
-    """
-    Adds server configuration with specified subnet and pool.
-    subnet may define specific subnet or use the word "default"
-    pool may define specific pool range or use the word "default"
+    """Adds server configuration with specified subnet and pool.
 
-    Setting subnet in that way, will cause to set in on interface you set in
-    init_all.py as variable "SERVER_IFACE" leave it to None if you don want to set
-    interface.
+    Arguments:
+    interface -- the interface to be configured on the subnet element and at the
+        global level
+    address -- the address to be configured at the global level
+    subnet -- the value for "subnet". If None, then continue with configuring an
+        already existing subnet element.
+    pool -- the value appended to "pools". If None, then leave "pools" alone.
     """
     interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
     dhcp.prepare_cfg_subnet_specific_interface(interface, address, subnet, pool)

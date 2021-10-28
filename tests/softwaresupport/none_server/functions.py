@@ -32,7 +32,7 @@ def set_time(*args):
     pass
 
 
-def add_interface(eth):
+def add_interface(iface):
     pass
 
 
@@ -48,7 +48,7 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     pass
 
 
-def prepare_cfg_subnet(subnet, pool, eth = None):
+def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface):
     pass
 
 
@@ -76,7 +76,7 @@ def add_pool_to_subnet(pool, subnet):
     pass
 
 
-def config_srv_another_subnet(subnet, pool, eth):
+def config_srv_another_subnet(subnet, pool, iface):
     pass
 
 

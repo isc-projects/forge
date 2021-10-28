@@ -187,8 +187,8 @@ def add_defaults4():
     if "valid-lifetime" not in world.dhcp_cfg:
         world.dhcp_cfg["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
 
-    eth = world.f_cfg.server_iface
-    add_interface(eth, add_to_existing=False)
+    iface = world.f_cfg.server_iface
+    add_interface(iface, add_to_existing=False)
 
 
 def add_defaults6():
@@ -201,8 +201,8 @@ def add_defaults6():
     if "valid-lifetime" not in world.dhcp_cfg:
         world.dhcp_cfg["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
 
-    eth = world.f_cfg.server_iface
-    add_interface(eth, add_to_existing=False)
+    iface = world.f_cfg.server_iface
+    add_interface(iface, add_to_existing=False)
 
 
 def add_logger(log_type, severity, severity_level, logging_file=None):
@@ -311,7 +311,17 @@ def add_line_in_subnet(subnet_id, additional_line):
     world.dhcp_cfg[sub][subnet_id].update(additional_line)
 
 
-def prepare_cfg_subnet(subnet, pool, eth=None):
+def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface):
+    """Creates or updates an element under "subnet[46]" element in Kea's JSON
+    configuration.
+
+    Arguments:
+    subnet -- the value for "subnet". If None, then continue with configuring an
+        already existing subnet element.
+    pool -- the value appended to "pools". If None, then leave "pools" alone.
+    iface -- the interface to be configured on the subnet element
+        (default: SERVER_IFACE)
+    """
     if world.proto == 'v4':
         if subnet == "default":
             subnet = "192.168.0.0/24"
@@ -322,8 +332,6 @@ def prepare_cfg_subnet(subnet, pool, eth=None):
             subnet = "2001:db8:1::/64"
         if pool == "default":
             pool = "2001:db8:1::1 - 2001:db8:1::ffff"
-    if eth is None:
-        eth = world.f_cfg.server_iface
 
     sub = "subnet%s" % world.proto[1]
     if sub not in world.dhcp_cfg.keys() and subnet:
@@ -334,15 +342,25 @@ def prepare_cfg_subnet(subnet, pool, eth=None):
     if subnet:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
-                                                         "interface": eth}
+                                                         "interface": iface}
     if pool:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
-    add_interface(eth)
+    add_interface(iface)
 
 
-def config_srv_another_subnet(subnet, pool, eth):
+def config_srv_another_subnet(subnet, pool, iface=world.f_cfg.server_iface):
+    """Like config_srv_subnet(subnet, pool, iface), but increments the subnet
+    counter to guarantee that this subnet will be a new one.
+
+    Arguments:
+    subnet -- the value for "subnet". If None, then continue with configuring an
+        already existing subnet element.
+    pool -- the value appended to "pools". If None, then leave "pools" alone.
+    iface -- the interface to be configured on the subnet element
+        (default: SERVER_IFACE)
+    """
     world.dhcp["subnet_cnt"] += 1
-    prepare_cfg_subnet(subnet, pool, eth)
+    prepare_cfg_subnet(subnet, pool, iface)
 
 
 def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
@@ -378,13 +396,22 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
                                          "array": False, "type": opt_type})
 
 
-def add_interface(eth, add_to_existing=True):
+def add_interface(iface, add_to_existing=True):
+    """Adds an interface to the "interfaces" list under "interfaces-config" in
+    Kea JSON configuration.
+
+    Arguments:
+    iface -- the interface to be added to the configuration
+    add_to_existing -- if True, then add the interface in all circumstances.
+        If False, then add the interface only if there are no other interfaces
+        configured
+    """
     if "interfaces-config" not in world.dhcp_cfg.keys():
         world.dhcp_cfg["interfaces-config"] = {"interfaces": []}
 
-    if eth is not None and eth not in world.dhcp_cfg["interfaces-config"]["interfaces"]:
+    if iface is not None and iface not in world.dhcp_cfg["interfaces-config"]["interfaces"]:
         if add_to_existing or len(world.dhcp_cfg["interfaces-config"]["interfaces"]) == 0:
-            world.dhcp_cfg["interfaces-config"]["interfaces"].append(eth)
+            world.dhcp_cfg["interfaces-config"]["interfaces"].append(iface)
 
 
 def add_pool_to_subnet(pool, subnet):
