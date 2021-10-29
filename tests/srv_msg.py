@@ -710,8 +710,12 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
      return dhcpmsg.check_IA_NA(address, status_code)
 
 
-def SARR(address, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
-    return dhcpmsg.SARR(address, relay_information, status_code, exchange, duid)
+def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
+     return dhcpmsg.check_IA_PD(address, status_code)
+
+
+def SARR(address=None, delegated_prefix=None, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+    return dhcpmsg.SARR(address, delegated_prefix, relay_information, status_code, exchange, duid)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):
