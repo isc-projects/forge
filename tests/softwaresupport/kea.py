@@ -1252,14 +1252,14 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
 
     kea_admin = world.f_cfg.sbin_join('kea-admin')
 
-    # MYSQL
+    # MySQL
     cmd = "mysql -u root -N -B -e \"DROP DATABASE IF EXISTS {db_name};\"".format(**locals())
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
-    cmd = "mysql -u root -N -B -e \"DROP USER IF EXISTS {db_user};\"".format(**locals())
+    cmd = "mysql -u root -N -B -e \"DROP USER IF EXISTS '{db_user}'@'localhost';\"".format(**locals())
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
-    cmd = "mysql -u root -N -B -e \"flush privileges;\"".format(**locals())
+    cmd = "mysql -u root -N -B -e \"FLUSH PRIVILEGES;\"".format(**locals())
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
 
@@ -1267,7 +1267,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     fabric_sudo_command(cmd, destination_host=dest)
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
     fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
-    cmd = "mysql -u root -e \"set global log_bin_trust_function_creators=1;\""
+    cmd = "mysql -u root -e \"SET GLOBAL log_bin_trust_function_creators=1;\""
     fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
     fabric_sudo_command(cmd, destination_host=dest)
@@ -1276,17 +1276,23 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
         result = fabric_run_command(cmd, destination_host=dest)
     assert result.succeeded
 
-    # POSTGRESQL
-    cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE {db_name}\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres', ignore_errors=True, destination_host=dest)
-    cmd = "cd /; psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    # PostgreSQL
+    cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE IF EXISTS {db_name}\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    assert result.succeeded
     cmd = "cd /; psql -U postgres -c \"DROP USER IF EXISTS {db_user};\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    assert result.succeeded
+
+    cmd = "cd /; psql -U postgres -c \"CREATE DATABASE {db_name};\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    assert result.succeeded
     cmd = "cd /; psql -U postgres -c \"CREATE USER {db_user} WITH PASSWORD '{db_passwd}';\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    assert result.succeeded
     cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
-    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    assert result.succeeded
     if init_db:
         cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
         result = fabric_run_command(cmd, destination_host=dest)

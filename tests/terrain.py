@@ -300,7 +300,7 @@ def test_start():
 
     # check remote system if it is redhat or debian based
     result = fabric_run_command('ls -al /etc/redhat-release',
-                                ignore_errors=True)
+                                hide_all=True, ignore_errors=True)
     if result.succeeded:
         world.server_system = 'redhat'
     else:
