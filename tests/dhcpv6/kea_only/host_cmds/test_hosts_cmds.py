@@ -511,17 +511,7 @@ def test_v6_hosts_cmds_add_reservation_complex(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA_Address')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.check_IA_NA('2001:db8:1::50')
+    srv_msg.SARR('2001:db8:1::50')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -555,20 +545,7 @@ def test_v6_hosts_cmds_add_reservation_complex(channel, host_database):
         "text": "Host added."
     }
 
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA_Address')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.check_IA_NA('2001:db8:1:0:cafe::1')
-
-    srv_msg.response_check_include_option(25)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:2:abcd::')
+    srv_msg.SARR('2001:db8:1:0:cafe::1', delegated_prefix='2001:db8:2:abcd::')
 
 
 @pytest.mark.v6
@@ -1322,7 +1299,6 @@ def test_v6_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     srv_msg.SARR('2001:db8:a::150', exchange=exchange)
 
 
-# TODO
 @pytest.mark.v6
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
@@ -1361,57 +1337,213 @@ def test_v6_hosts_cmds_reservation_get_by_hostname(channel):
                                            1,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:05')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:11')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'Reserved-Hostname',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:22')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Empty argument list
     response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "subnet-id": 1
+        'arguments': {
         },
-        "command": "reservation-get-by-hostname"
-    }, channel=channel)
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "missing parameter 'hostname'" in response['text']
 
+    # Hostname only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname2'
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel)
     assert response == {
-        "arguments": {
-            "hosts": [
+        'arguments': {
+            'hosts': [
                 {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname1",
-                    "hw-address": "f6:f5:f4:f3:f2:01",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname2",
-                    "hw-address": "f6:f5:f4:f3:f2:02",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname3",
-                    "hw-address": "f6:f5:f4:f3:f2:03",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname2',
+                    'hw-address': 'f6:f5:f4:f3:f2:02',
+                    'ip-addresses': [],
+                    'option-data': [],
+                    'prefixes': [],
+                    'subnet-id': 1
                 }
             ]
         },
-        "result": 0,
-        "text": "3 IPv6 host(s) found."
+        'result': 0,
+        'text': '1 IPv6 host(s) found.'
+    }
+
+    # Non-existing hostname only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname42'
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=3)
+    assert response == {
+        'arguments': {
+            'hosts': []
+        },
+        'result': 3,
+        'text': '0 IPv6 host(s) found.'
+    }
+
+    # Subnet ID only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "missing parameter 'hostname'" in response['text']
+
+    # Non-existing subnet ID only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "missing parameter 'hostname'" in response['text']
+
+    # Wrong data type for hostname
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 42,
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "invalid type specified for parameter 'hostname'" in response['text']
+
+    # Wrong data type for subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'my-hostname',
+            'subnet-id': 'hello'
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "invalid type specified for parameter 'subnet-id'" in response['text']
+
+    # Existing hostname with existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname2',
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname2',
+                    'hw-address': 'f6:f5:f4:f3:f2:02',
+                    'ip-addresses': [],
+                    'option-data': [],
+                    'prefixes': []
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv6 host(s) found.'
+    }
+
+    # Existing hostname with existing subnet ID, but the hostname has different
+    # capitalization
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'Reserved-Hostname',
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname',
+                    'hw-address': 'f6:f5:f4:f3:f2:11',
+                    'ip-addresses': [],
+                    'option-data': [],
+                    'prefixes': []
+                },
+                {
+                    'client-classes': [],
+                    'hostname': 'Reserved-Hostname',
+                    'hw-address': 'f6:f5:f4:f3:f2:22',
+                    'ip-addresses': [],
+                    'option-data': [],
+                    'prefixes': []
+                }
+            ]
+        },
+        'result': 0,
+        'text': '2 IPv6 host(s) found.'
+    }
+
+    # Existing hostname with non-existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname2',
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "IPv6 subnet with ID of '42' is not configured"
+    }
+
+    # Non-existing hostname with existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname42',
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=3)
+    assert response == {
+        'arguments': {
+            'hosts': []
+        },
+        'result': 3,
+        'text': '0 IPv6 host(s) found.'
+    }
+
+    # Non-existing hostname with non-existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname42',
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "IPv6 subnet with ID of '42' is not configured"
     }
 
 
-# TODO
 @pytest.mark.v6
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 @pytest.mark.kea_only
 @pytest.mark.parametrize('channel', ['http', 'socket'])
-def test_v6_hosts_cmds_reservation_get_by_id(channel):
+def test_v6_hosts_cmds_reservation_get_by_ID(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
@@ -1432,7 +1564,7 @@ def test_v6_hosts_cmds_reservation_get_by_id(channel):
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname3',
                                            0,
-                                           'hw-address',
+                                           'duid',
                                            'f6:f5:f4:f3:f2:03')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname4',
@@ -1442,49 +1574,282 @@ def test_v6_hosts_cmds_reservation_get_by_id(channel):
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname5',
                                            1,
-                                           'hw-address',
+                                           'flex-id',
                                            'f6:f5:f4:f3:f2:05')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Empty argument list
     response = srv_msg.send_ctrl_cmd({
-        "arguments": {
-            "subnet-id": 1
+        'arguments': {
         },
-        "command": "reservation-get-by-id"
-    }, channel=channel)
-
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
     assert response == {
-        "arguments": {
-            "hosts": [
+        'result': 1,
+        'text': "'identifier-type' is either missing or not a string."
+    }
+
+    # identifier-type only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier' is either missing or not a string."
+    }
+
+    # identifier only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier-type' is either missing or not a string."
+    }
+
+    # bogus identifier-type
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'bogus',
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Value of 'identifier-type' was not recognized."
+    }
+
+    # bogus identifier
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus identifier and bogus identifier-type
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'bogus',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # Wrong data type for identifier-type
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 42,
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier-type' is either missing or not a string."
+    }
+
+    # Wrong data type for identifier
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 42
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier' is either missing or not a string."
+    }
+
+    # bogus by circuit ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'circuit-id',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by client ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'client-id',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by DUID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'duid',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by hardware address
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by flex ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'flex-id',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # by circuit ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'circuit-id',
+            'identifier': 'f6:f5:f4:f3:f2:01'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=3)
+    assert response == {
+        'arguments': {
+            'hosts': []
+        },
+        'result': 3,
+        'text': '0 IPv6 host(s) found.'
+    }
+
+    # by client ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'client-id',
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=3)
+    assert response == {
+        'arguments': {
+            'hosts': []
+        },
+        'result': 3,
+        'text': '0 IPv6 host(s) found.'
+    }
+
+    # by DUID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'duid',
+            'identifier': 'f6:f5:f4:f3:f2:03'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
                 {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname1",
-                    "hw-address": "f6:f5:f4:f3:f2:01",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname2",
-                    "hw-address": "f6:f5:f4:f3:f2:02",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
-                },
-                {
-                    "client-classes": [],
-                    "hostname": "reserved-hostname3",
-                    "hw-address": "f6:f5:f4:f3:f2:03",
-                    "ip-addresses": [],
-                    "option-data": [],
-                    "prefixes": []
+                    'client-classes': [],
+                    'duid': 'f6:f5:f4:f3:f2:03',
+                    'hostname': 'reserved-hostname3',
+                    'ip-addresses': [],
+                    'option-data': [],
+                    'prefixes': [],
+                    'subnet-id': 1
                 }
             ]
         },
-        "result": 0,
-        "text": "3 IPv6 host(s) found."
+        'result': 0,
+        'text': '1 IPv6 host(s) found.'
     }
 
+    # by hardware address
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 'f6:f5:f4:f3:f2:04'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname4',
+                    'hw-address': 'f6:f5:f4:f3:f2:04',
+                    'ip-addresses': [],
+                    'option-data': [],
+                    'prefixes': [],
+                    'subnet-id': 2
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv6 host(s) found.'
+    }
 
+    # by flex ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'flex-id',
+            'identifier': 'f6:f5:f4:f3:f2:05'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname5',
+                    'flex-id': 'F6F5F4F3F205',
+                    'ip-addresses': [],
+                    'option-data': [],
+                    'prefixes': [],
+                    'subnet-id': 2
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv6 host(s) found.'
+    }

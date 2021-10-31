@@ -1,6 +1,5 @@
 """Kea Hook hosts_cmds testing"""
 
-
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
@@ -249,7 +248,7 @@ def test_v4_hosts_cmds_del_reservation_2(channel, host_database):
     if channel == 'http':
         srv_control.agent_control_channel()
 
-    # address reserved without using command
+    # address reserved without using commands
     srv_control.enable_db_backend_reservation(host_database)
     srv_control.new_db_backend_reservation(host_database, 'hw-address', 'ff:01:02:03:ff:04')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', host_database, 1)
@@ -1276,11 +1275,11 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
 
     # Remove the global reservation.
     response = srv_msg.send_ctrl_cmd({
-        "command": "reservation-del",
         "arguments": {
             "subnet-id": 0,
             "ip-address": "192.168.50.100"
-        }
+        },
+        "command": "reservation-del"
     }, channel=channel)
     assert response == {
         "result": 0,
@@ -1292,14 +1291,14 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
 
     # Add an in-subnet reservation.
     response = srv_msg.send_ctrl_cmd({
-        "command": "reservation-add",
         "arguments": {
             "reservation": {
                 "subnet-id": 1,
                 "hw-address": "ff:01:02:03:ff:04",
                 "ip-address": "192.168.50.150"
             }
-        }
+        },
+        "command": "reservation-add"
     }, channel=channel)
     assert response == {
         "result": 0,
@@ -1308,3 +1307,588 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
 
     # Check that Kea leases the in-subnet reserved address.
     srv_msg.DORA('192.168.50.150', exchange=exchange)
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_by_hostname(channel):
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname1',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:01')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname2',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:02')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname3',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:03')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname4',
+                                           1,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:04')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname5',
+                                           1,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:05')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:11')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'Reserved-Hostname',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:22')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Empty argument list
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "missing parameter 'hostname'" in response['text']
+
+    # Hostname only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname2'
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname2',
+                    'hw-address': 'f6:f5:f4:f3:f2:02',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': '',
+                    'subnet-id': 1
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv4 host(s) found.'
+    }
+
+    # Non-existing hostname only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname42'
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=3)
+    assert response == {
+        'arguments': {
+            'hosts': []
+        },
+        'result': 3,
+        'text': '0 IPv4 host(s) found.'
+    }
+
+    # Subnet ID only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "missing parameter 'hostname'" in response['text']
+
+    # Non-existing subnet ID only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "missing parameter 'hostname'" in response['text']
+
+    # Wrong data type for hostname
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 42,
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "invalid type specified for parameter 'hostname'" in response['text']
+
+    # Wrong data type for subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'my-hostname',
+            'subnet-id': 'hello'
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert "invalid type specified for parameter 'subnet-id'" in response['text']
+
+    # Existing hostname with existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname2',
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname2',
+                    'hw-address': 'f6:f5:f4:f3:f2:02',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': ''
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv4 host(s) found.'
+    }
+
+    # Existing hostname with existing subnet ID, but the hostname has different
+    # capitalization
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'Reserved-Hostname',
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname',
+                    'hw-address': 'f6:f5:f4:f3:f2:11',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': ''
+                },
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'hostname': 'Reserved-Hostname',
+                    'hw-address': 'f6:f5:f4:f3:f2:22',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': ''
+                }
+            ]
+        },
+        'result': 0,
+        'text': '2 IPv4 host(s) found.'
+    }
+
+    # Existing hostname with non-existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname2',
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "IPv4 subnet with ID of '42' is not configured"
+    }
+
+    # Non-existing hostname with existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname42',
+            'subnet-id': 1
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=3)
+    assert response == {
+        'arguments': {
+            'hosts': []
+        },
+        'result': 3,
+        'text': '0 IPv4 host(s) found.'
+    }
+
+    # Non-existing hostname with non-existing subnet ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'hostname': 'reserved-hostname42',
+            'subnet-id': 42
+        },
+        'command': 'reservation-get-by-hostname'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "IPv4 subnet with ID of '42' is not configured"
+    }
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.kea_only
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+def test_v4_hosts_cmds_reservation_get_by_ID(channel):
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname1',
+                                           0,
+                                           'circuit-id',
+                                           'f6:f5:f4:f3:f2:01')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname2',
+                                           0,
+                                           'client-id',
+                                           'f6:f5:f4:f3:f2:02')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname3',
+                                           0,
+                                           'duid',
+                                           'f6:f5:f4:f3:f2:03')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname4',
+                                           1,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:04')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname5',
+                                           1,
+                                           'flex-id',
+                                           'f6:f5:f4:f3:f2:05')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Empty argument list
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier-type' is either missing or not a string."
+    }
+
+    # identifier-type only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier' is either missing or not a string."
+    }
+
+    # identifier only
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier-type' is either missing or not a string."
+    }
+
+    # bogus identifier-type
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'bogus',
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Value of 'identifier-type' was not recognized."
+    }
+
+    # bogus identifier
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus identifier and bogus identifier-type
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'bogus',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # Wrong data type for identifier-type
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 42,
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier-type' is either missing or not a string."
+    }
+
+    # Wrong data type for identifier
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 42
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "'identifier' is either missing or not a string."
+    }
+
+    # bogus by circuit ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'circuit-id',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by client ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'client-id',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by DUID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'duid',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by hardware address
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # bogus by flex ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'flex-id',
+            'identifier': 'bogus'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel, exp_result=1)
+    assert response == {
+        'result': 1,
+        'text': "Unable to parse 'identifier' value."
+    }
+
+    # by circuit ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'circuit-id',
+            'identifier': 'f6:f5:f4:f3:f2:01'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'circuit-id': 'F6F5F4F3F201',
+                    'hostname': 'reserved-hostname1',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': '',
+                    'subnet-id': 1
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv4 host(s) found.'
+    }
+
+    # by client ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'client-id',
+            'identifier': 'f6:f5:f4:f3:f2:02'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'client-id': 'F6F5F4F3F202',
+                    'hostname': 'reserved-hostname2',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': '',
+                    'subnet-id': 1
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv4 host(s) found.'
+    }
+
+    # by DUID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'duid',
+            'identifier': 'f6:f5:f4:f3:f2:03'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'duid': 'f6:f5:f4:f3:f2:03',
+                    'hostname': 'reserved-hostname3',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': '',
+                    'subnet-id': 1
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv4 host(s) found.'
+    }
+
+    # by hardware address
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'hw-address',
+            'identifier': 'f6:f5:f4:f3:f2:04'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname4',
+                    'hw-address': 'f6:f5:f4:f3:f2:04',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': '',
+                    'subnet-id': 2
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv4 host(s) found.'
+    }
+
+    # by flex ID
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'identifier-type': 'flex-id',
+            'identifier': 'f6:f5:f4:f3:f2:05'
+        },
+        'command': 'reservation-get-by-id'
+    }, channel=channel)
+    assert response == {
+        'arguments': {
+            'hosts': [
+                {
+                    'boot-file-name': '',
+                    'client-classes': [],
+                    'hostname': 'reserved-hostname5',
+                    'flex-id': 'F6F5F4F3F205',
+                    'next-server': '0.0.0.0',
+                    'option-data': [],
+                    'server-hostname': '',
+                    'subnet-id': 2
+                }
+            ]
+        },
+        'result': 0,
+        'text': '1 IPv4 host(s) found.'
+    }
