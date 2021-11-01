@@ -1220,9 +1220,9 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
 
 
 def SARR(address, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+    misc.test_procedure()
+    client_sets_value('DUID', duid)
     if exchange == 'full':
-        misc.test_procedure()
-        client_sets_value('DUID', duid)
         client_does_include('Client', 'client-id', None)
         client_does_include('Client', 'IA_Address', None)
         client_does_include('Client', 'IA-NA', None)
@@ -1262,7 +1262,6 @@ def SARR(address, relay_information=False, status_code=DHCPv6_STATUS_CODES['Succ
     # @todo: Investigate why Kea doesn't respond to renews when RelayAgent is
     # used.
     if not relay_information:
-        client_sets_value('DUID', duid)
         client_copy_option('IA_NA')
         client_copy_option('server-id')
         client_does_include('Client', 'client-id', None)

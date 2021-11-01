@@ -52,19 +52,19 @@ def build_raw(msg, append):
     if msg == "":
         world.climsg.append(build_msg(opts="") / Raw(load=append))
     else:
-        client_send_msg(msg, None, None)
+        client_send_msg(msg)
         world.climsg[0] = world.climsg[0] / Raw(load=append)
 
 
-def client_send_msg(msgname, iface, addr):
-    """
-    Sends specified message with defined options.
+def client_send_msg(msgname, iface=None, addr=None):
+    """Sends specified message with defined options.
+
     Parameters:
-    msg ('<msg> message'): name of the message.
-    num_opts: number of options to send.
-    opt_type: option type
+    msgname: name of the message
+    iface: interface to send onto (default: None, meaning configured interface)
+    addr: address to send to (default: None)
     """
-    # set different ethernet interface then default one.
+    # set different ethernet interface than default one.
     if iface is not None:
         world.cfg["iface"] = iface
         world.cfg["srv4_addr"] = addr
@@ -519,7 +519,7 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
     if options:
         for k, v in options.items():
             client_does_include(None, k, v)
-    client_send_msg('REQUEST', None, None)
+    client_send_msg('REQUEST')
 
     send_wait_for_message('MUST', True, response_type)
     if response_type == 'ACK':
@@ -530,12 +530,12 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
 
 def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04'):
     misc.test_procedure()
+    client_sets_value('chaddr', chaddr)
     if exchange == 'full':
-        client_sets_value('chaddr', chaddr)
         if options:
             for k, v in options.items():
                 client_does_include(None, k, v)
-        client_send_msg('DISCOVER', None, None)
+        client_send_msg('DISCOVER')
 
         send_wait_for_message('MUST', True, 'OFFER')
         response_check_content(True, 'yiaddr', address)
@@ -544,3 +544,22 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
 
     # This is supposed to be the renew scenario after DORA.
     RA(address, options, response_type)
+
+
+def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):
+    misc.test_procedure()
+    client_sets_value('chaddr', chaddr)
+    client_send_msg('BOOTP_REQUEST')
+
+    misc.pass_criteria()
+    send_wait_for_message('MUST', True, 'BOOTP_REPLY')
+
+    # Make sure that the Message Type option added while converting
+    # BOOTP_REQUEST to REQUEST is not mirrored in the BOOTP_REPLY.
+    response_check_include_option(False, 53)
+
+    # Make sure that the lease is given to the client forever.
+    response_check_include_option(False, 58)
+    response_check_include_option(False, 59)
+
+    response_check_content(True, 'yiaddr', address)

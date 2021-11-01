@@ -27,7 +27,7 @@ def kill_kea_on_second_system():
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     # HA SERVER 1
     misc.test_setup()
@@ -43,7 +43,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -74,7 +74,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -120,7 +120,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     # in shared networks let's add small pools to insure that during test addresses from both pools will be assigned
     # HA SERVER 1
@@ -145,7 +145,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -187,7 +187,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -236,7 +236,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
 @pytest.mark.v6
 @pytest.mark.v4
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     # TODO maybe we should run this tests just with one backend
     # HA SERVER 1
@@ -257,7 +257,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -292,7 +292,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -354,7 +354,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
 @pytest.mark.v6
 @pytest.mark.v4
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     # TODO maybe we should run this tests just with one backend
     # HA SERVER 1
@@ -375,7 +375,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -410,7 +410,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,

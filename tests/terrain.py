@@ -209,7 +209,7 @@ def _define_software(dhcp_version):
     world.cfg["dns_under_test"] = ""
     for name in world.f_cfg.software_under_test:
         if name in world.f_cfg.dhcp_used:
-            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version == 'v4' else name.replace('4', '6')
+            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version in ['v4', 'bootp'] else name.replace('4', '6')
             # world.cfg["dns_under_test"] = ""
         elif name in world.f_cfg.dns_used:
             world.cfg["dns_under_test"] = name
@@ -348,6 +348,8 @@ def initialize(scenario):
             dhcp_version = 'v4'
         elif scenario.get_closest_marker('v6'):
             dhcp_version = 'v6'
+        elif scenario.get_closest_marker('bootp'):
+            dhcp_version = 'bootp'
         else:
             dhcp_version = None
 

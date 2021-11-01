@@ -62,7 +62,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1100,
@@ -92,7 +92,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1100,
@@ -206,7 +206,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1100,
@@ -238,7 +238,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1100,
@@ -362,7 +362,7 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 10000,
                                           "max-response-delay": 1100,
@@ -395,7 +395,7 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 10000,
                                           "max-response-delay": 1100,
@@ -499,7 +499,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1100,
@@ -531,7 +531,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1100,

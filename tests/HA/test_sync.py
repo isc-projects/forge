@@ -9,7 +9,7 @@ import srv_control
 import srv_msg
 
 from forge_cfg import world
-from HA.steps import generate_leases, wait_until_ha_state
+from HA.steps import generate_leases, load_hook_libraries, wait_until_ha_state
 from HA.steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
 
 # TODO add checking logs in all those tests
@@ -27,7 +27,8 @@ def kill_kea_on_second_system():
 
 @pytest.mark.v6
 @pytest.mark.HA
-def test_v6_hooks_HA_page_size_sync_mulitple_NA():
+@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
+def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
@@ -38,7 +39,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
@@ -61,10 +62,10 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    load_hook_libraries('v6', hook_order)
+
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
@@ -99,18 +100,19 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA():
     srv_msg.check_leases(set_of_leases_2)
 
 
+@pytest.mark.bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
-def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
-
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
+def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_order):
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    elif dhcp_version == 'v4':
+    elif dhcp_version in ['v4', 'bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -118,10 +120,9 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
     srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    load_hook_libraries(dhcp_version, hook_order)
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
@@ -141,20 +142,20 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::ffff',
                                       world.f_cfg.server2_iface)
-    elif dhcp_version == 'v4':
+    elif dhcp_version in ['v4', 'bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
+
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
     srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    load_hook_libraries(dhcp_version, hook_order)
 
-    world.dhcp_cfg["hooks-libraries"][1].update(HOT_STANDBY)
+    srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
@@ -233,24 +234,25 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend):
     srv_msg.check_leases(set_of_leases_2, backend=backend)
 
 
-@pytest.mark.v6
+@pytest.mark.bootp
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
-def test_HA_passive_backup_sync(dhcp_version, backend):
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
+def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    elif dhcp_version == 'v4':
+    elif dhcp_version in ['v4', 'bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    load_hook_libraries(dhcp_version, hook_order)
 
-    world.dhcp_cfg["hooks-libraries"][1].update(PASSIVE_BACKUP)
+    srv_control.update_ha_hook_parameter(PASSIVE_BACKUP)
     srv_control.update_ha_hook_parameter({"this-server-name": "server1"})
 
     srv_control.build_and_send_config_files()
@@ -261,21 +263,22 @@ def test_HA_passive_backup_sync(dhcp_version, backend):
     srv_control.define_temporary_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::ffff',
                                       world.f_cfg.server2_iface)
-    elif dhcp_version == 'v4':
+    elif dhcp_version in ['v4', 'bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
+
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
 
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    load_hook_libraries(dhcp_version, hook_order)
 
-    world.dhcp_cfg["hooks-libraries"][1].update(PASSIVE_BACKUP)
+    srv_control.update_ha_hook_parameter(PASSIVE_BACKUP)
     srv_control.update_ha_hook_parameter({"this-server-name": "server2"})
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
@@ -291,12 +294,14 @@ def test_HA_passive_backup_sync(dhcp_version, backend):
 
 
 # disabled, we know it fails due to design of HA load-balancing nothing will change here
-@pytest.mark.v6
+@pytest.mark.bootp
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.disabled
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
-def test_HA_load_balancing_sync(dhcp_version, backend):
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
+def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -312,10 +317,10 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
                                                       "client-class": "HA_server2"})
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    load_hook_libraries(dhcp_version, hook_order)
+
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
@@ -345,12 +350,13 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.20-192.168.50.30",
                                                       "client-class": "HA_server2"})
+
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    load_hook_libraries(dhcp_version, hook_order)
+
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
@@ -396,12 +402,14 @@ def test_HA_load_balancing_sync(dhcp_version, backend):
     srv_msg.check_leases(set_of_leases_1, backend=backend)
 
 
-@pytest.mark.v6
+@pytest.mark.bootp
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.disabled
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
-def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend):
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
+def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_order):
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -417,10 +425,10 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend):
                                                       "client-class": "HA_server2"})
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    load_hook_libraries(dhcp_version, hook_order)
+
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
                                           "max-response-delay": 1500,
@@ -445,12 +453,14 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend):
     srv_msg.check_leases(set_of_leases_1)
 
 
-@pytest.mark.v6
+@pytest.mark.bootp
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.disabled
 @pytest.mark.HA
-@pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
-def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
+def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook_order):
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -466,10 +476,10 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
                                                       "client-class": "HA_server2"})
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    load_hook_libraries(dhcp_version, hook_order)
+
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
@@ -499,12 +509,13 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend):
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.120",
                                                       "client-class": "HA_server2"})
+
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
 
-    world.dhcp_cfg["hooks-libraries"][1].update(LOAD_BALANCING)
+    load_hook_libraries(dhcp_version, hook_order)
+
+    srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 0,
                                           "max-response-delay": 1500,
