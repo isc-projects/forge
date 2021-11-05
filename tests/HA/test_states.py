@@ -83,11 +83,11 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -99,7 +99,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
@@ -228,11 +228,11 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -245,7 +245,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
@@ -384,11 +384,11 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
 
@@ -402,7 +402,7 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(3, 'seconds')
@@ -521,11 +521,11 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
-                                      world.f_cfg.server_iface_2)
+                                      world.f_cfg.server2_iface)
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
 
@@ -538,7 +538,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
-    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server_iface_2]
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
