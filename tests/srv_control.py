@@ -462,8 +462,17 @@ def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
 ##subnet options
 @step(r'Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
 def host_reservation_in_subnet(reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
-    """
-    Ability to configure simple host reservations in subnet.
+    """Configure a subnet-level host reservation.
+
+    Arguments:
+    reservation_type -- the type of the reserved resource: "client-classes",
+        "hostname", "ip-addresses", "option-data", "prefixes"
+    reserved_value -- the value of the reserved resource
+    subnet -- the ordinal number of the subnet under which the reservation will
+        be made. Careful, this is not the subnet ID.
+    unique_host_value_type -- the type for the reservation's identifier:
+        "circuit-id", "client-id", "duid", "flex-id", "hw-address"
+    unique_host_value -- the value for the reservation's identifier
     """
     reservation_type, reserved_value, unique_host_value_type, unique_host_value = test_define_value(reservation_type,
                                                                                                     reserved_value,

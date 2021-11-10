@@ -533,6 +533,18 @@ def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_valu
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
+    """Configure a subnet-level host reservation.
+
+    Arguments:
+    reservation_type -- the type of the reserved resource: "client-classes",
+        "hostname", "ip-addresses", "option-data", "prefixes"
+    reserved_value -- the value of the reserved resource
+    unique_host_value_type -- the type for the reservation's identifier:
+        "circuit-id", "client-id", "duid", "flex-id", "hw-address"
+    unique_host_value -- the value for the reservation's identifier
+    subnet -- the ordinal number of the subnet under which the reservation will
+        be made. Careful, this is not the subnet ID.
+    """
     sub = "subnet%s" % world.proto[1]
     if "reservations" not in world.dhcp_cfg[sub][subnet]:
         world.dhcp_cfg[sub][subnet]["reservations"] = []
@@ -540,8 +552,8 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
     # v6 for ip-address reservation and prefixes using different format and names:
     if world.proto[1] == '6':
         if reservation_type in ["ip-address", "prefix", "prefixes"]:
+            # Make sure it ends in "es".
             if reservation_type[-2:] != "es":
-                # in tests there are "prefixes", "prefix" and "ip-address", but we need "es" at the end
                 reservation_type += "es"
             # add reservation as list if it's prefix or address
             world.dhcp_cfg[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
@@ -558,6 +570,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
     sub = "subnet%s" % world.proto[1]
     if world.proto[1] == '6':
         if reservation_type in ["ip-address", "prefix", "prefixes"]:
+            # Make sure it ends in "es".
             if reservation_type[-2:] != "es":
                 reservation_type += "es"
             if not reservation_type in world.dhcp_cfg[sub][subnet]["reservations"][reservation_number]:
