@@ -104,7 +104,7 @@ def config_srv_another_subnet_no_interface(subnet, pool):
     Add another subnet to config file without interface specified.
     """
     subnet, pool = test_define_value(subnet, pool)
-    dhcp.config_srv_another_subnet(subnet, pool, None)
+    dhcp.config_srv_another_subnet(subnet, pool)
 
 
 @step(r'Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')
