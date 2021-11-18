@@ -100,7 +100,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
     srv_msg.check_leases(set_of_leases_2)
 
 
-@pytest.mark.bootp
+@pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.HA
@@ -112,7 +112,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    elif dhcp_version in ['v4', 'bootp']:
+    elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -142,7 +142,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::ffff',
                                       world.f_cfg.server2_iface)
-    elif dhcp_version in ['v4', 'bootp']:
+    elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
@@ -234,7 +234,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     srv_msg.check_leases(set_of_leases_2, backend=backend)
 
 
-@pytest.mark.bootp
+@pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.HA
@@ -245,7 +245,7 @@ def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    elif dhcp_version in ['v4', 'bootp']:
+    elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -268,7 +268,7 @@ def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::ffff',
                                       world.f_cfg.server2_iface)
-    elif dhcp_version in ['v4', 'bootp']:
+    elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
@@ -294,7 +294,7 @@ def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
 
 
 # disabled, we know it fails due to design of HA load-balancing nothing will change here
-@pytest.mark.bootp
+@pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled
@@ -402,7 +402,7 @@ def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
     srv_msg.check_leases(set_of_leases_1, backend=backend)
 
 
-@pytest.mark.bootp
+@pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled
@@ -453,7 +453,7 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_o
     srv_msg.check_leases(set_of_leases_1)
 
 
-@pytest.mark.bootp
+@pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled

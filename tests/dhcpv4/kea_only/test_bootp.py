@@ -25,7 +25,7 @@ from forge_cfg import world
 
 
 @pytest.mark.v4
-@pytest.mark.bootp
+@pytest.mark.v4_bootp
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_bootp_basic_request_reply(backend):
     misc.test_setup()

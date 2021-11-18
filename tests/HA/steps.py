@@ -216,12 +216,12 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
 
             all_leases += srv_msg.get_all_leases()
 
-    elif dhcp_version in ['v4', 'bootp']:
+    elif dhcp_version in ['v4', 'v4_bootp']:
         # This is v4 DORA which we also check in BOOTP's case.
 
         # When testing BOOTP, send half (rounded downwards) of the leases with
         # v4 and half with BOOTP.
-        if dhcp_version == 'bootp':
+        if dhcp_version == 'v4_bootp':
             leases_count = int(leases_count / 2)
 
         for _ in range(leases_count):
@@ -249,7 +249,7 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             all_leases.append(srv_msg.get_all_leases())
 
     # In the end, test BOOTP as well, if enabled.
-    if dhcp_version == 'bootp':
+    if dhcp_version == 'v4_bootp':
         for i in range(leases_count + 1, 2 * leases_count):
             assert i < 256
             srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY('192.168.50.' + str(i), chaddr='00:01:02:03:04:%0.2x' % i)
@@ -319,12 +319,12 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
 
 def load_hook_libraries(dhcp_version, hook_order):
     if hook_order == 'alphabetical':
-        if dhcp_version == 'bootp':
+        if dhcp_version == 'v4_bootp':
             srv_control.add_hooks('libdhcp_bootp.so')
         srv_control.add_ha_hook('libdhcp_ha.so')
         srv_control.add_hooks('libdhcp_lease_cmds.so')
     else:
         srv_control.add_hooks('libdhcp_lease_cmds.so')
         srv_control.add_ha_hook('libdhcp_ha.so')
-        if dhcp_version == 'bootp':
+        if dhcp_version == 'v4_bootp':
             srv_control.add_hooks('libdhcp_bootp.so')

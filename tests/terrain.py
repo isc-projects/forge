@@ -209,7 +209,7 @@ def _define_software(dhcp_version):
     world.cfg["dns_under_test"] = ""
     for name in world.f_cfg.software_under_test:
         if name in world.f_cfg.dhcp_used:
-            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version in ['v4', 'bootp'] else name.replace('4', '6')
+            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version in ['v4', 'v4_bootp'] else name.replace('4', '6')
             # world.cfg["dns_under_test"] = ""
         elif name in world.f_cfg.dns_used:
             world.cfg["dns_under_test"] = name
@@ -228,8 +228,8 @@ def declare_all(dhcp_version=None):
     world.define = []  # temporary define variables
 
     proto = dhcp_version if dhcp_version else world.f_cfg.proto
-    # Most of the time, treat bootp as v4. Use dhcp_version to differentiate between them.
-    if proto == 'bootp':
+    # Most of the time, treat v4_bootp as v4. Use dhcp_version to differentiate between them.
+    if proto == 'v4_bootp':
         proto = 'v4'
     world.proto = world.f_cfg.proto = proto
     world.oro = None
@@ -344,14 +344,11 @@ def initialize(scenario):
     try:
         dhcp_version = scenario._request.getfixturevalue('dhcp_version')
     except:
-        if scenario.get_closest_marker('v4'):
-            dhcp_version = 'v4'
-        elif scenario.get_closest_marker('v6'):
-            dhcp_version = 'v6'
-        elif scenario.get_closest_marker('bootp'):
-            dhcp_version = 'bootp'
-        else:
-            dhcp_version = None
+        dhcp_version = None
+        for v in ['v4', 'v6', 'v4_bootp']:
+            if scenario.get_closest_marker(v):
+                dhcp_version = v
+                break
 
     # Declare all default values
     declare_all(dhcp_version)

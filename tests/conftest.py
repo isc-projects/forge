@@ -46,7 +46,7 @@ def pytest_generate_tests(metafunc):
         return
 
     # Get the list of markers attributed to the function.
-    list_of_versions = ['bootp', 'v4', 'v6']
+    list_of_versions = ['v4_bootp', 'v4', 'v6']
     list_of_attributed_versions = [m for m in list_of_versions if metafunc.definition.get_closest_marker(m)]
 
     # If the -m parameter was provided...
@@ -61,12 +61,13 @@ def pytest_generate_tests(metafunc):
             if v in mark_expression and f'not {v}' in mark_expression:
                 # Then complain to the user.
                 raise Error(f'conflicting markers: "{v}" and "not {v}')
-            # If this version was provided or if "not version" was omitted...
+            # If this version was provided and if "not version" was omitted...
             if v in mark_expression and f'not {v}' not in mark_expression:
                 # Then add it to the list of parametrized versions.
                 dhcp_versions.append(v)
     else:
-        # Otherwise generate for all the markers that are atrributed to the function.
+        # Otherwise, meaning if -m was not provided, generate for all
+        # the markers that are atrributed to the function.
         dhcp_versions = list_of_attributed_versions
 
     # Parameterize.
