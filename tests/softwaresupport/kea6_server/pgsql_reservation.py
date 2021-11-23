@@ -230,16 +230,16 @@ def upload_db_reservation(exp_failed=False):
         copy_configuration_file("db_reservation")
         remove_local_file("db_reservation")
         result = fabric_sudo_command('PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} < {remote_db_path}'.format(**locals()),
-                                     ignore_errors=True)
+                                     ignore_errors=exp_failed)
         # pgsql insert do not return non zero status on failed command, we need to check stdout
-        if exp_failed:
-            if 'ERROR:  current transaction is aborted' in result.stdout:
-                fail_spotted = True
-        else:
-            assert result.succeeded
+        if result.failed or 'ERROR:' in result.stdout or 'ERROR:' in result.stderr:
+            fail_spotted = True
 
     if exp_failed:
         assert fail_spotted
+    else:
+        assert not fail_spotted
+
 
 
 def clear_all_reservations():

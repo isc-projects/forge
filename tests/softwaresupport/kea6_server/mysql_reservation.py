@@ -264,14 +264,13 @@ def upload_db_reservation(exp_failed=False):
         remove_local_file("db_reservation")
         result = fabric_sudo_command('mysql -u {db_user} -p{db_passwd} {db_name} < {remote_db_path}'.format(**locals()),
                                      ignore_errors=exp_failed)
-        if exp_failed:
-            if result.failed:
-                fail_spotted = True
-        else:
-            assert result.succeeded
+        if result.failed:
+            fail_spotted = True
 
     if exp_failed:
         assert fail_spotted
+    else:
+        assert not fail_spotted
 
 
 def clear_all_reservations():
