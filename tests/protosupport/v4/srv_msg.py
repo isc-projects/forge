@@ -512,6 +512,22 @@ def get_all_leases(decode_duid=True):
 
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+    """
+    Sends a request and expects an advertise. Inserts options in the client
+    packets based on given parameters and ensures that the right options are
+    found in the server packets. A single option missing or having incorrect
+    values renders the test failed.
+
+    Arguments:
+    address -- the expected address as value of the requested_addr option
+    options -- any additional options to be inserted in the client packets in
+        dictionary form with option names as keys and option values as values.
+        (default: {})
+    response_type -- the type of response to be expected in the server packet.
+        Can have values 'ACK' or 'NAK'. (default: 'ACK')
+    chaddr -- the client hardware address to be used in client packets
+        (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    """
     client_sets_value('chaddr', chaddr)
     client_copy_option('server_id')
     if not options or 'requested_addr' not in options:
@@ -529,21 +545,49 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
 
 
 def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+    """
+    Sends and ensures receival of 6 packets part of a regular DHCPv4 exchange
+    in the correct sequence: discover, offer, request,
+    acknowledgement/negative-acknowledgement plus an additional
+    request-reply for the renew scenario.
+    Inserts options in the client packets and ensures that the right options
+    are found in the server packets. A single option missing or having incorrect
+    values renders the test failed.
+
+    Arguments:
+    address -- the expected address in the yiaddr field
+    options -- any additional options to be inserted in the client packets in
+        dictionary form with option names as keys and option values as values.
+        (default: {})
+    exchange -- can have values 'full' meaning DORA plus an additional
+        request-reply for the renew scenario or "renew-only". It is a string
+        instead of a boolean for clearer test names because this value often
+        comes from pytest parametrization. (default: 'full')
+    response_type -- the type of response to be expected in the server packet.
+        Can have values 'ACK' or 'NAK'. (default: 'ACK')
+    chaddr -- the client hardware address to be used in client packets
+        (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    """
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
     if exchange == 'full':
+        # Send a discover.
+        client_sets_value('chaddr', chaddr)
         if options:
             for k, v in options.items():
                 client_does_include(None, k, v)
         client_send_msg('DISCOVER')
 
+        # Expect an offer.
         send_wait_for_message('MUST', True, 'OFFER')
         response_check_content(True, 'yiaddr', address)
 
-        RA(address, options, response_type)
+        # Send a request and expect an acknowledgement.
+        RA(address, options, response_type, chaddr)
 
+    # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
-    RA(address, options, response_type)
+    RA(address, options, response_type, chaddr)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):

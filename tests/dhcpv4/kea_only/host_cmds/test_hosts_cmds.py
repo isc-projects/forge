@@ -1309,6 +1309,12 @@ def test_v4_hosts_cmds_global_to_in_subnet(channel, exchange, host_database):
     srv_msg.DORA('192.168.50.150', exchange=exchange)
 
 
+# Tests the reservation-get-by-hostname API command.
+# Negative cases are included:
+# * empty argument list
+# * missing arguments
+# * wrong data types
+# * valid values, but not in configuration
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
@@ -1552,6 +1558,12 @@ def test_v4_hosts_cmds_reservation_get_by_hostname(channel):
     }
 
 
+# Tests the reservation-get-by-id API command.
+# Negative cases are included:
+# * empty argument list
+# * missing arguments
+# * wrong data types
+# * bogus values
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds

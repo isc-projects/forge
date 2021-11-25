@@ -94,7 +94,7 @@ def client_requests_option(opt_type):
     world.oro.reqopts.append(int(opt_type))
 
 
-def client_send_msg(msgname, iface, addr):
+def client_send_msg(msgname, iface=None, addr=None):
     """
     Sends specified message with defined options.
     Parameters:
@@ -1205,6 +1205,16 @@ def save_info():
 
 
 def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
+    """
+    Check that the latest received response has an IA_NA option containing
+    an IA_Address suboption with the given address and containing the given
+    status code.
+
+    Arguments:
+    address -- the expected address as value of the IA_Address suboption
+    status_code -- the expected status code (default: Success)
+    """
+
     response_check_include_option(True, 'IA_NA')
     # RFC 8415: If the Status Code option does not appear in a
     # message in which the option could appear, the status of the message
@@ -1220,6 +1230,16 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
 
 
 def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
+    """
+    Check that the latest received response has an IA_PD option containing
+    an IA_Prefix suboption with the given address and containing the given
+    status code.
+
+    Arguments:
+    prefix -- the expected prefix as value of the IA_Prefix suboption
+    status_code -- the expected status code (default: Success)
+    """
+
     response_check_include_option(True, 'IA_PD')
     # RFC 8415: If the Status Code option does not appear in a
     # message in which the option could appear, the status of the message
@@ -1235,9 +1255,34 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+    """
+    Sends and ensures receival of 6 packets part of a regular DHCPv6 exchange
+    in the correct sequence: solicit, advertise, request, reply, renew, reply.
+    Inserts options in the client packets based on given parameters and ensures
+    that the right options are found in the server packets. A single option
+    missing or having incorrect values renders the test failed.
+
+    Arguments:
+    address -- the expected address as value of the IA_Address suboption.
+        For multiple addresses, use additional check_IA_NA() calls.
+    delegated_prefix -- the expected prefix as value of the IA_Prefix suboption.
+        For multiple prefixes, use additional check_IA_PD() calls.
+    relay_information -- whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
+    status_code -- the expected status code (default: Success)
+    exchange -- can have values "full" meaning SARR + renew-reply or
+        "renew-reply". It is a string instead of a boolean for
+        clearer recognition of test names because this value often comes from
+        pytest parametrization. (default: "full")
+    duid -- the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    """
+
     misc.test_procedure()
     client_sets_value('DUID', duid)
     if exchange == 'full':
+        # Build and send a solicit.
         client_does_include('Client', 'client-id', None)
         if address is not None:
             client_does_include('Client', 'IA_Address', None)
@@ -1245,14 +1290,16 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
         if delegated_prefix is not None:
             client_does_include('Client', 'IA_Prefix', None)
             client_does_include('Client', 'IA-PD', None)
-        client_send_msg('SOLICIT', None, None)
+        client_send_msg('SOLICIT')
 
         if relay_information:
+            # Encapsulate the solicit in a relay forward message.
             client_sets_value('linkaddr', '2001:db8:1::1000')
             client_sets_value('ifaceid', 'port1234')
             client_does_include('RelayAgent', 'interface-id', None)
             create_relay_forward()
 
+            # Expect a relay reply.
             misc.pass_criteria()
             send_wait_for_message('MUST', True, 'RELAYREPLY')
             response_check_include_option(True, 'interface-id')
@@ -1265,15 +1312,19 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
             if delegated_prefix is not None:
                 check_IA_PD(delegated_prefix)
         else:
+            # Expect an advertise.
             misc.pass_criteria()
             send_wait_for_message('MUST', True, 'ADVERTISE')
             if address is not None:
                 check_IA_NA(address)
-                client_copy_option('IA_NA')
             if delegated_prefix is not None:
                 check_IA_PD(delegated_prefix)
-                client_copy_option('IA_PD')
 
+            # Build and send a request.
+            if address is not None:
+                client_copy_option('IA_NA')
+            if delegated_prefix is not None:
+                client_copy_option('IA_PD')
             client_copy_option('server-id')
             client_sets_value('DUID', duid)
             client_does_include('Client', 'client-id', None)
@@ -1282,8 +1333,9 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
                     client_sets_value('IA_Address', address)
                 if delegated_prefix is not None:
                     client_sets_value('IA-Prefix', delegated_prefix)
-            client_send_msg('REQUEST', None, None)
+            client_send_msg('REQUEST')
 
+            # Expect a reply.
             misc.pass_criteria()
             send_wait_for_message('MUST', True, 'REPLY')
             if address is not None:
@@ -1291,9 +1343,14 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
             if delegated_prefix is not None:
                 check_IA_PD(delegated_prefix)
 
-    # @todo: Investigate why Kea doesn't respond to renews when RelayAgent is
-    # used.
+    # @todo: forge doesn't receive a reply on renews if the initial solicit was
+    # encapsulated in a relay forward message. After an investigation is done,
+    # if it is decided that it is normal behavior, you may remove this comment
+    # block. If there was a bug in this function, then the following if
+    # statement is a hack and should be removed and the code block within should
+    # be bumped one scope level up at function level i.e. always executed.
     if not relay_information:
+        # Build and send a renew.
         if address is not None:
             client_copy_option('IA_NA')
         if delegated_prefix is not None:
@@ -1306,8 +1363,9 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
                 client_sets_value('IA_Address', address)
             if delegated_prefix is not None:
                 client_sets_value('IA_Prefix', delegated_prefix)
-        client_send_msg('RENEW', None, None)
+        client_send_msg('RENEW')
 
+        # Expect a reply.
         send_wait_for_message('MUST', True, 'REPLY')
         if address is not None:
             check_IA_NA(address)
