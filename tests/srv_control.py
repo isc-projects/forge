@@ -758,21 +758,21 @@ def add_ddns_server_options(option, value):
 
 
 @step(r'Add forward DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
-def add_forward_ddns(name, key_name):
-    if world.f_cfg.proto == 'v4':
+def add_forward_ddns(name, key_name, ip_address=None):
+    if world.f_cfg.proto == 'v4' and ip_address is None:
         ip_address = world.f_cfg.dns4_addr
-    else:
+    elif world.f_cfg.proto == 'v6' and ip_address is None:
         ip_address = world.f_cfg.dns6_addr
-    ddns.add_forward_ddns(name, key_name, ip_address, world.f_cfg.dns_port)
+    ddns.add_forward_ddns(name, key_name, ip_address, 53001)
 
 
 @step(r'Add reverse DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
-def add_reverse_ddns(name, key_name):
-    if world.f_cfg.proto == 'v4':
+def add_reverse_ddns(name, key_name, ip_address=None):
+    if world.f_cfg.proto == 'v4' and ip_address is None:
         ip_address = world.f_cfg.dns4_addr
-    else:
+    elif world.f_cfg.proto == 'v6' and ip_address is None:
         ip_address = world.f_cfg.dns6_addr
-    ddns.add_reverse_ddns(name, key_name, ip_address, world.f_cfg.dns_port)
+    ddns.add_reverse_ddns(name, key_name, ip_address, 53001)
 
 
 @step(r'Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
@@ -781,13 +781,28 @@ def add_keys(name, algorithm, secret):
 
 
 @step(r'DDNS server is configured with GSS-TSIG.')
-def ddns_add_gss_tsig():
-    ddns.ddns_add_gss_tsig()
+def ddns_add_gss_tsig(addr, dns_system,
+                      client_principal="DHCP/admin.example.com@EXAMPLE.COM",
+                      client_tab="FILE:/tmp/dhcp.keytab",
+                      fallback=False,
+                      retry_interval=None,
+                      rekey_interval=None,
+                      server_id="server1",
+                      server_principal="DNS/server.example.com@EXAMPLE.COM",
+                      tkey_lifetime=3600):
+    ddns.ddns_add_gss_tsig(addr=addr, dns_system=dns_system, client_principal=client_principal, client_tab=client_tab,
+                           fallback=fallback, retry_interval=retry_interval, rekey_interval=rekey_interval,
+                           server_id=server_id, server_principal=server_principal, tkey_lifetime=tkey_lifetime)
 
 
 @step(r'Use DNS set no. (\d+).')
-def use_dns_set_number(number):
-    dns.use_config_set(int(number))
+def use_dns_set_number(number, override_dns_addr=None):
+    """
+    Use specific set of configs for bind 9, in future we can make this dynamic just like kea
+    @param number:  int, number of set used
+    @param override_dns_addr: string, for now it will be used only to switch between v4 and v6 in AD setup
+    """
+    dns.use_config_set(int(number), override_dns=override_dns_addr)
 
 
 def print_cfg(service='DHCP'):
