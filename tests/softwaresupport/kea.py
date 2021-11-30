@@ -1110,8 +1110,8 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         # for now just killall kea processes and ignore errors
-        execute_shell_cmd("killall -q kea-ctrl-agent  kea-dhcp-ddns  kea-dhcp4  kea-dhcp6 || true",
-                          save_results=False, dest=destination_address)
+        fabric_sudo_command("killall -q kea-ctrl-agent  kea-dhcp-ddns  kea-dhcp4  kea-dhcp6",
+                            ignore_errors=True, destination_host=destination_address, hide_all=value)
 
     else:
         if world.server_system == 'redhat':

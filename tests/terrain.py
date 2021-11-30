@@ -425,7 +425,7 @@ def initialize(scenario):
         # potential probelms with two instances of tcpdump running
         # TODO make sure it works properly!
         if world.dhcp_enable and world.dns_enable:
-            if world.cfg["dns_iface"] != world.cfg["iface"]:
+            if world.f_cfg.dns_iface != world.cfg["iface"]:
                 cmd2 = world.f_cfg.tcpdump_path + 'tcpdump'
                 args2 = [cmd2, "-U", "-w", world.cfg["test_result_dir"] + "/capture_dns.pcap",
                          "-s", str(65535), "-i", world.cfg["dns_iface"]]
@@ -458,10 +458,10 @@ def cleanup(scenario):
                 # try:
                 if world.f_cfg.save_leases:
                     # save leases, if there is none leases in your software, just put "pass" in this function.
-                    functions.save_leases()
+                    functions.save_leases(destination_address=remote_server)
 
                 if world.f_cfg.save_logs:
-                    functions.save_logs()
+                    functions.save_logs(destination_address=remote_server)
 
 
 #@after.all
