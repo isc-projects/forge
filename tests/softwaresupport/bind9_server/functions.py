@@ -94,9 +94,11 @@ def add_rndc(address, port, alg, value):
     world.cfg["rndc-key"] += 'default-server {address};	default-port 953;{pointer_e};'.format(**locals())
 
 
-def _patch_config(cfg):
+def _patch_config(cfg, override_dns=None):
     tpl = string.Template(cfg)
-    if world.f_cfg.proto == 'v4':
+    if override_dns is not None:
+        dns_addr = override_dns
+    elif world.f_cfg.proto == 'v4':
         dns_addr = world.f_cfg.dns4_addr
     else:
         dns_addr = world.f_cfg.dns6_addr
@@ -105,7 +107,7 @@ def _patch_config(cfg):
                                dns_port=world.f_cfg.dns_port)
 
 
-def use_config_set(number):
+def use_config_set(number, override_dns=None):
     if number not in config_file_set:
         assert False, "There is no such config file set"
 
@@ -116,7 +118,7 @@ def use_config_set(number):
     fabric_sudo_command('chmod a+w %s' % namedb_dir)
 
     send_content('named.conf', os.path.join(world.f_cfg.dns_data_path, 'named.conf'),
-                 _patch_config(config_file_set[number][0]), 'dns')
+                 _patch_config(config_file_set[number][0], override_dns), 'dns')
 
     send_content('rndc.conf', os.path.join(world.f_cfg.dns_data_path, 'rndc.conf'),
                  config_file_set[number][1], 'dns')
@@ -148,6 +150,7 @@ def upload_dns_keytab(dns_keytab):
     content = base64.decodebytes(bytes(dns_keytab, 'ascii'))
     namedb_dir = os.path.join(world.f_cfg.dns_data_path, 'namedb')
     p = os.path.join(namedb_dir, 'dns.keytab')
+    fabric_sudo_command("cp /tmp/dns.keytab %s" % p)
     send_content('dns.keytab', p, content, 'dns')
     if world.f_cfg.dns_data_path.startswith('/etc'):
         # when installed from pkg
@@ -160,7 +163,6 @@ def upload_dns_keytab(dns_keytab):
         # when compiled and installed from sources
         fabric_sudo_command('chmod 400 %s' % p)
         fabric_sudo_command('chown root:root %s' % p)
-
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
