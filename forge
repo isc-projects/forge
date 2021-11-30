@@ -56,7 +56,8 @@ SERVER_IFACE = "{SERVER_IFACE}"
 #SERVER_IFACE = "eth2"
 DNS4_ADDR = "{DNS4_ADDR}"
 DNS6_ADDR = "{DNS6_ADDR}"
-WIN_DNS_ADDR = "{WIN_DNS_ADDR}"
+WIN_DNS_ADDR_2016 = "{WIN_DNS_ADDR_2016}"
+WIN_DNS_ADDR_2019 = "{WIN_DNS_ADDR_2019}"
 SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",
 SOFTWARE_INSTALL_PATH = "/usr/local"
 DB_TYPE = "memfile"
@@ -387,10 +388,12 @@ def setup(args):
     cfg = _load_config()
 
     set_init_all(args)
+    win_vm_2016 = None
+    win_vm_2019 = None
 
     if args.win_gss_tsig:
-        win_vm_2016 = _setup_win_ad_dns('ami-2016', 'win2016ad.aws.isc.org')
-        win_vm_2019 = _setup_win_ad_dns('ami-2019', 'win2019ad.aws.isc.org')
+        win_vm_2016 = _setup_win_ad_dns('ami-0fd47ed1938384219', 'win2016ad.aws.isc.org')
+        win_vm_2019 = _setup_win_ad_dns('ami-039c7ae745475bd32', 'win2019ad.aws.isc.org')
 
     if args.lxc:
         vagrant_tpl = 'vagrant/Vagrantfile.lxc.in'
