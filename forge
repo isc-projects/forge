@@ -256,6 +256,16 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
     return exitcode
 
 
+def _get_win_addresses(vars, version):
+    vars[f'WIN_DNS_ADDR_{version}'] = ''
+    if os.path.exists(f'aws-win-ad-dns-vm{version}.txt'):
+        with open(f'aws-win-ad-dns-vm{version}.txt', 'r') as f:
+            for line in f.readlines():
+                if line.startswith('ip-address='):
+                    vars[f'WIN_DNS_ADDR_{version}'] = line[11:].strip()
+    return vars
+
+
 def set_init_all(args):
     # generate init_all.py
     my_vars = globals()
@@ -265,12 +275,8 @@ def set_init_all(args):
     if args.system.startswith('fedora'):
         my_vars['DNS_DATA_PATH'] = '/etc/'
 
-    my_vars['WIN_DNS_ADDR'] = ''
-    if os.path.exists('aws-win-ad-dns-vm.txt'):
-        with open('aws-win-ad-dns-vm.txt', 'r') as f:
-            for line in f.readlines():
-                if line.startswith('ip-address='):
-                    my_vars['WIN_DNS_ADDR'] = line[11:].strip()
+    my_vars = _get_win_addresses(my_vars, '2016')
+    my_vars = _get_win_addresses(my_vars, '2019')
 
     txt = INIT_ALL.format(**my_vars)
 
@@ -350,24 +356,25 @@ def _destroy_lxc_containers(args):
         execute('sudo lxc-destroy --name %s' % cntr, raise_error=False)
 
 
-def _setup_win_ad_dns():
+def _setup_win_ad_dns(ami, domain):
     import boto3
     print('creating windows vm for gss-tsig testing')
     init_script="""<script>
-shutdown /s /t 10
+shutdown /s /t 240
 </script>
 """
     ec2 = boto3.resource('ec2', region_name='us-east-1')
     params = dict(MaxCount=1,
                   MinCount=1,
                   InstanceType='t2.micro',
-                  ImageId='ami-094063ddb5e0250b1',  # win2016-forge-06
+                  # ImageId='ami-094063ddb5e0250b1',  # win2016-forge-06
+                  ImageId=ami,  # win2016-forge-06
                   SubnetId='subnet-0efca44a30c0a40c0',
-                  KeyName='godfryd',
+                  KeyName='wlodek',
                   SecurityGroupIds=['sg-04a74236a5389e87f'],  # DomainController
-                  TagSpecifications=[{'ResourceType': 'instance','Tags': [
-                      {'Key': 'godfryd', 'Value': 'yes'},
-                      {'Key': 'isc:owner', 'Value': 'godfryd'},
+                  TagSpecifications=[{'ResourceType': 'instance', 'Tags': [
+                      {'Key': 'forge-testing', 'Value': 'yes'},
+                      {'Key': 'isc:owner', 'Value': 'wlodek'},
                       {'Key': 'isc:group', 'Value': 'kea'},
                       {'Key': 'isc:stack', 'Value': 'jenkins'},
                   ]}],
@@ -375,9 +382,10 @@ shutdown /s /t 10
                   UserData=init_script)
 
     i = list(ec2.create_instances(**params))[0]
-    with open('aws-win-ad-dns-vm.txt', 'w') as f:
-        f.write('instance-id=%s\n' % i.id)
-    print('windows vm instance-id: %s' % i.id)
+    with open(f'aws-win-ad-dns-vm{domain[3:7]}.txt', 'w') as f:
+        f.write(f'instance-id={i.id}\n')
+        f.write(f'domain={domain}\n')
+    print(f'windows vm using domain {domain} and instance-id: {i.id}')
     return i
 
 
@@ -388,7 +396,8 @@ def setup(args):
     set_init_all(args)
 
     if args.win_gss_tsig:
-        win_vm = _setup_win_ad_dns()
+        win_vm_2016 = _setup_win_ad_dns('ami-2016', 'win2016ad.aws.isc.org')
+        win_vm_2019 = _setup_win_ad_dns('ami-2019', 'win2019ad.aws.isc.org')
 
     if args.lxc:
         vagrant_tpl = 'vagrant/Vagrantfile.lxc.in'
@@ -476,12 +485,19 @@ def setup(args):
             execute('vagrant provision', cwd=vagrant_dir)
 
     if args.win_gss_tsig:
-        win_vm.wait_until_running()
-        win_vm.reload()
-        win_dns_addr = win_vm.private_ip_address
-        with open('aws-win-ad-dns-vm.txt', 'a') as f:
+        win_vm_2016.wait_until_running()
+        win_vm_2016.reload()
+        win_dns_addr = win_vm_2016.private_ip_address
+        with open('aws-win-ad-dns-vm2016.txt', 'a') as f:
             f.write('ip-address=%s\n' % win_dns_addr)
-        print('windows vm ip-address: %s' % win_dns_addr)
+        print('windows 2016 vm ip-address: %s' % win_dns_addr)
+
+        win_vm_2019.wait_until_running()
+        win_vm_2019.reload()
+        win_dns_addr = win_vm_2019.private_ip_address
+        with open('aws-win-ad-dns-vm2016.txt', 'a') as f:
+            f.write('ip-address=%s\n' % win_dns_addr)
+        print('windows 2019 vm ip-address: %s' % win_dns_addr)
 
 
 def install_kea(args):
@@ -517,7 +533,7 @@ def _upload_content(content, server_name, path, vagrant_dir, log_prefix):
 def _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
 
-    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server dnsutils'
+    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils'
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
