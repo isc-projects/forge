@@ -38,7 +38,7 @@ def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
                        password_loc=world.f_cfg.mgmt_password, hide_all=False,
                        ignore_errors=False):
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
             if ignore_errors:
                 fabric.state.output.warnings = False
@@ -91,7 +91,7 @@ def fabric_download_file(remote_path, local_path,
                          user_loc=world.f_cfg.mgmt_username,
                          password_loc=world.f_cfg.mgmt_password, ignore_errors=False):
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
             if ignore_errors:
                 fabric.state.output.warnings = False
@@ -108,11 +108,16 @@ def make_tarfile(output_filename, source_dir):
 def fabric_remove_file_command(remote_path,
                                destination_host=world.f_cfg.mgmt_address,
                                user_loc=world.f_cfg.mgmt_username,
-                               password_loc=world.f_cfg.mgmt_password):
+                               password_loc=world.f_cfg.mgmt_password,
+                               hide_all=True):
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
-            result = sudo("rm -f " + remote_path)
+            if hide_all:
+                with hide('running', 'stdout', 'stderr'):
+                    result = sudo("rm -f " + remote_path)
+            else:
+                result = sudo("rm -f " + remote_path)
     return result
 
 

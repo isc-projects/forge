@@ -331,6 +331,8 @@ def log_contains_count(server_type, count, line):
         log_file = world.cfg["dhcp_log_file"]
     elif server_type == "DNS":
         log_file = world.cfg["dns_log_file"]
+    elif server_type == "DDNS":
+        log_file = world.cfg["dns_log_file"]
     else:
         assert False, "No such name as: {server_type}".format(**locals())
 

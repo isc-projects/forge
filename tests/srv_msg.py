@@ -255,14 +255,9 @@ def dns_question_record(addr, qtype, qclass):
     dns.dns_question_record(str(addr), qtype, qclass)
 
 
-@step(r'For DNS query client sets (\w+) value to (\S+).')
-def dns_query_set_value(variable_name, value):
-    dns.set_val()
-
-
 @step(r'Client sends DNS query.')
-def client_send_dns_query():
-    dns.prepare_query()
+def client_send_dns_query(dns_addr=None, dns_port=None):
+    dns.prepare_query(dns_addr=dns_addr, dns_port=dns_port)
 
 
 ##checking DNS respond
@@ -301,6 +296,13 @@ def client_copy_option(option_name):
     """
     assert len(world.srvmsg), "No messages received, nothing to copy."
     dhcpmsg.client_copy_option(option_name)
+
+
+def clean_saved_options():
+    """
+    Clean all previously saved options
+    """
+    world.savedmsg = {}
 
 
 @step(r'Client saves (\S+) option from received message.')
@@ -479,11 +481,12 @@ def wait_for_message_count_in_log(count, line, timeout=4, log_file=None):
 
 
 @step(r'Sleep for (\S+) (seconds|second|milliseconds|millisecond).')
-def forge_sleep(time_val, time_units):
+def forge_sleep(time_val, time_units='seconds'):
     """
     Pause the test for selected amount of time counted in seconds or milliseconds.
     """
     time_val, time_units = test_define_value(time_val, time_units)
+    print("Sleep for %s %s" % (time_val, time_units))
     multi_protocol_functions.forge_sleep(int(time_val), str(time_units))
 
 
