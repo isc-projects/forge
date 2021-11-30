@@ -78,13 +78,15 @@ r_codes = {"OK": 0,
            "REFUSED": 5}
 
 
-def prepare_query():
+def prepare_query(dns_addr=None, dns_port=None):
     world.climsg = []
     build_query()
-    build_msg()
+    build_msg(dns_addr, dns_port)
 
 
-def send_wait_for_query(choose_must, expect_include):
+def send_wait_for_query(choose_must, expect_include, iface=None):
+    if iface is None:
+        iface = world.cfg["dns_iface"]
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
@@ -96,7 +98,7 @@ def send_wait_for_query(choose_must, expect_include):
              timeout)
 
     ans, unans = sr(world.climsg,
-                    iface=world.cfg["dns_iface"],
+                    iface=iface,
                     timeout=timeout,
                     multi=True,
                     verbose=99)
@@ -125,13 +127,12 @@ def send_wait_for_query(choose_must, expect_include):
         # if message was not received but expected, resend query with higher timeout
         if len(world.srvmsg) == 0 and world.dns_send_query_counter <= world.f_cfg.dns_retry:
             time.sleep(1)
-            send_wait_for_query(choose_must, expect_include)
+            send_wait_for_query(choose_must, expect_include, iface=iface)
         else:
             assert len(world.srvmsg) != 0, "No response received."
 
     elif not expect_include:
         assert len(world.srvmsg) == 0, "Response received, not expected"
-
 
     msg = world.srvmsg[0]
 
@@ -190,12 +191,25 @@ def dns_question_record(addr, my_qtype, my_qclass):
     world.question_record = dns.DNSQR(qname=addr, qtype=dnstype_code, qclass=dnsclass_code)
 
 
-def build_msg():
-    if world.proto == "v6":
-        msg = IPv6(dst=world.cfg["dns6_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
+def build_msg(dns_addr=None, dns_port=None):
+    if dns_port is None:
+        dns_port = world.cfg["dns_port"]
+
+    if dns_addr is None:
+        if world.proto == "v6":
+            dns_addr = world.cfg["dns6_addr"]
+        else:
+            dns_addr = world.cfg["dns4_addr"]
+
+    # this is now bit more complicated, normally we had v6 DNS traffic in v6 tests, for AD we need to have v4 traffic
+    # in v6 tests. So instead checking world.proto we will check address itself
+    if "." in dns_addr:
+        msg = IP(dst=dns_addr)
     else:
-        msg = IP(dst=world.cfg["dns4_addr"])/UDP(sport=world.cfg["dns_port"], dport=world.cfg["dns_port"])
-    msg.trid = random.randint(0, 256*256*256)
+        msg = IPv6(dst=dns_addr)
+
+    msg /= UDP(sport=dns_port, dport=dns_port)
+    msg.trid = random.randint(0, 255*255*255)
     world.climsg.append(msg/world.dns_query)
 
 

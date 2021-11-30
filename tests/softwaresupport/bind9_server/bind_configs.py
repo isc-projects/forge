@@ -2102,7 +2102,8 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
-    tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
+    tkey-gssapi-keytab "/tmp/dns.keytab"; // DNS principal keytab
+    # tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -2110,31 +2111,31 @@ zone "50.168.192.in-addr.arpa." {
     file "rev.db";
     notify no;
     update-policy {
-        grant "forge@EXAMPLE.COM" zonesub any;
+        grant "DHCP/admin.example.com@EXAMPLE.COM" zonesub any;
     };
     allow-query { any; };              // This is the default
 };
 
-zone "four.example.com" {
+zone "example.com" {
     type master;
     file "fwd.db";
     notify no;
     update-policy {
-        grant "forge@EXAMPLE.COM" zonesub any;
+        grant "DHCP/admin.example.com@EXAMPLE.COM" zonesub any;
     };
     allow-transfer { any; };
     allow-query { any; };              // This is the default
 };
 
 #Use with the following in named.conf, adjusting the allow list as needed:
-key "rndc-key" {
-    algorithm hmac-md5;
-    secret "+kOEcvxPTCPxzGqB5n5FeA==";
-};
+#key "rndc-key" {
+#    algorithm hmac-md5;
+#    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+#};
 
-controls {
-    inet 127.0.0.1 port 53001  allow { 127.0.0.1; } keys { "rndc-key"; };
-};
+#controls {
+#    inet 127.0.0.1 port 53002  allow { 127.0.0.1; } keys { "rndc-key"; };
+#};
 
 logging{
   channel simple_log {
@@ -2153,32 +2154,32 @@ logging{
 };
 """,  # rndc.conf
         """
-key "rndc-key" {
-	algorithm hmac-md5;
-	secret "+kOEcvxPTCPxzGqB5n5FeA==";
-};
-
-options {
-	default-key "rndc-key";
-	default-server 127.0.0.1;
-	default-port 953;
-};
+# key "rndc-key" {
+# 	algorithm hmac-md5;
+# 	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+# };
+# 
+# options {
+# 	default-key "rndc-key";
+# 	default-server 127.0.0.1;
+# 	default-port 953;
+# };
 """, # fwd.db
         """$ORIGIN .
 $TTL 86400	; 1 day
-four.example.com	IN SOA	dns.four.example.com. mail.four.example.com. (
+example.com	IN SOA	server.example.com. root.example.com. (
 				106        ; serial
 				3600       ; refresh (1 hour)
 				900        ; retry (15 minutes)
 				2592000    ; expire (4 weeks 2 days)
 				3600       ; minimum (1 hour)
 				)
-			NS	dns.four.example.com.
-$ORIGIN four.example.com.
-dns			A	172.16.1.1
+			NS	dns1.example.com.
+$ORIGIN example.com.
+dns1			A	172.16.1.1
 """, # rev.db
         """$TTL 1h	; Default TTL
-@ IN SOA dns1.four.example.com. hostmaster.example.com. (
+@ IN SOA dns1.example.com. hostmaster.example.com. (
 	100	; serial
 	1h		; slave refresh interval
 	15m		; slave retry interval
@@ -2186,12 +2187,114 @@ dns			A	172.16.1.1
 	1h		; NXDOMAIN cache time
 	)
 
-	NS	dns1.four.example.com.
+	NS	dns1.example.com.
 
 $ORIGIN 50.168.192.in-addr.arpa.
 
-1 	IN	PTR      dns1.four.example.com.
+1 	IN	PTR      dns1.example.com.
 """
+    ],
+34: [
+        # named.conf
+        """
+options {
+    directory "${data_path}";  // Working directory
+    listen-on port ${dns_port} { ${dns_addr}; };
+    allow-query-cache { none; };       // Do not allow access to cache
+    allow-update { any; };              // This is the default
+    allow-query { any; };              // This is the default
+    recursion no;                      // Do not provide recursive service
+    tkey-gssapi-keytab "/tmp/dns.keytab"; // DNS principal keytab
+    # tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
+};
+
+zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+     type master;
+     file "rev.db";
+     notify no;
+     update-policy {
+         grant "DHCP/admin.example.com@EXAMPLE.COM" zonesub any;
+     };
+     allow-query { any; };              // This is the default
+
+};
+
+zone "example.com" {
+    type master;
+    file "fwd.db";
+    notify no;
+    update-policy {
+        grant "DHCP/admin.example.com@EXAMPLE.COM" zonesub any;
+    };
+    allow-transfer { any; };
+    allow-query { any; };              // This is the default
+};
+
+#Use with the following in named.conf, adjusting the allow list as needed:
+#key "rndc-key" {
+#    algorithm hmac-md5;
+#    secret "+kOEcvxPTCPxzGqB5n5FeA==";
+#};
+
+#controls {
+#    inet 127.0.0.1 port 53002  allow { 127.0.0.1; } keys { "rndc-key"; };
+#};
+
+logging{
+  channel simple_log {
+    file "/tmp/dns.log";
+    severity debug 99;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category default{
+    simple_log;
+  };
+  category queries{
+    simple_log;
+  };
+};
+""",  # rndc.conf
+        """
+# key "rndc-key" {
+# 	algorithm hmac-md5;
+# 	secret "+kOEcvxPTCPxzGqB5n5FeA==";
+# };
+# 
+# options {
+# 	default-key "rndc-key";
+# 	default-server 127.0.0.1;
+# 	default-port 953;
+# };
+""", # fwd.db
+    """$ORIGIN .
+$TTL 86400	; 1 day
+example.com		IN SOA	dns6-1.example.com. mail.example.com. (
+                107        ; serial
+                3600       ; refresh (1 hour)
+                900        ; retry (15 minutes)
+                2592000    ; expire (4 weeks 2 days)
+                3600       ; minimum (1 hour)
+                )
+            NS	dns6-1.example.com.
+$ORIGIN example.com.
+dns6-1			AAAA	2001:db8:1::1
+nanny6			AAAA	2001:db8:1::10
+""", # rev.db
+    """$ORIGIN .
+$TTL 3600	; 1 hour
+1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa IN SOA	dns6-1.example.com. mail.example.com. (
+                102        ; serial
+                3600       ; refresh (1 hour)
+                900        ; retry (15 minutes)
+                604800     ; expire (1 week)
+                3600       ; minimum (1 hour)
+                )
+            NS	dns6-1.six.example.com.
+$ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+0			PTR	nanny6.exmaple.com.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+    """
     ]}
 
 keys = '''/* $Id: bind.keys,v 1.7 2011/01/03 23:45:07 each Exp $ */
