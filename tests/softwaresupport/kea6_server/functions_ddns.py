@@ -53,6 +53,7 @@ def add_ddns_server(address, port):
                       }  # default value
 
     add_ddns_server_options("server-ip", address)
+    add_ddns_server_options("server-port", int(port))
     add_ddns_server_options("enable-updates", False)
 
 
@@ -71,14 +72,16 @@ def add_ddns_server_options(option, value=None):
     world.dhcp_cfg["dhcp-ddns"][option] = value
 
 
-def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
+def add_forward_ddns(name, key_name, ip_address, port=53001, hostname=""):
     tmp_record = {
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
             "hostname": hostname,
             "ip-address": ip_address,
-            "port": port
+            # "ip-address": "127.0.0.1",
+            # "port": 53
+            # "port": port
         }]
     }
 
@@ -87,14 +90,16 @@ def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
     world.ddns_cfg["forward-ddns"]["ddns-domains"].append(tmp_record)
 
 
-def add_reverse_ddns(name, key_name, ip_address, port, hostname=""):
+def add_reverse_ddns(name, key_name, ip_address, port=53001, hostname=""):
     tmp_record = {
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
             "hostname": hostname,
             "ip-address": ip_address,
-            "port": port
+            # "ip-address": "127.0.0.1",
+            # "port": 53002
+            # "port": port
         }]
     }
 
@@ -121,26 +126,35 @@ def ddns_open_control_channel_socket(socket_name=None):
     world.ddns_cfg["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
 
 
-def ddns_add_gss_tsig():
+def ddns_add_gss_tsig(addr, dns_system,
+                      client_principal="DHCP/admin.example.com@EXAMPLE.COM",
+                      client_tab="FILE:/tmp/dhcp.keytab",
+                      fallback=False,
+                      retry_interval=None,
+                      rekey_interval=None,
+                      server_id="server1",
+                      server_principal="DNS/server.example.com@EXAMPLE.COM",
+                      tkey_lifetime=3600):
     gss_tsig_cfg = {
-        "library": world.f_cfg.hooks_join("libdhcp_gss_tsig.so"),
+        "library": world.f_cfg.hooks_join("libddns_gss_tsig.so"),
         "parameters": {
-            "server-principal": "DNS/server.example.org@REALM",
-            "client-principal": "DHCP/admin.example.org@REALM",
-            "client-keytab": "FILE:/etc/krb5.keytab",
-            "credentials-cache": "FILE:/etc/ccache",
-            "tkey-lifetime": 3600,
+            "server-principal": server_principal,
             "tkey-protocol": "TCP",
-
+            "rekey-interval": rekey_interval if rekey_interval is not None else tkey_lifetime-int(tkey_lifetime*0.1),
+            "retry-interval": retry_interval if retry_interval is not None else tkey_lifetime-int(tkey_lifetime*0.2),
+            "tkey-lifetime": tkey_lifetime,
+            "fallback": fallback,
             "servers": [{
-                "domain-names": [ ],
-                "ip-address": "192.0.2.1",
-                "port": 53,
-                "server-principal": "DNS/server1.example.org@REALM",
-                "client-principal": "DHCP/admin1.example.org@REALM",
-                "tkey-lifetime": 86400,
-                "tkey-protocol": "TCP"
+                "id": server_id,
+                "ip-address": addr,
             }]
         }
     }
-    # world.ddns_cfg["hooks-libraries"] = [gss_tsig_cfg] TODO: this is not supported by kea yet
+    if dns_system == 'linux':
+        gss_tsig_cfg["parameters"].update({
+            "client-principal": client_principal,
+            "client-keytab": client_tab,
+            "credentials-cache": "FILE:/etc/ccache"
+            })
+
+    world.ddns_cfg["hooks-libraries"] = [gss_tsig_cfg]
