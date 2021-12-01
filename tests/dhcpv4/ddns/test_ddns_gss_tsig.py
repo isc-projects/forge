@@ -9,8 +9,7 @@ import srv_msg
 import srv_control
 from forge_cfg import world
 from softwaresupport import krb
-from softwaresupport import krb_win
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_sudo_command
+from softwaresupport.multi_server_functions import fabric_sudo_command
 
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
@@ -139,8 +138,7 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
             # if all is as we expected we can continue with a test
             return response["arguments"]["keys"][index]["name"]
         srv_msg.forge_sleep(1)
-    else:
-        assert False, "After 5 seconds we don't have valid key, it might be environment issue, please debug this."
+    assert False, "After 5 seconds we don't have valid key, it might be environment issue, please debug this."
 
 # IMPORTANT NOTE
 # HOW TO MANUALLY DEBUG THOSE TESTS WITHOUT LOCAL WINDOWS SERVER
@@ -186,12 +184,12 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
             dns_addr = "54.242.20.19"
         world.f_cfg.win_dns_addr = dns_addr
         world.f_cfg.dns4_addr = dns_addr
-        krb_win.init_and_start_krb_win(dns_addr, my_domain)
+        krb.init_and_start_krb(dns_addr, my_domain)
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
     else:
         dns_addr = world.f_cfg.dns4_addr
-        krb.init_and_start_krb(dns_addr)
-        krb.manage_kerb(proceture='restart')
+        krb.init_and_start_krb(dns_addr, my_domain)
+        krb.manage_kerb(procedure='restart')
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
         fabric_sudo_command('klist')
         fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
@@ -300,8 +298,8 @@ def test_ddns4_gss_tsig_fallback(fallback):
     dns_addr = world.f_cfg.dns4_addr
     #
     # dns_keytab, dhcp_keytab = krb.init_and_start_krb(dns_addr)
-    krb.init_and_start_krb(dns_addr)
-    krb.manage_kerb(proceture='restart')
+    krb.init_and_start_krb(dns_addr, 'example.com')
+    krb.manage_kerb(procedure='restart')
     fabric_sudo_command('bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.example.com"')
     fabric_sudo_command('klist')
     fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
@@ -394,23 +392,17 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
         # dns_addr = "<global addr of vm running windows 2019>"
         # if "2016" in my_domain:
         #     dns_addr = "<global addr of vm running windows 2016>"
-
-
-        # my_domain = f"win{my_domain}ad.aws.isc.org"
-        # if not world.f_cfg.win_dns_addr:
-        #     pytest.skip("skipped test as there is no Windows machine")
-        #     return
         dns_addr = "54.224.249.185"
         if "2016" in my_domain:
             dns_addr = "54.242.20.19"
         world.f_cfg.win_dns_addr = dns_addr
         world.f_cfg.dns4_addr = dns_addr
-        krb_win.init_and_start_krb_win(dns_addr, my_domain)
+        krb.init_and_start_krb(dns_addr, my_domain)
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
     else:
         dns_addr = world.f_cfg.dns4_addr
-        krb.init_and_start_krb(dns_addr)
-        krb.manage_kerb(proceture='restart')
+        krb.init_and_start_krb(dns_addr, my_domain)
+        krb.manage_kerb(procedure='restart')
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
         fabric_sudo_command('klist')
         fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
@@ -485,12 +477,12 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     # check stats for single key, we made update for forward and reverse dns for one lease so we expect value 2
     cmd = dict(command="statistic-get", arguments={"name": f"key[{key_name}].update-success"})
     single_stat = _send_through_socket(cmd)["arguments"]
-    # assert single_stat[f"key[{key_name}].update-success"][0][0] == 2
+    assert single_stat[f"key[{key_name}].update-success"][0][0] == 2
 
     # check global number of updates
     cmd = dict(command="statistic-get", arguments={"name": "update-success"})
     single_stat = _send_through_socket(cmd)["arguments"]
-    # assert single_stat["update-success"][0][0] == 2
+    assert single_stat["update-success"][0][0] == 2
 
     cmd = dict(command="list-commands", arguments={})
     response = _send_through_socket(cmd)
