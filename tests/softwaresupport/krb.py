@@ -27,10 +27,14 @@ def install_krb(dns_addr, domain, key_life=2):
     fabric_sudo_command('kdestroy -A', ignore_errors=True)
     manage_kerb()
 
-    fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user')
-    fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')
-    fabric_sudo_command('rm -rf /tmp/dhcp.keytab /tmp/dns.keytab /tmp/krb5cc_0 /tmp/krb5*')
-    fabric_sudo_command('sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user')
+    if world.server_system == 'redhat':
+        # for now it will break
+        pass
+    else:
+        fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
+        fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')
+        fabric_sudo_command('rm -rf /tmp/dhcp.keytab /tmp/dns.keytab /tmp/krb5cc_0 /tmp/krb5*')
+        fabric_sudo_command('sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user')
 
     # /etc/krb5.conf
     krb5_conf = f"""[libdefaults]
@@ -73,6 +77,8 @@ def install_krb(dns_addr, domain, key_life=2):
 
             """
     send_content('kdc.conf', '/etc/krb5kdc/kdc.conf', kdc_conf, 'krb')
+
+
     cmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
     fabric_sudo_command(cmd)
 
