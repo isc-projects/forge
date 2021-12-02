@@ -11,6 +11,13 @@ from forge_cfg import world
 from softwaresupport import krb
 from softwaresupport.multi_server_functions import fabric_sudo_command
 
+pytestmark = [pytest.mark.v4,
+              pytest.mark.v6,
+              pytest.mark.kea_only,
+              pytest.mark.ddns,
+              pytest.mark.gss,
+              pytest.mark.tsig]
+
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
     return srv_msg.send_ctrl_cmd_via_socket(command=cmd, socket_name=socket_name,
@@ -148,12 +155,6 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 # use this address as "dns_addr" in all tests
 
 
-@pytest.mark.v6
-@pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.gss
-@pytest.mark.forward_reverse_add
 @pytest.mark.parametrize("system_and_domain", [('linux', 'example.com'), ('windows', '2019'), ('windows', '2016')])
 def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     """
