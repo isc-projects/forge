@@ -86,7 +86,7 @@ def install_krb(dns_addr, domain, key_life=2):
 
 
 def init_and_start_krb(dns_addr, domain, key_life=2):
-    install_krb(dns_addr, key_life)
+    install_krb(dns_addr, domain, key_life)
     fabric_sudo_command('kdestroy -A', ignore_errors=True)
     # /etc/krb5.conf
     ubuntu_krb5_conf = f"""[libdefaults]
