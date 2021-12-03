@@ -11,13 +11,6 @@ from forge_cfg import world
 from softwaresupport import krb
 from softwaresupport.multi_server_functions import fabric_sudo_command
 
-pytestmark = [pytest.mark.v4,
-              pytest.mark.v6,
-              pytest.mark.kea_only,
-              pytest.mark.ddns,
-              pytest.mark.gss,
-              pytest.mark.tsig]
-
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
     return srv_msg.send_ctrl_cmd_via_socket(command=cmd, socket_name=socket_name,
@@ -155,8 +148,13 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 # use this address as "dns_addr" in all tests
 
 
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ddns
+@pytest.mark.tsig
+@pytest.mark.gss
 @pytest.mark.parametrize("system_and_domain", [('linux', 'example.com'), ('windows', '2019'), ('windows', '2016')])
-def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
+def test_ddns_gss_tsig_manual_expiration(system_and_domain):
     """
     Simple scenario to check if we are just able to add and remove records from forward and reverse zones with
     automatically and manually generated key.
@@ -165,7 +163,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     rather than updates so those can be run in v4 only.
     """
     dns_system, my_domain = system_and_domain
-    if dhcp_version == 'v6' and dns_system == 'windows':
+    if world.proto == 'v6' and dns_system == 'windows':
         # TODO figure out why dns pkts with AAAA are dropped by windows
         pytest.skip("Windows DNS do not respond to AAAA question, manually checked - it worked nice")
 
@@ -194,7 +192,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
         fabric_sudo_command('klist')
         fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
-        srv_control.use_dns_set_number(33 if dhcp_version == 'v4' else 34, override_dns_addr=dns_addr)
+        srv_control.use_dns_set_number(33 if world.proto == 'v4' else 34, override_dns_addr=dns_addr)
         srv_control.start_srv('DNS', 'started')
 
     # couple configurable values used for kea configuration and further testing
@@ -202,8 +200,8 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     key_name = ""
 
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24' if dhcp_version == 'v4' else '2001:db8:1::/64',
-                                  '192.168.50.21-192.168.50.23' if dhcp_version == 'v4' else '2001:db8:1::51-2001:db8:1::53')
+    srv_control.config_srv_subnet('192.168.50.0/24' if world.proto == 'v4' else '2001:db8:1::/64',
+                                  '192.168.50.21-192.168.50.23' if world.proto == 'v4' else '2001:db8:1::51-2001:db8:1::53')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(SRV4_ADDR)')
     srv_control.add_ddns_server('127.0.0.1', '53001')
@@ -213,7 +211,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     srv_control.add_ddns_server_options('qualifying-suffix', my_domain)
     srv_control.add_forward_ddns(f'{my_domain}.', 'EMPTY_KEY', ip_address=dns_addr)
     # windows needs four additional 0 in reverse zone
-    srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.' if dhcp_version == 'v4' else '1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.' if dns_system == 'linux' else '0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
+    srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.' if world.proto == 'v4' else '1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.' if dns_system == 'linux' else '0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
                                  'EMPTY_KEY', ip_address=dns_addr)
 
     if dns_system == 'linux':
@@ -227,7 +225,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     key_name = _do_we_have_usable_key()
 
     # get 1st lease, dns updated with new key
-    addr = "192.168.50.21" if dhcp_version == 'v4' else "2001:db8:1::51"
+    addr = "192.168.50.21" if world.proto == 'v4' else "2001:db8:1::51"
     _get_lease(addr, f"name1.{my_domain}.", "01:01:01:01:01:11", suffix=my_domain)
 
     # srv_msg./wait_for_message_in_log('FQDN: [name1.example.com.]', log_file='kea.log_ddns')
@@ -240,7 +238,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     assert response["text"] == f"GSS-TSIG key '{key_name}' expired"
 
     # get another lease, dns should NOT be updated
-    addr2 = "192.168.50.22" if dhcp_version == 'v4' else "2001:db8:1::52"
+    addr2 = "192.168.50.22" if world.proto == 'v4' else "2001:db8:1::52"
     _get_lease(addr2, f"name2.{my_domain}.", "01:01:01:01:01:22", suffix=my_domain)
     srv_msg.forge_sleep(1)
     _check_dns_record(f"name2.{my_domain}.", dns_addr=dns_addr)
@@ -262,7 +260,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     assert response["text"] == f"NCR generated for: {addr2}, hostname: name2.{my_domain}."
 
     # get 3rd lease, dns updated with new key
-    addr = "192.168.50.23" if dhcp_version == 'v4' else "2001:db8:1::53"
+    addr = "192.168.50.23" if world.proto == 'v4' else "2001:db8:1::53"
     _get_lease(addr, f"name3.{my_domain}.", "01:01:01:01:01:33", suffix=my_domain)
     srv_msg.forge_sleep(1)
     _check_dns_record(f"name3.{my_domain}.", rdata=addr, dns_addr=dns_addr)
