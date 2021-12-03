@@ -40,13 +40,13 @@ def pytest_runtest_logreport(report):
 
 def pytest_generate_tests(metafunc):
     # If a test function has dhcp_version as fixtures ie. it has such argument
-    # then generate 3 versions of this test, for bootp, v4, v6 ie. automagically
+    # then generate 3 versions of this test, for v4, v4_bootp, v6 ie. automagically
     # parametrize.
     if 'dhcp_version' not in metafunc.fixturenames:
         return
 
     # Get the list of markers attributed to the function.
-    list_of_versions = ['v4_bootp', 'v4', 'v6']
+    list_of_versions = ['v4', 'v4_bootp', 'v6']
     list_of_attributed_versions = [m for m in list_of_versions if metafunc.definition.get_closest_marker(m)]
 
     # If the -m parameter was provided...
