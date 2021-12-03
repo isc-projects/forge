@@ -26,10 +26,9 @@ def install_krb(dns_addr, domain, key_life=2):
 
     fabric_sudo_command('kdestroy -A', ignore_errors=True)
     manage_kerb()
-
     if world.server_system == 'redhat':
-        # for now it will break
-        pass
+        fabric_sudo_command("dnf remove krb5-server krb5-workstation", ignore_errors=True)
+        fabric_sudo_command("dnf install -y krb5-server krb5-workstation")
     else:
         fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
         fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')

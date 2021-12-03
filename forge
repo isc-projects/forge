@@ -776,7 +776,7 @@ def _install_kea_make_on_server(args, server_idx):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', args.path)
-    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell,ccache --ccache-dir /ccache'
+    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,gssapi,forge,shell,ccache --ccache-dir /ccache'
 
     vagrant_dir = get_vagrant_dir(args)
 
@@ -785,8 +785,11 @@ def _install_kea_make_on_server(args, server_idx):
     cmd1 = cmd_tpl % subcmd1
     execute(cmd1, cwd=vagrant_dir, log_prefix=log_prefix)
 
-    #if server_idx == 1:
-    #    cmd = ''
+    if server_idx == 1:
+        if 'ubuntu' in args.system:
+            _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
+        else:
+            _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
 
     # do kea build
     subcmd2 = subcmd_tpl % (remote_path, 'build')
