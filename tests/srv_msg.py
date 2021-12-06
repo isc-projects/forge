@@ -698,6 +698,10 @@ def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address):
     multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest)
 
 
+def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
+     return dhcpmsg.DO(address, options, chaddr)
+
+
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
      return dhcpmsg.RA(address, options, response_type, chaddr)
 

@@ -363,6 +363,7 @@ def send_wait_for_message(msgtype, presence, exp_message):
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:
             expected_type_found = True
+        received_names = received_names.strip()
 
     log.debug("Received traffic (answered/unanswered): %d/%d packet(s)."
                               % (len(ans), len(unans)))
@@ -374,7 +375,7 @@ def send_wait_for_message(msgtype, presence, exp_message):
             assert len(world.srvmsg) != 0, "No response received."
             assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
         elif not presence:
-            assert len(world.srvmsg) == 0, "Response received, not expected"
+            assert len(world.srvmsg) == 0, "Response received (got " + received_names + "), not expected"
         assert presence == bool(world.srvmsg), "No response received."
     else:
         assert len(world.srvmsg) == 0, "Response message " + received_names + "received but none message expected."
@@ -511,6 +512,34 @@ def get_all_leases(decode_duid=True):
     return lease
 
 
+def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
+    """
+    Sends a discover and expects an offer. Inserts options in the client
+    packets based on given parameters and ensures that the right options are
+    found in the server packets. A single option missing or having incorrect
+    values renders the test failed.
+
+    Arguments:
+    address -- the expected address as value of the requested_addr option
+    options -- any additional options to be inserted in the client packets in
+        dictionary form with option names as keys and option values as values.
+        (default: {})
+    chaddr -- the client hardware address to be used in client packets
+        (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    """
+    # Send a discover.
+    client_sets_value('chaddr', chaddr)
+    if options:
+        for k, v in options.items():
+            client_does_include(None, k, v)
+    client_send_msg('DISCOVER')
+
+    # Expect an offer.
+    send_wait_for_message('MUST', True, 'OFFER')
+    response_check_content(True, 'yiaddr', address)
+    client_sets_value('chaddr', chaddr)
+
+
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
     """
     Sends a request and expects an advertise. Inserts options in the client
@@ -571,16 +600,8 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
     if exchange == 'full':
-        # Send a discover.
-        client_sets_value('chaddr', chaddr)
-        if options:
-            for k, v in options.items():
-                client_does_include(None, k, v)
-        client_send_msg('DISCOVER')
-
-        # Expect an offer.
-        send_wait_for_message('MUST', True, 'OFFER')
-        response_check_content(True, 'yiaddr', address)
+        # Send a discover and expect an offer.
+        DO(address, options, chaddr)
 
         # Send a request and expect an acknowledgement.
         RA(address, options, response_type, chaddr)

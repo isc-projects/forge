@@ -646,6 +646,7 @@ def send_wait_for_message(condition_type, presence, exp_message):
         received_names = get_msg_type(b) + " " + received_names
         if get_msg_type(b) == exp_message:
             expected_type_found = True
+        received_names = received_names.strip()
 
     if exp_message is not None:
         for x in unans:
@@ -663,7 +664,7 @@ def send_wait_for_message(condition_type, presence, exp_message):
         assert len(world.srvmsg) != 0, "No response received."
         assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
     elif not presence:
-        assert len(world.srvmsg) == 0, "Response received, not expected"
+        assert len(world.srvmsg) == 0, "Response received (got " + received_names + "), not expected"
 
     return world.srvmsg
 
