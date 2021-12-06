@@ -676,22 +676,7 @@ def _install_kea_native_on_server(args, server_idx):
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
         # prepare packages list with versions
-        pkgs = ["isc-kea-admin",
-                "isc-kea-common",
-                "isc-kea-ctrl-agent",
-                "isc-kea-dev",
-                "isc-kea-dhcp4-server",
-                "isc-kea-dhcp6-server",
-                "isc-kea-dhcp-ddns-server",
-                "isc-kea-doc",
-                "isc-kea-premium-cb-cmds",
-                "isc-kea-premium-class-cmds",
-                "isc-kea-premium-flex-id",
-                "isc-kea-premium-forensic-log",
-                "isc-kea-premium-host-cache",
-                "isc-kea-premium-host-cmds",
-                "isc-kea-premium-radius",
-                "isc-kea-premium-subnet-cmds",
+        pkgs = ["isc-kea-*",
                 "python3-isc-kea-connector"]
 
         sfx = '=' + args.version
