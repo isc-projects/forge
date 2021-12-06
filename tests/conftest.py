@@ -44,24 +44,42 @@ def pytest_generate_tests(metafunc):
     # parametrize.
     if 'dhcp_version' not in metafunc.fixturenames:
         return
-    dhcp_versions = []
-    # check if v4 and v6 markers are present in function
-    if metafunc.definition.get_closest_marker('v4') and metafunc.definition.get_closest_marker('v6'):
-        # if tests are filtered by markers then generate test versions
-        # only if given marker was selected
-        markexpr = metafunc.config.getoption("-m")
-        if not markexpr:
-            # no filtering, then pick both versions
-            dhcp_versions = ['v4', 'v6']
-        elif 'not v4' not in markexpr and 'v4' in markexpr:
-            # v4 is not filtered out or explicitly selected then take v4 only
-            dhcp_versions = ['v4']
-        elif 'not v6' not in markexpr and 'v6' in markexpr:
-            # v6 is not filtered out or explicitly selected then take v6 only
-            dhcp_versions = ['v6']
-        else:
-            # filtering present but it does not look into proto version, then pick both versions
-            dhcp_versions = ['v4', 'v6']
+    # Get the list of markers attributed to the function.
+    list_of_versions = ['v4', 'v4_bootp', 'v6']
+    list_of_attributed_versions = [m for m in list_of_versions if metafunc.definition.get_closest_marker(m)]
+
+    # If the -m parameter was provided...
+    mark_expression = metafunc.config.getoption("-m")
+    if mark_expression:
+        # Then start with an empty list and fill it in the loop below.
+        dhcp_versions = []
+
+        # For all versions attributed to the function...
+        explicit_dhcp_version=False
+        for v in list_of_attributed_versions:
+            # If conflicting expressions were provided...
+            if v in mark_expression and f'not {v}' in mark_expression:
+                # Then complain to the user.
+                raise Error(f'conflicting markers: "{v}" and "not {v}')
+            # If this version was provided...
+            if v in mark_expression:
+                explicit_dhcp_version=True
+                # And if "not version" was omitted...
+                if 'not {v}' not in mark_expression:
+                    # Then add it to the list of parametrized versions.
+                    dhcp_versions.append(v)
+
+        # If no dhcp_version mentioned in marker, enable all versions
+        # atrributed to the function.
+        if not explicit_dhcp_version:
+            dhcp_versions = list_of_attributed_versions
+    else:
+        # Otherwise, meaning if -m was not provided, enable all versions
+        # atrributed to the function.
+        dhcp_versions = list_of_attributed_versions
+
+    # Parameterize.
+
     if dhcp_versions:
         metafunc.parametrize('dhcp_version', dhcp_versions)
 
