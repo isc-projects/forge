@@ -8,6 +8,8 @@ import srv_control
 import srv_msg
 import misc
 
+from forge_cfg import world
+
 
 @pytest.mark.v4
 @pytest.mark.kea_only
@@ -122,12 +124,20 @@ def test_v4_loggers_options_info():
 @pytest.mark.logging
 def test_v4_loggers_bad_packets_debug():
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 99)
+    world.dhcp_cfg['authoritative'] = True
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Give our client a proper lease.
+    srv_msg.DORA('192.168.50.1')
+
+    # Have another client get a lease. It will help in testing NAKs.
+    srv_msg.DORA('192.168.50.2', chaddr='ff:22:22:22:22:22')
+
     misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:33:33:33:33:33')
     srv_msg.client_requests_option(1)
     srv_msg.client_requests_option(2)
     srv_msg.client_requests_option(7)
@@ -136,17 +146,18 @@ def test_v4_loggers_bad_packets_debug():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(1)
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_content('yiaddr', '192.168.50.3')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.100')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
+
     srv_msg.log_contains(r'DEBUG \[kea-dhcp4.bad-packets')
 
 
@@ -155,12 +166,20 @@ def test_v4_loggers_bad_packets_debug():
 @pytest.mark.logging
 def test_v4_loggers_bad_packets_info():
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'INFO', 'None')
+    world.dhcp_cfg['authoritative'] = True
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Give our client a proper lease.
+    srv_msg.DORA('192.168.50.1')
+
+    # Have another client get a lease. It will help in testing NAKs.
+    srv_msg.DORA('192.168.50.2', chaddr='ff:22:22:22:22:22')
+
     misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:33:33:33:33:33')
     srv_msg.client_requests_option(1)
     srv_msg.client_requests_option(2)
     srv_msg.client_requests_option(7)
@@ -169,17 +188,18 @@ def test_v4_loggers_bad_packets_info():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(1)
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_content('yiaddr', '192.168.50.3')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.100')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
+
     srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.bad-packets')
 
 
@@ -865,7 +885,7 @@ def test_v4_loggers_all():
 @pytest.mark.logging
 def test_v4_loggers_all_different_levels_same_file():
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None')
     srv_control.configure_loggers('kea-dhcp4.options', 'DEBUG', 99)
@@ -874,6 +894,7 @@ def test_v4_loggers_all_different_levels_same_file():
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', 50)
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 25)
     srv_control.configure_loggers('kea-dhcp4.options', 'INFO', 'None')
+    world.dhcp_cfg['authoritative'] = True
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -908,6 +929,12 @@ def test_v4_loggers_all_different_levels_same_file():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
+    # Give our client a proper lease.
+    srv_msg.DORA('192.168.50.1')
+
+    # Have another client get a lease. It will help in testing NAKs.
+    srv_msg.DORA('192.168.50.2', chaddr='ff:22:22:22:22:22')
+
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
     srv_msg.client_does_include_with_value('client_id', '00010203040111')
@@ -918,6 +945,7 @@ def test_v4_loggers_all_different_levels_same_file():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:44:44:44:44:44')
     srv_msg.client_requests_option(1)
     srv_msg.client_requests_option(2)
     srv_msg.client_requests_option(7)
@@ -926,12 +954,12 @@ def test_v4_loggers_all_different_levels_same_file():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(1)
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_content('yiaddr', '192.168.50.4')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.100')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
@@ -955,7 +983,7 @@ def test_v4_loggers_all_different_levels_different_file():
     # https://gitlab.isc.org/isc-projects/kea/issues/592
     # bug: #592
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('log-servers', '199.199.199.1,100.100.100.1')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None', 'kea.log1')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log2')
@@ -965,6 +993,7 @@ def test_v4_loggers_all_different_levels_different_file():
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', 50, 'kea.log6')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 25, 'kea.log7')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log8')
+    world.dhcp_cfg['authoritative'] = True
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -999,6 +1028,12 @@ def test_v4_loggers_all_different_levels_different_file():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
+    # Give our client a proper lease.
+    srv_msg.DORA('192.168.50.1')
+
+    # Have another client get a lease. It will help in testing NAKs.
+    srv_msg.DORA('192.168.50.2', chaddr='ff:22:22:22:22:22')
+
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
     srv_msg.client_does_include_with_value('client_id', '00010203040111')
@@ -1009,6 +1044,7 @@ def test_v4_loggers_all_different_levels_different_file():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:44:44:44:44:44')
     srv_msg.client_requests_option(1)
     srv_msg.client_requests_option(2)
     srv_msg.client_requests_option(7)
@@ -1017,12 +1053,12 @@ def test_v4_loggers_all_different_levels_different_file():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(1)
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_content('yiaddr', '192.168.50.4')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.100')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
@@ -1036,10 +1072,11 @@ def test_v4_loggers_all_different_levels_different_file():
     srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4', 'kea.log1')
     srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log2')
     srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log8')
+    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.options', 'kea.log3')
+
     # bug: #592
-    srv_msg.log_contains(r'INFO \[kea-dhcp4.dhcpsrv', 'kea.log8')
+    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log8')
     srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log2')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.options', 'kea.log3')
 
 
 @pytest.mark.v4
