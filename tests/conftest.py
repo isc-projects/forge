@@ -56,18 +56,27 @@ def pytest_generate_tests(metafunc):
         dhcp_versions = []
 
         # For all versions attributed to the function...
+        explicit_dhcp_version=False
         for v in list_of_attributed_versions:
             # If conflicting expressions were provided...
             if v in mark_expression and f'not {v}' in mark_expression:
                 # Then complain to the user.
                 raise Error(f'conflicting markers: "{v}" and "not {v}')
-            # If this version was provided and if "not version" was omitted...
-            if v in mark_expression and f'not {v}' not in mark_expression:
-                # Then add it to the list of parametrized versions.
-                dhcp_versions.append(v)
+            # If this version was provided...
+            if v in mark_expression:
+                explicit_dhcp_version=True
+                # And if "not version" was omitted...
+                if 'not {v}' not in mark_expression:
+                    # Then add it to the list of parametrized versions.
+                    dhcp_versions.append(v)
+
+        # If no dhcp_version mentioned in marker, enable all versions
+        # atrributed to the function.
+        if not explicit_dhcp_version:
+            dhcp_versions = list_of_attributed_versions
     else:
-        # Otherwise, meaning if -m was not provided, generate for all
-        # the markers that are atrributed to the function.
+        # Otherwise, meaning if -m was not provided, enable all versions
+        # atrributed to the function.
         dhcp_versions = list_of_attributed_versions
 
     # Parameterize.
