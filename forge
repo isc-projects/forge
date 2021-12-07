@@ -543,7 +543,7 @@ def _install_bind_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
-    subcmd = "git clone https://gitlab.isc.org/isc-projects/bind9.git && cd bind9 && autoreconf -if && ./configure --with-gssapi && make -j2 && sudo make install"
+    subcmd = "GIT_SSL_NO_VERIFY=true git clone https://gitlab.isc.org/isc-projects/bind9.git && cd bind9 && autoreconf -if && ./configure --with-gssapi && make -j2 && sudo make install"
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
