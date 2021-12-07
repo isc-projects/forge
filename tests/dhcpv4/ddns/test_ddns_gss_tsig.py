@@ -180,9 +180,9 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
         # dns_addr = "<global addr of vm running windows 2019>"
         # if "2016" in my_domain:
         #     dns_addr = "<global addr of vm running windows 2016>"
-        dns_addr = "54.224.249.185"
-        if "2016" in my_domain:
-            dns_addr = "54.242.20.19"
+        dns_addr = world.f_cfg.win_dns_addr_2016
+        if "2019" in my_domain:
+            dns_addr = world.f_cfg.win_dns_addr_2019
         world.f_cfg.win_dns_addr = dns_addr
         world.f_cfg.dns4_addr = dns_addr
         krb.init_and_start_krb(dns_addr, my_domain)
