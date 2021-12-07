@@ -533,6 +533,21 @@ def _upload_content(content, server_name, path, vagrant_dir, log_prefix):
     os.unlink(fp.name)
 
 
+def _install_bind_ubuntu(server_name, vagrant_dir, log_prefix):
+    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
+    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y libnghttp2-14 libnghttp2-dev libcap-dev'
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt remove debian9'
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    subcmd = "git clone https://gitlab.isc.org/isc-projects/bind9.git && cd bind9 && autoreconf -if && ./configure --with-gssapi && make -j2 && sudo make install"
+    cmd = cmd_tpl % subcmd
+    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+
 def _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
 
@@ -648,6 +663,7 @@ def _install_kea_native_on_server(args, server_idx):
     if server_idx == 1:
         if 'ubuntu' in args.system:
             _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
+            _install_bind_ubuntu(server_name, vagrant_dir, log_prefix)
         else:
             _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
 
