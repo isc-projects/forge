@@ -199,7 +199,7 @@ def start_srv(success, process, destination_address=world.f_cfg.mgmt_address):
                             os.path.join(world.f_cfg.dns_data_path, 'named.conf') + ' & )',
                             destination_host=destination_address)
 
-    time.sleep(world.f_cfg.sleep_time_1 + 2)
+    time.sleep(world.f_cfg.sleep_time_1 + 4)
 
     if world.f_cfg.dns_data_path.startswith('/etc'):
         fabric_sudo_command("systemctl status %s | grep 'Active: active (running)'" % srv_name,
