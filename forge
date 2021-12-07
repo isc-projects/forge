@@ -535,7 +535,7 @@ def _upload_content(content, server_name, path, vagrant_dir, log_prefix):
 
 def _install_bind_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
-    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y libnghttp2-14 libnghttp2-dev libcap-dev'
+    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y libuv1-dev libnghttp2-14 libnghttp2-dev libcap-dev'
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
