@@ -539,7 +539,7 @@ def _install_bind_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
-    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt remove bind9'
+    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt remove -y bind9'
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
