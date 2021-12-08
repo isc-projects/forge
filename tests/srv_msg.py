@@ -699,9 +699,9 @@ def get_all_leases():
     return dhcpmsg.get_all_leases()
 
 
-def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address):
+def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address, should_succeed=True):
     dest = test_define_value(dest)[0]
-    multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest)
+    multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest, should_succeed=should_succeed)
 
 
 def lease_dump(backend='memfile', db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
@@ -725,12 +725,12 @@ def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
     return dhcpmsg.DO(address, options, chaddr)
 
 
-def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
-    return dhcpmsg.RA(address, options, response_type, chaddr)
+def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
+    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot)
 
 
-def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04'):
-    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr)
+def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
+    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot)
 
 
 def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):

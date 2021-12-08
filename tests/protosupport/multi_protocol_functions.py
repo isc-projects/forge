@@ -717,7 +717,7 @@ def set_value(env_name, env_value):
     world.f_cfg.set_env_val(env_name, env_value)
 
 
-def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address):
+def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address, should_succeed=True):
     if not isinstance(leases_list, list):
         leases_list =[leases_list]
     leases_list_copy = copy.deepcopy(leases_list)
@@ -730,8 +730,10 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
             cmd += "| grep -c ^"
 
             result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
-            if not result.succeeded:
-                assert False, "Lease do NOT contain lease: %s" % json.dumps(lease)
+            if should_succeed:
+                assert result.succeeded, "Expected lease, but it does not exist: %s" % json.dumps(lease)
+            else:
+                assert result.failed, "Expected lease to not exist, but it does: %s" % json.dumps(lease)
             # TODO write check if there is more than one entry of the same type
 
     elif backend.lower() in ['mysql', 'postgresql', 'pgsql']:
@@ -758,7 +760,8 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
             else:
                 assert False, "There is something bad, you should never see this :)"
             db_table_contains_line(table, backend, grep_cmd=cmd,
-                                   destination=destination, lease=lease)
+                                   destination=destination, lease=lease,
+                                   expect=should_succeed)
 
     elif backend == 'cassandra':
         # TODO implement this sometime in the future

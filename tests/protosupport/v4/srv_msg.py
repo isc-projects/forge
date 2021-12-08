@@ -540,7 +540,7 @@ def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
     client_sets_value('chaddr', chaddr)
 
 
-def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
     """
     Sends a request and expects an advertise. Inserts options in the client
     packets based on given parameters and ensures that the right options are
@@ -553,12 +553,14 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
         dictionary form with option names as keys and option values as values.
         (default: {})
     response_type -- the type of response to be expected in the server packet.
-        Can have values 'ACK' or 'NAK'. (default: 'ACK')
+        Can have values 'ACK', 'NAK' or None. None means no response.
+        (default: 'ACK')
     chaddr -- the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     """
     client_sets_value('chaddr', chaddr)
-    client_copy_option('server_id')
+    if not init_reboot:
+        client_copy_option('server_id')
     if not options or 'requested_addr' not in options:
         client_does_include(None, 'requested_addr', address)
     if options:
@@ -566,14 +568,18 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
             client_does_include(None, k, v)
     client_send_msg('REQUEST')
 
-    send_wait_for_message('MUST', True, response_type)
-    if response_type == 'ACK':
+    if response_type is None:
+        send_wait_for_message('MUST', False, None)
+    elif response_type == 'ACK':
+        send_wait_for_message('MUST', True, 'ACK')
         response_check_content(True, 'yiaddr', address)
         response_check_include_option(True, 'subnet-mask')
         response_check_option_content('subnet-mask', True, 'value', '255.255.255.0')
+    elif response_type == 'NAK':
+        send_wait_for_message('MUST', True, 'NAK')
 
 
-def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04'):
+def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv4 exchange
     in the correct sequence: discover, offer, request,
@@ -604,11 +610,11 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
         DO(address, options, chaddr)
 
         # Send a request and expect an acknowledgement.
-        RA(address, options, response_type, chaddr)
+        RA(address, options, response_type, chaddr, init_reboot)
 
     # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
-    RA(address, options, response_type, chaddr)
+    RA(address, options, response_type, chaddr, init_reboot)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):
