@@ -19,7 +19,7 @@ We make new VM with network settings as follows:
 * Adapter 2: Host-Only Adapter _(in our case it automatically made vboxnet0)_
 * Adapter 3: Internal Network, write name you want to use for internal network
 
-**(following instructions are ment to be executed on VM you choose to be Device Under Test)**
+**(following instructions are meant to be executed on VM you choose to be Device Under Test)**
 
 ### 2. Install Ubuntu Server 21.10
 Install Ubuntu from ISO using default settings and not installing additional services other than OpenSSH.
