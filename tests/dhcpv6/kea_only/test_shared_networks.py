@@ -2504,7 +2504,7 @@ def test_v6_sharednetworks_host_reservation_options_override_1():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.upload_db_reservation('MySQL')
@@ -2575,7 +2575,7 @@ def test_v6_sharednetworks_host_reservation_options_override_2():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')

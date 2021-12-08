@@ -29,7 +29,7 @@ def test_v6_host_reservation_mysql_all_values_mac():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.upload_db_reservation('MySQL')

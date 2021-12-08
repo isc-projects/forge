@@ -26,7 +26,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.upload_db_reservation('MySQL')
@@ -82,7 +82,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_1():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.upload_db_reservation('MySQL')
@@ -138,7 +138,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_no_address_2():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.upload_db_reservation('MySQL')
@@ -206,7 +206,7 @@ def test_v6_host_reservation_mysql_duid_ll_matching_option_inforequest():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.upload_db_reservation('MySQL')
@@ -271,7 +271,7 @@ def test_v6_host_reservation_mysql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.option_db_record_reservation(21,
@@ -280,7 +280,7 @@ def test_v6_host_reservation_mysql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.option_db_record_reservation(23,
@@ -289,7 +289,7 @@ def test_v6_host_reservation_mysql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     srv_control.option_db_record_reservation(59,
@@ -298,7 +298,7 @@ def test_v6_host_reservation_mysql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'MySQL',
                                              1)
     # Add option reservation code 60 value 10 space dhcp6 persistent 1 client class $(EMPTY) subnet id 1 and scope subnet to MySQL record id 1.
@@ -389,7 +389,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')
@@ -445,7 +445,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option_no_address():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')
@@ -495,7 +495,7 @@ def test_v6_host_reservation_pgsql_hwaddrr_matching_option_inforequest():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')
@@ -545,7 +545,7 @@ def test_v6_host_reservation_pgsql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.option_db_record_reservation(21,
@@ -554,7 +554,7 @@ def test_v6_host_reservation_pgsql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.option_db_record_reservation(23,
@@ -563,7 +563,7 @@ def test_v6_host_reservation_pgsql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.option_db_record_reservation(59,
@@ -572,7 +572,7 @@ def test_v6_host_reservation_pgsql_option_multiple():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     # Add option reservation code 60 value 10 space dhcp6 persistent 1 client class $(EMPTY) subnet id 1 and scope subnet to MySQL record id 1.

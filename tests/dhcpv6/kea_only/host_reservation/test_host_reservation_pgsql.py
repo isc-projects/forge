@@ -30,7 +30,7 @@ def test_v6_host_reservation_pgsql_all_values_mac():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.upload_db_reservation('PostgreSQL')

@@ -363,8 +363,8 @@ if __name__ == '__main__':
     ipv6_prefix_db_backend_reservation("2001:db8:1::", 43, "", len(list_of_all_reservations))
     ipv6_address_db_backend_reservation("2001:db8:1::1111", "", len(list_of_all_reservations))
     ipv6_address_db_backend_reservation("2001:db8:1::2222", "", len(list_of_all_reservations))
-    option_db_record_reservation(1, "2001:db8:1::1", "dhcp6", 1, "", "subnet", len(list_of_all_reservations))
-    option_db_record_reservation(2, "2001:db8:1::21", "dhcp6", 0, "", "subnet", len(list_of_all_reservations))
+    option_db_record_reservation(1, "2001:db8:1::1", "dhcp6", 1, "", "host", len(list_of_all_reservations))
+    option_db_record_reservation(2, "2001:db8:1::21", "dhcp6", 0, "", "host", len(list_of_all_reservations))
     list_of_all_reservations[len(list_of_all_reservations)-1].build_script()
     list_of_all_reservations[len(list_of_all_reservations)-1].print_config()
 
@@ -376,9 +376,9 @@ if __name__ == '__main__':
     update_db_backend_reservation("server_hostname", "example.org.added.via.functions", len(list_of_all_reservations))
     update_db_backend_reservation("next_server", "10.0.0.1", len(list_of_all_reservations))
     update_db_backend_reservation("boot_file_name", "bootfile.efi", len(list_of_all_reservations))
-    option_db_record_reservation(1, "10.10.10.10", "dhcp4", 1, "", "subnet", len(list_of_all_reservations))
-    option_db_record_reservation(5, "10.10.10.10", "dhcp4", 1, "", "subnet", len(list_of_all_reservations))
-    option_db_record_reservation(7, "text-value", "dhcp4", 1, "", "subnet", len(list_of_all_reservations))
+    option_db_record_reservation(1, "10.10.10.10", "dhcp4", 1, "", "host", len(list_of_all_reservations))
+    option_db_record_reservation(5, "10.10.10.10", "dhcp4", 1, "", "host", len(list_of_all_reservations))
+    option_db_record_reservation(7, "text-value", "dhcp4", 1, "", "host", len(list_of_all_reservations))
     list_of_all_reservations[len(list_of_all_reservations)-1].build_script()
     list_of_all_reservations[len(list_of_all_reservations)-1].print_config()
 

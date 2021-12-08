@@ -113,7 +113,7 @@ def test_v4_host_reservation_pgsql_one_address_inside_pool_option():
                                              1,
                                              '$(EMPTY)',
                                              1,
-                                             'subnet',
+                                             'host',
                                              'PostgreSQL',
                                              1)
     srv_control.config_srv_opt('resource-location-servers', '199.199.199.1,150.150.150.1')
