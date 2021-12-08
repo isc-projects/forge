@@ -23,11 +23,13 @@ The framework is written in Python and uses the following libraries:
 Participants
 ============
 - Włodzimierz Wencel (ISC)
-- Michał Nowikowski (ISC)
 - Tomek Mrugalski (ISC, engineering manager)
+- Andrei Pavel (ISC)
+- Marcin Godzina (ISC)
 
 Former participants
 ===================
+- Michał Nowikowski (ISC)
 - Stephen Morris (ISC, engineering manager)
 - Marcin Siodelski (ISC)
 - Thomas Markwalder (ISC)

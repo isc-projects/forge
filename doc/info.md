@@ -8,25 +8,26 @@ For questions, ideas bug reports please contact us via kea-dev@lists.isc.org
 
  Dependencies Installation
 ---------------------------
-Forge requires python 2.7.x, the latest Scapy (from git) and pytest (4.6.5 or newer).
-Please see [requirements.txt](../requirements.txt) for details.
+Forge requires python 3.9.x, the latest Scapy and pytest. We also recommend venv.
+We recommend newest versions, if not specified otherwise in [requirements.txt](../requirements.txt).
 
 You basically only need to do this:
 
 ```
 cd forge-source-code-path
-python -m virtualenv venv
+python3 -m venv venv
 source ./venv/bin/activate
 ./venv/bin/pip install -r requirements.txt
 ```
 
-Also you may want to install tcpdump for saving captures of every test.
+Also, you may want to install tcpdump for saving captures of every test.
 This step is optional and tcpdump usage is controlled via init_all.py
 
 ```
 $ sudo apt-get install tcpdump
-
 ```
+
+
 
  DUT dependencies requirements and configuration
 -------------------------------------------------
@@ -34,31 +35,33 @@ On Device Under Test (DUT) on which will be running your server you need:
 
 * be able to connect via ssh
 * have access to bash shell from /bin/bash
-* install sudo - if you are using non-root account grand rights to use 'sudo'
+* install `sudo` - if you are using non-root account grand rights to use 'sudo'
   without password to your user account by adding to sudoers file:
 
-    %<group_name> ALL=(ALL) NOPASSWD: ALL
+    `%<group_name> ALL=(ALL) NOPASSWD: ALL`
+* install `socat` for testing Socket connections
 * installed DHCP/DNS server
 
- Configuration
+ Manual Configuration
 ---------------
-Configuration management is not well designed yet. The default configuration
+Configuration management is not well-designed yet. The default configuration
 is stored in forge/tests/init_all.py_default. Please copy this file
 to forge/tests/init_all.py and edit relevant values in this file.
 Without init_all.py Forge will not start at all. init_all.py is added
 to gitignore, so any local changes you make to this file will be ignored by git.
 
 Also make sure that your ssh server is configured. Make sure that SSH connection between
-used vms can be executed using generated keys.
+used vms can be executed using generated keys or provided password.
 
 Environment example:
 To use Forge you will need two PC's. In this configuration author used two virtual
-machines using VM VirtualBox. Those machines needs to be connected with internal network
-(without any other access to interfaces) in VirtualBox this is called Host-Only network.
+machines using VM VirtualBox. Those machines need to be connected with internal network
+(without any other access to interfaces). In VirtualBox this is called Host-Only network.
 You can establish internet connection on other interface if you want. Two different networks
 should be used for:
-	vboxnet0 - configuration server via ssh
-	vboxnet1 - testing.
+
+	vboxnet0 - configuration server via ssh, you can use this network to ssh to forge machine
+	vboxnet1 - testing, ip needs to be set manualy on both machines
 
 Author used this configuration:
 ```
@@ -73,10 +76,13 @@ report it on https://github.com/isc-projects/forge to update documentation.
 
  Usage
 -------
+First enter virtualenv created previously
 
-To run tests using virtualenv created previously
 ```
 source ./venv/bin/activate
+```
+To run all tests using virtualenv created previously
+```
 sudo ./venv/bin/pytest
 ```
 
@@ -89,6 +95,13 @@ Additional useful options are:
 using tests tags:
 ```
 sudo ./venv/bin/pytest -m ddns
+sudo ./venv/bin/pytest -m v4
+sudo ./venv/bin/pytest -m 'v4 and v6'
+```
+
+using test keywords:
+```
+sudo ./venv/bin/pytest -k 'test_status_get'
 ```
 Increased verbosity for debugging tests results
 
@@ -99,9 +112,13 @@ sudo ./venv/bin/pytest -vv
 Forge system tests require root privileges to open DHCP ports, mange DHCP servers and
 capturing traffic via tcpdump.
 
+ Step-by-step working setup example
+-------------------
+You can follow step-by-step guide to set up simple environment and run some tests.
+It's located in [example.md](example.md).
+
  Writing new tests
 -------------------
-
 Since forge moved from lettuce to pytest, writing new tests it's just python programming.
 Functions available in tests/srv_control.py are used to operate remote DHCP/DNS servers.
 Functions available in tests/srv_msg.py are used to generate and parse traffic.
