@@ -121,7 +121,7 @@ We make new VM with network settings as follows:
 * Adapter 2: Host-Only Adapter, choose the same as in DUT
 * Adapter 3: Internal Network, write **exactly the same** name as in DUT 
 
-**(following instructions are ment to be executed on VM you choose to be Forge Machine)**
+**(following instructions are meant to be executed on VM you choose to be Forge Machine)**
 ### 2. Install Ubuntu Server 21.10
 Install Ubuntu from ISO on VM using default settings and not installing additional services other than OpenSSH.
 
