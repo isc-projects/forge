@@ -150,7 +150,7 @@ sudo apt install socat
 We make new VM with network settings as follows:
 * Adapter 1: NAT
 * Adapter 2: Host-Only Adapter, choose the same as in DUT
-* Adapter 3: Internal Network, write **exactly the same** name as in DUT 
++* Adapter 3: Internal Network, write **exactly the same** name as in DUT
 
 **(following instructions are meant to be executed on VM you choose to be Forge Machine)**
 ### 2. Install Ubuntu Server 21.10
