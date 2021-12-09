@@ -27,7 +27,6 @@ def test_v6_host_reservation_mysql_duplicate_reservation_duid():
     srv_control.ipv6_address_db_backend_reservation('3000::2', '$(EMPTY)', 'MySQL', 2)
     srv_control.upload_db_reservation('MySQL', exp_failed=True)
 
-    # upload should failed!    # TODO add step to check failed upload
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -50,7 +49,6 @@ def test_v6_host_reservation_mysql_duplicate_reservation_address():
     srv_control.ipv6_address_db_backend_reservation('3000::1', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL', exp_failed=True)
 
-    # upload should failed!    # TODO add step to check failed upload
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

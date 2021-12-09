@@ -26,9 +26,8 @@ def test_v6_host_reservation_duplicate_reservation_duid():
     srv_control.new_db_backend_reservation('PostgreSQL', 'duid', '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 2)
     srv_control.ipv6_address_db_backend_reservation('3000::2', '$(EMPTY)', 'PostgreSQL', 2)
-    srv_control.upload_db_reservation('PostgreSQL')
+    srv_control.upload_db_reservation('PostgreSQL', exp_failed=True)
 
-    # upload should failed!#TODO add step to failed upload
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -48,11 +47,10 @@ def test_v6_host_reservation_duplicate_reservation_address():
     srv_control.ipv6_address_db_backend_reservation('3000::1', '$(EMPTY)', 'PostgreSQL', 1)
 
     srv_control.new_db_backend_reservation('PostgreSQL', 'duid', '00:03:00:01:f6:f5:f4:f3:f2:11')
-    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('3000::1', '$(EMPTY)', 'PostgreSQL', 1)
-    srv_control.upload_db_reservation('PostgreSQL')
+    srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 2)
+    srv_control.ipv6_address_db_backend_reservation('3000::1', '$(EMPTY)', 'PostgreSQL', 2)
+    srv_control.upload_db_reservation('PostgreSQL', exp_failed=True)
 
-    # upload should failed! #TODO add step to failed upload
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
