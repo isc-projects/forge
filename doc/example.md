@@ -1,5 +1,5 @@
   Working example
- ----------------
+ -----------------
 We present you step-by-step instructions to set up example testing environment and run some Forge tests on Kea server.
 In this example we will use Ubuntu server 21.10 installed from ISO on two Virtual Machines.
 
@@ -11,7 +11,7 @@ Other software used:
 This guide was last tested on 8th December 2021.
 
   Setting up DUT (Device Under Test)
- ----------------
+ ------------------------------------
 ### 1. Make VM for Kea Server
 Kea will need at least 20 GB of disk space for build process.
 We make new VM with network settings as follows:
@@ -36,7 +36,7 @@ Adapter 1 and 2 should get addresses from Virtual Box._(our machine got 10.0.2.1
 We use netplan on Ubuntu 21.10 to set static ip for Adapter 3.
 
 Enter netplan directory and list files.
-```
+```shell
 cd /etc/netplan
 ls
 ```
@@ -44,7 +44,9 @@ If you didn't modify anything after install, you should see one file. _(00-insta
 
 Edit this file.
 
-```sudo nano your_filename.yaml```
+```shell
+sudo nano your_filename.yaml
+```
 
 Change last interface options to static ip 192.168.20.1 _(we just choose this ip at random but not conflicting with other networks)_
 
@@ -65,56 +67,85 @@ network:
 
 Now you need to apply new configuration.
 
-`sudo netplan apply`
+```shell
+sudo netplan apply
+```
 
-### 4. Clone Kea DHCP Server from Git Repository
+### 4. Make sudo authenticate without password
+We need to make sudo commands run without password, so Forge can execute them remotely.
+
+```shell
+sudo visudo
+```
+
+add line to the end replacing `<user_name>` with username you will use to gain ssh access to DUT machine from Forge
+
+`%<user_name> ALL=(ALL) NOPASSWD: ALL`
+
+now you won't be asked for password when using sudo
+
+### 5. Clone Kea DHCP Server from Git Repository
 You can use git clone to download Kea from repository.
 
-```git clone https://gitlab.isc.org/isc-projects/kea.git```
+```shell
+git clone https://gitlab.isc.org/isc-projects/kea.git
+```
 
-### 5. Prepare environment for building Kea.
+### 6. Prepare environment for building Kea.
 enter Kea directory
 
-`cd kea`
+```shell
+cd kea
+```
 
 run hammer.py script which will prepare all requirements for build process.
 We use some predefined settings for basic server. hammer.py has config for ubuntu 21.04, but it works on 21.10.
 
-`./hammer.py prepare-system -p local -s ubuntu -r 21.04 -w mysql pgsql radius gssapi netconf shell ccache`
+```shell
+./hammer.py prepare-system -p local -s ubuntu -r 21.04 -w mysql pgsql radius gssapi netconf shell ccache
+```
 
 We need to make autoreconf of source.
-
-`autoreconf -if`
+```shell
+autoreconf -if
+```
 
 Now we need to configure the building process, we included some preferred options for first install.
 
-`./configure --with-mysql --with-pgsql --with-gssapi --enable-shell`
+```shell
+./configure --with-mysql --with-pgsql --with-gssapi --enable-shell
+```
 
-### 6. Building and installing Kea.
+### 7. Building and installing Kea.
 Next step is to build Kea from source. This step can take a while depending on speed of the machine. (it took about 20 minutes on our i5-4690K, 24GB RAM)
 
 (If you have multicore machine you can use multiple threads. eg. for 4 threads use `make -j4` )
 
-`make`
+```shell
+make
+```
 
 After you make, you need to install
 
 This step uses sudo and **CAN NOT** be run with -j parameter.
 
-`sudo make install`
-
+```shell
+sudo make install
+```
 And after install run:
 
-`sudo ldconfig`
+```shell
+sudo ldconfig
+```
+### 8. Install socat for socket testing
 
-### 7. Install socat for socket testing
-
-`sudo apt install socat`
-
+```shell
+sudo apt install socat
+```
 **Now Server Machine is ready.**
 
   Setting up Forge Machine
- ----------------
+ --------------------------
 ### 1. Make VM for Forge
 We make new VM with network settings as follows:
 * Adapter 1: NAT
@@ -137,7 +168,7 @@ Adapter 1 and 2 should get addresses from Virtual Box. _(our machine got 10.0.2.
 We use netplan on Ubuntu 21.10 to set static ip for Adapter 3.
 
 Enter netplan directory and list files.
-```
+```shell
 cd /etc/netplan
 ls
 ```
@@ -145,7 +176,9 @@ If you didn't modify anything after install, you should see one file. _(00-insta
 
 Edit this file.
 
-```sudo nano your_filename.yaml```
+```shell
+sudo nano your_filename.yaml
+```
 
 Change last interface options to static ip 192.168.20.10 _(we just choose this ip at random, but kept the same subnet as Adapter 3 on DUT)_
 
@@ -166,48 +199,49 @@ network:
 
 Now you need to apply new configuration.
 
-`sudo netplan apply`
+```shell
+sudo netplan apply
+```
 
 
-### 4. Make sudo authenticate without password
-We need to make sudo commands run without password, so Forge can execute them remotely.
-
-`sudo visudo`
-
-add line to the end replacing `<user_name>` with username you will use to gain ssh access to DUT machine from Forge
-
-`%<user_name> ALL=(ALL) NOPASSWD: ALL`
-
-now you wont be asked for password when using sudo
-
-### 5. Clone Forge from Git Repository
+### 4. Clone Forge from Git Repository
 You can use git clone to download Forge from repository.
 
-```git clone https://gitlab.isc.org/isc-projects/forge.git```
-
-### 6. Install Python virtual environment module
-`sudo apt install python3.9-venv`
-
-### 7. pcapy package needs to have **build-essential** installed on Ubuntu 21.10
-`sudo apt install build-essential`
-
-### 8. Make virtual environment and install requirements.
-We need to enter directory with cloned forge, make new virtual environment, activate it and run pip to install required python modules.
+```shell
+git clone https://gitlab.isc.org/isc-projects/forge.git
 ```
+
+### 5. Install Python virtual environment module
+```shell
+sudo apt install python3.9-venv
+```
+
+### 6. pcapy package needs to have **build-essential** installed on Ubuntu 21.10
+```shell
+sudo apt install build-essential
+```
+
+### 7. Make virtual environment and install requirements.
+We need to enter directory with cloned forge, make new virtual environment, activate it and run pip to install required python modules.
+```shell
 cd forge
 python3 -m venv venv
 source ./venv/bin/activate
 ./venv/bin/pip install -r requirements.txt
 ```
 
-### 9. Preparing config file
+### 8. Preparing config file
 You need to copy default config file as a working one:
 
-`cp tests/init_all.py_default tests/init_all.py`
+```shell
+cp tests/init_all.py_default tests/init_all.pl
+```
+
 
 And now edit this file:
-
-`nano tests/init_all.py`
+```shell
+nano tests/init_all.py
+```
 
 Parameters that need to be set or uncommented, some of them will be empty:
 
@@ -242,27 +276,31 @@ Parameters that need to be set or uncommented, some of them will be empty:
 **Your Forge Machine is ready for running tests**
 
   Running tests
- ----------------
-You can run tests from Forge Machine by entering Virtual Environment and executing pytest
+ ---------------
+You can run tests from Forge Machine by entering Virtual Environment and executing `pytest`
 Following command performs a few known good test that should pass on this setup.
 
-```
+```shell
 cd forge
 source ./venv/bin/activate
 sudo ./venv/bin/pytest -m 'v4 and v6' -k 'test_status_get'
 ```
 **OR** You can run directly from normal command line by entering forge directory and using oneliner:
 
-`cd forge`
+```shell
+cd forge
+```
 
 and then:
 
-```
+```shell
 sudo ./venv/bin/python ./venv/bin/pytest -m 'v4 and v6' -k 'test_status_get'
 ```
 
  Known problems
------------------
+----------------
 dnsmasq interferes with some testing. You can disable it temporary (until restart) using command on server:
 
-`sudo pkill -f dnsmasq`
+```shell
+sudo pkill -f dnsmasq
+```

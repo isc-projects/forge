@@ -13,7 +13,7 @@ We recommend newest versions, if not specified otherwise in [requirements.txt](.
 
 You basically only need to do this:
 
-```
+```shell
 cd forge-source-code-path
 python3 -m venv venv
 source ./venv/bin/activate
@@ -23,8 +23,8 @@ source ./venv/bin/activate
 Also, you may want to install tcpdump for saving captures of every test.
 This step is optional and tcpdump usage is controlled via init_all.py
 
-```
-$ sudo apt-get install tcpdump
+```shell
+sudo apt-get install tcpdump
 ```
 
 
@@ -43,7 +43,7 @@ On Device Under Test (DUT) on which will be running your server you need:
 * installed DHCP/DNS server
 
  Manual Configuration
----------------
+----------------------
 Configuration management is not well-designed yet. The default configuration
 is stored in forge/tests/init_all.py_default. Please copy this file
 to forge/tests/init_all.py and edit relevant values in this file.
@@ -78,34 +78,34 @@ report it on https://github.com/isc-projects/forge to update documentation.
 -------
 First enter virtualenv created previously
 
-```
+```shell
 source ./venv/bin/activate
 ```
 To run all tests using virtualenv created previously
-```
+```shell
 sudo ./venv/bin/pytest
 ```
 
 To run just subset of tests from one file
-```
+```shell
 sudo ./venv/bin/pytest tests/dhcpv4/kea_only/control_channel/test_command_control_socket.py
 ```
 Additional useful options are:
 
 using tests tags:
-```
+```shell
 sudo ./venv/bin/pytest -m ddns
 sudo ./venv/bin/pytest -m v4
 sudo ./venv/bin/pytest -m 'v4 and v6'
 ```
 
 using test keywords:
-```
+```shell
 sudo ./venv/bin/pytest -k 'test_status_get'
 ```
 Increased verbosity for debugging tests results
 
-```
+```shell
 sudo ./venv/bin/pytest -vv
 ```
 
@@ -113,7 +113,7 @@ Forge system tests require root privileges to open DHCP ports, mange DHCP server
 capturing traffic via tcpdump.
 
  Step-by-step working setup example
--------------------
+------------------------------------
 You can follow step-by-step guide to set up simple environment and run some tests.
 It's located in [example.md](example.md).
 
