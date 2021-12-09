@@ -234,7 +234,7 @@ source ./venv/bin/activate
 You need to copy default config file as a working one:
 
 ```shell
-cp tests/init_all.py_default tests/init_all.pl
++cp tests/init_all.py_default tests/init_all.py
 ```
 
 
