@@ -72,7 +72,7 @@ def test_bootp_basic_request_reply_same_chaddr(backend, bootp_first):
 
     # Run twice to check that the same request gets the same lease the second
     # time.
-    for i in range(2):
+    for i in range(3):
         if bootp_first or i > 0:
             # BOOTP with the same chaddr should get the same lease.
             srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY('192.168.50.1')
