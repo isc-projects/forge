@@ -28,6 +28,12 @@ from forge_cfg import world
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_bootp_basic_request_reply(backend):
+    '''Checks that two separate clients can get separate leases from the same pool
+    through BOOTP and DHCP respectively.
+
+    Arguments:
+    backend -- the type of lease database
+    '''
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -50,6 +56,13 @@ def test_bootp_basic_request_reply(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('bootp_first', [False, True])
 def test_bootp_basic_request_reply_same_chaddr(backend, bootp_first):
+    '''Checks that the same client can get the same lease by switching from
+    BOOTP to DHCP and from DHCP to BOOTP.
+
+    Arguments:
+    backend -- the type of lease database
+    bootp_first -- whether the first request should be BOOTP or DHCP
+    '''
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -60,7 +73,7 @@ def test_bootp_basic_request_reply_same_chaddr(backend, bootp_first):
     # Run twice to check that the same request gets the same lease the second
     # time.
     for i in range(2):
-        if bootp_first and i == 0:
+        if bootp_first or i > 0:
             # BOOTP with the same chaddr should get the same lease.
             srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY('192.168.50.1')
 
@@ -72,6 +85,13 @@ def test_bootp_basic_request_reply_same_chaddr(backend, bootp_first):
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_bootp_basic_request_reply_classes(backend):
+    '''Checks that two separate clients can get separate leases through BOOTP
+    and DHCP respectively from separate pools matched by the special BOOTP
+    client class.
+
+    Arguments:
+    backend -- the type of lease database
+    '''
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
