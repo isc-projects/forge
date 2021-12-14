@@ -56,7 +56,6 @@ def test_hook_v4_lease_cmds_list(channel):
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
-
     cmd = {"command": "list-commands", "arguments": {}}
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
@@ -219,6 +218,20 @@ def test_hook_v4_lease_cmds_get():
                     "subnet-id": 1,
                     "valid-lft": 4000}
 
+    # try nonexistent lease using ip address to confirm Lease not found
+    cmd = {"command": "lease4-get",
+           "arguments": {"ip-address": "192.168.50.2"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "Lease not found."
+
+    # try nonexistent lease using mac address to confirm Lease not found
+    cmd = {"command": "lease4-get",
+           "arguments": {"identifier-type": "hw-address", "identifier": "ff:01:02:03:ff:05", "subnet-id": 1}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "Lease not found."
+
+
+
 
 @pytest.mark.v4
 @pytest.mark.kea_only
@@ -345,8 +358,7 @@ def test_hook_v4_lease_cmds_add(backend):
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-# @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_hook_v4_lease_cmds_add_with_additional_values(backend):
     """
     Check lease4-add with all values possible to set in lease. Checks if lease is reported as added
