@@ -53,6 +53,9 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
 @pytest.mark.controlchannel
 @pytest.mark.kea_only
 def test_control_channel_lease4_get_by():
+    """
+    Check various options of lease4-get-by-* commands
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.6')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
@@ -152,7 +155,7 @@ def test_control_channel_lease4_get_by():
     del by_host_1["arguments"]["leases"][0]["cltt"]
     assert by_host_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
                                                    "fqdn-rev": False,
-                                                   # "client-id": "", #TODO I think it should be added
+                                                   # "client-id": "", #TODO I think it should be added kea#1391
                                                    "hostname": "xyz.com.",
                                                    "hw-address": "11:11:11:11:11:11",
                                                    "ip-address": "192.168.51.11",
@@ -163,7 +166,7 @@ def test_control_channel_lease4_get_by():
     del by_hw_1["arguments"]["leases"][0]["cltt"]
     assert by_hw_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
                                                  "fqdn-rev": False,
-                                                 # "client-id": "", #TODO I think it should be added
+                                                 # "client-id": "", #TODO I think it should be added kea#1391
                                                  "hostname": "xyz.com.",
                                                  "hw-address": "11:11:11:11:11:11",
                                                  "ip-address": "192.168.51.11",
@@ -175,7 +178,7 @@ def test_control_channel_lease4_get_by():
     del by_hw_1["arguments"]["leases"][0]["cltt"]
     assert by_hw_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
                                                  "fqdn-rev": False,
-                                                 # "client-id": "", #TODO I think it should be added
+                                                 # "client-id": "", #TODO I think it should be added kea#1391
                                                  "hw-address": "10:10:10:10:10:10",
                                                  "ip-address": "192.168.51.10",
                                                  "hostname": "",
@@ -190,3 +193,110 @@ def test_control_channel_lease4_get_by():
     _send_cmd("lease4-get-by-hw-address", exp_result=1)
     _send_cmd("lease4-get-by-hostname", exp_result=1)
     _send_cmd("lease4-get-by-client-id", exp_result=1)
+
+# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-adderss
+@pytest.mark.v4
+@pytest.mark.controlchannel
+@pytest.mark.kea_only
+def test_control_channel_lease4_get_by_negative():
+    """
+    Check various options of incorrectly build
+    lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-adderss, commands.
+    """
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+
+    # Testing lease4-get-by-client-id
+    cmd = {"command": "lease4-get-by-client-id"}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "Command arguments missing or a not a map."
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'client-id' parameter not specified"
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": ""}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "Empty DUIDs are not allowed" #TODO change in Kea to "Empty client-id is not allowed" and update here.
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": " "}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": "00"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "client-id is too short (1), at least 2 is required"
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": "00"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "client-id is too short (1), at least 2 is required"
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": "xx"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'xx' is not a valid string of hexadecimal digits"
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": 0}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'client-id' parameter must be a string"
+
+    # Testing lease4-get-by-hostname
+    cmd = {"command": "lease4-get-by-hostname"}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "Command arguments missing or a not a map."
+
+    cmd = {"command": "lease4-get-by-hostname",
+           "arguments": {}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hostname' parameter not specified"
+
+    cmd = {"command": "lease4-get-by-hostname",
+           "arguments": {"hostname": ""}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hostname' parameter is empty"
+
+    cmd = {"command": "lease4-get-by-hostname",
+           "arguments": {"hostname": ""}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hostname' parameter is empty"
+
+    cmd = {"command": "lease4-get-by-hostname",
+           "arguments": {"hostname": 0}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hostname' parameter must be a string"
+
+    # Testing lease4-get-by-hw-address
+    cmd = {"command": "lease4-get-by-hw-address"}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "Command arguments missing or a not a map."
+
+    cmd = {"command": "lease4-get-by-hw-address",
+           "arguments": {}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hw-address' parameter not specified"
+
+    cmd = {"command": "lease4-get-by-hw-address",
+           "arguments": {"hw-address": " "}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "' ' is not a valid hexadecimal digit in decoded string ' '"
+
+    cmd = {"command": "lease4-get-by-hw-address",
+           "arguments": {"hw-address": "aaaaaaaaaaaaaaaaaaaaaaa"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "invalid format of the decoded string 'aaaaaaaaaaaaaaaaaaaaaaa'"
+
+    cmd = {"command": "lease4-get-by-hw-address",
+           "arguments": {"hw-address": 0}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hw-address' parameter must be a string"
