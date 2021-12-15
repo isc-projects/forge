@@ -1,14 +1,12 @@
 """Kea leases manipulation commands"""
 
 # pylint: disable=invalid-name,line-too-long
-
+import time
 import pytest
 
 import misc
 import srv_msg
 import srv_control
-
-import time
 
 
 def _get_lease(addr='192.168.50.1', mac="ff:01:02:03:ff:04"):
@@ -229,8 +227,6 @@ def test_hook_v4_lease_cmds_get():
            "arguments": {"identifier-type": "hw-address", "identifier": "ff:01:02:03:ff:05", "subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
     assert resp["text"] == "Lease not found."
-
-
 
 
 @pytest.mark.v4
