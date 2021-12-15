@@ -1,4 +1,4 @@
-"""Kea Control Channel - socket"""
+"""Kea lease get by client-id/hostname/hw-address"""
 
 # pylint: disable=invalid-name,line-too-long
 
@@ -194,6 +194,7 @@ def test_control_channel_lease4_get_by():
     _send_cmd("lease4-get-by-hostname", exp_result=1)
     _send_cmd("lease4-get-by-client-id", exp_result=1)
 
+
 # lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-adderss
 @pytest.mark.v4
 @pytest.mark.controlchannel
@@ -210,7 +211,6 @@ def test_control_channel_lease4_get_by_negative():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-
     # Testing lease4-get-by-client-id
     cmd = {"command": "lease4-get-by-client-id"}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
@@ -224,7 +224,7 @@ def test_control_channel_lease4_get_by_negative():
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Empty DUIDs are not allowed" #TODO change in Kea to "Empty client-id is not allowed" and update here.
+    assert resp["text"] == "Empty DUIDs are not allowed"  # TODO change in Kea to "Empty client-id is not allowed" and update here.
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": " "}}
