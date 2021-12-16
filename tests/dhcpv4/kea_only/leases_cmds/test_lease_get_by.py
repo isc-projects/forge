@@ -1,6 +1,6 @@
 """Kea lease get by client-id/hostname/hw-address"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name,line-too-long,unused-argument
 
 import pytest
 
@@ -52,7 +52,8 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
 @pytest.mark.v4
 @pytest.mark.controlchannel
 @pytest.mark.kea_only
-def test_control_channel_lease4_get_by():
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_control_channel_lease4_get_by_positive(backend):
     """
     Check various options of lease4-get-by-* commands
     """
@@ -224,7 +225,8 @@ def test_control_channel_lease4_get_by_negative():
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Empty DUIDs are not allowed"  # TODO change in Kea to "Empty client-id is not allowed" and update here.
+    assert resp["text"] == "Empty DUIDs are not allowed"
+    # TODO change in Kea to "Empty client-id is not allowed" and update here.
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": " "}}

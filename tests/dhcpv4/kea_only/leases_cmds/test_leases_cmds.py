@@ -1,6 +1,6 @@
 """Kea leases manipulation commands"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name,line-too-long,unused-argument
 import time
 import pytest
 
@@ -394,6 +394,7 @@ def test_hook_v4_lease_cmds_add_with_additional_values(backend):
                          "fqdn-fwd": True,
                          "fqdn-rev": True,
                          "valid-lft": 7777,
+                         "state": 1,
                          "expire": int(time.time()) + 7000,
                          "hostname": "my.host.some.name",
                          "client-id": "aa:bb:cc:dd:11:22"}}
@@ -412,7 +413,7 @@ def test_hook_v4_lease_cmds_add_with_additional_values(backend):
                     "hostname": "my.host.some.name",
                     "hw-address": "1a:1b:1c:1d:1e:1f",
                     "ip-address": "192.168.50.5",
-                    "state": 0,
+                    "state": 1,
                     "subnet-id": 1,
                     "valid-lft": 7777}
     srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
@@ -688,7 +689,7 @@ def test_hook_v4_lease_cmds_lease_get_negative():
            "arguments": {"identifier": "ff:01:02:03:ff:05",
                          "identifier-type": "hw-address",
                          "subnet-id": 10}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     cmd = {"command": "lease4-get",
            "arguments": {"identifier": "ff:01:02:03:ff:05",
