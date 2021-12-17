@@ -2204,6 +2204,8 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
+    dnssec-enable no;
     tkey-gssapi-keytab "/tmp/dns.keytab"; // DNS principal keytab
     # tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
 };

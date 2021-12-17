@@ -153,8 +153,6 @@ def ddns_add_gss_tsig(addr, dns_system,
     if dns_system == 'linux':
         gss_tsig_cfg["parameters"].update({
             "client-principal": client_principal,
-            "client-keytab": client_tab,
-            "credentials-cache": "FILE:/etc/ccache"
-            })
+            "client-keytab": client_tab})
 
     world.ddns_cfg["hooks-libraries"] = [gss_tsig_cfg]

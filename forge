@@ -261,6 +261,8 @@ def _get_win_addresses(vars, version):
             for line in f.readlines():
                 if line.startswith('ip-address='):
                     vars[f'WIN_DNS_ADDR_{version}'] = line[11:].strip()
+                    log.info(f'extended forge configuration with WIN_DNS_ADDR_{version}=',
+                             vars[f'WIN_DNS_ADDR_{version}'])
     return vars
 
 
@@ -351,36 +353,64 @@ def _destroy_lxc_containers(args):
 
 
 def _setup_win_ad_dns(ami, domain):
+    """
+    Strictly for AWS testing, this will start vm based on ami. Use _terminate_instances to
+    terminate started systems, simple check is included to prevent starting multiple windows
+    system
+    @param ami: ami of vm template
+    @param domain: windows domain
+    @return: boto3 Instance
+    """
+    if os.path.exists(f'aws-win-ad-dns-vm{domain[3:7]}.txt'):
+        log.info(f"file aws-win-ad-dns-vm{domain[3:7]}.txt exists it's possible that vm is already running!")
+        log.info("please check if that's correct and use terminate-instances before setting up new system!")
+        sys.exit()
     import boto3
-    print('creating windows vm for gss-tsig testing')
-    init_script="""<script>
-shutdown /s /t 240
-</script>
-"""
+    log.info('creating windows vm for gss-tsig testing')
     ec2 = boto3.resource('ec2', region_name='us-east-1')
     params = dict(MaxCount=1,
                   MinCount=1,
                   InstanceType='t2.micro',
-                  # ImageId='ami-094063ddb5e0250b1',  # win2016-forge-06
-                  ImageId=ami,  # win2016-forge-06
+                  ImageId=ami,
                   SubnetId='subnet-0efca44a30c0a40c0',
-                  KeyName='wlodek',
+                  KeyName='jenkins-ec2',
                   SecurityGroupIds=['sg-04a74236a5389e87f'],  # DomainController
                   TagSpecifications=[{'ResourceType': 'instance', 'Tags': [
-                      {'Key': 'forge-testing', 'Value': 'yes'},
-                      {'Key': 'isc:owner', 'Value': 'wlodek'},
+                      {'Key': 'isc:purpose', 'Value': 'forge-testing'},
+                      {'Key': 'isc:owner', 'Value': 'jenkins-ec2'},
                       {'Key': 'isc:group', 'Value': 'kea'},
-                      {'Key': 'isc:stack', 'Value': 'jenkins'},
+                      {'Key': 'isc:provisioning', 'Value': 'python-api'},
+                      {'Key': 'isc:access', 'Value': 'private'},
+                      {'Key': 'isc:contact', 'Value': 'qa@isc.org'},
+                      {'Key': 'Name', 'Value': f'windows-{domain[3:7]}-forge-testing'}
                   ]}],
-                  InstanceInitiatedShutdownBehavior='terminate',
-                  UserData=init_script)
+                  InstanceInitiatedShutdownBehavior='terminate')
 
     i = list(ec2.create_instances(**params))[0]
     with open(f'aws-win-ad-dns-vm{domain[3:7]}.txt', 'w') as f:
         f.write(f'instance-id={i.id}\n')
         f.write(f'domain={domain}\n')
-    print(f'windows vm using domain {domain} and instance-id: {i.id}')
+    log.info(f'windows vm using domain {domain} and instance-id: {i.id}')
     return i
+
+
+def _terminate_instances():
+    """
+    Strictly for AWS testing, this will terminate previously started vms by ./forge setup --win-gss-tsig
+    """
+    import boto3
+    ec2 = boto3.resource('ec2', region_name='us-east-1')
+    for i in ("2016", "2019"):
+        if os.path.exists(f'aws-win-ad-dns-vm{i}.txt'):
+            with open(f'aws-win-ad-dns-vm{i}.txt', 'r') as f:
+                for line in f.readlines():
+                    if line.startswith('instance-id='):
+                        id = line[12:].strip()
+                        log.info(f'>>>>> Terminating vm with id {id}')
+                        ec2.Instance(id).terminate()
+                        os.rename(f'aws-win-ad-dns-vm{i}.txt', f'aws-win-ad-dns-vm{i}_terminated.txt')
+        else:
+            log.info(f'aws-win-ad-dns-vm{i}.txt not found, looks like systems were not started!')
 
 
 def setup(args):
@@ -484,14 +514,14 @@ def setup(args):
         win_dns_addr = win_vm_2016.private_ip_address
         with open('aws-win-ad-dns-vm2016.txt', 'a') as f:
             f.write('ip-address=%s\n' % win_dns_addr)
-        print('windows 2016 vm ip-address: %s' % win_dns_addr)
+        log.info('windows 2016 vm ip-address: %s' % win_dns_addr)
 
         win_vm_2019.wait_until_running()
         win_vm_2019.reload()
         win_dns_addr = win_vm_2019.private_ip_address
-        with open('aws-win-ad-dns-vm2016.txt', 'a') as f:
+        with open('aws-win-ad-dns-vm2019.txt', 'a') as f:
             f.write('ip-address=%s\n' % win_dns_addr)
-        print('windows 2019 vm ip-address: %s' % win_dns_addr)
+        log.info('windows 2019 vm ip-address: %s' % win_dns_addr)
 
 
 def install_kea(args):
@@ -524,21 +554,6 @@ def _upload_content(content, server_name, path, vagrant_dir, log_prefix):
     os.unlink(fp.name)
 
 
-def _install_bind_ubuntu(server_name, vagrant_dir, log_prefix):
-    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
-    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt install -y libuv1-dev libnghttp2-14 libnghttp2-dev libcap-dev'
-    cmd = cmd_tpl % subcmd
-    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
-
-    subcmd = 'sudo DEBIAN_FRONTEND=noninteractive apt remove -y bind9'
-    cmd = cmd_tpl % subcmd
-    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
-
-    subcmd = "GIT_SSL_NO_VERIFY=true git clone https://gitlab.isc.org/isc-projects/bind9.git && cd bind9 && autoreconf -if && ./configure --with-gssapi && make -j2 && sudo make install"
-    cmd = cmd_tpl % subcmd
-    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
-
-
 def _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
 
@@ -568,12 +583,13 @@ def _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix):
 [realms]
     EXAMPLE.COM = {
         database_name = /var/lib/krb5kdc/principal
+        default_ccache_name = FILE:/tmp/krb5cc_%{{uid}}
         admin_keytab = FILE:/etc/krb5kdc/kadm5.keytab
         acl_file = /etc/krb5kdc/kadm5.acl
         key_stash_file = /etc/krb5kdc/stash
         kdc_ports = 750,88
-        max_life = 10h 0m 0s
-        max_renewable_life = 7d 0h 0m 0s
+        max_life = 0h 3m 0s
+        max_renewable_life = 0d 0h 3m 0s
         master_key_type = des3-hmac-sha1
         #supported_enctypes = aes256-cts:normal aes128-cts:normal
         default_principal_flags = +preauth
@@ -654,7 +670,6 @@ def _install_kea_native_on_server(args, server_idx):
     if server_idx == 1:
         if 'ubuntu' in args.system:
             _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
-            _install_bind_ubuntu(server_name, vagrant_dir, log_prefix)
         else:
             _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
 
@@ -684,6 +699,7 @@ def _install_kea_native_on_server(args, server_idx):
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
         # prepare packages list with versions
+        # rather than remember to add new pkg to the list here, just install all
         pkgs = ["isc-kea-*",
                 "python3-isc-kea-connector"]
 
@@ -710,19 +726,8 @@ def _install_kea_native_on_server(args, server_idx):
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
         # prepare packages list with versions
-        pkgs = ["isc-kea",
-                "isc-kea-devel",
-                "isc-kea-hooks",
-                "isc-kea-libs",
-                "isc-kea-shell",
-                "isc-kea-premium-cb-cmds",
-                "isc-kea-premium-class-cmds",
-                "isc-kea-premium-flex-id",
-                "isc-kea-premium-forensic-log",
-                "isc-kea-premium-host-cache",
-                "isc-kea-premium-host-cmds",
-                "isc-kea-premium-radius",
-                "isc-kea-premium-subnet-cmds"]
+        # rather than remember to add new pkg to the list here, just install all
+        pkgs = ["isc-kea*"]
 
         if args.system == 'fedora-30':
             suffix = 'fc30'
@@ -984,10 +989,19 @@ def parse_args():
     parser.add_argument('--native', action='store_true', default=False,
                         help='Use native packages for testing')
     parser.add_argument('--version', help='Install given version of packages.')
+
     parser = subparsers.add_parser('clean',
                                    help="Destroy VMs")
     parser = subparsers.add_parser('box',
                                    help="Package LXC box and upload to cloud")
+
+    parser.add_argument('--dhcpd', action='store_true', help='Change settings to run tests for isc-dhcp.')
+
+    parser = subparsers.add_parser('terminate-instances',
+                                   help="Terminate Windows machines with AD/DNS previously started for GSS-TSIG")
+
+    parser = subparsers.add_parser('clean', help="Destroy VMs")
+    parser = subparsers.add_parser('box', help="Package LXC box and upload to cloud")
 
     args, rest = main_parser.parse_known_args()
     return args, rest, main_parser
@@ -1032,6 +1046,9 @@ def main():
 
     elif args.command == "box":
         package_box_and_upload(args)
+
+    elif args.command == "terminate-instances":
+        _terminate_instances()
 
     else:
         parser.print_help()
