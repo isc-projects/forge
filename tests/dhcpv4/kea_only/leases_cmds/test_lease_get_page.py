@@ -305,4 +305,3 @@ def test_control_channel_lease4_get_page_negative(channel):
            "arguments": {"from": "start", "limit": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'limit' parameter must be a number"
-
