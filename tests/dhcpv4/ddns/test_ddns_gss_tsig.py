@@ -190,10 +190,11 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.manage_kerb(procedure='restart')
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
-        fabric_sudo_command('klist')
-        fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
         srv_control.use_dns_set_number(33 if world.proto == 'v4' else 34, override_dns_addr=dns_addr)
         srv_control.start_srv('DNS', 'started')
+
+    fabric_sudo_command('klist')
+    fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
 
     # couple configurable values used for kea configuration and further testing
     server_id = "server1"
@@ -366,10 +367,7 @@ def test_ddns4_gss_tsig_fallback(fallback):
 @pytest.mark.tsig
 @pytest.mark.gss
 @pytest.mark.forward_reverse_add
-# @pytest.mark.parametrize("system_domain", [('linux', 'example.com'), ('windows', '2019'), ('windows', '2016')])
-@pytest.mark.parametrize("system_domain", [('linux', 'example.com')])
-# @pytest.mark.parametrize("system_domain", [('windows', '2019'), ('windows', '2016')])
-# @pytest.mark.parametrize("system_domain", [('windows', '2019')])
+@pytest.mark.parametrize("system_domain", [('linux', 'example.com'), ('windows', '2019'), ('windows', '2016')])
 def test_ddns4_gss_tsig_complex_scenario(system_domain):
     """
     This test checks multiple features related to GSS-TSIG on linux, windows 2016 and 2019.

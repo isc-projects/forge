@@ -1,5 +1,5 @@
 import os
-from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file
+from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
 from forge_cfg import world
 
 
@@ -16,13 +16,17 @@ def manage_kerb(procedure='stop'):
             fabric_sudo_command('systemctl status krb5-admin-server.service')
 
 
-def install_krb(dns_addr, domain, key_life=2):
+def clean_principals():
     result = fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
     if result.succeeded:
         for princ in result.stdout.splitlines():
-            if princ.startswith(('K/M', 'kadmin', 'kiprop', 'krbtgt')):
+            if princ.startswith(('Authenticating', 'K/M', 'kadmin', 'kiprop', 'krbtgt')):
                 continue
             fabric_sudo_command('kadmin.local -q "delprinc -force %s"' % princ)
+
+
+def install_krb(dns_addr, domain, key_life=2):
+    clean_principals()
 
     fabric_sudo_command('kdestroy -A', ignore_errors=True)
     manage_kerb()
@@ -76,7 +80,6 @@ def install_krb(dns_addr, domain, key_life=2):
 
             """
     send_content('kdc.conf', '/etc/krb5kdc/kdc.conf', kdc_conf, 'krb')
-
 
     cmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
     fabric_sudo_command(cmd)
@@ -139,20 +142,18 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
         # so we need to download keytabs before test for both 2016 and 2019, if something goes wrong in the future
         # we can add step here to generate this. Due to AWS setup if you are running those tests locally
         # you have to download those yourself because ssh connection will be blocked
-        if not os.path.exists(f"/tmp/forge{domain[3:7]}.keytab"):
-            fabric_download_file("\\Users\\forge\\forge.keytab", f"/tmp/forge{domain[3:7]}.keytab",
-                                 destination_host=dns_addr,
-                                 user_loc='forge',
-                                 password_loc='DdU3Hjb2')
+
+        fabric_download_file("..\\forge\\forge.keytab",
+                             os.path.join(world.cfg["test_result_dir"], f"forge{domain[3:7]}.keytab"),
+                             destination_host=dns_addr,
+                             user_loc='wlodek',
+                             password_loc='DdU3Hjb2')
+        # than we can upload this to system that is running kea
+        fabric_send_file(os.path.join(world.cfg["test_result_dir"], f"forge{domain[3:7]}.keytab"),
+                         f"/tmp/forge{domain[3:7]}.keytab")
 
     else:
-        # clean principals
-        result = fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
-        if result.succeeded:
-            for princ in result.stdout.splitlines():
-                if princ.startswith(('K/M', 'kadmin', 'kiprop', 'krbtgt')):
-                    continue
-                fabric_sudo_command('kadmin.local -q "delprinc -force %s"' % princ)
+        clean_principals()
         kadm5 = f"DHCP/admin.{domain}@{domain.upper()}      *\n"
         send_content('kadm5.acl', '/etc/krb5kdc/kadm5.acl', kadm5, 'krb')
 
@@ -160,5 +161,33 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
         fabric_sudo_command('kadmin.local -q "addprinc -pw 123 DHCP/admin.example.com"')
         fabric_sudo_command('kadmin.local -q "ktadd -k /tmp/dns.keytab DNS/server.example.com"')
         fabric_sudo_command('kadmin.local -q "ktadd -k /tmp/dhcp.keytab DHCP/admin.example.com"')
+
+    if 'win' not in domain:
+        # we don't use dns.keytab with AD
+        if world.f_cfg.dns_data_path.startswith('/etc'):
+            # when installed from pkg
+            fabric_sudo_command('chmod 440 /tmp/dns.keytab')
+            if world.server_system == 'redhat':
+                fabric_sudo_command('chown root:named /tmp/dns.keytab')
+                fabric_sudo_command('chown root:named /etc/krb5kdc/kadm5.acl')
+            else:
+                fabric_sudo_command('chown root:bind /tmp/dns.keytab')
+                fabric_sudo_command('chown root:bind /etc/krb5kdc/kadm5.acl')
+        else:
+            # when compiled and installed from sources
+            fabric_sudo_command('chmod 400 /tmp/dns.keytab')
+            fabric_sudo_command('chown root:root /tmp/dns.keytab')
+            fabric_sudo_command('chown root:root /etc/krb5kdc/kadm5.acl')
+
+    keytab_file = "/tmp/dhcp.keytab" if "win" not in domain else f"/tmp/forge{domain[3:7]}.keytab"
+
+    if world.server_system == 'redhat':
+        # this will change after pkg rebuild to use kea user in pkgs
+        fabric_sudo_command(f'chmod 440 {keytab_file}')
+        fabric_sudo_command(f'chown root:root {keytab_file}')
+    elif world.f_cfg.install_method == 'make':
+        fabric_sudo_command(f'chmod 440 {keytab_file}')
+    else:
+        fabric_sudo_command(f'chown root:_kea {keytab_file}')
 
     manage_kerb()
