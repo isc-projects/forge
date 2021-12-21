@@ -1,6 +1,21 @@
 import os
 from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
+from .multi_server_functions import fabric_run_command
 from forge_cfg import world
+
+
+def kinit(my_domain):
+    if world.server_system == 'debian' and world.f_cfg.install_method == 'native':
+        # kea is running using user _kea this is for now only one distinction
+        # all the rest is divided between windows and linux
+        if 'win' in my_domain:
+            fabric_run_command(f'sudo -u _kea bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
+        else:
+            fabric_run_command(f'sudo -u _kea bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
+    elif 'win' in my_domain:
+        fabric_sudo_command(f'bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
+    else:
+        fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
 
 
 def manage_kerb(procedure='stop'):

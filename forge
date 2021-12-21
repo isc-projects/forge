@@ -8,6 +8,7 @@
 """Forge - testing tool for Kea and ISC DHCP."""
 
 from __future__ import print_function
+import boto3
 import os
 import sys
 import time
@@ -22,6 +23,7 @@ import textwrap
 import functools
 import subprocess
 import configparser
+from botocore.exceptions import ClientError
 from urllib.parse import urljoin
 from collections import defaultdict
 try:
@@ -264,8 +266,10 @@ def _get_win_addresses(vars, version):
             for line in f.readlines():
                 if line.startswith('ip-address='):
                     vars[f'WIN_DNS_ADDR_{version}'] = line[11:].strip()
-                    log.info(f'extended forge configuration with WIN_DNS_ADDR_{version}=',
+                    log.info(f'extended forge configuration with WIN_DNS_ADDR_{version}=%s',
                              vars[f'WIN_DNS_ADDR_{version}'])
+    else:
+        log.info(f"aws-win-ad-dns-vm{version}.txt not found! Tests for GSS TSIG and ACTIVE DIRECTORY won't work")
     return vars
 
 
@@ -370,7 +374,7 @@ def _setup_win_ad_dns(ami, domain):
     """
     if os.path.exists(f'aws-win-ad-dns-vm{domain[3:7]}.txt'):
         log.info(f"file aws-win-ad-dns-vm{domain[3:7]}.txt exists it's possible that vm is already running!")
-        log.info("please check if that's correct and use terminate-instances before setting up new system!")
+        log.info("please check if that's correct and use terminate-instances before setting up new systems!")
         sys.exit()
     import boto3
     log.info('creating windows vm for gss-tsig testing')
@@ -401,36 +405,58 @@ def _setup_win_ad_dns(ami, domain):
     return i
 
 
-def _terminate_instances():
+def _terminate_single_vm(vm_id, instance):
+    log.info(f'>>>>> Terminating vm with id {vm_id} in progress..')
+    try:
+        instance.terminate()
+    except ClientError as er:
+        log.info(f'>>>>> There was a problem with termination of {vm_id}: {er}.')
+    else:
+        try:
+            instance.wait_until_terminated()
+        except ClientError as er:
+            log.info(f'>>>>> There was a problem with termination of {vm_id}: {er}.')
+        else:
+            log.info(f'>>>>> Id {vm_id} terminated.')
+            return True
+    return False
+
+
+def _terminate_instances(args):
     """
     Strictly for AWS testing, this will terminate previously started vms by ./forge setup --win-gss-tsig
     """
-    import boto3
     ec2 = boto3.resource('ec2', region_name='us-east-1')
-    for i in ("2016", "2019"):
-        if os.path.exists(f'aws-win-ad-dns-vm{i}.txt'):
-            with open(f'aws-win-ad-dns-vm{i}.txt', 'r') as f:
-                for line in f.readlines():
-                    if line.startswith('instance-id='):
-                        id = line[12:].strip()
-                        log.info(f'>>>>> Terminating vm with id {id}')
-                        ec2.Instance(id).terminate()
-                        os.rename(f'aws-win-ad-dns-vm{i}.txt', f'aws-win-ad-dns-vm{i}_terminated.txt')
-        else:
-            log.info(f'aws-win-ad-dns-vm{i}.txt not found, looks like systems were not started!')
+    if args.id is not None:
+        instance = ec2.Instance(args.id)
+        _terminate_single_vm(args.id, instance)
+    else:
+        for i in ("2016", "2019"):
+            if os.path.exists(f'aws-win-ad-dns-vm{i}.txt'):
+                with open(f'aws-win-ad-dns-vm{i}.txt', 'r') as f:
+                    for line in f.readlines():
+                        if line.startswith('instance-id='):
+                            vm_id = line[12:].strip()
+                            log.info(f'>>>>> Terminating vm with id {vm_id}')
+                            instance = ec2.Instance(vm_id)
+                            if _terminate_single_vm(vm_id, instance):
+                                os.rename(f'aws-win-ad-dns-vm{i}.txt', f'aws-win-ad-dns-vm{i}_terminated.txt')
+            else:
+                log.info(f'aws-win-ad-dns-vm{i}.txt not found, looks like systems were not started!')
 
 
 def setup(args):
     # load config
     cfg = _load_config()
 
-    set_init_all(args)
     win_vm_2016 = None
     win_vm_2019 = None
 
     if args.win_gss_tsig:
         win_vm_2016 = _setup_win_ad_dns('ami-0fd47ed1938384219', 'win2016ad.aws.isc.org')
         win_vm_2019 = _setup_win_ad_dns('ami-039c7ae745475bd32', 'win2019ad.aws.isc.org')
+
+    set_init_all(args)
 
     if args.lxc:
         vagrant_tpl = 'vagrant/Vagrantfile.lxc.in'
@@ -531,6 +557,9 @@ def setup(args):
         with open('aws-win-ad-dns-vm2019.txt', 'a') as f:
             f.write('ip-address=%s\n' % win_dns_addr)
         log.info('windows 2019 vm ip-address: %s' % win_dns_addr)
+
+        # we want again recreate init all to save windows dns ip addresses
+        set_init_all(args)
 
 
 def install_kea(args):
@@ -1062,6 +1091,7 @@ def parse_args():
 
     parser = subparsers.add_parser('terminate-instances',
                                    help="Terminate Windows machines with AD/DNS previously started for GSS-TSIG")
+    parser.add_argument('--id', default=None,  help='Terminate AWS system with id.')
 
     parser = subparsers.add_parser('clean', help="Destroy VMs")
     parser = subparsers.add_parser('box', help="Package LXC box and upload to cloud")
@@ -1114,7 +1144,7 @@ def main():
         package_box_and_upload(args)
 
     elif args.command == "terminate-instances":
-        _terminate_instances()
+        _terminate_instances(args)
 
     else:
         parser.print_help()
