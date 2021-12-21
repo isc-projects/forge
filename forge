@@ -453,8 +453,8 @@ def setup(args):
     win_vm_2019 = None
 
     if args.win_gss_tsig:
-        win_vm_2016 = _setup_win_ad_dns('ami-0fd47ed1938384219', 'win2016ad.aws.isc.org')
-        win_vm_2019 = _setup_win_ad_dns('ami-039c7ae745475bd32', 'win2019ad.aws.isc.org')
+        win_vm_2016 = _setup_win_ad_dns('ami-085b34aa1f55b9a7c', 'win2016ad.aws.isc.org')
+        win_vm_2019 = _setup_win_ad_dns('ami-0d9beed9cfa1f66a2', 'win2019ad.aws.isc.org')
 
     set_init_all(args)
 
