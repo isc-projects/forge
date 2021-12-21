@@ -9,7 +9,7 @@ import srv_msg
 import srv_control
 from forge_cfg import world
 from softwaresupport import krb
-from softwaresupport.multi_server_functions import fabric_sudo_command, fabric_run_command
+from softwaresupport.multi_server_functions import fabric_sudo_command
 
 pytestmark = [pytest.mark.v4,
               pytest.mark.v6,
