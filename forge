@@ -386,7 +386,7 @@ def _setup_win_ad_dns(ami, domain):
                       {'Key': 'isc:provisioning', 'Value': 'python-api'},
                       {'Key': 'isc:access', 'Value': 'private'},
                       {'Key': 'isc:contact', 'Value': 'qa@isc.org'},
-                      {'Key': 'Name', 'Value': f'windows-{domain[3:7]}-forge-testing'}
+                      {'Key': 'Name', 'Value': f'j-windows-{domain[3:7]}-forge-testing'}
                   ]}],
                   InstanceInitiatedShutdownBehavior='terminate')
 
