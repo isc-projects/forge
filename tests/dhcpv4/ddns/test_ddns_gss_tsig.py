@@ -9,7 +9,7 @@ import srv_msg
 import srv_control
 from forge_cfg import world
 from softwaresupport import krb
-from softwaresupport.multi_server_functions import fabric_sudo_command
+from softwaresupport.multi_server_functions import fabric_sudo_command, fabric_run_command
 
 pytestmark = [pytest.mark.v4,
               pytest.mark.v6,
@@ -171,11 +171,10 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
 
     tkey_lifetime = 30
     srv_msg.forge_sleep(tkey_lifetime+5)
-    if dns_system == 'windows':
-        my_domain = f"win{my_domain}ad.aws.isc.org"
     dns_addr = ""
 
     if dns_system == 'windows':
+        my_domain = f"win{my_domain}ad.aws.isc.org"
         # THIS IS THE SECTION NEEDED FOR MANUAL DEBUG
         # dns_addr = "<global addr of vm running windows 2019>"
         # if "2016" in my_domain:
@@ -186,12 +185,12 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
         world.f_cfg.win_dns_addr = dns_addr
         world.f_cfg.dns4_addr = dns_addr
         krb.init_and_start_krb(dns_addr, my_domain)
-        fabric_sudo_command(f'bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
+        krb.kinit(my_domain)
     else:
         dns_addr = world.f_cfg.dns4_addr
         krb.init_and_start_krb(dns_addr, my_domain)
-        krb.manage_kerb(procedure='restart')
-        fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
+        # krb.manage_kerb(procedure='restart')
+        krb.kinit(my_domain)
         srv_control.use_dns_set_number(33 if world.proto == 'v4' else 34, override_dns_addr=dns_addr)
         srv_control.start_srv('DNS', 'started')
 
@@ -302,7 +301,7 @@ def test_ddns4_gss_tsig_fallback(fallback):
     # dns_keytab, dhcp_keytab = krb.init_and_start_krb(dns_addr)
     krb.init_and_start_krb(dns_addr, 'example.com')
     krb.manage_kerb(procedure='restart')
-    fabric_sudo_command('bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.example.com"')
+    krb.kinit('example.com')
     fabric_sudo_command('klist')
     fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
     srv_control.use_dns_set_number(33)
@@ -391,18 +390,19 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
         # dns_addr = "<global addr of vm running windows 2019>"
         # if "2016" in my_domain:
         #     dns_addr = "<global addr of vm running windows 2016>"
-        dns_addr = "54.224.249.185"
+        dns_addr = world.f_cfg.win_dns_addr_2019
         if "2016" in my_domain:
-            dns_addr = "54.242.20.19"
+            dns_addr = world.f_cfg.win_dns_addr_2016
         world.f_cfg.win_dns_addr = dns_addr
         world.f_cfg.dns4_addr = dns_addr
         krb.init_and_start_krb(dns_addr, my_domain)
-        fabric_sudo_command(f'bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
+        krb.manage_kerb(procedure='restart')
+        krb.kinit(my_domain)
     else:
         dns_addr = world.f_cfg.dns4_addr
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.manage_kerb(procedure='restart')
-        fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
+        krb.kinit(my_domain)
         fabric_sudo_command('klist')
         fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
         srv_control.use_dns_set_number(33)
