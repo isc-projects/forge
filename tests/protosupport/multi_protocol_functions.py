@@ -266,12 +266,24 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
 
 def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=world.f_cfg.db_name,
                           db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                          destination=world.f_cfg.mgmt_address):
+                          destination=world.f_cfg.mgmt_address, lease=[]):
     if db_type.lower() == "mysql":
         if table_name == 'lease6':
-            select = 'select hex(duid), address, iaid, valid_lifetime'
+            select = "select"
+            for attribute in lease:
+                if attribute == "duid":
+                    select += ", hex(%s)" % attribute
+                else:
+                    select += ", %s" % attribute
+            select = select.replace(",", "", 1) # delete first comma
         elif table_name == 'lease4':
-            select = 'select hex(address), hex(hwaddr), valid_lifetime'
+            select = "select"
+            for attribute in lease:
+                if attribute == "address" or attribute == "hwaddr":
+                    select += ", hex(%s)" % attribute
+                else:
+                    select += ", %s" % attribute
+            select = select.replace(",", "", 1) # delete first comma
         else:
             select = 'select *'
         command = 'mysql -u {db_user} -p{db_passwd} -e "{select} from {table_name}"' \
@@ -279,7 +291,15 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
 
     elif db_type.lower() in ["postgresql", "pgsql"]:
         if table_name == 'lease4':
-            select = "select to_hex(address), encode(hwaddr,'hex'), valid_lifetime"
+            select = "select"
+            for attribute in lease:
+                if attribute == "address":
+                    select += ", to_hex(%s)" % attribute
+                elif attribute == "hwaddr":
+                    select += ", encode(%s,'hex')" % attribute
+                else:
+                    select += ", %s" % attribute
+            select = select.replace(",", "", 1)  # delete first comma
         else:
             select = 'select *'
         command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} ' \
@@ -299,11 +319,10 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
 
 def db_table_contains_line(table_name, db_type, line="", grep_cmd=None, expect=True, db_name=world.f_cfg.db_name,
                            db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                           destination=world.f_cfg.mgmt_address):
+                           destination=world.f_cfg.mgmt_address, lease=[]):
     result = db_table_record_count(table_name, db_type, line,
                                    grep_cmd, db_name, db_user, db_passwd,
-                                   destination)
-
+                                   destination, lease)
     if expect:
         if result < 1:
             assert False, 'In database {0} table name "{1}" has {2} of: "{3}".'.format(db_type,
@@ -630,17 +649,13 @@ def set_value(env_name, env_value):
 def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address):
     if not isinstance(leases_list, list):
         leases_list =[leases_list]
+
     if backend == 'memfile':
         for lease in leases_list:
-            if world.f_cfg.proto == 'v4':
-                cmd = "grep -E %s %s | grep -E %s | grep -E -c %s" % (lease["address"], world.f_cfg.get_leases_path(),
-                                                                      lease["hwaddr"], lease["valid_lifetime"])
-
-            elif world.f_cfg.proto == 'v6':
-                cmd = "grep -E %s %s | grep -E %s | grep -E -c %s" % (lease["address"], world.f_cfg.get_leases_path(),
-                                                                      lease["duid"], lease["idid"])
-            else:
-                assert False, "There is something bad, you should never see this :)"
+            cmd = "cat %s " % world.f_cfg.get_leases_path()
+            for attribute in lease:
+                cmd += "| grep -E %s " % lease[attribute]
+            cmd += "| grep -c ^"
 
             result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
             if not result.succeeded:
@@ -651,22 +666,30 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
         for lease in leases_list:
             if world.f_cfg.proto == 'v4':
                 table = 'lease4'
-                cmd = "grep -E -i %s /tmp/db_out | grep -E -i %s | grep -E  -c %s" % (convert_address_to_hex(lease["address"]),
-                                                                                      lease["hwaddr"].replace(":",""),
-                                                                                      lease["valid_lifetime"])
+                cmd = "cat /tmp/db_out "
+                if "hwaddr" in lease:
+                    lease["hwaddr"] = lease["hwaddr"].replace(":", "")
+                if "address" in lease:
+                    lease["address"] = convert_address_to_hex(lease["address"])
+                for attribute in lease:
+                    cmd += "| grep -E -i %s " % lease[attribute]
+                cmd += "| grep -c ^"
             elif world.f_cfg.proto == 'v6':
                 table = 'lease6'
-                cmd = "grep -E %s /tmp/db_out | grep -E -i %s | grep -E -c %s" % (lease["address"],
-                                                                                  lease["duid"].replace(":", ""),
-                                                                                  lease["idid"])
+                cmd = "cat /tmp/db_out "
+                if "duid" in lease:
+                    lease["duid"] = lease["duid"].replace(":", "")
+                for attribute in lease:
+                    cmd += "| grep -E -i %s " % lease[attribute]
+                cmd += "| grep -c ^"
+
             else:
                 assert False, "There is something bad, you should never see this :)"
-            db_table_contains_line(table, backend, grep_cmd=cmd, destination=destination)
+            db_table_contains_line(table, backend, grep_cmd=cmd, destination=destination, lease=lease)
 
     elif backend == 'cassandra':
         # TODO implement this sometime in the future
         pass
-
 
 def convert_address_to_hex(address):
     '''Convert string address to hexadecimal representation.'''
