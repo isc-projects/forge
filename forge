@@ -749,7 +749,7 @@ def _install_kea_native_on_server(args, server_idx):
         pkgs = f"isc-kea-*={args.version} python3-isc-kea-connector={args.version}"
 
         # install packages
-        cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew --allow-downgrades" %s' % pkgs
+        cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
         env = os.environ.copy()
         env['DEBIAN_FRONTEND'] = 'noninteractive'
         execute(cmd, cwd=vagrant_dir, env=env, log_prefix=log_prefix)
