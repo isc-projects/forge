@@ -9,7 +9,6 @@ import srv_msg
 import srv_control
 from forge_cfg import world
 from softwaresupport import krb
-from softwaresupport.multi_server_functions import fabric_sudo_command
 
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
@@ -192,9 +191,6 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
         srv_control.use_dns_set_number(33 if world.proto == 'v4' else 34, override_dns_addr=dns_addr)
         srv_control.start_srv('DNS', 'started')
 
-    fabric_sudo_command('klist')
-    fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
-
     # couple configurable values used for kea configuration and further testing
     server_id = "server1"
     key_name = ""
@@ -300,8 +296,6 @@ def test_ddns4_gss_tsig_fallback(fallback):
     krb.init_and_start_krb(dns_addr, 'example.com')
     krb.manage_kerb(procedure='restart')
     krb.kinit('example.com')
-    fabric_sudo_command('klist')
-    fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
     srv_control.use_dns_set_number(33)
     srv_control.start_srv('DNS', 'started')
 
@@ -401,8 +395,6 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.manage_kerb(procedure='restart')
         krb.kinit(my_domain)
-        fabric_sudo_command('klist')
-        fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
         srv_control.use_dns_set_number(33)
         srv_control.start_srv('DNS', 'started')
 

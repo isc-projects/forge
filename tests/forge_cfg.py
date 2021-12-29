@@ -84,6 +84,8 @@ SETTINGS = {
     'FABRIC_PTY': False,
     'DNS_RETRY': 6,
     'DISABLE_DB_SETUP': False,
+    'WIN_DNS_ADDR_2016': '',
+    'WIN_DNS_ADDR_2019': ''
 }
 
 
@@ -166,6 +168,7 @@ class ForgeConfiguration:
             if value is None:
                 raise Exception('Value for %s in init_all.py is None but should be specified' % key)
             value = os.getenv(key, value)
+            print(f"setting {key.lower()} = {value}")  # TODO turn it into forge parameter like --debug
             setattr(self, key.lower(), value)
 
     def gethwaddr(self, ifname):

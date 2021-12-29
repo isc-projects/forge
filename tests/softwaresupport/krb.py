@@ -1,6 +1,6 @@
 import os
 from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
-from .multi_server_functions import fabric_run_command
+
 from forge_cfg import world
 
 
@@ -9,13 +9,17 @@ def kinit(my_domain):
         # kea is running using user _kea this is for now only one distinction
         # all the rest is divided between windows and linux
         if 'win' in my_domain:
-            fabric_run_command(f'sudo -u _kea bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
+            fabric_sudo_command(f'bash -c "sudo -u _kea kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
         else:
-            fabric_run_command(f'sudo -u _kea bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
+            fabric_sudo_command(f'bash -c "sudo -u _kea kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
+        fabric_sudo_command('sudo -u _kea klist', ignore_errors=True)
     elif 'win' in my_domain:
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
+        fabric_sudo_command('klist')
     else:
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
+        fabric_sudo_command('klist')
+    fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
 
 
 def manage_kerb(procedure='stop'):
@@ -196,13 +200,10 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
 
     keytab_file = "/tmp/dhcp.keytab" if "win" not in domain else f"/tmp/forge{domain[3:7]}.keytab"
 
-    if world.server_system == 'redhat':
-        # this will change after pkg rebuild to use kea user in pkgs
-        fabric_sudo_command(f'chmod 440 {keytab_file}')
-        fabric_sudo_command(f'chown root:root {keytab_file}')
-    elif world.f_cfg.install_method == 'make':
-        fabric_sudo_command(f'chmod 440 {keytab_file}')
-    else:
+    fabric_sudo_command(f'chmod 440 {keytab_file}')
+    if world.server_system == 'ubuntu' and world.f_cfg.install_method == 'native':
         fabric_sudo_command(f'chown root:_kea {keytab_file}')
+    else:
+        fabric_sudo_command(f'chown root:root {keytab_file}')
 
     manage_kerb()
