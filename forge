@@ -746,12 +746,7 @@ def _install_kea_native_on_server(args, server_idx):
 
         # prepare packages list with versions
         # rather than remember to add new pkg to the list here, just install all
-        pkgs = ["isc-kea-*",
-                "python3-isc-kea-connector"]
-
-        sfx = '=' + args.version
-        pkgs = [p + sfx for p in pkgs]
-        pkgs = " ".join(pkgs)
+        pkgs = f"isc-kea-*={args.version} python3-isc-kea-connector={args.version}"
 
         # install packages
         cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew --allow-downgrades" %s' % pkgs
