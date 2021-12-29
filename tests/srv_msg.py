@@ -718,6 +718,10 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
      return dhcpmsg.check_IA_PD(address, status_code)
 
 
+def SA(address=None, delegated_prefix=None, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+    return dhcpmsg.SA(address, delegated_prefix, relay_information, status_code, duid)
+
+
 def SARR(address=None, delegated_prefix=None, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
     return dhcpmsg.SARR(address, delegated_prefix, relay_information, status_code, exchange, duid)
 

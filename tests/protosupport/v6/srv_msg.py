@@ -1220,8 +1220,8 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
     # RFC 8415: If the Status Code option does not appear in a
     # message in which the option could appear, the status of the message
     # is assumed to be Success.
-    if get_suboption('status-code', 'IA_NA'):
-        response_check_suboption_content('status-code', 'IA_NA', 'statuscode', status_code)
+    if get_suboption('IA_NA', 'status-code'):
+        response_check_suboption_content('status-code', 'IA_NA', True, 'statuscode', status_code)
     else:
         assert status_code == DHCPv6_STATUS_CODES['Success'], \
             'status code missing so implied Success, but expected {}'.format(status_code)
@@ -1372,3 +1372,64 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
             check_IA_NA(address)
         if delegated_prefix is not None:
             check_IA_PD(delegated_prefix)
+
+def SA(address=None, delegated_prefix=None, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+    """
+    Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
+    in the correct sequence: solicit, advertise.
+    Inserts options in the client packets based on given parameters and ensures
+    that the right options are found in the server packets. A single option
+    missing or having incorrect values renders the test failed.
+
+    Arguments:
+    address -- the expected address as value of the IA_Address suboption.
+        For multiple addresses, use additional check_IA_NA() calls.
+    delegated_prefix -- the expected prefix as value of the IA_Prefix suboption.
+        For multiple prefixes, use additional check_IA_PD() calls.
+    relay_information -- whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
+    status_code -- the expected status code (default: Success)
+    duid -- the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    """
+
+    misc.test_procedure()
+    client_sets_value('DUID', duid)
+    # Build and send a solicit.
+    client_does_include('Client', 'client-id', None)
+    if address is not None:
+        client_does_include('Client', 'IA_Address', None)
+        client_does_include('Client', 'IA-NA', None)
+    if delegated_prefix is not None:
+        client_does_include('Client', 'IA_Prefix', None)
+        client_does_include('Client', 'IA-PD', None)
+    client_send_msg('SOLICIT')
+
+    if relay_information:
+        # Encapsulate the solicit in a relay forward message.
+        client_sets_value('linkaddr', '2001:db8:1::1000')
+        client_sets_value('ifaceid', 'port1234')
+        client_does_include('RelayAgent', 'interface-id', None)
+        create_relay_forward()
+
+        # Expect a relay reply.
+        misc.pass_criteria()
+        send_wait_for_message('MUST', True, 'RELAYREPLY')
+        response_check_include_option(True, 'interface-id')
+        response_check_include_option(True, 'relay-msg')
+        response_check_option_content('relay-msg', True, 'Relayed', 'Message')
+        response_check_include_option(True, 'client-id')
+        response_check_include_option(True, 'server-id')
+        if address is not None:
+            check_IA_NA(address, status_code)
+        if delegated_prefix is not None:
+            check_IA_PD(delegated_prefix, status_code)
+    else:
+        # Expect an advertise.
+        misc.pass_criteria()
+        send_wait_for_message('MUST', True, 'ADVERTISE')
+        if address is not None:
+            check_IA_NA(address, status_code)
+        if delegated_prefix is not None:
+            check_IA_PD(delegated_prefix, status_code)
