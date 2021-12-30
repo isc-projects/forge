@@ -77,7 +77,9 @@ Automated environment setup
 ---------------------------
 
 There is a `forge` script in the root directory that provides an alternative way of setting up the
-VMs and environment. Its documentation is very basic. Here's the excerpt of the built-in help:
+VMs and environment. Its documentation is very basic. Its usage is entirely optional. The general idea
+is that it may set up VirtualBox virtual machines or LXC containers to run Kea tests. Here's the
+excerpt from the built-in help:
 
 ```shell
 $ ./forge --help
