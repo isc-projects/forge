@@ -47,3 +47,6 @@ output/*
 /vagrant/Vagrantfile
 /forge.ini
 /result
+
+# virtual env dir
+venv
