@@ -266,7 +266,7 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
 
 def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=world.f_cfg.db_name,
                           db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                          destination=world.f_cfg.mgmt_address, lease=[]):
+                          destination=world.f_cfg.mgmt_address, lease=None):
     if db_type.lower() == "mysql":
         if table_name == 'lease6':
             select = "select"
@@ -275,15 +275,15 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
                     select += ", hex(%s)" % attribute
                 else:
                     select += ", %s" % attribute
-            select = select.replace(",", "", 1) # delete first comma
+            select = select.replace(",", "", 1)  # delete first comma
         elif table_name == 'lease4':
             select = "select"
             for attribute in lease:
-                if attribute == "address" or attribute == "hwaddr":
+                if attribute in ["address", "hwaddr"]:
                     select += ", hex(%s)" % attribute
                 else:
                     select += ", %s" % attribute
-            select = select.replace(",", "", 1) # delete first comma
+            select = select.replace(",", "", 1)  # delete first comma
         else:
             select = 'select *'
         command = 'mysql -u {db_user} -p{db_passwd} -e "{select} from {table_name}"' \
@@ -319,14 +319,14 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
 
 def db_table_contains_line(table_name, db_type, line="", grep_cmd=None, expect=True, db_name=world.f_cfg.db_name,
                            db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                           destination=world.f_cfg.mgmt_address, lease=[]):
+                           destination=world.f_cfg.mgmt_address, lease=None):
     result = db_table_record_count(table_name, db_type, line,
                                    grep_cmd, db_name, db_user, db_passwd,
                                    destination, lease)
     if expect:
         if result < 1:
-            assert False, 'In database {0} table name "{1}" has {2} of: "{3}".'.format(db_type,
-                                                                                        table_name, result, line)
+            assert False, 'In database {0} table name "{1}" has {2} of: "{3}".'\
+                .format(db_type, table_name, result, line)
     else:
         if result > 0:
             assert False, 'In database {0} table name "{1}" has {2} of: "{3}".' \
@@ -685,7 +685,8 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
 
             else:
                 assert False, "There is something bad, you should never see this :)"
-            db_table_contains_line(table, backend, grep_cmd=cmd, destination=destination, lease=lease)
+            db_table_contains_line(table, backend, grep_cmd=cmd,
+                                   destination=destination, lease=lease)
 
     elif backend == 'cassandra':
         # TODO implement this sometime in the future

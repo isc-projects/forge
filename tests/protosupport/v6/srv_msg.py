@@ -1255,7 +1255,9 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
         response_check_suboption_content('IA-Prefix', 'IA_PD', True, 'prefix', prefix)
 
 
-def SARR(address=None, delegated_prefix=None, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], exchange='full', duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+def SARR(address=None, delegated_prefix=None, relay_information=False,
+         status_code=DHCPv6_STATUS_CODES['Success'], exchange='full',
+         duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise, request, reply, renew, reply.
@@ -1282,6 +1284,8 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
 
     misc.test_procedure()
     client_sets_value('DUID', duid)
+    if iaid is not None:
+        client_sets_value('ia_id', iaid)
     if exchange == 'full':
         # Build and send a solicit.
         client_does_include('Client', 'client-id', None)
@@ -1373,7 +1377,9 @@ def SARR(address=None, delegated_prefix=None, relay_information=False, status_co
         if delegated_prefix is not None:
             check_IA_PD(delegated_prefix)
 
-def SA(address=None, delegated_prefix=None, relay_information=False, status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01'):
+
+def SA(address=None, delegated_prefix=None, relay_information=False,
+       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None):
     """
     Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise.
@@ -1396,6 +1402,8 @@ def SA(address=None, delegated_prefix=None, relay_information=False, status_code
 
     misc.test_procedure()
     client_sets_value('DUID', duid)
+    if iaid is not None:
+        client_sets_value('ia_id', iaid)
     # Build and send a solicit.
     client_does_include('Client', 'client-id', None)
     if address is not None:
