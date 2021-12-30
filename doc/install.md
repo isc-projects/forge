@@ -70,5 +70,57 @@ The author used this configuration:
 |______| <----vboxnet1: testing DHCP        ----> |______|
 ```
 
-That's the only example, other architectures not tested. If you set up other configuration,
+That's the only example, other architectures not tested. If you set up another configuration,
 please report it on <https://github.com/isc-projects/forge> to update documentation.
+
+Automated environment setup
+---------------------------
+
+There is a `forge` script in the root directory that provides an alternative way of setting up the
+VMs and environment. Its documentation is very basic. Here's the excerpt of the built-in help:
+
+```shell
+$ ./forge --help
+usage: forge [-h] [-v] [-q] [--lxc] [--sid SID] [-s SYSTEM] {config,setup,refresh,install-kea,test,clean,box} ...
+
+Forge - testing tool for Kea and ISC DHCP.
+
+Basic steps for running Forge are as follows:
+1) first configure forge itself
+
+   ./forge config kea-dirs /path/to/kea/repos
+
+2) create VMs
+
+   ./forge setup
+
+3) install Kea in one of VMs
+
+   ./forge install-kea kea-subdir
+
+4) run indicated tests, parameters are directly passed to pytest
+
+   ./forge test -m v4
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --verbose         Enable verbose mode.
+  -q, --quiet           Enable quiet mode.
+  --lxc                 Use LXC instead of VirtualBox.
+  --sid SID             ID of setup. If more setups needed in parallel then run with specific ID.
+  -s SYSTEM, --system SYSTEM
+                        Server system name, default: 'ubuntu-18.04'
+
+Forge commands:
+  The following commands are provided by Forge. To get more information about
+  particular command invoke: ./forge <command> -h.
+
+  {config,setup,refresh,install-kea,test,clean,box}
+    config              Set config parameter in config file ie. forge.ini.
+    setup               Create VMs where testing happens.
+    refresh             Refresh VMs ie. restart and re-provision
+    install-kea         Install Kea into VM from indicated repository.
+    test                Run tests. Parameters are passed directly to pytest.
+    clean               Destroy VMs
+    box                 Package LXC box and upload to cloud
+```
