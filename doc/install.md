@@ -1,13 +1,11 @@
-  ISC Forge info
- ----------------
+ISC Forge Installation
+======================
 
-ISC Forge is an automated DHCP validation framework. It uses Scapy, Pytest and
-Fabric to run various DHCP tests.
+The following document covers installation and configuration. For usage, see [usage](usage.md).
 
-For questions, ideas bug reports please contact us via kea-dev@lists.isc.org
+Dependencies Installation
+-------------------------
 
- Dependencies Installation
----------------------------
 Forge requires python 3.9.x, the latest Scapy and pytest. We also recommend venv.
 We recommend newest versions, if not specified otherwise in [requirements.txt](../requirements.txt).
 
@@ -27,10 +25,9 @@ This step is optional and tcpdump usage is controlled via init_all.py
 sudo apt-get install tcpdump
 ```
 
-
-
- DUT dependencies requirements and configuration
+DUT dependencies requirements and configuration
 -------------------------------------------------
+
 On Device Under Test (DUT) on which will be running your server you need:
 
 * be able to connect via ssh
@@ -42,8 +39,9 @@ On Device Under Test (DUT) on which will be running your server you need:
 * install `socat` for testing Socket connections
 * installed DHCP/DNS server
 
- Manual Configuration
+Manual Configuration
 ----------------------
+
 Configuration management is not well-designed yet. The default configuration
 is stored in forge/tests/init_all.py_default. Please copy this file
 to forge/tests/init_all.py and edit relevant values in this file.
@@ -60,10 +58,11 @@ machines using VM VirtualBox. Those machines need to be connected with internal 
 You can establish internet connection on other interface if you want. Two different networks
 should be used for:
 
-	vboxnet0 - configuration server via ssh, you can use this network to ssh to forge machine
-	vboxnet1 - testing, ip needs to be set manualy on both machines
+ vboxnet0 - configuration server via ssh, you can use this network to ssh to forge machine
+ vboxnet1 - testing, ip needs to be set manualy on both machines
 
-Author used this configuration:
+The author used this configuration:
+
 ```
  ______                                            ______
 |      | <----vboxnet0: configuration via ssh---> |      |
@@ -71,59 +70,5 @@ Author used this configuration:
 |______| <----vboxnet1: testing DHCP        ----> |______|
 ```
 
-That's the only example, other architectures not tested. If you set up other configuration please
-report it on https://github.com/isc-projects/forge to update documentation.
-
- Usage
--------
-First enter virtualenv created previously
-
-```shell
-source ./venv/bin/activate
-```
-To run all tests using virtualenv created previously
-```shell
-sudo ./venv/bin/pytest
-```
-
-To run just subset of tests from one file
-```shell
-sudo ./venv/bin/pytest tests/dhcpv4/kea_only/control_channel/test_command_control_socket.py
-```
-Additional useful options are:
-
-using tests tags:
-```shell
-sudo ./venv/bin/pytest -m ddns
-sudo ./venv/bin/pytest -m v4
-sudo ./venv/bin/pytest -m 'v4 and v6'
-```
-
-using test keywords:
-```shell
-sudo ./venv/bin/pytest -k 'test_status_get'
-```
-Increased verbosity for debugging tests results
-
-```shell
-sudo ./venv/bin/pytest -vv
-```
-
-Forge system tests require root privileges to open DHCP ports, mange DHCP servers and
-capturing traffic via tcpdump.
-
- Step-by-step working setup example
-------------------------------------
-You can follow step-by-step guide to set up simple environment and run some tests.
-It's located in [example.md](example.md).
-
- Writing new tests
--------------------
-Since forge moved from lettuce to pytest, writing new tests it's just python programming.
-Functions available in tests/srv_control.py are used to operate remote DHCP/DNS servers.
-Functions available in tests/srv_msg.py are used to generate and parse traffic.
-
- Additional info
------------------
-https://docs.pytest.org/en/latest/ - Pytest homepage
-http://www.secdev.org/projects/scapy/ - Scapy homepage
+That's the only example, other architectures not tested. If you set up other configuration,
+please report it on <https://github.com/isc-projects/forge> to update documentation.
