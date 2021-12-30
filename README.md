@@ -60,7 +60,7 @@ Other useful documentation
 --------------------------
 
 - [Installation](doc/install.md) - a quick overview of Forge installation
-- [Usage](doc/usage.md) -
+- [Usage](doc/usage.md) - how to use Forge once installed
 - [Working Example](doc/example.md) - a step-by-step instructions for setting up Forge with Kea and
   running some tests.
 - [Coding Guidelines](doc/coding-guidelines.md) - various tips for developers and contributors.
