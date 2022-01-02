@@ -58,7 +58,8 @@ def install_krb(dns_addr, domain, key_life=2):
         fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
         fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')
         fabric_sudo_command('sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user')
-    fabric_sudo_command('rm -rf /tmp/dhcp.keytab /tmp/dns.keytab /tmp/krb5cc_0 /tmp/krb5*')
+        fabric_sudo_command('rm -rf /tmp/krb5cc_0 /tmp/krb5*')
+    fabric_sudo_command('rm -rf /tmp/*.keytab')
     # /etc/krb5.conf
     krb5_conf = f"""[libdefaults]
             default_realm = {domain.upper()}
@@ -203,7 +204,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     keytab_file = "/tmp/dhcp.keytab" if "win" not in domain else f"/tmp/forge{domain[3:7]}.keytab"
 
     fabric_sudo_command(f'chmod 440 {keytab_file}')
-    if world.server_system == 'ubuntu' and world.f_cfg.install_method == 'native':
+    if world.server_system == 'debian' and world.f_cfg.install_method == 'native':
         fabric_sudo_command(f'chown root:_kea {keytab_file}')
     else:
         fabric_sudo_command(f'chown root:root {keytab_file}')
