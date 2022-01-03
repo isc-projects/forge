@@ -150,8 +150,18 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 # HOW TO MANUALLY DEBUG THOSE TESTS WITHOUT LOCAL WINDOWS SERVER
 # connect to VPN
 # start windows with specific security group
-# copy globally accessible IPv4 address of started vm
-# use this address as "dns_addr" in all tests
+# copy globally accessible IPv4 address of started vm set it up as win_dns_addr_2019 or win_dns_addr_2016
+
+
+@pytest.fixture(autouse=True)
+def run_around_each_test(request):
+    krb.krb_destroy()
+
+    def unset():
+        krb.krb_destroy()
+        krb.clean_principals()
+
+    request.addfinalizer(unset)
 
 
 @pytest.mark.parametrize("system_and_domain", [('linux', 'example.com'), ('windows', '2019'), ('windows', '2016')])
@@ -168,27 +178,21 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
         # TODO figure out why dns pkts with AAAA are dropped by windows
         pytest.skip("Windows DNS do not respond to AAAA question, manually checked - it worked nice")
 
-    tkey_lifetime = 30
-    srv_msg.forge_sleep(tkey_lifetime+5)
+    tkey_lifetime = 60
     dns_addr = ""
 
     if dns_system == 'windows':
         my_domain = f"win{my_domain}ad.aws.isc.org"
-        # THIS IS THE SECTION NEEDED FOR MANUAL DEBUG
-        # dns_addr = "<global addr of vm running windows 2019>"
-        # if "2016" in my_domain:
-        #     dns_addr = "<global addr of vm running windows 2016>"
         dns_addr = world.f_cfg.win_dns_addr_2016
         if "2019" in my_domain:
             dns_addr = world.f_cfg.win_dns_addr_2019
-        world.f_cfg.win_dns_addr = dns_addr
-        world.f_cfg.dns4_addr = dns_addr
+        world.cfg["dns4_addr"] = dns_addr  # world.cfg["dns4_addr"] is based on world.f_cfg.dns4_addr
+        # and it's reset between each test
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
     else:
-        dns_addr = world.f_cfg.dns4_addr
+        dns_addr = world.cfg["dns4_addr"]
         krb.init_and_start_krb(dns_addr, my_domain)
-        # krb.manage_kerb(procedure='restart')
         krb.kinit(my_domain)
         srv_control.use_dns_set_number(33 if world.proto == 'v4' else 34, override_dns_addr=dns_addr)
         srv_control.start_srv('DNS', 'started')
@@ -288,15 +292,8 @@ def test_ddns4_gss_tsig_fallback(fallback):
     and bind 9 using tcpdump)
     """
 
-    # this is a problem, for some reason deleting principal and all files is not enough to regenerate keys.
-    # for now I will keep it that way
-    srv_msg.forge_sleep(40)
-
-    dns_addr = world.f_cfg.dns4_addr
-    #
-    # dns_keytab, dhcp_keytab = krb.init_and_start_krb(dns_addr)
+    dns_addr = world.cfg["dns4_addr"]
     krb.init_and_start_krb(dns_addr, 'example.com')
-    krb.manage_kerb(procedure='restart')
     krb.kinit('example.com')
     srv_control.use_dns_set_number(33)
     srv_control.start_srv('DNS', 'started')
@@ -373,29 +370,21 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     - Basic statistics (although something weird is in update counts, needs more investigation).
     - getting keys by server name, key name, list and all
     """
-    srv_msg.forge_sleep(50)
     dns_system, my_domain = system_domain
     if dns_system == 'windows':
         my_domain = f"win{my_domain}ad.aws.isc.org"
     dns_addr = ""
 
     if dns_system == 'windows':
-        # THIS IS THE SECTION NEEDED FOR MANUAL DEBUG
-        # dns_addr = "<global addr of vm running windows 2019>"
-        # if "2016" in my_domain:
-        #     dns_addr = "<global addr of vm running windows 2016>"
         dns_addr = world.f_cfg.win_dns_addr_2019
         if "2016" in my_domain:
             dns_addr = world.f_cfg.win_dns_addr_2016
-        world.f_cfg.win_dns_addr = dns_addr
-        world.f_cfg.dns4_addr = dns_addr
+        world.cfg["dns4_addr"] = dns_addr
         krb.init_and_start_krb(dns_addr, my_domain)
-        krb.manage_kerb(procedure='restart')
         krb.kinit(my_domain)
     else:
-        dns_addr = world.f_cfg.dns4_addr
+        dns_addr = world.cfg["dns4_addr"]
         krb.init_and_start_krb(dns_addr, my_domain)
-        krb.manage_kerb(procedure='restart')
         krb.kinit(my_domain)
         srv_control.use_dns_set_number(33)
         srv_control.start_srv('DNS', 'started')

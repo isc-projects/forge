@@ -647,10 +647,6 @@ def _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix):
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
-    subcmd = "sudo systemctl restart krb5-kdc.service"
-    cmd = cmd_tpl % subcmd
-    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
-
 
 def _install_krb_on_fedora(server_name, vagrant_dir, log_prefix):
     cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
@@ -689,10 +685,6 @@ def _install_krb_on_fedora(server_name, vagrant_dir, log_prefix):
     _upload_content(krb5_conf, server_name, '/etc/krb5.conf', vagrant_dir, log_prefix)
 
     subcmd = "sudo test -e /var/kerberos/krb5kdc/principal || printf '123\\n123' | sudo kdb5_util create -s"
-    cmd = cmd_tpl % subcmd
-    execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
-
-    subcmd = "sudo systemctl restart krb5kdc kadmin"
     cmd = cmd_tpl % subcmd
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
