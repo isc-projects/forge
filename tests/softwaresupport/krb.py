@@ -1,10 +1,16 @@
 import os
+import time
 from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
 
 from forge_cfg import world
 
 
 def kinit(my_domain):
+    fabric_sudo_command('cat /etc/krb5.conf')
+    if world.server_system == 'debian':
+        fabric_sudo_command('cat /etc/krb5kdc/kdc.conf')
+
+    manage_kerb(procedure='restart')
     if world.server_system == 'debian' and world.f_cfg.install_method == 'native':
         # kea is running using user _kea this is for now only one distinction
         # all the rest is divided between windows and linux
@@ -22,17 +28,16 @@ def kinit(my_domain):
     fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
 
 
-def manage_kerb(procedure='stop'):
+def manage_kerb(procedure='stop', ignore=False):
     if world.server_system == 'redhat':
-        fabric_sudo_command(f'systemctl {procedure} krb5kdc kadmin')
+        fabric_sudo_command(f'systemctl {procedure} krb5kdc kadmin', ignore_errors=ignore)
+        if procedure in ["start", "restart"]:
+            fabric_sudo_command('systemctl status krb5kdc kadmin', ignore_errors=ignore)
     else:
-        fabric_sudo_command(f'systemctl {procedure} krb5-admin-server.service')
-
-    if procedure in ["start", "restart"]:
-        if world.server_system == 'redhat':
-            fabric_sudo_command('systemctl status krb5kdc kadmin')
-        else:
-            fabric_sudo_command('systemctl status krb5-admin-server.service')
+        fabric_sudo_command(f'systemctl {procedure} krb5-admin-server.service', ignore_errors=ignore)
+        if procedure in ["start", "restart"]:
+            fabric_sudo_command('systemctl status krb5-admin-server.service', ignore_errors=ignore)
+    time.sleep(2)
 
 
 def clean_principals():
@@ -46,18 +51,40 @@ def clean_principals():
 
 def install_krb(dns_addr, domain, key_life=2):
     clean_principals()
-
-    fabric_sudo_command('kdestroy -A', ignore_errors=True)
+    krb_destroy()
     manage_kerb()
     if world.server_system == 'redhat':
         pass
         # fabric_sudo_command("dnf remove -y krb5-server krb5-workstation", ignore_errors=True)
         # fabric_sudo_command("dnf install -y krb5-server krb5-workstation", ignore_errors=True)
     else:
+        manage_kerb(ignore=True)  # stop all, do not care about error
         fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
         fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')
         fabric_sudo_command('sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user')
-        fabric_sudo_command('rm -rf /tmp/krb5cc_0 /tmp/krb5*')
+        fabric_sudo_command('rm -rf /tmp/krb5cc_0 /tmp/krb5* /etc/krb5.conf /etc/krb5kdc/kdc.conf')
+        kdc_conf = f"""[kdcdefaults]
+            kdc_ports = 750,88
+            extra_addresses = {dns_addr}
+
+        [realms]
+            {domain.upper()} = {{
+                database_name = /var/lib/krb5kdc/principal
+                default_ccache_name = FILE:/tmp/krb5cc_%{{uid}}
+                admin_keytab = FILE:/etc/krb5kdc/kadm5.keytab
+                acl_file = /etc/krb5kdc/kadm5.acl
+                key_stash_file = /etc/krb5kdc/stash
+                kdc_ports = 750,88
+                max_life = 0h {key_life}m 0s
+                max_renewable_life = 0d 0h {key_life}m 0s
+                master_key_type = des3-hmac-sha1
+                # supported_enctypes = aes256-cts:normal aes128-cts:normal
+                default_principal_flags = +preauth
+            }}
+
+                """
+        send_content('kdc.conf', '/etc/krb5kdc/kdc.conf', kdc_conf, 'krb')
+
     fabric_sudo_command('rm -rf /tmp/*.keytab')
     # /etc/krb5.conf
     krb5_conf = f"""[libdefaults]
@@ -79,37 +106,16 @@ def install_krb(dns_addr, domain, key_life=2):
 
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
-    kdc_conf = f"""[kdcdefaults]
-        kdc_ports = 750,88
-        extra_addresses = {dns_addr}
-
-    [realms]
-        {domain.upper()} = {{
-            database_name = /var/lib/krb5kdc/principal
-            default_ccache_name = FILE:/tmp/krb5cc_%{{uid}}
-            admin_keytab = FILE:/etc/krb5kdc/kadm5.keytab
-            acl_file = /etc/krb5kdc/kadm5.acl
-            key_stash_file = /etc/krb5kdc/stash
-            kdc_ports = 750,88
-            max_life = 0h {key_life}m 0s
-            max_renewable_life = 0d 0h {key_life}m 0s
-            master_key_type = des3-hmac-sha1
-            # supported_enctypes = aes256-cts:normal aes128-cts:normal
-            default_principal_flags = +preauth
-        }}
-
-            """
-    send_content('kdc.conf', '/etc/krb5kdc/kdc.conf', kdc_conf, 'krb')
-
     cmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
     fabric_sudo_command(cmd)
 
-    manage_kerb(procedure='restart')
+
+def krb_destroy():
+    fabric_sudo_command('kdestroy -A', ignore_errors=True)
 
 
 def init_and_start_krb(dns_addr, domain, key_life=2):
     install_krb(dns_addr, domain, key_life)
-    fabric_sudo_command('kdestroy -A', ignore_errors=True)
     # /etc/krb5.conf
     ubuntu_krb5_conf = f"""[libdefaults]
 	default_realm = {domain.upper()}
@@ -132,8 +138,8 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
 
 [libdefaults]
     dns_lookup_realm = false
-    ticket_lifetime = 24h
-    renew_lifetime = 7d
+    ticket_lifetime = {key_life}m
+    renew_lifetime = {key_life}m
     forwardable = true
     rdns = false
     pkinit_anchors = FILE:/etc/pki/tls/certs/ca-bundle.crt
@@ -150,10 +156,10 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
         admin_server = {dns_addr}
     }}
 """
+    krb5_conf = ubuntu_krb5_conf
     if world.server_system == 'redhat':
         krb5_conf = fedora_krb5_conf
-    else:
-        krb5_conf = ubuntu_krb5_conf
+
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
     if 'win' in domain:
@@ -169,7 +175,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
                              user_loc='wlodek',
                              password_loc='DdU3Hjb2')
         # than we can upload this to system that is running kea
-        fabric_sudo_command(f"rm -rf /tmp/forge{domain[3:7]}.keytab")
+        fabric_sudo_command(f"rm -rf /tmp/*.keytab")
         fabric_send_file(os.path.join(world.cfg["test_result_dir"], f"forge{domain[3:7]}.keytab"),
                          f"/tmp/forge{domain[3:7]}.keytab")
 
@@ -208,4 +214,5 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     else:
         fabric_sudo_command(f'chown root:root {keytab_file}')
 
-    manage_kerb()
+    # manage_kerb()
+    # manage_kerb(procedure='restart')
