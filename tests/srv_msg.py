@@ -121,7 +121,7 @@ def client_does_include_with_value(opt_type, value):
 
 
 @step(r'(\S+) does (NOT )?include (\S+).')
-def client_does_include(sender_type, opt_type):
+def client_does_include(sender_type, opt_type, value=None):
     # add " option." to the end of the step - change all tests!
     """
     You can choose to include options to message (support for every option listed
@@ -699,11 +699,11 @@ def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address):
 
 
 def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
-     return dhcpmsg.DO(address, options, chaddr)
+    return dhcpmsg.DO(address, options, chaddr)
 
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04'):
-     return dhcpmsg.RA(address, options, response_type, chaddr)
+    return dhcpmsg.RA(address, options, response_type, chaddr)
 
 
 def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04'):
@@ -711,11 +711,11 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
 
 
 def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
-     return dhcpmsg.check_IA_NA(address, status_code)
+    return dhcpmsg.check_IA_NA(address, status_code)
 
 
 def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
-     return dhcpmsg.check_IA_PD(address, status_code)
+    return dhcpmsg.check_IA_PD(address, status_code)
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
@@ -725,9 +725,10 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code=DHCPv6_STATUS_CODES['Success'], exchange='full',
-         duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None):
+         duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
+         linkaddr='2001:db8:1::1000', ifaceid='port1234'):
     return dhcpmsg.SARR(address, delegated_prefix, relay_information,
-                        status_code, exchange, duid, iaid)
+                        status_code, exchange, duid, iaid, linkaddr, ifaceid)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):

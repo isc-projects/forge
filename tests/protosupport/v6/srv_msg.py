@@ -164,7 +164,7 @@ def unicast_addres(addr_type):
         world.cfg["address_v6"] = world.f_cfg.srv_ipv6_addr_link_local
 
 
-def client_does_include(sender_type, opt_type, value):
+def client_does_include(sender_type, opt_type, value=None):
     """
     Include options to message. This function refers to @step in lettuce
     """
@@ -1257,7 +1257,8 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code=DHCPv6_STATUS_CODES['Success'], exchange='full',
-         duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None):
+         duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
+         linkaddr='2001:db8:1::1000', ifaceid='port1234'):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise, request, reply, renew, reply.
@@ -1280,51 +1281,15 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         pytest parametrization. (default: "full")
     duid -- the DUID to be used in client packets
         (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    linkaddr -- sets Link Address in Relayed message
+    ifaceid -- sets Interface ID in option 18 in Relayed message
     """
 
-    misc.test_procedure()
-    client_sets_value('DUID', duid)
-    if iaid is not None:
-        client_sets_value('ia_id', iaid)
     if exchange == 'full':
-        # Build and send a solicit.
-        client_does_include('Client', 'client-id', None)
-        if address is not None:
-            client_does_include('Client', 'IA_Address', None)
-            client_does_include('Client', 'IA-NA', None)
-        if delegated_prefix is not None:
-            client_does_include('Client', 'IA_Prefix', None)
-            client_does_include('Client', 'IA-PD', None)
-        client_send_msg('SOLICIT')
+        # Build and send Solicit and await Advertisement
+        SA(address, delegated_prefix, relay_information, status_code, duid, iaid, linkaddr, ifaceid)
 
-        if relay_information:
-            # Encapsulate the solicit in a relay forward message.
-            client_sets_value('linkaddr', '2001:db8:1::1000')
-            client_sets_value('ifaceid', 'port1234')
-            client_does_include('RelayAgent', 'interface-id', None)
-            create_relay_forward()
-
-            # Expect a relay reply.
-            misc.pass_criteria()
-            send_wait_for_message('MUST', True, 'RELAYREPLY')
-            response_check_include_option(True, 'interface-id')
-            response_check_include_option(True, 'relay-msg')
-            response_check_option_content('relay-msg', True, 'Relayed', 'Message')
-            response_check_include_option(True, 'client-id')
-            response_check_include_option(True, 'server-id')
-            if address is not None:
-                check_IA_NA(address)
-            if delegated_prefix is not None:
-                check_IA_PD(delegated_prefix)
-        else:
-            # Expect an advertise.
-            misc.pass_criteria()
-            send_wait_for_message('MUST', True, 'ADVERTISE')
-            if address is not None:
-                check_IA_NA(address)
-            if delegated_prefix is not None:
-                check_IA_PD(delegated_prefix)
-
+        if not relay_information:
             # Build and send a request.
             if address is not None:
                 client_copy_option('IA_NA')
@@ -1332,7 +1297,7 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
                 client_copy_option('IA_PD')
             client_copy_option('server-id')
             client_sets_value('DUID', duid)
-            client_does_include('Client', 'client-id', None)
+            client_does_include('Client', 'client-id')
             if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
                 if address is not None:
                     client_sets_value('IA_Address', address)
@@ -1355,6 +1320,10 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     # statement is a hack and should be removed and the code block within should
     # be bumped one scope level up at function level i.e. always executed.
     if not relay_information:
+        misc.test_procedure()
+        client_sets_value('DUID', duid)
+        if iaid is not None:
+            client_sets_value('ia_id', iaid)
         # Build and send a renew.
         if address is not None:
             client_copy_option('IA_NA')
@@ -1379,7 +1348,8 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
-       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None):
+       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
+       linkaddr='2001:db8:1::1000', ifaceid='port1234'):
     """
     Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise.
@@ -1398,6 +1368,8 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     status_code -- the expected status code (default: Success)
     duid -- the DUID to be used in client packets
         (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    linkaddr -- sets Link Address in Relayed message
+    ifaceid -- sets Interface ID in option 18 in Relayed message
     """
 
     misc.test_procedure()
@@ -1405,20 +1377,20 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     if iaid is not None:
         client_sets_value('ia_id', iaid)
     # Build and send a solicit.
-    client_does_include('Client', 'client-id', None)
+    client_does_include('Client', 'client-id')
     if address is not None:
-        client_does_include('Client', 'IA_Address', None)
-        client_does_include('Client', 'IA-NA', None)
+        client_does_include('Client', 'IA_Address')
+        client_does_include('Client', 'IA-NA')
     if delegated_prefix is not None:
-        client_does_include('Client', 'IA_Prefix', None)
-        client_does_include('Client', 'IA-PD', None)
+        client_does_include('Client', 'IA_Prefix')
+        client_does_include('Client', 'IA-PD')
     client_send_msg('SOLICIT')
 
     if relay_information:
         # Encapsulate the solicit in a relay forward message.
-        client_sets_value('linkaddr', '2001:db8:1::1000')
-        client_sets_value('ifaceid', 'port1234')
-        client_does_include('RelayAgent', 'interface-id', None)
+        client_sets_value('linkaddr', linkaddr)
+        client_sets_value('ifaceid', ifaceid)
+        client_does_include('RelayAgent', 'interface-id')
         create_relay_forward()
 
         # Expect a relay reply.
@@ -1437,6 +1409,8 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         # Expect an advertise.
         misc.pass_criteria()
         send_wait_for_message('MUST', True, 'ADVERTISE')
+        response_check_include_option(True, 'client-id')
+        response_check_include_option(True, 'server-id')
         if address is not None:
             check_IA_NA(address, status_code)
         if delegated_prefix is not None:

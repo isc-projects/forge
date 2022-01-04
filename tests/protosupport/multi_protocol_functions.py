@@ -28,6 +28,7 @@ import logging
 import codecs
 import ipaddress
 import requests
+import copy
 
 from forge_cfg import world
 from softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
@@ -268,7 +269,9 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
                           db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
                           destination=world.f_cfg.mgmt_address, lease=None):
     if db_type.lower() == "mysql":
-        if table_name == 'lease6':
+        if lease is None:
+            select = 'select *'
+        elif table_name == 'lease6':
             select = "select"
             for attribute in lease:
                 if attribute == "duid":
@@ -290,7 +293,9 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
                   ' {db_name} --silent > /tmp/db_out'.format(**locals())
 
     elif db_type.lower() in ["postgresql", "pgsql"]:
-        if table_name == 'lease4':
+        if lease is None:
+            select = 'select *'
+        elif table_name == 'lease4':
             select = "select"
             for attribute in lease:
                 if attribute == "address":
@@ -649,9 +654,10 @@ def set_value(env_name, env_value):
 def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address):
     if not isinstance(leases_list, list):
         leases_list =[leases_list]
+    leases_list_copy = copy.deepcopy(leases_list)
 
     if backend == 'memfile':
-        for lease in leases_list:
+        for lease in leases_list_copy:
             cmd = "cat %s " % world.f_cfg.get_leases_path()
             for attribute in lease:
                 cmd += "| grep -E %s " % lease[attribute]
@@ -663,7 +669,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
             # TODO write check if there is more than one entry of the same type
 
     elif backend.lower() in ['mysql', 'postgresql', 'pgsql']:
-        for lease in leases_list:
+        for lease in leases_list_copy:
             if world.f_cfg.proto == 'v4':
                 table = 'lease4'
                 cmd = "cat /tmp/db_out "
