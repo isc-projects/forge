@@ -714,7 +714,7 @@ def test_hook_v4_lease_cmds_lease_get_negative():
                          "subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "Incorrect identifier type: something, the only supported values are: address, hw-address, client-id"
-    #TODO: test fails, kea#2260
+    # TODO: test fails, kea#2260
 
     cmd = {"command": "lease4-get",
            "arguments": {"identifier": "ff:01:02:03:ff:05",
