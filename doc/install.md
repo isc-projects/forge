@@ -26,7 +26,7 @@ sudo apt-get install tcpdump
 ```
 
 DUT dependencies requirements and configuration
--------------------------------------------------
+-----------------------------------------------
 
 On Device Under Test (DUT) on which will be running your server you need:
 
@@ -40,7 +40,7 @@ On Device Under Test (DUT) on which will be running your server you need:
 * installed DHCP/DNS server
 
 Manual Configuration
-----------------------
+--------------------
 
 Configuration management is not well-designed yet. The default configuration
 is stored in forge/tests/init_all.py_default. Please copy this file
@@ -58,8 +58,8 @@ machines using VM VirtualBox. Those machines need to be connected with internal 
 You can establish internet connection on other interface if you want. Two different networks
 should be used for:
 
- vboxnet0 - configuration server via ssh, you can use this network to ssh to forge machine
- vboxnet1 - testing, ip needs to be set manualy on both machines
+* vboxnet0 - configuration server via ssh, you can use this network to ssh to forge machine
+* vboxnet1 - testing, ip needs to be set manually on both machines
 
 The author used this configuration:
 

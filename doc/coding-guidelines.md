@@ -10,7 +10,7 @@ Each new test must have a short (1-3 sentences) description of the goal of the t
 be added as a standard triple quote comment after the test function signature. Try to convey the
 purpose of the test (why you felt it was important enough to dedicate time to write it) rather than
 simply state what it does. Many tests don't have a description. We can address this problem
-incrementally. If you edit existing that is missing a description, you should add it.
+incrementally. If you edit an existing test that is missing a description, you should add it.
 
 pylint
 ------
@@ -33,9 +33,9 @@ Smaller changes (e.g. "I did fifth round of minor tweaks to something") should b
 Writing new tests
 -----------------
 
-Since forge moved from lettuce to pytest, writing new tests it's just python programming.
-Functions available in tests/srv_control.py are used to operate remote DHCP/DNS servers.
-Functions available in tests/srv_msg.py are used to generate and parse traffic. Don't forget
+Since forge moved from lettuce to pytest, writing new tests is just python programming.
+Functions available in `tests/srv_control.py` are used to operate remote DHCP/DNS servers.
+Functions available in `tests/srv_msg.py` are used to generate and parse traffic. Don't forget
 to write test description for new tests.
 
 Additional info

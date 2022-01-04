@@ -17,8 +17,8 @@ import srv_control
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_control_channel_lease4_get_page_positive(channel, backend):
     """
-     Check correct reponses of Kea lease-get-all and lease-get-page
-     """
+    Check correct responses of Kea lease-get-all and lease-get-page
+    """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.14')

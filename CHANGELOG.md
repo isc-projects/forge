@@ -1,4 +1,4 @@
-* 34.   [doc]	tomek
+* 34.	[doc]	tomek
 
 	Coding guidelines added, rearranged and update documentation.
 	(gitlab !219)
@@ -77,11 +77,11 @@ Code migrated from github (http://github.com/isc-projects/forge)
 
 	- support for vendor option tests
 
-* 19. [func]	maciek
+* 19.	[func]	maciek
 
 	- support for changing multiple values
 
-* 18. [bug]	wlodek
+* 18.	[bug]	wlodek
 
 	- parsing received message more accurate
 	- added new patch for Scapy!
@@ -137,21 +137,21 @@ Code migrated from github (http://github.com/isc-projects/forge)
 	-l for listing all features (for specific IP version)
 	-s for choosing test set based on directory name
 
-* 6. [bug] wlodek
+* 6.	[bug]	wlodek
 
 	- options -v4 and -v6 in run_test.py are operational
 
-* 5. [func] wlodek
+* 5.	[func]	wlodek
 
 	- building basic relay-forward message
 	- relay-forward message tests
 
-* 4. [doc] tomek
+* 4.	[doc]	tomek
 
 	Initial documentation added. Many overlapping and redundant copies
 	of readme/todo/notes sorted out.
 
-* 3. [func] wlodek
+* 3.	[func]	wlodek
 
 	- configuration checker (when starting by run_test.py)
 	- configuration in different file
@@ -161,25 +161,25 @@ Code migrated from github (http://github.com/isc-projects/forge)
 	- test tags
 	- automatic start/stop/configure bind10 - dhcp
 
-* 2. [func] rafal
+* 2.	[func]	rafal
 
 	Refactoring: generic code with dynamically loaded modules for
 	specific server or protocol
 
-* 1. [func] rafal, wlodek, tomek
+* 1.	[func]	rafal, wlodek, tomek
 
 	Initial code merged in. This is a result of a common development
 	on separate private repos.
 
 LEGEND
-[bug] 	general bug fix.  This is generally a backward compatible change,
+[bug]	general bug fix.  This is generally a backward compatible change,
 	unless it's deemed to be impossible or very hard to keep
 	compatibility to fix the bug.
 [build] compilation and installation infrastructure change.
-[doc] 	update to documentation. This shouldn't change run time behavior.
-[func] 	new feature.  In some cases this may be a backward incompatible
+[doc]	update to documentation. This shouldn't change run time behavior.
+[func]	new feature.  In some cases this may be a backward incompatible
 	change, which would require a bump of major version.
-[sec] 	security hole fix. This is no different than a general bug
+[sec]	security hole fix. This is no different than a general bug
 	fix except that it will be handled as confidential and will cause
 	security patch releases.
 

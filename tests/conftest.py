@@ -71,15 +71,15 @@ def pytest_generate_tests(metafunc):
                     dhcp_versions.append(v)
 
         # If no dhcp_version mentioned in marker, enable all versions
-        # atrributed to the function.
+        # attributed to the function.
         if not explicit_dhcp_version:
             dhcp_versions = list_of_attributed_versions
     else:
         # Otherwise, meaning if -m was not provided, enable all versions
-        # atrributed to the function.
+        # attributed to the function.
         dhcp_versions = list_of_attributed_versions
 
-    # Parameterize.
+    # Parametrize.
     if dhcp_versions:
         metafunc.parametrize('dhcp_version', dhcp_versions)
 

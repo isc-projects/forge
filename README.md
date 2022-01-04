@@ -54,7 +54,9 @@ Project homepage
 Getting the source code
 -----------------------
 
-`git clone https://gitlab.isc.org/isc-projects/forge`
+```shell
+git clone https://gitlab.isc.org/isc-projects/forge
+```
 
 Other useful documentation
 --------------------------

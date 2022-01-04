@@ -46,7 +46,7 @@ SLEEP_TIME_2=2
 SERVER_IFACE = "ens224"
 
 # The interface name for the second server. The second server is used sparingly
-# in tests and can have the secondary, standy or backup role in tests involving
+# in tests and can have the secondary, standby or backup role in tests involving
 # Kea with High Availability (HA). It can also be used as a second standalone
 # server connected to a database backend that is shared by the first server.
 SERVER2_IFACE = "ens224"
