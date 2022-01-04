@@ -53,12 +53,7 @@ def install_krb(dns_addr, domain, key_life=2):
     clean_principals()
     krb_destroy()
     manage_kerb()
-
-    if world.server_system == 'redhat':
-        pass
-        # fabric_sudo_command("dnf remove -y krb5-server krb5-workstation", ignore_errors=True)
-        # fabric_sudo_command("dnf install -y krb5-server krb5-workstation", ignore_errors=True)
-    else:
+    if world.server_system == 'debian':
         manage_kerb(ignore=True)  # stop all, do not care about error
         fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
         fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')
@@ -108,6 +103,8 @@ def install_krb(dns_addr, domain, key_life=2):
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
     cmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
+    if world.server_system == 'redhat':
+        cmd = "sudo test -e /var/kerberos/krb5kdc/principal || printf '123\\n123' | sudo kdb5_util create -s"
     fabric_sudo_command(cmd)
 
 
@@ -163,6 +160,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
 
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
+    kadm5_path = '/etc/krb5kdc/kadm5.acl' if world.server_system == 'debian' else '/var/kerberos/krb5kdc/kadm5.acl'
     if 'win' in domain:
         # on each configured windows system there is keatab generated, e.g command used:
         # PS C:\Users\Administrator> ktpass -out /Users/forge/forge.keytab -mapUser forge +rndPass -mapOp set +DumpSalt -crypto AES256-SHA1 -ptype KRB5_NT_PRINCIPAL -princ DHCP/forge.win2019ad.aws.isc.org@WIN2019AD.AWS.ISC.ORG
@@ -183,7 +181,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     else:
         clean_principals()
         kadm5 = f"DHCP/admin.{domain}@{domain.upper()}      *\n"
-        send_content('kadm5.acl', '/etc/krb5kdc/kadm5.acl', kadm5, 'krb')
+        send_content('kadm5.acl', kadm5_path, kadm5, 'krb')
 
         fabric_sudo_command('kadmin.local -q "addprinc -randkey DNS/server.example.com"')
         fabric_sudo_command('kadmin.local -q "addprinc -pw 123 DHCP/admin.example.com"')
@@ -196,16 +194,17 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
             # when installed from pkg
             fabric_sudo_command('chmod 440 /tmp/dns.keytab')
             if world.server_system == 'redhat':
-                fabric_sudo_command('chown root:named /tmp/dns.keytab')
-                fabric_sudo_command('chown root:named /etc/krb5kdc/kadm5.acl')
+                fabric_sudo_command('chown named:named /tmp/dns.keytab')
+                fabric_sudo_command(f'chown root:named {kadm5_path}')
+                fabric_sudo_command(f'chown root:named /etc/krb5.conf')
             else:
                 fabric_sudo_command('chown root:bind /tmp/dns.keytab')
-                fabric_sudo_command('chown root:bind /etc/krb5kdc/kadm5.acl')
+                fabric_sudo_command(f'chown root:bind {kadm5_path}')
         else:
             # when compiled and installed from sources
-            fabric_sudo_command('chmod 400 /tmp/dns.keytab')
+            fabric_sudo_command('chmod 440 /tmp/dns.keytab')
             fabric_sudo_command('chown root:root /tmp/dns.keytab')
-            fabric_sudo_command('chown root:root /etc/krb5kdc/kadm5.acl')
+            fabric_sudo_command(f'chown root:root {kadm5_path}')
 
     keytab_file = "/tmp/dhcp.keytab" if "win" not in domain else f"/tmp/forge{domain[3:7]}.keytab"
 
@@ -214,6 +213,3 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
         fabric_sudo_command(f'chown root:_kea {keytab_file}')
     else:
         fabric_sudo_command(f'chown root:root {keytab_file}')
-
-    # manage_kerb()
-    # manage_kerb(procedure='restart')

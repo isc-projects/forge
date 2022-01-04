@@ -151,6 +151,9 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 # connect to VPN
 # start windows with specific security group
 # copy globally accessible IPv4 address of started vm set it up as win_dns_addr_2019 or win_dns_addr_2016
+# Also there is no clean up of DNS records in windows system (each test is using different addresses) but
+# AWS will start new vm each time, so for manual debug keep in mind that DNS records in windows DNS have to be
+# removed manually.
 
 
 @pytest.fixture(autouse=True)
