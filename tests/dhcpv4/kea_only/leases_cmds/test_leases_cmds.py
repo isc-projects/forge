@@ -36,18 +36,18 @@ def _get_lease(addr='192.168.50.1', mac="ff:01:02:03:ff:04"):
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
 @pytest.mark.parametrize("channel", ['socket', 'http'])
-def test_hook_v4_lease_cmds_list(channel):
+def test_hook_lease_cmds_list(channel):
     """
     Check if with loaded hook, lease commands are available
     @param channel: we accept socket or http
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -64,17 +64,22 @@ def test_hook_v4_lease_cmds_list(channel):
                 "lease4-get-by-client-id",
                 "lease4-get-by-hostname",
                 "lease4-get-by-hw-address",
+                "lease4-resend-ddns",
                 "lease4-get-page",
                 "lease4-update",
                 "lease4-wipe",
                 "lease6-add",
+                "lease6-bulk-apply",
                 "lease6-del",
                 "lease6-get",
                 "lease6-get-all",
                 "lease6-get-by-duid",
                 "lease6-get-by-hostname",
+                "lease6-get-page",
+                "lease6-resend-ddns",
                 "lease6-update",
-                "lease6-wipe"]:
+                "lease6-wipe",
+                "leases-reclaim"]:
         assert cmd in resp["arguments"]
 
 
@@ -265,6 +270,10 @@ def test_hook_v4_lease_cmds_add(backend):
     resp = srv_msg.send_ctrl_cmd(cmd)
     assert resp["text"] == "Lease for address 192.168.50.5, subnet-id 1 added."
 
+    # check if we can add it again
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "IPv4 lease already exists."
+
     # re-check with command
     cmd = {"command": "lease4-get",
            "arguments": {"identifier-type": "hw-address", "identifier": "ff:01:02:03:ff:04", "subnet-id": 1}}
@@ -281,7 +290,8 @@ def test_hook_v4_lease_cmds_add(backend):
                     "subnet-id": 1,
                     "valid-lft": 999}
 
-    # this new lease will be for second subnet with address out of pool, and used the same mac address
+    # this new lease will be for second subnet with address out of pool,
+    # and used the same mac address
     # valid lifetime should be the one configured on subnet level = 2222
     cmd = {"command": "lease4-add",
            "arguments": {"hw-address": "ff:01:02:03:ff:04", "ip-address": "192.168.150.50"}}

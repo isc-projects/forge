@@ -1266,23 +1266,24 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
 
-    Arguments:
-    address -- the expected address as value of the IA_Address suboption.
-        For multiple addresses, use additional check_IA_NA() calls.
-    delegated_prefix -- the expected prefix as value of the IA_Prefix suboption.
-        For multiple prefixes, use additional check_IA_PD() calls.
-    relay_information -- whether client packets should be encapsulated in relay
-        forward messages, and by extension whether server packets should be
-        expected to be encapsulated in relay reply messages (default: False)
-    status_code -- the expected status code (default: Success)
-    exchange -- can have values "full" meaning SARR + renew-reply or
-        "renew-reply". It is a string instead of a boolean for
-        clearer recognition of test names because this value often comes from
-        pytest parametrization. (default: "full")
-    duid -- the DUID to be used in client packets
-        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-    linkaddr -- sets Link Address in Relayed message
-    ifaceid -- sets Interface ID in option 18 in Relayed message
+    Args:
+        address: the expected address as value of the IA_Address suboption.
+            For multiple addresses, use additional check_IA_NA() calls.
+        delegated_prefix: the expected prefix as value of the IA_Prefix suboption.
+            For multiple prefixes, use additional check_IA_PD() calls.
+        relay_information: whether client packets should be encapsulated in relay
+            forward messages, and by extension whether server packets should be
+            expected to be encapsulated in relay reply messages (default: False)
+        status_code: the expected status code (default: Success)
+        exchange: can have values "full" meaning SARR + renew-reply or
+            "renew-reply". It is a string instead of a boolean for
+            clearer recognition of test names because this value often comes from
+            pytest parametrization. (default: "full")
+        duid: the DUID to be used in client packets
+            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+        iaid: sets IAID for the client
+        linkaddr: sets Link Address in Relayed message
+        ifaceid: sets Interface ID in option 18 in Relayed message
     """
 
     if exchange == 'full':
@@ -1357,20 +1358,21 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
 
-    Arguments:
-    address -- the expected address as value of the IA_Address suboption.
-        For multiple addresses, use additional check_IA_NA() calls.
-    delegated_prefix -- the expected prefix as value of the IA_Prefix suboption.
-        For multiple prefixes, use additional check_IA_PD() calls.
-    relay_information -- whether client packets should be encapsulated in relay
-        forward messages, and by extension whether server packets should be
-        expected to be encapsulated in relay reply messages (default: False)
-    status_code -- the expected status code (default: Success)
-    duid -- the DUID to be used in client packets
-        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-    linkaddr -- sets Link Address in Relayed message
-    ifaceid -- sets Interface ID in option 18 in Relayed message
-    """
+    Args:
+        address: the expected address as value of the IA_Address suboption.
+            For multiple addresses, use additional check_IA_NA() calls.
+        delegated_prefix: the expected prefix as value of the IA_Prefix suboption.
+            For multiple prefixes, use additional check_IA_PD() calls.
+        relay_information: whether client packets should be encapsulated in relay
+            forward messages, and by extension whether server packets should be
+            expected to be encapsulated in relay reply messages (default: False)
+        status_code: the expected status code (default: Success)
+        duid: the DUID to be used in client packets
+            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+        iaid: sets IAID for the client
+        linkaddr: sets Link Address in Relayed message
+        ifaceid: sets Interface ID in option 18 in Relayed message
+        """
 
     misc.test_procedure()
     client_sets_value('DUID', duid)

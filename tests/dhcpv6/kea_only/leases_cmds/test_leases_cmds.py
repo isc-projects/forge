@@ -16,49 +16,6 @@ from dhcp4_scen import DHCPv6_STATUS_CODES
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize("channel", ['socket', 'http'])
-def test_hook_v6_lease_cmds_list(channel):
-    """
-    Check if with loaded hook, lease commands are available
-    @param channel: we accept socket or http
-    """
-    misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.build_and_send_config_files()
-
-    srv_control.start_srv('DHCP', 'started')
-
-    cmd = {"command": "list-commands", "arguments": {}}
-    resp = srv_msg.send_ctrl_cmd(cmd, channel=channel)
-
-    for cmd in ["lease4-add",
-                "lease4-del",
-                "lease4-get",
-                "lease4-get-all",
-                "lease4-get-by-client-id",
-                "lease4-get-by-hostname",
-                "lease4-get-by-hw-address",
-                "lease4-get-page",
-                "lease4-update",
-                "lease4-wipe",
-                "lease6-add",
-                "lease6-del",
-                "lease6-get",
-                "lease6-get-all",
-                "lease6-get-by-duid",
-                "lease6-get-by-hostname",
-                "lease6-update",
-                "lease6-wipe"]:
-        assert cmd in resp["arguments"]
-
-
-@pytest.mark.v6
-@pytest.mark.kea_only
-@pytest.mark.controlchannel
-@pytest.mark.hook
-@pytest.mark.lease_cmds
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_hook_v6_lease_cmds_add_valid(backend):
     """
@@ -249,6 +206,17 @@ def test_hook_v6_lease_cmds_add_notvalid():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "The address 2001:db8:2::1 does not belong " \
                            "to subnet 2001:db8:1::/64, subnet-id=1"
+
+    # try adding the same lease
+    cmd = {"command": "lease6-add",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "2001:db8:1::1",
+                         "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                         "iaid": 1234}}
+    srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "IPv6 lease already exists."
 
 
 @pytest.mark.v6
