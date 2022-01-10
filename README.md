@@ -20,7 +20,7 @@ The framework is written in Python and uses the following libraries:
 - Pytest (for test management)
 - Fabric (for remote server configuration)
 
-Participants
+Current team
 ------------
 
 - Włodzimierz Wencel (ISC)
@@ -28,15 +28,19 @@ Participants
 - Andrei Pavel (ISC)
 - Marcin Godzina (ISC)
 
+The list is in roughly chronological order.
+
 Former participants
 -------------------
 
-- Michał Nowikowski (ISC)
-- Stephen Morris (ISC, engineering manager)
-- Marcin Siodelski (ISC)
-- Thomas Markwalder (ISC)
 - Rafał Jankowski (Gdansk University, DHCPv4 validation)
 - Maciek Fijałkowski (Gdansk University, DHCPv6 validation)
+- Thomas Markwalder (ISC)
+- Marcin Siodelski (ISC)
+- Stephen Morris (ISC, engineering manager)
+- Michał Nowikowski (ISC)
+
+The list is roughly chronological order of the last activity.
 
 Getting in touch
 ----------------
