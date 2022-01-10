@@ -38,8 +38,10 @@ In _PyCharm_, go to `Settings` => `Tools` => `Python integrated tools` => `Docst
 the format to `reStructuredText`. The template will be filled as soon as you type `"""` and press
 Enter.
 
-For _Emacs_, there is `sphinx-doc` package that adds minor mode, but it was not tested by anyone
-from the ISC team.
+For _Emacs_, there is `sphinx-doc` package that adds minor mode that can be easily installed as
+package from [MELPA](https://www.emacswiki.org/emacs/MELPA). After installing, enable `sphinx-doc-mode`,
+then use `C-c M-d` to insert the comments. You may want to check the
+[github docs](https://github.com/naiquevin/sphinx-doc.el).
 
 pylint
 ------
