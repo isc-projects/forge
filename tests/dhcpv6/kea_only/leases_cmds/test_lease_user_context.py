@@ -21,21 +21,21 @@ def ordered(obj):
     return obj
 
 
-@pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize("channel", ['socket', 'http'])
-def test_hook_v4_lease_user_context(backend, channel):
+def test_hook_v6_lease_user_context(backend, channel):
     """
-    Test adding and getting user-context by lease4 commands.
+    Test adding and getting user-context by lease6 commands.
     :param backend: database backends as test parameter
     :param channel: communication channel as test parameter
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -51,19 +51,24 @@ def test_hook_v4_lease_user_context(backend, channel):
                               "bra,nch3": {"leaf1": 1,
                                            "leaf2": ["vein1", "vein2"]}}}
     # add lease with user-context
-    cmd = {"command": "lease4-add",
-           "arguments": {"hw-address": "ff:01:02:03:ff:04", "ip-address": "192.168.50.5",
+    cmd = {"command": "lease6-add",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "2001:db8:1::1",
+                         "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                         "iaid": 1234,
                          "user-context": user_context}}
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel)
-    assert resp["text"] == "Lease for address 192.168.50.5, subnet-id 1 added."
+    assert resp["text"] == "Lease for address 2001:db8:1::1, subnet-id 1 added."
 
-    # get the lease with lease4-get
-    cmd = {"command": "lease4-get",
-           "arguments": {"identifier-type": "hw-address", "identifier": "ff:01:02:03:ff:04",
-                         "subnet-id": 1}}
+    # get the lease with lease6-get
+    cmd = {"command": "lease6-get",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "2001:db8:1::1",
+                         "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                         "iaid": 1234}}
 
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel)
-    assert resp["text"] == "IPv4 lease found."
+    assert resp["text"] == "IPv6 lease found."
 
     resp = resp["arguments"]  # drop unnecessary info for comparison
 
@@ -74,29 +79,32 @@ def test_hook_v4_lease_user_context(backend, channel):
     del resp["cltt"]  # this value is dynamic
 
     # check the rest of the response
-    assert resp == {"fqdn-fwd": False,
+    assert resp == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                    "fqdn-fwd": False,
                     "fqdn-rev": False,
                     "hostname": "",
-                    "hw-address": "ff:01:02:03:ff:04",
-                    "ip-address": "192.168.50.5",
+                    "iaid": 1234,
+                    "ip-address": "2001:db8:1::1",
+                    "preferred-lft": 4000,
                     "state": 0,
                     "subnet-id": 1,
+                    "type": "IA_NA",
                     "valid-lft": 4000}
 
 
-@pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.kea_only
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
 @pytest.mark.parametrize("channel", ['socket', 'http'])
-def test_hook_v4_lease_user_context_negative(channel):
+def test_hook_v6_lease_user_context_negative(channel):
     """
-    Test invalid values send as user context by lease4-add and lease4-update
+    Test invalid values send as user context by lease6-add and lease4-update
     :param channel: communication channel as test parameter
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -105,22 +113,31 @@ def test_hook_v4_lease_user_context_negative(channel):
     srv_control.start_srv('DHCP', 'started')
 
     # add lease with invalid user-context
-    cmd = {"command": "lease4-add",
-           "arguments": {"hw-address": "ff:01:02:03:ff:04", "ip-address": "192.168.50.5",
+    cmd = {"command": "lease6-add",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "2001:db8:1::1",
+                         "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                         "iaid": 1234,
                          "user-context": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=1)
     assert resp["text"] == "Invalid user context '1' is not a JSON map."
 
     # add lease with invalid user-context
-    cmd = {"command": "lease4-add",
-           "arguments": {"hw-address": "ff:01:02:03:ff:04", "ip-address": "192.168.50.5",
+    cmd = {"command": "lease6-add",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "2001:db8:1::1",
+                         "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                         "iaid": 1234,
                          "user-context": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=1)
     assert resp["text"] == "Invalid user context 'true' is not a JSON map."
 
     # add lease with invalid user-context
-    cmd = {"command": "lease4-add",
-           "arguments": {"hw-address": "ff:01:02:03:ff:04", "ip-address": "192.168.50.5",
+    cmd = {"command": "lease6-add",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "2001:db8:1::1",
+                         "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                         "iaid": 1234,
                          "user-context": "test"}}
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=1)
     assert resp["text"] == "Invalid user context '\"test\"' is not a JSON map."
