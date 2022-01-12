@@ -6,18 +6,19 @@ import pytest
 import misc
 import srv_msg
 import srv_control
+from forge_cfg import world
 
 
-def ordered(obj):
+def _ordered(obj):
     """
     Helper function to sort JSON for ease of comparison.
     :param obj: json as dictionary
     :return: Sorted json dictionary
     """
     if isinstance(obj, dict):
-        return sorted((k, ordered(v)) for k, v in obj.items())
+        return sorted((k, _ordered(v)) for k, v in obj.items())
     if isinstance(obj, list):
-        return sorted(ordered(x) for x in obj)
+        return sorted(_ordered(x) for x in obj)
     return obj
 
 
@@ -68,7 +69,7 @@ def test_hook_v4_lease_user_context(backend, channel):
     resp = resp["arguments"]  # drop unnecessary info for comparison
 
     # compare sorted JSON prepared on start with sorted returned one
-    assert ordered(user_context) == ordered(resp["user-context"])
+    assert _ordered(user_context) == _ordered(resp["user-context"])
 
     del resp["user-context"]  # We already checked it
     del resp["cltt"]  # this value is dynamic
@@ -124,3 +125,67 @@ def test_hook_v4_lease_user_context_negative(channel):
                          "user-context": "test"}}
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=1)
     assert resp["text"] == "Invalid user context '\"test\"' is not a JSON map."
+
+
+@pytest.mark.v4
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v4_lease_extended_info(backend):
+    """
+    Test storing extended info of acquired lease and retrieving it by lease4-get
+    :param backend: database backends as test parameter
+    """
+    misc.test_setup()
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('relay_agent_information', '0106060106020603')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+
+    # get the lease with lease4-get
+    cmd = {"command": "lease4-get",
+           "arguments": {"identifier-type": "hw-address", "identifier": "ff:01:02:03:ff:04",
+                         "subnet-id": 1}}
+
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    assert resp["text"] == "IPv4 lease found."
+
+    del resp["arguments"]["cltt"]  # this value is dynamic
+
+    # check the response
+    assert resp["arguments"] == {"fqdn-fwd": False,
+                                 "fqdn-rev": False,
+                                 "hostname": "",
+                                 "hw-address": "ff:01:02:03:ff:04",
+                                 "ip-address": "192.168.50.1",
+                                 "state": 0,
+                                 "subnet-id": 1,
+                                 "user-context":
+                                     {"ISC": {"relay-agent-info": "0x0106060106020603"}},
+                                 "valid-lft": 4000}

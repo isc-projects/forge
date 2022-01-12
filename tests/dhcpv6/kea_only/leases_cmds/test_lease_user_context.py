@@ -6,18 +6,19 @@ import pytest
 import misc
 import srv_msg
 import srv_control
+from forge_cfg import world
 
 
-def ordered(obj):
+def _ordered(obj):
     """
     Helper function to sort JSON for ease of comparison.
     :param obj: json as dictionary
     :return: Sorted json dictionary
     """
     if isinstance(obj, dict):
-        return sorted((k, ordered(v)) for k, v in obj.items())
+        return sorted((k, _ordered(v)) for k, v in obj.items())
     if isinstance(obj, list):
-        return sorted(ordered(x) for x in obj)
+        return sorted(_ordered(x) for x in obj)
     return obj
 
 
@@ -73,7 +74,7 @@ def test_hook_v6_lease_user_context(backend, channel):
     resp = resp["arguments"]  # drop unnecessary info for comparison
 
     # compare sorted JSON prepared on start with sorted returned one
-    assert ordered(user_context) == ordered(resp["user-context"])
+    assert _ordered(user_context) == _ordered(resp["user-context"])
 
     del resp["user-context"]  # We already checked it
     del resp["cltt"]  # this value is dynamic
@@ -141,3 +142,103 @@ def test_hook_v6_lease_user_context_negative(channel):
                          "user-context": "test"}}
     resp = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=1)
     assert resp["text"] == "Invalid user context '\"test\"' is not a JSON map."
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v6_lease_extended_info(backend):
+    """
+    Test storing extended info of acquired lease and retrieving it by lease6-get
+    Communication with Kea is made by relayed messages to trigger storing relay info in user-context
+    :param backend: database backends as test parameter
+    """
+    misc.test_setup()
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    # Prepare Solicit message
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_sets_value('Client', 'ia_id', 1234)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    # Encapsulate the solicit in a relay forward message.
+    srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
+    srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
+    srv_msg.create_relay_forward()
+
+    # Send message and expect a relay reply.
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+
+    # Prepare Request message using options from Advertise
+    misc.test_procedure()
+    # Checking response for Relayed option and setting sender_type to 'Client' is required
+    # to copy options to correct place in Request message
+    srv_msg.response_check_option_content(9, 'Relayed', 'Message')
+    world.sender_type = "Client"
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Encapsulate the Request in a relay forward message.
+    srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
+    srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
+    srv_msg.create_relay_forward()
+
+    # Send message and expect a relay reply.
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+
+    # get the lease with lease6-get
+    cmd = {"command": "lease6-get",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "2001:db8:1::1",
+                         "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                         "iaid": 1234}}
+
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    assert resp["text"] == "IPv6 lease found."
+    del resp["arguments"]["cltt"]  # this value is dynamic
+    # check the response for user-context added by Kea server.
+    assert resp["arguments"] == {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                                 "fqdn-fwd": False,
+                                 "fqdn-rev": False,
+                                 "hostname": "",
+                                 "hw-address": "f6:f5:f4:f3:f2:01",
+                                 "iaid": 1234,
+                                 "ip-address": "2001:db8:1::1",
+                                 "preferred-lft": 3000,
+                                 "state": 0,
+                                 "subnet-id": 1,
+                                 "type": "IA_NA",
+                                 "user-context": {
+                                    "ISC": {
+                                            "relays": [
+                                                        {
+                                                         "hop": 0,
+                                                         "link": "2001:db8:1::1000",
+                                                         "options": "0x00120008706F727431323334",
+                                                         "peer": "fe80::a00:27ff:fe5d:efc6"
+                                                         }
+                                                      ]
+                                            }
+                                 },
+                                 "valid-lft": 4000}
