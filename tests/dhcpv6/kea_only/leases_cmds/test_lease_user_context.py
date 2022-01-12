@@ -1,4 +1,4 @@
-"""Kea API user context tests for v4"""
+"""Kea API user context tests for v6"""
 
 # pylint: disable=invalid-name,unused-argument
 import pytest
