@@ -189,6 +189,7 @@ def test_hook_v6_lease_extended_info(backend):
     misc.test_procedure()
     # Checking response for Relayed option and setting sender_type to 'Client' is required
     # to copy options to correct place in Request message
+    # TODO Modify client_copy_option to copy options into relayed messages w\o world.sender_type.
     srv_msg.response_check_option_content(9, 'Relayed', 'Message')
     world.sender_type = "Client"
     srv_msg.client_copy_option('IA_NA')
