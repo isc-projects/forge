@@ -316,7 +316,7 @@ def test_start():
         for sut_name in world.f_cfg.software_under_test:
             sut_module = importlib.import_module("softwaresupport.%s.functions" % sut_name)
             # True passed to stop_srv is to hide output in console.
-            sut_module.stop_srv()
+            sut_module.stop_srv(destination_address=world.f_cfg.mgmt_address)
 
             if 'kea' in sut_name:
                 kea_under_test = True
@@ -331,7 +331,9 @@ def test_start():
 def _clear_remainings():
     if not world.f_cfg.no_server_management:
         for remote_server in world.f_cfg.multiple_tested_servers:
+            print ("remote: ", remote_server)
             for sut in world.f_cfg.software_under_test:
+                print ("sut: ",sut)
                 functions = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # every software have something else to clear. Put in clear_all() whatever you need
                 functions.clear_all(destination_address=remote_server)
@@ -363,6 +365,9 @@ def initialize(scenario):
                              "kea-ddns.conf",
                              "kea-ctrl-agent.conf",
                              "kea-netconf.conf"]
+    if "isc_dhcp" in world.cfg["dhcp_under_test"]:
+        world.cfg["cfg_file"] = "server.cfg"
+        world.subcfg = [["", "", "", "", "", "", ""]]
 
     world.cfg["cfg_file_2"] = "second_server.cfg"
     world.reservation_backend = ""

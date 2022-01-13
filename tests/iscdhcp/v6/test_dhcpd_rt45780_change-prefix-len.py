@@ -1,352 +1,208 @@
 """ISC_DHCP DHCPv6 Tickets Prefix Length Pool Mismatch"""
 
+# pylint: disable=invalid-name,line-too-long
 
-import sys
-if 'features' not in sys.path:
-    sys.path.append('features')
-
-if 'pytest' in sys.argv[0]:
-    import pytest
-else:
-    import lettuce as pytest
-
+import pytest
 import misc
 import srv_control
 import srv_msg
 
+from softwaresupport.isc_dhcp6_server.functions import add_line_in_global
 
-@pytest.mark.py_test
+
 @pytest.mark.v6
-@pytest.mark.dhcp6
-@pytest.mark.PD
-@pytest.mark.rfc3633
-@pytest.mark.ticket
-@pytest.mark.rt45870
-def test_dhcpd_rt45780_change_prefix_len_exact(step):
+@pytest.mark.dhcpd
+def test_dhcpd_rt45780_change_prefix_len_exact():
     """new-dhcpd.rt45780.change-prefix-len.exact"""
 
-    misc.test_setup(step)
-    srv_control.run_command(step, 'prefix-length-mode exact;')
-    srv_control.run_command(step, 'ddns-updates off;')
-    srv_control.run_command(step, 'authoritative;')
-    srv_control.run_command(step, 'subnet6 3000::/16 {')
-    srv_control.run_command(step, ' pool6 {')
-    srv_control.run_command(step, '  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /64;')
-    srv_control.run_command(step, '  prefix6 3000:db8:0:200:: 3000:db8:0:200:: /60;')
-    srv_control.run_command(step, ' }')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    add_line_in_global('prefix-length-mode exact;')
+    add_line_in_global('ddns-updates off;')
+    add_line_in_global('authoritative;')
+    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global(' pool6 {')
+    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /64;')
+    add_line_in_global('  prefix6 3000:db8:0:200:: 3000:db8:0:200:: /60;')
+    add_line_in_global(' }')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
 
     # Verify SOLICIT of /60 gets us a /60 prefix
-    misc.test_procedure(step)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '60')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'plen', 60)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '25')
-    srv_msg.response_check_option_content(step, 'Response', '25', None, 'sub-option', '26')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'preflft',
-                                             '3000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'validlft',
-                                             '4000')
-    srv_msg.response_check_suboption_content(step, 'Response', '26', '25', None, 'plen', '60')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'prefix',
-                                             '3000:db8:0:200::')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
+    srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 60)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:0:200::')
 
     # Verify SOLICIT of /64 gets us a /64 prefix
-    misc.test_procedure(step)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '64')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'plen', 64)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '25')
-    srv_msg.response_check_option_content(step, 'Response', '25', None, 'sub-option', '26')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'preflft',
-                                             '3000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'validlft',
-                                             '4000')
-    srv_msg.response_check_suboption_content(step, 'Response', '26', '25', None, 'plen', '64')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'prefix',
-                                             '3000:db8:0:100::')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
+    srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
 
     # Save the client and server ids for REQUEST/RENEW tests
-    srv_msg.client_save_option_count(step, '1', 'client-id')
-    srv_msg.client_save_option_count(step, '1', 'server-id')
+    srv_msg.client_save_option_count(1, 'client-id')
+    srv_msg.client_save_option_count(1, 'server-id')
 
     # Verify REQUEST for 3000:db8:0:100::/64
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option_count(step, '1', 'DONT ')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '64')
-    srv_msg.client_sets_value(step, 'Client', 'prefix', '3000:db8:0:100::')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_sets_value('Client', 'plen', 64)
+    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '25')
-    srv_msg.response_check_option_content(step, 'Response', '25', None, 'sub-option', '26')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'preflft',
-                                             '3000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'validlft',
-                                             '4000')
-    srv_msg.response_check_suboption_content(step, 'Response', '26', '25', None, 'plen', '64')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'prefix',
-                                             '3000:db8:0:100::')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
+    srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
 
     # Verify RELEASE for 3000:db8:0:100::/64
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option_count(step, '1', 'DONT ')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '64')
-    srv_msg.client_sets_value(step, 'Client', 'prefix', '3000:db8:0:100::')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'RELEASE')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_sets_value('Client', 'plen', 64)
+    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('RELEASE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '0')
-
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
 
     # Verify SOLICIT of /60 gets us a /60 prefix AFTER we released /64
     # when mode is not "ignore"
-    misc.test_procedure(step)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '60')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'plen', 60)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '25')
-    srv_msg.response_check_option_content(step, 'Response', '25', None, 'sub-option', '26')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'preflft',
-                                             '3000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'validlft',
-                                             '4000')
-    srv_msg.response_check_suboption_content(step, 'Response', '26', '25', None, 'plen', '60')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'prefix',
-                                             '3000:db8:0:200::')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
+    srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 60)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:0:200::')
 
     # #############################################################################
 
 
-@pytest.mark.py_test
 @pytest.mark.v6
-@pytest.mark.dhcp6
-@pytest.mark.PD
-@pytest.mark.rfc3633
-@pytest.mark.ticket
-@pytest.mark.rt45870
-def test_dhcpd_rt45780_change_prefix_len_ignore(step):
+@pytest.mark.dhcpd
+def test_dhcpd_rt45780_change_prefix_len_ignore():
     """new-dhcpd.rt45780.change-prefix-len.ignore"""
 
-    misc.test_setup(step)
-    srv_control.run_command(step, 'prefix-length-mode ignore;')
-    srv_control.run_command(step, 'ddns-updates off;')
-    srv_control.run_command(step, 'authoritative;')
-    srv_control.run_command(step, 'subnet6 3000::/16 {')
-    srv_control.run_command(step, ' pool6 {')
-    srv_control.run_command(step, '  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /64;')
-    srv_control.run_command(step, '  prefix6 3000:db8:0:200:: 3000:db8:0:200:: /60;')
-    srv_control.run_command(step, ' }')
-    srv_control.build_and_send_config_files(step, 'SSH', 'config-file')
-    srv_control.start_srv(step, 'DHCP', 'started')
+    misc.test_setup()
+    add_line_in_global('prefix-length-mode ignore;')
+    add_line_in_global('ddns-updates off;')
+    add_line_in_global('authoritative;')
+    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global(' pool6 {')
+    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /64;')
+    add_line_in_global('  prefix6 3000:db8:0:200:: 3000:db8:0:200:: /60;')
+    add_line_in_global(' }')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
 
     # Verify SOLICIT of /60 gets us a /64 prefix as the hint
     # is ignored, giving us first available
-    misc.test_procedure(step)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '60')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'plen', 60)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '25')
-    srv_msg.response_check_option_content(step, 'Response', '25', None, 'sub-option', '26')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'preflft',
-                                             '3000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'validlft',
-                                             '4000')
-    srv_msg.response_check_suboption_content(step, 'Response', '26', '25', None, 'plen', '64')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'prefix',
-                                             '3000:db8:0:100::')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
+    srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
 
     # Save the client and server ids for REQUEST/RENEW tests
-    srv_msg.client_save_option_count(step, '1', 'client-id')
-    srv_msg.client_save_option_count(step, '1', 'server-id')
+    srv_msg.client_save_option_count(1, 'client-id')
+    srv_msg.client_save_option_count(1, 'server-id')
 
     # Verify REQUEST for 3000:db8:0:100::/64
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option_count(step, '1', 'DONT ')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '64')
-    srv_msg.client_sets_value(step, 'Client', 'prefix', '3000:db8:0:100::')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'REQUEST')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_sets_value('Client', 'plen', 64)
+    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('REQUEST')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '25')
-    srv_msg.response_check_option_content(step, 'Response', '25', None, 'sub-option', '26')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'preflft',
-                                             '3000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'validlft',
-                                             '4000')
-    srv_msg.response_check_suboption_content(step, 'Response', '26', '25', None, 'plen', '64')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'prefix',
-                                             '3000:db8:0:100::')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
+    srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
 
     # Verify RELEASE for 3000:db8:0:100::/64
-    misc.test_procedure(step)
-    srv_msg.client_add_saved_option_count(step, '1', 'DONT ')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '64')
-    srv_msg.client_sets_value(step, 'Client', 'prefix', '3000:db8:0:100::')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'RELEASE')
+    misc.test_procedure()
+    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_sets_value('Client', 'plen', 64)
+    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('RELEASE')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'REPLY')
-    srv_msg.response_check_include_option(step, 'Response', None, '13')
-    srv_msg.response_check_option_content(step, 'Response', '13', None, 'statuscode', '0')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
 
     # Verify SOLICIT of /60 gets us our previous /64 prefix
     # when mode is "ignore"
-    misc.test_procedure(step)
-    srv_msg.client_does_include(step, 'Client', None, 'client-id')
-    srv_msg.client_sets_value(step, 'Client', 'plen', '60')
-    srv_msg.client_does_include(step, 'Client', None, 'IA_Prefix')
-    srv_msg.client_does_include(step, 'Client', None, 'IA-PD')
-    srv_msg.client_send_msg(step, 'SOLICIT')
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'plen', 60)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria(step)
-    srv_msg.send_wait_for_message(step, 'MUST', None, 'ADVERTISE')
-    srv_msg.response_check_include_option(step, 'Response', None, '25')
-    srv_msg.response_check_option_content(step, 'Response', '25', None, 'sub-option', '26')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'preflft',
-                                             '3000')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'validlft',
-                                             '4000')
-    srv_msg.response_check_suboption_content(step, 'Response', '26', '25', None, 'plen', '64')
-    srv_msg.response_check_suboption_content(step,
-                                             'Response',
-                                             '26',
-                                             '25',
-                                             None,
-                                             'prefix',
-                                             '3000:db8:0:100::')
-
-
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
+    srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')

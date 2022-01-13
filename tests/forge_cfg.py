@@ -91,7 +91,7 @@ class ForgeConfiguration:
     def __init__(self):
         # default
         self.dns_used = ["bind9_server"]
-        self.dhcp_used = ["kea4_server", "kea6_server", "none_server"]
+        self.dhcp_used = ["kea4_server", "kea6_server", "none_server", "isc_dhcp4_server", "isc_dhcp6_server"]
         self.mgmt_address = None  # will be reconfigured, added to keep pycodestyle quiet
         self.mgmt_address_2 = None
 
@@ -122,7 +122,11 @@ class ForgeConfiguration:
         # backward compatibility
         self.gia4_addr = self.giaddr4
         self.software_install_dir = self.software_install_path
-
+        self.isc_dhcp_log_file = "/var/log/dhcpd_forge.log"
+        # add line:
+        # local7.debug	/var/log/dhcpd_forge.log
+        # to file /etc/rsyslog.conf and restart rsyslog
+        self.isc_dhcp_log_facility = "local7"
         try:
             self.cli_mac = self.gethwaddr(self.iface)
         except:

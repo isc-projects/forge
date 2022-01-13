@@ -56,7 +56,7 @@ def test_v6_relay_message_unicast_global():
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_addres('GLOBAL')
     srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 

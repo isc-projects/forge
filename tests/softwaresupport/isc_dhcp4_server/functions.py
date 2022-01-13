@@ -14,17 +14,17 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Author: Wlodzimierz Wencel
-from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file,\
-    copy_configuration_file, fabric_sudo_command, fabric_download_file, simple_file_layout
+from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
+from softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
 
-from lettuce import world
-from logging_facility import *
+from forge_cfg import world
 
-from logging_facility import get_common_logger
+from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file
+from softwaresupport.isc_dhcp6_server.functions import restart_srv, clear_all, save_leases, save_logs, start_srv
+from softwaresupport.isc_dhcp6_server.functions import add_line_in_global, check_process_result, clear_leases
+from softwaresupport.isc_dhcp6_server.functions import simple_file_layout
 
-from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file,\
-    fabric_remove_file_command, clear_all, add_line_in_global, check_process_result, clear_leases
-from functions_ddns import build_ddns_config
+from softwaresupport.isc_dhcp4_server.functions_ddns import build_ddns_config
 # option names in isc-dhcp v4, list is that you can check which one is different then Kea names - Kea names are used
 # in test scenarios.
 
@@ -160,18 +160,9 @@ needs_changing_coma = [
 ]
 
 
-def restart_srv():
-    stop_srv()
-    fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
-    fabric_sudo_command('(' + world.f_cfg.software_install_path
-                        + 'sbin/dhcpd -cf server.cfg_processed -lf '
-                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
-
-
-def add_siaddr(step, addr, subnet_number):
+def add_siaddr(addr, subnet_number):
     if subnet_number is None:
-        if not "simple_options" in world.cfg:
+        if "simple_options" not in world.cfg:
             world.cfg["simple_options"] = ''
         world.cfg["simple_options"] += 'next-server {addr};'.format(**locals())
     else:
@@ -180,7 +171,7 @@ def add_siaddr(step, addr, subnet_number):
 
 
 def add_defaults():
-    if not "conf_time" in world.cfg:
+    if "conf_time" not in world.cfg:
         world.cfg["conf_time"] = ""
 
     value = world.cfg["server_times"]["renew-timer"]
@@ -208,9 +199,8 @@ def netmask(subnet):
         return tmp_subnet[0] + " netmask 255.255.255.0 "
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    get_common_logger().debug("Configure subnet...")
-    if not "conf_subnet" in world.cfg:
+def prepare_cfg_subnet(subnet, pool, eth=None):
+    if "conf_subnet" not in world.cfg:
         world.cfg["conf_subnet"] = ""
 
     world.cfg["subnet"] = subnet
@@ -235,7 +225,7 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         '''.format(**locals())
 
 
-def add_pool_to_subnet(step, pool, subnet):
+def add_pool_to_subnet(pool, subnet):
     if pool == "default":
         pool = "192.168.0.1 192.168.0.254"
     else:
@@ -244,12 +234,12 @@ def add_pool_to_subnet(step, pool, subnet):
     world.subcfg[subnet][0] += 'range {pool};'.format(**locals())
 
 
-def config_srv_another_subnet(step, subnet, pool, eth):
+def config_srv_another_subnet(subnet, pool, eth):
     ## it will pass ethernet interface but it will have no impact on config files
     world.subcfg.append(["", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
-    prepare_cfg_subnet(step, subnet, pool, eth)
+    prepare_cfg_subnet(subnet, pool, eth)
 
 
 def remove_coma(string):
@@ -270,8 +260,8 @@ def remove_coma(string):
     return tmp
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space = 'dhcp'):
-    if not "conf_option" in world.cfg:
+def prepare_cfg_add_option(option_name, option_value, space='dhcp'):
+    if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
     if space == 'dhcp4':
@@ -321,13 +311,13 @@ def prepare_cfg_add_option(step, option_name, option_value, space = 'dhcp'):
             '''.format(**locals())
 
 
-def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
     #implement this
     pass #http://linux.die.net/man/5/dhcp-options
 
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space = 'dhcp'):
-    if not "conf_subnet" in world.cfg:
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space = 'dhcp'):
+    if "conf_subnet" not in world.cfg:
         assert False, 'Configure subnet/pool first, then subnet options'
 
     option_proper_name = isc_dhcp_options4_different_name.get(option_name)
@@ -370,14 +360,14 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space
             '''.format(**locals())
 
 
-def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     assert False, "This function can be used only with DHCPv6"
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value, un_used):
     pointer_start = "{"
     pointer_end = "}"
-    if not "custom_lines" in world.cfg:
+    if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ""
     host_name = "anyhostname_"+str(len(world.cfg["custom_lines"]))
 
@@ -441,22 +431,12 @@ def build_log_path():
     return log_file
 
 
-def build_and_send_config_files(connection_type, configuration_type):
-    """
-    This one is needed in kea only
-    """
-    pass
-
-
-def start_srv(start, process):
-    """
-    Start ISC-DHCP with generated config.
-    """
-    if not "conf_option" in world.cfg:
+def build_and_send_config_files(cfg, destination_address):
+    if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
     world.cfg['log_file'] = build_log_path()
-    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
+    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'], destination_host=destination_address)
     world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     log = "local7"
@@ -467,42 +447,60 @@ def start_srv(start, process):
 
     add_defaults()
     cfg_write()
-    get_common_logger().debug("Start ISC-DHCP with generated config:")
     convert_cfg_file(world.cfg["cfg_file"])
-    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
+    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed',
+                     destination_host=destination_address)
     copy_configuration_file(world.cfg["cfg_file"] + '_processed')
     remove_local_file(world.cfg["cfg_file"])
-    #set_ethernet_interface()
-    stop_srv()
 
-    world.cfg['leases'] = build_leases_path()
+    stop_srv(destination_address=destination_address)
 
-    #fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
+#
+# def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
+#     """
+#     Start ISC-DHCP with generated config.
+#     """
+#     if not "conf_option" in world.cfg:
+#         world.cfg["conf_option"] = ""
+#
+#     world.cfg['log_file'] = build_log_path()
+#     fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
+#     world.cfg["dhcp_log_file"] = world.cfg['log_file']
+#
+#     log = "local7"
+#     if world.f_cfg.isc_dhcp_log_facility != "":
+#         log = world.f_cfg.isc_dhcp_log_facility
+#
+#     world.cfg['log_facility'] = '''\nlog-facility {log};\n'''.format(**locals())
+#
+#     add_defaults()
+#     cfg_write()
+#     convert_cfg_file(world.cfg["cfg_file"])
+#     fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed', destination_host=destination_address)
+#     copy_configuration_file(world.cfg["cfg_file"] + '_processed')
+#     remove_local_file(world.cfg["cfg_file"])
+#     #set_ethernet_interface()
+#     stop_srv()
+#
+#     world.cfg['leases'] = build_leases_path()
+#
+#     #fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
+#     fabric_sudo_command('touch ' + world.cfg['leases'])
+#
+#     result = fabric_sudo_command('(' + world.f_cfg.software_install_path
+#                                  + 'sbin/dhcpd -cf server.cfg_processed'
+#                                  + ' -lf ' + world.cfg['leases']
+#                                  + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';', destination_host=destination_address)
+#
+#     check_process_result(start, result, process)
+#
+#     # clear configs in case we would like make couple configs in one test
+#     world.cfg["conf_time"] = ""
+#     world.cfg["log_facility"] = ""
+#     world.cfg["custom_lines"] = ""
+#     world.cfg["conf_option"] = ""
+#     world.cfg["conf_vendor"] = ""
 
-    result = fabric_sudo_command('(' + world.f_cfg.software_install_path
-                                 + 'sbin/dhcpd -cf server.cfg_processed'
-                                 + ' -lf ' + world.cfg['leases']
-                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
 
-    check_process_result(start, result, process)
-
-    # clear configs in case we would like make couple configs in one test
-    world.cfg["conf_time"] = ""
-    world.cfg["log_facility"] = ""
-    world.cfg["custom_lines"] = ""
-    world.cfg["conf_option"] = ""
-    world.cfg["conf_vendor"] = ""
-
-
-def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd.leases')
-
-
-def save_logs():
-    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
-
-
-def config_client_classification(step, subnet, option_value):
+def config_client_classification(subnet, option_value):
     assert False, "TODO!"
-

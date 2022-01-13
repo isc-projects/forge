@@ -34,15 +34,9 @@ class Dispatcher(object):
 
     def __getattr__(self, attr_name):
         if any(('isc_dhcp' in s for s in world.f_cfg.software_under_test)):
-            if world.f_cfg.proto == 'v4':
-                server_name = 'isc_dhcp4_server'
-            else:
-                server_name = 'isc_dhcp6_server'
+            server_name = f'isc_dhcp{world.proto[1]}_server'
         else:
-            if world.f_cfg.proto == 'v4':
-                server_name = 'kea4_server'
-            else:
-                server_name = 'kea6_server'
+            server_name = f'kea{world.proto[1]}_server'
 
         full_mod_name = "softwaresupport.%s.%s" % (server_name, self.mod_name)
         mod = importlib.import_module(full_mod_name)
@@ -802,8 +796,8 @@ def use_dns_set_number(number):
 
 def print_cfg(service='DHCP'):
     if service.lower() == 'dhcp':
-        print ("DHCP config:")
-        print (json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+        print("DHCP config:")
+        print(json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
     elif service.lower() == 'ddns':
-        print ("DDNS config:")
-        print (json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+        print("DDNS config:")
+        print(json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': ')))

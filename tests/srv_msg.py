@@ -412,7 +412,7 @@ def log_contains(line, log_file=None):
 
 def log_doesnt_contain(line, log_file=None):
     line = test_define_value(line)[0]
-    multi_protocol_functions.log_contains(line, 'NOT', log_file)
+    multi_protocol_functions.log_contains(line, False, log_file)
 
 
 def lease_file_contains(line):
@@ -738,7 +738,7 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
 
 
 def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
-    return dhcpmsg.check_IA_PD(address, status_code)
+    return dhcpmsg.check_IA_PD(prefix, status_code)
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,

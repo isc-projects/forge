@@ -15,7 +15,7 @@
 
 # Author: Wlodzimierz Wencel
 
-from lettuce.registry import world
+from forge_cfg import world
 
 
 def add_ddns_server(address, port):
@@ -25,9 +25,6 @@ def add_ddns_server(address, port):
     world.ddns_forw = []
     world.ddns_rev = []
     world.ddns_keys = []
-
-    pointer_start = "{"
-    pointer_end = "}"
 
     if address == "default":
         address = "127.0.0.1"
@@ -44,25 +41,14 @@ def add_ddns_server_options(option, value):
 
 
 def add_forward_ddns(name, key_name, ip_address, port):
-    pointer_start = "{"
-    pointer_end = "}"
     world.ddns_domainname = name
     if key_name == "EMPTY_KEY":
-        world.ddns_forw.append('''\nzone {name} 
-                                {pointer_start}
-                                primary6 {ip_address};
-                                {pointer_end}'''.format(**locals()))
+        world.ddns_forw.append(f'\nzone {name} {{ primary6 {ip_address}; }}')
     else:
-        world.ddns_forw.append('''\nzone {name} 
-                                {pointer_start}
-                                key {key_name};
-                                primary6 {ip_address};
-                                {pointer_end}'''.format(**locals()))
+        world.ddns_forw.append(f'\nzone {name} {{ key {key_name}; primary6 {ip_address}; }}')
 
 
 def add_reverse_ddns(name, key_name, ip_address, port):
-    pointer_start = "{"
-    pointer_end = "}"
     tmp = []
     for each in name.split(".")[::-1]:
         if each.isdigit():
@@ -72,27 +58,13 @@ def add_reverse_ddns(name, key_name, ip_address, port):
     world.ddns_rev_domainname = ".".join(tmp[::-1])
 
     if key_name == "EMPTY_KEY":
-        world.ddns_rev.append('''\nzone {name} 
-                                {pointer_start}
-                                primary6 {ip_address};
-                                {pointer_end}'''.format(**locals()))
+        world.ddns_rev.append(f'\nzone {name} {{ primary6 {ip_address}; }}')
     else:
-        world.ddns_rev.append('''\nzone {name} 
-                                {pointer_start}
-                                key {key_name};
-                                primary6 {ip_address};
-                                {pointer_end}'''.format(**locals()))
+        world.ddns_rev.append(f'\nzone {name} {{key {key_name}; primary6 {ip_address};}}')
 
 
 def add_keys(secret, name, algorithm):
-    pointer_start = "{"
-    pointer_end = "}"
-
-    world.ddns_keys.append('''\nkey {name} 
-                            {pointer_start}
-                            algorithm {algorithm};
-                            secret {secret};
-                            {pointer_end}'''.format(**locals()))
+    world.ddns_keys.append(f'\nkey {name} {{algorithm {algorithm};secret {secret};}}')
 
 
 def build_ddns_config():

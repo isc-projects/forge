@@ -16,13 +16,15 @@
 # Author: Wlodzimierz Wencel
 
 
-from logging_facility import *
-from lettuce.registry import world
+import logging
+import os
+from forge_cfg import world
 
 from softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
     remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file,\
-    fabric_remove_file_command, simple_file_layout
-from functions_ddns import build_ddns_config
+    fabric_remove_file_command
+from softwaresupport.isc_dhcp6_server.functions_ddns import build_ddns_config
+from softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
@@ -144,16 +146,17 @@ def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
     return final
 
 
-def restart_srv():
-    stop_srv()
-    fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-    fabric_sudo_command('touch ' + world.cfg['leases'])
-    fabric_sudo_command('(' + world.f_cfg.software_install_path
-                        + 'sbin/dhcpd -6 -cf server.cfg_processed -lf '
-                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
+def restart_srv(destination_address=world.f_cfg.mgmt_address):
+    stop_srv(destination_address=destination_address)
+    fabric_sudo_command('rm -f ' + world.cfg['leases'], destination_host=destination_address)
+    fabric_sudo_command('touch ' + world.cfg['leases'], destination_host=destination_address)
+    fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, f'sbin/dhcpd -{world.proto[1]}')
+                        + '-cf server.cfg_processed -lf '
+                        + world.cfg['leases'] + '); sleep ' + str(world.f_cfg.sleep_time_1) + ';',
+                        destination_host=destination_address)
 
 
-def set_time(step, which_time, value, subnet = None):
+def set_time(which_time, value, subnet=None):
     assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
     if subnet is None:
         world.cfg["server_times"][which_time] = value
@@ -171,15 +174,15 @@ def set_time(step, which_time, value, subnet = None):
             assert False, "If you see that message something went terribly wrong! Please report bug!"
 
 
-def unset_time(step, which_time, subnet = None):
+def unset_time(which_time, subnet=None):
     if which_time in world.cfg["server_times"]:
-            world.cfg["server_times"][which_time] = None
+        world.cfg["server_times"][which_time] = None
     else:
         assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
 
 
 def add_defaults():
-    if not "conf_time" in world.cfg:
+    if "conf_time" not in world.cfg:
         world.cfg["conf_time"] = ""
 
     value = world.cfg["server_times"]["renew-timer"]
@@ -190,8 +193,8 @@ def add_defaults():
     if value is not None:
         world.cfg["conf_time"] += '''option dhcp-rebinding-time {0};\n'''.format(value)
 
-    value = world.cfg["server_times"]["preferred-lifetime"]
-    if value is not None:
+    # value = world.cfg["server_times"]["preferred-lifetime"]
+    if "preferred-lifetime" in world.cfg["server_times"] and world.cfg["server_times"] is not None:
         world.cfg["conf_time"] += '''preferred-lifetime {0};\n'''.format(value)
 
     value = world.cfg["server_times"]["valid-lifetime"]
@@ -204,27 +207,24 @@ def add_defaults():
             '''
 
 
-def add_pool_to_subnet(step, pool, subnet):
+def add_pool_to_subnet(pool, subnet):
     if pool == "default":
         pool = "2001:db8:1::0 2001:db8:1::ffff"
     else:
         pool = pool.replace('-', ' ')
 
-    world.subcfg[subnet][0] += 'range6 {pool};'.format(**locals())
+    world.subcfg[subnet][0] += f'range6 {pool};'
 
 
-def prepare_cfg_subnet(step, subnet, pool, eth = None):
-    get_common_logger().debug("Configure subnet...")
+def prepare_cfg_subnet(subnet, pool, iface=None):
     ## structure of world.subcfg is [["", "", "", "",""]] but we need only one argument in the list
     ## every configuration added for subnets in ISC-DHCP is configured on the same level
     ## so we use here: world.subcfg[0] = [all_options]
-    if not "conf_subnet" in world.cfg:
+    if "conf_subnet" not in world.cfg:
         world.cfg["conf_subnet"] = ""
 
     # in case we will enable ip address changing on interface under test
     world.cfg["subnet"] = subnet
-
-    pointer = '{'
 
     if subnet == "default":
         subnet = "2001:db8:1::/64"
@@ -240,25 +240,25 @@ def prepare_cfg_subnet(step, subnet, pool, eth = None):
         world.subcfg[world.dhcp["subnet_cnt"]][0] = ""
 
     #world.cfg["conf_subnet"] += '''
-    world.subcfg[world.dhcp["subnet_cnt"]][0] += '''
-        subnet6 {subnet} {pointer}
+    world.subcfg[world.dhcp["subnet_cnt"]][0] += f'''
+        subnet6 {subnet} {{
             range6 {pool};
-        '''.format(**locals())
+        '''
 
     if tmp is not None:
         world.subcfg[world.dhcp["subnet_cnt"]][0] += tmp
 
 
-def config_srv_another_subnet(step, subnet, pool, eth):
+def config_srv_another_subnet(subnet, pool, eth):
     ## it will pass ethernet interface but it will have no impact on config files
     world.subcfg.append(["", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
-    prepare_cfg_subnet(step, subnet, pool, eth)
+    prepare_cfg_subnet(subnet, pool, eth)
 
 
-def prepare_cfg_add_option(step, option_name, option_value, space):
-    if not "conf_option" in world.cfg:
+def prepare_cfg_add_option(option_name, option_value, space):
+    if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
     # first check it in global options
@@ -286,13 +286,13 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
 
     # for all common options
     if space == 'dhcp6':
-        world.cfg["conf_option"] += ''' option dhcp6.{option_proper_name} {option_value};
-                '''.format(**locals())
+        world.cfg["conf_option"] += f''' option dhcp6.{option_proper_name} {option_value};
+                '''
 
     # for vendor option, for now we support only one vendor in config file
     else:
         ## check if we already have space in config
-        if not "conf_vendor" in world.cfg:
+        if "conf_vendor" not in world.cfg:
             ## if not add new
             world.cfg["conf_vendor"] = '''
                 option space {space} code width 2 length width 2;
@@ -301,37 +301,37 @@ def prepare_cfg_add_option(step, option_name, option_value, space):
 
         ## if we have space configured check if we try to add new vendor
         elif "conf_vendor" in world.cfg and not space in world.cfg["conf_vendor"]:
-            world.cfg["conf_vendor"] += '''
+            world.cfg["conf_vendor"] += f'''
                 option space {space} code width 2 length width 2;
-                '''.format(**locals())
+                '''
 
         value_type = isc_dhcp_otheroptions_value_type.get(option_name)
-        world.cfg["conf_vendor"] += '''
+        world.cfg["conf_vendor"] += f'''
             option {space}.{option_name} code {option_proper_name} = {value_type};
             option {space}.{option_name} {option_value};
-            '''.format(**locals())
+            '''
 
 
-def prepare_cfg_prefix(step, prefix, length, delegated_length, subnet):
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     subnet = int(subnet)
 
     highest = switch_prefix6_lengths_to_pool(str(prefix), int(length), int(delegated_length))
 
     #world.cfg["conf_subnet"] += '''prefix6 {prefix} {highest} /{delegated_length};
-    world.subcfg[subnet][0] += 'prefix6 {prefix} {highest} /{delegated_length};'.format(**locals())
+    world.subcfg[subnet][0] += f'prefix6 {prefix} {highest} /{delegated_length};'
 
 
-def prepare_cfg_add_custom_option(step, opt_name, opt_code, opt_type, opt_value, space):
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
     #implement this
     pass #http://linux.die.net/man/5/dhcp-options
 
 
-def config_client_classification(step, subnet, option_value):
+def config_client_classification(subnet, option_value):
     assert False, "TODO!"
 
 
-def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space = 'dhcp6'):
-    if not "conf_subnet" in world.cfg:
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space = 'dhcp6'):
+    if "conf_subnet" not in world.cfg:
         assert False, 'Configure subnet/pool first, then subnet options'
 
     option_proper_name = isc_dhcp_options6.get(option_name)
@@ -348,42 +348,38 @@ def prepare_cfg_add_option_subnet(step, option_name, subnet, option_value, space
         option_value = ','.join('"' + item + '"' for item in tmp)
 
     if space == 'dhcp6':
-        world.subcfg[subnet][0] += 'option {space}.{option_proper_name} {option_value};'.format(**locals())
+        world.subcfg[subnet][0] += f'option {space}.{option_proper_name} {option_value};'
 
     # for vendor option, for now we support only one vendor in config file
     else:
         ## check if we already have space in config
         value_type = isc_dhcp_otheroptions_value_type.get(option_name)
-        if not "conf_vendor" in world.cfg:
+        if "conf_vendor" not in world.cfg:
             ## if not add new
-            world.cfg["conf_vendor"] = '''
+            world.cfg["conf_vendor"] = f'''
                 option space {space} code width 2 length width 2;
                 option {space}.{option_name} code {option_proper_name} = {value_type};
-                '''.format(**locals())
+                '''
                 #code width 2 length width 2 hash size 3
 
         ## if we have space configured check if we try to add new vendor
-        elif "conf_vendor" in world.cfg and not space in world.cfg["conf_vendor"]:
-            world.cfg["conf_vendor"] += '''
+        elif "conf_vendor" in world.cfg and space not in world.cfg["conf_vendor"]:
+            world.cfg["conf_vendor"] += f'''
                 option {space}.{option_name} code {option_proper_name} = {value_type};
                 option space {space} code width 2 length width 2;
-                '''.format(**locals())
+                '''
 
-        world.subcfg[subnet][0] += '''
-            option {space}.{option_name} {option_value};
-            '''.format(**locals())
+        world.subcfg[subnet][0] += f'option {space}.{option_name} {option_value};'
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value, un_used):
-    pointer_start = "{"
-    pointer_end = "}"
-    if not "custom_lines" in world.cfg:
+    if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ""
     host_name = "anyhostname_"+str(len(world.cfg["custom_lines"]))
 
     if reservation_type == "address":
-        world.cfg["custom_lines"] += '''host {host_name} {pointer_start} hardware ethernet {unique_host_value};
-                                    fixed-address6 {reserved_value}; {pointer_end}'''.format(**locals())
+        world.cfg["custom_lines"] += f'''host {host_name} {{ hardware ethernet {unique_host_value};
+                                    fixed-address6 {reserved_value}; }}'''
     else:
         assert False, "Not supported"
         #TODO! implement this!
@@ -458,19 +454,14 @@ def set_ethernet_interface():
     tmp = world.cfg["subnet"].split('/')
     address = tmp[0] + "1/" + tmp[1]
     eth = world.f_cfg.server_iface
-    cmd = 'ip addr flush {eth}'.format(**locals())
-    cmd1 = 'ip -6 addr add {address} dev {eth}'.format(**locals())
-
-    get_common_logger().debug("Set up ethernet interface for ISC-DHCP server:")
+    cmd = f'ip addr flush {eth}'
+    cmd1 = f'ip -6 addr add {address} dev {eth}'
 
 
-#     fabric_cmd(cmd,0)
-#     time.sleep(3)
-#     fabric_cmd(cmd1,0)
 def build_leases_path():
-    leases_file = '/var/db/dhcpd6.leases'
+    leases_file = '/var/db/dhcpd.leases'
     if world.f_cfg.software_install_path != "/usr/local/":
-        leases_file = world.f_cfg.software_install_path + 'dhcpd6.leases'
+        leases_file = os.path.join(world.f_cfg.software_install_path, 'dhcpd.leases')
     return leases_file
 
 
@@ -484,11 +475,29 @@ def build_log_path():
     return log_file
 
 
-def build_and_send_config_files(connection_type, configuration_type):
-    """
-    this one is needed in kea only
-    """
-    pass
+def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
+    if "conf_option" not in world.cfg:
+        world.cfg["conf_option"] = ""
+
+    world.cfg['log_file'] = build_log_path()
+    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'], destination_host=destination_address)
+    world.cfg["dhcp_log_file"] = world.cfg['log_file']
+
+    log = "local7"
+    if world.f_cfg.isc_dhcp_log_facility != "":
+        log = world.f_cfg.isc_dhcp_log_facility
+
+    world.cfg['log_facility'] = '''\nlog-facility {log};\n'''.format(**locals())
+
+    add_defaults()
+    cfg_write()
+    convert_cfg_file(world.cfg["cfg_file"])
+    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed',
+                     destination_host=destination_address)
+    copy_configuration_file(world.cfg["cfg_file"] + '_processed')
+    remove_local_file(world.cfg["cfg_file"])
+
+    stop_srv(destination_address=destination_address)
 
 
 def check_process_result(succeed, result, process):
@@ -503,14 +512,14 @@ def check_process_result(succeed, result, process):
 
 
 def add_line_in_global(command):
-    if not "custom_lines" in world.cfg:
+    if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ''
 
     world.cfg["custom_lines"] += ('\n' + command + '\n')
 
 
 def set_conf_parameter_global(parameter_name, value):
-    if not "custom_lines" in world.cfg:
+    if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ''
     if parameter_name == "rapid-commit":
         world.cfg["custom_lines"] += '\noption dhcp6.rapid-commit;\n'
@@ -527,41 +536,20 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
         #world.subcfg[subnet_id][0] += '{parameter_name} {value};'.format(**locals())
 
 
-def start_srv(start, process):
+def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
     Start ISC-DHCPv6 with generated config.
     """
-    if not "conf_option" in world.cfg:
-        world.cfg["conf_option"] = ""
-
-    world.cfg['log_file'] = build_log_path()
-    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
-    world.cfg["dhcp_log_file"] = world.cfg['log_file']
-
-    log = "local7"
-    if world.f_cfg.isc_dhcp_log_facility != "":
-        log = world.f_cfg.isc_dhcp_log_facility
-
-    world.cfg['log_facility'] = '''\nlog-facility {log};\n'''.format(**locals())
-
-    add_defaults()
-    cfg_write()
-    get_common_logger().debug("Start ISC-DHCPv6 with generated config:")
-    convert_cfg_file(world.cfg["cfg_file"])
-    fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed')
-    copy_configuration_file(world.cfg["cfg_file"] + '_processed')
-    remove_local_file(world.cfg["cfg_file"])
-    #set_ethernet_interface()
-    stop_srv()
-
     world.cfg['leases'] = build_leases_path()
-    #fabric_run_command('echo y |rm ' + world.cfg['leases'])
+    fabric_run_command('rm -f ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
-
-    result = fabric_sudo_command('(' + world.f_cfg.software_install_path
-                                 + 'sbin/dhcpd -6 -cf server.cfg_processed'
+    import pdb
+    # pdb.set_trace()
+    result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, f'sbin/dhcpd -{world.proto[1]}')
+                                 + ' -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
-                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';')
+                                 + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';',
+                                 destination_host=destination_address)
 
     check_process_result(start, result, process)
 
@@ -573,35 +561,89 @@ def start_srv(start, process):
     world.cfg["conf_vendor"] = ""
 
 
-def save_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+def save_leases(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.cfg['leases'],
+                         check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
+                                                               'dhcpd.leases',
+                                                               destination_address),
+                         destination_host=destination_address)
 
 
-def save_logs():
-    fabric_download_file(world.cfg["dhcp_log_file"], world.cfg["dir_name"] + '/forge_dhcpd.log')
+def save_logs(destination_address=world.f_cfg.mgmt_address):
+    fabric_download_file(world.cfg["dhcp_log_file"],
+                         check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
+                                                               'forge_dhcpd.log',
+                                                               destination_address),
+                         destination_host=destination_address)
 
 
-def clear_leases():
-    fabric_download_file(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
-    fabric_remove_file_command(world.cfg["leases"])
-    fabric_run_command('echo y |rm ' + world.cfg['leases'])
+def clear_leases(destination_address=world.f_cfg.mgmt_address,
+              software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
+              db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
+    fabric_remove_file_command(world.cfg["leases"], destination_host=destination_address)
+    fabric_run_command('rm -f ' + world.cfg['leases'], destination_host=destination_address)
 
 
-def stop_srv(value=False):
-    try:
-        fabric_sudo_command("killall dhcpd &>/dev/null", value)
-    except:
-        pass
+def stop_srv(destination_address=world.f_cfg.mgmt_address, value=False):
+    fabric_sudo_command("killall dhcpd &>/dev/null", ignore_errors=True, destination_host=destination_address)
 
 
-def clear_all():
+def clear_all(destination_address=world.f_cfg.mgmt_address,
+              software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
+              db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
     # TODO we should consider moving it to multi_server_functions, and set just world.cfg["dhcp_log_file"]
     #  and world.cfg["leases"] in every supported server files
     try:
         # ISC_DHCP logs using syslog/rsyslog (OS dependent). DO NOT delete the log file as
         # not all implementations will re-create it.
         # fabric_remove_file_command(world.cfg["dhcp_log_file"])
-        fabric_remove_file_command(world.cfg["leases"])
-        fabric_remove_file_command(world.cfg['leases'], world.cfg["dir_name"] + '/dhcpd6.leases')
+        fabric_remove_file_command(world.cfg["leases"], destination_host=destination_address)
+
     except:
         pass
+
+
+# ISC-DHCP specific functions
+def simple_file_layout():
+    """
+    Format dhcp config file
+    """
+    config = open(world.cfg["cfg_file"], 'r')
+    new_config = ""
+
+    for each in config:
+        new_line = each.strip()
+        new_config += new_line
+    config.close()
+
+    real_config = ""
+    counter = 0
+    space = "\t"
+    flag = 0
+
+    for each in new_config:
+        if each == '"' and flag == 0:
+            flag = 1
+            real_config += each
+
+        elif each == '"' and flag == 1:
+            flag = 0
+            real_config += each
+
+        elif each == "{" and flag == 0:
+            real_config += space * counter + each
+            counter += 1
+            real_config += "\n" + space * counter
+
+        elif each == "}" and flag == 0:
+            counter -= 1
+            real_config += "\n" + space * counter + each + "\n" + space * counter
+
+        elif each == ";" and flag == 0:
+            real_config += each + "\n" + space * counter
+        else:
+            real_config += each
+
+    config = open(world.cfg["cfg_file"], 'w')
+    config.write(real_config)
+    config.close()
