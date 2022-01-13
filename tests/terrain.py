@@ -331,9 +331,7 @@ def test_start():
 def _clear_remainings():
     if not world.f_cfg.no_server_management:
         for remote_server in world.f_cfg.multiple_tested_servers:
-            print ("remote: ", remote_server)
             for sut in world.f_cfg.software_under_test:
-                print ("sut: ",sut)
                 functions = importlib.import_module("softwaresupport.%s.functions" % sut)
                 # every software have something else to clear. Put in clear_all() whatever you need
                 functions.clear_all(destination_address=remote_server)
