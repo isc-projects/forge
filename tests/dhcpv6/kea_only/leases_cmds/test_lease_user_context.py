@@ -1,3 +1,20 @@
+# Copyright (C) 2013-2022 Internet Systems Consortium.
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SYSTEMS CONSORTIUM
+# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+# INTERNET SYSTEMS CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
+# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+# Author: Marcin Godzina
+
 """Kea API user context tests for v6"""
 
 # pylint: disable=invalid-name,unused-argument
@@ -201,6 +218,7 @@ def test_hook_v6_lease_extended_info(backend):
     # Encapsulate the Request in a relay forward message.
     srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
     srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
+    srv_msg.client_sets_value('RelayAgent', 'peeraddr', 'fe80::1')
     srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
@@ -237,8 +255,8 @@ def test_hook_v6_lease_extended_info(backend):
                                                          "hop": 0,
                                                          "link": "2001:db8:1::1000",
                                                          "options": "0x00120008706F727431323334",
-                                                         "peer": "fe80::a00:27ff:fe5d:efc6"
-                                                         }
+                                                         "peer": "fe80::1"
+                                                        }
                                                       ]
                                             }
                                  },
