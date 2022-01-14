@@ -146,6 +146,19 @@ def file_includes_line(condition, line):
             assert False, 'Downloaded file does NOT contain line: "%s"' % line
 
 
+def sort_container(obj):
+    """
+    Helper function to sort JSON for ease of comparison.
+    :param obj: json as dictionary or other list
+    :return: Sorted json dictionary or other list
+    """
+    if isinstance(obj, dict):
+        return sorted((k, sort_container(v)) for k, v in obj.items())
+    if isinstance(obj, list):
+        return sorted(sort_container(x) for x in obj)
+    return obj
+
+
 def add_variable(variable_name, variable_val, val_type):
     """
     Define variable and add it to temporary list or to init_all.py file.

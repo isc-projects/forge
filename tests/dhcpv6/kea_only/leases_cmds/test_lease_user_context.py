@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium.
+# Copyright (C) 2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -24,19 +24,7 @@ import misc
 import srv_msg
 import srv_control
 from forge_cfg import world
-
-
-def _ordered(obj):
-    """
-    Helper function to sort JSON for ease of comparison.
-    :param obj: json as dictionary
-    :return: Sorted json dictionary
-    """
-    if isinstance(obj, dict):
-        return sorted((k, _ordered(v)) for k, v in obj.items())
-    if isinstance(obj, list):
-        return sorted(_ordered(x) for x in obj)
-    return obj
+from protosupport.multi_protocol_functions import sort_container
 
 
 @pytest.mark.v6
@@ -91,7 +79,7 @@ def test_hook_v6_lease_user_context(backend, channel):
     resp = resp["arguments"]  # drop unnecessary info for comparison
 
     # compare sorted JSON prepared on start with sorted returned one
-    assert _ordered(user_context) == _ordered(resp["user-context"])
+    assert sort_container(user_context) == sort_container(resp["user-context"])
 
     del resp["user-context"]  # We already checked it
     del resp["cltt"]  # this value is dynamic
