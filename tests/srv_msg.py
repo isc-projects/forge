@@ -371,22 +371,28 @@ def network_variable(value_name, value):
 
 
 @step(r'File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
-def file_contains_line(file_path, condition, line):
+def file_contains_line(file_path, condition, line, singlequotes=False):
     """
     Check if Log includes line.
     Be aware that tested line is every thing after "line: " until end of the line.
+    :param singlequotes: encloses grep text in ' instead of " for proper escaping of ""
+                         Use single quotes when passing 'line' parameter.
     """
     file_path, line = test_define_value(file_path, line)
-    multi_protocol_functions.regular_file_contain(file_path, condition, line)
+    multi_protocol_functions.regular_file_contain(file_path, condition,
+                                                  line, singlequotes=singlequotes)
 
 
-def file_contains_line_n_times(file_path, n, line):
+def file_contains_line_n_times(file_path, n, line, singlequotes=False):
     """
     Check if Log includes line.
     Be aware that tested line is every thing after "line: " until end of the line.
+    :param singlequotes: encloses grep text in ' instead of " for proper escaping of ""
+                         Use single quotes when passing 'line' parameter.
     """
     file_path, line = test_define_value(file_path, line)
-    multi_protocol_functions.regular_file_contains_n_lines(file_path, n, line)
+    multi_protocol_functions.regular_file_contains_n_lines(file_path, n,
+                                                           line, singlequotes=singlequotes)
 
 
 @step(r'DNS log MUST (NOT )?contain line: (.+)')

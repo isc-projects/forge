@@ -233,29 +233,58 @@ def log_contains(line, condition, log_file=None):
             assert False, 'Log does NOT contain line: "%s"' % line
 
 
-def regular_file_contain(file_name, condition, line, destination=None):
-
+def regular_file_contain(file_name, condition, line, destination=None, singlequotes=False):
+    """
+    :param singlequotes: encloses grep text in ' instead of " for proper escaping of ""
+                         Use single quotes when passing 'line' parameter.
+    """
     if destination is None:
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), ignore_errors=True)
+        if singlequotes:
+            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
+                                         ignore_errors=True)
+        else:
+            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
+                                         ignore_errors=True)
     else:
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), destination_host=destination, ignore_errors=True)
+        if singlequotes:
+            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
+                                         destination_host=destination, ignore_errors=True)
+        else:
+            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
+                                         destination_host=destination, ignore_errors=True)
 
     if condition is not None:
         if result.succeeded:
-            assert False, 'File {0} contains line/phrase: {1} But it should NOT.'.format(file_name, line)
+            assert False, 'File {0} contains line/phrase: {1} But it should NOT.'\
+                .format(file_name, line)
     else:
         if result.failed:
             assert False, 'File {0} does NOT contain line/phrase: {1} .'.format(file_name, line)
 
 
-def regular_file_contains_n_lines(file_name, n, line, destination=None):
+def regular_file_contains_n_lines(file_name, n, line, destination=None, singlequotes=False):
+    """
+    :param singlequotes: encloses grep text in ' instead of " for proper escaping of
+    """
     if destination is None:
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), ignore_errors=True)
+        if singlequotes:
+            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
+                                         ignore_errors=True)
+        else:
+            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
+                                         ignore_errors=True)
     else:
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name), destination_host=destination, ignore_errors=True)
+        if singlequotes:
+            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
+                                         destination_host=destination, ignore_errors=True)
+        else:
+            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
+                                         destination_host=destination, ignore_errors=True)
 
     if int(result) != n:
-        assert False, 'Expected file {} to contain line/phrase "{}" a number of {} times. Found {} time{}.'.format(file_name, line, n, result, '' if result == 1 else 's')
+        assert False, 'Expected file {} to contain line/phrase "{}" a number of {} times. ' \
+                      'Found {} time{}.'.format(file_name, line, n,
+                                                result, '' if result == 1 else 's')
 
 
 def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
@@ -361,6 +390,29 @@ def db_table_contains_line_n_times(table_name, db_type, n, line="", grep_cmd=Non
     if result != n:
         assert False, 'Expected {} database table "{}" to contain line/phrase "{}" a number of {} times. Found {} time{}.' \
             .format(db_type, table_name, line, n, result, '' if result == 1 else 's')
+
+
+def lease_dump(backend='memfile', proto=world.f_cfg.proto , db_name=world.f_cfg.db_name,
+               db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+               out="/tmp/lease_dump.csv"):
+    """
+    Function dumps database to CSV file performing kea-admin lese-dump command on server.
+    :param backend: Select database backend: memfile, mysql, pgsql
+    :param proto: Select protocol v4 or v6
+    :param db_name: specifies a database name to connect to
+    :param db_user: specifies username when connecting to a database
+    :param db_passwd: specifies a password for the database connection
+    :param out: output file
+    :return: output file path on server
+    """
+    path = world.f_cfg.software_install_path
+    if path[-1] is not "/" or "\\":
+        path += "/"
+    remove_file_from_server(out)
+    execute_shell_cmd(f"{path}sbin/kea-admin lease-dump {backend} -u {db_user} -p {db_passwd} "
+                      f"-n {db_name} -{proto[1]} -o {out}")
+
+    return out
 
 
 def log_contains_count(server_type, count, line):
