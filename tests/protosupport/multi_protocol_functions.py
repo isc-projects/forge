@@ -392,25 +392,29 @@ def db_table_contains_line_n_times(table_name, db_type, n, line="", grep_cmd=Non
             .format(db_type, table_name, line, n, result, '' if result == 1 else 's')
 
 
-def lease_dump(backend='memfile', proto=world.f_cfg.proto , db_name=world.f_cfg.db_name,
-               db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-               out="/tmp/lease_dump.csv"):
+def lease_dump(backend='memfile', db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
+               db_passwd=world.f_cfg.db_passwd, out="/tmp/lease_dump.csv"):
     """
     Function dumps database to CSV file performing kea-admin lese-dump command on server.
     :param backend: Select database backend: memfile, mysql, pgsql
-    :param proto: Select protocol v4 or v6
     :param db_name: specifies a database name to connect to
     :param db_user: specifies username when connecting to a database
     :param db_passwd: specifies a password for the database connection
-    :param out: output file
+    :param out: output file path
     :return: output file path on server
     """
     path = world.f_cfg.software_install_path
     if path[-1] is not "/" or "\\":
         path += "/"
+
+    if backend in ["postgresql"]:
+        backend_name = 'pgsql'
+    else:
+        backend_name = backend
+
     remove_file_from_server(out)
-    execute_shell_cmd(f"{path}sbin/kea-admin lease-dump {backend} -u {db_user} -p {db_passwd} "
-                      f"-n {db_name} -{proto[1]} -o {out}")
+    execute_shell_cmd(f"{path}sbin/kea-admin lease-dump {backend_name} -u {db_user} -p {db_passwd} "
+                      f"-n {db_name} -{world.f_cfg.proto[1]} -o {out}")
 
     return out
 

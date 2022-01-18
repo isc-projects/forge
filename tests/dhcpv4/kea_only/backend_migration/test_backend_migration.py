@@ -15,7 +15,7 @@
 
 # Author: Marcin Godzina
 
-"""Kea backend migration tests"""
+"""Kea v4 backend migration tests"""
 
 # pylint: disable=invalid-name,line-too-long,unused-argument
 import time
@@ -29,8 +29,7 @@ from protosupport.multi_protocol_functions import lease_dump, execute_shell_cmd
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql'])  # TODO add others when ready in kea
 def test_v4_lease_dump_single(backend):
     """
     Test to check validity of "kea-admin lease-dump" command with one lease.
@@ -125,7 +124,7 @@ def test_v4_lease_dump_single(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
 
-    # Check if the pre-dump lease from is present after restoring memfile from dump
+    # Check if the pre-dump lease is present after restoring memfile from dump
     cmd = {"command": "lease4-get",
            "arguments": {"identifier-type": "client-id", "identifier": "aa:bb:cc:dd:11:22",
                          "subnet-id": 1}}
@@ -145,8 +144,7 @@ def test_v4_lease_dump_single(backend):
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql'])  # TODO add others when ready in kea
 def test_v4_lease_dump_multiple(backend):
     """
     Test to check validity of "kea-admin lease-dump" command with few leases.
