@@ -272,6 +272,11 @@ def set_init_all(args):
 
     txt = INIT_ALL.format(**my_vars)
 
+    if args.dhcpd:
+        txt.replace('SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",',
+                    'SOFTWARE_UNDER_TEST = "isc_dhcp4_server", "bind9_server",')
+        txt += ("\nDISABLE_DB_SETUP = True")
+
     path = os.path.abspath('tests/init_all.py')
     with open(path, 'w') as f:
         f.write(txt)
@@ -768,6 +773,63 @@ def _install_kea_make_on_server(args, server_idx):
     execute(cmd3, cwd=vagrant_dir, log_prefix=log_prefix)
 
 
+def install_dhcpd(args):
+    """
+    Run ISC-DHCP installation on both systems
+    :param args:
+    :return:
+    """
+    ensure_lxc_bridges(args)
+
+    vagrant_dir = get_vagrant_dir(args)
+    execute('vagrant up', cwd=vagrant_dir, raise_error=False)
+
+    _install_dhcpd_on_server(args, 1)
+    _install_dhcpd_on_server(args, 2)
+
+
+def _install_dhcpd_on_server(args, server_idx):
+    """
+    Build and install ISC-DHCP on ubuntu system and enable logging
+    :param args: forge arguments
+    :param server_idx: id of a vm on which installation will be performed
+    """
+    server_name = _get_server_name(args, server_idx)
+    cmd_tpl = 'vagrant ssh ' + server_name + ' -c "%s"'
+    log_prefix = f"|{server_name} {{ts}}| "
+
+    cfg = _load_config()
+    kea_dirs = cfg['Forge']['kea-dirs']
+    local_kea_path = os.path.join(kea_dirs, args.path)
+    if args.path == '':
+        print('Path to ISC-DHCP folder is empty. Give one of these:')
+        for d in sorted(os.listdir(kea_dirs)):
+            p = os.path.join(kea_dirs, d)
+            if os.path.isdir(p):
+                print('  %s' % d)
+        exit(1)
+    if not os.path.exists(local_kea_path):
+        raise Exception('Folder %s does not exists.' % local_kea_path)
+    if not os.path.isdir(local_kea_path):
+        raise Exception('Folder %s is not a directory.' % local_kea_path)
+
+    remote_path = os.path.join('/kea-dirs', args.path)
+
+    vagrant_dir = get_vagrant_dir(args)
+
+    # isc-dhcp is simple we don't need much, just compile and install
+    cmd = f'cd {remote_path} && ./configure && make -j1 && sudo make install'
+    execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    # enable logging for isc-dhcp
+    cmd = "sudo sed -i '1s/^/\/var\/log\/dhcpd_forge.log\\t\/var\/log\/dhcpd_forge.log\\n/' /etc/rsyslog.conf"
+    execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    # restart syslog
+    cmd = "sudo systemctl restart rsyslog"
+    execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+
 def test(args, params):
     set_init_all(args)
 
@@ -909,8 +971,10 @@ def parse_args():
         "   ./forge config kea-dirs /path/to/kea/repos\n\n"
         "2) create VMs\n\n"
         "   ./forge setup\n\n"
-        "3) install Kea in one of VMs\n\n"
+        "3a) install Kea in one of VMs\n\n"
         "   ./forge install-kea kea-subdir\n\n"
+        "3b) or instead of Kea install ISC-DHCP in one of VMs\n\n"
+        "   ./forge install-dhcpd dhcpd-subdir\n\n"
         "4) run indicated tests, parameters are directly passed to pytest\n\n"
         "   ./forge test -m v4\n"
     ]
@@ -952,6 +1016,7 @@ def parse_args():
                         help='Re-provision only.')
     parser = subparsers.add_parser('install-kea',
                                    help="Install Kea into VM from indicated repository.")
+    parser = subparsers.add_parser('install-dhcpd', help="Install isc-dhcp into VM from indicated directory.")
     parser.add_argument('path', default='', nargs='?', help='Sub-path to the repository.')
     parser.add_argument('--version', help='Version of packages.')
     parser = subparsers.add_parser('test',
@@ -959,6 +1024,7 @@ def parse_args():
     parser.add_argument('--native', action='store_true', default=False,
                         help='Use native packages for testing')
     parser.add_argument('--version', help='Install given version of packages.')
+    parser.add_argument('--dhcpd', action='store_true', help='Change settings to run tests for isc-dhcp.')
     parser = subparsers.add_parser('clean',
                                    help="Destroy VMs")
     parser = subparsers.add_parser('box',
@@ -996,6 +1062,9 @@ def main():
 
     elif args.command == "install-kea":
         install_kea(args)
+
+    elif args.command == "install-dhcpd":
+        install_dhcpd(args)
 
     elif args.command == "test":
         if args.version:
