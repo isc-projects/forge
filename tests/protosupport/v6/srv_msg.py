@@ -1050,12 +1050,12 @@ def get_all_leases(decode_duid=True):
         elif msg.optcode == 3:
             for ia_id in msg.ianaopts:
                 if ia_id.optcode == 5:
-                    all_addr.append({"duid": current_duid, "idid": msg.iaid, "valid_lifetime": ia_id.validlft,
+                    all_addr.append({"duid": current_duid, "iaid": msg.iaid, "valid_lifetime": ia_id.validlft,
                                      "pref_lifetime":ia_id.preflft, "address": ia_id.addr, "prefix_len": 0})
         elif msg.optcode == 25:
             for ia_pd in msg.iapdopt:
                 if ia_pd.optcode == 26:
-                    all_addr.append({"duid": current_duid, "idid": msg.iaid, "valid_lifetime": ia_pd.validlft,
+                    all_addr.append({"duid": current_duid, "iaid": msg.iaid, "valid_lifetime": ia_pd.validlft,
                                      "pref_lifetime":ia_pd.preflft, "address": ia_pd.prefix, "prefix_len": ia_pd.plen})
         msg = msg.payload
 
