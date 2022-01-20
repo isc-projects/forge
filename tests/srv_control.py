@@ -611,34 +611,30 @@ def start_srv(name, type_of_action, config_set=None, dest=world.f_cfg.mgmt_addre
     if name not in ["DHCP", "DNS"]:
         assert False, "I don't think there is support for something else than DNS or DHCP"
     if type_of_action == "started":
+        log.info(f'-----------------  {name} START %s -------------------------------------------------------', dest)
         if name == "DHCP":
-            log.info('-----------------  KEA START %s -------------------------------------------------------', dest)
             dhcp.start_srv(True, None, destination_address=dest)
         elif name == "DNS":
-            log.info('-----------------  BIND START %s -------------------------------------------------------', dest)
             if config_set is not None:
                 use_dns_set_number(config_set)
             dns.start_srv(True, None, destination_address=dest)
     elif type_of_action == "stopped":
+        log.info(f'-----------------  {name} STOP %s  -------------------------------------------------------', dest)
         if name == "DHCP":
-            log.info('-----------------  KEA STOP %s  -------------------------------------------------------', dest)
             dhcp.stop_srv(destination_address=dest)
         elif name == "DNS":
-            log.info('-----------------  BIND STOP %s  -------------------------------------------------------', dest)
             dns.stop_srv(destination_address=dest)
     elif type_of_action == "restarted":
+        log.info(f'-----------------  {name} RESTART %s  -------------------------------------------------------', dest)
         if name == "DHCP":
-            log.info('-----------------  KEA RESTART %s  -------------------------------------------------------', dest)
             dhcp.restart_srv(destination_address=dest)
         elif name == "DNS":
-            log.info('-----------------  BIND RESTART %s  -------------------------------------------------------', dest)
             dns.restart_srv(destination_address=dest)
     elif type_of_action == "reconfigured":
+        log.info(f'-----------------  {name} RECONFIG %s  -------------------------------------------------------', dest)
         if name == "DHCP":
-            log.info('-----------------  KEA RECONFIG %s  -------------------------------------------------------', dest)
             dhcp.reconfigure_srv(destination_address=dest)
         elif name == "DNS":
-            log.info('-----------------  BIND RECONFIG %s  -------------------------------------------------------', dest)
             dns.reconfigure_srv(destination_address=dest)
     else:
         assert False, "we don't support '%s' action." % str(type_of_action)

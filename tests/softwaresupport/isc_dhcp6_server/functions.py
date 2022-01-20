@@ -538,13 +538,11 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
 
 def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
-    Start ISC-DHCPv6 with generated config.
+    Start ISC-DHCP v4 or v6 with generated config.
     """
     world.cfg['leases'] = build_leases_path()
     fabric_run_command('rm -f ' + world.cfg['leases'])
     fabric_sudo_command('touch ' + world.cfg['leases'])
-    import pdb
-    # pdb.set_trace()
     result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, f'sbin/dhcpd -{world.proto[1]}')
                                  + ' -cf server.cfg_processed'
                                  + ' -lf ' + world.cfg['leases']
@@ -570,6 +568,9 @@ def save_leases(destination_address=world.f_cfg.mgmt_address):
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
+    if world.cfg["dhcp_log_file"] == "~/none_file":
+        return
+
     fabric_download_file(world.cfg["dhcp_log_file"],
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                'forge_dhcpd.log',
@@ -581,7 +582,7 @@ def clear_leases(destination_address=world.f_cfg.mgmt_address,
               software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
               db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
     fabric_remove_file_command(world.cfg["leases"], destination_host=destination_address)
-    fabric_run_command('rm -f ' + world.cfg['leases'], destination_host=destination_address)
+    fabric_run_command('touch ' + world.cfg['leases'], destination_host=destination_address)
 
 
 def stop_srv(destination_address=world.f_cfg.mgmt_address, value=False):
@@ -597,7 +598,8 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
         # ISC_DHCP logs using syslog/rsyslog (OS dependent). DO NOT delete the log file as
         # not all implementations will re-create it.
         # fabric_remove_file_command(world.cfg["dhcp_log_file"])
-        fabric_remove_file_command(world.cfg["leases"], destination_host=destination_address)
+        clear_leases(destination_address=destination_address, software_install_path=software_install_path,
+                     db_user=db_user, db_passwd=db_passwd, db_name=db_name)
 
     except:
         pass

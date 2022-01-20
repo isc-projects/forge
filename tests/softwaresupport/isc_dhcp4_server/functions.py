@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 Internet Systems Consortium.
+# Copyright (C) 2014-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -154,7 +154,7 @@ needs_changing_quote = [
     "nwip-domain"
 ]
 
-needs_changing_coma = [
+needs_changing_comma = [
     "policy-filter",
     "static-routes"
 ]
@@ -242,9 +242,9 @@ def config_srv_another_subnet(subnet, pool, eth):
     prepare_cfg_subnet(subnet, pool, eth)
 
 
-def remove_coma(string):
+def remove_comma(string):
     ## because we in ISC-DHCP we separate ip addresses with whitespace and
-    ## pairs of ip addresses with coma we need to remove every odd coma from configuration
+    ## pairs of ip addresses with comma we need to remove every odd comma from configuration
     flag = False
     tmp = ""
     for each in string:
@@ -280,8 +280,8 @@ def prepare_cfg_add_option(option_name, option_value, space='dhcp'):
         tmp = option_value.split(",")
         option_value = ','.join('"' + item + '"' for item in tmp)
 
-    if option_proper_name in needs_changing_coma:
-        option_value = remove_coma(option_value)
+    if option_proper_name in needs_changing_comma:
+        option_value = remove_comma(option_value)
 
     # for all common options
     if space == 'dhcp':
@@ -330,7 +330,7 @@ def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space = 'dh
         tmp = option_value.split(",")
         option_value = ','.join('"' + item + '"' for item in tmp)
 
-    if option_proper_name in needs_changing_coma:
+    if option_proper_name in needs_changing_comma:
         option_value = option_value.replace(",", " ")
 
     if space == 'dhcp':
@@ -454,52 +454,6 @@ def build_and_send_config_files(cfg, destination_address):
     remove_local_file(world.cfg["cfg_file"])
 
     stop_srv(destination_address=destination_address)
-
-#
-# def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
-#     """
-#     Start ISC-DHCP with generated config.
-#     """
-#     if not "conf_option" in world.cfg:
-#         world.cfg["conf_option"] = ""
-#
-#     world.cfg['log_file'] = build_log_path()
-#     fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'])
-#     world.cfg["dhcp_log_file"] = world.cfg['log_file']
-#
-#     log = "local7"
-#     if world.f_cfg.isc_dhcp_log_facility != "":
-#         log = world.f_cfg.isc_dhcp_log_facility
-#
-#     world.cfg['log_facility'] = '''\nlog-facility {log};\n'''.format(**locals())
-#
-#     add_defaults()
-#     cfg_write()
-#     convert_cfg_file(world.cfg["cfg_file"])
-#     fabric_send_file(world.cfg["cfg_file"] + '_processed', world.cfg["cfg_file"] + '_processed', destination_host=destination_address)
-#     copy_configuration_file(world.cfg["cfg_file"] + '_processed')
-#     remove_local_file(world.cfg["cfg_file"])
-#     #set_ethernet_interface()
-#     stop_srv()
-#
-#     world.cfg['leases'] = build_leases_path()
-#
-#     #fabric_sudo_command('echo y |rm ' + world.cfg['leases'])
-#     fabric_sudo_command('touch ' + world.cfg['leases'])
-#
-#     result = fabric_sudo_command('(' + world.f_cfg.software_install_path
-#                                  + 'sbin/dhcpd -cf server.cfg_processed'
-#                                  + ' -lf ' + world.cfg['leases']
-#                                  + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';', destination_host=destination_address)
-#
-#     check_process_result(start, result, process)
-#
-#     # clear configs in case we would like make couple configs in one test
-#     world.cfg["conf_time"] = ""
-#     world.cfg["log_facility"] = ""
-#     world.cfg["custom_lines"] = ""
-#     world.cfg["conf_option"] = ""
-#     world.cfg["conf_vendor"] = ""
 
 
 def config_client_classification(subnet, option_value):

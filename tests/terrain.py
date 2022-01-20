@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -243,6 +243,8 @@ def declare_all(dhcp_version=None):
     world.control_channel = None  # last received response from any communication channel
     world.cfg = {}
 
+    _define_software(dhcp_version)
+
     world.f_cfg.multiple_tested_servers = [world.f_cfg.mgmt_address]
     # dictionary that will keep multiple configs for various servers
     # mainly for testing multiple kea servers in the single test,
@@ -256,8 +258,14 @@ def declare_all(dhcp_version=None):
 
     world.configString = ""
     world.generated_config = None
-    world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
-                                       'var/lib/kea/kea-leases%s.csv' % world.proto[1])
+
+    if 'isc_dhcp' in world.cfg['dhcp_under_test']:
+        world.cfg['leases'] = os.path.join(
+            world.f_cfg.software_install_path, 'dhcpd.leases')
+    else:
+        world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
+                                           f'var/lib/kea/kea-leases{world.proto[1]}.csv')
+
     world.cfg['kea_logs'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea.log')
 
     world.cfg["dhcp_log_file"] = "~/none_file"
@@ -352,7 +360,6 @@ def initialize(scenario):
 
     # Declare all default values
     declare_all(dhcp_version)
-    _define_software(dhcp_version)
 
     world.cfg["iface"] = world.f_cfg.iface
     # world.cfg["server_type"] = SOFTWARE_UNDER_TEST for now I'll leave it here,
@@ -452,10 +459,10 @@ def cleanup(scenario):
                 # try:
                 if world.f_cfg.save_leases:
                     # save leases, if there is none leases in your software, just put "pass" in this function.
-                    functions.save_leases(destination_address=remote_server)
+                    functions.save_leases()
 
                 if world.f_cfg.save_logs:
-                    functions.save_logs(destination_address=remote_server)
+                    functions.save_logs()
 
 
 #@after.all

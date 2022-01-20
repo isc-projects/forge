@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -230,7 +230,7 @@ def log_contains(line, expected=True, log_file=None):
             assert False, f'Log file {log_file} contains line: "{line}" But it should NOT.'
     else:
         if result.failed:
-            assert False, f'Log file does {log_file} NOT contain line: "{line}"'
+            assert False, f'Log file {log_file} does NOT contain line: "{line}"'
 
 
 def regular_file_contain(file_name, condition, line, destination=None, singlequotes=False):

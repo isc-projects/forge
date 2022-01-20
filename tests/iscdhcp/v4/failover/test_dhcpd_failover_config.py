@@ -12,6 +12,7 @@ from softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_
 
 @pytest.mark.v4
 @pytest.mark.dhcpd
+@pytest.mark.disabled
 def test_v4_dhcpd_failover_sanity_check_good_config():
     """new-v4.dhcpd.failover.sanity_check.good_config"""
     srv_msg.wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
@@ -41,14 +42,14 @@ def test_v4_dhcpd_failover_sanity_check_good_config():
     add_line_in_global('     split 128;')
     add_line_in_global('     load balance max seconds 2;')
     add_line_in_global(' }')
-    add_line_in_global(' subnet 178.16.1.0 netmask 255.255.255.0 {')
+    add_line_in_global(' subnet 192.168.50.0 netmask 255.255.255.0 {')
     add_line_in_global('     pool {')
     add_line_in_global('       failover peer "fonet";')
-    add_line_in_global('       range 178.16.1.50 178.16.1.50;')
+    add_line_in_global('       range 192.168.50.50 192.168.50.50;')
     add_line_in_global('     }')
     add_line_in_global('     pool {')
     add_line_in_global('       failover peer "beebonet";')
-    add_line_in_global('       range 178.16.1.150 178.16.1.200;')
+    add_line_in_global('       range 192.168.50.150 192.168.50.200;')
     add_line_in_global('     }')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
@@ -66,6 +67,7 @@ def test_v4_dhcpd_failover_sanity_check_good_config():
 
 @pytest.mark.v4
 @pytest.mark.dhcpd
+@pytest.mark.disabled
 def test_v4_dhcpd_failover_sanity_check_no_pools():
     """new-v4.dhcpd.failover.sanity_check.no_pools"""
     # #
@@ -93,12 +95,12 @@ def test_v4_dhcpd_failover_sanity_check_no_pools():
     add_line_in_global('     split 128;')
     add_line_in_global('     load balance max seconds 2;')
     add_line_in_global(' }')
-    add_line_in_global(' subnet 178.16.1.0 netmask 255.255.255.0 {')
+    add_line_in_global(' subnet 192.168.50.0 netmask 255.255.255.0 {')
     add_line_in_global('     pool {')
-    add_line_in_global('       range 178.16.1.50 178.16.1.50;')
+    add_line_in_global('       range 192.168.50.50 192.168.50.50;')
     add_line_in_global('     }')
     add_line_in_global('     pool {')
-    add_line_in_global('       range 178.16.1.150 178.16.1.200;')
+    add_line_in_global('       range 192.168.50.150 192.168.50.200;')
     add_line_in_global('     }')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
