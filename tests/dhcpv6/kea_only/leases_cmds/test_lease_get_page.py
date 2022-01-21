@@ -198,46 +198,56 @@ def test_hook_v6_lease_get_page_positive(backend):
            "arguments": {"limit": per_page, "from": "start"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
+    # write leases from all pages to "all_pages" buffer
+    all_pages = []
     while 0 < resp["arguments"]["count"] <= per_page:
         all_leases = resp["arguments"]["leases"]
         for lease in all_leases:
             lease_nbr = all_leases.index(lease)
             del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
-            if lease_nbr + counter < 10:  # subnet 1 and over 10th lease subnet 2
-                assert all_leases[lease_nbr] == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:"
-                                                 + f'{lease_nbr + counter + 10:02}',
-                                                 "fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 "hostname": "",
-                                                 "iaid": 1230 + lease_nbr + counter,
-                                                 "ip-address": "2001:db8:1::"
-                                                               + str(lease_nbr + counter + 10),
-                                                 "preferred-lft": 4000,
-                                                 "state": 0,
-                                                 "subnet-id": 1,
-                                                 "type": "IA_NA",
-                                                 "valid-lft": 4000}
-            else:
-                assert all_leases[lease_nbr] == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:46:"
-                                                 + f'{lease_nbr + counter + 10 - 10:02}',
-                                                 "fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 "hostname": "",
-                                                 "iaid": 2340 + lease_nbr + counter - 10,
-                                                 "ip-address": "2001:db8:2::"
-                                                               + str(lease_nbr + counter + 10 - 10),
-                                                 "preferred-lft": 4000,
-                                                 "state": 0,
-                                                 "subnet-id": 2,
-                                                 "type": "IA_NA",
-                                                 "valid-lft": 4000}
+            # add lease to buffer
+            all_pages.append(all_leases[lease_nbr])
+            # remeber last ip to ask for next page
             last_ip = all_leases[lease_nbr]["ip-address"]
         counter += len(all_leases)
-
+        # get next page
         cmd = {"command": "lease6-get-page",
                "arguments": {"limit": per_page, "from": last_ip}}
         resp = srv_msg.send_ctrl_cmd(cmd, exp_result=None)
     assert resp["result"] == 3 and resp["arguments"]["count"] == 0
+
+    # Verify leases added to "all_pages" buffer
+    all_pages = sorted(all_pages, key=lambda d: d['duid'])
+    for lease in all_pages:
+        lease_nbr = all_pages.index(lease)
+        if lease_nbr < 10:  # subnet 1 and over 10th lease subnet 2
+            assert all_pages[lease_nbr] == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:"
+                                                    + f'{lease_nbr + 10:02}',
+                                            "fqdn-fwd": False,
+                                            "fqdn-rev": False,
+                                            "hostname": "",
+                                            "iaid": 1230 + lease_nbr,
+                                            "ip-address": "2001:db8:1::"
+                                                          + str(lease_nbr + 10),
+                                            "preferred-lft": 4000,
+                                            "state": 0,
+                                            "subnet-id": 1,
+                                            "type": "IA_NA",
+                                            "valid-lft": 4000}
+        else:
+            assert all_pages[lease_nbr] == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:46:"
+                                                    + f'{lease_nbr + 10 - 10:02}',
+                                            "fqdn-fwd": False,
+                                            "fqdn-rev": False,
+                                            "hostname": "",
+                                            "iaid": 2340 + lease_nbr - 10,
+                                            "ip-address": "2001:db8:2::"
+                                                          + str(lease_nbr + 10 - 10),
+                                            "preferred-lft": 4000,
+                                            "state": 0,
+                                            "subnet-id": 2,
+                                            "type": "IA_NA",
+                                            "valid-lft": 4000}
 
 
 @pytest.mark.v6

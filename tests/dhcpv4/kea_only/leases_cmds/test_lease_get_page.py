@@ -163,7 +163,8 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
                                              "valid-lft": 4000
                                              }
 
-    # checking if lease4-get-page will return correct number of leases with higher limit than number of leases
+    # checking if lease4-get-page will return correct number of leases
+    # with higher limit than number of leases
     cmd = {"command": "lease4-get-page",
            "arguments": {"limit": 100, "from": "start"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -177,38 +178,49 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
            "arguments": {"limit": per_page, "from": "start"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
+    # write leases from all pages to "all_pages" buffer
+    all_pages = []
     while 0 < resp["arguments"]["count"] <= per_page:
         all_leases = resp["arguments"]["leases"]
         for lease in all_leases:
             lease_nbr = all_leases.index(lease)
             del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
-            if lease_nbr + counter < 10:  # subnet 1 and over 10th lease subnet 2
-                assert all_leases[lease_nbr] == {"fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 "hostname": "",
-                                                 "hw-address": "1a:1b:1c:1d:1e:" + f'{lease_nbr + counter + 5:02}',
-                                                 "ip-address": "192.168.50." + str(lease_nbr + counter + 5),
-                                                 "state": 0,
-                                                 "subnet-id": 1,
-                                                 "valid-lft": 4000
-                                                 }
-            else:
-                assert all_leases[lease_nbr] == {"fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 "hostname": "",
-                                                 "hw-address": "2a:2b:2c:2d:2e:" + f'{lease_nbr + counter - 5:02}',
-                                                 "ip-address": "192.168.60." + str(lease_nbr + counter - 5),
-                                                 "state": 0,
-                                                 "subnet-id": 2,
-                                                 "valid-lft": 4000
-                                                 }
+            # add lease to buffer
+            all_pages.append(all_leases[lease_nbr])
+            # remeber last ip to ask for next page
             last_ip = all_leases[lease_nbr]["ip-address"]
         counter += len(all_leases)
-
+        # get next page
         cmd = {"command": "lease4-get-page",
                "arguments": {"limit": per_page, "from": last_ip}}
         resp = srv_msg.send_ctrl_cmd(cmd, exp_result=None)
     assert resp["result"] == 3 and resp["arguments"]["count"] == 0
+
+    # Verify leases added to "all_pages" buffer
+    all_pages = sorted(all_pages, key=lambda d: d['hw-address'])
+    for lease in all_pages:
+        lease_nbr = all_pages.index(lease)
+        if lease_nbr < 10:  # subnet 1 and over 10th lease subnet 2
+            assert all_pages[lease_nbr] == {"fqdn-fwd": False,
+                                            "fqdn-rev": False,
+                                            "hostname": "",
+                                            "hw-address": "1a:1b:1c:1d:1e:" + f'{lease_nbr + 5:02}',
+                                            "ip-address": "192.168.50." + str(
+                                                lease_nbr + 5),
+                                            "state": 0,
+                                            "subnet-id": 1,
+                                            "valid-lft": 4000
+                                            }
+        else:
+            assert all_pages[lease_nbr] == {"fqdn-fwd": False,
+                                            "fqdn-rev": False,
+                                            "hostname": "",
+                                            "hw-address": "2a:2b:2c:2d:2e:" + f'{lease_nbr - 5:02}',
+                                            "ip-address": "192.168.60." + str(lease_nbr - 5),
+                                            "state": 0,
+                                            "subnet-id": 2,
+                                            "valid-lft": 4000
+                                            }
 
 
 @pytest.mark.v4
