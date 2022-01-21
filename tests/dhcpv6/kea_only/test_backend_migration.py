@@ -72,6 +72,8 @@ def test_v6_lease_dump(backend):
 
     cltt = []
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
+
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         cltt.append(all_leases[lease_nbr]["cltt"])
@@ -235,6 +237,8 @@ def test_v6_lease_dump(backend):
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
+
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
@@ -260,6 +264,172 @@ def test_v6_lease_dump(backend):
                          "iaid": 5678}}
     resp = srv_msg.send_ctrl_cmd(cmd)
 
+    assert resp["text"] == "IPv6 lease found."
+    del resp["arguments"]["cltt"]  # this value is dynamic
+    # check the response for user-context added by Kea server.
+    assert resp["arguments"] == {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                                 "fqdn-fwd": False,
+                                 "fqdn-rev": False,
+                                 "hostname": "",
+                                 "hw-address": "f6:f5:f4:f3:f2:01",
+                                 "iaid": 5678,
+                                 "ip-address": "2001:db8:2::1",
+                                 "preferred-lft": 3000,
+                                 "state": 0,
+                                 "subnet-id": 2,
+                                 "type": "IA_NA",
+                                 "user-context": {
+                                     "ISC": {
+                                         "relays": [
+                                             {
+                                                 "hop": 0,
+                                                 "link": "2001:db8:2::1000",
+                                                 "options": "0x00120008706F727431323334",
+                                                 "peer": "fe80::1"
+                                             }
+                                         ]
+                                     }
+                                 },
+                                 "valid-lft": 4000}
+
+
+@pytest.mark.v6
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_v6_lease_upload(backend):
+    """
+    Test to check validity of "kea-admin lease-upload" command.
+    Test adds leases to Kea memfile.
+    Kea is restarted with selected backend and tested to confirm 0 leases in the database
+    Next CSV file is uploaded using kae-admin lease-upload command.
+    Last test checks if leases are restored from memfile to database.
+    :param backend: 2 types of leases backend kea support (without memfile)
+    """
+    misc.test_setup()
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
+                                                       '2001:db8:2::1-2001:db8:2::1')
+    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'restarted')
+
+    # add 5 leases
+    for i in range(5):
+        cmd = {"command": "lease6-add",
+               "arguments": {"subnet-id": 1,
+                             "ip-address": f"2001:db8:1::{i+1}",
+                             "duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{i+1:02}",
+                             "iaid": 1230 + i,
+                             "hw-address": f"1a:2b:3c:4d:5e:6f:{i+1:02}",
+                             "preferred-lft": 7777,
+                             "valid-lft": 11111,
+                             "fqdn-fwd": True,
+                             "fqdn-rev": True,
+                             "hostname": f"urania.example.org{i+1}"}}
+        srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    # Get lease for subnet 2 with user-context relay info
+    # Prepare Solicit message
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_sets_value('Client', 'ia_id', 5678)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    # Encapsulate the solicit in a relay forward message.
+    srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::1000')
+    srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
+    srv_msg.create_relay_forward()
+
+    # Send message and expect a relay reply.
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+
+    # Prepare Request message using options from Advertise
+    misc.test_procedure()
+    # Checking response for Relayed option and setting sender_type to 'Client' is required
+    # to copy options to correct place in Request message
+    # TODO Modify client_copy_option to copy options into relayed messages w\o world.sender_type.
+    srv_msg.response_check_option_content(9, 'Relayed', 'Message')
+    world.sender_type = "Client"
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Encapsulate the Request in a relay forward message.
+    srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
+    srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:2::1000')
+    srv_msg.client_sets_value('RelayAgent', 'peeraddr', 'fe80::1')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
+    srv_msg.create_relay_forward()
+
+    # Send message and expect a relay reply.
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+
+    # Restart Kea with selected database
+    misc.test_setup()
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
+                                                       '2001:db8:2::1-2001:db8:2::1')
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check to see if lease6-get-all will return 0 leases
+    cmd = {"command": "lease6-get-all"}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "0 IPv6 lease(s) found."
+
+    # Lease-upload from memfile
+    srv_msg.lease_upload(backend, world.f_cfg.get_leases_path())
+
+    # Check if the leases are restored to subnet 1
+    cmd = {"command": "lease6-get-all",
+           "arguments": {"subnets": [1]}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
+
+    for lease in all_leases:
+        lease_nbr = all_leases.index(lease)
+        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
+        assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
+                                         "fqdn-fwd": True,
+                                         "fqdn-rev": True,
+                                         "hostname": f"urania.example.org{lease_nbr+1}",
+                                         "hw-address": f"1a:2b:3c:4d:5e:6f:{lease_nbr+1:02}",
+                                         "iaid": 1230 + lease_nbr,
+                                         "ip-address": f"2001:db8:1::{lease_nbr+1}",
+                                         "preferred-lft": 7777,
+                                         "state": 0,
+                                         "subnet-id": 1,
+                                         "type": "IA_NA",
+                                         "valid-lft": 11111
+                                         }
+
+    # get the second lease with lease6-get
+    cmd = {"command": "lease6-get",
+           "arguments": {"subnet-id": 2,
+                         "ip-address": "2001:db8:2::1",
+                         "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                         "iaid": 1234}}
+
+    resp = srv_msg.send_ctrl_cmd(cmd)
     assert resp["text"] == "IPv6 lease found."
     del resp["arguments"]["cltt"]  # this value is dynamic
     # check the response for user-context added by Kea server.
