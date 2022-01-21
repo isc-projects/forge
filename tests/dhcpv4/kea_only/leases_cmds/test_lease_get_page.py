@@ -57,6 +57,8 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
@@ -83,6 +85,8 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
@@ -101,6 +105,8 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
@@ -131,6 +137,8 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
@@ -159,7 +167,6 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
     cmd = {"command": "lease4-get-page",
            "arguments": {"limit": 100, "from": "start"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
-    all_leases = resp["arguments"]["leases"]
     assert len(all_leases) == 20 and resp["arguments"]["count"] == 20
 
     # checking if lease4-get-page returns leases in pages in span of 2 subnets
