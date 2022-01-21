@@ -92,8 +92,8 @@ def test_hook_v6_lease_get_page_positive(backend):
     cmd = {"command": "lease6-get-all",
            "arguments": {"subnets": [2]}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
-    all_leases = sorted(all_leases, key=lambda d: d['duid'])
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
@@ -113,8 +113,8 @@ def test_hook_v6_lease_get_page_positive(backend):
     # let's get all leases from all subnets and check if they are all there
     cmd = {"command": "lease6-get-all"}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
-    all_leases = sorted(all_leases, key=lambda d: d['duid'])
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
@@ -149,8 +149,8 @@ def test_hook_v6_lease_get_page_positive(backend):
     cmd = {"command": "lease6-get-all",
            "arguments": {"subnets": [1, 2]}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
-    all_leases = sorted(all_leases, key=lambda d: d['duid'])
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
