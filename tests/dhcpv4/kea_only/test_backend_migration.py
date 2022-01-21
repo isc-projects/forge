@@ -72,6 +72,9 @@ def test_v4_lease_dump(backend):
 
     cltt = []
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+
+    print(all_leases)
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         cltt.append(all_leases[lease_nbr]["cltt"])
@@ -130,6 +133,88 @@ def test_v4_lease_dump(backend):
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+
+    for lease in all_leases:
+        lease_nbr = all_leases.index(lease)
+        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
+        assert all_leases[lease_nbr] == {"subnet-id": 1,
+                                         "ip-address": f"192.168.50.{lease_nbr+1}",
+                                         "hw-address": f"1a:1b:1c:1d:1e:{lease_nbr+1:02}",
+                                         "fqdn-fwd": True,
+                                         "fqdn-rev": True,
+                                         "valid-lft": 7777,
+                                         "state": 1,
+                                         "hostname": f"my.host.some.name{lease_nbr+1}",
+                                         "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
+                                         "user-context": {"value": 1},
+                                         }
+
+
+@pytest.mark.v4
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_v4_lease_upload(backend):
+    """
+    Test to check validity of "kea-admin lease-upload" command.
+    Test adds leases to Kea memfile.
+    Kea is restarted with selected backend and tested to confirm 0 leases in the database.
+    Next CSV file is uploaded using kae-admin lease-upload command..
+    Last test checks if leases are restored from memfile to database.
+    :param backend: 2 types of leases backend kea support (without memfile)
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
+    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # add 5 leases
+    for i in range(5):
+        cmd = {"command": "lease4-add",
+               "arguments": {"subnet-id": 1,
+                             "ip-address": f"192.168.50.{i+1}",
+                             "hw-address": f"1a:1b:1c:1d:1e:{i+1:02}",
+                             "fqdn-fwd": True,
+                             "fqdn-rev": True,
+                             "valid-lft": 7777,
+                             "state": 1,
+                             "expire": int(time.time()) + 7000,
+                             "hostname": f"my.host.some.name{i+1}",
+                             "client-id": f"aa:bb:cc:dd:11:{i+1:02}",
+                             "user-context": {"value": 1},
+                             }}
+        srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    # Restart Kea with selected database
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'restarted')
+
+    # Check to see if lease4-get-all will return 0 leases
+    cmd = {"command": "lease4-get-all",
+           "arguments": {"subnets": [1]}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "0 IPv4 lease(s) found."
+
+    # Lease-upload from memfile
+    srv_msg.lease_upload(backend, world.f_cfg.get_leases_path())
+
+    # Check if the pre restart leases are present after uploading
+    cmd = {"command": "lease4-get-all",
+           "arguments": {"subnets": [1]}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+
     for lease in all_leases:
         lease_nbr = all_leases.index(lease)
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
