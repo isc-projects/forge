@@ -9,3 +9,4 @@ netifaces
 pytest
 PyCryptodome
 requests
+boto3
