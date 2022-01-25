@@ -133,12 +133,12 @@ def test_hook_v6_lease_get_page_positive(backend):
                                              "valid-lft": 4000}
         else:
             assert all_leases[lease_nbr] == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:46:"
-                                             + f'{lease_nbr + 10 - 10:02}',
+                                             + f'{lease_nbr:02}',
                                              "fqdn-fwd": False,
                                              "fqdn-rev": False,
                                              "hostname": "",
                                              "iaid": 2340 + lease_nbr - 10,
-                                             "ip-address": "2001:db8:2::" + str(lease_nbr + 10 - 10),
+                                             "ip-address": "2001:db8:2::" + str(lease_nbr),
                                              "preferred-lft": 4000,
                                              "state": 0,
                                              "subnet-id": 2,
@@ -169,13 +169,13 @@ def test_hook_v6_lease_get_page_positive(backend):
                                              "valid-lft": 4000}
         else:
             assert all_leases[lease_nbr] == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:46:"
-                                             + f'{lease_nbr + 10 - 10:02}',
+                                             + f'{lease_nbr:02}',
                                              "fqdn-fwd": False,
                                              "fqdn-rev": False,
                                              "hostname": "",
                                              "iaid": 2340 + lease_nbr - 10,
                                              "ip-address": "2001:db8:2::"
-                                                           + str(lease_nbr + 10 - 10),
+                                                           + str(lease_nbr),
                                              "preferred-lft": 4000,
                                              "state": 0,
                                              "subnet-id": 2,
@@ -192,7 +192,6 @@ def test_hook_v6_lease_get_page_positive(backend):
 
     # checking if lease6-get-page returns leases in pages in span of 2 subnets
     per_page = 3
-    counter = 0
     last_ip = ""
     cmd = {"command": "lease6-get-page",
            "arguments": {"limit": per_page, "from": "start"}}
@@ -207,9 +206,8 @@ def test_hook_v6_lease_get_page_positive(backend):
             del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
             # add lease to buffer
             all_pages.append(all_leases[lease_nbr])
-            # remeber last ip to ask for next page
+            # remember last ip to ask for next page
             last_ip = all_leases[lease_nbr]["ip-address"]
-        counter += len(all_leases)
         # get next page
         cmd = {"command": "lease6-get-page",
                "arguments": {"limit": per_page, "from": last_ip}}
@@ -236,13 +234,13 @@ def test_hook_v6_lease_get_page_positive(backend):
                                             "valid-lft": 4000}
         else:
             assert all_pages[lease_nbr] == {"duid": "1a:1b:1c:1d:1e:1f:20:21:22:46:"
-                                                    + f'{lease_nbr + 10 - 10:02}',
+                                                    + f'{lease_nbr:02}',
                                             "fqdn-fwd": False,
                                             "fqdn-rev": False,
                                             "hostname": "",
                                             "iaid": 2340 + lease_nbr - 10,
                                             "ip-address": "2001:db8:2::"
-                                                          + str(lease_nbr + 10 - 10),
+                                                          + str(lease_nbr),
                                             "preferred-lft": 4000,
                                             "state": 0,
                                             "subnet-id": 2,
