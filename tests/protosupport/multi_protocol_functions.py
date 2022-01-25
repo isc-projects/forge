@@ -413,12 +413,12 @@ def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user
     return out
 
 
-def lease_upload(backend, input, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
+def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
     """
     Function uploads CSV file to database performing kea-admin lese-upload command on server.
     :param backend: Select database backend: mysql, pgsql
-    :param input: input file path
+    :param leases_file: input file path
     :param db_name: specifies a database name to connect to
     :param db_user: specifies username when connecting to a database
     :param db_passwd: specifies a password for the database connection
@@ -430,7 +430,7 @@ def lease_upload(backend, input, db_name=world.f_cfg.db_name, db_user=world.f_cf
     backend = 'pgsql' if backend == "postgresql" else backend
 
     result = execute_shell_cmd(f"{path} lease-upload {backend} -u {db_user} -p {db_passwd} "
-                               f"-n {db_name} -{world.f_cfg.proto[1]} -i {input}",
+                               f"-n {db_name} -{world.f_cfg.proto[1]} -i {leases_file}",
                                dest=destination_address)
     return result
 
