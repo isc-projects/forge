@@ -653,5 +653,5 @@ def simple_file_layout():
 
     config = open(world.cfg["cfg_file"], 'w')
     config.write(real_config)
-    print('\n', real_config)
+    log.info(real_config)
     config.close()
