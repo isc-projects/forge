@@ -504,7 +504,7 @@ def get_all_leases(decode_duid=True):
 
     lease = {"hwaddr": mac, "address": world.srvmsg[0].yiaddr}
     try:
-        lease.update({"client_id": get_option(world.srvmsg[0], 61)[1]})
+        lease.update({"client_id": get_option(world.srvmsg[0], 61)[1]}.hex())
     except:
         pass
     lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})

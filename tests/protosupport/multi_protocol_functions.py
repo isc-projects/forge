@@ -322,7 +322,7 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
         elif table_name == 'lease4':
             select = "select"
             for attribute in lease:
-                if attribute in ["address", "hwaddr"]:
+                if attribute in ["address", "hwaddr", "client_id"]:
                     select += ", hex(%s)" % attribute
                 else:
                     select += ", %s" % attribute
@@ -744,6 +744,8 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
     if backend == 'memfile':
         for lease in leases_list_copy:
             cmd = "cat %s " % world.f_cfg.get_leases_path()
+            if "client_id" in lease:
+                lease['client_id'] = ':'.join(lease['client_id'][i:i + 2] for i in range(0, 14, 2))
             for attribute in lease:
                 cmd += "| grep -E %s " % lease[attribute]
             cmd += "| grep -c ^"
