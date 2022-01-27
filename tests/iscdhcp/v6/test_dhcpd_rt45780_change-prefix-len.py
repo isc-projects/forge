@@ -67,7 +67,7 @@ def test_dhcpd_rt45780_change_prefix_len_exact():
 
     # Verify REQUEST for 3000:db8:0:100::/64
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
     srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
@@ -85,7 +85,7 @@ def test_dhcpd_rt45780_change_prefix_len_exact():
 
     # Verify RELEASE for 3000:db8:0:100::/64
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
     srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
@@ -159,7 +159,7 @@ def test_dhcpd_rt45780_change_prefix_len_ignore():
 
     # Verify REQUEST for 3000:db8:0:100::/64
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
     srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
@@ -177,7 +177,7 @@ def test_dhcpd_rt45780_change_prefix_len_ignore():
 
     # Verify RELEASE for 3000:db8:0:100::/64
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
     srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')

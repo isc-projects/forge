@@ -23,11 +23,10 @@ def test_ddns6_notsig_forw_and_rev_release():
     srv_control.add_ddns_server_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
-    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', 53)
+    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
     add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
                      'EMPTY_KEY',
-                     '2001:db8:1::1000',
-                     53)
+                     '2001:db8:1::1000')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -57,7 +56,7 @@ def test_ddns6_notsig_forw_and_rev_release():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -96,7 +95,7 @@ def test_ddns6_notsig_forw_and_rev_release():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -136,11 +135,10 @@ def test_ddns6_notsig_forw_and_rev_release_notenabled():
     srv_control.add_ddns_server_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
-    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', 53)
+    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
     add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
                      'EMPTY_KEY',
-                     '2001:db8:1::1000',
-                     53)
+                     '2001:db8:1::1000')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -170,7 +168,7 @@ def test_ddns6_notsig_forw_and_rev_release_notenabled():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -216,17 +214,16 @@ def test_ddns6_notsig_forw_and_rev_release_notenabled():
     # DDNS server is configured with ddns-update-style option set to off.
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
-    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', 53)
+    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
     add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
                      'EMPTY_KEY',
-                     '2001:db8:1::1000',
-                     53)
+                     '2001:db8:1::1000')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -270,11 +267,10 @@ def test_ddns6_notsig_rev_release():
     srv_control.add_ddns_server_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
-    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', 53)
+    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
     add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
                      'EMPTY_KEY',
-                     '2001:db8:1::1000',
-                     53)
+                     '2001:db8:1::1000')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -314,7 +310,7 @@ def test_ddns6_notsig_rev_release():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
     srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_does_include('Client', 'client-id')
@@ -351,7 +347,7 @@ def test_ddns6_notsig_rev_release():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_msg.client_add_saved_option_count(1, 'DONT ')
+    srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('RELEASE')
 
@@ -395,11 +391,10 @@ def test_ddns6_notsig_expired():
     srv_control.add_ddns_server_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
-    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000', 53)
+    add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
     add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.',
                      'EMPTY_KEY',
-                     '2001:db8:1::1000',
-                     53)
+                     '2001:db8:1::1000')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

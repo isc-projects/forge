@@ -52,7 +52,7 @@ def test_v6_dhcpd_keyword_fixed_address6():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
 
     # DUID1 accepts the address
 
@@ -109,7 +109,7 @@ def test_v6_dhcpd_keyword_fixed_address6():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::1')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -121,7 +121,7 @@ def test_v6_dhcpd_keyword_fixed_address6():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::1')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')

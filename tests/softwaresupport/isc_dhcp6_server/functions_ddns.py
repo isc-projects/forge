@@ -16,6 +16,7 @@
 # Author: Wlodzimierz Wencel
 
 from forge_cfg import world
+from protosupport.multi_protocol_functions import test_define_value
 
 
 def add_ddns_server(address, port):
@@ -40,15 +41,19 @@ def add_ddns_server_options(option, value):
     world.ddns_add += option + " " + value + ";\n"
 
 
-def add_forward_ddns(name, key_name, ip_address, port):
+def add_forward_ddns(name, key_name, ip_address):
+    ip_address = test_define_value(ip_address)[0]
+    version = "" if world.proto == 'v4' else 6
     world.ddns_domainname = name
     if key_name == "EMPTY_KEY":
-        world.ddns_forw.append(f'\nzone {name} {{ primary6 {ip_address}; }}')
+        world.ddns_forw.append(f'\nzone {name} {{ primary{version} {ip_address}; }}')
     else:
-        world.ddns_forw.append(f'\nzone {name} {{ key {key_name}; primary6 {ip_address}; }}')
+        world.ddns_forw.append(f'\nzone {name} {{ key {key_name}; primary{version} {ip_address}; }}')
 
 
-def add_reverse_ddns(name, key_name, ip_address, port):
+def add_reverse_ddns(name, key_name, ip_address):
+    ip_address = test_define_value(ip_address)[0]
+    version = "" if world.proto == 'v4' else 6
     tmp = []
     for each in name.split(".")[::-1]:
         if each.isdigit():
@@ -58,9 +63,9 @@ def add_reverse_ddns(name, key_name, ip_address, port):
     world.ddns_rev_domainname = ".".join(tmp[::-1])
 
     if key_name == "EMPTY_KEY":
-        world.ddns_rev.append(f'\nzone {name} {{ primary6 {ip_address}; }}')
+        world.ddns_rev.append(f'\nzone {name} {{ primary{version} {ip_address}; }}')
     else:
-        world.ddns_rev.append(f'\nzone {name} {{key {key_name}; primary6 {ip_address};}}')
+        world.ddns_rev.append(f'\nzone {name} {{key {key_name}; primary{version} {ip_address};}}')
 
 
 def add_keys(secret, name, algorithm):

@@ -199,7 +199,7 @@ def netmask(subnet):
         return tmp_subnet[0] + " netmask 255.255.255.0 "
 
 
-def prepare_cfg_subnet(subnet, pool, eth=None):
+def prepare_cfg_subnet(subnet, pool, iface=None):
     if "conf_subnet" not in world.cfg:
         world.cfg["conf_subnet"] = ""
 

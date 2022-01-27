@@ -154,7 +154,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
 
     # Release the first lease, should not see low threshold log.
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, None)
+    srv_msg.client_add_saved_option_count(1, erase=True)
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
@@ -344,7 +344,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
 
     # Release the first lease, should not see low threshold log.
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, None)
+    srv_msg.client_add_saved_option_count(1, erase=True)
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
@@ -522,7 +522,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
 
     # Release the first lease, should not see low threshold log.
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, None)
+    srv_msg.client_add_saved_option_count(1, erase=True)
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
@@ -704,7 +704,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
 
     # Release the first lease, should not see low threshold log.
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, None)
+    srv_msg.client_add_saved_option_count(1, erase=True)
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
@@ -909,7 +909,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
 
     # Release the first lease, should not see low threshold log.
     misc.test_procedure()
-    srv_msg.client_add_saved_option_count(1, None)
+    srv_msg.client_add_saved_option_count(1, erase=True)
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()

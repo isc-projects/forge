@@ -25,6 +25,10 @@ from softwaresupport.multi_server_functions import fabric_run_command, fabric_se
     fabric_remove_file_command
 from softwaresupport.isc_dhcp6_server.functions_ddns import build_ddns_config
 from softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
+from protosupport.multi_protocol_functions import test_define_value
+
+log = logging.getLogger('forge')
+
 
 # it would be wise to remove redundant names,
 # but I'll leave it that way for now.
@@ -193,8 +197,8 @@ def add_defaults():
     if value is not None:
         world.cfg["conf_time"] += '''option dhcp-rebinding-time {0};\n'''.format(value)
 
-    # value = world.cfg["server_times"]["preferred-lifetime"]
-    if "preferred-lifetime" in world.cfg["server_times"] and world.cfg["server_times"] is not None:
+    value = world.cfg["server_times"]["preferred-lifetime"]
+    if value is not None:
         world.cfg["conf_time"] += '''preferred-lifetime {0};\n'''.format(value)
 
     value = world.cfg["server_times"]["valid-lifetime"]
@@ -512,6 +516,7 @@ def check_process_result(succeed, result, process):
 
 
 def add_line_in_global(command):
+    command = test_define_value(command)[0]
     if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ''
 
@@ -648,4 +653,5 @@ def simple_file_layout():
 
     config = open(world.cfg["cfg_file"], 'w')
     config.write(real_config)
+    print('\n', real_config)
     config.close()

@@ -57,7 +57,7 @@ def test_v6_dhcpd_keyword_ddns_forward_add():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
     srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2 for myhost.six.example.com',
                          log_file=build_log_path())
 
@@ -108,7 +108,7 @@ def test_v6_dhcpd_keyword_ddns_forward_do_forward_updates_false():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
     srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2', log_file=build_log_path())
 
 
@@ -155,7 +155,7 @@ def test_v6_dhcpd_keyword_ddns_forward_no_client_fqdn():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
     srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2', log_file=build_log_path())
 
 
@@ -205,7 +205,7 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_hostname():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
     srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2 for cfg_host.six.example.com',
                          log_file=build_log_path())
 
@@ -256,6 +256,6 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_ttl():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
     srv_msg.log_contains('ttl: 7701',
                          log_file=build_log_path())

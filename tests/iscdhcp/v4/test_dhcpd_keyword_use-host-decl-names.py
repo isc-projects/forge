@@ -42,15 +42,16 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on():
     srv_control.start_srv('DHCP', 'started')
 
     # Do BOOTP_REQUEST, BOOTP_REPLY should have host-name = cartmen
-    misc.test_procedure()
-    srv_msg.client_send_msg('BOOTP_REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'BOOTP_REPLY')
-    srv_msg.response_check_content('yiaddr', '192.168.50.10')
-    srv_msg.response_check_include_option(12)
-    srv_msg.response_check_option_content(12, 'value', 'cartmen')
-
+    # misc.test_procedure()
+    # srv_msg.client_sets_value('Client', 'chaddr', '$(CLI_MAC)')
+    # srv_msg.client_send_msg('BOOTP_REQUEST')
+    #
+    # misc.pass_criteria()
+    # srv_msg.send_wait_for_message('MUST', 'BOOTP_REPLY')
+    # srv_msg.response_check_content('yiaddr', '192.168.50.10')
+    # srv_msg.response_check_include_option(12)
+    # srv_msg.response_check_option_content(12, 'value', 'cartmen')
+    srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY("192.168.50.10")
     # Do DISCOVER, OFFER should have host-name = cartmen
     misc.test_procedure()
     srv_msg.client_send_msg('DISCOVER')
@@ -95,6 +96,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_off():
 
     # Do BOOTP_REQUEST, BOOTP_REPLY should not contain host-name.
     misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '$(CLI_MAC)')
     srv_msg.client_send_msg('BOOTP_REQUEST')
 
     misc.pass_criteria()
@@ -148,6 +150,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_override():
 
     # Do BOOTP_REQUEST, BOOTP_REPLY should have host-name = notcartmen
     misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '$(CLI_MAC)')
     srv_msg.client_send_msg('BOOTP_REQUEST')
 
     misc.pass_criteria()

@@ -46,7 +46,9 @@ def set_world():
                       "hooks-libraries": [],
                       "shared-networks": []}
     world.ca_cfg = {}
-
+    if "isc_dhcp" in world.cfg["dhcp_under_test"]:
+        world.subcfg = [["", "", "", "", "", "", ""]]
+        world.cfg["conf_time"] = ""
     # new configuration process:
     world.configClass = KeaConfiguration()
 
