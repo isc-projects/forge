@@ -998,37 +998,34 @@ def parse_args():
                        "To get more information about particular command invoke: "
                        "./forge <command> -h.\n"))
 
-    parser = subparsers.add_parser('config',
-                                   help="Set config parameter in config file ie. forge.ini.")
-    parser.add_argument('name', nargs='?', default=None,
-                        help='Name of parameter.')
-    parser.add_argument('value', nargs='?', default=None,
-                        help='Value for indicated parameter.')
-    parser = subparsers.add_parser('setup',
-                                   help="Create VMs where testing happens.")
+    parser = subparsers.add_parser('config', help="Set config parameter in config file ie. forge.ini.")
+    parser.add_argument('name', nargs='?', default=None, help='Name of parameter.')
+    parser.add_argument('value', nargs='?', default=None, help='Value for indicated parameter.')
+
+    parser = subparsers.add_parser('setup', help="Create VMs where testing happens.")
     parser.add_argument('--win-gss-tsig', action='store_true',
                         help='Enable setup of Windows machine with AD/DNS for testing GSS-TSIG.')
-    parser = subparsers.add_parser('refresh',
-                                   help="Refresh VMs ie. restart and re-provision")
-    parser.add_argument('--reload', action='store_true',
-                        help='Reload only.')
-    parser.add_argument('--provision', action='store_true',
-                        help='Re-provision only.')
-    parser = subparsers.add_parser('install-kea',
-                                   help="Install Kea into VM from indicated repository.")
-    parser = subparsers.add_parser('install-dhcpd', help="Install isc-dhcp into VM from indicated directory.")
+    parser.add_argument('--dhcpd', action='store_true', help='Change settings to run tests for isc-dhcp.')
+
+    parser = subparsers.add_parser('refresh', help="Refresh VMs ie. restart and re-provision")
+    parser.add_argument('--reload', action='store_true', help='Reload only.')
+    parser.add_argument('--provision', action='store_true', help='Re-provision only.')
+    parser.add_argument('--dhcpd', action='store_true', help='Change settings to run tests for isc-dhcp.')
+
+    parser = subparsers.add_parser('install-kea', help="Install Kea into VM from indicated repository.")
     parser.add_argument('path', default='', nargs='?', help='Sub-path to the repository.')
     parser.add_argument('--version', help='Version of packages.')
-    parser = subparsers.add_parser('test',
-                                   help="Run tests. Parameters are passed directly to pytest.")
-    parser.add_argument('--native', action='store_true', default=False,
-                        help='Use native packages for testing')
+
+    parser = subparsers.add_parser('install-dhcpd', help="Install isc-dhcp into VM from indicated directory.")
+    parser.add_argument('path', default='', nargs='?', help='Sub-path to the repository.')
+
+    parser = subparsers.add_parser('test', help="Run tests. Parameters are passed directly to pytest.")
+    parser.add_argument('--native', action='store_true', default=False, help='Use native packages for testing')
     parser.add_argument('--version', help='Install given version of packages.')
     parser.add_argument('--dhcpd', action='store_true', help='Change settings to run tests for isc-dhcp.')
-    parser = subparsers.add_parser('clean',
-                                   help="Destroy VMs")
-    parser = subparsers.add_parser('box',
-                                   help="Package LXC box and upload to cloud")
+
+    parser = subparsers.add_parser('clean', help="Destroy VMs")
+    parser = subparsers.add_parser('box', help="Package LXC box and upload to cloud")
 
     args, rest = main_parser.parse_known_args()
     return args, rest, main_parser
