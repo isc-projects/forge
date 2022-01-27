@@ -273,9 +273,13 @@ def set_init_all(args):
     txt = INIT_ALL.format(**my_vars)
 
     if args.dhcpd:
-        txt.replace('SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",',
-                    'SOFTWARE_UNDER_TEST = "isc_dhcp4_server", "bind9_server",')
-        txt += ("\nDISABLE_DB_SETUP = True")
+        tmp_txt = ""
+        for line in txt.split('\n'):
+            if not line.startswith('SOFTWARE_UNDER_TEST'):
+                tmp_txt += f'\n{line}'
+        tmp_txt += '\nSOFTWARE_UNDER_TEST = "isc_dhcp4_server", "bind9_server",'
+        tmp_txt += '\nDISABLE_DB_SETUP = True'
+        txt = tmp_txt
 
     path = os.path.abspath('tests/init_all.py')
     with open(path, 'w') as f:
