@@ -758,8 +758,10 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
-       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None):
-    return dhcpmsg.SA(address, delegated_prefix, relay_information, status_code, duid, iaid)
+       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
+       linkaddr='2001:db8:1::1000', ifaceid='port1234'):
+    return dhcpmsg.SA(address, delegated_prefix, relay_information, status_code, duid, iaid,
+                      linkaddr, ifaceid)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
