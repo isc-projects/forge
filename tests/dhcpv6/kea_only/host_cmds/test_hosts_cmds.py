@@ -470,8 +470,10 @@ def test_v6_hosts_cmds_add_reservation_flex_id_NoAddressAvail(channel, host_data
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.SARR('2001:db8:1::50', relay_information=True)
+    # Get the first lease from subnet
+    srv_msg.SARR('2001:db8:1::50', duid='00:03:00:01:f6:f5:f4:f3:f2:01', relay_information=False)
 
+    # add host reservationa
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
@@ -489,7 +491,31 @@ def test_v6_hosts_cmds_add_reservation_flex_id_NoAddressAvail(channel, host_data
         "text": "Host added."
     }
 
-    srv_msg.SARR('2001:db8:1::100', relay_information=True, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    # get lease from host reservation
+    srv_msg.SA('2001:db8:1::100', duid='00:03:00:01:f6:f5:f4:f3:f2:02', relay_information=True)
+
+    misc.test_procedure()
+    world.sender_type = "Client"
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:02')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Encapsulate the Request in a relay forward message.
+    srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'port1234')
+    srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8:1::1000')
+    srv_msg.client_sets_value('RelayAgent', 'peeraddr', 'fe80::1')
+    srv_msg.client_does_include('RelayAgent', 'interface-id')
+    srv_msg.create_relay_forward()
+
+    # Send message and expect a relay reply.
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
+
+    # check for available lease
+    srv_msg.SA('2001:db8:1::100', duid='00:03:00:01:f6:f5:f4:f3:f2:03', relay_information=True,
+               status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'], ifaceid='port1234')
 
 
 @pytest.mark.v6
