@@ -407,7 +407,7 @@ def dns_log_contains(condition, line):
 
 def log_contains(line, log_file=None):
     line = test_define_value(line)[0]
-    multi_protocol_functions.log_contains(line, None, log_file)
+    multi_protocol_functions.log_contains(line, True, log_file)
 
 
 def log_doesnt_contain(line, log_file=None):

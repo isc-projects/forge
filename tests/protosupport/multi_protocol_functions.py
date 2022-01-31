@@ -227,10 +227,22 @@ def log_contains(line, expected=True, log_file=None):
 
     if expected:
         if result.succeeded:
-            assert False, f'Log file {log_file} contains line: "{line}" But it should NOT.'
+            assert True, f'Log file {log_file} contains line: "{line}".'
+        elif result.failed:
+            assert False, f'Log file {log_file} does NOT contain line: "{line}" BUT it should HAVE.'
+        else:
+            assert False, f'Failed to check {log_file} for line "{line}"'
+
     else:
         if result.failed:
-            assert False, f'Log file {log_file} does NOT contain line: "{line}"'
+            assert True, f'Log file {log_file} does NOT contain line: "{line}"'
+        elif result.succeeded:
+            assert False, f'Log file {log_file} contains line: "{line}" But it should NOT.'
+        else:
+            assert False, f'Failed to check {log_file} for line "{line}"'
+
+
+
 
 
 def regular_file_contain(file_name, condition, line, destination=None, singlequotes=False):
