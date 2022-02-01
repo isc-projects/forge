@@ -19,10 +19,10 @@ def test_dhcpd_rt45780_change_prefix_len_exact():
     add_line_in_global('prefix-length-mode exact;')
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /64;')
-    add_line_in_global('  prefix6 3000:db8:0:200:: 3000:db8:0:200:: /60;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:0:200:: 2001:db8:0:200:: /60;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -42,7 +42,7 @@ def test_dhcpd_rt45780_change_prefix_len_exact():
     srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
     srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 60)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:0:200::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:0:200::')
 
     # Verify SOLICIT of /64 gets us a /64 prefix
     misc.test_procedure()
@@ -59,17 +59,17 @@ def test_dhcpd_rt45780_change_prefix_len_exact():
     srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
     srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
     # Save the client and server ids for REQUEST/RENEW tests
     srv_msg.client_save_option_count(1, 'client-id')
     srv_msg.client_save_option_count(1, 'server-id')
 
-    # Verify REQUEST for 3000:db8:0:100::/64
+    # Verify REQUEST for 2001:db8:0:100::/64
     misc.test_procedure()
     srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
-    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
     srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('REQUEST')
@@ -81,13 +81,13 @@ def test_dhcpd_rt45780_change_prefix_len_exact():
     srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
     srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # Verify RELEASE for 3000:db8:0:100::/64
+    # Verify RELEASE for 2001:db8:0:100::/64
     misc.test_procedure()
     srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
-    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
     srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('RELEASE')
@@ -113,7 +113,7 @@ def test_dhcpd_rt45780_change_prefix_len_exact():
     srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
     srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 60)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:0:200::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:0:200::')
 
     # #############################################################################
 
@@ -127,10 +127,10 @@ def test_dhcpd_rt45780_change_prefix_len_ignore():
     add_line_in_global('prefix-length-mode ignore;')
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /64;')
-    add_line_in_global('  prefix6 3000:db8:0:200:: 3000:db8:0:200:: /60;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:0:200:: 2001:db8:0:200:: /60;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -151,17 +151,17 @@ def test_dhcpd_rt45780_change_prefix_len_ignore():
     srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
     srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
     # Save the client and server ids for REQUEST/RENEW tests
     srv_msg.client_save_option_count(1, 'client-id')
     srv_msg.client_save_option_count(1, 'server-id')
 
-    # Verify REQUEST for 3000:db8:0:100::/64
+    # Verify REQUEST for 2001:db8:0:100::/64
     misc.test_procedure()
     srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
-    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
     srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('REQUEST')
@@ -173,13 +173,13 @@ def test_dhcpd_rt45780_change_prefix_len_ignore():
     srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
     srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # Verify RELEASE for 3000:db8:0:100::/64
+    # Verify RELEASE for 2001:db8:0:100::/64
     misc.test_procedure()
     srv_msg.client_add_saved_option_count(1)
     srv_msg.client_sets_value('Client', 'plen', 64)
-    srv_msg.client_sets_value('Client', 'prefix', '3000:db8:0:100::')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:100::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
     srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('RELEASE')
@@ -205,4 +205,4 @@ def test_dhcpd_rt45780_change_prefix_len_ignore():
     srv_msg.response_check_suboption_content(26, 25, 'preflft', 3000)
     srv_msg.response_check_suboption_content(26, 25, 'validlft', 4000)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')

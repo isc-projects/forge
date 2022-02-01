@@ -28,7 +28,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     # # does not appear.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::4')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -244,7 +244,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     # # not release... asinine but true).
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::4')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
     add_line_in_global('log-threshold-low 30;')
     add_line_in_global('log-threshold-high 60;')
     srv_control.build_and_send_config_files()
@@ -422,7 +422,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     # # are output.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::4')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
     add_line_in_global('log-threshold-low 65;')
     add_line_in_global('log-threshold-high 60;')
     srv_control.build_and_send_config_files()
@@ -605,7 +605,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     # #
 
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::4')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
     add_line_in_global('log-threshold-high 60;')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -782,7 +782,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     # # message appear.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::4')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
     add_line_in_global('log-threshold-low 30;')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -992,14 +992,13 @@ def test_v6_dhcpd_keyword_log_threshold_too_large():
     # #
     misc.test_setup()
     add_line_in_global(' shared-network net1 {')
-    add_line_in_global(' subnet6 3000::/16 {')
-    add_line_in_global('  range6 3000:1::0/63;')
-    add_line_in_global('  range6 3000:D::0/66;')
-    add_line_in_global('  range6 3000:E::0/66;')
+    add_line_in_global(' subnet6 2001:db8::/32 {')
+    add_line_in_global('  range6 2001:db8:1::0/66;')
+    add_line_in_global('  range6 2001:db8:2::0/66;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.pass_criteria()
-    srv_msg.wait_for_message_in_log('Threshold logging disabled for shared subnet of ranges: 3000:1::/63, 3000:d::/66, 3000:e::/66',
+    srv_msg.wait_for_message_in_log('Threshold logging disabled for shared subnet of ranges: 2001:db8:1::0/66, 2001:db8:2::0/66',
                                     count=1, log_file=build_log_path())

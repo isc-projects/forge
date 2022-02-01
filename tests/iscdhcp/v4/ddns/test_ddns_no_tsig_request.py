@@ -12,9 +12,7 @@ from softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, ad
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.notsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_notsig_forw_and_rev_add_success_Sflag():
 
     misc.test_setup()
@@ -84,9 +82,7 @@ def test_ddns4_notsig_forw_and_rev_add_success_Sflag():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.notsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_notsig_forw_and_rev_add_fail_Sflag():
 
     misc.test_setup()
@@ -152,9 +148,7 @@ def test_ddns4_notsig_forw_and_rev_add_fail_Sflag():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.notsig
-@pytest.mark.forward_update
+@pytest.mark.dhcpd
 def test_ddns4_notsig_forw_and_rev_update_success_Sflag():
 
     misc.test_setup()
@@ -302,9 +296,7 @@ def test_ddns4_notsig_forw_and_rev_update_success_Sflag():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.notsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_notsig_forw_and_rev_two_dhci_Sflag():
 
     misc.test_setup()
@@ -410,9 +402,7 @@ def test_ddns4_notsig_forw_and_rev_two_dhci_Sflag():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.notsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_notsig_forw_and_rev_dhci_conflicts_Sflag():
 
     misc.test_setup()

@@ -20,7 +20,7 @@ def test_v6_dhcpd_keyword_ddns_forward_add():
     # # is valid but minimal and client sends a request with valid fqdn
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-domainname "six.example.com";')
     add_line_in_global('fqdn-reply true;')
@@ -57,8 +57,8 @@ def test_v6_dhcpd_keyword_ddns_forward_add():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2 for myhost.six.example.com',
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2 for myhost.six.example.com',
                          log_file=build_log_path())
 
 
@@ -72,7 +72,7 @@ def test_v6_dhcpd_keyword_ddns_forward_do_forward_updates_false():
     # # is set to false.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-domainname "six.example.com";')
     add_line_in_global('ddns-update-style interim;')
@@ -108,8 +108,8 @@ def test_v6_dhcpd_keyword_ddns_forward_do_forward_updates_false():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
-    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2', log_file=build_log_path())
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2', log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -122,7 +122,7 @@ def test_v6_dhcpd_keyword_ddns_forward_no_client_fqdn():
     # # no client FQDN option is supplied.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-domainname "six.example.com";')
     add_line_in_global('ddns-update-style interim;')
@@ -155,8 +155,8 @@ def test_v6_dhcpd_keyword_ddns_forward_no_client_fqdn():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
-    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2', log_file=build_log_path())
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2', log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -169,7 +169,7 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_hostname():
     # # can be specified using ddns-hostname.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-domainname "six.example.com";')
     add_line_in_global('ddns-hostname "cfg_host";')
@@ -205,8 +205,8 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_hostname():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 3000::2 for cfg_host.six.example.com',
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2 for cfg_host.six.example.com',
                          log_file=build_log_path())
 
 
@@ -220,7 +220,7 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_ttl():
     # # using ddns-ttl.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-domainname "six.example.com";')
     add_line_in_global('ddns-ttl 7701;')
@@ -256,6 +256,6 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_ttl():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
     srv_msg.log_contains('ttl: 7701',
                          log_file=build_log_path())

@@ -17,23 +17,23 @@ def test_v6_dhcpd_keyword_fixed_address6():
     # #
     # # Tests address assignment when fixed-address6 is used.
     # #
-    # # Server is configured with one subnet 3000::/64, with one pool of two
-    # # addresses 3000::1 - 3000::2.  One address, 3000::1, is reserved to a
+    # # Server is configured with one subnet 2001:db8:1::/64, with one pool of two
+    # # addresses 2001:db8:1::1 - 2001:db8:1::2.  One address, 2001:db8:1::1, is reserved to a
     # # specific client (DUID2) using the host statement and fixed-address6.
     # #
-    # # Stage 1: Client with DUID1 asks for and should be granted 3000::2,
+    # # Stage 1: Client with DUID1 asks for and should be granted 2001:db8:1::2,
     # # the only address available to Clients who are NOT DUID2
     # #
     # # Stage 2: Client with DUID3 solicts an address but should be denied
     # #
     # # Stage 3: Client with DUID2 solicits and should be should be granted
-    # # 3000::1, the reserved address.
+    # # 2001:db8:1::1, the reserved address.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     add_line_in_global('host specialclient {')
     add_line_in_global('  host-identifier option dhcp6.client-id 00:03:00:01:ff:ff:ff:ff:ff:02;')
-    add_line_in_global('  fixed-address6 3000::1; }')
+    add_line_in_global('  fixed-address6 2001:db8:1::1; }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -46,13 +46,13 @@ def test_v6_dhcpd_keyword_fixed_address6():
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    # Server should offer 3000::2
+    # Server should offer 2001:db8:1::2
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
 
     # DUID1 accepts the address
 
@@ -103,13 +103,13 @@ def test_v6_dhcpd_keyword_fixed_address6():
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    # Server should offer the reserved address, 3000::1
+    # Server should offer the reserved address, 2001:db8:1::1
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -121,7 +121,7 @@ def test_v6_dhcpd_keyword_fixed_address6():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')

@@ -12,9 +12,7 @@ from softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, ad
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_remove
+@pytest.mark.dhcpd
 def test_ddns4_tsig_sha1_forw_and_rev_release():
 
     misc.test_setup()
@@ -111,9 +109,7 @@ def test_ddns4_tsig_sha1_forw_and_rev_release():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.reverse_remove
+@pytest.mark.dhcpd
 def test_ddns4_tsig_sha1_rev_release():
 
     misc.test_setup()

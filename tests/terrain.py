@@ -260,15 +260,13 @@ def declare_all(dhcp_version=None):
     world.generated_config = None
 
     if 'isc_dhcp' in world.cfg['dhcp_under_test']:
-        world.cfg['leases'] = os.path.join(
-            world.f_cfg.software_install_path, 'dhcpd.leases')
+        world.cfg['leases'] = '/tmp/dhcpd.leases'  # do not use different value
+        world.cfg['dhcp_log_file'] = '/var/log/forge_dhcpd.log'  # do not use different value
     else:
         world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
                                            f'var/lib/kea/kea-leases{world.proto[1]}.csv')
 
     world.cfg['kea_logs'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea.log')
-
-    world.cfg["dhcp_log_file"] = "~/none_file"
 
     world.loops = {"active": False,
                    "save_leases_details": False}

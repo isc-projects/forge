@@ -20,7 +20,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_add():
     # # is valid but minimal and client sends a request with valid fqdn
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-update-style interim;')
     add_line_in_global('do-reverse-updates true;')
@@ -55,7 +55,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_add():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
     srv_msg.log_contains('DDNS_STATE_ADD_PTR myhost.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
                          log_file=build_log_path())
 
@@ -70,7 +70,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_do_reverse_updates_false():
     # # when do-reverse-updates is set to false.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-update-style interim;')
     add_line_in_global('do-reverse-updates false;')
@@ -105,7 +105,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_do_reverse_updates_false():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
     srv_msg.log_doesnt_contain('DDNS_STATE_ADD_PTR reverse myhost.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
                                log_file=build_log_path())
 
@@ -120,7 +120,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_no_client_fqdn():
     # # no client FQDN option is supplied.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-update-style interim;')
     add_line_in_global('do-reverse-updates true;')
@@ -152,7 +152,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_no_client_fqdn():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
     srv_msg.log_doesnt_contain('DDNS_STATE_ADD_PTR reverse.', log_file=build_log_path())
 
 
@@ -166,7 +166,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_ttl():
     # # using ddns-ttl.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-update-style interim;')
     add_line_in_global('do-reverse-updates true;')
@@ -202,7 +202,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_ttl():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
     srv_msg.log_contains('ttl: 7701', log_file=build_log_path())
 
 
@@ -220,7 +220,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_hostname():
     # # the PTR record.  This seems inconsistent.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::2-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
     add_line_in_global('ddns-updates true;')
     add_line_in_global('ddns-domainname "six.example.com";')
     add_line_in_global('ddns-hostname "cfg_host";')
@@ -257,6 +257,6 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_hostname():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::2')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
     srv_msg.log_contains('DDNS_STATE_ADD_PTR reverse cfg_host.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
                          log_file=build_log_path())

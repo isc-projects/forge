@@ -13,9 +13,7 @@ from softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, ad
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_tsig_sha1_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
@@ -84,9 +82,7 @@ def test_ddns4_tsig_sha1_forw_and_rev():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_tsig_sha224_forw_and_rev():
 
     misc.test_setup()
@@ -156,9 +152,7 @@ def test_ddns4_tsig_sha224_forw_and_rev():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_tsig_sha256_forw_and_rev():
 
     misc.test_setup()
@@ -228,9 +222,7 @@ def test_ddns4_tsig_sha256_forw_and_rev():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_tsig_sha384_forw_and_rev():
 
     misc.test_setup()
@@ -301,9 +293,7 @@ def test_ddns4_tsig_sha384_forw_and_rev():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_tsig_sha512_forw_and_rev():
 
     misc.test_setup()
@@ -374,9 +364,7 @@ def test_ddns4_tsig_sha512_forw_and_rev():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_tsig_md5_forw_and_rev():
 
     misc.test_setup()
@@ -447,9 +435,7 @@ def test_ddns4_tsig_md5_forw_and_rev():
 
 
 @pytest.mark.v4
-@pytest.mark.ddns
-@pytest.mark.tsig
-@pytest.mark.forward_reverse_add
+@pytest.mark.dhcpd
 def test_ddns4_tsig_multi_key_forw_and_rev():
 
     misc.test_setup()

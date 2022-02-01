@@ -36,7 +36,8 @@ FORGE_INI = 'forge.ini'
 SRV4_ADDR = "192.168.50.252"
 CLNT4_ADDR = "192.168.50.2"
 CLNT4_ADDR_2 = "192.168.51.2"
-SRV_IPV6_ADDR_GLOBAL = "3000::1000"
+SRV_IPV6_ADDR_GLOBAL = "2001:db8:1::1000"
+CLNT6_ADDR = "2001:db8:1::2000"
 MGMT_ADDRESS = "172.28.0.31"
 MGMT_ADDRESS_2 = "172.28.0.32"
 MGMT_ADDRESS_3 = "172.28.0.33"
@@ -73,6 +74,7 @@ OUTPUT_WAIT_MAX_INTERVALS = 2
 PACKET_WAIT_INTERVAL = 1
 SRV_IPV6_ADDR_GLOBAL = "{SRV_IPV6_ADDR_GLOBAL}"
 SRV_IPV6_ADDR_LINK_LOCAL = "fe80::a00:27ff:fedf:63bc"
+CLNT6_ADDR = "{CLNT6_ADDR}"
 HISTORY = True
 TCPDUMP = False
 TCPDUMP_PATH = ""
@@ -427,6 +429,7 @@ def setup(args):
                               CLNT4_ADDR_2=CLNT4_ADDR_2,
                               SRV_IPV6_ADDR_GLOBAL_1=srv1_addr6,
                               SRV_IPV6_ADDR_GLOBAL_2=srv2_addr6,
+                              CLNT6_ADDR=CLNT6_ADDR,
                               IFACE=IFACE,
                               SERVER_IFACE=SERVER_IFACE,
                               SERVER2_IFACE=SERVER2_IFACE,
@@ -780,7 +783,7 @@ def _install_kea_make_on_server(args, server_idx):
 def install_dhcpd(args):
     """
     Run ISC-DHCP installation on both systems
-    :param args:
+    :param args: parser arguments
     :return:
     """
     ensure_lxc_bridges(args)
@@ -826,7 +829,7 @@ def _install_dhcpd_on_server(args, server_idx):
     execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # enable logging for isc-dhcp
-    cmd = "sudo sed -i '1s/^/\/var\/log\/dhcpd_forge.log\\t\/var\/log\/dhcpd_forge.log\\n/' /etc/rsyslog.conf"
+    cmd = "sudo sed -i '1s/^/local7.debug\\t\/var\/log\/forge_dhcpd.log\\n/' /etc/rsyslog.conf"
     execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # restart syslog

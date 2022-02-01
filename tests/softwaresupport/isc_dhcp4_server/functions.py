@@ -22,7 +22,7 @@ from forge_cfg import world
 from softwaresupport.isc_dhcp6_server.functions import set_time, unset_time, stop_srv, convert_cfg_file
 from softwaresupport.isc_dhcp6_server.functions import restart_srv, clear_all, save_leases, save_logs, start_srv
 from softwaresupport.isc_dhcp6_server.functions import add_line_in_global, check_process_result, clear_leases
-from softwaresupport.isc_dhcp6_server.functions import simple_file_layout
+from softwaresupport.isc_dhcp6_server.functions import simple_file_layout, build_leases_path, build_log_path
 
 from softwaresupport.isc_dhcp4_server.functions_ddns import build_ddns_config
 # option names in isc-dhcp v4, list is that you can check which one is different then Kea names - Kea names are used
@@ -414,29 +414,12 @@ def cfg_write():
     simple_file_layout()
 
 
-def build_leases_path():
-    leases_file = '/var/db/dhcpd.leases'
-    if world.f_cfg.software_install_path != "/usr/local/":
-        leases_file = world.f_cfg.software_install_path + 'dhcpd.leases'
-    return leases_file
-
-
-def build_log_path():
-    # syslog/rsyslog typically will not write to log files unless
-    # they are in /var/log without manual intervention.
-    log_file = '/var/log/forge_dhcpd.log'
-    if world.f_cfg.isc_dhcp_log_file != "":
-        log_file = world.f_cfg.isc_dhcp_log_file
-
-    return log_file
-
-
 def build_and_send_config_files(cfg, destination_address):
     if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
     world.cfg['log_file'] = build_log_path()
-    fabric_sudo_command('cat /dev/null >' + world.cfg['log_file'], destination_host=destination_address)
+    fabric_sudo_command('rm -f ' + world.cfg['log_file'], destination_host=destination_address)
     world.cfg["dhcp_log_file"] = world.cfg['log_file']
 
     log = "local7"

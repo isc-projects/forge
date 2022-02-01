@@ -26,7 +26,7 @@ def test_v6_dhcpd_keyword_valid_lifetime_not_set():
     # # preferred lifetime should be 27000 (62.5% of valid lifetime)
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     unset_time('preferred-lifetime')
     unset_time('valid-lifetime')
     srv_control.build_and_send_config_files()
@@ -61,7 +61,7 @@ def test_v6_dhcpd_keyword_valid_lifetime_set():
     # # preferred lifetime  should be 625.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.set_time('valid-lifetime', 1000)
     unset_time('preferred-lifetime')
     srv_control.build_and_send_config_files()

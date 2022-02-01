@@ -19,7 +19,7 @@ def test_v6_dhcpd_keyword_log_facility_success():
     # # succeeds in capturing dhcpd logging.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -41,7 +41,7 @@ def test_v6_dhcpd_keyword_log_facility_fail():
     # # value, causes dhcpd logging to not be directed to log file.
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     add_line_in_global('log-facility bogus;')
     srv_control.build_and_send_config_files()
     srv_control.start_srv_during_process('DHCP', 'configuration')

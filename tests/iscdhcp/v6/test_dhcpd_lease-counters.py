@@ -31,7 +31,7 @@ def test_v6_dhcpd_lease_counters():
     # #  - should NOT see best match message for DUID 3
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::100-3000::101')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::100-2001:db8:1::101')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -109,7 +109,7 @@ def test_v6_dhcpd_lease_counters():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
-    srv_msg.wait_for_message_in_log('shared network 3000::/64: 2 total, 1 active,  1 abandoned',
+    srv_msg.wait_for_message_in_log('shared network 2001:db8:1::/64: 2 total, 1 active,  1 abandoned',
                                     count=1, log_file=build_log_path())
     srv_msg.wait_for_message_in_log('Best match for DUID 00:03:00:01:ff:ff:ff:ff:ff:01 is an abandoned address',
                                     count=1, log_file=build_log_path())
@@ -143,7 +143,7 @@ def test_v6_dhcpd_lease_counters():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
-    srv_msg.wait_for_message_in_log('shared network 3000::/64: 2 total, 2 active,  0 abandoned',
+    srv_msg.wait_for_message_in_log('shared network 2001:db8:1::/64: 2 total, 2 active,  0 abandoned',
                                     count=1, log_file=build_log_path())
     srv_msg.wait_for_message_in_log('Best match for DUID 00:03:00:01:ff:ff:ff:ff:ff:03 is an abandoned address',
                                     count=0, log_file=build_log_path())

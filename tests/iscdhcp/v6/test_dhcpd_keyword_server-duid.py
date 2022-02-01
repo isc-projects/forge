@@ -24,7 +24,7 @@ def test_v6_dhcpd_keyword_server_duid_ll():
     # # server DUID matches the configured LL value
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     add_line_in_global('server-duid LL ethernet 00:16:6f:49:7d:9b;')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -57,7 +57,7 @@ def test_v6_dhcpd_keyword_server_duid_llt():
     # # server DUID matches the configured LLT value
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     add_line_in_global('server-duid LLT ethernet 9999 00:16:6f:49:7d:9b;')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -90,7 +90,7 @@ def test_v6_dhcpd_keyword_server_duid_en():
     # # server DUID matches the configured EN value
     # #
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     add_line_in_global('server-duid EN 2495 "peter-pan";')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

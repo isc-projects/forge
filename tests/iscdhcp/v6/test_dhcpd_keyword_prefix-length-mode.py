@@ -21,26 +21,26 @@ def test_dhcpd_keyword_prefix_length_mode_default():
     #
     # Solicit plen    Offer Outcome
     # --------------------------------------
-    # /0              3000:db8:0:100::/56
-    # /48             3000:db8:0:100::/56
-    # /60             3000:db8:0:100::/56
-    # /64             3000:db8:1:100::/64
-    # /72             3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
+    # /60             2001:db8:0:100::/56
+    # /64             2001:db8:1:100::/64
+    # /72             2001:db8:0:100::/56
 
     misc.test_setup()
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /56;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /56;')
     add_line_in_global(' }')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:1:100:: 3000:db8:1:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:1:100:: 2001:db8:1:100:: /64;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 0)
@@ -53,9 +53,9 @@ def test_dhcpd_keyword_prefix_length_mode_default():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /48             3000:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 48)
@@ -68,9 +68,9 @@ def test_dhcpd_keyword_prefix_length_mode_default():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /60             3000:db8:0:100::/56
+    # /60             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 60)
@@ -82,9 +82,9 @@ def test_dhcpd_keyword_prefix_length_mode_default():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /64             3000:db8:1:100::/64
+    # /64             2001:db8:1:100::/64
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 64)
@@ -97,9 +97,9 @@ def test_dhcpd_keyword_prefix_length_mode_default():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
-    # /72             3000:db8:0:100::/56
+    # /72             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', '72')
@@ -111,7 +111,7 @@ def test_dhcpd_keyword_prefix_length_mode_default():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
 
 @pytest.mark.v6
@@ -124,27 +124,27 @@ def test_dhcpd_keyword_prefix_length_mode_ignore():
     #
     # Solicit plen    Offer Outcome
     # --------------------------------------
-    # /0              3000:db8:0:100::/56
-    # /48             3000:db8:0:100::/56
-    # /60             3000:db8:0:100::/56
-    # /64             3000:db8:0:100::/56
-    # /72             3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
+    # /60             2001:db8:0:100::/56
+    # /64             2001:db8:0:100::/56
+    # /72             2001:db8:0:100::/56
 
     misc.test_setup()
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
     add_line_in_global('prefix-length-mode ignore;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /56;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /56;')
     add_line_in_global(' }')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:1:100:: 3000:db8:1:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:1:100:: 2001:db8:1:100:: /64;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 0)
@@ -157,9 +157,9 @@ def test_dhcpd_keyword_prefix_length_mode_ignore():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /48             3000:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 48)
@@ -171,9 +171,9 @@ def test_dhcpd_keyword_prefix_length_mode_ignore():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /60             3000:db8:0:100::/56
+    # /60             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 60)
@@ -185,9 +185,9 @@ def test_dhcpd_keyword_prefix_length_mode_ignore():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /64             3000:db8:1:100::/56
+    # /64             2001:db8:1:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 64)
@@ -199,9 +199,9 @@ def test_dhcpd_keyword_prefix_length_mode_ignore():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /72             3000:db8:1:100::/56
+    # /72             2001:db8:1:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', '72')
@@ -213,7 +213,7 @@ def test_dhcpd_keyword_prefix_length_mode_ignore():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
 
 @pytest.mark.v6
@@ -226,27 +226,27 @@ def test_dhcpd_keyword_prefix_length_mode_prefer():
     #
     # Solicit plen    Offer Outcome
     # --------------------------------------
-    # /0              3000:db8:0:100::/56
-    # /48             3000:db8:0:100::/56
-    # /60             3000:db8:0:100::/56
-    # /64             3000:db8:1:100::/64
-    # /72             3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
+    # /60             2001:db8:0:100::/56
+    # /64             2001:db8:1:100::/64
+    # /72             2001:db8:0:100::/56
 
     misc.test_setup()
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
     add_line_in_global('prefix-length-mode prefer;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /56;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /56;')
     add_line_in_global(' }')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:1:100:: 3000:db8:1:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:1:100:: 2001:db8:1:100:: /64;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 0)
@@ -259,9 +259,9 @@ def test_dhcpd_keyword_prefix_length_mode_prefer():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /48             3000:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 48)
@@ -274,9 +274,9 @@ def test_dhcpd_keyword_prefix_length_mode_prefer():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /60             3000:db8:0:100::/56
+    # /60             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 60)
@@ -288,9 +288,9 @@ def test_dhcpd_keyword_prefix_length_mode_prefer():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /64             3000:db8:1:100::/64
+    # /64             2001:db8:1:100::/64
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 64)
@@ -303,9 +303,9 @@ def test_dhcpd_keyword_prefix_length_mode_prefer():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
-    # /72             3000:db8:0:100::/56
+    # /72             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', '72')
@@ -317,7 +317,7 @@ def test_dhcpd_keyword_prefix_length_mode_prefer():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
 
 @pytest.mark.v6
@@ -331,27 +331,27 @@ def test_dhcpd_keyword_prefix_length_mode_exact():
     #
     # Solicit plen    Offer Outcome
     # --------------------------------------
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     # /48             None available
     # /60             None available
-    # /64             3000:db8:1:100::/64
+    # /64             2001:db8:1:100::/64
     # /72             None available
 
     misc.test_setup()
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
     add_line_in_global('prefix-length-mode exact;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /56;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /56;')
     add_line_in_global(' }')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:1:100:: 3000:db8:1:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:1:100:: 2001:db8:1:100:: /64;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 0)
@@ -364,7 +364,7 @@ def test_dhcpd_keyword_prefix_length_mode_exact():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
     # /48             None available
     misc.test_procedure()
@@ -394,7 +394,7 @@ def test_dhcpd_keyword_prefix_length_mode_exact():
     srv_msg.response_check_option_content(25, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 6)
 
-    # /64             3000:db8:1:100::/64
+    # /64             2001:db8:1:100::/64
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 64)
@@ -407,7 +407,7 @@ def test_dhcpd_keyword_prefix_length_mode_exact():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
     # /72             None available
     misc.test_procedure()
@@ -437,27 +437,27 @@ def test_dhcpd_keyword_prefix_length_mode_minimum():
     #
     # Solicit plen    Offer Outcome
     # --------------------------------------
-    # /0              3000:db8:0:100::/56
-    # /48             3000:db8:0:100::/56
-    # /60             3000:db8:1:100::/64
-    # /64             3000:db8:1:100::/64
+    # /0              2001:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
+    # /60             2001:db8:1:100::/64
+    # /64             2001:db8:1:100::/64
     # /72             None available
 
     misc.test_setup()
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
     add_line_in_global('prefix-length-mode minimum;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /56;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /56;')
     add_line_in_global(' }')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:1:100:: 3000:db8:1:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:1:100:: 2001:db8:1:100:: /64;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 0)
@@ -470,9 +470,9 @@ def test_dhcpd_keyword_prefix_length_mode_minimum():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /48             3000:db8:0:100::/56
+    # /48             2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 48)
@@ -484,9 +484,9 @@ def test_dhcpd_keyword_prefix_length_mode_minimum():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /60             3000:db8:1:100::/64
+    # /60             2001:db8:1:100::/64
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 60)
@@ -498,9 +498,9 @@ def test_dhcpd_keyword_prefix_length_mode_minimum():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
-    # /64             3000:db8:1:100::/64
+    # /64             2001:db8:1:100::/64
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 64)
@@ -513,7 +513,7 @@ def test_dhcpd_keyword_prefix_length_mode_minimum():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
     # /72             None available
     misc.test_procedure()
@@ -543,27 +543,27 @@ def test_dhcpd_keyword_prefix_length_mode_maximum():
     #
     # Solicit plen    Offer Outcome
     # --------------------------------------
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     # /48             None available
-    # /60             3000:db8:1:100::/56
-    # /64             3000:db8:1:100::/64
-    # /72             3000:db8:0:100::/56
+    # /60             2001:db8:1:100::/56
+    # /64             2001:db8:1:100::/64
+    # /72             2001:db8:0:100::/56
 
     misc.test_setup()
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
     add_line_in_global('prefix-length-mode maximum;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /56;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /56;')
     add_line_in_global(' }')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:1:100:: 3000:db8:1:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:1:100:: 2001:db8:1:100:: /64;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # /0              3000:db8:0:100::/56
+    # /0              2001:db8:0:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 0)
@@ -576,7 +576,7 @@ def test_dhcpd_keyword_prefix_length_mode_maximum():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
     # /48             None available
     misc.test_procedure()
@@ -592,7 +592,7 @@ def test_dhcpd_keyword_prefix_length_mode_maximum():
     srv_msg.response_check_option_content(25, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 6)
 
-    # /60            3000:db8:1:100::/56
+    # /60            2001:db8:1:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 60)
@@ -604,9 +604,9 @@ def test_dhcpd_keyword_prefix_length_mode_maximum():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
-    # /64             3000:db8:1:100::/64
+    # /64             2001:db8:1:100::/64
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', 64)
@@ -619,9 +619,9 @@ def test_dhcpd_keyword_prefix_length_mode_maximum():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
-    # /72             3000:db8:1:100::/56
+    # /72             2001:db8:1:100::/56
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_sets_value('Client', 'plen', '72')
@@ -633,7 +633,7 @@ def test_dhcpd_keyword_prefix_length_mode_maximum():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
 
 @pytest.mark.v6
@@ -658,12 +658,12 @@ def test_dhcpd_keyword_prefix_length_mode_plen_0():
     misc.test_setup()
     add_line_in_global('ddns-updates off;')
     add_line_in_global('authoritative;')
-    add_line_in_global('subnet6 3000::/16 {')
+    add_line_in_global('subnet6 2001:db8::/32 {')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:0:100:: 3000:db8:0:100:: /56;')
+    add_line_in_global('  prefix6 2001:db8:0:100:: 2001:db8:0:100:: /56;')
     add_line_in_global(' }')
     add_line_in_global(' pool6 {')
-    add_line_in_global('  prefix6 3000:db8:1:100:: 3000:db8:1:100:: /64;')
+    add_line_in_global('  prefix6 2001:db8:1:100:: 2001:db8:1:100:: /64;')
     add_line_in_global(' }')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -686,7 +686,7 @@ def test_dhcpd_keyword_prefix_length_mode_plen_0():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
     misc.test_procedure()
     # Client copies IA-PD option from received message.
@@ -699,7 +699,7 @@ def test_dhcpd_keyword_prefix_length_mode_plen_0():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 56)
-    srv_msg.response_check_suboption_content(26,  25,  'prefix', '3000:db8:0:100::')
+    srv_msg.response_check_suboption_content(26,  25,  'prefix', '2001:db8:0:100::')
 
     # ######################################################################
     # Case 2: Client 2 requests an address
@@ -719,7 +719,7 @@ def test_dhcpd_keyword_prefix_length_mode_plen_0():
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
     misc.test_procedure()
     # Client copies IA-PD option from received message.
@@ -732,7 +732,7 @@ def test_dhcpd_keyword_prefix_length_mode_plen_0():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '3000:db8:1:100::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:100::')
 
     # ######################################################################
     # Case 3: Client 3 requests an address

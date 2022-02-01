@@ -65,53 +65,53 @@ def test_v4_dhcpd_failover_sanity_check_good_config():
                          log_file=build_log_path())
 
 
-@pytest.mark.v4
-@pytest.mark.dhcpd
-@pytest.mark.disabled
-def test_v4_dhcpd_failover_sanity_check_no_pools():
-    """new-v4.dhcpd.failover.sanity_check.no_pools"""
-    # #
-    # # Verifies that failover sanity checking detects when
-    # # peers are not referenced in pools.
-    # #
-    misc.test_setup()
-    add_line_in_global(' failover peer "fonet" {')
-    add_line_in_global('     primary;')
-    add_line_in_global('     address 175.16.1.30;')
-    add_line_in_global('     port 519;')
-    add_line_in_global('     peer address 175.16.1.30;')
-    add_line_in_global('     peer port 520;')
-    add_line_in_global('     mclt 30;')
-    add_line_in_global('     split 128;')
-    add_line_in_global('     load balance max seconds 2;')
-    add_line_in_global(' }')
-    add_line_in_global(' failover peer "beebonet" {')
-    add_line_in_global('     primary;')
-    add_line_in_global('     address 175.16.1.30;')
-    add_line_in_global('     port 521;')
-    add_line_in_global('     peer address 175.16.1.30;')
-    add_line_in_global('     peer port 522;')
-    add_line_in_global('     mclt 30;')
-    add_line_in_global('     split 128;')
-    add_line_in_global('     load balance max seconds 2;')
-    add_line_in_global(' }')
-    add_line_in_global(' subnet 192.168.50.0 netmask 255.255.255.0 {')
-    add_line_in_global('     pool {')
-    add_line_in_global('       range 192.168.50.50 192.168.50.50;')
-    add_line_in_global('     }')
-    add_line_in_global('     pool {')
-    add_line_in_global('       range 192.168.50.150 192.168.50.200;')
-    add_line_in_global('     }')
-    add_line_in_global(' }')
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
-
-    misc.test_procedure()
-    # No steps required
-
-    misc.pass_criteria()
-    # @todo Forge does not yet support searching console output.  Pre-startup
-    # errors like these occur before logging is initted, so the console is the
-    # only place to see them.
-    # DHCP console MUST contain line: ERROR: Failover peer, fobonet, has no referring pools
-    # DHCP console MUST contain line: ERROR: Failover peer, beebonet, has no referring pools
+# @pytest.mark.v4
+# @pytest.mark.dhcpd
+# @pytest.mark.disabled
+# def test_v4_dhcpd_failover_sanity_check_no_pools():
+#     """new-v4.dhcpd.failover.sanity_check.no_pools"""
+#     # #
+#     # # Verifies that failover sanity checking detects when
+#     # # peers are not referenced in pools.
+#     # #
+#     misc.test_setup()
+#     add_line_in_global(' failover peer "fonet" {')
+#     add_line_in_global('     primary;')
+#     add_line_in_global('     address 175.16.1.30;')
+#     add_line_in_global('     port 519;')
+#     add_line_in_global('     peer address 175.16.1.30;')
+#     add_line_in_global('     peer port 520;')
+#     add_line_in_global('     mclt 30;')
+#     add_line_in_global('     split 128;')
+#     add_line_in_global('     load balance max seconds 2;')
+#     add_line_in_global(' }')
+#     add_line_in_global(' failover peer "beebonet" {')
+#     add_line_in_global('     primary;')
+#     add_line_in_global('     address 175.16.1.30;')
+#     add_line_in_global('     port 521;')
+#     add_line_in_global('     peer address 175.16.1.30;')
+#     add_line_in_global('     peer port 522;')
+#     add_line_in_global('     mclt 30;')
+#     add_line_in_global('     split 128;')
+#     add_line_in_global('     load balance max seconds 2;')
+#     add_line_in_global(' }')
+#     add_line_in_global(' subnet 192.168.50.0 netmask 255.255.255.0 {')
+#     add_line_in_global('     pool {')
+#     add_line_in_global('       range 192.168.50.50 192.168.50.50;')
+#     add_line_in_global('     }')
+#     add_line_in_global('     pool {')
+#     add_line_in_global('       range 192.168.50.150 192.168.50.200;')
+#     add_line_in_global('     }')
+#     add_line_in_global(' }')
+#     srv_control.build_and_send_config_files()
+#     srv_control.start_srv_during_process('DHCP', 'configuration')
+#
+#     # misc.test_procedure()
+#     # No steps required
+#
+#     # misc.pass_criteria()
+#     # @todo Forge does not yet support searching console output.  Pre-startup
+#     # errors like these occur before logging is initted, so the console is the
+#     # only place to see them.
+#     # DHCP console MUST contain line: ERROR: Failover peer, fobonet, has no referring pools
+#     # DHCP console MUST contain line: ERROR: Failover peer, beebonet, has no referring pools
