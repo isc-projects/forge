@@ -514,7 +514,7 @@ def test_v6_hosts_cmds_add_reservation_flex_id_NoAddressAvail(channel, host_data
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
 
     # check for available lease
-    srv_msg.SA('2001:db8:1::100', duid='00:03:00:01:f6:f5:f4:f3:f2:03', relay_information=True,
+    srv_msg.SA(duid='00:03:00:01:f6:f5:f4:f3:f2:03', relay_information=True,
                status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'], ifaceid='port1234')
 
 
