@@ -87,16 +87,15 @@ def test_v4_echo_client_id_enabled():
 @pytest.mark.parametrize('has_existing_lease', [False, True])
 @pytest.mark.parametrize('init_reboot', [False, True])
 def test_v4_authoritative(backend, requested_address, authoritative, has_existing_lease, init_reboot):
-    '''Tests that a client gets the proper response from a server configured
+    '''Checks that a client gets the proper response from a server configured
     with different values of authoritative.
 
-    Arguments:
-    backend -- the lease database backend type
-    requested_address -- what value the client uses for option 50
-    authoritative -- the value for the server's authoritative setting
-    has_existing_lease -- whether the client has an existing lease at the moment
+    :param backend: the lease database backend type
+    :param requested_address: what value the client uses for option 50
+    :param authoritative: the value for the server's authoritative setting
+    :param has_existing_lease: whether the client has an existing lease at the moment
         it requests the address
-    init_reboot -- whether the client is in an INIT-REBOOT state when it
+    :param init_reboot: whether the client is in an INIT-REBOOT state when it
         requests the address
     '''
     misc.test_setup()
