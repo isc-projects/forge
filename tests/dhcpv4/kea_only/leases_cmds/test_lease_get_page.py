@@ -13,9 +13,8 @@ import srv_control
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize("channel", ['socket', 'http'])
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_control_channel_lease4_get_page_positive(channel, backend):
+def test_control_channel_lease4_get_page_positive(backend):
     """
     Check correct responses of Kea lease-get-all and lease-get-page
     """
@@ -228,8 +227,7 @@ def test_control_channel_lease4_get_page_positive(channel, backend):
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize("channel", ['socket', 'http'])
-def test_control_channel_lease4_get_page_negative(channel):
+def test_control_channel_lease4_get_page_negative():
     """
     Negative check for Kea lease-get-all and lease-get-page
     """
