@@ -563,11 +563,15 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
     if world.cfg["dhcp_log_file"] == "~/none_file":
         return
 
-    fabric_download_file(build_log_path(),
-                         check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
-                                                               'forge_dhcpd.log',
-                                                               destination_address),
-                         destination_host=destination_address)
+    try:
+        # sometimes log file is not created, ignore it than.....
+        fabric_download_file(build_log_path(),
+                             check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
+                                                                   'forge_dhcpd.log',
+                                                                   destination_address),
+                             destination_host=destination_address)
+    except:
+        pass
 
 
 def clear_leases(destination_address=world.f_cfg.mgmt_address,
@@ -586,7 +590,10 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address):
     # fabric_sudo_command(f'true > {build_log_path()}', destination_host=destination_address)
     fabric_sudo_command(f'rm -f {build_log_path()}', destination_host=destination_address)
     fabric_sudo_command(f'touch {build_log_path()}', destination_host=destination_address)
-    fabric_sudo_command(f'chown syslog:syslog {build_log_path()}', destination_host=destination_address)
+    try:
+        fabric_sudo_command(f'chown syslog:syslog {build_log_path()}', destination_host=destination_address)
+    except:
+        fabric_sudo_command(f'chown root:root {build_log_path()}', destination_host=destination_address)
     fabric_sudo_command(f'chmod 644 {build_log_path()}', destination_host=destination_address)
     fabric_sudo_command('systemctl restart rsyslog', destination_host=destination_address)
 
