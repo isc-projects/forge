@@ -277,10 +277,11 @@ def set_init_all(args):
     if args.dhcpd:
         tmp_txt = ""
         for line in txt.split('\n'):
-            if not line.startswith('SOFTWARE_UNDER_TEST'):
+            if not line.startswith('SOFTWARE_UNDER_TEST') or not line.startswith('PACKET_WAIT_INTERVAL'):
                 tmp_txt += f'\n{line}'
         tmp_txt += '\nSOFTWARE_UNDER_TEST = "isc_dhcp4_server", "bind9_server",'
         tmp_txt += '\nDISABLE_DB_SETUP = True'
+        tmp_txt += '\nPACKET_WAIT_INTERVAL = 3'
         txt = tmp_txt
 
     path = os.path.abspath('tests/init_all.py')
