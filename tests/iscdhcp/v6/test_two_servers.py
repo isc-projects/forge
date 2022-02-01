@@ -7,7 +7,10 @@ import misc
 import srv_control
 import srv_msg
 
-from softwaresupport.isc_dhcp6_server.functions import add_line_in_global
+# if used those 3 functions has to be imported directly
+# from softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, add_reverse_ddns
+# from softwaresupport.isc_dhcp6_server.functions import add_line_in_global
+
 from forge_cfg import world
 
 
