@@ -248,11 +248,10 @@ class ForgeConfiguration:
         return self.data_join('kea-leases%s.csv' % proto[1])
 
 
-
-
 # global object that stores all needed data: configs, etc.
 world = threading.local()
 world.f_cfg = ForgeConfiguration()
+world.test_count = 1
 
 
 def _conv_arg_to_txt(arg):

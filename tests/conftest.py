@@ -1,4 +1,5 @@
 import pytest
+from forge_cfg import world
 
 
 def pytest_runtest_setup(item):
@@ -13,15 +14,16 @@ def pytest_runtest_teardown(item, nextitem):
 
 
 def pytest_runtest_logstart(nodeid, location):
-    banner = '\n\n************ START   %s ' % nodeid
+    banner = f'\n\n************ START #{world.test_count} {nodeid} '
     banner += '*' * (140 - len(banner))
     banner += '\n'
     banner = '\u001b[36m' + banner + '\u001b[0m'
     print(banner)
+    world.test_count += 1
 
 
 def pytest_runtest_logfinish(nodeid, location):
-    banner = '\n************ END   %s ' % nodeid
+    banner = f'\n************ END   {nodeid} '
     banner += '*' * (140 - len(banner))
     banner = '\u001b[36;1m' + banner + '\u001b[0m'
     print(banner)
