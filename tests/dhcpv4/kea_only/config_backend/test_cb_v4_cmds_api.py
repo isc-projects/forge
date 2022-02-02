@@ -390,6 +390,8 @@ def test_remote_subnet4_get_all_values():
                     'server-hostname': 'name-xyz',
                     'shared-network-name': None,
                     'subnet': '192.168.50.0/24',
+                    'max-valid-lifetime': 1000,
+                    'min-valid-lifetime': 1000,
                     'valid-lifetime': 1000
                 }
             ]
@@ -750,6 +752,8 @@ def test_remote_subnet4_get_by_id():
                                                    'reservations-global': True,      # new since 1.9.1
                                                    'reservations-in-subnet': False,  # new since 1.9.1
                                                    "server-hostname": "name-xyz",
+                                                   "max-valid-lifetime": 1000,
+                                                   "min-valid-lifetime": 1000,
                                                    "subnet": "192.168.50.0/24", "valid-lifetime": 1000}]},
                         "result": 0, "text": "IPv4 subnet 2 found."}
 
@@ -829,6 +833,8 @@ def test_remote_subnet4_get_by_prefix():
             'reservations-in-subnet': True,     # new since 1.9.1
             'reservations-out-of-pool': False,  # new since 1.9.1
             "server-hostname": "name-xyz",
+            "max-valid-lifetime": 1000,
+            "min-valid-lifetime": 1000,
             "subnet": "192.168.50.0/24",
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv4 subnet 192.168.50.0/24 found."}
 
@@ -988,6 +994,8 @@ def test_remote_network4_get_all_values():
                                       "shared-networks": [{"authoritative": False, "client-class": "abc",
                                                            "rebind-timer": 200, "renew-timer": 100,
                                                            "valid-lifetime": 300,
+                                                           "max-valid-lifetime": 300,
+                                                           "min-valid-lifetime": 300,
                                                            # "reservation-mode": "global",   # not anymore since 1.9.1
                                                            'reservations-global': True,      # new since 1.9.1
                                                            'reservations-in-subnet': False,  # new since 1.9.1

@@ -357,6 +357,8 @@ def test_remote_subnet6_get_all_values():
                     'reservations-out-of-pool': False,
                     'shared-network-name': None,
                     'subnet': '2001:db8:1::/64',
+                    "max-valid-lifetime": 1000,
+                    "min-valid-lifetime": 1000,
                     'valid-lifetime': 1000
                 }
             ]
@@ -693,6 +695,8 @@ def test_remote_subnet6_get_by_id():
                                                                                "space": "dhcp6"}],
                                                               "pool": "2001:db8:1::1-2001:db8:1::10"}],
                                                    "rebind-timer": 500, "renew-timer": 200,
+                                                   "max-valid-lifetime": 1000,
+                                                   "min-valid-lifetime": 1000,
                                                    "reservations-global": True,
                                                    "reservations-in-subnet": False,
                                                    "pd-pools": [],
@@ -761,6 +765,8 @@ def test_remote_subnet6_get_by_prefix():
             "pd-pools": [],
             "relay": {"ip-addresses": []},
             "subnet": "2001:db8:1::/64",
+            "max-valid-lifetime": 1000,
+            "min-valid-lifetime": 1000,
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv6 subnet 2001:db8:1::/64 found."}
 
 
@@ -918,6 +924,8 @@ def test_remote_network6_get_all_values():
                                       "shared-networks": [{"client-class": "abc",
                                                            "rebind-timer": 200, "renew-timer": 100,
                                                            "valid-lifetime": 300,
+                                                           "max-valid-lifetime": 300,
+                                                           "min-valid-lifetime": 300,
                                                            "reservations-global": True,
                                                            "reservations-in-subnet": False,
                                                            "interface": srv_msg.get_server_interface(),

@@ -244,9 +244,7 @@ def test_ddns6_notsig_forw_and_rev_release_fqdn_sanitization_omit_1():
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'server-id')
     srv_msg.client_add_saved_option_count(1)
-    srv_msg.client_sets_value('Client',
-                              'FQDN_domain_name',
-                              '$(WHITE_SPACE)*sth6*.si^x(')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', '$(WHITE_SPACE)*sth6*.six.example.com^(')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_does_include('Client', 'client-id')

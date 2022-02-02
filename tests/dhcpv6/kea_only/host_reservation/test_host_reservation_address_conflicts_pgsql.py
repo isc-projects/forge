@@ -36,7 +36,12 @@ def test_v6_host_reservation_duplicate_reservation_duid():
 @pytest.mark.host_reservation
 @pytest.mark.kea_only
 @pytest.mark.pgsql
+@pytest.mark.disabled
 def test_v6_host_reservation_duplicate_reservation_address():
+    # since address uniqueness is now configurable fom kea config level
+    # it's normal we can input reservations directly to database no matter
+    # kea configuration, reservation uniqueness is checked while using "reservation-add"
+    # command. Disabling test.
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
 
