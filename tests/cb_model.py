@@ -204,13 +204,18 @@ class ConfigModel(ConfigElem):
                 cfg['shared-networks'].append(net.get_dict())
 
         if world.f_cfg.install_method == 'make':
-            log_file = world.f_cfg.log_join('kea.log')
+            loggers = {"output": world.f_cfg.log_join('kea.log'),
+                       "flush": True,
+                       "maxsize": 10240000,
+                       "maxver": 1,
+                       "pattern": ""}
         else:
-            log_file = 'stdout'
+            loggers = {"output": "stdout",
+                       "pattern": ""}
 
         # loggers config
         cfg["loggers"] = [{"name": "kea-dhcp" + proto,
-                           "output_options": [{"output": log_file}],
+                           "output_options": [loggers],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
 
@@ -600,6 +605,9 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  'hostname-char-set', 'statistic-default-sample-count',
                  'multi-threading', 'ip-reservations-unique',
                  'ddns-use-conflict-resolution',
+                 # those values depends on configured valid-lifetime and preferred-lifetime
+                 # let's ignore it for now since we don't have procedure to check it
+                 'max-valid-lifetime', 'min-valid-lifetime', 'max-preferred-lifetime', 'min-preferred-lifetime'
                  ]:
             # TODO: for now ignore these fields
             continue
