@@ -607,6 +607,7 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  'ddns-use-conflict-resolution',
                  # those values depends on configured valid-lifetime and preferred-lifetime
                  # let's ignore it for now since we don't have procedure to check it
+                 # qa-dhcp #287
                  'max-valid-lifetime', 'min-valid-lifetime', 'max-preferred-lifetime', 'min-preferred-lifetime'
                  ]:
             # TODO: for now ignore these fields
