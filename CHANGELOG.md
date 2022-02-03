@@ -1,3 +1,8 @@
+* 35    [func]  wlodek
+
+    Bring back isc-dhcp tests and isc-dhcp server management.
+    (gitlab !235)
+
 * 34.	[doc]	tomek
 
 	Coding guidelines added, rearranged and update documentation.

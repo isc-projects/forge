@@ -1,4 +1,15 @@
 """ISC_DHCP DHCPv6 two server setup test"""
+# This is example file to how write test that are using two virtual systems.
+# Both of those systems have to have installed isc-dhcp and bind (for ddns tests)
+# If forge + vagrant is used isc-dhcp and bind are installed:
+# ./forge config kea-dirs /home/ubuntu/
+# ./forge config ccache-dir /tmp
+# ./forge --lxc --sid all -s ubuntu-20.04 setup --dhcpd
+# ./forge --lxc --sid all -s ubuntu-20.04 install-dhcpd <path-to-sources>
+# Both systems are accessible by world.f_cfg.mgmt_address and world.f_cfg.mgmt_address_2 inside test
+# To access systems directly:
+# list all created systems: vagrant global-status
+# vagrant ssh <system-id> -c "bash"
 
 # pylint: disable=invalid-name,line-too-long
 
@@ -27,6 +38,11 @@ def kill_kea_on_second_system():
 
 
 def _get_address(duid, address):
+    """
+    Get assigned address from DHCP server using full SARR exchange
+    :param duid: string with DUID used by client
+    :param address: string with expected address in IA-NA option
+    """
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'ia_id', 666)
     srv_msg.client_sets_value('Client', 'DUID', duid)

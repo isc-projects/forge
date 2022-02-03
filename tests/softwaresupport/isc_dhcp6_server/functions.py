@@ -83,6 +83,12 @@ isc_dhcp_otheroptions_value_type = {
 
 
 def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
+    """
+    Calculate prefix pool from prefix length and prefix delegated length (different notation than in Kea)
+    :param ip6_addr: subnet ip address
+    :param length: int prefix length
+    :param delegated_length: int prefix delegated length
+    """
 
     ip6_addr_splited = ip6_addr.split(":")
     if len(ip6_addr_splited) < 3 or len(ip6_addr_splited) > 9:
@@ -151,6 +157,10 @@ def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
+    """
+    Restart ISC-DHCP on remote system
+    :param destination_address: string with ip address of remote system
+    """
     stop_srv(destination_address=destination_address)
     fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, f'sbin/dhcpd -{world.proto[1]}')
                         + '-cf server.cfg_processed -lf '
@@ -159,6 +169,13 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 
 def set_time(which_time, value, subnet=None):
+    """
+    Change default value of configured time
+    :param which_time: string with parameter name
+    :param value: int with timer value
+    :param subnet: int subnet id
+    :return:
+    """
     assert which_time in world.cfg["server_times"], "Unknown time name: %s" % which_time
     if subnet is None:
         world.cfg["server_times"][which_time] = value
@@ -177,6 +194,11 @@ def set_time(which_time, value, subnet=None):
 
 
 def unset_time(which_time, subnet=None):
+    """
+    Remove single timer from configuration
+    :param which_time: string with timer name e.g. "renew-timer"
+    :param subnet: not used
+    """
     if which_time in world.cfg["server_times"]:
         world.cfg["server_times"][which_time] = None
     else:
@@ -184,6 +206,9 @@ def unset_time(which_time, subnet=None):
 
 
 def add_defaults():
+    """
+    Add default parameters to configuration
+    """
     if "conf_time" not in world.cfg:
         world.cfg["conf_time"] = ""
 
@@ -210,6 +235,11 @@ def add_defaults():
 
 
 def add_pool_to_subnet(pool, subnet):
+    """
+    Add pool to indicated subnet
+    :param pool: string with pool
+    :param subnet: int with subnet id
+    """
     if pool == "default":
         pool = "2001:db8:1::0 2001:db8:1::ffff"
     else:
@@ -219,6 +249,12 @@ def add_pool_to_subnet(pool, subnet):
 
 
 def prepare_cfg_subnet(subnet, pool, iface=None):
+    """
+    Add first subnet of configuration with possible default values
+    :param subnet: string with subnet
+    :param pool: string with pool
+    :param iface: not used
+    """
     ## structure of world.subcfg is [["", "", "", "",""]] but we need only one argument in the list
     ## every configuration added for subnets in ISC-DHCP is configured on the same level
     ## so we use here: world.subcfg[0] = [all_options]
@@ -252,6 +288,12 @@ def prepare_cfg_subnet(subnet, pool, iface=None):
 
 
 def config_srv_another_subnet(subnet, pool, eth):
+    """
+    Create new subnet configuration and add there indicated subnet
+    :param subnet: string with subnet
+    :param pool: string with pool
+    :param eth: not used in isc-dhcp
+    """
     ## it will pass ethernet interface but it will have no impact on config files
     world.subcfg.append(["", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
@@ -260,6 +302,12 @@ def config_srv_another_subnet(subnet, pool, eth):
 
 
 def prepare_cfg_add_option(option_name, option_value, space):
+    """
+    Add option to global part of configuration
+    :param option_name: string with option name
+    :param option_value: string with option value
+    :param space: string on which option should be configured
+    """
     if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
@@ -315,6 +363,14 @@ def prepare_cfg_add_option(option_name, option_value, space):
 
 
 def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
+    """
+    Add prefix configuration
+    :param prefix: string with prefix
+    :param length: int prefix length
+    :param delegated_length: int prefix delegated length
+    :param subnet: int subnet id in which prefix have to be configured
+    :return:
+    """
     subnet = int(subnet)
 
     highest = switch_prefix6_lengths_to_pool(str(prefix), int(length), int(delegated_length))
@@ -332,7 +388,14 @@ def config_client_classification(subnet, option_value):
     assert False, "TODO!"
 
 
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space = 'dhcp6'):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp6'):
+    """
+    Add option configuration in specific subnet
+    :param option_name: string with option name
+    :param subnet: int, subnet id
+    :param option_value: string with option value
+    :param space: string with space on which option have to be configured
+    """
     if "conf_subnet" not in world.cfg:
         assert False, 'Configure subnet/pool first, then subnet options'
 
@@ -375,6 +438,13 @@ def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space = 'dh
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value, un_used):
+    """
+    Create host reservation
+    :param reservation_type: string, "address" is only accepted value
+    :param reserved_value: string with reserved ip address
+    :param unique_host_value: string with mac address for reservation
+    :param un_used: not used
+    """
     if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ""
     host_name = "anyhostname_"+str(len(world.cfg["custom_lines"]))
@@ -393,6 +463,9 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 
 
 def cfg_write():
+    """
+    Build config file from all previously added options, subntes and parameters
+    """
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])
 
@@ -424,6 +497,10 @@ def cfg_write():
 
 
 def convert_cfg_file(cfg):
+    """
+    Change layout of config file
+    :param cfg: path to config file
+    """
     tmpfile = cfg + "_processed"
     conf = open(cfg, "rt")
     process = open(tmpfile, "w")
@@ -461,16 +538,27 @@ def set_ethernet_interface():
 
 
 def build_leases_path():
+    """
+    :return: static value, path to leases file, do not change
+    """
     return '/tmp/dhcpd.leases'
 
 
 def build_log_path():
+    """
+    :return: static value, path to log file, do not change
+    """
     # syslog/rsyslog typically will not write to log files unless
     # they are in /var/log without manual intervention.
     return '/var/log/forge_dhcpd.log'
 
 
 def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
+    """
+    Build and send ISC-DHCP configuration file to specific location
+    :param destination_address: string with ip address of remote server running ISC-DHCP
+    :param cfg: not used here
+    """
     if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
@@ -494,6 +582,13 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
 
 
 def check_process_result(succeed, result, process):
+    """
+    Check result of starting ISC-DHCP
+    :param succeed: True/False, True if we expect ISC-DHCP to start successfully
+    :param result: logs from ISC-DHCP
+    :param process: not used
+    :return:
+    """
     errors = ["exiting."]
     for each in errors:
         if succeed is True:
@@ -505,6 +600,10 @@ def check_process_result(succeed, result, process):
 
 
 def add_line_in_global(command):
+    """
+    Add line to ISC-DHCP configuration file, will also perform replacing $() values
+    :param command: string with line added to config file
+    """
     command = test_define_value(command)[0]
     if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ''
@@ -513,6 +612,12 @@ def add_line_in_global(command):
 
 
 def set_conf_parameter_global(parameter_name, value):
+    """
+    Add parameter in global configuration file of ISC-DHCP server
+    :param parameter_name: string with parameter name
+    :param value: sting with value of configured parameter
+    :return:
+    """
     if "custom_lines" not in world.cfg:
         world.cfg["custom_lines"] = ''
     if parameter_name == "rapid-commit":
@@ -522,9 +627,15 @@ def set_conf_parameter_global(parameter_name, value):
 
 
 def set_conf_parameter_subnet(parameter_name, value, subnet_id):
+    """
+    Add rapid commit option to specific subnet in server config file
+    :param parameter_name: string with parameter name, here can only be rapid-commit
+    :param value: True/False, True if we want to add this parameter
+    :param subnet_id: id of subnet that should be configured
+    """
     if parameter_name == "rapid-commit":
-            if value == 'true':
-                world.subcfg[subnet_id][0] += 'option dhcp6.rapid-commit;'
+        if value == 'true':
+            world.subcfg[subnet_id][0] += 'option dhcp6.rapid-commit;'
     else:
         pass
         #world.subcfg[subnet_id][0] += '{parameter_name} {value};'.format(**locals())
@@ -532,7 +643,11 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
 
 def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     """
-    Start ISC-DHCP v4 or v6 with generated config.
+    Start ISC-DHCP server on remote system
+    :param start: binary value of expected result, True if server should successfully start
+    :param process: None
+    :param destination_address: string with ip address of remote system
+    :return:
     """
     world.cfg['leases'] = build_leases_path()
     result = fabric_sudo_command('(' + os.path.join(world.f_cfg.software_install_path, f'sbin/dhcpd -{world.proto[1]}')
@@ -552,6 +667,10 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
 
 
 def save_leases(destination_address=world.f_cfg.mgmt_address):
+    """
+    Download leases ISC-DHCP file from remote system
+    :param destination_address: string with ip address
+    """
     fabric_download_file(build_leases_path(),
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                'dhcpd.leases',
@@ -560,6 +679,10 @@ def save_leases(destination_address=world.f_cfg.mgmt_address):
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
+    """
+    Download logs into tests_results
+    :param destination_address: string with ip address of system running ISC-DHCP
+    """
     if world.cfg["dhcp_log_file"] == "~/none_file":
         return
 
@@ -577,17 +700,31 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
 def clear_leases(destination_address=world.f_cfg.mgmt_address,
                  software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
+    """
+    Clear leases file on remote system
+    :param destination_address: string with ip address
+    :param software_install_path: not used, path is static
+    :param db_user: not used
+    :param db_passwd: not used
+    :param db_name: not used
+    """
     fabric_sudo_command(f'true > {build_leases_path()}', destination_host=destination_address)
 
 
 def stop_srv(destination_address=world.f_cfg.mgmt_address, value=False):
+    """
+    Stop ISC-DHCP server
+    :param destination_address: string with ip address
+    :param value: not used in isc-dhcp
+    """
     fabric_sudo_command("killall dhcpd &>/dev/null", ignore_errors=True, destination_host=destination_address)
 
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
-    # ISC_DHCP logs using syslog/rsyslog (OS dependent). DO NOT delete the log file as
-    # not all implementations will re-create it.
-    # fabric_sudo_command(f'true > {build_log_path()}', destination_host=destination_address)
+    """
+    Remove ISC-DHCP logs from remote system
+    :param destination_address: string with ip address
+    """
     fabric_sudo_command(f'rm -f {build_log_path()}', destination_host=destination_address)
     fabric_sudo_command(f'touch {build_log_path()}', destination_host=destination_address)
     try:
@@ -601,6 +738,14 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address):
 def clear_all(destination_address=world.f_cfg.mgmt_address,
               software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
               db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
+    """
+    Clean leases and logs from remote system
+    :param destination_address: ip address of the host on which isc-dhcp is running
+    :param software_install_path: path to installed binaries
+    :param db_user: not used in isc-dhcp
+    :param db_passwd: not used in isc-dhcp
+    :param db_name: not used in isc-dhcp
+    """
     try:
         clear_logs(destination_address=destination_address)
         clear_leases(destination_address=destination_address, software_install_path=software_install_path,
@@ -608,10 +753,11 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
     except:
         pass
 
+
 # ISC-DHCP specific functions
 def simple_file_layout():
     """
-    Format dhcp config file
+    Format dhcp config file, add missing brackets
     """
     config = open(world.cfg["cfg_file"], 'r')
     new_config = ""

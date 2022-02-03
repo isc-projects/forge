@@ -161,6 +161,12 @@ needs_changing_comma = [
 
 
 def add_siaddr(addr, subnet_number):
+    """
+    Change siaddr value in partucular subnet
+    :param addr: string with ip address
+    :param subnet_number: int with subnet id
+    :return:
+    """
     if subnet_number is None:
         if "simple_options" not in world.cfg:
             world.cfg["simple_options"] = ''
@@ -171,6 +177,9 @@ def add_siaddr(addr, subnet_number):
 
 
 def add_defaults():
+    """
+    Add default values in the config file
+    """
     if "conf_time" not in world.cfg:
         world.cfg["conf_time"] = ""
 
@@ -188,6 +197,11 @@ def add_defaults():
 
 
 def netmask(subnet):
+    """
+    Add netmask to configuration based on subnet
+    :param subnet: string with subnet
+    :return: string with replaced int value to netmask text
+    """
     ## this is ugly and easiest hack, just for standard values of netmasks
     ## TODO: enable using all netmasks!
     tmp_subnet = subnet.split("/")
@@ -200,6 +214,12 @@ def netmask(subnet):
 
 
 def prepare_cfg_subnet(subnet, pool, iface=None):
+    """
+    Add first subnet of configuration with possible default values
+    :param subnet: string with subnet
+    :param pool: string with pool
+    :param iface: not used
+    """
     if "conf_subnet" not in world.cfg:
         world.cfg["conf_subnet"] = ""
 
@@ -226,6 +246,11 @@ def prepare_cfg_subnet(subnet, pool, iface=None):
 
 
 def add_pool_to_subnet(pool, subnet):
+    """
+    Add pool to indicated subnet
+    :param pool: string with pool
+    :param subnet: int with subnet id
+    """
     if pool == "default":
         pool = "192.168.0.1 192.168.0.254"
     else:
@@ -235,6 +260,12 @@ def add_pool_to_subnet(pool, subnet):
 
 
 def config_srv_another_subnet(subnet, pool, eth):
+    """
+    Add first subnet of configuration with possible default values
+    :param subnet: string with subnet
+    :param pool: string with pool
+    :param eth: not used
+    """
     ## it will pass ethernet interface but it will have no impact on config files
     world.subcfg.append(["", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
@@ -243,8 +274,13 @@ def config_srv_another_subnet(subnet, pool, eth):
 
 
 def remove_comma(string):
-    ## because we in ISC-DHCP we separate ip addresses with whitespace and
-    ## pairs of ip addresses with comma we need to remove every odd comma from configuration
+    """
+    because we in ISC-DHCP we separate ip addresses with whitespace and
+    pairs of ip addresses with comma we need to remove every odd comma from configuration
+    :param string: list of addresses
+    """
+    ##
+    ##
     flag = False
     tmp = ""
     for each in string:
@@ -261,6 +297,12 @@ def remove_comma(string):
 
 
 def prepare_cfg_add_option(option_name, option_value, space='dhcp'):
+    """
+    Add option to global part of configuration
+    :param option_name: string with option name
+    :param option_value: string with option value
+    :param space: string on which option should be configured
+    """
     if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
@@ -316,7 +358,14 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
     pass #http://linux.die.net/man/5/dhcp-options
 
 
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space = 'dhcp'):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp'):
+    """
+    Add option configuration in specific subnet
+    :param option_name: string with option name
+    :param subnet: int, subnet id
+    :param option_value: string with option value
+    :param space: string with space on which option have to be configured
+    """
     if "conf_subnet" not in world.cfg:
         assert False, 'Configure subnet/pool first, then subnet options'
 
@@ -365,6 +414,13 @@ def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value, un_used):
+    """
+    Create host reservation
+    :param reservation_type: string, "address" is only accepted value
+    :param reserved_value: string with reserved ip address
+    :param unique_host_value: string with mac address for reservation
+    :param un_used: not used
+    """
     pointer_start = "{"
     pointer_end = "}"
     if "custom_lines" not in world.cfg:
@@ -382,6 +438,9 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 
 
 def cfg_write():
+    """
+    Combine all parts into single configuration file and save it
+    """
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])
     cfg_file.write("authoritative;\n")
@@ -415,6 +474,11 @@ def cfg_write():
 
 
 def build_and_send_config_files(cfg, destination_address):
+    """
+    Build ISC-DHCP config file and send it to remote server
+    :param cfg: not used
+    :param destination_address:string with ip address
+    """
     if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""
 
