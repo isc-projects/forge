@@ -15,7 +15,8 @@ pytestmark = [pytest.mark.v4,
 
 
 @pytest.mark.parametrize("classes_kept_in", ["db", "config"])
-def test_class_in_subnet(dhcp_version, classes_kept_in):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_class_in_subnet(dhcp_version, classes_kept_in, backend):
     # prepare initial config with 1 class 'modem' for 1 client with specificed MAC address
     if classes_kept_in == 'config':
         init_cfg = {'client-classes': [{'name': 'modem'}]}
@@ -25,16 +26,17 @@ def test_class_in_subnet(dhcp_version, classes_kept_in):
             init_cfg['client-classes'][0]['test'] = "hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'"
     else:
         init_cfg = {}
-    cfg = setup_server_for_config_backend_cmds(**init_cfg)
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend, **init_cfg)
 
     if classes_kept_in == 'db':
         if dhcp_version == 'v4':
-            cfg.add_class(name="modem", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'")
+            cfg.add_class(backend=backend, name="modem", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'")
         else:
-            cfg.add_class(name="modem", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'")
+            cfg.add_class(backend=backend, name="modem",
+                          test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'")
 
     # add 1 subnet that permits only client from 'modem' class
-    subnet_cfg, _ = cfg.add_subnet(client_class='modem')
+    subnet_cfg, _ = cfg.add_subnet(backend=backend, client_class='modem')
 
     # client from 'modem' class with specific MAC address should get lease
     get_address(mac_addr="00:00:00:00:00:01", exp_addr='192.168.50.1' if dhcp_version == 'v4' else '2001:db8:1::1')
@@ -44,23 +46,23 @@ def test_class_in_subnet(dhcp_version, classes_kept_in):
 
     # change class name in subnet and now the first client should not be given a lease
     # as class names do not match
-    subnet_cfg.update(client_class='not-modem')
+    subnet_cfg.update(backend=backend, client_class='not-modem')
     get_rejected(mac_addr='00:00:00:00:00:01')
 
     # change class name in subnet to '' ie. reset it, ie. make the subnet open to any client
     # and now unclassified should get a lease
-    subnet_cfg.update(client_class='')
+    subnet_cfg.update(backend=backend, client_class='')
     get_address(mac_addr="00:00:00:00:00:03", exp_addr='192.168.50.2' if dhcp_version == 'v4' else '2001:db8:1::2')
 
 
 @pytest.mark.parametrize("classes_kept_in", ["db", "config"])
-def test_class_in_network(dhcp_version, classes_kept_in):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_class_in_network(dhcp_version, classes_kept_in, backend):
     # prepare initial config with 3 class: modem, user, other
     # each class is assigned to 1 client with specified MAC address
 
     if classes_kept_in == "config":
         if dhcp_version == 'v4':
-            # cfg.add_class()
             init_cfg = {'client-classes': [{
                 'name': 'modem',
                 'test': "hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'"
@@ -84,28 +86,31 @@ def test_class_in_network(dhcp_version, classes_kept_in):
             }]}
     else:
         init_cfg = {}
-    cfg = setup_server_for_config_backend_cmds(**init_cfg)
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend, **init_cfg)
 
     if classes_kept_in == 'db':
         if dhcp_version == 'v4':
-            cfg.add_class(name="modem", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'")
-            cfg.add_class(name="user", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:02'")
-            cfg.add_class(name="other", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:03'")
+            cfg.add_class(backend=backend, name="modem", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'")
+            cfg.add_class(backend=backend, name="user", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:02'")
+            cfg.add_class(backend=backend, name="other", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:03'")
         else:
-            cfg.add_class(name="modem", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'")
-            cfg.add_class(name="user", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:02'")
-            cfg.add_class(name="other", test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:03'")
+            cfg.add_class(backend=backend, name="modem",
+                          test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'")
+            cfg.add_class(backend=backend, name="user",
+                          test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:02'")
+            cfg.add_class(backend=backend, name="other",
+                          test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:03'")
 
     # add 2 subnets
 
     # subnet 1 is for a modem class
-    cfg.add_subnet(client_class='modem')
+    cfg.add_subnet(backend=backend, client_class='modem')
 
     # subnet 2 is assigned to shared netwrok which is assigned to user class
-    network_cfg, _ = cfg.add_network(name='user-nets',
+    network_cfg, _ = cfg.add_network(backend=backend, name='user-nets',
                                      client_class='user')
     pool = '2.2.2.1-2.2.2.10' if dhcp_version == 'v4' else '2:2:2::1-2:2:2::10'
-    cfg.add_subnet(shared_network_name='user-nets',
+    cfg.add_subnet(backend=backend, shared_network_name='user-nets',
                    subnet='2.2.2.0/24' if dhcp_version == 'v4' else '2:2:2::/64',
                    pools=[{'pool': pool}])
 
@@ -119,10 +124,10 @@ def test_class_in_network(dhcp_version, classes_kept_in):
     get_rejected(mac_addr='00:00:00:00:00:03')
 
     # change class name in network to 'other' and now client 3 should be given a lease
-    network_cfg.update(client_class='other')
+    network_cfg.update(backend=backend, client_class='other')
     get_address(mac_addr="00:00:00:00:00:03", exp_addr='2.2.2.2' if dhcp_version == 'v4' else '2:2:2::2')
 
     # change class name in network to '' ie. reset it, ie. make the network open to any client
     # and now unclassified client 4 should be given a lease from subnet 2
-    network_cfg.update(client_class='')
+    network_cfg.update(backend=backend, client_class='')
     get_address(mac_addr="00:00:00:00:00:04", exp_addr='2.2.2.3' if dhcp_version == 'v4' else '2:2:2::3')

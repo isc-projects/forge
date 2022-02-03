@@ -13,10 +13,10 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.cb_cmds]
 
 
-@pytest.fixture(autouse=True)
-def run_around_tests():
-    setup_server_for_config_backend_cmds(config_control={"config-fetch-wait-time": 1}, force_reload=False)
-    cmd = dict(command="remote-server4-set", arguments={"remote": {"type": "mysql"},
+def _setup_server(backend):
+    setup_server_for_config_backend_cmds(backend_type=backend, config_control={"config-fetch-wait-time": 1},
+                                         force_reload=False)
+    cmd = dict(command="remote-server4-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -29,9 +29,9 @@ def _get_server_config(reload_kea=False):
     return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
 
-def _subnet_set():
+def _subnet_set(backend):
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "subnets": [{"subnet": "10.0.0.0/24",
                                        "id": 5,
@@ -45,8 +45,8 @@ def _subnet_set():
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
-def _set_network(channel='http'):
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+def _set_network(backend, channel='http'):
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{"name": "floor13"}]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
@@ -56,8 +56,10 @@ def _set_network(channel='http'):
 
 
 @pytest.mark.v4
-def test_subnet_option():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_option(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
     cmd = dict(command="remote-option4-subnet-set",
                arguments={"subnets": [{"id": 5}],
                           "options": [{"always-send": False,
@@ -66,7 +68,7 @@ def test_subnet_option():
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
                                        "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -76,7 +78,7 @@ def test_subnet_option():
 
     cmd = dict(command="remote-option4-subnet-del",
                arguments={"subnets": [{"id": 5}], "options": [{"code": 6, "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -86,11 +88,13 @@ def test_subnet_option():
 
 
 @pytest.mark.v4
-def test_multiple_subnet_option():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_multiple_subnet_option(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "subnets": [{"subnet": "10.10.0.0/24",
                                        "id": 9,
@@ -107,14 +111,14 @@ def test_multiple_subnet_option():
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
                                        "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     cmd = dict(command="remote-option4-subnet-set",
                arguments={"subnets": [{"id": 9}],
                           "options": [{"always-send": False, "code": 6, "csv-format": True,
                                        "data": "10.0.0.2", "name": "domain-name-servers",
-                                       "space": "dhcp4"}], "remote": {"type": "mysql"}})
+                                       "space": "dhcp4"}], "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -130,7 +134,7 @@ def test_multiple_subnet_option():
 
     cmd = dict(command="remote-option4-subnet-del",
                arguments={"subnets": [{"id": 5}], "options": [{"code": 6, "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -146,10 +150,12 @@ def test_multiple_subnet_option():
 
 
 @pytest.mark.v4
-def test_subnet_in_network_option():
-    _set_network()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_in_network_option(backend):
+    _setup_server(backend)
+    _set_network(backend)
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "subnets": [{"subnet": "10.0.0.0/24",
                                        "id": 5,
@@ -166,7 +172,7 @@ def test_subnet_in_network_option():
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
                                        "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(2, "seconds")
@@ -176,10 +182,12 @@ def test_subnet_in_network_option():
 
 
 @pytest.mark.v4
-def test_option_on_all_levels():
-    _set_network()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_option_on_all_levels(backend):
+    _setup_server(backend)
+    _set_network(backend)
     cmd = dict(command="remote-subnet4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "subnets": [{"subnet": "10.0.0.0/24",
                                        "id": 5,
@@ -196,7 +204,7 @@ def test_option_on_all_levels():
                                            "name": "domain-name-servers",
                                            "space": "dhcp4",
                                            "data": "10.0.0.1"}],
-                              "remote": {"type": "mysql"}})
+                              "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd_sub, exp_result=0)
 
     cmd_pool = dict(command="remote-option4-pool-set",
@@ -207,7 +215,7 @@ def test_option_on_all_levels():
                                             "name": "domain-name-servers",
                                             "space": "dhcp4",
                                             "data": "10.0.0.2"}],
-                               "remote": {"type": "mysql"}})
+                               "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd_pool, exp_result=0)
 
     cmd_net = dict(command="remote-option4-network-set",
@@ -218,7 +226,7 @@ def test_option_on_all_levels():
                                            "name": "domain-name-servers",
                                            "space": "dhcp4",
                                            "data": "10.0.0.3"}],
-                              "remote": {"type": "mysql"}})
+                              "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd_net, exp_result=0)
 
     srv_msg.forge_sleep(2, "seconds")
@@ -233,8 +241,10 @@ def test_option_on_all_levels():
 
 
 @pytest.mark.v4
-def test_network_option():
-    _set_network()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_network_option(backend):
+    _setup_server(backend)
+    _set_network(backend)
 
     cmd = dict(command="remote-option4-network-set",
                arguments={"shared-networks": [{"name": "floor13"}],
@@ -244,7 +254,7 @@ def test_network_option():
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
                                        "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
 
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -254,7 +264,7 @@ def test_network_option():
     cmd = dict(command="remote-option4-network-del",
                arguments={"shared-networks": [{"name": "floor13"}],
                           "options": [{"code": 6, "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
 
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
     srv_msg.forge_sleep(3, "seconds")
@@ -264,8 +274,10 @@ def test_network_option():
 
 
 @pytest.mark.v4
-def test_pool_option():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_pool_option(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
     cmd = dict(command="remote-option4-pool-set",
                arguments={"pools": [{"pool": "10.0.0.1-10.0.0.100"}],
                           "options": [{"always-send": False,
@@ -274,7 +286,7 @@ def test_pool_option():
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
                                        "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -285,7 +297,7 @@ def test_pool_option():
     cmd = dict(command="remote-option4-pool-del",
                arguments={"pools": [{"pool": "10.0.0.1-10.0.0.100"}],
                           "options": [{"code": 6, "space": "dhcp4"}],
-                          "remote": {"type": "mysql"}})
+                          "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(4, "seconds")

@@ -16,22 +16,21 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.cb_cmds]
 
 
-def _set_server_tag(tag):
-    cmd = dict(command="remote-server%s-set" % world.proto[-1], arguments={"remote": {"type": "mysql"},
+def _set_server_tag(backend, tag):
+    cmd = dict(command="remote-server%s-set" % world.proto[-1], arguments={"remote": {"type": backend},
                                                                            "servers": [{"server-tag": tag}]})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
 
-@pytest.fixture(autouse=True)
-def run_around_tests():
-    setup_server_for_config_backend_cmds()
-    _set_server_tag("abc")
+def _setup_server(backend):
+    setup_server_for_config_backend_cmds(backend_type=backend)
+    _set_server_tag(backend, "abc")
 
 
-def _send_cmd(cmd, remote="mysql", tag=None, channel='http', exp_result=0):
+def _send_cmd(cmd, backend="", tag=None, channel='http', exp_result=0):
     # remote and tag in cmd have priority over the ones in the parameters.
     if "remote" not in cmd["arguments"]:
-        cmd["arguments"].update({"remote": {"type": remote}})
+        cmd["arguments"].update({"remote": {"type": backend}})
     if "server-tags" not in cmd["arguments"] and tag is not None:
         if not isinstance(tag, list):
             tag = [tag]
@@ -41,6 +40,7 @@ def _send_cmd(cmd, remote="mysql", tag=None, channel='http', exp_result=0):
 
 
 def test_availability():
+    _setup_server('mysql')
     cmd = dict(command='list-commands')
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -86,8 +86,10 @@ def test_availability():
 
 # subnet tests
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_subnet4_set_basic(channel):
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_basic(channel, backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
@@ -101,8 +103,10 @@ def test_remote_subnet4_set_basic(channel):
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
-def test_remote_subnet4_set_empty_subnet():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_empty_subnet(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "shared-network-name": "",
                                                         "subnets": [{"subnet": "",
@@ -113,8 +117,10 @@ def test_remote_subnet4_set_empty_subnet():
     assert "subnet configuration failed: Invalid subnet syntax (prefix/len expected):" in response["text"]
 
 
-def test_remote_subnet4_set_missing_subnet():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_missing_subnet(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "shared-network-name": "",
                                                         "subnets": [{"interface": "$(SERVER_IFACE)", "id": 1}]})
@@ -124,8 +130,10 @@ def test_remote_subnet4_set_missing_subnet():
            "is missing for a subnet being configured" in response["text"]
 
 
-def test_remote_subnet4_set_stateless():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_stateless(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -137,8 +145,10 @@ def test_remote_subnet4_set_stateless():
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
-def test_remote_subnet4_set_id():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_id(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -151,8 +161,10 @@ def test_remote_subnet4_set_id():
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
-def test_remote_subnet4_set_duplicated_id():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_duplicated_id(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -164,7 +176,7 @@ def test_remote_subnet4_set_duplicated_id():
     assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.51.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -176,7 +188,7 @@ def test_remote_subnet4_set_duplicated_id():
     assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.51.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -186,8 +198,10 @@ def test_remote_subnet4_set_duplicated_id():
                         "result": 0, "text": "1 IPv4 subnet(s) found."}
 
 
-def test_remote_subnet4_set_duplicated_subnet():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_duplicated_subnet(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -199,7 +213,7 @@ def test_remote_subnet4_set_duplicated_subnet():
     assert response == {"arguments": {"subnets": [{"id": 5, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -211,7 +225,7 @@ def test_remote_subnet4_set_duplicated_subnet():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -222,8 +236,10 @@ def test_remote_subnet4_set_duplicated_subnet():
                         "result": 0, "text": "1 IPv4 subnet(s) found."}
 
 
-def test_remote_subnet4_set_all_values():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_all_values(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"4o6-interface": "eth9",
                                                                      "4o6-interface-id": "interf-id",
@@ -255,10 +271,12 @@ def test_remote_subnet4_set_all_values():
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
-def test_remote_subnet4_get_all_values():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_all_values(backend):
+    _setup_server(backend)
     cmd = dict(command='remote-subnet4-set', arguments={
         'remote': {
-            'type': 'mysql'
+            "type": backend
         },
         'server-tags': [
             'abc'
@@ -324,7 +342,7 @@ def test_remote_subnet4_get_all_values():
 
     cmd = dict(command='remote-subnet4-get-by-prefix', arguments={
         'remote': {
-            'type': 'mysql'
+            "type": backend
         },
         'subnets': [
             {
@@ -402,8 +420,10 @@ def test_remote_subnet4_get_all_values():
 
 
 # reservation-mode is integer in db, so we need to check if it's converted correctly
-def test_remote_subnet4_set_reservation_mode_all_old():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_all_old(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -417,7 +437,7 @@ def test_remote_subnet4_set_reservation_mode_all_old():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -429,8 +449,10 @@ def test_remote_subnet4_set_reservation_mode_all_old():
     assert subnet["reservations-out-of-pool"] is False
 
 
-def test_remote_subnet4_set_reservation_mode_all():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_all(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -446,7 +468,7 @@ def test_remote_subnet4_set_reservation_mode_all():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -458,8 +480,10 @@ def test_remote_subnet4_set_reservation_mode_all():
     assert subnet["reservations-out-of-pool"] is False
 
 
-def test_remote_subnet4_set_reservation_mode_global_old():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_global_old(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -473,7 +497,7 @@ def test_remote_subnet4_set_reservation_mode_global_old():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -484,8 +508,10 @@ def test_remote_subnet4_set_reservation_mode_global_old():
     assert subnet["reservations-in-subnet"] is False
 
 
-def test_remote_subnet4_set_reservation_mode_global():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_global(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -500,7 +526,7 @@ def test_remote_subnet4_set_reservation_mode_global():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -511,8 +537,10 @@ def test_remote_subnet4_set_reservation_mode_global():
     assert subnet["reservations-in-subnet"] is False
 
 
-def test_remote_subnet4_set_reservation_mode_out_of_pool_old():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_out_of_pool_old(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -526,7 +554,7 @@ def test_remote_subnet4_set_reservation_mode_out_of_pool_old():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -538,8 +566,10 @@ def test_remote_subnet4_set_reservation_mode_out_of_pool_old():
     assert subnet["reservations-out-of-pool"] is True
 
 
-def test_remote_subnet4_set_reservation_mode_out_of_pool():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_out_of_pool(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -555,7 +585,7 @@ def test_remote_subnet4_set_reservation_mode_out_of_pool():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -567,8 +597,10 @@ def test_remote_subnet4_set_reservation_mode_out_of_pool():
     assert subnet["reservations-out-of-pool"] is True
 
 
-def test_remote_subnet4_set_reservation_mode_disabled_old():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_disabled_old(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -580,7 +612,7 @@ def test_remote_subnet4_set_reservation_mode_disabled_old():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -591,8 +623,10 @@ def test_remote_subnet4_set_reservation_mode_disabled_old():
     assert subnet["reservations-in-subnet"] is False
 
 
-def test_remote_subnet4_set_reservation_mode_disabled():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_set_reservation_mode_disabled(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.50.0/24",
                                                                      "id": 1,
@@ -605,7 +639,7 @@ def test_remote_subnet4_set_reservation_mode_disabled():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -616,10 +650,10 @@ def test_remote_subnet4_set_reservation_mode_disabled():
     assert subnet["reservations-in-subnet"] is False
 
 
-def _subnet_set(server_tag=None):
+def _subnet_set(backend, server_tag=None):
     if server_tag is None:
         server_tag = ["abc"]
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": server_tag,
                                                         "subnets": [{"subnet": "192.168.50.0/24", "id": 5,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -632,67 +666,81 @@ def _subnet_set(server_tag=None):
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
-def test_remote_subnet4_del_by_id():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_del_by_id(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": backend},
                                                               "subnets": [{"id": 5}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 subnet(s) deleted."}
 
 
-def test_remote_subnet4_del_by_id_incorrect_id():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_del_by_id_incorrect_id(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": backend},
                                                               "subnets": [{"id": 15}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 IPv4 subnet(s) deleted."}
 
 
-def test_remote_subnet4_del_id_negative_missing_subnet():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_del_id_negative_missing_subnet(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-del-by-id", arguments={"remote": {"type": backend},
                                                               "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "missing 'id' parameter"}
 
 
-def test_remote_subnet4_del_by_prefix():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_del_by_prefix(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 subnet(s) deleted."}
 
 
-def test_remote_subnet4_del_by_prefix_non_existing_subnet():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_del_by_prefix_non_existing_subnet(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.51.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 IPv4 subnet(s) deleted."}
 
 
-def test_remote_subnet4_del_by_prefix_missing_subnet_():
-    _subnet_set()
-    cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_del_by_prefix_missing_subnet_(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
+    cmd = dict(command="remote-subnet4-del-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"id": 2}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "missing 'subnet' parameter"}
 
 
-def test_remote_subnet4_get_by_id():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_by_id(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"4o6-interface": "eth9",
                                                                      "shared-network-name": "",
@@ -724,7 +772,7 @@ def test_remote_subnet4_get_by_id():
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": backend},
                                                               "subnets": [{"id": 2}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -758,10 +806,12 @@ def test_remote_subnet4_get_by_id():
                         "result": 0, "text": "IPv4 subnet 2 found."}
 
 
-def test_remote_subnet4_get_by_id_incorrect_id():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_by_id_incorrect_id(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": backend},
                                                               "subnets": [{"id": 3}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
@@ -769,10 +819,12 @@ def test_remote_subnet4_get_by_id_incorrect_id():
                         "result": 3, "text": "IPv4 subnet 3 not found."}
 
 
-def test_remote_subnet4_get_by_id_missing_id():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_by_id_missing_id(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-id", arguments={"remote": {"type": backend},
                                                               "subnets": [{"subnet": 3}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
@@ -780,8 +832,10 @@ def test_remote_subnet4_get_by_id_missing_id():
                         "text": "missing 'id' parameter"}
 
 
-def test_remote_subnet4_get_by_prefix():
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_by_prefix(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"4o6-interface": "eth9",
                                                                      "shared-network-name": "",
@@ -803,7 +857,7 @@ def test_remote_subnet4_get_by_prefix():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "192.168.50.0/24"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -839,10 +893,12 @@ def test_remote_subnet4_get_by_prefix():
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv4 subnet 192.168.50.0/24 found."}
 
 
-def test_remote_subnet4_get_by_prefix_negative():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_by_prefix_negative(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "10.0.0.2/12"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
@@ -850,9 +906,11 @@ def test_remote_subnet4_get_by_prefix_negative():
                         "result": 3, "text": "IPv4 subnet 10.0.0.2/12 not found."}
 
 
-def test_remote_subnet4_get_by_prefix_incorrect_prefix():
-    _subnet_set()
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_by_prefix_incorrect_prefix(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"subnet": "10.0.0/12"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
@@ -860,10 +918,12 @@ def test_remote_subnet4_get_by_prefix_incorrect_prefix():
                         "text": "unable to parse invalid prefix 10.0.0/12"}
 
 
-def test_remote_subnet4_get_by_prefix_missing_prefix():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_get_by_prefix_missing_prefix(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
                                                                   "subnets": [{"id": "10.0.0/12"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
@@ -871,10 +931,12 @@ def test_remote_subnet4_get_by_prefix_missing_prefix():
                         "text": "missing 'subnet' parameter"}
 
 
-def test_remote_subnet4_list():
-    _subnet_set()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet4_list(backend):
+    _setup_server(backend)
+    _subnet_set(backend)
 
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.51.0/24", "id": 3,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -883,7 +945,7 @@ def test_remote_subnet4_list():
                                                                          {"pool": "192.168.51.1-192.168.51.100"}]}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.168.52.0/24", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -892,7 +954,7 @@ def test_remote_subnet4_list():
                                                                          {"pool": "192.168.52.1-192.168.52.100"}]}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -913,8 +975,10 @@ def test_remote_subnet4_list():
 
 # network tests
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_network4_set_basic(channel):
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_set_basic(channel, backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{"name": "floor13"}]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
@@ -923,16 +987,20 @@ def test_remote_network4_set_basic(channel):
                         "result": 0, "text": "IPv4 shared network successfully set."}
 
 
-def test_remote_network4_set_missing_name():
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_set_missing_name(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert "missing parameter 'name'" in response["text"]
 
 
-def test_remote_network4_set_empty_name():
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_set_empty_name(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": ""}]})
@@ -942,15 +1010,17 @@ def test_remote_network4_set_empty_name():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_network4_get_basic(channel):
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_get_basic(channel, backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
-    cmd = dict(command="remote-network4-get", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-get", arguments={"remote": {"type": backend},
                                                          "shared-networks": [{
                                                              "name": "net1"}]})
 
@@ -962,8 +1032,10 @@ def test_remote_network4_get_basic(channel):
                         "result": 0, "text": "IPv4 shared network 'net1' found."}
 
 
-def test_remote_network4_get_all_values():
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_get_all_values(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
@@ -985,7 +1057,7 @@ def test_remote_network4_get_all_values():
                                                                               "always-send": True,
                                                                               "csv-format": True}]}]})
     srv_msg.send_ctrl_cmd(cmd)
-    cmd = dict(command="remote-network4-get", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-get", arguments={"remote": {"type": backend},
                                                          "shared-networks": [{
                                                              "name": "net1"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -1016,8 +1088,10 @@ def test_remote_network4_get_all_values():
                         "result": 0, "text": "IPv4 shared network 'net1' found."}
 
 
-def test_remote_network4_set_t1_t2():
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_set_t1_t2(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
@@ -1028,7 +1102,7 @@ def test_remote_network4_set_t1_t2():
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert "'t2-percent' parameter is not a real" in response["text"]
 
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
@@ -1039,7 +1113,7 @@ def test_remote_network4_set_t1_t2():
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert "'t1-percent' parameter is not a real" in response["text"]
 
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
@@ -1052,22 +1126,24 @@ def test_remote_network4_set_t1_t2():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_network4_list_basic(channel):
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_list_basic(channel, backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net2",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
     assert response == {"arguments": {"count": 2, "shared-networks": [{"metadata": {"server-tags": ["abc"]},
@@ -1078,8 +1154,10 @@ def test_remote_network4_list_basic(channel):
                         "text": "2 IPv4 shared network(s) found."}
 
 
-def test_remote_network4_list_no_networks():
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_list_no_networks(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0,
@@ -1089,22 +1167,24 @@ def test_remote_network4_list_no_networks():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_network4_del_basic(channel):
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_del_basic(channel, backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net2",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
     assert response == {"arguments": {"count": 2,
@@ -1113,28 +1193,28 @@ def test_remote_network4_del_basic(channel):
                         "result": 0,
                         "text": "2 IPv4 shared network(s) found."}
 
-    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": backend},
                                                          "shared-networks": [{"name": "net1"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
     assert response == {"arguments": {"count": 1,
                                       "shared-networks": [{"metadata": {"server-tags": ["abc"]}, "name": "net2"}]},
                         "result": 0, "text": "1 IPv4 shared network(s) found."}
 
-    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": backend},
                                                          "shared-networks": [{"name": "net2"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=3)
 
     assert response == {"arguments": {"count": 0,
@@ -1143,23 +1223,25 @@ def test_remote_network4_del_basic(channel):
                         "text": "0 IPv4 shared network(s) found."}
 
 
-def test_remote_network4_del_subnet_keep():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_del_subnet_keep(backend):
+    _setup_server(backend)
     # add networks
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net2",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 2,
                                       "shared-networks": [{"metadata": {"server-tags": ["abc"]},
@@ -1170,7 +1252,7 @@ def test_remote_network4_del_subnet_keep():
                         "text": "2 IPv4 shared network(s) found."}
 
     # add subnets to networks
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.8.0.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
@@ -1183,7 +1265,7 @@ def test_remote_network4_del_subnet_keep():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.8.0.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.9.0.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
@@ -1197,7 +1279,7 @@ def test_remote_network4_del_subnet_keep():
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
     # we want to have 2 subnets
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -1209,14 +1291,14 @@ def test_remote_network4_del_subnet_keep():
                                                                "metadata": {"server-tags": ["abc"]}}]},
                         "result": 0, "text": "2 IPv4 subnet(s) found."}
 
-    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": "mysql"}, "subnets-action": "keep",
+    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": backend}, "subnets-action": "keep",
                                                          "shared-networks": [{"name": "net1"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1,
@@ -1224,7 +1306,7 @@ def test_remote_network4_del_subnet_keep():
                         "result": 0, "text": "1 IPv4 shared network(s) found."}
 
     # after deleting network we still want to have 2 subnets
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -1235,14 +1317,14 @@ def test_remote_network4_del_subnet_keep():
                                                    "shared-network-name": "net2", "subnet": "192.9.0.0/24"}]},
                         "result": 0, "text": "2 IPv4 subnet(s) found."}
 
-    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": "mysql"}, "subnets-action": "keep",
+    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": backend}, "subnets-action": "keep",
                                                          "shared-networks": [{"name": "net2"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0,
@@ -1251,7 +1333,7 @@ def test_remote_network4_del_subnet_keep():
                         "text": "0 IPv4 shared network(s) found."}
 
     # after removing all networks we still want to have both subnets
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -1263,11 +1345,13 @@ def test_remote_network4_del_subnet_keep():
                         "result": 0, "text": "2 IPv4 subnet(s) found."}
 
 
-def test_remote_network4_del_subnet_delete_simple():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_del_subnet_delete_simple(backend):
+    _setup_server(backend)
     # for ticket #738
     cmd = dict(command='remote-network4-set', arguments={
         'remote': {
-            'type': 'mysql'
+            "type": backend
         },
         'server-tags': [
             'abc'
@@ -1283,7 +1367,7 @@ def test_remote_network4_del_subnet_delete_simple():
 
     cmd = dict(command='remote-subnet4-set', arguments={
         'remote': {
-            'type': 'mysql'
+            "type": backend
         },
         'server-tags': [
             'abc'
@@ -1306,7 +1390,7 @@ def test_remote_network4_del_subnet_delete_simple():
 
     cmd = dict(command='remote-network4-del', arguments={
         'remote': {
-            'type': 'mysql'
+            "type": backend
         },
         'shared-networks': [
             {
@@ -1318,23 +1402,25 @@ def test_remote_network4_del_subnet_delete_simple():
     srv_msg.send_ctrl_cmd(cmd)
 
 
-def test_remote_network4_del_subnet_delete():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network4_del_subnet_delete(backend):
+    _setup_server(backend)
     # add networks
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-network4-set", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net2",
                                                              "interface": "$(SERVER_IFACE)"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 2,
                                       "shared-networks": [{"metadata": {"server-tags": ["abc"]},
@@ -1345,7 +1431,7 @@ def test_remote_network4_del_subnet_delete():
                         "text": "2 IPv4 shared network(s) found."}
 
     # add subnets to networks
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.8.0.0/24",
                                                                      "id": 1,
@@ -1358,7 +1444,7 @@ def test_remote_network4_del_subnet_delete():
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.8.0.0/24"}]},
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"subnet": "192.9.0.0/24",
                                                                      "interface": "$(SERVER_IFACE)",
@@ -1372,7 +1458,7 @@ def test_remote_network4_del_subnet_delete():
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
     # we want to have 2 subnets
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -1385,14 +1471,14 @@ def test_remote_network4_del_subnet_delete():
                                                                "metadata": {"server-tags": ["abc"]}}]},
                         "result": 0, "text": "2 IPv4 subnet(s) found."}
 
-    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": "mysql"}, "subnets-action": "delete",
+    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": backend}, "subnets-action": "delete",
                                                          "shared-networks": [{"name": "net1"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1,
@@ -1400,7 +1486,7 @@ def test_remote_network4_del_subnet_delete():
                         "result": 0, "text": "1 IPv4 shared network(s) found."}
 
     # after deleting network we still want to have 2 subnets
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -1409,14 +1495,14 @@ def test_remote_network4_del_subnet_delete():
                                                    "shared-network-name": "net2", "subnet": "192.9.0.0/24"}]},
                         "result": 0, "text": "1 IPv4 subnet(s) found."}
 
-    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": "mysql"}, "subnets-action": "delete",
+    cmd = dict(command="remote-network4-del", arguments={"remote": {"type": backend}, "subnets-action": "delete",
                                                          "shared-networks": [{"name": "net2"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv4 shared network(s) deleted."}
 
-    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-network4-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0,
@@ -1425,7 +1511,7 @@ def test_remote_network4_del_subnet_delete():
                         "text": "0 IPv4 shared network(s) found."}
 
     # all subnets should be removed now
-    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-subnet4-list", arguments={"remote": {"type": backend},
                                                          "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
@@ -1433,8 +1519,8 @@ def test_remote_network4_del_subnet_delete():
                         "result": 3, "text": "0 IPv4 subnet(s) found."}
 
 
-def _set_global_parameter():
-    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
+def _set_global_parameter(backend):
+    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": backend},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": {
                                                                       "boot-file-name": "/dev/null"}})
@@ -1446,12 +1532,16 @@ def _set_global_parameter():
 
 
 # global-parameter tests
-def test_remote_global_parameter4_set_text():
-    _set_global_parameter()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_set_text(backend):
+    _setup_server(backend)
+    _set_global_parameter(backend)
 
 
-def test_remote_global_parameter4_set_integer():
-    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_set_integer(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": backend},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": {"valid-lifetime": 1000}})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -1461,8 +1551,10 @@ def test_remote_global_parameter4_set_integer():
                         "text": "1 DHCPv4 global parameter(s) successfully set."}
 
 
-def test_remote_global_parameter4_set_incorrect_parameter():
-    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_set_incorrect_parameter(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": backend},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": {"boot-fiabcsd": "/dev/null"}})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
@@ -1470,10 +1562,12 @@ def test_remote_global_parameter4_set_incorrect_parameter():
     assert response == {"result": 1, "text": "unknown parameter 'boot-fiabcsd'"}
 
 
-def test_remote_global_parameter4_del():
-    _set_global_parameter()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_del(backend):
+    _setup_server(backend)
+    _set_global_parameter(backend)
 
-    cmd = dict(command="remote-global-parameter4-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-global-parameter4-del", arguments={"remote": {"type": backend},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": ["boot-file-name"]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -1482,8 +1576,10 @@ def test_remote_global_parameter4_del():
                         "result": 0, "text": "1 DHCPv4 global parameter(s) deleted."}
 
 
-def test_remote_global_parameter4_del_not_existing_parameter():
-    cmd = dict(command="remote-global-parameter4-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_del_not_existing_parameter(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-global-parameter4-del", arguments={"remote": {"type": backend},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": ["boot-file-name"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
@@ -1492,10 +1588,12 @@ def test_remote_global_parameter4_del_not_existing_parameter():
                         "result": 3, "text": "0 DHCPv4 global parameter(s) deleted."}
 
 
-def test_remote_global_parameter4_get():
-    _set_global_parameter()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_get(backend):
+    _setup_server(backend)
+    _set_global_parameter(backend)
 
-    cmd = dict(command="remote-global-parameter4-get", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-global-parameter4-get", arguments={"remote": {"type": backend},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": ["boot-file-name"]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -1506,10 +1604,12 @@ def test_remote_global_parameter4_get():
                         "result": 0, "text": "'boot-file-name' DHCPv4 global parameter found."}
 
 
-def test_remote_global_parameter4_get_all_one():
-    _set_global_parameter()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_get_all_one(backend):
+    _setup_server(backend)
+    _set_global_parameter(backend)
 
-    cmd = dict(command="remote-global-parameter4-get-all", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-global-parameter4-get-all", arguments={"remote": {"type": backend},
                                                                       "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -1518,10 +1618,12 @@ def test_remote_global_parameter4_get_all_one():
                         "result": 0, "text": "1 DHCPv4 global parameter(s) found."}
 
 
-def test_remote_global_parameter4_get_all_multiple():
-    _set_global_parameter()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_get_all_multiple(backend):
+    _setup_server(backend)
+    _set_global_parameter(backend)
 
-    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-global-parameter4-set", arguments={"remote": {"type": backend},
                                                                   "server-tags": ["abc"],
                                                                   "parameters": {"decline-probation-period": 15}})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -1529,7 +1631,7 @@ def test_remote_global_parameter4_get_all_multiple():
     assert response == {"arguments": {"count": 1, "parameters": {"decline-probation-period": 15}}, "result": 0,
                         "text": "1 DHCPv4 global parameter(s) successfully set."}
 
-    cmd = dict(command="remote-global-parameter4-get-all", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-global-parameter4-get-all", arguments={"remote": {"type": backend},
                                                                       "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -1539,8 +1641,10 @@ def test_remote_global_parameter4_get_all_multiple():
     assert {"decline-probation-period": 15, "metadata": {"server-tags": ["abc"]}} in response["arguments"]["parameters"]
 
 
-def test_remote_global_parameter4_get_all_zero():
-    cmd = dict(command="remote-global-parameter4-get-all", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_parameter4_get_all_zero(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-global-parameter4-get-all", arguments={"remote": {"type": backend},
                                                                       "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
@@ -1548,8 +1652,8 @@ def test_remote_global_parameter4_get_all_zero():
                         "result": 3, "text": "0 DHCPv4 global parameter(s) found."}
 
 
-def _set_option_def(channel='http'):
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+def _set_option_def(backend, channel='http'):
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo",
@@ -1562,12 +1666,16 @@ def _set_option_def(channel='http'):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_option_def4_set_basic(channel):
-    _set_option_def(channel=channel)
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_set_basic(channel, backend):
+    _setup_server(backend)
+    _set_option_def(backend, channel=channel)
 
 
-def test_remote_option_def4_set_using_zero_as_code():
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_set_using_zero_as_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo",
@@ -1578,8 +1686,10 @@ def test_remote_option_def4_set_using_zero_as_code():
     assert "invalid option code '0': reserved for PAD" in response["text"]
 
 
-def test_remote_option_def4_set_using_standard_code():
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_set_using_standard_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo",
@@ -1590,8 +1700,10 @@ def test_remote_option_def4_set_using_standard_code():
     assert response == {"result": 1, "text": "an option with code 24 already exists in space 'dhcp4'"}
 
 
-def test_remote_option_def4_set_missing_parameters():
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_set_missing_parameters(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "code": 222,
@@ -1604,7 +1716,7 @@ def test_remote_option_def4_set_missing_parameters():
 
     assert "missing parameter 'name'" in response["text"]
 
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "aa",
@@ -1617,7 +1729,7 @@ def test_remote_option_def4_set_missing_parameters():
 
     assert "missing parameter 'code'" in response["text"]
 
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "aa",
@@ -1632,10 +1744,12 @@ def test_remote_option_def4_set_missing_parameters():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_option_def4_get_basic(channel):
-    _set_option_def()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_get_basic(channel, backend):
+    _setup_server(backend)
+    _set_option_def(backend)
 
-    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "code": 222}]})
@@ -1647,10 +1761,12 @@ def test_remote_option_def4_get_basic(channel):
                         "result": 0, "text": "DHCPv4 option definition 222 in 'dhcp4' found."}
 
 
-def test_remote_option_def4_get_multiple_defs():
-    _set_option_def()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_get_multiple_defs(backend):
+    _setup_server(backend)
+    _set_option_def(backend)
 
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo",
@@ -1662,7 +1778,7 @@ def test_remote_option_def4_get_multiple_defs():
     assert response == {"arguments": {"option-defs": [{"code": 222, "space": "abc"}]},
                         "result": 0, "text": "DHCPv4 option definition successfully set."}
 
-    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "code": 222,
@@ -1675,8 +1791,10 @@ def test_remote_option_def4_get_multiple_defs():
                         "result": 0, "text": "DHCPv4 option definition 222 in 'abc' found."}
 
 
-def test_remote_option_def4_get_missing_code():
-    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_get_missing_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option-def4-get", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo"}]})
@@ -1685,18 +1803,22 @@ def test_remote_option_def4_get_missing_code():
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-def test_remote_option_def4_get_all_option_not_defined():
-    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_get_all_option_not_defined(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0, "option-defs": []},
                         "result": 3, "text": "0 DHCPv4 option definition(s) found."}
 
 
-def test_remote_option_def4_get_all_multiple_defs():
-    _set_option_def()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_get_all_multiple_defs(backend):
+    _setup_server(backend)
+    _set_option_def(backend)
 
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo",
@@ -1708,7 +1830,7 @@ def test_remote_option_def4_get_all_multiple_defs():
     assert response == {"arguments": {"option-defs": [{"code": 222, "space": "abc"}]},
                         "result": 0, "text": "DHCPv4 option definition successfully set."}
 
-    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 2, "option-defs": [{"array": False, "code": 222,
@@ -1725,10 +1847,12 @@ def test_remote_option_def4_get_all_multiple_defs():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_option_def4_get_all_basic(channel):
-    _set_option_def()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_get_all_basic(channel, backend):
+    _setup_server(backend)
+    _set_option_def(backend)
 
-    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
 
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
     assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
@@ -1739,58 +1863,68 @@ def test_remote_option_def4_get_all_basic(channel):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_option_def4_del_basic(channel):
-    _set_option_def()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_del_basic(channel, backend):
+    _setup_server(backend)
+    _set_option_def(backend)
 
-    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{"code": 222}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option definition(s) deleted."}
 
 
-def test_remote_option_def4_del_different_space():
-    _set_option_def()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_del_different_space(backend):
+    _setup_server(backend)
+    _set_option_def(backend)
 
-    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{"code": 222, "space": "abc"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv4 option definition(s) deleted."}
 
 
-def test_remote_option_def4_del_incorrect_code():
-    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_del_incorrect_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{"name": 22}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
-    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
-    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{"code": "abc"}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-def test_remote_option_def4_del_missing_option():
-    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_del_missing_option(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{"code": 212}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv4 option definition(s) deleted."}
 
 
-def test_remote_option_def4_del_multiple_options():
-    _set_option_def()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def4_del_multiple_options(backend):
+    _setup_server(backend)
+    _set_option_def(backend)
 
-    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option-def4-set", arguments={"remote": {"type": backend},
                                                             "server-tags": ["abc"],
                                                             "option-defs": [{
                                                                 "name": "foo",
@@ -1802,13 +1936,13 @@ def test_remote_option_def4_del_multiple_options():
     assert response == {"arguments": {"option-defs": [{"code": 222, "space": "abc"}]},
                         "result": 0, "text": "DHCPv4 option definition successfully set."}
 
-    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"],
+    cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{"code": 222}]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option definition(s) deleted."}
 
-    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-option-def4-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1, "option-defs": [{"array": False, "code": 222, "encapsulate": "",
@@ -1818,8 +1952,8 @@ def test_remote_option_def4_del_multiple_options():
                         "result": 0, "text": "1 DHCPv4 option definition(s) found."}
 
 
-def _set_global_option():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+def _set_global_option(backend):
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "code": 6,
@@ -1830,21 +1964,27 @@ def _set_global_option():
                         "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
 
 
-def test_remote_global_option4_global_set_basic():
-    _set_global_option()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_basic(backend):
+    _setup_server(backend)
+    _set_global_option(backend)
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_global_option4_global_set_missing_data(channel):
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_missing_data(channel, backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "code": 6}]})
     srv_msg.send_ctrl_cmd(cmd, channel=channel)
 
 
-def test_remote_global_option4_global_set_name():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_name(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "name": "host-name",
@@ -1854,8 +1994,10 @@ def test_remote_global_option4_global_set_name():
                         "result": 0, "text": "DHCPv4 option successfully set."}
 
 
-def test_remote_global_option4_global_set_incorrect_code_missing_name():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_incorrect_code_missing_name(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "code": "aaa"}]})
@@ -1864,8 +2006,10 @@ def test_remote_global_option4_global_set_incorrect_code_missing_name():
     assert "'code' parameter is not an integer" in response["text"]
 
 
-def test_remote_global_option4_global_set_incorrect_name_missing_code():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_incorrect_name_missing_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "name": 123}]})
@@ -1874,8 +2018,10 @@ def test_remote_global_option4_global_set_incorrect_name_missing_code():
     assert "'name' parameter is not a string" in response["text"]
 
 
-def test_remote_global_option4_global_set_missing_code_and_name():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_missing_code_and_name(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
@@ -1884,8 +2030,10 @@ def test_remote_global_option4_global_set_missing_code_and_name():
            "'code' or 'name' parameters to be specified" in response["text"]
 
 
-def test_remote_global_option4_global_set_incorrect_code():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_incorrect_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": "aa",
                                                                             "name": "cc"}]})
@@ -1894,8 +2042,10 @@ def test_remote_global_option4_global_set_incorrect_code():
     assert "'code' parameter is not an integer" in response["text"]
 
 
-def test_remote_global_option4_global_set_incorrect_name():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_incorrect_name(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 12,
                                                                             "name": 12,
@@ -1906,10 +2056,12 @@ def test_remote_global_option4_global_set_incorrect_name():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_global_option4_global_get_basic(channel):
-    _set_global_option()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_get_basic(channel, backend):
+    _setup_server(backend)
+    _set_global_option(backend)
 
-    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
@@ -1920,8 +2072,10 @@ def test_remote_global_option4_global_get_basic(channel):
                         "result": 0, "text": "DHCPv4 option 6 in 'dhcp4' found."}
 
 
-def test_remote_global_option4_global_set_different_space():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_different_space(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6,
                                                                             "data": '192.0.2.1, 192.0.2.2',
@@ -1933,8 +2087,10 @@ def test_remote_global_option4_global_set_different_space():
     assert "definition for the option 'xyz.' having code '6' does not exist" in response["text"]
 
 
-def test_remote_global_option4_global_set_csv_false_incorrect():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_csv_false_incorrect(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6,
                                                                             "data": '192.0.2.1',
@@ -1945,8 +2101,10 @@ def test_remote_global_option4_global_set_csv_false_incorrect():
     assert "option data is not a valid string of hexadecimal digits: 192.0.2.1" in response["text"]
 
 
-def test_remote_global_option4_global_set_csv_false_correct():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_csv_false_correct(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6,
                                                                             "data": "C0000201",  # 192.0.2.1
@@ -1958,8 +2116,10 @@ def test_remote_global_option4_global_set_csv_false_correct():
                         "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
 
 
-def test_remote_global_option4_global_set_csv_false_incorrect_hex():
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_set_csv_false_incorrect_hex(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6,
                                                                             "data": "C0000201Z",
@@ -1971,58 +2131,72 @@ def test_remote_global_option4_global_set_csv_false_incorrect_hex():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_global_option4_global_del_basic(channel):
-    _set_global_option()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_del_basic(channel, backend):
+    _setup_server(backend)
+    _set_global_option(backend)
 
-    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option(s) deleted."}
 
 
-def test_remote_global_option4_global_del_missing_code():
-    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_del_missing_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"ab": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-def test_remote_global_option4_global_del_incorrect_code():
-    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_del_incorrect_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": "6"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-def test_remote_global_option4_global_del_missing_option():
-    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_del_missing_option(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv4 option(s) deleted."}
 
 
-def test_remote_global_option4_global_get_missing_code():
-    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_get_missing_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"ab": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-def test_remote_global_option4_global_get_incorrect_code():
-    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_get_incorrect_code(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": "6"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-def test_remote_global_option4_global_get_missing_option():
-    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_get_missing_option(backend):
+    _setup_server(backend)
+    cmd = dict(command="remote-option4-global-get", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
@@ -2030,9 +2204,11 @@ def test_remote_global_option4_global_get_missing_option():
                         "result": 3, "text": "DHCPv4 option 6 in 'dhcp4' not found."}
 
 
-def test_remote_global_option4_global_get_csv_false():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_get_csv_false(backend):
+    _setup_server(backend)
     cmd = dict(command="remote-option4-global-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "options": [{"code": 6,
                                        "data": "C0000301C0000302",
@@ -2044,7 +2220,7 @@ def test_remote_global_option4_global_get_csv_false():
                         "arguments": {"options": [{"code": 6, "space": "dhcp4"}]}}
 
     cmd = dict(command="remote-option4-global-get",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -2055,10 +2231,12 @@ def test_remote_global_option4_global_get_csv_false():
                         "result": 0, "text": "DHCPv4 option 6 in 'dhcp4' found."}
 
 
-def test_remote_global_option4_global_get_all():
-    _set_global_option()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_global_option4_global_get_all(backend):
+    _setup_server(backend)
+    _set_global_option(backend)
 
-    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option4-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{
                                                                    "code": 16,
@@ -2068,7 +2246,7 @@ def test_remote_global_option4_global_get_all():
     assert response == {"result": 0, "text": "DHCPv4 option successfully set.",
                         "arguments": {"options": [{"code": 16, "space": "dhcp4"}]}}
 
-    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -2082,13 +2260,13 @@ def test_remote_global_option4_global_get_all():
                                                    "data": "199.199.199.1", "name": "swap-server", "space": "dhcp4"}]},
                         "result": 0, "text": "2 DHCPv4 option(s) found."}
 
-    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 6}]})
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option(s) deleted."}
 
-    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
 
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 16, "csv-format": True,
@@ -2097,19 +2275,19 @@ def test_remote_global_option4_global_get_all():
                                                                "space": "dhcp4"}]},
                         "result": 0, "text": "1 DHCPv4 option(s) found."}
 
-    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
                                                                "options": [{"code": 16}]})
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv4 option(s) deleted."}
 
-    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": "mysql"}, "server-tags": ["abc"]})
+    cmd = dict(command="remote-option4-global-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
     assert response == {"arguments": {"count": 0, "options": []}, "result": 3, "text": "0 DHCPv4 option(s) found."}
 
 
-def _set_class(args=None, res=0, resp_text=None, tag='abc'):
+def _set_class(backend, args=None, res=0, resp_text=None, tag='abc'):
     if args is None:
         args = {"client-classes": [{"name": "foo",
                                     "test": "member('KNOWN')"}]}
@@ -2118,7 +2296,7 @@ def _set_class(args=None, res=0, resp_text=None, tag='abc'):
     resp_text = resp_text.replace("vX", world.proto)
 
     cmd = dict(command="remote-class%s-set" % world.proto[-1], arguments=args)
-    response = _send_cmd(cmd, tag=tag, exp_result=res)
+    response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
 
     if res == 1:
         assert response == {"result": 1, "text": resp_text}
@@ -2127,7 +2305,7 @@ def _set_class(args=None, res=0, resp_text=None, tag='abc'):
         assert response == {"result": 0, "text": resp_text, "arguments": {"client-classes": [{"name": cls_name}]}}
 
 
-def _del_class(args=None, res=0, resp_text=None, tag=None, count=1):
+def _del_class(backend, args=None, res=0, resp_text=None, tag=None, count=1):
     if args is None:
         args = {"client-classes": [{"name": "foo"}]}
     if resp_text is None:
@@ -2135,14 +2313,14 @@ def _del_class(args=None, res=0, resp_text=None, tag=None, count=1):
     resp_text = resp_text.replace("vX", world.proto)
 
     cmd = dict(command="remote-class%s-del" % world.proto[-1], arguments=args)
-    response = _send_cmd(cmd, tag=tag, exp_result=res)
+    response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
     if res == 1:
         assert response == {"result": res, "text": resp_text}
     else:
         assert response == {"result": res, "text": resp_text, "arguments": {"count": count}}
 
 
-def _get_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
+def _get_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=None):
     if args is None:
         args = {"client-classes": [{"name": "foo"}]}
     if resp_text is None:
@@ -2169,7 +2347,7 @@ def _get_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
             args_rec["client-classes"][0].update({'preferred-lifetime': 0})
 
     cmd = dict(command="remote-class%s-get" % world.proto[-1], arguments=args)
-    response = _send_cmd(cmd, tag=tag, exp_result=res)
+    response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
     if res == 1:
         assert response == {"result": res, "text": resp_text}
     else:
@@ -2178,10 +2356,10 @@ def _get_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
                             "arguments": args_rec}
 
 
-def _get_all_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
+def _get_all_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=None):
     resp_text = resp_text.replace("vX", world.proto)
     cmd = dict(command="remote-class%s-get-all" % world.proto[-1], arguments=args)
-    response = _send_cmd(cmd, tag=tag, exp_result=res)
+    response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
     if res == 1:
         assert response == {"result": res, "text": resp_text}
     else:
@@ -2190,30 +2368,33 @@ def _get_all_class(args=None, args_rec=None, res=0, resp_text=None, tag=None):
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class_set(dhcp_version):  # pylint: disable=unused-argument
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_class_set(dhcp_version, backend):  # pylint: disable=unused-argument
+    _setup_server(backend)
     # I think there is too many test cases in this single test, but splitting them to separate test will result
     # in much longer testing time, and we should start saving time
     # let's start with default
-    _set_class()
+    _set_class(backend)
     # just name
-    _set_class({"client-classes": [{"name": "aaa"}]})
+    _set_class(backend, {"client-classes": [{"name": "aaa"}]})
     # empty class should fail
-    _set_class(args={"client-classes": [{}]}, res=1, resp_text="missing parameter 'name' (<wire>:0:38)")
+    _set_class(backend, args={"client-classes": [{}]}, res=1, resp_text="missing parameter 'name' (<wire>:0:38)")
     # empty class list should fail
-    _set_class(args={"client-classes": []}, res=1, resp_text="'client-classes' list must include exactly one element")
+    _set_class(backend, args={"client-classes": []}, res=1,
+               resp_text="'client-classes' list must include exactly one element")
     # multiple classes, also should fail
-    _set_class(args={"client-classes": [{"name": "aaa"}, {"name": "xyz"}]}, res=1,
+    _set_class(backend, args={"client-classes": [{"name": "aaa"}, {"name": "xyz"}]}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # the same class twice, should fail
-    _set_class(args={"client-classes": [{"name": "aaa"}, {"name": "aaa"}]}, res=1,
+    _set_class(backend, args={"client-classes": [{"name": "aaa"}, {"name": "aaa"}]}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # client-classes not list
-    _set_class(args={"client-classes": {"name": "aaa"}}, res=1,
+    _set_class(backend, args={"client-classes": {"name": "aaa"}}, res=1,
                resp_text="'client-classes' parameter must be specified and must be a list")
     # client-classes missing
-    _set_class(args={}, res=1, resp_text="'client-classes' parameter must be specified and must be a list")
+    _set_class(backend, args={}, res=1, resp_text="'client-classes' parameter must be specified and must be a list")
     # send without server tag
-    _set_class({"client-classes": [{"name": "something"}]}, res=1,
+    _set_class(backend, args={"client-classes": [{"name": "something"}]}, res=1,
                resp_text="'server-tags' parameter is mandatory", tag=None)
 
     # option-def is only supported by v4
@@ -2221,45 +2402,49 @@ def test_remote_class_set(dhcp_version):  # pylint: disable=unused-argument
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",
                                "option-data": [{"name": "configfile123", "data": "1APC"}]}]}
-    _set_class(arg, res=1, resp_text="definition for the option 'dhcp%s.configfile123'"
-                                     " does not exist (<wire>:0:107)" % world.proto[-1])
+    _set_class(backend, arg, res=1, resp_text="definition for the option 'dhcp%s.configfile123'"
+                                              " does not exist (<wire>:0:107)" % world.proto[-1])
     # set class with custom option with name that is not defined, but it will be accepted as hex
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",
                                "option-data": [{"code": 222, "data": "123"}]}]}
-    _set_class(arg)
+    _set_class(backend, arg)
     # set class with custom option that is already defined in the database
     cmd = dict(command="remote-option-def%s-set" % world.proto[-1],
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "option-defs": [{"name": "foo", "code": 222, "type": "uint32"}]})
     srv_msg.send_ctrl_cmd(cmd)
     # this will give us option 222/foo with uint32 value
-    _set_class({"client-classes": [{"name": "my_weird_name", "option-data": [{"code": 222, "data": "123"}]}]})
-    _set_class({"client-classes": [{"name": "my_weird_name_2", "option-data": [{"name": "foo", "data": "123"}]}]})
+    _set_class(backend, {"client-classes": [{"name": "my_weird_name", "option-data": [{"code": 222, "data": "123"}]}]})
+    _set_class(backend, {"client-classes": [{"name": "my_weird_name_2",
+                                             "option-data": [{"name": "foo", "data": "123"}]}]})
     # set class that is relaying on different already configured
-    _set_class({"client-classes": [{"name": "next_pointless_class", "test": "member('aaa')"}]})
+    _set_class(backend, {"client-classes": [{"name": "next_pointless_class", "test": "member('aaa')"}]})
     # set class that is relaying on different not configured class
-    _set_class({"client-classes": [{"name": "next_pointless_class_3", "test": "member('not_existing_name')"}]},
+    _set_class(backend, {"client-classes": [{"name": "next_pointless_class_3", "test": "member('not_existing_name')"}]},
                res=1, resp_text="unmet dependency on client class: not_existing_name")
 
 
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled
-def test_remote_class_set_non_existing_params(dhcp_version):  # pylint: disable=unused-argument
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_class_set_non_existing_params(dhcp_version, backend):  # pylint: disable=unused-argument
+    _setup_server(backend)
     # add to many, not allowed parameters
     # it might and up disabled
     # bug, don't know what error should be here
     # https://gitlab.isc.org/isc-projects/kea/-/issues/290
-    _set_class({"client-classes": [{"name": "aaa", "something": [{"more": 123}]}]}, res=1)
+    _set_class(backend, {"client-classes": [{"name": "aaa", "something": [{"more": 123}]}]}, res=1)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def remote_class_set_all_parameters(dhcp_version):
+def remote_class_set_all_parameters(dhcp_version, backend):
+    _setup_server(backend)
     # let's first set simple class
-    _set_class({"client-classes": [{"name": "foo"}]})
+    _set_class(backend, {"client-classes": [{"name": "foo"}]})
     # and now we will overwrite this with another one, with all parameters
     send_arg = {"client-classes": [{"name": "foo",
                                     "only-if-required": True,
@@ -2319,89 +2504,95 @@ def remote_class_set_all_parameters(dhcp_version):
                                            "test": "member('UNKNOWN')",
                                            "valid-lifetime": 1000}],
                        "count": 1}
-    _set_class(send_arg)
-    _get_class(args_rec=receive_arg)
+    _set_class(backend, send_arg)
+    _get_class(backend=backend, args_rec=receive_arg)
     # and now again set simple class with the same name and check if this was overwritten correctly
-    _set_class()
+    _set_class(backend)
     # get existing class
-    _get_class()
+    _get_class(backend=backend)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class_del(dhcp_version):  # pylint: disable=unused-argument
-    _set_class()
-    _set_class({"client-classes": [{"name": "bar"}]})
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_class_del(dhcp_version, backend):  # pylint: disable=unused-argument
+    _setup_server(backend)
+    _set_class(backend)
+    _set_class(backend, {"client-classes": [{"name": "bar"}]})
     # remove existing class
-    _del_class()
+    _del_class(backend)
     # try to remove non existing class
-    _del_class(res=3, resp_text="0 DHCPvX client class(es) deleted.", count=0)
+    _del_class(backend, res=3, resp_text="0 DHCPvX client class(es) deleted.", count=0)
     # let's add once again class
-    _set_class()
+    _set_class(backend)
     # empty class list
-    _del_class({"client-classes": []}, res=1,
+    _del_class(backend, {"client-classes": []}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # empty class in the list
-    _del_class({"client-classes": [{}]}, res=1,
+    _del_class(backend, {"client-classes": [{}]}, res=1,
                resp_text="missing 'name' parameter")
     # try to remove multiple classes
-    _del_class({"client-classes": [{"name": "foo"}, {"name": "bar"}]}, res=1,
+    _del_class(backend, {"client-classes": [{"name": "foo"}, {"name": "bar"}]}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # try to remove one class twice
-    _del_class({"client-classes": [{"name": "foo"}, {"name": "foo"}]}, res=1,
+    _del_class(backend, {"client-classes": [{"name": "foo"}, {"name": "foo"}]}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # client-classes empty
-    _del_class(args={"client-classes": []}, res=1,
+    _del_class(backend, args={"client-classes": []}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # client-classes missing
-    _del_class(args={}, res=1, resp_text="'client-classes' parameter must be specified and must be a list")
+    _del_class(backend, args={}, res=1, resp_text="'client-classes' parameter must be specified and must be a list")
     # try to remove existing class but with different server tag, should fail
-    _del_class({"client-classes": [{"name": "foo"}]}, res=1, tag='abc',
+    _del_class(backend, {"client-classes": [{"name": "foo"}]}, res=1, tag='abc',
                resp_text="'server-tags' parameter is forbidden")
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class_get(dhcp_version):  # pylint: disable=unused-argument
-    _set_class()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_class_get(dhcp_version, backend):  # pylint: disable=unused-argument
+    _setup_server(backend)
+    _set_class(backend)
     # get existing class
-    _get_class()
+    _get_class(backend=backend)
     # delete existing class
-    _del_class()
+    _del_class(backend)
     # get non existing class
-    _get_class(res=3, resp_text="DHCPvX client class 'foo' not found.",
+    _get_class(backend=backend, res=3, resp_text="DHCPvX client class 'foo' not found.",
                args_rec={"client-classes": [], "count": 0})
     # empty class list
-    _get_class({"client-classes": []}, res=1,
+    _get_class(backend=backend, args={"client-classes": []}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # empty class in the list
-    _get_class({"client-classes": [{}]}, res=1,
+    _get_class(backend=backend, args={"client-classes": [{}]}, res=1,
                resp_text="missing 'name' parameter")
     # try to get multiple classes
-    _get_class({"client-classes": [{"name": "foo"}, {"name": "bar"}]}, res=1,
+    _get_class(backend=backend, args={"client-classes": [{"name": "foo"}, {"name": "bar"}]}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # try to get the same classes twice
-    _get_class({"client-classes": [{"name": "foo"}, {"name": "foo"}]}, res=1,
+    _get_class(backend=backend, args={"client-classes": [{"name": "foo"}, {"name": "foo"}]}, res=1,
                resp_text="'client-classes' list must include exactly one element")
     # try to get exiting class with tag
-    _get_class({"client-classes": [{"name": "foo"}]}, res=1, tag='abc',
+    _get_class(backend=backend, args={"client-classes": [{"name": "foo"}]}, res=1, tag='abc',
                resp_text="'server-tags' parameter is forbidden")
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_remote_class4_get_all(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_class4_get_all(dhcp_version, backend):
+    _setup_server(backend)
     # non existing tag
-    _get_all_class({"server-tags": ["some-name-that-do-not-exist"]},
+    _get_all_class(backend=backend, args={"server-tags": ["some-name-that-do-not-exist"]},
                    resp_text="0 DHCPvX client class(es) found.",
                    args_rec={"client-classes": [], "count": 0}, res=3)
     # check existing tag but no classes defined:
-    _get_all_class({"server-tags": ["abc"]}, resp_text="0 DHCPvX client class(es) found.",
+    _get_all_class(backend=backend, args={"server-tags": ["abc"]}, resp_text="0 DHCPvX client class(es) found.",
                    args_rec={"client-classes": [], "count": 0}, res=3)
 
-    _set_server_tag("xyz")
+    _set_server_tag(backend, "xyz")
     # set class, get just one
-    _set_class()
+    _set_class(backend)
     args_rec = {"client-classes": [{"boot-file-name": "",
                                     "metadata": {"server-tags": ["abc"]},
                                     "name": "foo",
@@ -2422,10 +2613,11 @@ def test_remote_class4_get_all(dhcp_version):
                                         "valid-lifetime": 0}],
                     "count": 1}
 
-    _get_all_class({"server-tags": ["abc"]}, resp_text="1 DHCPvX client class(es) found.", args_rec=args_rec)
+    _get_all_class(backend=backend, args={"server-tags": ["abc"]}, resp_text="1 DHCPvX client class(es) found.",
+                   args_rec=args_rec)
 
     # set another class, get two
-    _set_class({"client-classes": [{"name": "bar"}]})  # this is without test parameter
+    _set_class(backend, {"client-classes": [{"name": "bar"}]})  # this is without test parameter
     if dhcp_version == 'v6':
         args_rec["client-classes"].append({"metadata": {"server-tags": ["abc"]},
                                            "name": "bar",
@@ -2444,12 +2636,14 @@ def test_remote_class4_get_all(dhcp_version):
                                            "valid-lifetime": 0})
         args_rec["count"] = 2
 
-    _get_all_class({"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec)
+    _get_all_class(backend=backend, args={"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.",
+                   args_rec=args_rec)
 
     # set 3rd class with different server tag
-    _set_class({"client-classes": [{"name": "3rd-class", "test": "member('UNKNOWN')"}]}, tag="xyz")
+    _set_class(backend, {"client-classes": [{"name": "3rd-class", "test": "member('UNKNOWN')"}]}, tag="xyz")
     # get all for tag abs should be the same as above
-    _get_all_class({"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec)
+    _get_all_class(backend=backend, args={"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.",
+                   args_rec=args_rec)
 
     # get all for tag xyz, should be just one
     args_rec_2 = {"client-classes": [{"boot-file-name": "",
@@ -2471,11 +2665,13 @@ def test_remote_class4_get_all(dhcp_version):
                                           "valid-lifetime": 0}],
                       "count": 1}
 
-    _get_all_class({"server-tags": ["xyz"]}, resp_text="1 DHCPvX client class(es) found.", args_rec=args_rec_2)
+    _get_all_class(backend=backend, args={"server-tags": ["xyz"]}, resp_text="1 DHCPvX client class(es) found.",
+                   args_rec=args_rec_2)
     # get abc, still should be just 2 classes
-    _get_all_class({"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec)
+    _get_all_class(backend=backend, args={"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.",
+                   args_rec=args_rec)
     # set anther class with tag all, it should be in requests for abc and xyz
-    _set_class({"client-classes": [{"name": "4th-class", "test": "member('UNKNOWN')"}]}, tag="all")
+    _set_class(backend, {"client-classes": [{"name": "4th-class", "test": "member('UNKNOWN')"}]}, tag="all")
 
     if dhcp_version == 'v6':
         args_rec["client-classes"].append({"metadata": {"server-tags": ["all"]},
@@ -2515,8 +2711,10 @@ def test_remote_class4_get_all(dhcp_version):
                                              "valid-lifetime": 0})
         args_rec_2["count"] = 2
 
-    _get_all_class({"server-tags": ["abc", "all"]}, resp_text="3 DHCPvX client class(es) found.", args_rec=args_rec)
-    _get_all_class({"server-tags": ["xyz", "all"]}, resp_text="2 DHCPvX client class(es) found.", args_rec=args_rec_2)
+    _get_all_class(backend=backend, args={"server-tags": ["abc", "all"]}, resp_text="3 DHCPvX client class(es) found.",
+                   args_rec=args_rec)
+    _get_all_class(backend=backend, args={"server-tags": ["xyz", "all"]}, resp_text="2 DHCPvX client class(es) found.",
+                   args_rec=args_rec_2)
 
     # check tag just all
     args_rec_all = {"client-classes": [{"boot-file-name": "",
@@ -2538,8 +2736,9 @@ def test_remote_class4_get_all(dhcp_version):
                                             "valid-lifetime": 0}],
                         "count": 1}
 
-    _get_all_class({"server-tags": ["all"]}, resp_text="1 DHCPvX client class(es) found.", args_rec=args_rec_all)
+    _get_all_class(backend=backend, args={"server-tags": ["all"]}, resp_text="1 DHCPvX client class(es) found.",
+                   args_rec=args_rec_all)
 
-    _get_all_class({"server-tags": [""]}, resp_text="server-tag must not be empty", res=1)
-    _get_all_class({"server-tags": []}, resp_text="'server-tags' list must not be empty", res=1)
-    _get_all_class({}, resp_text="'server-tags' parameter is mandatory", res=1)
+    _get_all_class(backend=backend, args={"server-tags": [""]}, resp_text="server-tag must not be empty", res=1)
+    _get_all_class(backend=backend, args={"server-tags": []}, resp_text="'server-tags' list must not be empty", res=1)
+    _get_all_class(backend=backend, args={}, resp_text="'server-tags' parameter is mandatory", res=1)

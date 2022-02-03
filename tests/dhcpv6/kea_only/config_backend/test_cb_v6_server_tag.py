@@ -25,8 +25,8 @@ def run_around_each_test(request):
     request.addfinalizer(unset)
 
 
-def _set_server_tag(tag="abc"):
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+def _set_server_tag(backend, tag="abc"):
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": tag}]})
     return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -39,11 +39,12 @@ def _get_server_config(reload_kea=False):
     return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
 
-def test_server_tag_subnet():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_server_tag_subnet(backend):
     # create first configuration
-    cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz")
-    _set_server_tag("xyz")
-    _set_server_tag("abc")
+    cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
+    _set_server_tag(backend, "xyz")
+    _set_server_tag(backend, "abc")
     get_rejected()
     # add configuration for abc, don't check reconfigure result
     cfg_xyz.add_subnet(server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
@@ -73,7 +74,7 @@ def test_server_tag_subnet():
     srv_control.start_srv('DHCP', 'stopped')
 
     # create second configuration
-    setup_server_for_config_backend_cmds(server_tag="abc")
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
 
     get_address(mac_addr='00:00:00:00:00:02', exp_addr='2001:db8:1::1')
     abc = _get_server_config()
@@ -86,7 +87,7 @@ def test_server_tag_subnet():
     srv_control.start_srv('DHCP', 'stopped')
 
     # create third subnet that will use "all" tag
-    cfg_qwe = setup_server_for_config_backend_cmds(server_tag="qwe")
+    cfg_qwe = setup_server_for_config_backend_cmds(server_tag="qwe", backend_type=backend)
 
     get_rejected()
 
@@ -103,7 +104,7 @@ def test_server_tag_subnet():
     get_address(mac_addr='00:00:00:00:00:03', exp_addr='2001:db8:3::20')
 
     srv_control.start_srv('DHCP', 'stopped')
-    setup_server_for_config_backend_cmds(server_tag="abc")
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     abc = _get_server_config()
 
     # two subnets without classification on the same interface doesn't make sense so we will just check config
@@ -116,10 +117,11 @@ def test_server_tag_subnet():
     assert abc["arguments"]["Dhcp6"]["subnet6"][1]["subnet"] == "2001:db8:3::/64"
 
 
-def test_server_tag_global_option():
-    cfg = setup_server_for_config_backend_cmds(server_tag="abc")
-    _set_server_tag("xyz")
-    _set_server_tag("abc")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_server_tag_global_option(backend):
+    cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend, "xyz")
+    _set_server_tag(backend, "abc")
     cfg.add_subnet(server_tags="abc")
     cfg.add_option(server_tags=["all"], code=22, csv_format=True, data="2001::1", name="sip-server-addr", space="dhcp6")
 
@@ -146,7 +148,7 @@ def test_server_tag_global_option():
 
     srv_control.start_srv('DHCP', 'stopped')
 
-    cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz")
+    cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
     cfg_xyz.add_subnet(server_tags="xyz")
     abc = _get_server_config()
     # new kea is started with tag "xyz"
@@ -163,10 +165,11 @@ def test_server_tag_global_option():
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::1"})
 
 
-def test_server_tag_network():
-    cfg = setup_server_for_config_backend_cmds(server_tag="abc")
-    _set_server_tag("xyz")
-    _set_server_tag("abc")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_server_tag_network(backend):
+    cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend, "xyz")
+    _set_server_tag(backend, "abc")
     cfg.add_network(server_tags=["abc"], name="flor1")
 
     cfg.add_subnet(shared_network_name="flor1", server_tags=["abc"],
@@ -192,7 +195,7 @@ def test_server_tag_network():
     get_rejected(mac_addr='00:00:00:00:00:10')
     srv_control.start_srv('DHCP', 'stopped')
 
-    setup_server_for_config_backend_cmds(server_tag="xyz")
+    setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
     get_address(mac_addr='00:00:00:00:00:04', exp_addr='2001:db8:2::5')
 
     # we still want just one network with one subnet but different subnet, from xyz
@@ -207,7 +210,7 @@ def test_server_tag_network():
     # model was incomplete on previous step so I can't use del_subnet method because it's again
     # forcing checking
     cmd = dict(command="remote-subnet6-del-by-prefix",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "subnets": [{"subnet": "2001:db8:2::/64"}]})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
@@ -219,10 +222,11 @@ def test_server_tag_network():
     get_address(mac_addr='00:00:00:00:00:05', exp_addr='2001:db8:3::5')
 
 
-def test_server_tag_global_parameter():
-    cfg = setup_server_for_config_backend_cmds(server_tag="abc")
-    _set_server_tag("xyz")
-    _set_server_tag("abc")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_server_tag_global_parameter(backend):
+    cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend, "xyz")
+    _set_server_tag(backend, "abc")
 
     cfg.add_subnet(server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
                    pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])
@@ -242,7 +246,7 @@ def test_server_tag_global_parameter():
 
     get_address(mac_addr='00:00:00:00:00:05', exp_ia_na_iaaddr_validlft=5002)
     srv_control.start_srv('DHCP', 'stopped')
-    cfg = setup_server_for_config_backend_cmds(server_tag="xyz")
+    cfg = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
 
     cfg.add_subnet(server_tags=["xyz"], subnet="2001:db8:1::/64", id=1,
                    pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])
@@ -253,10 +257,11 @@ def test_server_tag_global_parameter():
     get_address(mac_addr='00:00:00:00:00:06', exp_ia_na_iaaddr_validlft=5001)
 
 
-def test_server_tag_kea_without_tag():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_server_tag_kea_without_tag(backend):
     # create first configuration, kea has no assigned tag, so it should get config just from "all"
-    cfg = setup_server_for_config_backend_cmds(server_tag="")
-    _set_server_tag("abc")
+    cfg = setup_server_for_config_backend_cmds(server_tag="", backend_type=backend)
+    _set_server_tag(backend, "abc")
 
     cfg.add_subnet(server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
                    pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])

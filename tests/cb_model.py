@@ -64,7 +64,7 @@ class ConfigNetworkModel(ConfigElem):
 
         return cfg
 
-    def update(self, **kwargs):
+    def update(self, backend=None, **kwargs):
         for param, val in kwargs.items():
             param = param.replace('_', '-')
             if val is None:
@@ -74,7 +74,7 @@ class ConfigNetworkModel(ConfigElem):
                 self.cfg[param] = val
 
         # send command
-        response = network_set(self.cfg)
+        response = network_set(self.cfg, db_type=backend)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -95,7 +95,7 @@ class ConfigSubnetModel(ConfigElem):
         del cfg['shared-network-name']
         return cfg
 
-    def update(self, **kwargs):
+    def update(self, backend, **kwargs):
         # prepare arguments
         if 'pool' in kwargs:
             pool = kwargs.pop('pool')
@@ -110,7 +110,7 @@ class ConfigSubnetModel(ConfigElem):
                 self.cfg[param] = val
 
         # send command
-        response = subnet_set(self.cfg)
+        response = subnet_set(self.cfg, db_type=backend)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -118,8 +118,8 @@ class ConfigSubnetModel(ConfigElem):
 
         return config
 
-    def delete(self):
-        response = subnet_del_by_prefix(self.cfg['subnet'])
+    def delete(self, backend):
+        response = subnet_del_by_prefix(self.cfg['subnet'], db_type=backend)
         assert response["result"] == 0
 
         config = self.get_root().reload_and_check()
@@ -286,6 +286,7 @@ class ConfigModel(ConfigElem):
     def set_global_parameter(self, **kwargs):
         # prepare command
         server_tags = None
+        backend = None
         parameters = {}
         for param, val in kwargs.items():
             if val is None:
@@ -294,6 +295,9 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = _to_list(val)
                 continue
+            if param == "backend":
+                backend = val
+                continue
             else:
                 param = param.replace('_', '-')
                 parameters[param] = val
@@ -301,8 +305,10 @@ class ConfigModel(ConfigElem):
 
         if "server_tags" in kwargs:
             del kwargs["server_tags"]
+        if "backend" in kwargs:
+            del kwargs["backend"]
 
-        response = global_parameter_set(parameters, server_tags=server_tags)
+        response = global_parameter_set(parameters, db_type=backend, server_tags=server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -313,6 +319,7 @@ class ConfigModel(ConfigElem):
     def add_network(self, **kwargs):
         # prepare command
         server_tags = None
+        backend = None
         network = {
             "name": "floor13",
             "interface": "$(SERVER_IFACE)"}
@@ -325,7 +332,9 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = _to_list(val)
                 continue
-
+            if param == "backend":
+                backend = val
+                continue
             param = param.replace('_', '-')
             network[param] = val
 
@@ -334,9 +343,11 @@ class ConfigModel(ConfigElem):
 
         if "server_tags" in kwargs:
             del kwargs["server_tags"]
+        if "backend" in kwargs:
+            del kwargs["backend"]
 
         # send command
-        response = network_set(network, server_tags=server_tags)
+        response = network_set(network, db_type=backend, server_tags=server_tags)
         assert response["result"] == 0
 
         network_cfg = ConfigNetworkModel(self, network)
@@ -347,7 +358,7 @@ class ConfigModel(ConfigElem):
 
         return network_cfg, config
 
-    def update_network(self, **kwargs):
+    def update_network(self, backend=None, **kwargs):
         # find network
         if 'network' not in kwargs:
             assert len(self.shared_networks) == 1
@@ -360,7 +371,7 @@ class ConfigModel(ConfigElem):
             if network is None:
                 raise Exception('Cannot find network %s for update' % kwargs['network'])
 
-        config = network.update(**kwargs)
+        config = network.update(db_type=backend, **kwargs)
         return config
 
     def gen_subnet_id(self):
@@ -368,6 +379,7 @@ class ConfigModel(ConfigElem):
         return self.subnet_id
 
     def add_option(self, **kwargs):
+        backend = None
         server_tags = None
         option = {"code": 0,
                   "data": None,
@@ -380,15 +392,20 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = _to_list(val)
                 continue
+            if param == "backend":
+                backend = val
+                continue
             param = param.replace('_', '-')
             option[param] = val
         self.cfg["option-data"] = [option]
 
         if "server_tags" in kwargs:
             del kwargs["server_tags"]
+        if "backend" in kwargs:
+            del kwargs["backend"]
 
         # send command
-        response = global_option_set([option], server_tags=server_tags)
+        response = global_option_set([option], db_type=backend, server_tags=server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -398,6 +415,7 @@ class ConfigModel(ConfigElem):
 
     def del_option(self, **kwargs):
         server_tags = None
+        backend = None
         option = {"code": 0}
         for param, val in kwargs.items():
             if val is None:
@@ -405,14 +423,20 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = _to_list(val)
                 continue
+            if param == "backend":
+                backend = val
+                continue
             param = param.replace('_', '-')
             option[param] = val
         if "server_tags" in kwargs:
             del kwargs["server_tags"]
+        if "backend" in kwargs:
+            del kwargs["backend"]
+
         self.cfg["option-data"] = []
 
         # send command
-        response = global_option_del([option], server_tags=server_tags)
+        response = global_option_del([option], db_type=backend, server_tags=server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -423,6 +447,7 @@ class ConfigModel(ConfigElem):
     def add_subnet(self, **kwargs):
         # prepare command
         server_tags = None
+        backend = None
         default_pool_range = "192.168.50.1-192.168.50.100" if world.proto == 'v4' else '2001:db8:1::1-2001:db8:1::100'
         subnet = {
             "id": self.gen_subnet_id(),
@@ -444,6 +469,9 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = _to_list(val)
                 continue
+            if param == "backend":
+                backend = val
+                continue
             param = param.replace('_', '-')
             subnet[param] = val
 
@@ -452,9 +480,11 @@ class ConfigModel(ConfigElem):
 
         if "server_tags" in kwargs:
             del kwargs["server_tags"]
+        if "backend" in kwargs:
+            del kwargs["backend"]
 
         # send command
-        response = subnet_set(subnet, server_tags=server_tags)
+        response = subnet_set(subnet, db_type=backend, server_tags=server_tags)
         assert response["result"] == 0
 
         subnet_cfg = ConfigSubnetModel(self, subnet)
@@ -465,7 +495,7 @@ class ConfigModel(ConfigElem):
 
         return subnet_cfg, config
 
-    def update_subnet(self, **kwargs):
+    def update_subnet(self, backend=None, **kwargs):
         # find subnet
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
@@ -478,10 +508,10 @@ class ConfigModel(ConfigElem):
             if subnet is None:
                 raise Exception('Cannot find subnet %s for update' % kwargs['subnet'])
 
-        config = subnet.update(**kwargs)
+        config = subnet.update(backend, **kwargs)
         return config
 
-    def del_subnet(self, **kwargs):
+    def del_subnet(self, backend=None, **kwargs):
         # find subnet
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
@@ -496,7 +526,7 @@ class ConfigModel(ConfigElem):
 
         del self.subnets[subnet.cfg['subnet']]
 
-        config = subnet.delete()
+        config = subnet.delete(backend)
         return config
 
     def get_subnets(self, network=None):
@@ -510,6 +540,7 @@ class ConfigModel(ConfigElem):
         if "client-classes" not in self.cfg:
             self.cfg["client-classes"] = []
         server_tags = None
+        backend = None
         client_class = {'boot-file-name': '',
                         'next-server': '0.0.0.0',
                         'option-data': [],
@@ -526,6 +557,9 @@ class ConfigModel(ConfigElem):
             if param == "server_tags":
                 server_tags = _to_list(val)
                 continue
+            if param == "backend":
+                backend = val
+                continue
             param = param.replace('_', '-')
             client_class[param] = val
         self.cfg["client-classes"].append(client_class)
@@ -533,9 +567,11 @@ class ConfigModel(ConfigElem):
 
         if "server_tags" in kwargs:
             del kwargs["server_tags"]
+        if "backend" in kwargs:
+            del kwargs["backend"]
 
         # send command
-        response = client_class_set([client_class], server_tags=server_tags)
+        response = client_class_set([client_class], db_type=backend, server_tags=server_tags)
         assert response["result"] == 0
 
         # request config reloading and check result
@@ -543,7 +579,7 @@ class ConfigModel(ConfigElem):
 
         return client_class, config
 
-    def del_class(self, class_name=None):
+    def del_class(self, class_name=None, backend=None):
         # find subnet
         my_class = None
         idx = None
@@ -559,7 +595,7 @@ class ConfigModel(ConfigElem):
             del self.client_classes[idx]
             del self.cfg["client-classes"][idx]
 
-        response = client_class_del(class_name)
+        response = client_class_del(class_name, backend)
         assert response["result"] == 0
 
         config = self.get_root().reload_and_check()
@@ -678,19 +714,34 @@ def setup_server(**kwargs):
 
 
 def setup_server_for_config_backend_cmds(**kwargs):
-    default_cfg = {"hooks-libraries": [{"library": world.f_cfg.hooks_join("libdhcp_cb_cmds.so")},
-                                       {"library": world.f_cfg.hooks_join("libdhcp_mysql_cb.so")}],
+    default_cfg = {"hooks-libraries": [{"library": world.f_cfg.hooks_join("libdhcp_cb_cmds.so")}],
                    "server-tag": "abc",
-                   "parked-packet-limit": 256,
-                   "config-control": {"config-databases": [{"user": "$(DB_USER)",
-                                                            "password": "$(DB_PASSWD)",
-                                                            "name": "$(DB_NAME)",
-                                                            "type": "mysql"}]}}
+                   "parked-packet-limit": 256}
+    db = {"config-control": {"config-databases": [{"user": "$(DB_USER)",
+                                                   "password": "$(DB_PASSWD)",
+                                                   "name": "$(DB_NAME)",
+                                                   "type": ""}]}}
     kwargs = _normalize_keys(kwargs)
     if "server-tag" in kwargs:
         default_cfg["server-tag"] = kwargs["server-tag"]
         del kwargs["server-tag"]
+    if "backend-type" in kwargs:
+        if kwargs["backend-type"] not in ["mysql", "postgresql"]:
+            assert False, f"Kea does not support {kwargs['backend-type']} as config backend."
 
+        db["config-control"]["config-databases"][0]["type"] = kwargs["backend-type"]
+
+        if kwargs["backend-type"] == "postgresql":
+            default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_pgsql_cb.so")})
+        else:
+            default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_mysql_cb.so")})
+
+        del kwargs["backend-type"]
+    else:  # let' for now keep default value, but it may result in missing some tests with pgsql backend
+        db["config-control"]["config-databases"][0]["type"] = "mysql"
+        default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_mysql_cb.so")})
+
+    default_cfg.update(db)
     init_cfg = _merge_configs(default_cfg, kwargs)
     result = setup_server(**init_cfg)
 
@@ -718,7 +769,7 @@ def setup_server_with_radius(**kwargs):
                     "secret": "testing123"}],
                 "attributes": [{
                         "name": "password",
-                    "expr": "hexstring(pkt4.mac, ':')"}]},
+                        "expr": "hexstring(pkt4.mac, ':')"}]},
             "accounting": {
                 "servers": [{
                     # These are parameters for the first (and only) access server

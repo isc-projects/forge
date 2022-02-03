@@ -13,9 +13,11 @@ pytestmark = [pytest.mark.kea_only,
               pytest.mark.v6]
 
 
-def test_auto_reload_1second(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_auto_reload_1second(dhcp_version, backend):
     # prepare initial config with fetch wait time set to 1 second
-    cfg = setup_server_for_config_backend_cmds(config_control={"config-fetch-wait-time": 1}, force_reload=False)
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend, config_control={"config-fetch-wait-time": 1},
+                                               force_reload=False)
 
     dhcp_key = 'Dhcp%s' % dhcp_version[1]
     subnet_key = 'subnet%s' % dhcp_version[1]
@@ -26,7 +28,7 @@ def test_auto_reload_1second(dhcp_version):
     assert new_cfg[dhcp_key]['config-control']['config-fetch-wait-time'] == 1
 
     # add subnet and wait 2 seconds that config is reloaded automatically
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
     time.sleep(2)
 
     # now check if there is a subnet in config
@@ -38,9 +40,11 @@ def test_auto_reload_1second(dhcp_version):
     get_address()
 
 
-def test_auto_reload_100seconds(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_auto_reload_100seconds(dhcp_version, backend):
     # prepare initial config with fetch wait time set to 100 seconds
-    cfg = setup_server_for_config_backend_cmds(config_control={"config-fetch-wait-time": 100}, force_reload=False)
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend, config_control={"config-fetch-wait-time": 100},
+                                               force_reload=False)
 
     dhcp_key = 'Dhcp%s' % dhcp_version[1]
     subnet_key = 'subnet%s' % dhcp_version[1]
@@ -51,7 +55,7 @@ def test_auto_reload_100seconds(dhcp_version):
     assert new_cfg[dhcp_key]['config-control']['config-fetch-wait-time'] == 100
 
     # add subnet and wait 2 seconds that config is NOT reloaded automatically as it is done every 100 seconds
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
     time.sleep(2)
 
     # now check if there is NO subnets in config

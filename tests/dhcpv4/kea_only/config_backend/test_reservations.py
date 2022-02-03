@@ -5,6 +5,7 @@ import pytest
 from dhcp4_scen import get_address
 from cb_model import setup_server_for_config_backend_cmds
 
+# pylint: disable=unused-argument
 
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.controlchannel,
@@ -15,9 +16,10 @@ pytestmark = [pytest.mark.kea_only,
 
 
 @pytest.mark.parametrize("initial_reservation_mode", [None, 'all', 'out-of-pool', 'global', 'disabled'])
-def test_reservation_mode_override_init(initial_reservation_mode, dhcp_version):  # pylint: disable=unused-argument
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_reservation_mode_override_init(initial_reservation_mode, dhcp_version, backend):
     # set initial reservation-mode
-    cfg, _ = setup_server_for_config_backend_cmds(reservation_mode=initial_reservation_mode,
+    cfg, _ = setup_server_for_config_backend_cmds(backend_type=backend, reservation_mode=initial_reservation_mode,
                                                   check_config=True)
 
     # change reservation-mode to disabled or global and check it
@@ -25,10 +27,11 @@ def test_reservation_mode_override_init(initial_reservation_mode, dhcp_version):
         exp_reservation_mode = 'global'
     else:
         exp_reservation_mode = 'disabled'
-    cfg.set_global_parameter(reservation_mode=exp_reservation_mode)
+    cfg.set_global_parameter(backend=backend, reservation_mode=exp_reservation_mode)
 
 
-def test_reservation_mode_in_globals(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_reservation_mode_in_globals(dhcp_version, backend):
     if dhcp_version == 'v4':
         init_cfg = dict(
             subnet4=[{
@@ -59,17 +62,17 @@ def test_reservation_mode_in_globals(dhcp_version):
 
     init_cfg['check-config'] = True
 
-    cfg, _ = setup_server_for_config_backend_cmds(**init_cfg)
+    cfg, _ = setup_server_for_config_backend_cmds(backend_type=backend, **init_cfg)
 
     # by default reservation-mode is 'all' so the address should be returned from subnet reservation
     get_address(mac_addr="00:00:00:00:00:01", exp_addr='2.2.2.2' if dhcp_version == 'v4' else '2001:db8:1::2')
 
     # change reservation-mode to 'global' and now address should be returned from global reservations
-    cfg.set_global_parameter(reservation_mode='global')
+    cfg.set_global_parameter(backend=backend, reservation_mode='global')
     get_address(mac_addr="00:00:00:00:00:01", exp_addr='1.1.1.1' if dhcp_version == 'v4' else '2001:db8:1::3')
 
     # now change reservation-mode to 'disabled' and then the address should be returned from subnet pool
     # (not from reservations)
-    cfg.set_global_parameter(reservation_mode='disabled')
+    cfg.set_global_parameter(backend=backend, reservation_mode='disabled')
     get_address(mac_addr="00:00:00:00:00:01",
                 exp_addr='2.2.2.1' if dhcp_version == 'v4' else '2001:db8:1::1')

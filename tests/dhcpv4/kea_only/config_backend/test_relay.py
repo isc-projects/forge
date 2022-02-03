@@ -14,17 +14,18 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.config_backend]
 
 
-def test_relay_in_subnet(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_relay_in_subnet(dhcp_version, backend):
     relay_addr_1 = "10.0.0.1" if dhcp_version == 'v4' else '10:0:0::1'
     relay_addr_2 = "10.0.0.2" if dhcp_version == 'v4' else '10:0:0::2'
     exp_addr_1 = '192.168.50.1' if dhcp_version == 'v4' else '2001:db8:1::1'
     exp_addr_2 = '192.168.50.2' if dhcp_version == 'v4' else '2001:db8:1::2'
     exp_addr_3 = '192.168.50.3' if dhcp_version == 'v4' else '2001:db8:1::3'
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # create a subnet with specific IP address for relay agent
-    subnet_cfg, _ = cfg.add_subnet(relay={"ip-addresses": [relay_addr_1]})
+    subnet_cfg, _ = cfg.add_subnet(backend=backend, relay={"ip-addresses": [relay_addr_1]})
 
     # client 1 behind relay agent 1 should get a lease
     get_address(mac_addr='00:00:00:00:00:01', relay_addr=relay_addr_1, exp_addr=exp_addr_1)
@@ -33,7 +34,7 @@ def test_relay_in_subnet(dhcp_version):
     get_rejected(mac_addr='00:00:00:00:00:02', relay_addr=relay_addr_2)
 
     # add another relay agent 2
-    subnet_cfg.update(relay={"ip-addresses": [relay_addr_1, relay_addr_2]})
+    subnet_cfg.update(backend=backend, relay={"ip-addresses": [relay_addr_1, relay_addr_2]})
 
     # client 2 now should get a lease
     get_address(mac_addr='00:00:00:00:00:02', relay_addr=relay_addr_2, exp_addr=exp_addr_2)
@@ -42,7 +43,8 @@ def test_relay_in_subnet(dhcp_version):
     get_address(mac_addr='00:00:00:00:00:03', relay_addr=relay_addr_1, exp_addr=exp_addr_3)
 
 
-def test_relay_in_network(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_relay_in_network(dhcp_version, backend):
     relay_addr_1 = "10.0.0.1" if dhcp_version == 'v4' else '10:0:0::1'
     relay_addr_2 = "10.0.0.2" if dhcp_version == 'v4' else '10:0:0::2'
     relay_addr_3 = "10.0.0.3" if dhcp_version == 'v4' else '10:0:0::3'
@@ -51,11 +53,11 @@ def test_relay_in_network(dhcp_version):
     exp_addr_3 = '192.168.50.3' if dhcp_version == 'v4' else '2001:db8:1::3'
     exp_addr_4 = '192.168.50.4' if dhcp_version == 'v4' else '2001:db8:1::4'
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # create a network with specific IP address for relay agent
-    network_cfg, _ = cfg.add_network(relay={"ip-addresses": [relay_addr_1]})
-    subnet_cfg, _ = cfg.add_subnet(network=network_cfg)
+    network_cfg, _ = cfg.add_network(backend=backend, relay={"ip-addresses": [relay_addr_1]})
+    subnet_cfg, _ = cfg.add_subnet(backend=backend, network=network_cfg)
 
     # client 1 behind relay agent 1 should get a lease
     get_address(mac_addr='00:00:00:00:00:01', relay_addr=relay_addr_1, exp_addr=exp_addr_1)
@@ -64,7 +66,7 @@ def test_relay_in_network(dhcp_version):
     get_rejected(mac_addr='00:00:00:00:00:02', relay_addr=relay_addr_2)
 
     # add another relay agent 2
-    network_cfg.update(relay={"ip-addresses": [relay_addr_1, relay_addr_2]})
+    network_cfg.update(backend=backend, relay={"ip-addresses": [relay_addr_1, relay_addr_2]})
 
     # client 2 now should get a lease
     get_address(mac_addr='00:00:00:00:00:02', relay_addr=relay_addr_2, exp_addr=exp_addr_2)
@@ -73,7 +75,7 @@ def test_relay_in_network(dhcp_version):
     get_address(mac_addr='00:00:00:00:00:03', relay_addr=relay_addr_1, exp_addr=exp_addr_3)
 
     # and now override relay on subnet level to relay agent 3
-    subnet_cfg.update(relay={"ip-addresses": [relay_addr_3]})
+    subnet_cfg.update(backend=backend, relay={"ip-addresses": [relay_addr_3]})
 
     # client 4 now should get a lease
     get_address(mac_addr='00:00:00:00:00:04', relay_addr=relay_addr_3, exp_addr=exp_addr_4)

@@ -13,14 +13,8 @@ pytestmark = [pytest.mark.v6,
               pytest.mark.cb_cmds]
 
 
-@pytest.fixture(autouse=True)
-def run_around_tests():
-    # we still can use server configured with one server tag
-    setup_server_for_config_backend_cmds(server_tag="abc")
-
-
-def _set_server_tag(tag="abc"):
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+def _set_server_tag(backend, tag="abc"):
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": tag,
                                                                      "description": "some server"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -29,12 +23,16 @@ def _set_server_tag(tag="abc"):
                         "arguments": {"servers": [{"server-tag": tag, "description": "some server"}]}}
 
 
-def test_remote_server_tag_set():
-    _set_server_tag()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
 
 
-def test_remote_server_tag_set_any():
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_any(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "any"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
@@ -42,32 +40,40 @@ def test_remote_server_tag_set_any():
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-def test_remote_server_tag_set_missing_tag(channel):
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_missing_tag(channel, backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"description": "some server"}]})
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel, exp_result=1)
 
     assert response == {"result": 1, "text": "missing 'server-tag' parameter"}
 
 
-def test_remote_server_tag_set_incorrect_tag():
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_incorrect_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": 123}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "'server-tag' parameter is not a string"}
 
 
-def test_remote_server_tag_set_empty_tag():
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_empty_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": ""}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "server-tag must not be empty"}
 
 
-def test_remote_server_tag_set_missing_description():
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_missing_description(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "someserver"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -75,23 +81,29 @@ def test_remote_server_tag_set_missing_description():
                         "result": 0, "text": "DHCPv6 server successfully set."}
 
 
-def test_remote_server_tag_set_missing_servers():
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"}})
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_missing_servers(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend}})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "'servers' parameter must be specified and must be a list"}
 
 
-def test_remote_server_tag_set_empty_servers():
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_empty_servers(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": []})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "'servers' list must include exactly one element"}
 
 
-def test_remote_server_tag_set_multiple_servers():
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_set_multiple_servers(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "someserver"},
                                                                     {"server-tag": "abc"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
@@ -99,9 +111,11 @@ def test_remote_server_tag_set_multiple_servers():
     assert response == {"result": 1, "text": "'servers' list must include exactly one element"}
 
 
-def test_remote_server_tag_get():
-    _set_server_tag()
-    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_get(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
@@ -109,8 +123,10 @@ def test_remote_server_tag_get():
                         "result": 0, "text": "DHCPv6 server 'abc' found."}
 
 
-def test_remote_server_tag_get_non_existing_tag():
-    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_get_non_existing_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
@@ -118,33 +134,39 @@ def test_remote_server_tag_get_non_existing_tag():
                         "result": 3, "text": "DHCPv6 server 'abc' not found."}
 
 
-def test_remote_server_tag_get_empty_tag():
-    _set_server_tag()
-    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_get_empty_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": ""}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "server-tag must not be empty"}
 
 
-def test_remote_server_tag_get_missing_tag():
-    _set_server_tag()
-    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_get_missing_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": backend},
                                                         "servers": [{}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "missing 'server-tag' parameter"}
 
 
-def test_remote_server_tag_del():
-    _set_server_tag()
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_del(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 server(s) deleted."}
 
-    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-server6-get", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
@@ -152,9 +174,11 @@ def test_remote_server_tag_del():
                         "result": 3, "text": "DHCPv6 server 'abc' not found."}
 
 
-def test_remote_server_tag_del_all():
-    _set_server_tag()
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_del_all(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "all"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
@@ -163,36 +187,44 @@ def test_remote_server_tag_del_all():
                                 "elements with all servers connecting to the database and may not be deleted"}
 
 
-def test_remote_server_tag_del_non_existing_tag():
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_del_non_existing_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv6 server(s) deleted."}
 
 
-def test_remote_server_tag_del_empty_tag():
-    _set_server_tag()
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_del_empty_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": ""}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "server-tag must not be empty"}
 
 
-def test_remote_server_tag_del_missing_tag():
-    _set_server_tag()
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_del_missing_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
 
     assert response == {"result": 1, "text": "missing 'server-tag' parameter"}
 
 
-def test_remote_server_tag_get_all():
-    _set_server_tag()
-    _set_server_tag(tag="xyz")
-    cmd = dict(command="remote-server6-get-all", arguments={"remote": {"type": "mysql"}})
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_get_all(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
+    _set_server_tag(backend, tag="xyz")
+    cmd = dict(command="remote-server6-get-all", arguments={"remote": {"type": backend}})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 2,
@@ -201,17 +233,21 @@ def test_remote_server_tag_get_all():
                         "result": 0, "text": "2 DHCPv6 server(s) found."}
 
 
-def test_remote_server_tag_get_all_no_tags():
-    cmd = dict(command="remote-server6-get-all", arguments={"remote": {"type": "mysql"}})
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_get_all_no_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    cmd = dict(command="remote-server6-get-all", arguments={"remote": {"type": backend}})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     assert response == {"arguments": {"count": 0, "servers": []}, "result": 3, "text": "0 DHCPv6 server(s) found."}
 
 
-def test_remote_server_tag_get_all_one_tags():
-    _set_server_tag()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_server_tag_get_all_one_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend)
 
-    cmd = dict(command="remote-server6-get-all", arguments={"remote": {"type": "mysql"}})
+    cmd = dict(command="remote-server6-get-all", arguments={"remote": {"type": backend}})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1,
@@ -219,14 +255,14 @@ def test_remote_server_tag_get_all_one_tags():
                         "result": 0, "text": "1 DHCPv6 server(s) found."}
 
 
-def _add_server_tag(server_tag=None):
-    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": "mysql"},
+def _add_server_tag(backend, server_tag=None):
+    cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": server_tag}]})
     srv_msg.send_ctrl_cmd(cmd)
 
 
-def _subnet_set(server_tags, subnet_id, pool, exp_result=0, subnet="2001:db8:1::/64", ):
-    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": "mysql"},
+def _subnet_set(server_tags, subnet_id, pool, backend, exp_result=0, subnet="2001:db8:1::/64"):
+    cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
                                                         "server-tags": server_tags,
                                                         "subnets": [{"subnet": subnet, "id": subnet_id,
                                                                      "interface": "$(SERVER_IFACE)",
@@ -239,22 +275,23 @@ def _subnet_set(server_tags, subnet_id, pool, exp_result=0, subnet="2001:db8:1::
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
-def _subnet_get(command, exp_result=0, subnet_parameter=None):
-    cmd = dict(command=command, arguments={"remote": {"type": "mysql"}})
+def _subnet_get(backend, command="remote-subnet6-get-by-id", exp_result=0, subnet_parameter=None):
+    cmd = dict(command=command, arguments={"remote": {"type": backend}})
     if subnet_parameter:
         cmd["arguments"]["subnets"] = [subnet_parameter]
 
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
 
 
-def _subnet_list(command, server_tags, exp_result=0):
-    cmd = dict(command=command, arguments={"remote": {"type": "mysql"}, "server-tags": server_tags})
+def _subnet_list(command, server_tags, backend, exp_result=0):
+    cmd = dict(command=command, arguments={"remote": {"type": backend}, "server-tags": server_tags})
 
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
 
 
-def _subnet_del(exp_result=0, subnet_parameter=None):
-    return _subnet_get("remote-subnet6-del-by-id", exp_result=exp_result, subnet_parameter=subnet_parameter)
+def _subnet_del(backend, exp_result=0, subnet_parameter=None):
+    return _subnet_get(command="remote-subnet6-del-by-id", exp_result=exp_result, subnet_parameter=subnet_parameter,
+                       backend=backend)
 
 
 def _check_subnet_result(resp, server_tags, count=1, subnet_id=5, subnet="2001:db8:1::/64"):
@@ -265,59 +302,66 @@ def _check_subnet_result(resp, server_tags, count=1, subnet_id=5, subnet="2001:d
     assert resp["arguments"]["subnets"][0]["id"] == subnet_id
 
 
-def test_remote_subnet6_server_tags_delete_server_tag_keep_data():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
-    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10", subnet="2001:db8:3::/64")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet6_server_tags_delete_server_tag_keep_data(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100", backend=backend)
+    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10", subnet="2001:db8:3::/64",
+                backend=backend)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(subnet_parameter={"id": 6}, backend=backend)
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
 
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="2001:db8:1::/64")
 
-    _add_server_tag("abc")
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    _add_server_tag(backend, "abc")
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="2001:db8:1::/64")
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(subnet_parameter={"id": 6}, backend=backend)
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
 
 
-def test_remote_subnet6_get_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _subnet_set(server_tags=["abc", "xyz"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
-    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10", subnet="2001:db8:3::/64")
-    _subnet_set(server_tags=["all"], subnet_id=7, pool="2001:db8:2::1-2001:db8:2::10", subnet="2001:db8:2::/64")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet6_get_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _subnet_set(server_tags=["abc", "xyz"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100", backend=backend)
+    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10",
+                subnet="2001:db8:3::/64", backend=backend)
+    _subnet_set(server_tags=["all"], subnet_id=7, pool="2001:db8:2::1-2001:db8:2::10",
+                subnet="2001:db8:2::/64", backend=backend)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=["abc", "xyz"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(subnet_parameter={"id": 6}, backend=backend)
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
 
     resp = _subnet_get(command="remote-subnet6-get-by-prefix",
-                       subnet_parameter={"subnet": "2001:db8:3::/64"})
+                       subnet_parameter={"subnet": "2001:db8:3::/64"}, backend=backend)
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
 
     resp = _subnet_get(command="remote-subnet6-get-by-prefix",
-                       subnet_parameter={"subnet": "2001:db8:1::/64"})
+                       subnet_parameter={"subnet": "2001:db8:1::/64"}, backend=backend)
     _check_subnet_result(resp, server_tags=["abc", "xyz"], subnet_id=5)
 
-    resp = _subnet_list(command="remote-subnet6-list", server_tags=["abc"])
+    resp = _subnet_list(command="remote-subnet6-list", server_tags=["abc"], backend=backend)
     # not sure if this is how it suppose to work
     _check_subnet_result(resp, server_tags=["abc", "xyz"], count=2, subnet_id=5)
 
-    resp = _subnet_list(command="remote-subnet6-list", server_tags=["xyz"])
+    resp = _subnet_list(command="remote-subnet6-list", server_tags=["xyz"], backend=backend)
     _check_subnet_result(resp, server_tags=["abc", "xyz"], count=3, subnet_id=5)
     assert resp["arguments"]["subnets"][1]["subnet"] == "2001:db8:3::/64"
     assert resp["arguments"]["subnets"][1]["id"] == 6
@@ -325,65 +369,71 @@ def test_remote_subnet6_get_server_tags():
     assert resp["arguments"]["subnets"][2]["id"] == 7
 
 
-def test_remote_subnet6_get_server_tags_all_incorrect_setup():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet6_get_server_tags_all_incorrect_setup(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # Configure 2 subnet with the same id but different tags will result with just one subnet in configuration
     # the first one will be overwritten
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
-    _subnet_set(server_tags=["xyz"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::10")
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100", backend=backend)
+    _subnet_set(server_tags=["xyz"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::10", backend=backend)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=5)
 
 
-def test_remote_subnet6_del_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100")
-    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10", subnet="2001:db8:3::/64")
-    _subnet_set(server_tags=["all"], subnet_id=7, pool="2001:db8:2::1-2001:db8:2::10", subnet="2001:db8:2::/64")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_subnet6_del_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _subnet_set(server_tags=["abc"], subnet_id=5, pool="2001:db8:1::1-2001:db8:1::100", backend=backend)
+    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="2001:db8:3::1-2001:db8:3::10", subnet="2001:db8:3::/64",
+                backend=backend)
+    _subnet_set(server_tags=["all"], subnet_id=7, pool="2001:db8:2::1-2001:db8:2::10", subnet="2001:db8:2::/64",
+                backend=backend)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(subnet_parameter={"id": 6}, backend=backend)
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 7})
+    resp = _subnet_get(subnet_parameter={"id": 7}, backend=backend)
     _check_subnet_result(resp, server_tags=["all"], subnet_id=7, subnet="2001:db8:2::/64")
 
     # we should delete just one
-    resp = _subnet_del(subnet_parameter={"id": 6})
+    resp = _subnet_del(subnet_parameter={"id": 6}, backend=backend)
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
     # since this one was just removed now we expect error
-    resp = _subnet_del(subnet_parameter={"id": 6}, exp_result=3)
+    resp = _subnet_del(subnet_parameter={"id": 6}, exp_result=3, backend=backend)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
     # those two should still be configured
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 7})
+    resp = _subnet_get(subnet_parameter={"id": 7}, backend=backend)
     _check_subnet_result(resp, server_tags=["all"], subnet_id=7, subnet="2001:db8:2::/64")
 
-    resp = _subnet_del(subnet_parameter={"id": 7})
+    resp = _subnet_del(subnet_parameter={"id": 7}, backend=backend)
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(subnet_parameter={"id": 5}, backend=backend)
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet6-get-by-id", subnet_parameter={"id": 7}, exp_result=3)
+    resp = _subnet_get(subnet_parameter={"id": 7}, exp_result=3, backend=backend)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
 
-def _network_set(server_tags, network_name="florX", exp_result=0):
-    cmd = dict(command="remote-network6-set", arguments={"remote": {"type": "mysql"}, "server-tags": server_tags,
+def _network_set(server_tags, backend, network_name="florX", exp_result=0):
+    cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend}, "server-tags": server_tags,
                                                          "shared-networks": [{"name": network_name}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
 
@@ -391,22 +441,23 @@ def _network_set(server_tags, network_name="florX", exp_result=0):
                         "result": 0, "text": "IPv6 shared network successfully set."}
 
 
-def _network_get(command, exp_result=0, network_parameter=None):
-    cmd = dict(command=command, arguments={"remote": {"type": "mysql"}})
+def _network_get(backend, command="remote-network6-get", exp_result=0, network_parameter=None):
+    cmd = dict(command=command, arguments={"remote": {"type": backend}})
     if network_parameter:
         cmd["arguments"]["shared-networks"] = [network_parameter]
 
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
 
 
-def _network_list(command, server_tags, exp_result=0):
-    cmd = dict(command=command, arguments={"remote": {"type": "mysql"}, "server-tags": server_tags})
+def _network_list(backend, server_tags, exp_result=0):
+    cmd = dict(command="remote-network6-list", arguments={"remote": {"type": backend}, "server-tags": server_tags})
 
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
 
 
-def _network_del(exp_result=0, network_parameter=None):
-    return _network_get("remote-network6-del", exp_result=exp_result, network_parameter=network_parameter)
+def _network_del(backend, exp_result=0, network_parameter=None):
+    return _network_get(command="remote-network6-del", backend=backend, exp_result=exp_result,
+                        network_parameter=network_parameter)
 
 
 def _network_check_res(resp, server_tags, count=1, network_name="florX"):
@@ -416,115 +467,123 @@ def _network_check_res(resp, server_tags, count=1, network_name="florX"):
     assert resp["arguments"]["shared-networks"][0]["name"] == network_name
 
 
-def test_remote_network6_server_tags_remove_server_tag_keep_data():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xyz"], network_name="flor1")
-    _network_set(server_tags=["all"], network_name="top_flor")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network6_server_tags_remove_server_tag_keep_data(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _network_set(server_tags=["abc"], backend=backend)
+    _network_set(server_tags=["xyz"], network_name="flor1", backend=backend)
+    _network_set(server_tags=["all"], network_name="top_flor", backend=backend)
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "flor1"})
+    resp = _network_get(backend=backend, network_parameter={"name": "flor1"})
     _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
     # Tag removed but network should exist
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=[], network_name="florX")
 
     # add back the same tag, make sure that network is still unassigned
-    _add_server_tag("abc")
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    _add_server_tag(backend, "abc")
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=[], network_name="florX")
 
     # rest should be intact
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "flor1"})
+    resp = _network_get(backend=backend, network_parameter={"name": "flor1"})
     _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
 
-def test_remote_network6_get_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xyz"], network_name="flor1")
-    _network_set(server_tags=["all"], network_name="top_flor")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network6_get_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _network_set(server_tags=["abc"], backend=backend)
+    _network_set(server_tags=["xyz"], network_name="flor1", backend=backend)
+    _network_set(server_tags=["all"], network_name="top_flor", backend=backend)
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "flor1"})
+    resp = _network_get(backend=backend, network_parameter={"name": "flor1"})
     _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
-    resp = _network_list(command="remote-network6-list", server_tags=["xyz"])
+    resp = _network_list(backend, server_tags=["xyz"])
     _network_check_res(resp, server_tags=["xyz"], count=2, network_name="flor1")
 
     assert resp["arguments"]["shared-networks"][1]["metadata"] == {"server-tags": ["all"]}
     assert resp["arguments"]["shared-networks"][1]["name"] == "top_flor"
 
 
-def test_remote_network6_get_server_tags_all_incorrect_setup():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network6_get_server_tags_all_incorrect_setup(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # Configure 2 networks with the same name but different tags will result with just one network in configuration
     # the first one will be overwritten
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xyz"])
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _network_set(server_tags=["abc"], backend=backend)
+    _network_set(server_tags=["xyz"], backend=backend)
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=["xyz"], network_name="florX")
 
 
-def test_remote_network6_del_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _network_set(server_tags=["abc"])
-    _network_set(server_tags=["xyz"], network_name="flor1")
-    _network_set(server_tags=["all"], network_name="top_flor")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_network6_del_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _network_set(server_tags=["abc"], backend=backend)
+    _network_set(server_tags=["xyz"], network_name="flor1", backend=backend)
+    _network_set(server_tags=["all"], network_name="top_flor", backend=backend)
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "flor1"})
+    resp = _network_get(backend=backend, network_parameter={"name": "flor1"})
     _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "top_flor"})
+    resp = _network_get(backend=backend, network_parameter={"name": "top_flor"})
     _network_check_res(resp, server_tags=["all"], network_name="top_flor")
 
-    _network_del(network_parameter={"name": "flor1"})
+    _network_del(backend=backend, network_parameter={"name": "flor1"})
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
     # removed, so it should not be returned
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "flor1"}, exp_result=3)
+    resp = _network_get(backend=backend, network_parameter={"name": "flor1"}, exp_result=3)
     assert resp["result"] == 3
     assert resp["arguments"]["count"] == 0
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "top_flor"})
+    resp = _network_get(backend=backend, network_parameter={"name": "top_flor"})
     _network_check_res(resp, server_tags=["all"], network_name="top_flor")
 
-    resp = _network_del(network_parameter={"name": "top_flor"})
+    resp = _network_del(backend=backend, network_parameter={"name": "top_flor"})
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "florX"})
+    resp = _network_get(backend=backend, network_parameter={"name": "florX"})
     _network_check_res(resp, server_tags=["abc"], network_name="florX")
 
     # removed, so it should not be returned
-    resp = _network_get(command="remote-network6-get", network_parameter={"name": "top_flor"}, exp_result=3)
+    resp = _network_get(backend=backend, network_parameter={"name": "top_flor"}, exp_result=3)
     assert resp["result"] == 3
     assert resp["arguments"]["count"] == 0
 
 
-def _option_set(server_tags, exp_result=0, code=23, opt_data="2001::1"):
-    cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": "mysql"},
+def _option_set(backend, server_tags, exp_result=0, code=23, opt_data="2001::1"):
+    cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
                                                                "server-tags": server_tags,
                                                                "options": [{
                                                                    "code": code,
@@ -535,8 +594,8 @@ def _option_set(server_tags, exp_result=0, code=23, opt_data="2001::1"):
                         "arguments": {"options": [{"code": code, "space": "dhcp6"}]}}
 
 
-def _option_get(command, server_tags, exp_result=0, opt_code=None):
-    cmd = dict(command=command, arguments={"remote": {"type": "mysql"},
+def _option_get(backend, server_tags, command="remote-option6-global-get-all", exp_result=0, opt_code=None):
+    cmd = dict(command=command, arguments={"remote": {"type": backend},
                                            "server-tags": server_tags})
 
     if opt_code:
@@ -557,81 +616,91 @@ def _check_option_result(resp, server_tags, count=1, opt_name=None, opt_data=Non
     assert resp["arguments"]["options"][0]["data"] == opt_data
 
 
-def test_remote_option6_get_server_tags_all():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option6_get_server_tags_all(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # simple test for one ticket https://gitlab.isc.org/isc-projects/kea/issues/737
-    _add_server_tag("abc")
-    _option_set(server_tags=["all"], opt_data='2001::3')
-    resp = _option_get(command="remote-option6-global-get-all", server_tags=["abc"], opt_code=23)
+    _add_server_tag(backend, "abc")
+    _option_set(backend, server_tags=["all"], opt_data='2001::3')
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
     _check_option_result(resp, count=1, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
 
-def test_remote_option_get_server_tags_get_non_existing_tag():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_get_server_tags_get_non_existing_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # we will request option 23 from tag "abc" but it's was just configured for "all" which should be returned instead
-    _add_server_tag("abc")
-    _option_set(server_tags=["all"])
+    _add_server_tag(backend, "abc")
+    _option_set(backend, server_tags=["all"])
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23)
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::1")
 
 
-def test_remote_option_remove_server_tag_and_data():
-    _add_server_tag("abc")
-    _option_set(server_tags=["abc"])
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_remove_server_tag_and_data(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _option_set(backend, server_tags=["abc"])
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23)
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
 
     _check_option_result(resp, server_tags=["abc"], opt_name="dns-servers", opt_data="2001::1")
 
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
     # after removing tag all options should be removed with it
-    _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23, exp_result=3)
+    _option_get(backend, server_tags=["abc"], opt_code=23, exp_result=3)
 
 
-def test_remote_option6_get_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _option_set(server_tags=["abc"])
-    _option_set(server_tags=["xyz"], opt_data='2001::2')
-    _option_set(server_tags=["all"], opt_data='2001::3')
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option6_get_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _option_set(backend, server_tags=["abc"])
+    _option_set(backend, server_tags=["xyz"], opt_data='2001::2')
+    _option_set(backend, server_tags=["all"], opt_data='2001::3')
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23)
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
     _check_option_result(resp, server_tags=["abc"], opt_name="dns-servers", opt_data="2001::1")
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["xyz"], opt_code=23)
+    resp = _option_get(backend, server_tags=["xyz"], opt_code=23)
     _check_option_result(resp, server_tags=["xyz"], opt_name="dns-servers", opt_data="2001::2")
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["all"], opt_code=23)
+    resp = _option_get(backend, server_tags=["all"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
-    _option_set(server_tags=["abc"], code=28, opt_data='2001::6')
+    _option_set(backend, server_tags=["abc"], code=28, opt_data='2001::6')
 
-    resp = _option_get(command="remote-option6-global-get-all", server_tags=["abc"], opt_code=23)
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
     _check_option_result(resp, count=2, server_tags=["abc"], opt_name="dns-servers", opt_data="2001::1")
     assert resp["arguments"]["options"][1]["metadata"] == {"server-tags": ["abc"]}
     assert resp["arguments"]["options"][1]["name"] == "nisp-servers"
     assert resp["arguments"]["options"][1]["data"] == "2001::6"
 
-    resp = _option_get(command="remote-option6-global-get-all", server_tags=["xyz"], opt_code=23)
+    resp = _option_get(backend, server_tags=["xyz"], opt_code=23)
     _check_option_result(resp, count=1, server_tags=["xyz"], opt_name="dns-servers", opt_data="2001::2")
 
 
-def test_remote_option6_del_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
-    _option_set(server_tags=["abc"])
-    _option_set(server_tags=["xyz"], opt_data='2001::2')
-    _option_set(server_tags=["all"], opt_data='2001::3')
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option6_del_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
+    _option_set(backend, server_tags=["abc"])
+    _option_set(backend, server_tags=["xyz"], opt_data='2001::2')
+    _option_set(backend, server_tags=["all"], opt_data='2001::3')
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23)
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
     _check_option_result(resp, server_tags=["abc"], opt_name="dns-servers", opt_data="2001::1")
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["xyz"], opt_code=23)
+    resp = _option_get(backend, server_tags=["xyz"], opt_code=23)
     _check_option_result(resp, server_tags=["xyz"], opt_name="dns-servers", opt_data="2001::2")
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["all"], opt_code=23)
+    resp = _option_get(backend, server_tags=["all"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
     resp = _option_del(server_tags=["xyz"], opt_code=23)
@@ -639,14 +708,14 @@ def test_remote_option6_del_server_tags():
     assert resp["text"] == "1 DHCPv6 option(s) deleted."
     assert resp["result"] == 0
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["xyz"], opt_code=23)
+    resp = _option_get(backend, server_tags=["xyz"], opt_code=23)
     # it was removed but tag "all" should return option
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23)
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
     _check_option_result(resp, server_tags=["abc"], opt_name="dns-servers", opt_data="2001::1")
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["all"], opt_code=23)
+    resp = _option_get(backend, server_tags=["all"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
     resp = _option_del(server_tags=["abc"], opt_code=23)
@@ -655,33 +724,33 @@ def test_remote_option6_del_server_tags():
     assert resp["result"] == 0
 
     # this also should be tag all
-    resp = _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23)
+    resp = _option_get(backend, server_tags=["abc"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
     # this should be from tag "all"
-    resp = _option_get(command="remote-option6-global-get", server_tags=["xyz"], opt_code=23)
+    resp = _option_get(backend, server_tags=["xyz"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["all"], opt_code=23)
+    resp = _option_get(backend, server_tags=["all"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
-    resp = _option_get(command="remote-option6-global-del", server_tags=["all"], opt_code=23)
+    resp = _option_get(backend=backend, command="remote-option6-global-del", server_tags=["all"], opt_code=23)
     assert resp["arguments"]["count"] == 1
     assert resp["text"] == "1 DHCPv6 option(s) deleted."
     assert resp["result"] == 0
 
     # now all commands should return error
-    _option_get(command="remote-option6-global-get", server_tags=["xyz"], opt_code=23, exp_result=3)
+    _option_get(backend, server_tags=["xyz"], opt_code=23, exp_result=3)
 
-    _option_get(command="remote-option6-global-get", server_tags=["abc"], opt_code=23, exp_result=3)
+    _option_get(backend, server_tags=["abc"], opt_code=23, exp_result=3)
 
-    resp = _option_get(command="remote-option6-global-get", server_tags=["all"], opt_code=23, exp_result=3)
+    resp = _option_get(backend, server_tags=["all"], opt_code=23, exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
 
-def _optdef_set(server_tags, exp_result=0, opt_code=222, opt_name="foo", opt_type="uint32"):
-    cmd = dict(command="remote-option-def6-set", arguments={"remote": {"type": "mysql"},
+def _optdef_set(backend, server_tags, exp_result=0, opt_code=222, opt_name="foo", opt_type="uint32"):
+    cmd = dict(command="remote-option-def6-set", arguments={"remote": {"type": backend},
                                                             "server-tags": server_tags,
                                                             "option-defs": [{
                                                                 "name": opt_name,
@@ -693,8 +762,8 @@ def _optdef_set(server_tags, exp_result=0, opt_code=222, opt_name="foo", opt_typ
                         "result": 0, "text": "DHCPv6 option definition successfully set."}
 
 
-def _optdef_get(command, server_tags, exp_result=0, option_def_parameter=None):
-    cmd = dict(command=command, arguments={"remote": {"type": "mysql"},
+def _optdef_get(backend, server_tags, command="remote-option-def6-get", exp_result=0, option_def_parameter=None):
+    cmd = dict(command=command, arguments={"remote": {"type": backend},
                                            "server-tags": server_tags})
     if option_def_parameter:
         cmd["arguments"]["option-defs"] = [option_def_parameter]
@@ -702,8 +771,8 @@ def _optdef_get(command, server_tags, exp_result=0, option_def_parameter=None):
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
 
 
-def _optdef_del(server_tags, exp_result=0, option_def_parameter=None):
-    return _optdef_get("remote-option-def6-del", server_tags, exp_result=exp_result,
+def _optdef_del(backend, server_tags, exp_result=0, option_def_parameter=None):
+    return _optdef_get(backend, server_tags, command="remote-option-def6-del", exp_result=exp_result,
                        option_def_parameter=option_def_parameter)
 
 
@@ -716,138 +785,148 @@ def _check_optdef_result(resp, server_tags, count=1, opt_type="uint32", opt_name
     assert resp["arguments"]["option-defs"][0]["type"] == opt_type
 
 
-def test_remote_option_def_get_server_tags_tmp():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def_get_server_tags_tmp(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # simple test for one ticket https://gitlab.isc.org/isc-projects/kea/issues/737
-    _add_server_tag("abc")
-    _optdef_set(server_tags=["all"])
-    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["abc"])
+    _add_server_tag(backend, "abc")
+    _optdef_set(backend, server_tags=["all"])
+    resp = _optdef_get(backend=backend, command="remote-option-def6-get-all", server_tags=["abc"])
     _check_optdef_result(resp, server_tags=["all"], count=1)
 
 
-def test_remote_option_def_get_server_tags_get_non_existing_tag():
-    _add_server_tag("abc")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def_get_server_tags_get_non_existing_tag(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
     # let's make two definitions with the same name but different type and server tag, plus one different with
     # server tag "all"
-    _optdef_set(server_tags=["all"])
+    _optdef_set(backend, server_tags=["all"])
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+    resp = _optdef_get(backend, server_tags=["abc"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["all"])
 
 
-def test_remote_option_def_remove_server_tag_and_data():
-    _add_server_tag("abc")
-    _optdef_set(server_tags=["abc"])
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def_remove_server_tag_and_data(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _optdef_set(backend, server_tags=["abc"])
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+    resp = _optdef_get(backend, server_tags=["abc"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["abc"])
 
-    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": "mysql"},
+    cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
     # after removing tag all option definition should be removed with it
-    _optdef_get(command="remote-option-def6-get", server_tags=["abc"], option_def_parameter={"code": 222},
-                exp_result=3)
+    _optdef_get(backend=backend, command="remote-option-def6-get", server_tags=["abc"],
+                option_def_parameter={"code": 222}, exp_result=3)
 
 
-def test_remote_option_def_get_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def_get_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
     # let's make two definitions with the same name but different type and server tag, plus one different with
     # server tag "all"
-    _optdef_set(server_tags=["abc"])
-    _optdef_set(server_tags=["xyz"], opt_type="string")
-    _optdef_set(server_tags=["all"], opt_code=233, opt_name="bar")
+    _optdef_set(backend, server_tags=["abc"])
+    _optdef_set(backend, server_tags=["xyz"], opt_type="string")
+    _optdef_set(backend, server_tags=["all"], opt_code=233, opt_name="bar")
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+    resp = _optdef_get(backend, server_tags=["abc"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["abc"])
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+    resp = _optdef_get(backend, server_tags=["xyz"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")
 
     # this one should fail
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+    resp = _optdef_get(backend, server_tags=["all"],
                        option_def_parameter={"code": 222}, exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+    resp = _optdef_get(backend, server_tags=["all"],
                        option_def_parameter={"code": 233})
     _check_optdef_result(resp, server_tags=["all"], opt_code=233, opt_name="bar")
 
     # let's check if -all will return list of two options for each tag and one option for "all"
-    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["abc"])
+    resp = _optdef_get(backend=backend, command="remote-option-def6-get-all", server_tags=["abc"])
     _check_optdef_result(resp, server_tags=["abc"], count=2)
 
     assert resp["arguments"]["option-defs"][1]["metadata"] == {"server-tags": ["all"]}
     assert resp["arguments"]["option-defs"][1]["name"] == "bar"
     assert resp["arguments"]["option-defs"][1]["code"] == 233
 
-    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["xyz"])
+    resp = _optdef_get(backend=backend, command="remote-option-def6-get-all", server_tags=["xyz"])
     _check_optdef_result(resp, server_tags=["xyz"], count=2, opt_type="string")
     assert resp["arguments"]["option-defs"][1]["metadata"] == {"server-tags": ["all"]}
     assert resp["arguments"]["option-defs"][1]["name"] == "bar"
     assert resp["arguments"]["option-defs"][1]["code"] == 233
 
-    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["all"])
+    resp = _optdef_get(backend=backend, command="remote-option-def6-get-all", server_tags=["all"])
     _check_optdef_result(resp, server_tags=["all"], opt_code=233, opt_name="bar")
 
 
-def test_remote_option_def_del_server_tags():
-    _add_server_tag("abc")
-    _add_server_tag("xyz")
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_remote_option_def_del_server_tags(backend):
+    setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _add_server_tag(backend, "abc")
+    _add_server_tag(backend, "xyz")
     # we should be able to configure the same option for each tag, different type is for distinguish returns
     # options from "all" should be overwritten by specific tags on kea configuration level, not in db!
-    _optdef_set(server_tags=["abc"])
-    _optdef_set(server_tags=["xyz"], opt_type="string")
-    _optdef_set(server_tags=["all"], opt_type="uint8")
+    _optdef_set(backend, server_tags=["abc"])
+    _optdef_set(backend, server_tags=["xyz"], opt_type="string")
+    _optdef_set(backend, server_tags=["all"], opt_type="uint8")
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+    resp = _optdef_get(backend, server_tags=["abc"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["abc"], count=1)
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+    resp = _optdef_get(backend, server_tags=["xyz"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["xyz"], opt_type="string", count=1)
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+    resp = _optdef_get(backend, server_tags=["all"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["all"], opt_type="uint8")
 
     # let's remove one option and see if all other stays
-    _optdef_del(["all"], option_def_parameter={"code": 222})
+    _optdef_del(backend, ["all"], option_def_parameter={"code": 222})
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+    resp = _optdef_get(backend, server_tags=["abc"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["abc"])
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+    resp = _optdef_get(backend, server_tags=["xyz"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["all"],
+    resp = _optdef_get(backend, server_tags=["all"],
                        option_def_parameter={"code": 222}, exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
     # same with -all command, we expect just one
-    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["xyz"])
+    resp = _optdef_get(backend=backend, command="remote-option-def6-get-all", server_tags=["xyz"])
     _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")
 
-    resp = _optdef_get(command="remote-option-def6-get-all", server_tags=["xyz"])
+    resp = _optdef_get(backend=backend, command="remote-option-def6-get-all", server_tags=["xyz"])
     _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")
 
-    _optdef_del(["abc"], option_def_parameter={"code": 222})
+    _optdef_del(backend, ["abc"], option_def_parameter={"code": 222})
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["abc"],
+    resp = _optdef_get(backend, server_tags=["abc"],
                        option_def_parameter={"code": 222}, exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
-    resp = _optdef_get(command="remote-option-def6-get", server_tags=["xyz"],
+    resp = _optdef_get(backend, server_tags=["xyz"],
                        option_def_parameter={"code": 222})
     _check_optdef_result(resp, server_tags=["xyz"], opt_type="string")

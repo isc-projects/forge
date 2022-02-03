@@ -21,17 +21,18 @@ pytestmark = [pytest.mark.kea_only,
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_subnet_and_renew_timer(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_renew_timer(dhcp_version, backend):
     # change renew timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     dhcp_key = 'Dhcp%s' % dhcp_version[1]
     subnet_key = 'subnet%s' % dhcp_version[1]
 
     # define one, default subnet
-    _, config = cfg.add_subnet()
+    _, config = cfg.add_subnet(backend=backend)
     assert 'renew-timer' not in config[dhcp_key][subnet_key][0]
 
     # check getting address from this subnet
@@ -39,114 +40,117 @@ def test_subnet_and_renew_timer(dhcp_version):
 
     # change global renew_timer to 1sec and now check
     # if received lease has renew_timer accordingly set
-    cfg.set_global_parameter(renew_timer=1)
+    cfg.set_global_parameter(backend=backend, renew_timer=1)
     get_address(exp_renew_timer=1)
 
     # change renew_timer on subnet level to 1000sec
     # and now check if received lease has renew_timer accordingly set
-    cfg.update_subnet(renew_timer=1000)
+    cfg.update_subnet(backend=backend, renew_timer=1000)
     get_address(exp_renew_timer=1000)
 
     # change again renew_timer on subnet level to 1sec
     # and now check if received lease has renew_timer accordingly set
-    cfg.update_subnet(renew_timer=1)
+    cfg.update_subnet(backend=backend, renew_timer=1)
     get_address(exp_renew_timer=1)
 
     # change again renew_timer on global level to 500sec
     # and now check if it is ignored ans it still should be taken
     # from subnet level
-    cfg.set_global_parameter(renew_timer=500)
+    cfg.set_global_parameter(backend=backend, renew_timer=500)
     get_address(exp_renew_timer=1)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_subnet_and_rebind_timer(dhcp_version):  # pylint: disable=unused-argument
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_rebind_timer(dhcp_version, backend):  # pylint: disable=unused-argument
     # change rebind timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     # check getting address from this subnet
     get_address()
 
     # change global renew_timer to 1sec and now check
     # if received lease has renew_timer accordingly set
-    cfg.set_global_parameter(rebind_timer=1)
+    cfg.set_global_parameter(backend=backend, rebind_timer=1)
     get_address(exp_rebind_timer=1)
 
     # change rebind_timer on subnet level to 1000sec
     # and now check if received lease has rebind_timer accordingly set
-    cfg.update_subnet(rebind_timer=1000)
+    cfg.update_subnet(backend=backend, rebind_timer=1000)
     get_address(exp_rebind_timer=1000)
 
     # change again rebind_timer on subnet level to 1sec
     # and now check if received lease has rebind_timer accordingly set
-    cfg.update_subnet(rebind_timer=1)
+    cfg.update_subnet(backend=backend, rebind_timer=1)
     get_address(exp_rebind_timer=1)
 
     # change again rebind_timer on global level to 500sec
     # and now check if it is ignored ans it still should be taken
     # from subnet level
-    cfg.set_global_parameter(rebind_timer=500)
+    cfg.set_global_parameter(backend=backend, rebind_timer=500)
     get_address(exp_rebind_timer=1)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_subnet_and_timers_renew_less(dhcp_version):  # pylint: disable=unused-argument
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_timers_renew_less(dhcp_version, backend):  # pylint: disable=unused-argument
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
     # in this case renew is always less than rebind time so both should
     # be present in responses
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     # check getting address from this subnet
     get_address()
 
     # set renew and rebind timers on global level
     # and check if they are present in ACK packet
-    cfg.set_global_parameter(renew_timer=100, rebind_timer=1000)
+    cfg.set_global_parameter(backend=backend, renew_timer=100, rebind_timer=1000)
     get_address(exp_renew_timer=100, exp_rebind_timer=1000)
 
     # set renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    cfg.update_subnet(renew_timer=200, rebind_timer=2000)
+    cfg.update_subnet(backend=backend, renew_timer=200, rebind_timer=2000)
     get_address(exp_renew_timer=200, exp_rebind_timer=2000)
 
     # change renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    cfg.update_subnet(renew_timer=300, rebind_timer=3000)
+    cfg.update_subnet(backend=backend, renew_timer=300, rebind_timer=3000)
     get_address(exp_renew_timer=300, exp_rebind_timer=3000)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    cfg.set_global_parameter(renew_timer=400, rebind_timer=4000)
+    cfg.set_global_parameter(backend=backend, renew_timer=400, rebind_timer=4000)
     get_address(exp_renew_timer=300, exp_rebind_timer=3000)
 
 
 @pytest.mark.v4
 @pytest.mark.disabled  # #505 will not be fixed
-def test_subnet_and_timers_renew_greater_4():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_timers_renew_greater_4(backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check that if renew timer is greater than rebind timer
     # then an error is returned
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     cmd = {'command': 'remote-subnet4-set',
-           'arguments': {'remote': {'type': 'mysql'},
+           'arguments': {'remote': {"type": backend},
                          'server-tags': ['all'],
                          'subnets': [{'id': 1,
                                       'interface': 'enp0s10',
@@ -166,7 +170,7 @@ def test_subnet_and_timers_renew_greater_4():
 
     cmd = {'command': 'remote-global-parameter4-set',
            'arguments': {'parameters': {'rebind-timer': 10, 'renew-timer': 100},
-                         'remote': {'type': 'mysql'},
+                         'remote': {"type": backend},
                          'server-tags': ['all']}}
 
     # bug #505
@@ -180,18 +184,19 @@ def test_subnet_and_timers_renew_greater_4():
 
 @pytest.mark.v6
 @pytest.mark.disabled  # #505 will not be fixed
-def test_subnet_and_timers_renew_greater_6():
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_timers_renew_greater_6(backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check that if renew timer is greater than rebind timer
     # then an error is returned
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     cmd = {'command': 'remote-subnet6-set',
-           'arguments': {'remote': {'type': 'mysql'},
+           'arguments': {'remote': {"type": backend},
                          'server-tags': ['all'],
                          'subnets': [{'id': 1,
                                       'interface': 'enp0s10',
@@ -211,7 +216,7 @@ def test_subnet_and_timers_renew_greater_6():
 
     cmd = {'command': 'remote-global-parameter6-set',
            'arguments': {'parameters': {'rebind-timer': 10, 'renew-timer': 100},
-                         'remote': {'type': 'mysql'},
+                         'remote': {"type": backend},
                          'server-tags': ['all']}}
 
     # bug #505
@@ -225,149 +230,153 @@ def test_subnet_and_timers_renew_greater_6():
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_subnet_and_timers_equal(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_timers_equal(dhcp_version, backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
     # in this case renew is always equal to rebind time,
     # ie. renew should be ignored and not present in responses
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     # check getting address from this subnet
     get_address()
 
     # set renew and rebind timers on global level
     # and as renew equals rebind check if only rebind is present in ACK packet
-    cfg.set_global_parameter(renew_timer=1, rebind_timer=1)
+    cfg.set_global_parameter(backend=backend, renew_timer=1, rebind_timer=1)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1)
 
     # set renew and rebind timers on subnet level
     # and as renew equals rebind check if only rebind is present in ACK packet
-    cfg.update_subnet(renew_timer=1000, rebind_timer=1000)
+    cfg.update_subnet(backend=backend, renew_timer=1000, rebind_timer=1000)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1000)
 
     # change renew and rebind timers on subnet level
     # and as renew equals rebind check if only rebind is present in ACK packet
-    cfg.update_subnet(renew_timer=2, rebind_timer=2)
+    cfg.update_subnet(backend=backend, renew_timer=2, rebind_timer=2)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=2)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    cfg.set_global_parameter(renew_timer=5, rebind_timer=5)
+    cfg.set_global_parameter(backend=backend, renew_timer=5, rebind_timer=5)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=2)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_subnet_and_timers_mix(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_timers_mix(dhcp_version, backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
     # in this case they are in different relations to each other
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     # check getting address from this subnet
     get_address()
 
     # change renew and rebind timers that they are less or equal to each other, do it on global level
-    cfg.set_global_parameter(renew_timer=1500, rebind_timer=1500)
+    cfg.set_global_parameter(backend=backend, renew_timer=1500, rebind_timer=1500)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1500)
 
-    cfg.set_global_parameter(renew_timer=1000, rebind_timer=1500)
+    cfg.set_global_parameter(backend=backend, renew_timer=1000, rebind_timer=1500)
     get_address(exp_renew_timer=1000, exp_rebind_timer=1500)
 
-    cfg.set_global_parameter(renew_timer=1000, rebind_timer=1000)
+    cfg.set_global_parameter(backend=backend, renew_timer=1000, rebind_timer=1000)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1000)
 
     # now change on subnet level in all directions
-    cfg.update_subnet(renew_timer=1500, rebind_timer=1500)
+    cfg.update_subnet(backend=backend, renew_timer=1500, rebind_timer=1500)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1500)
 
-    cfg.update_subnet(renew_timer=1000, rebind_timer=1500)
+    cfg.update_subnet(backend=backend, renew_timer=1000, rebind_timer=1500)
     get_address(exp_renew_timer=1000, exp_rebind_timer=1500)
 
-    cfg.update_subnet(renew_timer=1000, rebind_timer=1000)
+    cfg.update_subnet(backend=backend, renew_timer=1000, rebind_timer=1000)
     get_address(exp_renew_timer='missing' if dhcp_version == 'v4' else 0, exp_rebind_timer=1000)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_shared_networks_and_timers_renew_less(dhcp_version):  # pylint: disable=unused-argument
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_shared_networks_and_timers_renew_less(dhcp_version, backend):  # pylint: disable=unused-argument
     # change both renew and rebind timers on different levels (global, shared network and subnet)
     # and check if these changes are properly reflected in received ACKs
     # in this case renew is always less than rebind time so both should be present in responses
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define a shared network with one subnet
-    network_cfg, _ = cfg.add_network()
-    subnet_cfg, _ = cfg.add_subnet(network=network_cfg)
+    network_cfg, _ = cfg.add_network(backend=backend)
+    subnet_cfg, _ = cfg.add_subnet(backend=backend, network=network_cfg)
 
     # check getting address from this subnet
     get_address()
 
     # set renew and rebind timers on global level
     # and check if they are present in ACK packet
-    cfg.set_global_parameter(renew_timer=10, rebind_timer=100)
+    cfg.set_global_parameter(backend=backend, renew_timer=10, rebind_timer=100)
     get_address(exp_renew_timer=10, exp_rebind_timer=100)
 
     # set renew and rebind timers on network level
     # and check if they are present in ACK packet
-    network_cfg.update(renew_timer=20, rebind_timer=200)
+    network_cfg.update(backend=backend, renew_timer=20, rebind_timer=200)
     get_address(exp_renew_timer=20, exp_rebind_timer=200)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    cfg.set_global_parameter(renew_timer=30, rebind_timer=300)
+    cfg.set_global_parameter(backend=backend, renew_timer=30, rebind_timer=300)
     get_address(exp_renew_timer=20, exp_rebind_timer=200)
 
     # change renew and rebind timers on network level
     # and check if they are present in ACK packet
-    network_cfg.update(renew_timer=40, rebind_timer=400)
+    network_cfg.update(backend=backend, renew_timer=40, rebind_timer=400)
     get_address(exp_renew_timer=40, exp_rebind_timer=400)
 
     # set renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    subnet_cfg.update(renew_timer=50, rebind_timer=500)
+    subnet_cfg.update(backend=backend, renew_timer=50, rebind_timer=500)
     get_address(exp_renew_timer=50, exp_rebind_timer=500)
 
     # change renew and rebind timers on subnet level
     # and check if they are present in ACK packet
-    subnet_cfg.update(renew_timer=60, rebind_timer=600)
+    subnet_cfg.update(backend=backend, renew_timer=60, rebind_timer=600)
     get_address(exp_renew_timer=60, exp_rebind_timer=600)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    network_cfg.update(renew_timer=70, rebind_timer=700)
+    network_cfg.update(backend=backend, renew_timer=70, rebind_timer=700)
     get_address(exp_renew_timer=60, exp_rebind_timer=600)
 
     # change renew and rebind timers on global level
     # and check if they are not reflected in ACK packet,
     # they still should be taken from subnet
-    cfg.set_global_parameter(renew_timer=80, rebind_timer=800)
+    cfg.set_global_parameter(backend=backend, renew_timer=80, rebind_timer=800)
     get_address(exp_renew_timer=60, exp_rebind_timer=600)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_subnet_and_valid_lifetime(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_valid_lifetime(dhcp_version, backend):
     # change valid-lifetime on different levels (global and subnet)
     # and check if behavior is as expected ie leases after lifetime
     # are available for other clients
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet with 1 IP address
-    cfg.add_subnet(pool="192.168.50.2/32" if dhcp_version == 'v4' else '2001:db8:1::2/128')
+    cfg.add_subnet(backend=backend, pool="192.168.50.2/32" if dhcp_version == 'v4' else '2001:db8:1::2/128')
 
     # check getting address from this subnet by client 1
     get_address(mac_addr='00:00:00:00:00:01', exp_addr='192.168.50.2' if dhcp_version == 'v4' else '2001:db8:1::2')
@@ -379,8 +388,8 @@ def test_subnet_and_valid_lifetime(dhcp_version):
     # change lease lifetime on global level to be small ie. 1sec
     # and 1) extend address pool by 1 IP for new client 3 as previous IP address is taken for long time
     # and 2) check getting address by this new client 3
-    cfg.set_global_parameter(valid_lifetime=1)
-    cfg.update_subnet(pool="192.168.50.2/31" if dhcp_version == 'v4' else '2001:db8:1::2/127')
+    cfg.set_global_parameter(backend=backend, valid_lifetime=1)
+    cfg.update_subnet(backend=backend, pool="192.168.50.2/31" if dhcp_version == 'v4' else '2001:db8:1::2/127')
     get_address(mac_addr='00:00:00:00:00:03', exp_lease_time=1,
                 exp_addr='192.168.50.3' if dhcp_version == 'v4' else '2001:db8:1::3')
     # as lease time is 1 sec after 2secs this just taken IP address should
@@ -393,7 +402,7 @@ def test_subnet_and_valid_lifetime(dhcp_version):
 
     # change lease lifetime on subnet level to be big ie. 1000sec
     # and check getting address by client 5
-    cfg.update_subnet(valid_lifetime=1000)
+    cfg.update_subnet(backend=backend, valid_lifetime=1000)
     get_address(mac_addr='00:00:00:00:00:05', exp_lease_time=1000,
                 exp_addr='192.168.50.3' if dhcp_version == 'v4' else '2001:db8:1::3')
     # after 2 seconds check if another client 6 can get address - as new lifetime is big
@@ -404,7 +413,7 @@ def test_subnet_and_valid_lifetime(dhcp_version):
     # change lease lifetime on subnet level to be small ie. 1sec
     # and check getting address by client 7 but first extent pool by one address
     # as previous IP addresses are taken for long time
-    cfg.update_subnet(valid_lifetime=1,
+    cfg.update_subnet(backend=backend, valid_lifetime=1,
                       pool="192.168.50.2-192.168.50.4" if dhcp_version == 'v4' else '2001:db8:1::2-2001:db8:1::4')
     get_address(mac_addr='00:00:00:00:00:07', exp_lease_time=1,
                 exp_addr='192.168.50.4' if dhcp_version == 'v4' else '2001:db8:1::4')
@@ -416,16 +425,17 @@ def test_subnet_and_valid_lifetime(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_shared_networks_and_valid_lifetime(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_shared_networks_and_valid_lifetime(dhcp_version, backend):
     # change valid-lifetime on different levels (global, shared network and subnet)
     # and check if behavior is as expected ie leases after lifetime
     # are not available for rebinding
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define a shared network with one subnet
-    network_cfg, _ = cfg.add_network()
-    subnet_cfg, _ = cfg.add_subnet(network=network_cfg,
+    network_cfg, _ = cfg.add_network(backend=backend)
+    subnet_cfg, _ = cfg.add_subnet(backend=backend, network=network_cfg,
                                    pool="192.168.50.2/32" if dhcp_version == 'v4' else '2001:db8:1::2/128')
 
     # check getting address from this subnet by client 1
@@ -438,8 +448,8 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
     # change lease lifetime on global level to be small ie. 1sec
     # and 1) extend address pool by 1 IP for new client 3 as previous IP address is taken for long time
     # and 2) check getting address by this new client 3
-    cfg.set_global_parameter(valid_lifetime=1)
-    subnet_cfg.update(pool="192.168.50.2/31" if dhcp_version == 'v4' else '2001:db8:1::2/127')
+    cfg.set_global_parameter(backend=backend, valid_lifetime=1)
+    subnet_cfg.update(backend=backend, pool="192.168.50.2/31" if dhcp_version == 'v4' else '2001:db8:1::2/127')
     get_address(mac_addr='00:00:00:00:00:03', exp_lease_time=1,
                 exp_addr='192.168.50.3' if dhcp_version == 'v4' else '2001:db8:1::3')
     # as lease time is 1 sec after 2secs this just taken IP address should
@@ -451,7 +461,7 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
 
     # change lease lifetime on network level to be big ie. 1000sec
     # and check getting address by client 5
-    network_cfg.update(valid_lifetime=1000)
+    network_cfg.update(backend=backend, valid_lifetime=1000)
     get_address(mac_addr='00:00:00:00:00:05',
                 exp_lease_time=1000, exp_addr='192.168.50.3' if dhcp_version == 'v4' else '2001:db8:1::3')
     # after 2 seconds check if another client 6 can get address - as new lifetime is big
@@ -462,8 +472,9 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
     # change lease lifetime on network level to be small ie. 1sec
     # and check getting address by client 7 but first extent pool by one address
     # as previous IP addresses are taken for long time
-    network_cfg.update(valid_lifetime=1)
-    subnet_cfg.update(pool="192.168.50.2-192.168.50.4" if dhcp_version == 'v4' else '2001:db8:1::2-2001:db8:1::4')
+    network_cfg.update(backend=backend, valid_lifetime=1)
+    subnet_cfg.update(backend=backend,
+                      pool="192.168.50.2-192.168.50.4" if dhcp_version == 'v4' else '2001:db8:1::2-2001:db8:1::4')
     get_address(mac_addr='00:00:00:00:00:07', exp_lease_time=1,
                 exp_addr='192.168.50.4' if dhcp_version == 'v4' else '2001:db8:1::4')
     # as lease time is 1 sec after 2secs this just taken IP address should
@@ -475,7 +486,7 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
 
     # change lease lifetime on subnet level to be big ie. 1000sec
     # and check getting address by client 9
-    subnet_cfg.update(valid_lifetime=1000)
+    subnet_cfg.update(backend=backend, valid_lifetime=1000)
     get_address(mac_addr='00:00:00:00:00:09', exp_lease_time=1000,
                 exp_addr='192.168.50.4' if dhcp_version == 'v4' else '2001:db8:1::4')
     # after 2 seconds check if another client 10 can get address - as new lifetime is big
@@ -486,7 +497,7 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
     # change lease lifetime on subnet level to be small ie. 1sec
     # and check getting address by client 11 but first extent pool by one address
     # as previous IP addresses are taken for long time
-    subnet_cfg.update(valid_lifetime=1,
+    subnet_cfg.update(backend=backend, valid_lifetime=1,
                       pool="192.168.50.2-192.168.50.5" if dhcp_version == 'v4' else '2001:db8:1::2-2001:db8:1::5')
     get_address(mac_addr='00:00:00:00:00:11', exp_lease_time=1,
                 exp_addr='192.168.50.5' if dhcp_version == 'v4' else '2001:db8:1::5')
@@ -504,19 +515,21 @@ def test_shared_networks_and_valid_lifetime(dhcp_version):
                           (True, 0.1, 0.9, None),
                           (True, None, None, 5000),
                           (True, 0.3, 0.7, 5000)])
+@pytest.mark.parametrize('backend', ['mysql'])
 def test_calculate_timers_init_v4(initial_calculate_tee_times,
                                   initial_t1_percent,
                                   initial_t2_percent,
-                                  initial_valid_lifetime):
+                                  initial_valid_lifetime,
+                                  backend):
     # check initial values of different timers in config file
 
-    cfg = setup_server_for_config_backend_cmds(calculate_tee_times=initial_calculate_tee_times,
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend, calculate_tee_times=initial_calculate_tee_times,
                                                t1_percent=initial_t1_percent,
                                                t2_percent=initial_t2_percent,
                                                valid_lifetime=initial_valid_lifetime)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     calculate_tee_times = initial_calculate_tee_times if initial_calculate_tee_times is not None else False
     valid_lifetime = initial_valid_lifetime if initial_valid_lifetime is not None else get_cfg_default('valid-lifetime')
@@ -543,21 +556,23 @@ def test_calculate_timers_init_v4(initial_calculate_tee_times,
                           (True, 0.1, 0.9, None, None),
                           (True, None, None, 5000, 10000),
                           (True, 0.3, 0.7, 5000, 10000)])
+@pytest.mark.parametrize('backend', ['mysql'])
 def test_calculate_timers_init_v6(initial_calculate_tee_times,
                                   initial_t1_percent,
                                   initial_t2_percent,
                                   initial_preferred_lifetime,
-                                  initial_valid_lifetime):
+                                  initial_valid_lifetime,
+                                  backend):
     # check initial values of different timers in config file
 
-    cfg = setup_server_for_config_backend_cmds(calculate_tee_times=initial_calculate_tee_times,
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend, calculate_tee_times=initial_calculate_tee_times,
                                                t1_percent=initial_t1_percent,
                                                t2_percent=initial_t2_percent,
                                                preferred_lifetime=initial_preferred_lifetime,
                                                valid_lifetime=initial_valid_lifetime)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     calculate_tee_times = initial_calculate_tee_times if initial_calculate_tee_times is not None else False
     if initial_preferred_lifetime is not None:
@@ -582,14 +597,15 @@ def test_calculate_timers_init_v6(initial_calculate_tee_times,
 
 @pytest.mark.v4
 @pytest.mark.v6
-def test_subnet_and_calculate_timers(dhcp_version):
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_subnet_and_calculate_timers(dhcp_version, backend):
     # change renew timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
 
-    cfg = setup_server_for_config_backend_cmds()
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # define one, default subnet
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
 
     if dhcp_version == 'v4':
         base_lifetime = get_cfg_default('valid-lifetime')
@@ -598,7 +614,7 @@ def test_subnet_and_calculate_timers(dhcp_version):
 
     # change global renew_timer to 1sec and now check
     # if received lease has renew_timer accordingly set
-    cfg.set_global_parameter(calculate_tee_times=True)
+    cfg.set_global_parameter(backend=backend, calculate_tee_times=True)
 
     t1_percent = get_cfg_default('t1-percent')
     t2_percent = get_cfg_default('t2-percent')
@@ -608,17 +624,17 @@ def test_subnet_and_calculate_timers(dhcp_version):
     # change t1 and t2 and check new renew/rebind-timers
     t1_percent = 0.1
     t2_percent = 0.9
-    cfg.set_global_parameter(t1_percent=t1_percent, t2_percent=t2_percent)
+    cfg.set_global_parameter(backend=backend, t1_percent=t1_percent, t2_percent=t2_percent)
     get_address(exp_renew_timer=int(t1_percent * base_lifetime),
                 exp_rebind_timer=int(t2_percent * base_lifetime))
 
     # change again but only t1 and check new renew/rebind-timers
     t1_percent = 0.3
-    cfg.set_global_parameter(t1_percent=t1_percent)
+    cfg.set_global_parameter(backend=backend, t1_percent=t1_percent)
     get_address(exp_renew_timer=int(t1_percent * base_lifetime),
                 exp_rebind_timer=int(t2_percent * base_lifetime))
 
     # switch off calculate_tee_times and check if renew/rebind-timers
     # are not present in responses anymore
-    cfg.set_global_parameter(calculate_tee_times=False)
+    cfg.set_global_parameter(backend=backend, calculate_tee_times=False)
     get_address(exp_renew_timer=None, exp_rebind_timer=None)

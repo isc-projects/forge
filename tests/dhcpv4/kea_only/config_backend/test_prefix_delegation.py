@@ -13,11 +13,12 @@ pytestmark = [pytest.mark.v6,
               pytest.mark.config_backend]
 
 
-def test_pd_pool():
-    cfg = setup_server_for_config_backend_cmds()
+@pytest.mark.parametrize('backend', ['mysql'])
+def test_pd_pool(backend):
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     # add subnet with prefix delegation
-    subnet_cfg, _ = cfg.add_subnet(
+    subnet_cfg, _ = cfg.add_subnet(backend=backend,
         subnet='3000::/64',
         pools=[{'pool': '3000::2/128'}],
         pd_pools=[{
@@ -33,7 +34,7 @@ def test_pd_pool():
                 exp_ia_pd_iaprefix_plen=96)
 
     # change PD params (prefix itself, its len and delgated len)
-    subnet_cfg.update(pd_pools=[{
+    subnet_cfg.update(backend=backend, pd_pools=[{
         "prefix": '2001:db8:2::',
         "prefix-len": 80,
         "delegated-len": 104,
@@ -46,7 +47,7 @@ def test_pd_pool():
                 exp_ia_pd_iaprefix_plen=104)
 
     # add exlusion to PD
-    subnet_cfg.update(pd_pools=[{
+    subnet_cfg.update(backend=backend, pd_pools=[{
         "prefix": '2001:db8:2::',
         "prefix-len": 80,
         "delegated-len": 104,

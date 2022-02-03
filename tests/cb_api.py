@@ -2,7 +2,7 @@ import srv_msg
 from forge_cfg import world
 
 
-def send_cmd(cmd, db_type='mysql', server_tags=None, **kwargs):
+def send_cmd(cmd, db_type='', server_tags=None, **kwargs):
     if server_tags is None:
         server_tags = ["all"]
     cmd = {"command": cmd,
@@ -14,13 +14,13 @@ def send_cmd(cmd, db_type='mysql', server_tags=None, **kwargs):
     return response
 
 
-def global_option_set(options, db_type='mysql', server_tags=None):
+def global_option_set(options, db_type='', server_tags=None):
     cmd = 'remote-option%s-global-set' % world.proto[1]
     response = send_cmd(cmd, db_type, server_tags, options=options)
     return response
 
 
-def client_class_set(classes, db_type='mysql', server_tags=None):
+def client_class_set(classes, db_type='', server_tags=None):
     if not isinstance(classes, list):
         classes = [classes]
     kwargs = {"client-classes": classes}
@@ -29,7 +29,7 @@ def client_class_set(classes, db_type='mysql', server_tags=None):
     return response
 
 
-def client_class_del(class_name, db_type='mysql'):
+def client_class_del(class_name, db_type=''):
     server_tags = "forbidden"
     kwargs = {"client-classes": [{"name": class_name}]}
     cmd = 'remote-class%s-del' % world.proto[1]
@@ -37,19 +37,19 @@ def client_class_del(class_name, db_type='mysql'):
     return response
 
 
-def global_option_del(options, db_type='mysql', server_tags=None):
+def global_option_del(options, db_type='', server_tags=None):
     cmd = 'remote-option%s-global-del' % world.proto[1]
     response = send_cmd(cmd, db_type, server_tags, options=options)
     return response
 
 
-def global_parameter_set(parameters, db_type='mysql', server_tags=None):
+def global_parameter_set(parameters, db_type='', server_tags=None):
     cmd = 'remote-global-parameter%s-set' % world.proto[1]
     response = send_cmd(cmd, db_type, server_tags, parameters=parameters)
     return response
 
 
-def subnet_set(subnets, db_type='mysql', server_tags=None):
+def subnet_set(subnets, db_type='', server_tags=None):
     if not isinstance(subnets, list):
         subnets = [subnets]
     cmd = 'remote-subnet%s-set' % world.proto[1]
@@ -57,7 +57,7 @@ def subnet_set(subnets, db_type='mysql', server_tags=None):
     return response
 
 
-def network_set(networks, db_type='mysql', server_tags=None):
+def network_set(networks, db_type='', server_tags=None):
     if not isinstance(networks, list):
         networks = [networks]
     kwargs = {"shared-networks": networks}
@@ -66,7 +66,7 @@ def network_set(networks, db_type='mysql', server_tags=None):
     return response
 
 
-def subnet_del_by_id(subnet_id, db_type='mysql', server_tags=None):
+def subnet_del_by_id(subnet_id, db_type='', server_tags=None):
     server_tags = "forbidden"
     kwargs = {"subnets": [{"id": subnet_id}]}
     cmd = 'remote-subnet%s-del-by-id' % world.proto[1]
@@ -74,7 +74,7 @@ def subnet_del_by_id(subnet_id, db_type='mysql', server_tags=None):
     return response
 
 
-def subnet_del_by_prefix(subnet_prefix, db_type='mysql', server_tags=None):
+def subnet_del_by_prefix(subnet_prefix, db_type='', server_tags=None):
     server_tags = "forbidden"
     kwargs = {"subnets": [{"subnet": subnet_prefix}]}
     cmd = 'remote-subnet%s-del-by-prefix' % world.proto[1]
