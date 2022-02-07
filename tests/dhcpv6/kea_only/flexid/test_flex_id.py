@@ -14,13 +14,13 @@ import srv_control
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -48,7 +48,7 @@ def test_v6_hooks_flexid_1():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -56,13 +56,13 @@ def test_v6_hooks_flexid_1():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_libreload():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -91,7 +91,7 @@ def test_v6_hooks_flexid_libreload():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "libreload","arguments": {}}')
     # if reload works - classification should work without changes
@@ -115,7 +115,7 @@ def test_v6_hooks_flexid_libreload():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -123,13 +123,13 @@ def test_v6_hooks_flexid_libreload():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_reconfigure_1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -158,16 +158,16 @@ def test_v6_hooks_flexid_reconfigure_1():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -197,7 +197,7 @@ def test_v6_hooks_flexid_reconfigure_1():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -205,13 +205,13 @@ def test_v6_hooks_flexid_reconfigure_1():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_reconfigure_2():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -240,16 +240,16 @@ def test_v6_hooks_flexid_reconfigure_2():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '\'port4321\'')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -278,7 +278,7 @@ def test_v6_hooks_flexid_reconfigure_2():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f', expect_include=False)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f', expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
@@ -298,7 +298,7 @@ def test_v6_hooks_flexid_reconfigure_2():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -306,13 +306,13 @@ def test_v6_hooks_flexid_reconfigure_2():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_2():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '\'port1234\'')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1, 'identifier-expression', 'relay6[0].option[18].hex')
@@ -339,7 +339,7 @@ def test_v6_hooks_flexid_2():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # Relayed Message sub-option 5 from option 3 MUST contain address 2001:db8:1::1.
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -347,13 +347,13 @@ def test_v6_hooks_flexid_2():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_3():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -376,7 +376,7 @@ def test_v6_hooks_flexid_3():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -384,7 +384,7 @@ def test_v6_hooks_flexid_3():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_mysql_1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1, 'identifier-expression', 'relay6[0].option[18].hex')
@@ -393,7 +393,7 @@ def test_v6_hooks_flexid_mysql_1():
     srv_control.new_db_backend_reservation('MySQL', 'flex-id', '706f727431323334')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'MySQL', 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8::f', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
     srv_control.build_and_send_config_files()
@@ -418,7 +418,7 @@ def test_v6_hooks_flexid_mysql_1():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -426,7 +426,7 @@ def test_v6_hooks_flexid_mysql_1():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_mysql_2():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -437,7 +437,7 @@ def test_v6_hooks_flexid_mysql_2():
     srv_control.new_db_backend_reservation('MySQL', 'flex-id', '01:02:03:04:05:06')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'MySQL', 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8::f', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
     srv_control.build_and_send_config_files()
@@ -457,7 +457,7 @@ def test_v6_hooks_flexid_mysql_2():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -465,7 +465,7 @@ def test_v6_hooks_flexid_mysql_2():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_pgsql_1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1, 'identifier-expression', 'relay6[0].option[18].hex')
@@ -474,7 +474,7 @@ def test_v6_hooks_flexid_pgsql_1():
     srv_control.new_db_backend_reservation('PostgreSQL', 'flex-id', '706f727431323334')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', 1)
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'PostgreSQL', 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8::f', '$(EMPTY)', 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.build_and_send_config_files()
@@ -500,7 +500,7 @@ def test_v6_hooks_flexid_pgsql_1():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -508,7 +508,7 @@ def test_v6_hooks_flexid_pgsql_1():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_pgsql_2():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -519,7 +519,7 @@ def test_v6_hooks_flexid_pgsql_2():
     srv_control.new_db_backend_reservation('PostgreSQL', 'flex-id', '01:02:03:04:05:06')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', 1)
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'PostgreSQL', 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8::f', '$(EMPTY)', 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.build_and_send_config_files()
@@ -539,7 +539,7 @@ def test_v6_hooks_flexid_pgsql_2():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -547,13 +547,13 @@ def test_v6_hooks_flexid_pgsql_2():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_replace_duid():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -578,7 +578,7 @@ def test_v6_hooks_flexid_replace_duid():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -597,7 +597,7 @@ def test_v6_hooks_flexid_replace_duid():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
 
 @pytest.mark.v6
@@ -606,13 +606,13 @@ def test_v6_hooks_flexid_replace_duid():
 def test_v6_hooks_flexid_replace_duid_renew():
 
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -637,7 +637,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -656,7 +656,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     # Client with different duid try to renew
     misc.test_procedure()
@@ -676,7 +676,7 @@ def test_v6_hooks_flexid_replace_duid_renew():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
     srv_msg.response_check_suboption_content(5, 3, 'validlft', 0, expect_include=False)
 
 
@@ -685,13 +685,13 @@ def test_v6_hooks_flexid_replace_duid_renew():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_replace_duid_renew_failed():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -715,7 +715,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -734,7 +734,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     # Client with the same DUID and different flex-id try to renew
     misc.test_procedure()
@@ -754,7 +754,7 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
     srv_msg.response_check_suboption_content(5, 3, 'validlft', 0)
 
 
@@ -763,13 +763,13 @@ def test_v6_hooks_flexid_replace_duid_renew_failed():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_replace_duid_release():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -794,7 +794,7 @@ def test_v6_hooks_flexid_replace_duid_release():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -813,7 +813,7 @@ def test_v6_hooks_flexid_replace_duid_release():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     # Client with different duid try to release
     misc.test_procedure()
@@ -841,13 +841,13 @@ def test_v6_hooks_flexid_replace_duid_release():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_replace_duid_release_failed():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -871,7 +871,7 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -890,7 +890,7 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     # Client with the same duid but different flex-id try to release (result should be nobiding)
     misc.test_procedure()
@@ -912,8 +912,8 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 3)
 
-    # File stored in kea-leases6.csv MUST contain line or phrase: 3000::f,01:02:03:04:05:06,4000,
-    # File stored in kea-leases6.csv MUST NOT contain line or phrase: 3000::f,01:02:03:04:05:06,0,
+    # File stored in kea-leases6.csv MUST contain line or phrase: 2001:db8::f,01:02:03:04:05:06,4000,
+    # File stored in kea-leases6.csv MUST NOT contain line or phrase: 2001:db8::f,01:02:03:04:05:06,0,
 
 
 @pytest.mark.v6
@@ -922,13 +922,13 @@ def test_v6_hooks_flexid_replace_duid_release_failed():
 def test_v6_hooks_flexid_replace_duid_release_mysql():
 
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -940,7 +940,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_control.new_db_backend_reservation('MySQL', 'flex-id', '01:02:03:04:05:06')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'MySQL', 1)
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'MySQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'MySQL', 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8::f', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
 
     srv_control.build_and_send_config_files()
@@ -960,7 +960,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f', expect_include=False)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f', expect_include=False)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -976,7 +976,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -995,7 +995,7 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     # Client with different duid try to release
     misc.test_procedure()
@@ -1023,13 +1023,13 @@ def test_v6_hooks_flexid_replace_duid_release_mysql():
 @pytest.mark.kea_only
 def test_v6_hooks_flexid_replace_duid_release_pgsql():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(1,
@@ -1041,7 +1041,7 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
     srv_control.new_db_backend_reservation('PostgreSQL', 'flex-id', '01:02:03:04:05:06')
     srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', 'PostgreSQL', 1)
     srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, 'PostgreSQL', 1)
-    srv_control.ipv6_address_db_backend_reservation('3000::f', '$(EMPTY)', 'PostgreSQL', 1)
+    srv_control.ipv6_address_db_backend_reservation('2001:db8::f', '$(EMPTY)', 'PostgreSQL', 1)
     srv_control.upload_db_reservation('PostgreSQL')
 
     srv_control.build_and_send_config_files()
@@ -1061,7 +1061,7 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -1080,7 +1080,7 @@ def test_v6_hooks_flexid_replace_duid_release_pgsql():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
     # Client with different duid try to release
     misc.test_procedure()

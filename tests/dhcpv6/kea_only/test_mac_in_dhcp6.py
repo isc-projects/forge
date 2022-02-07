@@ -14,7 +14,7 @@ import misc
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_duid_type3():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["duid"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -46,7 +46,7 @@ def test_v6_mac_in_dhcp6_duid_type3():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_duid_type1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["duid"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -79,7 +79,7 @@ def test_v6_mac_in_dhcp6_duid_type1():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_any():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["any"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -111,7 +111,7 @@ def test_v6_mac_in_dhcp6_any():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_ipv6_link_local():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["ipv6-link-local"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -143,7 +143,7 @@ def test_v6_mac_in_dhcp6_ipv6_link_local():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_client_link_addr_1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["client-link-addr-option"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -182,7 +182,7 @@ def test_v6_mac_in_dhcp6_client_link_addr_1():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_client_link_addr_2():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["rfc6939"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -220,7 +220,7 @@ def test_v6_mac_in_dhcp6_client_link_addr_2():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_remote_id_1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["rfc4649"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -259,7 +259,7 @@ def test_v6_mac_in_dhcp6_remote_id_1():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_remote_id_2():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["remote-id"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -299,7 +299,7 @@ def test_v6_mac_in_dhcp6_remote_id_2():
 @pytest.mark.disabled
 def test_v6_mac_in_dhcp6_subscriber_id_1():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["subscriber-id"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -339,7 +339,7 @@ def test_v6_mac_in_dhcp6_subscriber_id_1():
 @pytest.mark.disabled
 def test_v6_mac_in_dhcp6_subscriber_id_2():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["rfc4580"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -378,7 +378,7 @@ def test_v6_mac_in_dhcp6_subscriber_id_2():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_docsis_modem():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["docsis-modem"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -413,7 +413,7 @@ def test_v6_mac_in_dhcp6_docsis_modem():
 @pytest.mark.kea_only
 def test_v6_mac_in_dhcp6_docsic_cmts():
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::ff')
     srv_control.add_line({"mac-sources": ["docsis-cmts"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
