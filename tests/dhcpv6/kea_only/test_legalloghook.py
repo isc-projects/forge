@@ -162,7 +162,7 @@ def _send_relayed_client_requests(count):
         srv_msg.client_sets_value('Client', 'subscriber_id', 50)
         srv_msg.client_does_include('Client', 'remote-id')
         srv_msg.client_does_include('Client', 'subscriber-id')
-        srv_msg.client_sets_value('RelayAgent', 'linkaddr', '3000::1005')
+        srv_msg.client_sets_value('RelayAgent', 'linkaddr', '2001:db8::1005')
         srv_msg.client_sets_value('RelayAgent', 'ifaceid', 'abc')
         srv_msg.client_does_include('RelayAgent', 'interface-id')
         srv_msg.create_relay_forward(5)
@@ -189,7 +189,7 @@ def _send_client_requests_for_flex_id(count):
         srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
         srv_msg.response_check_include_option(3)
         srv_msg.response_check_option_content(3, 'sub-option', 5)
-        srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::f')
+        srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::f')
 
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'enterprisenum', '4491')
@@ -220,8 +220,8 @@ def test_v6_legal_log_address_assigned_duid():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -230,7 +230,7 @@ def test_v6_legal_log_address_assigned_duid():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                        'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -247,8 +247,8 @@ def test_v6_legal_log_address_assigned_duid_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -260,7 +260,7 @@ def test_v6_legal_log_address_assigned_duid_db(backend):
     _send_client_requests(MESSAGE_COUNT)
 
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
-                                        'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                        'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -277,8 +277,8 @@ def test_v6_legal_log_address_renewed_duid():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -289,7 +289,7 @@ def test_v6_legal_log_address_renewed_duid():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
-                                       'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                        'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -307,8 +307,8 @@ def test_v6_legal_log_address_renewed_duid_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -322,7 +322,7 @@ def test_v6_legal_log_address_renewed_duid_db(backend):
     _send_client_renews(MESSAGE_COUNT)
 
     srv_msg.table_contains_line_n_times('logs', backend, 2 * MESSAGE_COUNT,
-                                        'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                        'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -339,8 +339,8 @@ def test_v6_legal_log_address_rebind_duid():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -351,7 +351,7 @@ def test_v6_legal_log_address_rebind_duid():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
-                                       'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                        'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -369,8 +369,8 @@ def test_v6_legal_log_address_rebind_duid_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -384,7 +384,7 @@ def test_v6_legal_log_address_rebind_duid_db(backend):
     _send_client_rebinds(MESSAGE_COUNT)
 
     srv_msg.table_contains_line_n_times('logs', backend, 2 * MESSAGE_COUNT,
-                                        'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                        'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -401,8 +401,8 @@ def test_v6_legal_log_address_assigned_docsis_modem():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_line({"mac-sources": ["docsis-modem"]})
     srv_control.build_and_send_config_files()
@@ -412,7 +412,7 @@ def test_v6_legal_log_address_assigned_docsis_modem():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                        'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
 
@@ -430,8 +430,8 @@ def test_v6_legal_log_address_assigned_docsis_modem_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -444,7 +444,7 @@ def test_v6_legal_log_address_assigned_docsis_modem_db(backend):
     _send_client_requests_with_docsis(MESSAGE_COUNT)
 
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
-                                        'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                        'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and '
                                         'hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
 
@@ -462,8 +462,8 @@ def test_v6_legal_log_address_assigned_docsis_cmts():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_line({"mac-sources": ["docsis-cmts"]})
     srv_control.build_and_send_config_files()
@@ -473,7 +473,7 @@ def test_v6_legal_log_address_assigned_docsis_cmts():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 '
                                        'and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
 
@@ -492,8 +492,8 @@ def test_v6_legal_log_address_assigned_docsis_cmts_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -506,7 +506,7 @@ def test_v6_legal_log_address_assigned_docsis_cmts_db(backend):
     _send_relayed_client_requests_with_docsis(MESSAGE_COUNT)
 
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
-                                        'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                        'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 '
                                         'and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
 
@@ -524,8 +524,8 @@ def test_v6_legal_log_address_assigned_relay():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -534,12 +534,12 @@ def test_v6_legal_log_address_assigned_relay():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 '
                                        'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) '
                                        'connected via relay at address:')
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'for client on link address: 3000::1005, hop count: 4')
+                                       'for client on link address: 2001:db8::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -556,8 +556,8 @@ def test_v6_legal_log_address_assigned_relay_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -569,12 +569,12 @@ def test_v6_legal_log_address_assigned_relay_db(backend):
     _send_relayed_client_requests(MESSAGE_COUNT)
 
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
-                                        'Address: 3000::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                        'Address: 2001:db8::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) '
                                         'connected via relay at address:')
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
-                                        'for client on link address: 3000::1005, hop count: 4')
+                                        'for client on link address: 2001:db8::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -589,14 +589,14 @@ def test_v6_legal_log_with_flex_id_address_assigned():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook(2,
@@ -610,7 +610,7 @@ def test_v6_legal_log_with_flex_id_address_assigned():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 3000::f has been assigned for 0 hrs 10 mins 0 secs '
+                                       'Address: 2001:db8::f has been assigned for 0 hrs 10 mins 0 secs '
                                        'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                        'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
@@ -627,14 +627,14 @@ def test_v6_legal_log_with_flex_id_address_assigned_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('3000::/64', '3000::5-3000::50')
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::5-2001:db8::50')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'flex-id',
                                            '01:02:03:04:05:06')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::f')
-    srv_control.config_srv_prefix('3001::', 0, 90, 94)
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8::f')
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -651,6 +651,6 @@ def test_v6_legal_log_with_flex_id_address_assigned_db(backend):
     _send_client_requests_for_flex_id(MESSAGE_COUNT)
 
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
-                                        'Address: 3000::f has been assigned for 0 hrs 10 mins 0 secs '
+                                        'Address: 2001:db8::f has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
