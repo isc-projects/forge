@@ -46,7 +46,7 @@ def test_options_network(backend):
 @pytest.mark.parametrize('backend', ['mysql'])
 def test_options_global(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
-    cfg.add_subnet()
+    cfg.add_subnet(backend=backend)
     cfg.add_option(backend=backend, code=23, csv_format=True, data="2001::3", name="dns-servers", space="dhcp6")
 
     get_address(req_opts=[23, 27], exp_option={"code": 23, "data": "2001::3"})

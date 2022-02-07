@@ -19,13 +19,12 @@ def test_pd_pool(backend):
 
     # add subnet with prefix delegation
     subnet_cfg, _ = cfg.add_subnet(backend=backend,
-        subnet='3000::/64',
-        pools=[{'pool': '3000::2/128'}],
-        pd_pools=[{
-            "prefix": '2001:db8:1::',
-            "prefix-len": 90,
-            "delegated-len": 96,
-        }])
+                                   subnet='3000::/64',
+                                   pools=[{'pool': '3000::2/128'}],
+                                   pd_pools=[{
+                                       "prefix": '2001:db8:1::',
+                                       "prefix-len": 90,
+                                       "delegated-len": 96}])
 
     # and get a PD
     get_address(mac_addr='00:00:00:00:00:01',

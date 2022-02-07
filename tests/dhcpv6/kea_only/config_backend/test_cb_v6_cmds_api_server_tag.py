@@ -604,8 +604,9 @@ def _option_get(backend, server_tags, command="remote-option6-global-get-all", e
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
 
 
-def _option_del(server_tags, exp_result=0, opt_code=None):
-    return _option_get("remote-option6-global-del", server_tags=server_tags, exp_result=exp_result, opt_code=opt_code)
+def _option_del(backend, server_tags, exp_result=0, opt_code=None):
+    return _option_get(command="remote-option6-global-del", backend=backend, server_tags=server_tags,
+                       exp_result=exp_result, opt_code=opt_code)
 
 
 def _check_option_result(resp, server_tags, count=1, opt_name=None, opt_data=None):
@@ -703,7 +704,7 @@ def test_remote_option6_del_server_tags(backend):
     resp = _option_get(backend, server_tags=["all"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
-    resp = _option_del(server_tags=["xyz"], opt_code=23)
+    resp = _option_del(backend, server_tags=["xyz"], opt_code=23)
     assert resp["arguments"]["count"] == 1
     assert resp["text"] == "1 DHCPv6 option(s) deleted."
     assert resp["result"] == 0
@@ -718,7 +719,7 @@ def test_remote_option6_del_server_tags(backend):
     resp = _option_get(backend, server_tags=["all"], opt_code=23)
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
-    resp = _option_del(server_tags=["abc"], opt_code=23)
+    resp = _option_del(backend, server_tags=["abc"], opt_code=23)
     assert resp["arguments"]["count"] == 1
     assert resp["text"] == "1 DHCPv6 option(s) deleted."
     assert resp["result"] == 0

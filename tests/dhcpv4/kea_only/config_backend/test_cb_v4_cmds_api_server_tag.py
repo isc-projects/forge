@@ -97,6 +97,7 @@ def test_remote_server_tag_set_missing_servers(backend):
 
 @pytest.mark.parametrize('backend', ['mysql'])
 def test_remote_server_tag_set_empty_servers(backend):
+    _setup_server(backend)
     cmd = dict(command="remote-server4-set", arguments={"remote": {"type": backend},
                                                         "servers": []})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
@@ -279,7 +280,7 @@ def _subnet_set(server_tags, subnet_id, pool, backend=None, exp_result=0, subnet
                         "result": 0, "text": "IPv4 subnet successfully set."}
 
 
-def _subnet_get(command, backend=None, exp_result=0, subnet_parameter=None):
+def _subnet_get(command="remote-subnet4-get-by-id", backend=None, exp_result=0, subnet_parameter=None):
     cmd = dict(command=command, arguments={"remote": {"type": backend}})
     if subnet_parameter:
         cmd["arguments"]["subnets"] = [subnet_parameter]
@@ -294,7 +295,7 @@ def _subnet_list(command, server_tags, backend=None, exp_result=0):
 
 
 def _subnet_del(backend=None, exp_result=0, subnet_parameter=None):
-    return _subnet_get("remote-subnet4-del-by-id", backend=backend,
+    return _subnet_get(command="remote-subnet4-del-by-id", backend=backend,
                        exp_result=exp_result, subnet_parameter=subnet_parameter)
 
 
@@ -311,27 +312,28 @@ def test_remote_subnet4_server_tags_delete_server_tag_keep_data(backend):
     _setup_server(backend)
     _add_server_tag(backend=backend, server_tag="abc")
     _add_server_tag(backend=backend, server_tag="xyz")
-    _subnet_set(server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
-    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="192.168.53.1-192.168.53.10", subnet="192.168.53.0/24")
+    _subnet_set(backend=backend, server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(backend=backend, server_tags=["xyz"], subnet_id=6, pool="192.168.53.1-192.168.53.10",
+                subnet="192.168.53.0/24")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 6})
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="192.168.53.0/24")
 
     cmd = dict(command="remote-server4-del", arguments={"remote": {"type": backend},
                                                         "servers": [{"server-tag": "abc"}]})
     srv_msg.send_ctrl_cmd(cmd)
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="192.168.50.0/24")
 
     _add_server_tag(backend=backend, server_tag="abc")
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=[], subnet_id=5, subnet="192.168.50.0/24")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 6})
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="192.168.53.0/24")
 
 
@@ -340,29 +342,31 @@ def test_remote_subnet4_get_server_tags(backend):
     _setup_server(backend)
     _add_server_tag(backend=backend, server_tag="abc")
     _add_server_tag(backend=backend, server_tag="xyz")
-    _subnet_set(server_tags=["abc", "xyz"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
-    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="192.168.53.1-192.168.53.10", subnet="192.168.53.0/24")
-    _subnet_set(server_tags=["all"], subnet_id=7, pool="192.168.51.1-192.168.51.10", subnet="192.168.51.0/24")
+    _subnet_set(backend=backend, server_tags=["abc", "xyz"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(backend=backend, server_tags=["xyz"], subnet_id=6,
+                pool="192.168.53.1-192.168.53.10", subnet="192.168.53.0/24")
+    _subnet_set(backend=backend, server_tags=["all"], subnet_id=7,
+                pool="192.168.51.1-192.168.51.10", subnet="192.168.51.0/24")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=["abc", "xyz"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 6})
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="192.168.53.0/24")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-prefix",
+    resp = _subnet_get(backend=backend, command="remote-subnet4-get-by-prefix",
                        subnet_parameter={"subnet": "192.168.53.0/24"})
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="192.168.53.0/24")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-prefix",
+    resp = _subnet_get(backend=backend, command="remote-subnet4-get-by-prefix",
                        subnet_parameter={"subnet": "192.168.50.0/24"})
     _check_subnet_result(resp, server_tags=["abc", "xyz"], subnet_id=5)
 
-    resp = _subnet_list(command="remote-subnet4-list", server_tags=["abc"])
+    resp = _subnet_list(backend=backend, command="remote-subnet4-list", server_tags=["abc"])
     # not sure if this is how it suppose to work
     _check_subnet_result(resp, server_tags=["abc", "xyz"], count=2, subnet_id=5)
 
-    resp = _subnet_list(command="remote-subnet4-list", server_tags=["xyz"])
+    resp = _subnet_list(backend=backend, command="remote-subnet4-list", server_tags=["xyz"])
     _check_subnet_result(resp, server_tags=["abc", "xyz"], count=3, subnet_id=5)
     assert resp["arguments"]["subnets"][1]["subnet"] == "192.168.53.0/24"
     assert resp["arguments"]["subnets"][1]["id"] == 6
@@ -377,10 +381,10 @@ def test_remote_subnet4_get_server_tags_all_incorrect_setup(backend):
     # the first one will be overwritten
     _add_server_tag(backend=backend, server_tag="abc")
     _add_server_tag(backend=backend, server_tag="xyz")
-    _subnet_set(server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
-    _subnet_set(server_tags=["xyz"], subnet_id=5, pool="192.168.50.1-192.168.50.10")
+    _subnet_set(backend=backend, server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(backend=backend, server_tags=["xyz"], subnet_id=5, pool="192.168.50.1-192.168.50.10")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=5)
 
 
@@ -389,44 +393,46 @@ def test_remote_subnet4_del_server_tags(backend):
     _setup_server(backend)
     _add_server_tag(backend=backend, server_tag="abc")
     _add_server_tag(backend=backend, server_tag="xyz")
-    _subnet_set(server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
-    _subnet_set(server_tags=["xyz"], subnet_id=6, pool="192.168.53.1-192.168.53.10", subnet="192.168.53.0/24")
-    _subnet_set(server_tags=["all"], subnet_id=7, pool="192.168.51.1-192.168.51.10", subnet="192.168.51.0/24")
+    _subnet_set(backend=backend, server_tags=["abc"], subnet_id=5, pool="192.168.50.1-192.168.50.100")
+    _subnet_set(backend=backend, server_tags=["xyz"], subnet_id=6, pool="192.168.53.1-192.168.53.10",
+                subnet="192.168.53.0/24")
+    _subnet_set(backend=backend, server_tags=["all"], subnet_id=7, pool="192.168.51.1-192.168.51.10",
+                subnet="192.168.51.0/24")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 6})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 6})
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="192.168.53.0/24")
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 7})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 7})
     _check_subnet_result(resp, server_tags=["all"], subnet_id=7, subnet="192.168.51.0/24")
 
     # we should delete just one
-    resp = _subnet_del(subnet_parameter={"id": 6})
+    resp = _subnet_del(backend=backend, subnet_parameter={"id": 6})
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
     # since this one was just removed now we expect error
-    resp = _subnet_del(subnet_parameter={"id": 6}, exp_result=3)
+    resp = _subnet_del(backend=backend, subnet_parameter={"id": 6}, exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
     # those two should still be configured
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 7})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 7})
     _check_subnet_result(resp, server_tags=["all"], subnet_id=7, subnet="192.168.51.0/24")
 
-    resp = _subnet_del(subnet_parameter={"id": 7})
+    resp = _subnet_del(backend=backend, subnet_parameter={"id": 7})
     assert resp["arguments"]["count"] == 1
     assert resp["result"] == 0
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 5})
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 5})
     _check_subnet_result(resp, server_tags=["abc"], subnet_id=5)
 
-    resp = _subnet_get(command="remote-subnet4-get-by-id", subnet_parameter={"id": 7}, exp_result=3)
+    resp = _subnet_get(backend=backend, subnet_parameter={"id": 7}, exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
 
@@ -595,7 +601,7 @@ def _option_set(server_tags, backend, exp_result=0, code=3, opt_data="1.1.1.1"):
                         "arguments": {"options": [{"code": code, "space": "dhcp4"}]}}
 
 
-def _option_get(command, server_tags, backend, exp_result=0, opt_code=None):
+def _option_get(server_tags, backend, command="remote-option4-global-get", exp_result=0, opt_code=None):
     cmd = dict(command=command, arguments={"remote": {"type": backend},
                                            "server-tags": server_tags})
 
@@ -635,7 +641,7 @@ def test_remote_option_get_server_tags_get_non_existing_tag(backend):
     _add_server_tag(backend=backend, server_tag="abc")
     _option_set(backend=backend, server_tags=["all"])
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="1.1.1.1")
 
 
@@ -645,7 +651,7 @@ def test_remote_option_remove_server_tag_and_data(backend):
     _add_server_tag(backend=backend, server_tag="abc")
     _option_set(backend=backend, server_tags=["abc"])
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
 
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
@@ -654,7 +660,7 @@ def test_remote_option_remove_server_tag_and_data(backend):
     srv_msg.send_ctrl_cmd(cmd)
 
     # after removing tag all options should be removed with it
-    _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3, exp_result=3)
+    _option_get(backend=backend,server_tags=["abc"], opt_code=3, exp_result=3)
 
 
 @pytest.mark.parametrize('backend', ['mysql'])
@@ -666,13 +672,13 @@ def test_remote_option4_get_server_tags(backend):
     _option_set(backend=backend, server_tags=["xyz"], opt_data='2.2.2.2')
     _option_set(backend=backend, server_tags=["all"], opt_data='3.3.3.3')
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
     _check_option_result(resp, server_tags=["xyz"], opt_name="routers", opt_data="2.2.2.2")
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     _option_set(backend=backend, server_tags=["abc"], code=4, opt_data='6.6.6.6')
@@ -696,13 +702,13 @@ def test_remote_option4_del_server_tags(backend):
     _option_set(backend=backend, server_tags=["xyz"], opt_data='2.2.2.2')
     _option_set(backend=backend, server_tags=["all"], opt_data='3.3.3.3')
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
     _check_option_result(resp, server_tags=["xyz"], opt_name="routers", opt_data="2.2.2.2")
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     resp = _option_del(backend=backend, server_tags=["xyz"], opt_code=3)
@@ -710,14 +716,14 @@ def test_remote_option4_del_server_tags(backend):
     assert resp["text"] == "1 DHCPv4 option(s) deleted."
     assert resp["result"] == 0
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
     # it was removed but tag "all" should return option
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     resp = _option_del(backend=backend, server_tags=["abc"], opt_code=3)
@@ -726,14 +732,14 @@ def test_remote_option4_del_server_tags(backend):
     assert resp["result"] == 0
 
     # this also should be tag all
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     # this should be from tag "all"
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     resp = _option_get(backend=backend, command="remote-option4-global-del", server_tags=["all"], opt_code=3)
@@ -742,11 +748,11 @@ def test_remote_option4_del_server_tags(backend):
     assert resp["result"] == 0
 
     # now all commands should return error
-    _option_get(backend=backend, command="remote-option4-global-get", server_tags=["xyz"], opt_code=3, exp_result=3)
+    _option_get(backend=backend,server_tags=["xyz"], opt_code=3, exp_result=3)
 
-    _option_get(backend=backend, command="remote-option4-global-get", server_tags=["abc"], opt_code=3, exp_result=3)
+    _option_get(backend=backend,server_tags=["abc"], opt_code=3, exp_result=3)
 
-    resp = _option_get(backend=backend, command="remote-option4-global-get", server_tags=["all"], opt_code=3,
+    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3,
                        exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3

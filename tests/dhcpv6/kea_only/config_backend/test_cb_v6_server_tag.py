@@ -48,7 +48,8 @@ def test_server_tag_subnet(backend):
     get_rejected()
     # add configuration for abc, don't check reconfigure result
     cfg_xyz.add_subnet(server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
-                       pools=[{'pool': "2001:db8:1::1/128"}])
+                       pools=[{'pool': "2001:db8:1::1/128"}],
+                       backend=backend)
 
     get_rejected()
 
@@ -60,7 +61,8 @@ def test_server_tag_subnet(backend):
 
     # add configuration for xyz
     cfg_xyz.add_subnet(server_tags=["xyz"], subnet="2001:db8:2::/64", id=2,
-                       pools=[{'pool': "2001:db8:2::50/128"}])
+                       pools=[{'pool': "2001:db8:2::50/128"}],
+                       backend=backend)
 
     get_address(mac_addr='00:00:00:00:00:01', exp_addr='2001:db8:2::50')
 
@@ -92,7 +94,8 @@ def test_server_tag_subnet(backend):
     get_rejected()
 
     cfg_qwe.add_subnet(server_tags=["all"], subnet="2001:db8:3::/64", id=3,
-                       pools=[{'pool': "2001:db8:3::20-2001:db8:3::21"}])
+                       pools=[{'pool': "2001:db8:3::20-2001:db8:3::21"}],
+                       backend=backend)
 
     abc = _get_server_config()
     # check if it's configured with just one subnet
@@ -122,8 +125,9 @@ def test_server_tag_global_option(backend):
     cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend, "xyz")
     _set_server_tag(backend, "abc")
-    cfg.add_subnet(server_tags="abc")
-    cfg.add_option(server_tags=["all"], code=22, csv_format=True, data="2001::1", name="sip-server-addr", space="dhcp6")
+    cfg.add_subnet(backend=backend, server_tags="abc")
+    cfg.add_option(backend=backend, server_tags=["all"], code=22, csv_format=True,
+                   data="2001::1", name="sip-server-addr", space="dhcp6")
 
     abc = _get_server_config()
     # server should have just one option now, from "all"
@@ -132,14 +136,16 @@ def test_server_tag_global_option(backend):
 
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::1"})
 
-    cfg.add_option(server_tags=["abc"], code=22, csv_format=True, data="2001::2", name="sip-server-addr", space="dhcp6")
+    cfg.add_option(backend=backend, server_tags=["abc"], code=22, csv_format=True,
+                   data="2001::2", name="sip-server-addr", space="dhcp6")
     abc = _get_server_config()
     # now, despite the fact that two tags are for server "abc" ("abc" and "all") option "all" should be overwritten
     assert len(abc["arguments"]["Dhcp6"]["option-data"]) == 1
     assert abc["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::2"
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::2"})
 
-    cfg.add_option(server_tags=["xyz"], code=22, csv_format=True, data="2001::3", name="sip-server-addr", space="dhcp6")
+    cfg.add_option(backend=backend, server_tags=["xyz"], code=22, csv_format=True,
+                   data="2001::3", name="sip-server-addr", space="dhcp6")
     abc = _get_server_config()
     # after adding "xyz" option, there should not be any change in running kea
     assert len(abc["arguments"]["Dhcp6"]["option-data"]) == 1
@@ -149,7 +155,7 @@ def test_server_tag_global_option(backend):
     srv_control.start_srv('DHCP', 'stopped')
 
     cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
-    cfg_xyz.add_subnet(server_tags="xyz")
+    cfg_xyz.add_subnet(backend=backend, server_tags="xyz")
     abc = _get_server_config()
     # new kea is started with tag "xyz"
     assert len(abc["arguments"]["Dhcp6"]["option-data"]) == 1
@@ -158,7 +164,7 @@ def test_server_tag_global_option(backend):
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::3"})
 
     # delete option with tag "xyz", kea should download tag "all"
-    cfg_xyz.del_option(server_tags=["xyz"], code=22)
+    cfg_xyz.del_option(backend=backend, server_tags=["xyz"], code=22)
     xyz = _get_server_config(reload_kea=True)
     assert len(xyz["arguments"]["Dhcp6"]["option-data"]) == 1
     assert xyz["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::1"
@@ -170,9 +176,9 @@ def test_server_tag_network(backend):
     cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend, "xyz")
     _set_server_tag(backend, "abc")
-    cfg.add_network(server_tags=["abc"], name="flor1")
+    cfg.add_network(backend=backend, server_tags=["abc"], name="flor1")
 
-    cfg.add_subnet(shared_network_name="flor1", server_tags=["abc"],
+    cfg.add_subnet(shared_network_name="flor1", server_tags=["abc"], backend=backend,
                    subnet="2001:db8:1::/64", id=1, pools=[{'pool': "2001:db8:1::1-2001:db8:1::1"}])
 
     xyz = _get_server_config()
@@ -181,9 +187,9 @@ def test_server_tag_network(backend):
 
     get_address(mac_addr='00:00:00:00:00:03', exp_addr='2001:db8:1::1')
 
-    cfg.add_network(server_tags=["xyz"], name="flor2")
+    cfg.add_network(backend=backend, server_tags=["xyz"], name="flor2")
 
-    cfg.add_subnet(shared_network_name="flor2", server_tags=["xyz"],
+    cfg.add_subnet(backend=backend, shared_network_name="flor2", server_tags=["xyz"],
                    subnet="2001:db8:2::/64", id=2, pools=[{'pool': "2001:db8:2::5-2001:db8:2::5"}])
 
     # we still want just one network with one subnet
@@ -204,7 +210,7 @@ def test_server_tag_network(backend):
     assert len(xyz["arguments"]["Dhcp6"]["shared-networks"][0]["subnet6"]) == 1
     assert xyz["arguments"]["Dhcp6"]["shared-networks"][0]["subnet6"][0]["subnet"] == "2001:db8:2::/64"
 
-    cfg.add_subnet(shared_network_name="flor2", server_tags=["all"],
+    cfg.add_subnet(backend=backend, shared_network_name="flor2", server_tags=["all"],
                    subnet="2001:db8:3::/64", id=3, pools=[{'pool': "2001:db8:3::5-2001:db8:3::5"}])
 
     # model was incomplete on previous step so I can't use del_subnet method because it's again
@@ -228,19 +234,19 @@ def test_server_tag_global_parameter(backend):
     _set_server_tag(backend, "xyz")
     _set_server_tag(backend, "abc")
 
-    cfg.add_subnet(server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
+    cfg.add_subnet(backend=backend, server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
                    pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])
-    cfg.set_global_parameter(server_tags=["all"], valid_lifetime=7700)
+    cfg.set_global_parameter(backend=backend, server_tags=["all"], valid_lifetime=7700)
     get_address(mac_addr='00:00:00:00:00:03', exp_ia_na_iaaddr_validlft=7700)
 
     # this update should not change anything
-    cfg.set_global_parameter(server_tags=["xyz"], valid_lifetime=5001)
+    cfg.set_global_parameter(backend=backend, server_tags=["xyz"], valid_lifetime=5001)
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp6"]["valid-lifetime"] == 7700
     get_address(mac_addr='00:00:00:00:00:04', exp_ia_na_iaaddr_validlft=7700)
 
     # this should overwrite "all"
-    cfg.set_global_parameter(server_tags=["abc"], valid_lifetime=5002)
+    cfg.set_global_parameter(backend=backend, server_tags=["abc"], valid_lifetime=5002)
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp6"]["valid-lifetime"] == 5002
 
@@ -248,7 +254,7 @@ def test_server_tag_global_parameter(backend):
     srv_control.start_srv('DHCP', 'stopped')
     cfg = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
 
-    cfg.add_subnet(server_tags=["xyz"], subnet="2001:db8:1::/64", id=1,
+    cfg.add_subnet(backend=backend, server_tags=["xyz"], subnet="2001:db8:1::/64", id=1,
                    pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])
 
     # now server "xyz" has two parameters configured, should use "xyz"
@@ -263,7 +269,7 @@ def test_server_tag_kea_without_tag(backend):
     cfg = setup_server_for_config_backend_cmds(server_tag="", backend_type=backend)
     _set_server_tag(backend, "abc")
 
-    cfg.add_subnet(server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
+    cfg.add_subnet(backend=backend, server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
                    pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])
     get_rejected()
     xyz = _get_server_config()
@@ -274,12 +280,13 @@ def test_server_tag_kea_without_tag(backend):
     assert len(xyz["arguments"]["Dhcp6"]["option-data"]) == 0
 
     # set network, subnet, option and parameter for "all"
-    cfg.add_network(server_tags=["all"], name="flor1")
-    cfg.add_subnet(server_tags=["all"], shared_network_name="flor1",
+    cfg.add_network(backend=backend, server_tags=["all"], name="flor1")
+    cfg.add_subnet(backend=backend, server_tags=["all"], shared_network_name="flor1",
                    subnet="2001:db8:2::/64", id=2,
                    pools=[{'pool': "2001:db8:2::1-2001:db8:2::100"}])
-    cfg.set_global_parameter(server_tags=["all"], valid_lifetime=7700)
-    cfg.add_option(server_tags=["all"], code=22, csv_format=True, data="2001::1", name="sip-server-addr", space="dhcp6")
+    cfg.set_global_parameter(backend=backend, server_tags=["all"], valid_lifetime=7700)
+    cfg.add_option(backend=backend, server_tags=["all"], code=22, csv_format=True,
+                   data="2001::1", name="sip-server-addr", space="dhcp6")
 
     xyz = _get_server_config()
     assert len(xyz["arguments"]["Dhcp6"]["subnet6"]) == 0
