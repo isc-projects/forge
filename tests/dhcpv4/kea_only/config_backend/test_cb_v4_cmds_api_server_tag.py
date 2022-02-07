@@ -641,7 +641,7 @@ def test_remote_option_get_server_tags_get_non_existing_tag(backend):
     _add_server_tag(backend=backend, server_tag="abc")
     _option_set(backend=backend, server_tags=["all"])
 
-    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="1.1.1.1")
 
 
@@ -651,7 +651,7 @@ def test_remote_option_remove_server_tag_and_data(backend):
     _add_server_tag(backend=backend, server_tag="abc")
     _option_set(backend=backend, server_tags=["abc"])
 
-    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["abc"], opt_code=3)
 
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
@@ -660,7 +660,7 @@ def test_remote_option_remove_server_tag_and_data(backend):
     srv_msg.send_ctrl_cmd(cmd)
 
     # after removing tag all options should be removed with it
-    _option_get(backend=backend,server_tags=["abc"], opt_code=3, exp_result=3)
+    _option_get(backend=backend, server_tags=["abc"], opt_code=3, exp_result=3)
 
 
 @pytest.mark.parametrize('backend', ['mysql'])
@@ -672,13 +672,13 @@ def test_remote_option4_get_server_tags(backend):
     _option_set(backend=backend, server_tags=["xyz"], opt_data='2.2.2.2')
     _option_set(backend=backend, server_tags=["all"], opt_data='3.3.3.3')
 
-    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
-    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["xyz"], opt_code=3)
     _check_option_result(resp, server_tags=["xyz"], opt_name="routers", opt_data="2.2.2.2")
 
-    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     _option_set(backend=backend, server_tags=["abc"], code=4, opt_data='6.6.6.6')
@@ -702,13 +702,13 @@ def test_remote_option4_del_server_tags(backend):
     _option_set(backend=backend, server_tags=["xyz"], opt_data='2.2.2.2')
     _option_set(backend=backend, server_tags=["all"], opt_data='3.3.3.3')
 
-    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
-    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["xyz"], opt_code=3)
     _check_option_result(resp, server_tags=["xyz"], opt_name="routers", opt_data="2.2.2.2")
 
-    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     resp = _option_del(backend=backend, server_tags=["xyz"], opt_code=3)
@@ -716,14 +716,14 @@ def test_remote_option4_del_server_tags(backend):
     assert resp["text"] == "1 DHCPv4 option(s) deleted."
     assert resp["result"] == 0
 
-    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["xyz"], opt_code=3)
     # it was removed but tag "all" should return option
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
-    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["abc"], opt_name="routers", opt_data="1.1.1.1")
 
-    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     resp = _option_del(backend=backend, server_tags=["abc"], opt_code=3)
@@ -732,14 +732,14 @@ def test_remote_option4_del_server_tags(backend):
     assert resp["result"] == 0
 
     # this also should be tag all
-    resp = _option_get(backend=backend,server_tags=["abc"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["abc"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     # this should be from tag "all"
-    resp = _option_get(backend=backend,server_tags=["xyz"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["xyz"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
-    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3)
+    resp = _option_get(backend=backend, server_tags=["all"], opt_code=3)
     _check_option_result(resp, server_tags=["all"], opt_name="routers", opt_data="3.3.3.3")
 
     resp = _option_get(backend=backend, command="remote-option4-global-del", server_tags=["all"], opt_code=3)
@@ -748,11 +748,11 @@ def test_remote_option4_del_server_tags(backend):
     assert resp["result"] == 0
 
     # now all commands should return error
-    _option_get(backend=backend,server_tags=["xyz"], opt_code=3, exp_result=3)
+    _option_get(backend=backend, server_tags=["xyz"], opt_code=3, exp_result=3)
 
-    _option_get(backend=backend,server_tags=["abc"], opt_code=3, exp_result=3)
+    _option_get(backend=backend, server_tags=["abc"], opt_code=3, exp_result=3)
 
-    resp = _option_get(backend=backend,server_tags=["all"], opt_code=3,
+    resp = _option_get(backend=backend, server_tags=["all"], opt_code=3,
                        exp_result=3)
     assert resp["arguments"]["count"] == 0
     assert resp["result"] == 3
