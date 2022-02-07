@@ -105,6 +105,10 @@ def client_send_msg(msgname, iface=None, addr=None):
         # msg code: 8
         msg = build_msg([("message-type", "inform")] + options)
 
+    elif msgname == "LEASEQUERY":
+        # msg code: 10
+        msg = build_msg([("message-type", "lease_query")] + options)
+
     elif msgname == "BOOTP_REQUEST":
         world.cfg["values"]["broadcastBit"] = True
         msg = build_msg(['\x63\x82\x53\x63'] + options)
@@ -300,6 +304,7 @@ def build_msg(opts):
     msg.ciaddr = world.cfg["values"]["ciaddr"]
     msg.yiaddr = world.cfg["values"]["yiaddr"]
     msg.htype = world.cfg["values"]["htype"]
+    msg.hlen = world.cfg["values"]["hlen"]
     return msg
 
 
@@ -312,7 +317,11 @@ def get_msg_type(msg):
                  5: "ACK",
                  6: "NAK",
                  7: "RELEASE",
-                 8: "INFORM"
+                 8: "INFORM",
+                 10: "LEASEQUERY",
+                 11: "LEASEUNASSIGNED",
+                 12: "LEASEUNKNOWN",
+                 13: "LEASEACTIVE"
                  }
     # option 53 it's message type
     opt = get_option(msg, 53)
