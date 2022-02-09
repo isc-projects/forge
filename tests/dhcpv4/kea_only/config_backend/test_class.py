@@ -131,3 +131,43 @@ def test_class_in_network(dhcp_version, classes_kept_in, backend):
     # and now unclassified client 4 should be given a lease from subnet 2
     network_cfg.update(backend=backend, client_class='')
     get_address(mac_addr="00:00:00:00:00:04", exp_addr='2.2.2.3' if dhcp_version == 'v4' else '2:2:2::3')
+
+
+@pytest.mark.parametrize('csv', [False, True])
+@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('always_send', [False, True])
+def test_class_options(dhcp_version, backend, always_send, csv):
+    """
+    Test kea ability to send options assigned to class when config kept in database backend
+    :param dhcp_version: fixture, string, v4 or v6
+    :param backend: string, mysql or postgresql
+    :param always_send: boolean, value of always send configuration option
+    :param csv: boolean, value of csv configuration option
+    """
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
+
+    if dhcp_version == 'v4':
+        cfg.add_class(backend=backend, name="modem", test="hexstring(pkt4.mac, ':') == '00:00:00:00:00:01'",
+                      option_data=[{"name": "domain-name-servers",
+                                    "code": 6,
+                                    "space": "dhcp4",
+                                    "csv-format": csv,
+                                    "always-send": always_send,
+                                    "data": "192.0.2.1" if csv else "C0000201"}])
+    else:
+        cfg.add_class(backend=backend, name="modem",
+                      test="hexstring(option[1].hex, ':') == '00:03:00:01:00:00:00:00:00:01'",
+                      option_data=[{"name": "dns-servers",
+                                    "code": 23,
+                                    "space": "dhcp6",
+                                    "csv-format": csv,
+                                    "always-send": always_send,
+                                    "data": "2001:db8:1::1, 2001:db8:2::1" if csv else "20010DB800010000000000000000000120010DB8000200000000000000000001"}])
+
+    # subnet for a modem class
+    cfg.add_subnet(backend=backend, client_class='modem')
+
+    # client 1 from 'modem' class should get lease
+    get_address(mac_addr="00:00:00:00:00:01", exp_addr='192.168.50.1' if dhcp_version == 'v4' else '2001:db8:1::1',
+                req_opts=[6] if dhcp_version == 'v4' else [23] if not always_send else [],
+                exp_option={"code": 6, "data": "192.0.2.1"} if dhcp_version == 'v4' else {"code": 23, "data": "2001:db8:1::1,2001:db8:2::1"})
