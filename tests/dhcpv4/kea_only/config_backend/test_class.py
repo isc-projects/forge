@@ -163,12 +163,18 @@ def test_class_options(dhcp_version, backend, always_send, csv):
                                     "space": "dhcp6",
                                     "csv-format": csv,
                                     "always-send": always_send,
-                                    "data": "2001:db8:1::1, 2001:db8:2::1" if csv else "20010DB800010000000000000000000120010DB8000200000000000000000001"}])
+                                    "data": "2001:db8:1::1, 2001:db8:2::1" if csv else
+                                    "20010DB800010000000000000000000120010DB8000200000000000000000001"}])
 
     # subnet for a modem class
     cfg.add_subnet(backend=backend, client_class='modem')
 
+    expected_option = {"code": 6, "data": "192.0.2.1"}
+    if dhcp_version == 'v6':
+        expected_option = {"code": 23, "data": "2001:db8:1::1,2001:db8:2::1"}
+
     # client 1 from 'modem' class should get lease
-    get_address(mac_addr="00:00:00:00:00:01", exp_addr='192.168.50.1' if dhcp_version == 'v4' else '2001:db8:1::1',
+    get_address(mac_addr="00:00:00:00:00:01",
+                exp_addr='192.168.50.1' if dhcp_version == 'v4' else '2001:db8:1::1',
                 req_opts=[6] if dhcp_version == 'v4' else [23] if not always_send else [],
-                exp_option={"code": 6, "data": "192.0.2.1"} if dhcp_version == 'v4' else {"code": 23, "data": "2001:db8:1::1,2001:db8:2::1"})
+                exp_option=expected_option)

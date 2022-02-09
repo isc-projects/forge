@@ -1,7 +1,7 @@
 Coding Guidelines
 =================
 
-The lines should not exceed 100 characters.
+The lines should not exceed 120 characters.
 
 Test comments
 -------------
