@@ -215,8 +215,9 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     rather than updates so those can be run in v4 only.
     """
     dns_system, my_domain = system_and_domain
-    if dhcp_version == 'v6' and dns_system == 'windows':
+    if world.proto == 'v6' and dns_system == 'windows' or world.server_system == 'redhat':
         # TODO figure out why dns pkts with AAAA are dropped by windows
+        # TODO we are running tests on fedora but kerberos is failing with this configuration
         pytest.skip("Windows DNS do not respond to AAAA question, manually checked - it worked nice")
 
     tkey_lifetime = 60
@@ -332,7 +333,9 @@ def test_ddns4_gss_tsig_fallback(fallback):
     updates we have to check DNS server logs (I've also looked into traffic between kea-ddns
     and bind 9 using tcpdump)
     """
-
+    if world.server_system == 'redhat':
+        # TODO we are running tests on fedora but kerberos is failing with this configuration
+        pytest.skip("Work out why kerberos is failing to start on fedora")
     dns_addr = world.cfg["dns4_addr"]
     krb.init_and_start_krb(dns_addr, 'example.com')
     krb.kinit('example.com')
@@ -411,6 +414,10 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     - Basic statistics (although something weird is in update counts, needs more investigation).
     - getting keys by server name, key name, list and all
     """
+    if world.server_system == 'redhat':
+        # TODO we are running tests on fedora but kerberos is failing with this configuration
+        pytest.skip("Work out why kerberos is failing to start on fedora")
+
     dns_system, my_domain = system_domain
     if dns_system == 'windows':
         my_domain = f"win{my_domain}ad.aws.isc.org"
