@@ -257,6 +257,12 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
 
 
 def _get_win_addresses(vars, version):
+    """
+    Update forge configuration with ip addresses of windows systems
+    :param vars: string, include entire forge configuration
+    :param version: string, contain release year of windows systems, in our setup it's 2016 or 2019
+    :return: string, updated forge configuration
+    """
     vars[f'WIN_DNS_ADDR_{version}'] = ''
     if os.path.exists(f'aws-win-ad-dns-vm{version}.txt'):
         with open(f'aws-win-ad-dns-vm{version}.txt', 'r') as f:
