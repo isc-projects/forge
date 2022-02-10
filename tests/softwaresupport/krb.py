@@ -4,8 +4,20 @@ from .multi_server_functions import fabric_sudo_command, send_content, fabric_do
 
 from forge_cfg import world
 
+#
+# This file include all operations needed for installing, configuring and managing kerberos server
+# as well as authenticating to it. It's windows part is based on preconfigured windows systems
+# in kea internal testing network. On contrary to all other configuration procedures in forge
+# all operations here can be execute just on one system, primary accessible via MGMT_ADDRESS
+#
+
 
 def kinit(my_domain):
+    """
+    Execute kinit on debian/redhat based systems in various configurations
+    :param my_domain: sting with domain name
+    :return:
+    """
     fabric_sudo_command('cat /etc/krb5.conf')
     if world.server_system == 'debian':
         fabric_sudo_command('cat /etc/krb5kdc/kdc.conf')
@@ -29,6 +41,11 @@ def kinit(my_domain):
 
 
 def manage_kerb(procedure='stop', ignore=False):
+    """
+    Manage kerberos via systemctl on redhat and ubuntu
+    :param procedure: string, can be start, stop or restart (disable and enable not recommended)
+    :param ignore: bool, decide if possible systemctl error should be ignored
+    """
     if world.server_system == 'redhat':
         fabric_sudo_command(f'systemctl {procedure} krb5kdc kadmin', ignore_errors=ignore)
         if procedure in ["start", "restart"]:
@@ -41,6 +58,9 @@ def manage_kerb(procedure='stop', ignore=False):
 
 
 def clean_principals():
+    """
+    Remove all non default principals
+    """
     result = fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
     if result.succeeded:
         for princ in result.stdout.splitlines():
@@ -50,6 +70,12 @@ def clean_principals():
 
 
 def install_krb(dns_addr, domain, key_life=2):
+    """
+    Remove, install and configure (default configuration) kerberos on ubuntu/redhat based system
+    :param dns_addr: string with ip address of dns system
+    :param domain: sting with domain name in which we should authenticate
+    :param key_life: int, lifetime of a key in seconds
+    """
     clean_principals()
     krb_destroy()
     manage_kerb()
@@ -109,10 +135,19 @@ def install_krb(dns_addr, domain, key_life=2):
 
 
 def krb_destroy():
+    """
+    Execute kdestory -A
+    """
     fabric_sudo_command('kdestroy -A', ignore_errors=True)
 
 
 def init_and_start_krb(dns_addr, domain, key_life=2):
+    """
+    Configure and start kerberos with OS specific configuration files.
+    :param dns_addr: string with ip address of DNS server
+    :param domain: string with domain name
+    :param key_life: int with key life time in seconds
+    """
     install_krb(dns_addr, domain, key_life)
     # /etc/krb5.conf
     ubuntu_krb5_conf = f"""[libdefaults]
@@ -162,7 +197,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
 
     kadm5_path = '/etc/krb5kdc/kadm5.acl' if world.server_system == 'debian' else '/var/kerberos/krb5kdc/kadm5.acl'
     if 'win' in domain:
-        # on each configured windows system there is keatab generated, e.g command used:
+        # on each configured windows system there is keytab generated, e.g command used:
         # PS C:\Users\Administrator> ktpass -out /Users/forge/forge.keytab -mapUser forge +rndPass -mapOp set +DumpSalt -crypto AES256-SHA1 -ptype KRB5_NT_PRINCIPAL -princ DHCP/forge.win2019ad.aws.isc.org@WIN2019AD.AWS.ISC.ORG
         # so we need to download keytabs before test for both 2016 and 2019, if something goes wrong in the future
         # we can add step here to generate this. Due to AWS setup if you are running those tests locally
