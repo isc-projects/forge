@@ -421,17 +421,12 @@ def _terminate_single_vm(instance):
     log.info(f'>>>>> Terminating vm with id {instance.id} in progress..')
     try:
         instance.terminate()
+        instance.wait_until_terminated()
     except ClientError as er:
-        log.info(f'>>>>> There was a problem with termination of {instance.id}: {er}.')
-    else:
-        try:
-            instance.wait_until_terminated()
-        except ClientError as er:
-            log.info(f'>>>>> There was a problem with termination of {instance.id}: {er}.')
-        else:
-            log.info(f'>>>>> AWS vm {instance.id} terminated.')
-            return True
-    return False
+        log.error(f'>>>>> There was a problem with termination of {instance.id}: {er}.')
+        return False
+    log.info(f'>>>>> AWS vm {instance.id} terminated.')
+    return True
 
 
 def _terminate_instances(args):
@@ -440,11 +435,7 @@ def _terminate_instances(args):
     """
     ec2 = boto3.resource('ec2', region_name='us-east-1')
     if args.id is not None:
-        vms = None
-        if "," in args.id:
-            vms = args.id.split(",")
-        else:
-            vms = [args.id]
+        vms = args.id.split(",")
         for vm_id in vms:
             instance = ec2.Instance(vm_id)
             _terminate_single_vm(instance)

@@ -12,12 +12,25 @@ from softwaresupport import krb
 
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
+    """
+    Send kea command via command control channel using socket
+    :param cmd: dict, command to send
+    :param socket_name: string, path to socket, by default here we are using Kea-dhcp-ddns socket
+    :param exp_result: int, expected result returned by kea after processing command
+    :param exp_failed: boolean,
+    :return: dict, response from kea server
+    """
     return srv_msg.send_ctrl_cmd_via_socket(command=cmd, socket_name=socket_name,
                                             exp_result=exp_result, exp_failed=exp_failed)
 
 
 def _check_dns_record(fqdn, rdata=None, dns_addr=None):
-    # this time we are using v4 address to communicate to DNS so no need to change this
+    """
+    Check if DNS record have been updated
+    :param fqdn: string, include fqdn
+    :param rdata: string, expected address send from DNS
+    :param dns_addr: string, ip address of a system that is running DNS server
+    """
     misc.test_procedure()
     srv_msg.dns_question_record(fqdn, 'A' if world.proto == 'v4' else 'AAAA', 'IN')
     srv_msg.client_send_dns_query(dns_addr=dns_addr)
@@ -32,6 +45,13 @@ def _check_dns_record(fqdn, rdata=None, dns_addr=None):
 
 
 def _get_lease(addr, fqdn, mac, suffix="example.com"):
+    """
+    Simple 4 messages exchange to get lease assigned
+    :param addr: string, ip address expected to be assigned by Kea
+    :param fqdn: string, fqdn send by simulated client
+    :param mac: string, mac address used by simulated client
+    :param suffix: string, suffix of fqdn will be added to fqdn if it's not already included
+    """
     srv_msg.clean_saved_options()
     misc.test_procedure()
 
@@ -99,6 +119,11 @@ def _get_lease(addr, fqdn, mac, suffix="example.com"):
 
 
 def _release_lease(addr, mac):
+    """
+    Simple two message exchange to release address
+    :param addr: string, ip address that we want to release
+    :param mac: string, mac address of a simulated client that will release address
+    """
     misc.test_procedure()
     if world.proto == 'v4':
         srv_msg.client_add_saved_option(erase=True)
@@ -121,6 +146,12 @@ def _release_lease(addr, mac):
 
 
 def _delete_lease(extra_param=None, exp_result=0):
+    """
+    Send lease4/6-del command to kea server
+    :param extra_param: dict, extra arguments that should be included in command
+    :param exp_result: int, expected result returned by kea after processing command
+    :return: dict, response from Kea server
+    """
     cmd = dict(command=f"lease{world.proto[1]}-del", arguments={})
     if isinstance(extra_param, dict):
         cmd["arguments"].update(extra_param)
@@ -128,11 +159,18 @@ def _delete_lease(extra_param=None, exp_result=0):
 
 
 def _do_we_have_usable_key(index=0, server_id='server1'):
+    """
+    In span of 5 seconds check if Kea DDNS server has successfully negotiated usable key
+    Assert and fail test if key negotiation fail or kea don't have key after 5 seconds
+    :param index: int, list index of key we are checking, default 0
+    :param server_id: string, name of server configured in libddns_gss_tsig hook
+    :return: string, key name
+    """
     for _ in range(5):
         cmd = dict(command="gss-tsig-get", arguments={"server-id": server_id})
         response = _send_through_socket(cmd)
         assert response["arguments"]["keys"][index]["status"] != "in error",\
-            f'Key negotiation filed with status: {response["arguments"]["keys"][0]["tkey-status"]}'
+            f'Key negotiation filed with status: {response["arguments"]["keys"][index]["tkey-status"]}'
         if response["arguments"]["keys"][index]["status"] == "usable":
             # if all is as we expected we can continue with a test
             return response["arguments"]["keys"][index]["name"]
