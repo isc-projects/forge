@@ -230,6 +230,7 @@ def test_v4_lease_upload(backend):
                                          "user-context": {"value": 1},
                                          }
 
+
 @pytest.mark.v4
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_v4_lease_upload_duplicate(backend):
