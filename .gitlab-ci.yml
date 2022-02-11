@@ -1,5 +1,22 @@
-pylint:
-  image: python:3.6
+variables:
+  # B101    assert_used
+  BANDIT_SKIPS: 'B101'
+
+  CI_REGISTRY_IMAGE: registry.gitlab.isc.org/isc-projects/forge
+
+bandit:
+  allow_failure: true
+  image: "${CI_REGISTRY_IMAGE}:latest"
   script:
-    - pip3 install pylint pytest pycodestyle --quiet
+    - bandit -s "${BANDIT_SKIPS}" -r ./forge ./tests
+
+pylint:
+  image: "${CI_REGISTRY_IMAGE}:latest"
+  script:
     - ./check-style.sh
+
+semgrep:
+  allow_failure: true
+  image: "${CI_REGISTRY_IMAGE}:latest"
+  script:
+    - semgrep --config auto --error .
