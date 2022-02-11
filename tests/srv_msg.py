@@ -660,7 +660,7 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
     return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed)
 
 
-def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0):
+def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, address='$(MGMT_ADDRESS)'):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
 
     if channel == 'http':
@@ -671,7 +671,7 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0):
                 cmd["service"] = ['dhcp6']
 
     if channel == 'http':
-        response = send_ctrl_cmd_via_http(cmd, '$(MGMT_ADDRESS)', 8000, exp_result=exp_result)
+        response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result)
         response = response[0]
     elif channel == 'socket':
         response = send_ctrl_cmd_via_socket(cmd, exp_result=exp_result)
