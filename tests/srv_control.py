@@ -763,7 +763,7 @@ def add_forward_ddns(name, key_name, ip_address=None):
         ip_address = world.f_cfg.dns4_addr
     elif world.f_cfg.proto == 'v6' and ip_address is None:
         ip_address = world.f_cfg.dns6_addr
-    ddns.add_forward_ddns(name, key_name, ip_address, 53001)
+    ddns.add_forward_ddns(name, key_name, ip_address, world.f_cfg.dns_port)
 
 
 @step(r'Add reverse DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
@@ -772,7 +772,7 @@ def add_reverse_ddns(name, key_name, ip_address=None):
         ip_address = world.f_cfg.dns4_addr
     elif world.f_cfg.proto == 'v6' and ip_address is None:
         ip_address = world.f_cfg.dns6_addr
-    ddns.add_reverse_ddns(name, key_name, ip_address, 53001)
+    ddns.add_reverse_ddns(name, key_name, ip_address, world.f_cfg.dns_port)
 
 
 @step(r'Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
