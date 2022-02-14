@@ -72,16 +72,14 @@ def add_ddns_server_options(option, value=None):
     world.dhcp_cfg["dhcp-ddns"][option] = value
 
 
-def add_forward_ddns(name, key_name, ip_address, port=53001, hostname=""):
+def add_forward_ddns(name, key_name, ip_address, port, hostname=""):
     tmp_record = {
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
             "hostname": hostname,
             "ip-address": ip_address,
-            # "ip-address": "127.0.0.1",
-            # "port": 53
-            # "port": port
+            "port": port
         }]
     }
 
@@ -90,16 +88,14 @@ def add_forward_ddns(name, key_name, ip_address, port=53001, hostname=""):
     world.ddns_cfg["forward-ddns"]["ddns-domains"].append(tmp_record)
 
 
-def add_reverse_ddns(name, key_name, ip_address, port=53001, hostname=""):
+def add_reverse_ddns(name, key_name, ip_address, port, hostname=""):
     tmp_record = {
         "name": name,
         "key-name": key_name,
         "dns-servers": [{
             "hostname": hostname,
             "ip-address": ip_address,
-            # "ip-address": "127.0.0.1",
-            # "port": 53002
-            # "port": port
+            "port": port
         }]
     }
 
