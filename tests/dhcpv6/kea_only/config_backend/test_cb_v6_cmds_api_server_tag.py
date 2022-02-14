@@ -23,13 +23,13 @@ def _set_server_tag(backend, tag="abc"):
                         "arguments": {"servers": [{"server-tag": tag, "description": "some server"}]}}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_any(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
@@ -40,7 +40,7 @@ def test_remote_server_tag_set_any(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_missing_tag(channel, backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
@@ -50,7 +50,7 @@ def test_remote_server_tag_set_missing_tag(channel, backend):
     assert response == {"result": 1, "text": "missing 'server-tag' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_incorrect_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
@@ -60,7 +60,7 @@ def test_remote_server_tag_set_incorrect_tag(backend):
     assert response == {"result": 1, "text": "'server-tag' parameter is not a string"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_empty_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
@@ -70,7 +70,7 @@ def test_remote_server_tag_set_empty_tag(backend):
     assert response == {"result": 1, "text": "server-tag must not be empty"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_missing_description(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
@@ -81,7 +81,7 @@ def test_remote_server_tag_set_missing_description(backend):
                         "result": 0, "text": "DHCPv6 server successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_missing_servers(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend}})
@@ -90,7 +90,7 @@ def test_remote_server_tag_set_missing_servers(backend):
     assert response == {"result": 1, "text": "'servers' parameter must be specified and must be a list"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_empty_servers(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
@@ -100,7 +100,7 @@ def test_remote_server_tag_set_empty_servers(backend):
     assert response == {"result": 1, "text": "'servers' list must include exactly one element"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_set_multiple_servers(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-set", arguments={"remote": {"type": backend},
@@ -111,7 +111,7 @@ def test_remote_server_tag_set_multiple_servers(backend):
     assert response == {"result": 1, "text": "'servers' list must include exactly one element"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_get(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -123,7 +123,7 @@ def test_remote_server_tag_get(backend):
                         "result": 0, "text": "DHCPv6 server 'abc' found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_get_non_existing_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-get", arguments={"remote": {"type": backend},
@@ -134,7 +134,7 @@ def test_remote_server_tag_get_non_existing_tag(backend):
                         "result": 3, "text": "DHCPv6 server 'abc' not found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_get_empty_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -145,7 +145,7 @@ def test_remote_server_tag_get_empty_tag(backend):
     assert response == {"result": 1, "text": "server-tag must not be empty"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_get_missing_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -156,7 +156,7 @@ def test_remote_server_tag_get_missing_tag(backend):
     assert response == {"result": 1, "text": "missing 'server-tag' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_del(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -174,7 +174,7 @@ def test_remote_server_tag_del(backend):
                         "result": 3, "text": "DHCPv6 server 'abc' not found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_del_all(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -187,7 +187,7 @@ def test_remote_server_tag_del_all(backend):
                                 "elements with all servers connecting to the database and may not be deleted"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_del_non_existing_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-del", arguments={"remote": {"type": backend},
@@ -197,7 +197,7 @@ def test_remote_server_tag_del_non_existing_tag(backend):
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv6 server(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_del_empty_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -208,7 +208,7 @@ def test_remote_server_tag_del_empty_tag(backend):
     assert response == {"result": 1, "text": "server-tag must not be empty"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_del_missing_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -219,7 +219,7 @@ def test_remote_server_tag_del_missing_tag(backend):
     assert response == {"result": 1, "text": "missing 'server-tag' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_get_all(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -233,7 +233,7 @@ def test_remote_server_tag_get_all(backend):
                         "result": 0, "text": "2 DHCPv6 server(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_get_all_no_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     cmd = dict(command="remote-server6-get-all", arguments={"remote": {"type": backend}})
@@ -242,7 +242,7 @@ def test_remote_server_tag_get_all_no_tags(backend):
     assert response == {"arguments": {"count": 0, "servers": []}, "result": 3, "text": "0 DHCPv6 server(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_server_tag_get_all_one_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend)
@@ -302,7 +302,7 @@ def _check_subnet_result(resp, server_tags, count=1, subnet_id=5, subnet="2001:d
     assert resp["arguments"]["subnets"][0]["id"] == subnet_id
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_server_tags_delete_server_tag_keep_data(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -332,7 +332,7 @@ def test_remote_subnet6_server_tags_delete_server_tag_keep_data(backend):
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=6, subnet="2001:db8:3::/64")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -369,7 +369,7 @@ def test_remote_subnet6_get_server_tags(backend):
     assert resp["arguments"]["subnets"][2]["id"] == 7
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_server_tags_all_incorrect_setup(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # Configure 2 subnet with the same id but different tags will result with just one subnet in configuration
@@ -383,7 +383,7 @@ def test_remote_subnet6_get_server_tags_all_incorrect_setup(backend):
     _check_subnet_result(resp, server_tags=["xyz"], subnet_id=5)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_del_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -467,7 +467,7 @@ def _network_check_res(resp, server_tags, count=1, network_name="florX"):
     assert resp["arguments"]["shared-networks"][0]["name"] == network_name
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_server_tags_remove_server_tag_keep_data(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -500,7 +500,7 @@ def test_remote_network6_server_tags_remove_server_tag_keep_data(backend):
     _network_check_res(resp, server_tags=["xyz"], network_name="flor1")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_get_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -522,7 +522,7 @@ def test_remote_network6_get_server_tags(backend):
     assert resp["arguments"]["shared-networks"][1]["name"] == "top_flor"
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_get_server_tags_all_incorrect_setup(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # Configure 2 networks with the same name but different tags will result with just one network in configuration
@@ -536,7 +536,7 @@ def test_remote_network6_get_server_tags_all_incorrect_setup(backend):
     _network_check_res(resp, server_tags=["xyz"], network_name="florX")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_del_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -617,7 +617,7 @@ def _check_option_result(resp, server_tags, count=1, opt_name=None, opt_data=Non
     assert resp["arguments"]["options"][0]["data"] == opt_data
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option6_get_server_tags_all(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # simple test for one ticket https://gitlab.isc.org/isc-projects/kea/issues/737
@@ -627,7 +627,7 @@ def test_remote_option6_get_server_tags_all(backend):
     _check_option_result(resp, count=1, server_tags=["all"], opt_name="dns-servers", opt_data="2001::3")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_get_server_tags_get_non_existing_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # we will request option 23 from tag "abc" but it's was just configured for "all" which should be returned instead
@@ -638,7 +638,7 @@ def test_remote_option_get_server_tags_get_non_existing_tag(backend):
     _check_option_result(resp, server_tags=["all"], opt_name="dns-servers", opt_data="2001::1")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_remove_server_tag_and_data(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -656,7 +656,7 @@ def test_remote_option_remove_server_tag_and_data(backend):
     _option_get(backend, server_tags=["abc"], opt_code=23, exp_result=3)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option6_get_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -686,7 +686,7 @@ def test_remote_option6_get_server_tags(backend):
     _check_option_result(resp, count=1, server_tags=["xyz"], opt_name="dns-servers", opt_data="2001::2")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option6_del_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -786,7 +786,7 @@ def _check_optdef_result(resp, server_tags, count=1, opt_type="uint32", opt_name
     assert resp["arguments"]["option-defs"][0]["type"] == opt_type
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def_get_server_tags_tmp(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     # simple test for one ticket https://gitlab.isc.org/isc-projects/kea/issues/737
@@ -796,7 +796,7 @@ def test_remote_option_def_get_server_tags_tmp(backend):
     _check_optdef_result(resp, server_tags=["all"], count=1)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def_get_server_tags_get_non_existing_tag(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -809,7 +809,7 @@ def test_remote_option_def_get_server_tags_get_non_existing_tag(backend):
     _check_optdef_result(resp, server_tags=["all"])
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def_remove_server_tag_and_data(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -828,7 +828,7 @@ def test_remote_option_def_remove_server_tag_and_data(backend):
                 option_def_parameter={"code": 222}, exp_result=3)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def_get_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")
@@ -875,7 +875,7 @@ def test_remote_option_def_get_server_tags(backend):
     _check_optdef_result(resp, server_tags=["all"], opt_code=233, opt_name="bar")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def_del_server_tags(backend):
     setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _add_server_tag(backend, "abc")

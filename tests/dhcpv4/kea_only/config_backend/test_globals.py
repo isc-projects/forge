@@ -19,7 +19,7 @@ pytestmark = [pytest.mark.kea_only,
 
 @pytest.mark.v4
 @pytest.mark.parametrize("initial_echo_client_id", [None, True, False])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_echo_client_id(initial_echo_client_id, backend):
     # Set initial value of echo-client-id in config file and then change it
     # using cb-cmds. Observe if client-id is included in responses according to settings.
@@ -49,7 +49,7 @@ def test_echo_client_id(initial_echo_client_id, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize("initial_decline_probation_period", [None, 1, 1000])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_decline_and_probation_period(initial_decline_probation_period, dhcp_version, backend):
     # Set initial value of decline-probation-period in config file and then change it
     # using cb-cmds. Observe if the setting is honored in case of sending DECLINE messages.
@@ -159,7 +159,7 @@ def _check_matching_client_id_when_true():
 
 @pytest.mark.v4
 @pytest.mark.parametrize("initial_match_client_id", [None, True, False])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_match_client_id_override_init(initial_match_client_id, backend):
     cfg, _ = setup_server_for_config_backend_cmds(backend_type=backend, match_client_id=initial_match_client_id,
                                                   check_config=True)
@@ -178,7 +178,7 @@ def test_match_client_id_override_init(initial_match_client_id, backend):
 
 
 @pytest.mark.v4
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_match_client_id(backend):
     cfg, _ = setup_server_for_config_backend_cmds(backend_type=backend, check_config=True)
 
@@ -203,7 +203,7 @@ def test_subnet_and_match_client_id(backend):
 
 
 @pytest.mark.v4
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_network_and_match_client_id(backend):
     cfg, _ = setup_server_for_config_backend_cmds(backend_type=backend, check_config=True)
 
@@ -248,7 +248,7 @@ def test_network_and_match_client_id(backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize("initial_dhcp4o6_port", [None, 1234])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_dhcp4o6_port(initial_dhcp4o6_port, dhcp_version, backend):  # pylint: disable=unused-argument
     cfg, config = setup_server_for_config_backend_cmds(backend_type=backend, dhcp4o6_port=initial_dhcp4o6_port,
                                                        check_config=True)

@@ -198,7 +198,7 @@ def test_ddns6_control_channel_config_set_all_values():
     _send_through_ddns_socket(cmd, socket_name="different_ddns_control_socket", exp_failed=True)
 
     # send to the new socket, should work, and it should be the same configuration as previously
-    # previously we removed logging from config, so new ddns configuration is without logging seciotn
+    # previously we removed logging from config, so new ddns configuration is without logging section
     cmd = dict(command='config-get', arguments={})
     response = _send_through_ddns_socket(cmd)
     cfg = response["arguments"]

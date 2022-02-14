@@ -13,7 +13,7 @@ pytestmark = [pytest.mark.v6,
               pytest.mark.config_backend]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_interface_id_in_subnet(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
@@ -39,7 +39,7 @@ def test_interface_id_in_subnet(backend):
     get_rejected(mac_addr='00:00:00:00:00:04', interface_id='vlan-a', relay_addr='7::1')
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_interface_id_in_network(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 

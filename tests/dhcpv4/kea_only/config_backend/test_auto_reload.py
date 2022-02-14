@@ -13,7 +13,7 @@ pytestmark = [pytest.mark.kea_only,
               pytest.mark.v6]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_auto_reload_1second(dhcp_version, backend):
     # prepare initial config with fetch wait time set to 1 second
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, config_control={"config-fetch-wait-time": 1},
@@ -40,7 +40,7 @@ def test_auto_reload_1second(dhcp_version, backend):
     get_address()
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_auto_reload_100seconds(dhcp_version, backend):
     # prepare initial config with fetch wait time set to 100 seconds
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, config_control={"config-fetch-wait-time": 100},

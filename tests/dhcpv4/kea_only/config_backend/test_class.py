@@ -16,7 +16,7 @@ pytestmark = [pytest.mark.v4,
 
 
 @pytest.mark.parametrize("classes_kept_in", ["db", "config"])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_class_in_subnet(dhcp_version, classes_kept_in, backend):
     # prepare initial config with 1 class 'modem' for 1 client with specificed MAC address
     if classes_kept_in == 'config':
@@ -57,7 +57,7 @@ def test_class_in_subnet(dhcp_version, classes_kept_in, backend):
 
 
 @pytest.mark.parametrize("classes_kept_in", ["db", "config"])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_class_in_network(dhcp_version, classes_kept_in, backend):
     # prepare initial config with 3 class: modem, user, other
     # each class is assigned to 1 client with specified MAC address
@@ -135,7 +135,7 @@ def test_class_in_network(dhcp_version, classes_kept_in, backend):
 
 
 @pytest.mark.parametrize('csv', [False, True])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 @pytest.mark.parametrize('always_send', [False, True])
 def test_class_options(dhcp_version, backend, always_send, csv):
     """

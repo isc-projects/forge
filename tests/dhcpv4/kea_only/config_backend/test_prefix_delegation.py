@@ -13,7 +13,7 @@ pytestmark = [pytest.mark.v6,
               pytest.mark.config_backend]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_pd_pool(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 

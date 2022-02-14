@@ -14,7 +14,7 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.config_backend]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_relay_in_subnet(dhcp_version, backend):
     relay_addr_1 = "10.0.0.1" if dhcp_version == 'v4' else '10:0:0::1'
     relay_addr_2 = "10.0.0.2" if dhcp_version == 'v4' else '10:0:0::2'
@@ -43,7 +43,7 @@ def test_relay_in_subnet(dhcp_version, backend):
     get_address(mac_addr='00:00:00:00:00:03', relay_addr=relay_addr_1, exp_addr=exp_addr_3)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_relay_in_network(dhcp_version, backend):
     relay_addr_1 = "10.0.0.1" if dhcp_version == 'v4' else '10:0:0::1'
     relay_addr_2 = "10.0.0.2" if dhcp_version == 'v4' else '10:0:0::2'

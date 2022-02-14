@@ -15,7 +15,7 @@ pytestmark = [pytest.mark.kea_only,
 @pytest.mark.parametrize("initial_next_server,initial_server_hostname,initial_boot_file_name",
                          [(None, None, None),                              # pick defaults
                           ('1.1.1.1', 'aaa.example.com', '/boot/aaa')])    # some specific initial values
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_override_init(initial_next_server, initial_server_hostname, initial_boot_file_name, backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, next_server=initial_next_server,
                                                server_hostname=initial_server_hostname,
@@ -34,7 +34,7 @@ def test_subnet_override_init(initial_next_server, initial_server_hostname, init
                 exp_boot_file_name='/boot/bbb')
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_change_params(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
@@ -74,7 +74,7 @@ def test_subnet_change_params(backend):
 @pytest.mark.parametrize("initial_next_server,initial_server_hostname,initial_boot_file_name",
                          [(None, None, None),                              # pick defaults
                           ('1.1.1.1', 'aaa.example.com', '/boot/aaa')])    # some specific initial values
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_network_override_init(initial_next_server, initial_server_hostname, initial_boot_file_name, backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, next_server=initial_next_server,
                                                server_hostname=initial_server_hostname,
@@ -93,7 +93,7 @@ def test_network_override_init(initial_next_server, initial_server_hostname, ini
                 exp_boot_file_name='/boot/bbb')
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_network_change_params(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 

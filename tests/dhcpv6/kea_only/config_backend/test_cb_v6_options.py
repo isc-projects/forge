@@ -79,7 +79,7 @@ def _set_global_option(backend, channel='http'):
 
 
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_option(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -111,7 +111,7 @@ def test_subnet_option(backend):
 
 
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_in_network_option(backend):
     _set_server(backend)
     _set_network(backend)
@@ -143,7 +143,7 @@ def test_subnet_in_network_option(backend):
 
 
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_option_on_all_levels(backend):
     _set_server(backend)
     _set_network(backend)
@@ -218,7 +218,7 @@ def test_option_on_all_levels(backend):
 
 
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_network_option(backend):
     _set_server(backend)
     _set_network(backend)
@@ -251,7 +251,7 @@ def test_network_option(backend):
 
 
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_pool_option(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -284,7 +284,7 @@ def test_pool_option(backend):
 
 
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_pd_pool_option(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},

@@ -16,7 +16,7 @@ pytestmark = [pytest.mark.kea_only,
 
 
 @pytest.mark.parametrize("initial_reservation_mode", [None, 'all', 'out-of-pool', 'global', 'disabled'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_reservation_mode_override_init(initial_reservation_mode, dhcp_version, backend):
     # set initial reservation-mode
     cfg, _ = setup_server_for_config_backend_cmds(backend_type=backend, reservation_mode=initial_reservation_mode,
@@ -30,7 +30,7 @@ def test_reservation_mode_override_init(initial_reservation_mode, dhcp_version, 
     cfg.set_global_parameter(backend=backend, reservation_mode=exp_reservation_mode)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_reservation_mode_in_globals(dhcp_version, backend):
     if dhcp_version == 'v4':
         init_cfg = dict(

@@ -39,7 +39,7 @@ def _get_server_config(reload_kea=False):
     return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_subnet4(backend):
     # create first configuration
     cfg_xyz = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="xyz")
@@ -117,7 +117,7 @@ def test_server_tag_subnet4(backend):
     assert abc["arguments"]["Dhcp4"]["subnet4"][1]["subnet"] == "192.168.52.0/24"
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_global_option4(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="abc")
     _set_server_tag(backend, "xyz")
@@ -168,7 +168,7 @@ def test_server_tag_global_option4(backend):
     get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.1"})
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_network4(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="abc")
     _set_server_tag(backend, "xyz")
@@ -225,7 +225,7 @@ def test_server_tag_network4(backend):
     get_address(mac_addr='00:00:00:00:00:05', exp_addr='192.168.52.5')
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_global_parameter4(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="abc")
     _set_server_tag(backend, "xyz")
@@ -264,7 +264,7 @@ def test_server_tag_global_parameter4(backend):
     get_address(exp_boot_file_name="/dev/null_xyz")
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_kea_without_tag(backend):
     # create first configuration, kea has no assigned tag, so it should get config just from "all"
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="")

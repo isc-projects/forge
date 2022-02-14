@@ -39,7 +39,7 @@ def _get_server_config(reload_kea=False):
     return srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_subnet(backend):
     # create first configuration
     cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
@@ -120,7 +120,7 @@ def test_server_tag_subnet(backend):
     assert abc["arguments"]["Dhcp6"]["subnet6"][1]["subnet"] == "2001:db8:3::/64"
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_global_option(backend):
     cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend, "xyz")
@@ -171,7 +171,7 @@ def test_server_tag_global_option(backend):
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::1"})
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_network(backend):
     cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend, "xyz")
@@ -228,7 +228,7 @@ def test_server_tag_network(backend):
     get_address(mac_addr='00:00:00:00:00:05', exp_addr='2001:db8:3::5')
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_global_parameter(backend):
     cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend, "xyz")
@@ -263,7 +263,7 @@ def test_server_tag_global_parameter(backend):
     get_address(mac_addr='00:00:00:00:00:06', exp_ia_na_iaaddr_validlft=5001)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_kea_without_tag(backend):
     # create first configuration, kea has no assigned tag, so it should get config just from "all"
     cfg = setup_server_for_config_backend_cmds(server_tag="", backend_type=backend)

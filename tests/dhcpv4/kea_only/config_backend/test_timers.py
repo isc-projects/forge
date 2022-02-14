@@ -21,7 +21,7 @@ pytestmark = [pytest.mark.kea_only,
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_renew_timer(dhcp_version, backend):
     # change renew timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
@@ -62,7 +62,7 @@ def test_subnet_and_renew_timer(dhcp_version, backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_rebind_timer(dhcp_version, backend):  # pylint: disable=unused-argument
     # change rebind timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
@@ -99,7 +99,7 @@ def test_subnet_and_rebind_timer(dhcp_version, backend):  # pylint: disable=unus
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_timers_renew_less(dhcp_version, backend):  # pylint: disable=unused-argument
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
@@ -138,7 +138,7 @@ def test_subnet_and_timers_renew_less(dhcp_version, backend):  # pylint: disable
 
 @pytest.mark.v4
 @pytest.mark.disabled  # #505 will not be fixed
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_timers_renew_greater_4(backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check that if renew timer is greater than rebind timer
@@ -184,7 +184,7 @@ def test_subnet_and_timers_renew_greater_4(backend):
 
 @pytest.mark.v6
 @pytest.mark.disabled  # #505 will not be fixed
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_timers_renew_greater_6(backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check that if renew timer is greater than rebind timer
@@ -230,7 +230,7 @@ def test_subnet_and_timers_renew_greater_6(backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_timers_equal(dhcp_version, backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
@@ -269,7 +269,7 @@ def test_subnet_and_timers_equal(dhcp_version, backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_timers_mix(dhcp_version, backend):
     # change both renew and rebind timers on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs
@@ -306,7 +306,7 @@ def test_subnet_and_timers_mix(dhcp_version, backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_shared_networks_and_timers_renew_less(dhcp_version, backend):  # pylint: disable=unused-argument
     # change both renew and rebind timers on different levels (global, shared network and subnet)
     # and check if these changes are properly reflected in received ACKs
@@ -367,7 +367,7 @@ def test_shared_networks_and_timers_renew_less(dhcp_version, backend):  # pylint
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_valid_lifetime(dhcp_version, backend):
     # change valid-lifetime on different levels (global and subnet)
     # and check if behavior is as expected ie leases after lifetime
@@ -425,7 +425,7 @@ def test_subnet_and_valid_lifetime(dhcp_version, backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_shared_networks_and_valid_lifetime(dhcp_version, backend):
     # change valid-lifetime on different levels (global, shared network and subnet)
     # and check if behavior is as expected ie leases after lifetime
@@ -515,7 +515,7 @@ def test_shared_networks_and_valid_lifetime(dhcp_version, backend):
                           (True, 0.1, 0.9, None),
                           (True, None, None, 5000),
                           (True, 0.3, 0.7, 5000)])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_calculate_timers_init_v4(initial_calculate_tee_times,
                                   initial_t1_percent,
                                   initial_t2_percent,
@@ -556,7 +556,7 @@ def test_calculate_timers_init_v4(initial_calculate_tee_times,
                           (True, 0.1, 0.9, None, None),
                           (True, None, None, 5000, 10000),
                           (True, 0.3, 0.7, 5000, 10000)])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_calculate_timers_init_v6(initial_calculate_tee_times,
                                   initial_t1_percent,
                                   initial_t2_percent,
@@ -597,7 +597,7 @@ def test_calculate_timers_init_v6(initial_calculate_tee_times,
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_subnet_and_calculate_timers(dhcp_version, backend):
     # change renew timer on different levels (global and subnet)
     # and check if these changes are properly reflected in received ACKs

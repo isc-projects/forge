@@ -53,7 +53,7 @@ def test_availability():
 
 # subnet tests
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_basic(channel, backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -70,7 +70,7 @@ def test_remote_subnet6_set_basic(channel, backend):
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_empty_subnet(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -84,7 +84,7 @@ def test_remote_subnet6_set_empty_subnet(backend):
     assert "subnet configuration failed: Invalid subnet syntax (prefix/len expected):" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_missing_subnet(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -97,7 +97,7 @@ def test_remote_subnet6_set_missing_subnet(backend):
            "is missing for a subnet being configured" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_stateless(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -112,7 +112,7 @@ def test_remote_subnet6_set_stateless(backend):
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_id(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -128,7 +128,7 @@ def test_remote_subnet6_set_id(backend):
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_duplicated_id(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -165,7 +165,7 @@ def test_remote_subnet6_set_duplicated_id(backend):
                         "result": 0, "text": "1 IPv6 subnet(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_duplicated_subnet(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -203,7 +203,7 @@ def test_remote_subnet6_set_duplicated_subnet(backend):
                         "result": 0, "text": "1 IPv6 subnet(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_all_values(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -235,7 +235,7 @@ def test_remote_subnet6_set_all_values(backend):
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_all_values(backend):
     _set_server(backend)
     cmd = dict(command='remote-subnet6-set', arguments={
@@ -387,7 +387,7 @@ def test_remote_subnet6_get_all_values(backend):
 
 
 # reservation-mode is integer in db, so we need to check if it's converted correctly
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_all_old(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -416,7 +416,7 @@ def test_remote_subnet6_set_reservation_mode_all_old(backend):
     assert subnet["reservations-out-of-pool"] is False
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_all(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -446,7 +446,7 @@ def test_remote_subnet6_set_reservation_mode_all(backend):
     assert subnet["reservations-out-of-pool"] is False
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_global_old(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -474,7 +474,7 @@ def test_remote_subnet6_set_reservation_mode_global_old(backend):
     assert subnet["reservations-in-subnet"] is False
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_global(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -503,7 +503,7 @@ def test_remote_subnet6_set_reservation_mode_global(backend):
     assert subnet["reservations-in-subnet"] is False
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_out_of_pool_old(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -531,7 +531,7 @@ def test_remote_subnet6_set_reservation_mode_out_of_pool_old(backend):
     assert subnet["reservations-out-of-pool"] is True
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_out_of_pool(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -562,7 +562,7 @@ def test_remote_subnet6_set_reservation_mode_out_of_pool(backend):
     assert subnet["reservations-out-of-pool"] is True
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_disabled_old(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -588,7 +588,7 @@ def test_remote_subnet6_set_reservation_mode_disabled_old(backend):
     assert subnet["reservations-in-subnet"] is False
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_set_reservation_mode_disabled(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -629,7 +629,7 @@ def _subnet_set(backend):
                         "result": 0, "text": "IPv6 subnet successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_del_by_id(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -641,7 +641,7 @@ def test_remote_subnet6_del_by_id(backend):
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv6 subnet(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_del_by_id_incorrect_id(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -653,7 +653,7 @@ def test_remote_subnet6_del_by_id_incorrect_id(backend):
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 IPv6 subnet(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_del_id_negative_missing_subnet(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -665,7 +665,7 @@ def test_remote_subnet6_del_id_negative_missing_subnet(backend):
     assert response == {"result": 1, "text": "missing 'id' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_del_by_prefix(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -677,7 +677,7 @@ def test_remote_subnet6_del_by_prefix(backend):
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 IPv6 subnet(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_del_by_prefix_non_existing_subnet(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -689,7 +689,7 @@ def test_remote_subnet6_del_by_prefix_non_existing_subnet(backend):
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 IPv6 subnet(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_del_by_prefix_missing_subnet_(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -700,7 +700,7 @@ def test_remote_subnet6_del_by_prefix_missing_subnet_(backend):
     assert response == {"result": 1, "text": "missing 'subnet' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_by_id(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -753,7 +753,7 @@ def test_remote_subnet6_get_by_id(backend):
                         "result": 0, "text": "IPv6 subnet 2 found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_by_id_incorrect_id(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -766,7 +766,7 @@ def test_remote_subnet6_get_by_id_incorrect_id(backend):
                         "result": 3, "text": "IPv6 subnet 3 not found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_by_id_missing_id(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -779,7 +779,7 @@ def test_remote_subnet6_get_by_id_missing_id(backend):
                         "text": "missing 'id' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_by_prefix(backend):
     _set_server(backend)
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
@@ -824,7 +824,7 @@ def test_remote_subnet6_get_by_prefix(backend):
             "valid-lifetime": 1000}]}, "result": 0, "text": "IPv6 subnet 2001:db8:1::/64 found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_by_prefix_negative(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -837,7 +837,7 @@ def test_remote_subnet6_get_by_prefix_negative(backend):
                         "result": 3, "text": "IPv6 subnet 2001:db8:2::/63 not found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_by_prefix_incorrect_prefix(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -849,7 +849,7 @@ def test_remote_subnet6_get_by_prefix_incorrect_prefix(backend):
                         "text": "unable to parse invalid IPv6 prefix ::/64"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_get_by_prefix_missing_prefix(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -862,7 +862,7 @@ def test_remote_subnet6_get_by_prefix_missing_prefix(backend):
                         "text": "missing 'subnet' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet6_list(backend):
     _set_server(backend)
     _subnet_set(backend)
@@ -906,7 +906,7 @@ def test_remote_subnet6_list(backend):
 
 # network tests
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_set_basic(channel, backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -918,7 +918,7 @@ def test_remote_network6_set_basic(channel, backend):
                         "result": 0, "text": "IPv6 shared network successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_set_missing_name(backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -928,7 +928,7 @@ def test_remote_network6_set_missing_name(backend):
     assert "missing parameter 'name'" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_set_empty_name(backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -941,7 +941,7 @@ def test_remote_network6_set_empty_name(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_get_basic(channel, backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -963,7 +963,7 @@ def test_remote_network6_get_basic(channel, backend):
                         "result": 0, "text": "IPv6 shared network 'net1' found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_get_all_values(backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -1017,7 +1017,7 @@ def test_remote_network6_get_all_values(backend):
                         "result": 0, "text": "IPv6 shared network 'net1' found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_set_t1_t2(backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -1055,7 +1055,7 @@ def test_remote_network6_set_t1_t2(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_list_basic(channel, backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -1083,7 +1083,7 @@ def test_remote_network6_list_basic(channel, backend):
                         "text": "2 IPv6 shared network(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_list_no_networks(backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-list", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
@@ -1096,7 +1096,7 @@ def test_remote_network6_list_no_networks(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_del_basic(channel, backend):
     _set_server(backend)
     cmd = dict(command="remote-network6-set", arguments={"remote": {"type": backend},
@@ -1152,7 +1152,7 @@ def test_remote_network6_del_basic(channel, backend):
                         "text": "0 IPv6 shared network(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_del_subnet_keep(backend):
     _set_server(backend)
     # add networks
@@ -1272,7 +1272,7 @@ def test_remote_network6_del_subnet_keep(backend):
                         "result": 0, "text": "2 IPv6 subnet(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_del_subnet_delete_simple(backend):
     _set_server(backend)
     # the v6 counterpart of ticket #738
@@ -1329,7 +1329,7 @@ def test_remote_network6_del_subnet_delete_simple(backend):
     srv_msg.send_ctrl_cmd(cmd)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_network6_del_subnet_delete(backend):
     _set_server(backend)
     # add networks
@@ -1456,13 +1456,13 @@ def _set_global_parameter(backend):
 
 
 # global-parameter tests
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_set_text(backend):
     _set_server(backend)
     _set_global_parameter(backend)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_set_integer(backend):
     _set_server(backend)
     cmd = dict(command="remote-global-parameter6-set", arguments={"remote": {"type": backend},
@@ -1475,7 +1475,7 @@ def test_remote_global_parameter6_set_integer(backend):
                         "text": "1 DHCPv6 global parameter(s) successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_set_incorrect_parameter(backend):
     _set_server(backend)
     cmd = dict(command="remote-global-parameter6-set", arguments={"remote": {"type": backend},
@@ -1486,7 +1486,7 @@ def test_remote_global_parameter6_set_incorrect_parameter(backend):
     assert response == {"result": 1, "text": "unknown parameter 'decline-aaa-period'"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_del(backend):
     _set_server(backend)
     _set_global_parameter(backend)
@@ -1500,7 +1500,7 @@ def test_remote_global_parameter6_del(backend):
                         "result": 0, "text": "1 DHCPv6 global parameter(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_del_not_existing_parameter(backend):
     _set_server(backend)
     cmd = dict(command="remote-global-parameter6-del", arguments={"remote": {"type": backend},
@@ -1512,7 +1512,7 @@ def test_remote_global_parameter6_del_not_existing_parameter(backend):
                         "result": 3, "text": "0 DHCPv6 global parameter(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_get(backend):
     _set_server(backend)
     _set_global_parameter(backend)
@@ -1528,7 +1528,7 @@ def test_remote_global_parameter6_get(backend):
                         "result": 0, "text": "'decline-probation-period' DHCPv6 global parameter found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_get_all_one(backend):
     _set_server(backend)
     _set_global_parameter(backend)
@@ -1542,7 +1542,7 @@ def test_remote_global_parameter6_get_all_one(backend):
                         "result": 0, "text": "1 DHCPv6 global parameter(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_get_all_multiple(backend):
     _set_server(backend)
     _set_global_parameter(backend)
@@ -1568,7 +1568,7 @@ def test_remote_global_parameter6_get_all_multiple(backend):
             "metadata": {"server-tags": ["abc"]}} in response["arguments"]["parameters"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_parameter6_get_all_zero(backend):
     _set_server(backend)
     cmd = dict(command="remote-global-parameter6-get-all", arguments={"remote": {"type": backend},
@@ -1593,13 +1593,13 @@ def _set_option_def(backend, channel='http'):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_set_basic(channel, backend):
     _set_server(backend)
     _set_option_def(backend, channel)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_set_using_zero_as_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option-def6-set", arguments={"remote": {"type": backend},
@@ -1612,7 +1612,7 @@ def test_remote_option_def6_set_using_zero_as_code(backend):
     assert "invalid option code '0': reserved value" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_set_using_standard_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option-def6-set", arguments={"remote": {"type": backend},
@@ -1626,7 +1626,7 @@ def test_remote_option_def6_set_using_standard_code(backend):
     assert response == {"result": 1, "text": "an option with code 24 already exists in space 'dhcp6'"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_set_missing_parameters(backend):
     _set_server(backend)
     cmd = dict(command="remote-option-def6-set", arguments={"remote": {"type": backend},
@@ -1668,7 +1668,7 @@ def test_remote_option_def6_set_missing_parameters(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_get_basic(channel, backend):
     _set_server(backend)
     _set_option_def(backend)
@@ -1685,7 +1685,7 @@ def test_remote_option_def6_get_basic(channel, backend):
                         "result": 0, "text": "DHCPv6 option definition 222 in 'dhcp6' found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_get_multiple_defs(backend):
     _set_server(backend)
     _set_option_def(backend)
@@ -1715,7 +1715,7 @@ def test_remote_option_def6_get_multiple_defs(backend):
                         "result": 0, "text": "DHCPv6 option definition 222 in 'abc' found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_get_missing_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option-def6-get", arguments={"remote": {"type": backend},
@@ -1727,7 +1727,7 @@ def test_remote_option_def6_get_missing_code(backend):
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_get_all_option_not_defined(backend):
     _set_server(backend)
     cmd = dict(command="remote-option-def6-get-all", arguments={"remote": {"type": backend}, "server-tags": ["abc"]})
@@ -1737,7 +1737,7 @@ def test_remote_option_def6_get_all_option_not_defined(backend):
                         "result": 3, "text": "0 DHCPv6 option definition(s) found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_get_all_multiple_defs(backend):
     _set_server(backend)
     _set_option_def(backend)
@@ -1771,7 +1771,7 @@ def test_remote_option_def6_get_all_multiple_defs(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_get_all_basic(channel, backend):
     _set_server(backend)
     _set_option_def(backend)
@@ -1787,7 +1787,7 @@ def test_remote_option_def6_get_all_basic(channel, backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_del_basic(channel, backend):
     _set_server(backend)
     _set_option_def(backend)
@@ -1799,7 +1799,7 @@ def test_remote_option_def6_del_basic(channel, backend):
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 option definition(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_del_different_space(backend):
     _set_server(backend)
     _set_option_def(backend)
@@ -1811,7 +1811,7 @@ def test_remote_option_def6_del_different_space(backend):
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv6 option definition(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_del_incorrect_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option-def6-del", arguments={"remote": {"type": backend},
@@ -1834,7 +1834,7 @@ def test_remote_option_def6_del_incorrect_code(backend):
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_del_missing_option(backend):
     _set_server(backend)
     cmd = dict(command="remote-option-def6-del", arguments={"remote": {"type": backend},
@@ -1845,7 +1845,7 @@ def test_remote_option_def6_del_missing_option(backend):
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv6 option definition(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_option_def6_del_multiple_options(backend):
     _set_server(backend)
     _set_option_def(backend)
@@ -1892,13 +1892,13 @@ def _set_global_option(backend, channel='http'):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_basic(channel, backend):
     _set_server(backend)
     _set_global_option(backend, channel)
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_missing_data(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -1909,7 +1909,7 @@ def test_remote_global_option6_global_set_missing_data(backend):
     assert "no option value specified" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_name(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -1922,7 +1922,7 @@ def test_remote_global_option6_global_set_name(backend):
                         "result": 0, "text": "DHCPv6 option successfully set."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_incorrect_code_missing_name(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -1933,7 +1933,7 @@ def test_remote_global_option6_global_set_incorrect_code_missing_name(backend):
     assert "'code' parameter is not an integer" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_incorrect_name_missing_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -1945,7 +1945,7 @@ def test_remote_global_option6_global_set_incorrect_name_missing_code(backend):
     assert "'name' parameter is not a string" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_missing_code_and_name(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -1956,7 +1956,7 @@ def test_remote_global_option6_global_set_missing_code_and_name(backend):
     assert "option data configuration requires one of 'code' or 'name' parameters to be specified" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_incorrect_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -1968,7 +1968,7 @@ def test_remote_global_option6_global_set_incorrect_code(backend):
     assert "'code' parameter is not an integer" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_incorrect_name(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -1982,7 +1982,7 @@ def test_remote_global_option6_global_set_incorrect_name(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_get_basic(channel, backend):
     _set_server(backend)
     _set_global_option(backend)
@@ -1998,7 +1998,7 @@ def test_remote_global_option6_global_get_basic(channel, backend):
                         "result": 0, "text": "DHCPv6 option 7 in 'dhcp6' found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_different_space(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -2013,7 +2013,7 @@ def test_remote_global_option6_global_set_different_space(backend):
     assert "definition for the option 'xyz.' having code '7' does not exist" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_csv_false_incorrect(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -2027,7 +2027,7 @@ def test_remote_global_option6_global_set_csv_false_incorrect(backend):
     assert "option data is not a valid string of hexadecimal digits: 12Z3" in response["text"]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_csv_false_correct(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -2042,7 +2042,7 @@ def test_remote_global_option6_global_set_csv_false_correct(backend):
                         "arguments": {"options": [{"code": 7, "space": "dhcp6"}]}}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_set_csv_false_incorrect_hex(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set", arguments={"remote": {"type": backend},
@@ -2057,7 +2057,7 @@ def test_remote_global_option6_global_set_csv_false_incorrect_hex(backend):
 
 
 @pytest.mark.parametrize('channel', ['socket', 'http'])
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_del_basic(channel, backend):
     _set_server(backend)
     _set_global_option(backend)
@@ -2069,7 +2069,7 @@ def test_remote_global_option6_global_del_basic(channel, backend):
     assert response == {"arguments": {"count": 1}, "result": 0, "text": "1 DHCPv6 option(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_del_missing_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": backend},
@@ -2079,7 +2079,7 @@ def test_remote_global_option6_global_del_missing_code(backend):
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_del_incorrect_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": backend},
@@ -2089,7 +2089,7 @@ def test_remote_global_option6_global_del_incorrect_code(backend):
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_del_missing_option(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": backend},
@@ -2099,7 +2099,7 @@ def test_remote_global_option6_global_del_missing_option(backend):
     assert response == {"arguments": {"count": 0}, "result": 3, "text": "0 DHCPv6 option(s) deleted."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_get_missing_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": backend},
@@ -2109,7 +2109,7 @@ def test_remote_global_option6_global_get_missing_code(backend):
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_get_incorrect_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": backend},
@@ -2119,7 +2119,7 @@ def test_remote_global_option6_global_get_incorrect_code(backend):
     assert response == {"result": 1, "text": "'code' parameter is not an integer"}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_get_missing_option(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": backend},
@@ -2130,7 +2130,7 @@ def test_remote_global_option6_global_get_missing_option(backend):
                         "result": 3, "text": "DHCPv6 option 6 in 'dhcp6' not found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_get_csv_false(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-set",
@@ -2158,7 +2158,7 @@ def test_remote_global_option6_global_get_csv_false(backend):
                         "result": 0, "text": "DHCPv6 option 22 in 'dhcp6' found."}
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_option6_global_get_all(backend):
     _set_server(backend)
     _set_global_option(backend)

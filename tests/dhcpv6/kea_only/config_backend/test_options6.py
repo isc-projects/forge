@@ -11,7 +11,7 @@ pytestmark = [pytest.mark.kea_only,
               pytest.mark.config_backend]
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_options_pool(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
@@ -21,7 +21,7 @@ def test_options_pool(backend):
     get_address(req_opts=22, exp_option={"code": 22, "data": "2001::3"})
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_options_subnet(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
@@ -32,7 +32,7 @@ def test_options_subnet(backend):
     get_address(req_opts=22, exp_option={"code": 22, "data": "2001::4"})
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_options_network(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
     network_cfg, _ = cfg.add_network(backend=backend,
@@ -43,7 +43,7 @@ def test_options_network(backend):
     get_address(req_opts=[23, 27], exp_option={"code": 23, "data": "2001::3"})
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_options_global(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
     cfg.add_subnet(backend=backend)
@@ -56,7 +56,7 @@ def test_options_global(backend):
     get_address(req_opts=[23, 27], no_exp_option={"code": 23})
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_options_all_levels(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
     cfg.add_option(backend=backend, code=31, csv_format=True, data="2001::31", name="sntp-servers", space="dhcp6")
@@ -76,7 +76,7 @@ def test_options_all_levels(backend):
                                                        {"code": 28, "data": "2001::32"}])
 
 
-@pytest.mark.parametrize('backend', ['mysql'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_options_inherit(backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
