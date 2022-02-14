@@ -42,7 +42,7 @@ def test_HA_hot_standby_status_get(dhcp_version, channel):
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 500,
                                           "max-ack-delay": 10000,
-                                          "max-response-delay": 1100,
+                                          "max-response-delay": 600,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server1",
                                           "state-machine": {"states": []}})
@@ -71,7 +71,7 @@ def test_HA_hot_standby_status_get(dhcp_version, channel):
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 500,
                                           "max-ack-delay": 10000,
-                                          "max-response-delay": 1100,
+                                          "max-response-delay": 600,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
                                           "state-machine": {"states": []}})
@@ -111,7 +111,7 @@ def test_HA_hot_standby_status_get(dhcp_version, channel):
     assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients'] >= 0
     assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients-left'] >= 0
 
-    # Get status from Server2and test the response
+    # Get status from Server2 and test the response
     cmd = {"command": "status-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, channel=channel, address='$(MGMT_ADDRESS_2)')
 
@@ -130,3 +130,23 @@ def test_HA_hot_standby_status_get(dhcp_version, channel):
     assert response['arguments']['high-availability'][0]['ha-servers']['remote']['role'] == 'primary'
     assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients'] >= 0
     assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients-left'] >= 0
+
+    # disable Server 2 to trigger different status
+
+    srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
+    #breakpoint()
+    srv_msg.forge_sleep(3, 'seconds')
+    # Get status from Server1 and test the response
+    cmd = {"command": "status-get", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, channel=channel, address='$(MGMT_ADDRESS)')
+
+    assert response['arguments']['high-availability'][0]['ha-mode'] == 'hot-standby'
+
+    assert response['arguments']['high-availability'][0]['ha-servers']['local'] == \
+           {"role": "primary", "scopes": ["server1"], "state": "partner-down"}
+
+    assert response['arguments']['high-availability'][0]['ha-servers']['remote']['communication-interrupted'] is True
+    assert response['arguments']['high-availability'][0]['ha-servers']['remote']['in-touch']
+    assert response['arguments']['high-availability'][0]['ha-servers']['remote']['last-scopes'] == []
+    assert response['arguments']['high-availability'][0]['ha-servers']['remote']['last-state'] == 'unavailable'
+    assert response['arguments']['high-availability'][0]['ha-servers']['remote']['role'] == 'standby'
