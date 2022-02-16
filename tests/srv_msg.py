@@ -674,7 +674,7 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, address='$(MG
         response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result)
         response = response[0]
     elif channel == 'socket':
-        response = send_ctrl_cmd_via_socket(cmd, exp_result=exp_result)
+        response = send_ctrl_cmd_via_socket(cmd, destination_address=address, exp_result=exp_result)
     else:
         raise ValueError('unsupported channel type: %s' % str(channel))
     return response
