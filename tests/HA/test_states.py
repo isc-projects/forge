@@ -219,7 +219,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     _get_status_HA(True, False, ha_mode='load-balancing', primary_state='load-balancing', secondary_state='unavailable',
                    primary_role='primary', secondary_role='secondary',
                    primary_scopes=['server1'], secondary_scopes=['server2'],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+                   comm_interrupt=True, in_touch=True, channel=channel)
 
     # continue server1 from load-balancing
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -231,7 +231,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     _get_status_HA(True, False, ha_mode='load-balancing', primary_state='partner-down', secondary_state='unavailable',
                    primary_role='primary', secondary_role='secondary',
                    primary_scopes=["server1", "server2"], secondary_scopes=["server2"],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+                   comm_interrupt=True, in_touch=True, channel=channel)
 
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
