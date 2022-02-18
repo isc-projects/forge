@@ -615,7 +615,6 @@ def _merge_configs(a, b, path=None):
             elif a[k] == b[k]:
                 pass
             else:
-                # pudb.set_trace()
                 raise Exception('Conflict at %s' % '.'.join(path + [str(k)]))
         else:
             a[k] = b[k]
@@ -749,6 +748,11 @@ def setup_server_for_config_backend_cmds(**kwargs):
 
 
 def setup_server_with_radius(**kwargs):
+    if world.proto == 'v4':
+        expression = "hexstring(pkt4.mac, ':')"
+    elif world.proto == 'v6':
+        expression = "substring(hexstring(option[1].hex, ':'), 12, 17)"
+
     default_cfg = {"hooks-libraries": [{
         # Load the host cache hook library. It is needed by the RADIUS
         # library to keep the attributes from authorization to later user
@@ -767,9 +771,13 @@ def setup_server_with_radius(**kwargs):
                     "name": world.f_cfg.mgmt_address,
                     "port": 1812,
                     "secret": "testing123"}],
-                "attributes": [{
+                "attributes": [
+                    {
                         "name": "password",
-                        "expr": "hexstring(pkt4.mac, ':')"}]},
+                        "expr": expression
+                    }
+                ]
+            },
             "accounting": {
                 "servers": [{
                     # These are parameters for the first (and only) access server

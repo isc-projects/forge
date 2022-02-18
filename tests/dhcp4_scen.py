@@ -193,6 +193,8 @@ def send_request_and_check_ack(
         for opt in no_exp_option:
             srv_msg.response_check_include_option(opt.get("code"), expect_include=False)
 
+    return world.srvmsg[0].yiaddr
+
 
 def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
                  exp_yiaddr=None, exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
@@ -208,15 +210,13 @@ def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
         no_exp_boot_file_name=no_exp_boot_file_name)
 
     # send REQUEST and check ACK
-    send_request_and_check_ack(
+    return send_request_and_check_ack(
         chaddr=chaddr, client_id=client_id, requested_addr=rcvd_yiaddr, server_id=True, req_opts=_to_list(req_opts),
         exp_lease_time=exp_lease_time, exp_renew_timer=exp_renew_timer, exp_rebind_timer=exp_rebind_timer,
         exp_client_id=exp_client_id,
         exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name,
         exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option),
         no_exp_boot_file_name=no_exp_boot_file_name)
-
-    return rcvd_yiaddr
 
 #########################################################################
 # DHCPv6
@@ -324,6 +324,16 @@ def _send_and_check_response(req_ia,
         for opt in no_exp_option:
             srv_msg.response_check_include_option(opt.get("code"), expect_include=False)
 
+    # Return the list of received addresses and prefixes.
+    result = []
+    addresses, _ = srv_msg.get_subopt_from_option('IA_NA', 'IA_address')
+    for i in addresses:
+        result.append(i.fields.get('addr'))
+    prefixes, _ = srv_msg.get_subopt_from_option('IA_PD', 'IA-Prefix')
+    for i in prefixes:
+        result.append(i.fields.get('prefix'))
+    return result
+
 
 def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                                     interface_id=None,
@@ -376,7 +386,8 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
     else:
         exp_msg_type = 'ADVERTISE'
 
-    _send_and_check_response(req_ia,
+    return _send_and_check_response(
+                             req_ia,
                              exp_msg_type,
                              exp_ia_na_t1,
                              exp_ia_na_t2,
@@ -389,21 +400,6 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
                              rapid_commit,
                              exp_option,
                              no_exp_option)
-
-    # srv_msg.response_check_include_option(1)
-    # srv_msg.response_check_include_option(54)
-    # srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-    # srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
-
-    # if exp_client_id is not None:
-    #     if exp_client_id == 'missing':
-    #         srv_msg.response_check_include_option(61, expect_include=False)
-    #     else:
-    #         srv_msg.response_check_include_option(61)
-    #         srv_msg.response_check_option_content(61, 'value', exp_client_id)
-
-    #return rcvd_yiaddr
-    return None
 
 
 def send_request_and_check_reply(duid=None,
@@ -488,7 +484,8 @@ def send_request_and_check_reply(duid=None,
     else:
         exp_msg_type = 'REPLY'
 
-    _send_and_check_response(req_ia,
+    return _send_and_check_response(
+                             req_ia,
                              exp_msg_type,
                              exp_ia_na_t1,
                              exp_ia_na_t2,
@@ -516,7 +513,8 @@ def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                  exp_option=None,
                  no_exp_option=None):
 
-    send_solicit_and_check_response(duid=duid,
+    received_leases = send_solicit_and_check_response(
+                                    duid=duid,
                                     relay_addr=relay_addr,
                                     req_ia=req_ia,
                                     rapid_commit=rapid_commit,
@@ -531,7 +529,8 @@ def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                                     no_exp_option=_to_list(no_exp_option))
 
     if not rapid_commit:
-        send_request_and_check_reply(duid=duid,
+        received_leases = send_request_and_check_reply(
+                                     duid=duid,
                                      req_ia=req_ia,
                                      interface_id=interface_id,
                                      exp_ia_na_t1=exp_ia_na_t1,
@@ -544,6 +543,8 @@ def get_address6(duid=None, relay_addr=None, req_ia='IA-NA', rapid_commit=False,
                                      req_opts=_to_list(req_opts),
                                      exp_option=_to_list(exp_option),
                                      no_exp_option=_to_list(no_exp_option))
+
+    return received_leases
 
 
 def send_decline6():

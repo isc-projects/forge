@@ -740,6 +740,14 @@ def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=worl
                                                  destination_address)
 
 
+def get_option(msg, opt_code):
+    return dhcpmsg.get_option(msg, opt_code)
+
+
+def get_subopt_from_option(exp_opt_code, exp_subopt_code):
+    return dhcpmsg.get_subopt_from_option(exp_opt_code, exp_subopt_code)
+
+
 def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
     return dhcpmsg.DO(address, options, chaddr)
 

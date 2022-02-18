@@ -754,6 +754,7 @@ def get_option(msg, opt_code):
     :return: scapy message representing the option or None if the option doesn't exist
     '''
 
+    # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
 
     # We need to iterate over all options and see
