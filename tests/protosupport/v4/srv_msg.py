@@ -42,6 +42,22 @@ OPTIONS = {
     "subnet-mask": 1,
 }
 
+
+def get_option_code(opt_code) -> int:
+    '''
+    Return an integer representation of the option code or name {opt_code}.
+    :param opt_code: integer or string representing the option's code or name
+    '''
+    if isinstance(opt_code, str):
+        if opt_code.isdigit():
+            # It was an integer in string format.
+            opt_code = int(opt_code)
+        else:
+            # It was an option name.
+            opt_code = OPTIONS[opt_code]
+    return opt_code
+
+
 def client_requests_option(opt_type):
     if not hasattr(world, 'prl'):
         world.prl = ""  # don't request anything by default
@@ -394,11 +410,21 @@ def send_wait_for_message(msgtype, presence, exp_message):
 
 
 def get_option(msg, opt_code):
+    '''
+    Retrieve from scapy message {msg}, the DHCPv6 option having IANA code {opt_code}.
+    :param msg: scapy message to retrieve the option from
+    :param opt_code: option code or name
+    :return: scapy message representing the option or None if the option doesn't exist
+    '''
+
+    # Ensure the option code is an integer.
+    opt_code = get_option_code(opt_code)
+
     # Returns option of specified type
     # We need to iterate over all options and see
     # if there's one we're looking for
     world.opts = []
-    opt_name = DHCPOptions[int(opt_code)]
+    opt_name = DHCPOptions[opt_code]
     # dhcpv4 implementation in Scapy is a mess. The options array contains mix of
     # strings, IPField, ByteEnumField and who knows what else. In each case the
     # values are accessed differently
@@ -444,7 +470,16 @@ def test_option(opt_code, received, expected):
 
 
 def _get_opt_descr(opt_code):
-    opt = DHCPOptions[int(opt_code)]
+    '''
+    Get a textual description as provided by scapy, of option code or name {opt_code}.
+    :param opt_code: the option code or name that is being described
+    :return: the description
+    '''
+
+    # Ensure the option code is an integer.
+    opt_code = get_option_code(opt_code)
+
+    opt = DHCPOptions[opt_code]
     if isinstance(opt, str):
         opt_descr = "%s[%s]" % (opt, opt_code)
     else:
@@ -454,10 +489,6 @@ def _get_opt_descr(opt_code):
 
 def response_check_include_option(expected, opt_code):
     assert len(world.srvmsg) != 0, "No response received."
-
-    # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str) and not opt_code.isdigit():
-        opt_code = OPTIONS[opt_code]
 
     opt = get_option(world.srvmsg[0], opt_code)
 
@@ -473,11 +504,6 @@ def response_check_option_content(opt_code, expect, data_type, expected):
     # expect == None when we want that content and NOT when we dont want! that's messy correct that!
     assert len(world.srvmsg) != 0, "No response received."
 
-    # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str):
-        opt_code = OPTIONS[opt_code]
-
-    opt_code = int(opt_code)
     received = get_option(world.srvmsg[0], opt_code)
 
     # FQDN is being parsed different way because of scapy imperfections

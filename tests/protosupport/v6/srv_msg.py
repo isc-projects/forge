@@ -75,6 +75,21 @@ OPTIONS = {"client-id": 1,
            "erp-local-domain-name": 65,
            "client-link-layer-addr": 79}
 
+
+def get_option_code(opt_code) -> int:
+    '''
+    Return an integer representation of the option code or name {opt_code}.
+    :param opt_code: integer or string representing the option's code or name
+    '''
+    if isinstance(opt_code, str):
+        if opt_code.isdigit():
+            # It was an integer in string format.
+            opt_code = int(opt_code)
+        else:
+            # It was an option name.
+            opt_code = OPTIONS[opt_code]
+    return opt_code
+
 ## ======================================================================
 ## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
 
@@ -732,6 +747,15 @@ def client_copy_option(option_name):
 
 
 def get_option(msg, opt_code):
+    '''
+    Retrieve from scapy message {msg}, the DHCPv6 option having IANA code {opt_code}.
+    :param msg: scapy message to retrieve the option from
+    :param opt_code: option code or name
+    :return: scapy message representing the option or None if the option doesn't exist
+    '''
+
+    opt_code = get_option_code(opt_code)
+
     # We need to iterate over all options and see
     # if there's one we're looking for
 
@@ -757,7 +781,7 @@ def get_option(msg, opt_code):
                         "vcdata"
                         ]
     while x:
-        if x.optcode == int(opt_code):
+        if x.optcode == opt_code:
             tmp = x.copy()
             # del tmp.payload
             world.opts.append(x)
@@ -787,8 +811,17 @@ def unknown_option_to_str(data_type, opt):
 
 
 def _get_opt_descr(opt_code):
+    '''
+    Get a textual description as provided by scapy, of option code or name {opt_code}.
+    :param opt_code: the option code or name that is being described
+    :return: the description
+    '''
+
+    # Ensure the option code is an integer.
+    opt_code = get_option_code(opt_code)
+
     try:
-        opt = dhcp6.dhcp6opts_by_code[int(opt_code)]
+        opt = dhcp6.dhcp6opts_by_code[opt_code]
     except KeyError:
         opt = 'unknown'
     opt_descr = "%s[%s]" % (opt, opt_code)
@@ -800,10 +833,6 @@ def response_check_include_option(must_include, opt_code):
     Checking presence of expected option.
     """
     assert len(world.srvmsg) != 0, "No response received."
-
-    # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str) and not opt_code.isdigit():
-        opt_code = OPTIONS[opt_code]
 
     opt = get_option(world.srvmsg[0], opt_code)
 
@@ -819,6 +848,19 @@ def response_check_include_option(must_include, opt_code):
 
 
 def get_subopt_from_option(exp_opt_code, exp_subopt_code):
+    '''
+    Get the list of {exp_subopt_code} suboptions which are inside option
+    {exp_opt_code} that should have been previously retrieved through
+    get_option().
+    :param exp_opt_code: the option code or name that was previously retrieved through get_option()
+    :param exp_subopt_code: the option code or name to be retrieved, nested inside the higher-level option
+    :return: tuple(the list of suboptions, the suboption code)
+    '''
+
+    # Ensure option codes are integers.
+    exp_opt_code = get_option_code(exp_opt_code)
+    exp_subopt_code = get_option_code(exp_subopt_code)
+
     result = []
     received = ''
     list_fields = ["ianaopts",
@@ -849,12 +891,6 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
     return result, received
 
 def get_suboption(opt_code, subopt_code):
-    # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str) and not opt_code.isdigit():
-        opt_code = OPTIONS[opt_code]
-    if isinstance(subopt_code, str) and not subopt_code.isdigit():
-        subopt_code = OPTIONS[subopt_code]
-
     opt, _ = get_subopt_from_option(opt_code, subopt_code)
     return opt
 
@@ -872,14 +908,16 @@ def extract_duid(option):
 
 
 def response_check_include_suboption(opt_code, expect, expected_value):
-    # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str):
-        opt_code = OPTIONS[opt_code]
-    if isinstance(expected_value, str):
-        if not expected_value.isdigit():
-            expected_value = OPTIONS[expected_value]
+    '''
+    Assert that suboption {expected_value} exists inside option {opt_code}
+    if {expect} is True or doesn't exist if {expect} is False.
+    :param opt_code: option code or name
+    :param expect: whether the suboption should exist
+    :param expected_value: suboption code or name
+    :return: tuple(the list of suboptions, the suboption code)
+    '''
 
-    x, receive_tmp = get_subopt_from_option(int(opt_code), int(expected_value))
+    x, receive_tmp = get_subopt_from_option(opt_code, expected_value)
     opt_descr = _get_opt_descr(opt_code)
     subopt_descr = _get_opt_descr(expected_value)
     if expect:
@@ -895,15 +933,22 @@ values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sips
 
 
 def response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected_value):
-    # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str):
-        opt_code = OPTIONS[opt_code]
-    if isinstance(subopt_code, str):
-        if not subopt_code.isdigit():
-            subopt_code = OPTIONS[subopt_code]
+    '''
+    Assert that field {data_type} from option {subopt_code} nested inside option
+    {opt_code} has {expected_value} if {expect} is True. Or check that it has a
+    different value than {expected_value} if {expect} is False.
+    :param subopt_code: suboption code or name
+    :param opt_code: option code or name
+    :param expect: whether the value is expected or not in the suboption
+    :param data_type: the suboption field whose value is checked
+    :param expected_value: the value that is checked
+    '''
+
+    # Ensure the option codes are integers.
+    opt_code = get_option_code(opt_code)
+    subopt_code = get_option_code(subopt_code)
 
     #first check if subotion exists and get suboption
-    opt_code = int(opt_code)
     if opt_code == 17:
         data_type = "optdata"
     data_type = str(data_type)
@@ -943,10 +988,19 @@ def convert_relayed_message(relayed_option):
 
 
 def response_check_option_content(opt_code, expect, data_type, expected_value):
-    # if opt_code is actually a opt name then convert it to code
-    if isinstance(opt_code, str) and not opt_code.isdigit():
-        opt_code = OPTIONS[opt_code]
-    opt_code = int(opt_code)
+    '''
+    Assert that field {data_type} of option with code or name {opt_code} has
+    value {expected_value} if {expect} is True or has a different value if
+    {expect} is False.
+    :param opt_code: option code or name
+    :param expect: whether the value is expected or not
+    :param data_type: the option field whose value is checked
+    :param expected_value: the value that is checked
+    '''
+
+    # Ensure the option code is an integer.
+    opt_code = get_option_code(opt_code)
+
     data_type = str(data_type)
     expected_value = str(expected_value)
     initial_data_type = data_type
@@ -986,15 +1040,15 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                         received.append(str(tmp_field))
         # test if expected option/suboption/value is in all collected options/suboptions/values
         if received[0] == 'None':
-            assert False, "Within option " + opt_descr + " there is no " + initial_data_type\
-                          + " value. Probably that is test error"
+            assert False, "Within option " + opt_descr + " there is no " + initial_data_type + \
+                          " value. Probably that is test error"
 
         if expect:
-            assert expected_value in received, "Invalid " + opt_descr + " option, received "\
-                                               + data_type + ": " + ",".join(received) + ", but expected " \
-                                               + str(expected_value)
+            assert expected_value in received, "Invalid " + opt_descr + " option, received " + \
+                                               data_type + ": " + ",".join(received) + ", but expected " + \
+                                               str(expected_value)
         else:
-            assert expected_value not in received, "Received value of " + data_type + ": " + ",".join(received) +\
+            assert expected_value not in received, "Received value of " + data_type + ": " + ",".join(received) + \
                                                    " should not be equal to value from client - " + str(expected_value)
 
 
