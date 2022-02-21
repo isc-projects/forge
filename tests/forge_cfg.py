@@ -17,10 +17,7 @@
 #
 # author: Wlodzimierz Wencel
 
-import importlib
-import optparse
 import os
-import sys
 import threading
 import fcntl
 import socket
@@ -254,7 +251,8 @@ class ForgeConfiguration:
 # global object that stores all needed data: configs, etc.
 world = threading.local()
 world.f_cfg = ForgeConfiguration()
-world.test_count = 1
+world.current_test_index = 1
+world.test_count = 0
 
 
 def _conv_arg_to_txt(arg):

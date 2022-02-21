@@ -1,5 +1,22 @@
+# Copyright (C) 2019-2022 Internet Systems Consortium, Inc. ("ISC")
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import pytest
 from forge_cfg import world
+
+
+@pytest.fixture(autouse=True, scope='session')
+def get_number_of_tests(request):
+    """
+    Get the total number of tests. Function is called automatically, but after
+    the first test so test_count will be != 0 from the second test onward.
+
+    :param request: pytest request to run a test
+    """
+    world.test_count = len(request.node.items)
 
 
 def pytest_runtest_setup(item):
@@ -14,12 +31,15 @@ def pytest_runtest_teardown(item, nextitem):
 
 
 def pytest_runtest_logstart(nodeid, location):
-    banner = f'\n\n************ START #{world.test_count} {nodeid} '
+    index = f'#{world.current_test_index}'
+    if world.test_count != 0:
+        index += f'/{world.test_count}'
+    banner = f'\n\n************ START {index}: {nodeid} '
     banner += '*' * (140 - len(banner))
     banner += '\n'
     banner = '\u001b[36m' + banner + '\u001b[0m'
     print(banner)
-    world.test_count += 1
+    world.current_test_index += 1
 
 
 def pytest_runtest_logfinish(nodeid, location):
