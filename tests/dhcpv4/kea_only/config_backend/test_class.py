@@ -12,7 +12,7 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.mark.configbackend]
+              pytest.mark.dbconf]
 
 
 @pytest.mark.parametrize("classes_kept_in", ["db", "config"])

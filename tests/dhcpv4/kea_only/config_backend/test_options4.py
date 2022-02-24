@@ -8,7 +8,7 @@ from cb_model import setup_server_for_config_backend_cmds
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.hook,
               pytest.mark.v4,
-              pytest.mark.configbackend]
+              pytest.mark.dbconf]
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])

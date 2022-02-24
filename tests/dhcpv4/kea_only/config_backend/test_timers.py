@@ -16,7 +16,7 @@ log = logging.getLogger('forge')
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.mark.configbackend]
+              pytest.mark.dbconf]
 
 
 @pytest.mark.v4
