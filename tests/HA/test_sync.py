@@ -26,7 +26,7 @@ def kill_kea_on_second_system():
 
 
 @pytest.mark.v6
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
 def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
     # HA SERVER 1
@@ -103,7 +103,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
 @pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
 def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_order):
@@ -237,7 +237,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
 @pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
 def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
@@ -298,7 +298,7 @@ def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
 def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
@@ -406,7 +406,7 @@ def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
 def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_order):
@@ -457,7 +457,7 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_o
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
 def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook_order):

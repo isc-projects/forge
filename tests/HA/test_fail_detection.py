@@ -26,7 +26,7 @@ def kill_kea_on_second_system():
 # TODO add checking logs in all those tests
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     # HA SERVER 1
@@ -119,7 +119,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     # in shared networks let's add small pools to insure that during test addresses from both pools will be assigned
@@ -235,7 +235,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
 # 00:03:00:01:09:0a:14:0b:12:08 00:03:00:01:0a:0b:15:0c:13:09
 @pytest.mark.v6
 @pytest.mark.v4
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     # TODO maybe we should run this tests just with one backend
@@ -353,7 +353,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
 # 00:03:00:01:01:16:ea:ca:eb:dc
 @pytest.mark.v6
 @pytest.mark.v4
-@pytest.mark.HA
+@pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     # TODO maybe we should run this tests just with one backend

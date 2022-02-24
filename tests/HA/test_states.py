@@ -49,7 +49,7 @@ def _send_message(dhcp='v6', expect_answer=True):
 
 @pytest.mark.v6
 @pytest.mark.v4
-@pytest.mark.HA
+@pytest.mark.ha
 def test_HA_load_balancing_hold_state_always(dhcp_version):
 
     # HA SERVER 1
@@ -192,7 +192,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
 
 @pytest.mark.v6
 @pytest.mark.v4
-@pytest.mark.HA
+@pytest.mark.ha
 def test_HA_load_balancing_hold_state_once(dhcp_version):
 
     # HA SERVER 1
@@ -348,7 +348,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
 
 @pytest.mark.v6
 @pytest.mark.v4
-@pytest.mark.HA
+@pytest.mark.ha
 def test_HA_hot_standby_hold_state_once(dhcp_version):
 
     # HA SERVER 1
@@ -485,7 +485,7 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
 
 @pytest.mark.v6
 @pytest.mark.v4
-@pytest.mark.HA
+@pytest.mark.ha
 def test_HA_hot_standby_hold_state_always(dhcp_version):
 
     # HA SERVER 1
