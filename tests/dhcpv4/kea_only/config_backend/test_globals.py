@@ -14,7 +14,7 @@ from cb_model import setup_server_for_config_backend_cmds
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.mark.config_backend]
+              pytest.mark.configbackend]
 
 
 @pytest.mark.v4

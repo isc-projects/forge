@@ -12,7 +12,7 @@ pytestmark = [pytest.mark.kea_only,
               pytest.mark.hook,
               pytest.mark.v4,
               pytest.mark.v6,
-              pytest.mark.config_backend]
+              pytest.mark.configbackend]
 
 
 @pytest.mark.parametrize("initial_reservation_mode", [None, 'all', 'out-of-pool', 'global', 'disabled'])

@@ -10,7 +10,7 @@ pytestmark = [pytest.mark.v6,
               pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.mark.config_backend]
+              pytest.mark.configbackend]
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
