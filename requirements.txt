@@ -9,3 +9,4 @@ netifaces
 pytest == 6.2.5
 PyCryptodome
 requests
+boto3
