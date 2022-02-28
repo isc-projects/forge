@@ -4,6 +4,8 @@ from cb_model import setup_server_with_radius
 from dhcp4_scen import get_address, send_discover_with_no_answer
 from softwaresupport import radius
 
+# All the tests in this file have theoretically been moved to tests/dhcp/test_radius.py.
+
 
 @pytest.mark.v4
 @pytest.mark.radius

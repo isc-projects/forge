@@ -7,7 +7,7 @@ script_path=$(cd "$(dirname "${0}")" && pwd)
 cd "${script_path}"
 if [ $# -eq 0 ]
   then
-    PY_FILES="$(find tests/{dhcpv4,dhcpv6,other_tests,HA,iscdhcp}/ -name '*.py' | sort -V)"
+    PY_FILES="$(find tests/{dhcp,dhcpv4,dhcpv6,other_tests,HA,iscdhcp}/ -name '*.py' | sort -V)"
   else
     PY_FILES="$@"
 fi

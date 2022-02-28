@@ -3,13 +3,13 @@ import os
 import srv_msg
 
 from .multi_server_functions import fabric_sudo_command, fabric_send_file, TemporaryFile
-from dhcp4_scen import DHCPv6_STATUS_CODES, get_address4, get_address6
+from dhcp4_scen import DHCPv6_STATUS_CODES, get_address4, get_address6, send_discover_with_no_answer
 from forge_cfg import world
 
 
 def _init_radius():
     # User-Name prefix
-    if world.proto == 'v4':
+    if world.proto in ['v4', 'v4_bootp']:
         p = '11'
     elif world.proto == 'v6':
         p = '00:03:00:01'
@@ -117,10 +117,11 @@ def get_address(mac: str, expected_lease: str = None) -> str:
     '''
     Make a full exchange, check that the expected lease is received and,
     finally, return the received leases.
-    mac: the client's MAC address
-    expected_lease: a lease that's expected to be given by the DHCP server
+
+    :param mac: the client's MAC address
+    :param expected_lease: a lease that's expected to be given by the DHCP server
     '''
-    if world.proto == 'v4':
+    if world.proto in ['v4', 'v4_bootp']:
         client_id = '11:' + mac.replace(':', '')
         return get_address4(chaddr=mac,
                             client_id=client_id,
@@ -137,9 +138,10 @@ def send_message_and_expect_no_more_leases(mac):
     '''
     Send a discover or a solicit and expect the exhausted leases case which is
     no answer for v4 or NoAddrsAvail status code for v6.
-    mac: the client's MAC address
+
+    :param mac: the client's MAC address
     '''
-    if world.proto == 'v4':
+    if world.proto in ['v4', 'v4_bootp']:
         client_id = '11:' + mac.replace(':', '')
         send_discover_with_no_answer(chaddr=mac, client_id=client_id)
     elif world.proto == 'v6':
@@ -149,15 +151,14 @@ def send_message_and_expect_no_more_leases(mac):
         assert False, f'unknown proto {world.proto}'
 
 
-def get_test_case_variables(dhcp_version : str) -> tuple[dict, dict, dict]:
+def get_test_case_variables() -> tuple[dict, dict, dict]:
     '''
     Populate variables used in RADIUS tests: various addresses, subnets and configurations.
 
-    :param dhcp_version: the DHCP version used in testing
     :return: tuple(addresses, subnets, configurations)
     '''
 
-    if dhcp_version == 'v4':
+    if world.proto in ['v4', 'v4_bootp']:
         addresses = {
           '50-5': '192.168.50.5',
           '50-6': '192.168.50.6',
@@ -172,7 +173,7 @@ def get_test_case_variables(dhcp_version : str) -> tuple[dict, dict, dict]:
           '60': '192.168.60.0/24',
           '70': '192.168.70.0/24',
         }
-    elif dhcp_version == 'v6':
+    elif world.proto == 'v6':
         addresses = {
           '50-5': '2001:db8:50::5',
           '50-6': '2001:db8:50::6',
@@ -229,7 +230,7 @@ def get_test_case_variables(dhcp_version : str) -> tuple[dict, dict, dict]:
         ]
     }
 
-    configs['subnet-level-class'] = {
+    configs['multiple-subnets'] = {
         # Global reservation mode.
         'reservations-global': True,
         'reservations-in-subnet': False,
@@ -242,14 +243,27 @@ def get_test_case_variables(dhcp_version : str) -> tuple[dict, dict, dict]:
                         'interface': '$(SERVER_IFACE)',
                         'pools': [
                             {
-                                'pool': f"{addresses['50-5']} - {addresses['50-5']}",
-                                'client-class': 'gold'
+                                'client-class': 'gold',
+                                'pool': f"{addresses['50-5']} - {addresses['50-5']}"
                             }, {
-                                'pool': f"{addresses['50-6']} - {addresses['50-6']}",
-                                'client-class': 'silver'
+                                'client-class': 'silver',
+                                'pool': f"{addresses['50-6']} - {addresses['50-6']}"
                             }, {
-                                'pool': f"{addresses['50-7']} - {addresses['50-7']}",
-                                'client-class': 'bronze'
+                                'client-class': 'bronze',
+                                'pool': f"{addresses['50-7']} - {addresses['50-7']}"
+                            }
+                        ]
+                    },
+                    {
+                        'subnet': subnets['60'],
+                        'interface': '$(SERVER_IFACE)',
+                        'pools': [
+                            {
+                                'client-class': 'gold',
+                                'pool': f"{addresses['60-5']} - {addresses['60-5']}"
+                            }, {
+                                'client-class': 'silver',
+                                'pool': f"{addresses['60-6']} - {addresses['60-6']}"
                             }
                         ]
                     },
@@ -268,121 +282,43 @@ def get_test_case_variables(dhcp_version : str) -> tuple[dict, dict, dict]:
         ]
     }
 
-    configs['two-networks'] = {
-        # Global reservation mode.
-        'reservations-global': True,
-        'reservations-in-subnet': False,
-        'shared-networks': [
-            {
-                'name': 'net-1',
-                f'subnet{v}': [
-                    {
-                        'subnet': subnets['50'],
-                        'interface': '$(SERVER_IFACE)',
-                        'pools': [
-                            {
-                                'pool': f"{addresses['50-5']} - {addresses['50-5']}",
-                                'client-class': 'gold'
-                            }, {
-                                'pool': f"{addresses['50-6']} - {addresses['50-6']}",
-                                'client-class': 'silver'
-                            }, {
-                                'pool': f"{addresses['50-7']} - {addresses['50-7']}",
-                                'client-class': 'bronze'
-                            }
-                        ]
-                    },
-                    {
-                        'subnet': subnets['60'],
-                        'interface': '$(SERVER_IFACE)',
-                        'pools': [
-                            {
-                                'pool': f"{addresses['60-5']} - {addresses['60-5']}",
-                                'client-class': 'gold'
-                            }, {
-                                'pool': f"{addresses['60-6']} - {addresses['60-6']}",
-                                'client-class': 'silver'
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
-
     return addresses, subnets, configs
 
 
-def check_leases(config_type : str, lease_position : str, addresses : dict[str], subnets : dict[str]):
+def check_leases(config_type : str, has_reservation : str, addresses : dict[str], subnets : dict[str]):
     '''
-    Populate variables used in RADIUS tests: various addresses, subnets and configurations.
+    Exchange messages and check that the proper leases were returned according
+    to Kea's configuration.
 
-    :param lease_position: position of test lease relative to pool e.g. in pool or out of pool
-    :param config_type: different configuration types used in testing
+    :param config_type: different configurations used in testing
+        * 'subnet': a classified pool with a single address configured inside a traditional subnet
+        * 'network': a classified pool with a single address configured inside a shared network
+        * 'multiple-subnets': multiple classified pools in multiple subnets inside a shared network
+    :param has_reservation: whether the first client coming in with a request has its lease or pool reserved in RADIUS
+        * 'client-has-reservation-in-radius': yes
+        * 'client-has-no-reservation-in-radius': no
     :param addresses: dictionary of addresses used in testing indexed by recognizable patterns
     :param subnets: dictionary of subnets used in testing indexed by recognizable patterns
     '''
-    if config_type == 'subnet-level-class':
-        # Platinum client gets platinum lease.
-        get_address(mac='08:00:27:b0:c8:01',
-                    expected_lease=addresses['70-5'])
 
-    elif config_type == 'two-networks':
-        gold_ips = set([addresses['50-5'], addresses['60-5']])
-        silver_ips = set([addresses['50-6'], addresses['60-6']])
-
-        # Get the lease that is configured explicitly in RADIUS with
-        # Framed-IP-Address.
-        get_address(mac='08:00:27:b0:c1:42',
-                    expected_lease=addresses['52-52'])
-
-        # ### Take all addresses from gold pools. ###
-        # Get the first gold lease.
-        yiaddr = get_address(mac='08:00:27:b0:c5:01')
-        assert yiaddr in gold_ips
-        gold_ips.remove(yiaddr)
-
-        # Get the second and last gold lease.
-        yiaddr = get_address(mac='08:00:27:b0:c5:02')
-        assert yiaddr in gold_ips
-        gold_ips.remove(yiaddr)
-
-        # No more leases.
-        send_message_and_expect_no_more_leases(mac='08:00:27:b0:c5:03')
-
-        # ### Take all addresses from silver pools. ###
-        # Get the first silver lease.
-        yiaddr = get_address(mac='08:00:27:b0:c6:01')
-        assert yiaddr in silver_ips
-        silver_ips.remove(yiaddr)
-
-        # Get the second and last silver lease.
-        yiaddr = get_address(mac='08:00:27:b0:c6:02')
-        assert yiaddr in silver_ips
-        silver_ips.remove(yiaddr)
-
-        # No more leases.
-        send_message_and_expect_no_more_leases(mac='08:00:27:b0:c6:03')
-
-        # ### Take all addresses from bronze pools. ###
-        # Get the first and only bronze lease.
-        get_address(mac='08:00:27:b0:c7:01',
-                    expected_lease=addresses['50-7'])
-
-        # No more leases.
-        send_message_and_expect_no_more_leases(mac='08:00:27:b0:c7:02')
-
-    elif lease_position == 'lease-in-pool':
+    if has_reservation == 'client-has-reservation-in-radius':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is part of a configured pool in Kea.
         get_address(mac='08:00:27:b0:c5:10',
                     expected_lease=addresses['50-5'])
 
-        # A client with a gold Framed-Pool should get no lease because the
-        # pool is full.
-        send_message_and_expect_no_more_leases(mac='08:00:27:b0:c5:01')
+        # If the config has only one address in the pool...
+        if config_type in ['subnet', 'network']:
+            # Even if the client has the right gold Framed-Pool, it should get
+            # no lease because the pool is full.
+            send_message_and_expect_no_more_leases(mac='08:00:27:b0:c5:01')
+        else:
+            # It should get the '60-5' lease, but don't lease that address here
+            # so that the rest of the test is the same.
+            pass
 
-    elif lease_position == 'lease-out-of-pool':
+
+    elif has_reservation == 'client-has-no-reservation-in-radius':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is outside of any configured pool in Kea.
         get_address(mac='08:00:27:b0:c1:42',
@@ -392,3 +328,50 @@ def check_leases(config_type : str, lease_position : str, addresses : dict[str],
         # pool has a free lease.
         get_address(mac='08:00:27:b0:c5:01',
                     expected_lease=addresses['50-5'])
+
+    # 'multiple-subnets' is more complex so treat it first.
+    if config_type == 'multiple-subnets':
+        gold_ips = {addresses['60-5']}  # Skip '50-5' because it was leased previously.
+        silver_ips = {addresses['50-6'], addresses['60-6']}
+
+        # Get the lease that is configured explicitly in RADIUS with
+        # Framed-IP-Address.
+        get_address(mac='08:00:27:b0:c1:42',
+                    expected_lease=addresses['52-52'])
+
+        # ### Take all addresses from gold pools. ###
+        # Skip '50-5' because it was leased previously.
+
+        # Lease the second and last gold address.
+        yiaddr = get_address(mac='08:00:27:b0:c5:02')
+        assert yiaddr in gold_ips
+        gold_ips.remove(yiaddr)
+
+        # No more leases.
+        send_message_and_expect_no_more_leases(mac='08:00:27:b0:c5:03')
+
+        # ### Take all addresses from silver pools. ###
+        # Lease the first silver address.
+        yiaddr = get_address(mac='08:00:27:b0:c6:01')
+        assert yiaddr in silver_ips
+        silver_ips.remove(yiaddr)
+
+        # Lease the second and last silver address.
+        yiaddr = get_address(mac='08:00:27:b0:c6:02')
+        assert yiaddr in silver_ips
+        silver_ips.remove(yiaddr)
+
+        # No more leases.
+        send_message_and_expect_no_more_leases(mac='08:00:27:b0:c6:03')
+
+        # ### Take all addresses from bronze pools. ###
+        # Lease the first and only bronze address.
+        get_address(mac='08:00:27:b0:c7:01',
+                    expected_lease=addresses['50-7'])
+
+        # No more leases.
+        send_message_and_expect_no_more_leases(mac='08:00:27:b0:c7:02')
+
+        # Platinum client gets platinum lease.
+        get_address(mac='08:00:27:b0:c8:01',
+                    expected_lease=addresses['70-5'])
