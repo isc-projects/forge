@@ -43,7 +43,7 @@ class StatsState4:
     def compare(self):
         result = srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
         statistics_from_kea = result['arguments']
-        assert len(statistics_from_kea) == 26
+        assert len(statistics_from_kea) == 31
 
         statistics_not_found = []
         for key, _ in self.s.items():

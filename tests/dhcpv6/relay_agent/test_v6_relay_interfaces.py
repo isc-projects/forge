@@ -442,7 +442,7 @@ def test_v6_relay_relayaddress_within_subnet():
 def test_v6_relay_interface_one_subnet_not_matching_id():
 
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
+    srv_control.config_srv_subnet('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::10')
     srv_control.set_conf_parameter_subnet('interface-id', 'xyz', 0)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -476,7 +476,7 @@ def test_v6_relay_interface_one_subnet_not_matching_id():
 def test_v6_relay_interface_two_subnets_direct_client():
 
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.config_srv_subnet('2001:db8:3::/64', '2001:db8:3::1-2001:db8:3::1')
     srv_control.set_conf_parameter_subnet('interface-id', 'abc', 0)
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::10')
@@ -514,7 +514,7 @@ def test_v6_relay_interface_two_subnets_direct_client():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1', expect_include=False)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:3::1', expect_include=False)
 
     references.references_check('Kea')
 
