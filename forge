@@ -699,7 +699,7 @@ def _install_kea_native_on_server(args, server_idx):
     cmd = 'vagrant upload hammer.py %s' % server_name
     execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
 
-    cmd = cmd_tpl % './hammer.py prepare-system -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell'
+    cmd = cmd_tpl % './hammer.py prepare-system -p local -x unittest docs perfdhcp -w gssapi,mysql,pgsql,radius,forge,shell'
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     if server_idx == 1:
@@ -804,7 +804,7 @@ def _install_kea_make_on_server(args, server_idx):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', args.path)
-    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell,ccache --ccache-dir /ccache'
+    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w gssapi,mysql,pgsql,radius,forge,shell,ccache --ccache-dir /ccache'
 
     vagrant_dir = get_vagrant_dir(args)
 
