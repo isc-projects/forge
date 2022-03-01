@@ -103,8 +103,6 @@ def test_HA_load_balancing_hold_state_always(dhcp_version):
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
-    srv_msg.forge_sleep(3, 'seconds')
-
     _send_message(dhcp=dhcp_version, expect_answer=False)
 
     # make sure server 1 stay in waiting state
@@ -248,7 +246,6 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
-    srv_msg.forge_sleep(3, 'seconds')
 
     # check that both servers keep waiting (server1 is paused, server2 is waiting for server1
     _send_message(dhcp=dhcp_version, expect_answer=False)
@@ -405,7 +402,6 @@ def test_HA_hot_standby_hold_state_once(dhcp_version):
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
-    srv_msg.forge_sleep(3, 'seconds')
 
     # keep both in waiting
     _send_message(dhcp=dhcp_version, expect_answer=False)
@@ -541,8 +537,6 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
-
-    srv_msg.forge_sleep(3, 'seconds')
 
     _send_message(dhcp=dhcp_version, expect_answer=False)
 

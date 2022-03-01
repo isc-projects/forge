@@ -102,7 +102,7 @@ def send_command(cmd=None, dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgm
     return result[0]
 
 
-def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=3, dhcp_version='v6'):
+def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1, dhcp_version='v6'):
     """
     Send ha-heartbeat messages to server as long as we get expected state, HA tend to be slow so it's
     way of active sleep

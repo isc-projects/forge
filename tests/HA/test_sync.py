@@ -176,7 +176,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     # start clean server2
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     # let's wait for full synchronization of server2
-    wait_until_ha_state('hot-standby', sleep=2, dhcp_version=dhcp_version)
+    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
     # misc.pass_criteria()
     # if dhcp_version == 'v6':
@@ -227,7 +227,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     # start server1
     srv_control.start_srv('DHCP', 'started')
     # let's wait for full synchronization of server2
-    wait_until_ha_state('hot-standby', sleep=2, dhcp_version=dhcp_version)
+    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
     # check synced leaases
     srv_msg.check_leases(set_of_leases_1, backend=backend)
@@ -385,7 +385,7 @@ def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
     wait_until_ha_state('partner-down', dhcp_version=dhcp_version)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     # let's wait for full synchronization of server2
-    wait_until_ha_state('load-balancing', sleep=2, dhcp_version=dhcp_version)
+    wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
     # check leases on server2
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend)
 
@@ -397,7 +397,7 @@ def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
     wait_until_ha_state('partner-down', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started')
     # let's wait for full synchronization of server1
-    wait_until_ha_state('load-balancing', sleep=2, dhcp_version=dhcp_version)
+    wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
     # check leases on server1
     srv_msg.check_leases(set_of_leases_1, backend=backend)
 
