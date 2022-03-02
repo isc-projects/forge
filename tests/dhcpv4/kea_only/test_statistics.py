@@ -39,6 +39,11 @@ class StatsState4:
         self.s["subnet[1].reclaimed-declined-addresses"] = 0
         self.s["subnet[1].reclaimed-leases"] = 0
         self.s["subnet[1].total-addresses"] = 0
+        self.s['v4-allocation-fail'] = 0
+        self.s['v4-allocation-fail-classes'] = 0
+        self.s['v4-allocation-fail-no-pools'] = 0
+        self.s['v4-allocation-fail-shared-network'] = 0
+        self.s['v4-allocation-fail-subnet'] = 0
 
     def compare(self):
         result = srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
