@@ -1,13 +1,36 @@
 #!/bin/bash
 
+# Usage:
+# ./check-style.sh
+# `- Checks a predetermined list of python files.
+#
+# ./check-style.sh --all
+# `- Checks all the files.
+#
+# ./check-style.sh --changed
+# `- Checks only the files that were changed in this branch.
+#
+# ./check-style.sh file1.py file2.py ...
+# `- Checks only the given files.
+
 set -eu
 
 script_path=$(cd "$(dirname "${0}")" && pwd)
 
+if test "${1-}" = '--all'; then
+  files_to_search='./tests'
+  shift
+elif test "${1-}" = '--changed'; then
+  files_to_search="$(git diff --name-only "$(git merge-base origin/master "$(git rev-parse --abbrev-ref HEAD)")")"
+  shift
+else
+  files_to_search=$(find ./tests/{dhcp,dhcpv4,dhcpv6,other_tests,HA,iscdhcp}/ | sort -uV)
+fi
+
 cd "${script_path}"
 if [ $# -eq 0 ]
   then
-    PY_FILES="$(find tests/{dhcp,dhcpv4,dhcpv6,other_tests,HA,iscdhcp}/ -name '*.py' | sort -V)"
+    PY_FILES="$(find ${files_to_search} -name '*.py' | sort -uV)"
   else
     PY_FILES="$@"
 fi
