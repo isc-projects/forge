@@ -12,7 +12,7 @@ from forge_cfg import world
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.hook,
               pytest.mark.v4,
-              pytest.pytest.cb]
+              pytest.mark.cb]
 
 
 @pytest.fixture(autouse=True)

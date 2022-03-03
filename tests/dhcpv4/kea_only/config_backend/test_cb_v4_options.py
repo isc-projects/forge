@@ -9,7 +9,7 @@ pytestmark = [pytest.mark.v4,
               pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.pytest.cb,
+              pytest.mark.cb,
               pytest.mark.cb_cmds]
 
 

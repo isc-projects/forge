@@ -7,7 +7,7 @@ from dhcp4_scen import get_address, get_rejected
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
-              pytest.pytest.cb,
+              pytest.mark.cb,
               pytest.mark.kea_only,
               pytest.mark.v4,
               pytest.mark.v6]
