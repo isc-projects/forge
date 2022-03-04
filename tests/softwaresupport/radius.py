@@ -151,7 +151,7 @@ def send_message_and_expect_no_more_leases(mac):
         assert False, f'unknown proto {world.proto}'
 
 
-def get_test_case_variables() -> tuple[dict, dict, dict]:
+def get_test_case_variables():
     '''
     Populate variables used in RADIUS tests: various addresses, subnets and configurations.
 
