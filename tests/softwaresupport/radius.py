@@ -285,7 +285,7 @@ def get_test_case_variables():
     return addresses, subnets, configs
 
 
-def check_leases(config_type : str, has_reservation : str, addresses : dict[str], subnets : dict[str]):
+def check_leases(config_type : str, has_reservation : str, addresses, subnets ):
     '''
     Exchange messages and check that the proper leases were returned according
     to Kea's configuration.
