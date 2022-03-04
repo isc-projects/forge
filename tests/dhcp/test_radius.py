@@ -1,7 +1,6 @@
 import pytest
 
 from cb_model import setup_server_with_radius
-from forge_cfg import world
 from softwaresupport import radius
 
 
