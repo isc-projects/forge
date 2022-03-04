@@ -16,17 +16,20 @@ There are several formats of docstring and we decided to use `sphinx` variant. S
 [Forge!219](https://gitlab.isc.org/isc-projects/forge/-/merge_requests/219#note_257686) for details.
 Many modern editors support this syntax out of the box.
 
+We also use [Python type hints](https://docs.python.org/3/library/typing.html).
+If using more advanced types than primitives (str, bool, int, etc.), it may be necessary to do
+`from typing import Tuple,Sequence,Literal` (or whatever type you're using).
+
 An example comment looks like this:
 
 ```python
-def test_some_function(class_cmd, dhcp_version):
+def test_some_function(class_cmd: str, dhcp6: bool) -> Tuple[int, str]:
     """This test checks if the specified API calls can handle negative (missing mandatory parameters,
        garbage, no parameters) scenarios.
 
     :param class_cmd: specific API command to be tested
-    :type class_cmd: str
-    :param dhcp_version: defines if DHCPv4 (4) or DHCPv6 (6) should be tested
-    :type dhcp_version: int
+    :param dhcp6: defines if DHCPv4 (false) or DHCPv6 (true) should be tested
+    :return: a tuple with status code and error message (if status is non-zero)
     """
 ```
 
