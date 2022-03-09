@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Internet Systems Consortium.
+# Copyright (C) 2020-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -122,12 +122,14 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
     return {}  # let's keep pylint error quiet
 
 
-def _increase_mac(mac, rand=False):
+def increase_mac(mac: str, rand: bool = False):
     """
     Recalculate mac address by: keep first octet unchanged (we can change it in test to make sure that
     consecutive steps will generate different sets, change second octet always by 1, all the rest we can
     change by one or random number between 3 and 20. Used rand=True to generate test data
+
     :param mac: mac address as string
+    :param rand: whether to use randomness in changing the MAC
     :return: increased mac address as string
     """
     mac = mac.split(":")
@@ -157,7 +159,7 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
     world.f_cfg.show_packets_from = ""
     if dhcp_version == 'v6':
         for _ in range(leases_count):
-            mac = _increase_mac(mac)
+            mac = increase_mac(mac)
             duid = "00:03:00:01:" + mac
             ia_1 = random.randint(2000, 7000)
             pd_1 = random.randint(7001, 9999)
@@ -217,7 +219,6 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             all_leases += srv_msg.get_all_leases()
 
     elif dhcp_version in ['v4', 'v4_bootp']:
-        # This is v4 DORA which we also check in BOOTP's case.
 
         # When testing BOOTP, send half (rounded downwards) of the leases with
         # v4 and half with BOOTP.
@@ -225,9 +226,11 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             leases_count = int(leases_count / 2)
 
         for _ in range(leases_count):
-            mac = _increase_mac(mac)
+            mac = increase_mac(mac)
+            client_id = '11' + mac.replace(':', '')
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'chaddr', mac)
+            srv_msg.client_does_include_with_value('client_id', client_id)
             srv_msg.client_requests_option(1)
             srv_msg.client_send_msg('DISCOVER')
 
@@ -238,6 +241,7 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'chaddr', mac)
             srv_msg.client_copy_option('server_id')
+            srv_msg.client_does_include_with_value('client_id', client_id)
             srv_msg.client_does_include_with_value('requested_addr', yiaddr)
             srv_msg.client_requests_option(1)
             srv_msg.client_send_msg('REQUEST')
@@ -250,9 +254,16 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
 
     # In the end, test BOOTP as well, if enabled.
     if dhcp_version == 'v4_bootp':
+        # Make sure that the last iteration has its value fit in a two-character
+        # hexadecimal so we can build a chaddr out of it.
+        assert 2 * leases_count < 256, 'too many leases: will result in invalid chaddr'
+
         for i in range(leases_count + 1, 2 * leases_count):
-            assert i < 256
-            srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY('192.168.50.' + str(i), chaddr='00:01:02:03:04:%0.2x' % i)
+            mac = increase_mac(mac)
+            client_id = '11' + mac.replace(':', '')
+            srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY(address='192.168.50.' + str(i),
+                                                  chaddr='00:01:02:03:04:%0.2x' % i,
+                                                  client_id=client_id)
 
     world.f_cfg.show_packets_from = tmp
     return all_leases
@@ -280,7 +291,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
                 duid = duid[:-1]
             else:
                 # if list were not given calculate new
-                mac = _increase_mac(duid[12:])
+                mac = increase_mac(duid[12:])
                 my_duid = duid[:12] + mac
                 duid = my_duid
             ia_1 = random.randint(1000, 1500)
@@ -303,7 +314,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
                 my_mac = mac[-1]
                 mac = mac[:-1]
             else:
-                mac = _increase_mac(mac)
+                mac = increase_mac(mac)
                 my_mac = mac
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'chaddr', my_mac)

@@ -1,13 +1,29 @@
-import os
+# Copyright (C) 2019-2022 Internet Systems Consortium, Inc. ("ISC")
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import srv_msg
 
-from .multi_server_functions import fabric_sudo_command, fabric_send_file, TemporaryFile
 from dhcp4_scen import DHCPv6_STATUS_CODES, get_address4, get_address6, send_discover_with_no_answer
 from forge_cfg import world
+from .multi_server_functions import fabric_sudo_command, fabric_send_file, TemporaryFile
 
 
-def _init_radius():
+def _init_radius(authorize_content: str = '',
+                 replace_authorize_content: bool = False,
+                 destination: str = world.f_cfg.mgmt_address):
+    '''
+    Create authorize file and clients.conf needed by RADIUS and send them to {destination}.
+
+    :param authorize_content: additional content that can go in the authorize
+        file, it can contain {p} as a template for the prefix below.
+    :param replace_authorize_content: whether to completely replace the content
+        in the authorize file, or otherwise just add to it
+    :param destination: address where RADIUS is set up
+    '''
+
     # User-Name prefix
     if world.proto in ['v4', 'v4_bootp']:
         p = '11'
@@ -15,63 +31,83 @@ def _init_radius():
         p = '00:03:00:01'
 
     # authorize config file
-    authorize_content = f'''\
+    if replace_authorize_content:
+        entire_authorize_content = authorize_content.format(p=p)
+    else:
+        entire_authorize_content = f'''\
 {p}:08:00:27:b0:c1:41    Cleartext-password := "08:00:27:b0:c1:41"
     \tFramed-IP-Address = "192.168.51.51",
     \tFramed-IPv6-Address = "2001:db8:51::51",
-    \tFramed-Pool = "blues"
+    \tFramed-Pool = "blues",
+    \tFramed-IPv6-Pool = "blues"
 
 {p}:08:00:27:b0:c1:42    Cleartext-password := "08:00:27:b0:c1:42"
     \tFramed-IP-Address = "192.168.52.52",
     \tFramed-IPv6-Address = "2001:db8:52::52",
-    \tFramed-Pool = "gold"
+    \tFramed-Pool = "gold",
+    \tFramed-IPv6-Pool = "gold"
 
 {p}:08:00:27:b0:c5:01    Cleartext-password := "08:00:27:b0:c5:01"
-    \tFramed-Pool = "gold"
+    \tFramed-Pool = "gold",
+    \tFramed-IPv6-Pool = "gold"
 
 {p}:08:00:27:b0:c5:02    Cleartext-password := "08:00:27:b0:c5:02"
-    \tFramed-Pool = "gold"
+    \tFramed-Pool = "gold",
+    \tFramed-IPv6-Pool = "gold"
 
 {p}:08:00:27:b0:c5:03    Cleartext-password := "08:00:27:b0:c5:03"
-    \tFramed-Pool = "gold"
+    \tFramed-Pool = "gold",
+    \tFramed-IPv6-Pool = "gold"
 
 {p}:08:00:27:b0:c5:10    Cleartext-password := "08:00:27:b0:c5:10"
     \tFramed-IP-Address = "192.168.50.5",
     \tFramed-IPv6-Address = "2001:db8:50::5",
-    \tFramed-Pool = "gold"
+    \tFramed-Pool = "gold",
+    \tFramed-IPv6-Pool = "gold"
 
 {p}:08:00:27:b0:c6:01    Cleartext-password := "08:00:27:b0:c6:01"
-    \tFramed-Pool = "silver"
+    \tFramed-Pool = "silver",
+    \tFramed-IPv6-Pool = "silver"
 
 {p}:08:00:27:b0:c6:02    Cleartext-password := "08:00:27:b0:c6:02"
-    \tFramed-Pool = "silver"
+    \tFramed-Pool = "silver",
+    \tFramed-IPv6-Pool = "silver"
 
 {p}:08:00:27:b0:c6:03    Cleartext-password := "08:00:27:b0:c6:03"
-    \tFramed-Pool = "silver"
+    \tFramed-Pool = "silver",
+    \tFramed-IPv6-Pool = "silver"
 
 {p}:08:00:27:b0:c7:01    Cleartext-password := "08:00:27:b0:c7:01"
-    \tFramed-Pool = "bronze"
+    \tFramed-Pool = "bronze",
+    \tFramed-IPv6-Pool = "bronze"
 
 {p}:08:00:27:b0:c7:02    Cleartext-password := "08:00:27:b0:c7:02"
-    \tFramed-Pool = "bronze"
+    \tFramed-Pool = "bronze",
+    \tFramed-IPv6-Pool = "bronze"
 
 {p}:08:00:27:b0:c7:03    Cleartext-password := "08:00:27:b0:c7:03"
-    \tFramed-Pool = "bronze"
+    \tFramed-Pool = "bronze",
+    \tFramed-IPv6-Pool = "bronze"
 
 {p}:08:00:27:b0:c8:01    Cleartext-password := "08:00:27:b0:c8:01"
-    \tFramed-Pool = "platinum"
+    \tFramed-Pool = "platinum",
+    \tFramed-IPv6-Pool = "platinum"
 '''
+        entire_authorize_content += authorize_content.format(p=p)
     authorize_file = 'authorize.txt'
-    with TemporaryFile(authorize_file, authorize_content):
+    with TemporaryFile(authorize_file, entire_authorize_content):
         if world.server_system == 'redhat':
             # freeradius 3.x
-            fabric_send_file(authorize_file, "/etc/raddb/mods-config/files/authorize")
+            fabric_send_file(authorize_file, '/etc/raddb/mods-config/files/authorize',
+                             destination_host=destination)
         else:
             # freeradius 3.x
             fabric_send_file(authorize_file,
-                             '/etc/freeradius/3.0/mods-config/files/authorize')
+                             '/etc/freeradius/3.0/mods-config/files/authorize',
+                             destination_host=destination)
             # freeradius 2.x
-            fabric_send_file(authorize_file, "/etc/freeradius/users")
+            fabric_send_file(authorize_file, '/etc/freeradius/users',
+                             destination_host=destination)
 
     # clients.conf file
     clients_conf_content = '''
@@ -87,50 +123,80 @@ client {mgmt_address} {{
       idle_timeout = 30
    }}
 }}'''
-    clients_conf_content = clients_conf_content.format(mgmt_address=world.f_cfg.mgmt_address)
+    clients_conf_content = clients_conf_content.format(mgmt_address=destination)
     clients_conf_file = 'clients.conf'
     with TemporaryFile(clients_conf_file, clients_conf_content):
         if world.server_system == 'redhat':
             # freeradius 3.x
-            fabric_send_file(clients_conf_file, "/etc/raddb/clients.conf")
+            fabric_send_file(clients_conf_file, '/etc/raddb/clients.conf',
+                             destination_host=destination)
         else:
             # freeradius 3.x
-            fabric_send_file(clients_conf_file, "/etc/freeradius/3.0/clients.conf")
+            fabric_send_file(clients_conf_file, '/etc/freeradius/3.0/clients.conf',
+                             destination_host=destination)
             # freeradius 2.x
-            fabric_send_file(clients_conf_file, "/etc/freeradius/clients.conf")
+            fabric_send_file(clients_conf_file, '/etc/freeradius/clients.conf',
+                             destination_host=destination)
 
 
-def _start_radius():
+def _start_radius(destination: str = world.f_cfg.mgmt_address):
+    '''
+    Restart the RADIUS systemd service.
+
+    :param destination: address of the server that hosts the RADIUS service
+    '''
     if world.server_system == 'redhat':
         cmd = 'sudo systemctl restart radiusd'
     else:
         cmd = 'sudo systemctl restart freeradius'
-    fabric_sudo_command(cmd)
+    fabric_sudo_command(cmd, destination_host=destination)
 
 
-def init_and_start_radius():
-    _init_radius()
-    _start_radius()
+def init_and_start_radius(authorize_content: str = '',
+                          replace_authorize_content: bool = False,
+                          destination: str = world.f_cfg.mgmt_address):
+    '''
+    Configure and restart RADIUS on remote hosts.
+
+    :param destination: address of the server that hosts the RADIUS service
+    '''
+    _init_radius(authorize_content=authorize_content,
+                 replace_authorize_content=replace_authorize_content,
+                 destination=destination)
+    _start_radius(destination=destination)
 
 
-def get_address(mac: str, expected_lease: str = None) -> str:
+def get_address(mac: str, giaddr: str = None, expected_lease: str = None) -> str:
     '''
     Make a full exchange, check that the expected lease is received and,
     finally, return the received leases.
 
     :param mac: the client's MAC address
+    :param giaddr: the v4 client's giaddr value
     :param expected_lease: a lease that's expected to be given by the DHCP server
+    :return: the leased v4 address or the first lease in the v6 case, in both cases along with the client ID and MAC address
     '''
+
     if world.proto in ['v4', 'v4_bootp']:
-        client_id = '11:' + mac.replace(':', '')
-        return get_address4(chaddr=mac,
-                            client_id=client_id,
-                            exp_yiaddr=expected_lease)
+        client_id = '11' + mac.replace(':', '')
+        address = get_address4(chaddr=mac,
+                               client_id=client_id,
+                               giaddr=giaddr,
+                               exp_yiaddr=expected_lease)
+        return {
+            'address': address,
+            'client_id': client_id,
+            'hwaddr': mac
+        }
     if world.proto == 'v6':
         duid = '00:03:00:01:' + mac
         addresses = get_address6(duid=duid, exp_ia_na_iaaddr_addr=expected_lease)
         # Tests check only one address, so return the first.
-        return addresses[0] if len(addresses) > 0 else None
+        return {
+            'address': addresses[0] if len(addresses) > 0 else None,
+            'client_id': client_id,
+            'duid': duid
+        }
     assert False, f'unknown proto {world.proto}'
 
 
@@ -141,8 +207,9 @@ def send_message_and_expect_no_more_leases(mac):
 
     :param mac: the client's MAC address
     '''
+
     if world.proto in ['v4', 'v4_bootp']:
-        client_id = '11:' + mac.replace(':', '')
+        client_id = '11' + mac.replace(':', '')
         send_discover_with_no_answer(chaddr=mac, client_id=client_id)
     elif world.proto == 'v6':
         duid = '00:03:00:01:' + mac
@@ -151,11 +218,12 @@ def send_message_and_expect_no_more_leases(mac):
         assert False, f'unknown proto {world.proto}'
 
 
-def get_test_case_variables():
+def get_test_case_variables(interface: str = world.f_cfg.server_iface):
     '''
     Populate variables used in RADIUS tests: various addresses, subnets and configurations.
 
-    :return: tuple(addresses, subnets, configurations)
+    :param interface: the name of the client-facing interface on the server side
+    :return: tuple(addresses, configurations)
     '''
 
     if world.proto in ['v4', 'v4_bootp']:
@@ -195,7 +263,7 @@ def get_test_case_variables():
     configs['subnet'] = {
         f'subnet{v}': [
             {
-                'interface': '$(SERVER_IFACE)',
+                'interface': interface,
                 'pools': [
                     {
                         'client-class': 'gold',
@@ -216,7 +284,7 @@ def get_test_case_variables():
                 'name': 'net-1',
                 f'subnet{v}': [
                     {
-                        'interface': '$(SERVER_IFACE)',
+                        'interface': interface,
                         'pools': [
                             {
                                 'client-class': 'gold',
@@ -240,7 +308,7 @@ def get_test_case_variables():
                 f'subnet{v}': [
                     {
                         'subnet': subnets['50'],
-                        'interface': '$(SERVER_IFACE)',
+                        'interface': interface,
                         'pools': [
                             {
                                 'client-class': 'gold',
@@ -256,7 +324,7 @@ def get_test_case_variables():
                     },
                     {
                         'subnet': subnets['60'],
-                        'interface': '$(SERVER_IFACE)',
+                        'interface': interface,
                         'pools': [
                             {
                                 'client-class': 'gold',
@@ -270,7 +338,7 @@ def get_test_case_variables():
                     {
                         'subnet': subnets['70'],
                         'client-class': 'platinum',
-                        'interface': '$(SERVER_IFACE)',
+                        'interface': interface,
                         'pools': [
                             {
                                 'pool': f"{addresses['70-5']} - {addresses['70-5']}"
@@ -282,10 +350,10 @@ def get_test_case_variables():
         ]
     }
 
-    return addresses, subnets, configs
+    return addresses, configs
 
 
-def check_leases(config_type : str, has_reservation : str, addresses, subnets ):
+def send_and_receive(config_type: str, has_reservation: str, addresses):
     '''
     Exchange messages and check that the proper leases were returned according
     to Kea's configuration.
@@ -298,14 +366,16 @@ def check_leases(config_type : str, has_reservation : str, addresses, subnets ):
         * 'client-has-reservation-in-radius': yes
         * 'client-has-no-reservation-in-radius': no
     :param addresses: dictionary of addresses used in testing indexed by recognizable patterns
-    :param subnets: dictionary of subnets used in testing indexed by recognizable patterns
+    :return list of dictionaries of leases containing address, client_id, mac
     '''
+
+    leases = []
 
     if has_reservation == 'client-has-reservation-in-radius':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is part of a configured pool in Kea.
-        get_address(mac='08:00:27:b0:c5:10',
-                    expected_lease=addresses['50-5'])
+        leases.append(get_address(mac='08:00:27:b0:c5:10',
+                                  expected_lease=addresses['50-5']))
 
         # If the config has only one address in the pool...
         if config_type in ['subnet', 'network']:
@@ -317,17 +387,16 @@ def check_leases(config_type : str, has_reservation : str, addresses, subnets ):
             # so that the rest of the test is the same.
             pass
 
-
     elif has_reservation == 'client-has-no-reservation-in-radius':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is outside of any configured pool in Kea.
-        get_address(mac='08:00:27:b0:c1:42',
-                    expected_lease=addresses['52-52'])
+        leases.append(get_address(mac='08:00:27:b0:c1:42',
+                                  expected_lease=addresses['52-52']))
 
         # A client with a gold Framed-Pool should get the lease because the
         # pool has a free lease.
-        get_address(mac='08:00:27:b0:c5:01',
-                    expected_lease=addresses['50-5'])
+        leases.append(get_address(mac='08:00:27:b0:c5:01',
+                                  expected_lease=addresses['50-5']))
 
     # 'multiple-subnets' is more complex so treat it first.
     if config_type == 'multiple-subnets':
@@ -336,42 +405,91 @@ def check_leases(config_type : str, has_reservation : str, addresses, subnets ):
 
         # Get the lease that is configured explicitly in RADIUS with
         # Framed-IP-Address.
-        get_address(mac='08:00:27:b0:c1:42',
-                    expected_lease=addresses['52-52'])
+        leases.append(get_address(mac='08:00:27:b0:c1:42',
+                                  expected_lease=addresses['52-52']))
 
-        # ### Take all addresses from gold pools. ###
+        # ---- Take all addresses from gold pools. ----
         # Skip '50-5' because it was leased previously.
 
         # Lease the second and last gold address.
-        yiaddr = get_address(mac='08:00:27:b0:c5:02')
-        assert yiaddr in gold_ips
-        gold_ips.remove(yiaddr)
+        lease = get_address(mac='08:00:27:b0:c5:02')
+        assert lease['address'] in gold_ips
+        gold_ips.remove(lease['address'])
+        leases.append(lease)
 
         # No more leases.
         send_message_and_expect_no_more_leases(mac='08:00:27:b0:c5:03')
 
-        # ### Take all addresses from silver pools. ###
+        # ---- Take all addresses from silver pools. ----
         # Lease the first silver address.
-        yiaddr = get_address(mac='08:00:27:b0:c6:01')
-        assert yiaddr in silver_ips
-        silver_ips.remove(yiaddr)
+        lease = get_address(mac='08:00:27:b0:c6:01')
+        assert lease['address'] in silver_ips
+        silver_ips.remove(lease['address'])
+        leases.append(lease)
 
         # Lease the second and last silver address.
-        yiaddr = get_address(mac='08:00:27:b0:c6:02')
-        assert yiaddr in silver_ips
-        silver_ips.remove(yiaddr)
+        lease = get_address(mac='08:00:27:b0:c6:02')
+        assert lease['address'] in silver_ips
+        silver_ips.remove(lease['address'])
+        leases.append(lease)
 
         # No more leases.
         send_message_and_expect_no_more_leases(mac='08:00:27:b0:c6:03')
 
-        # ### Take all addresses from bronze pools. ###
+        # ---- Take all addresses from bronze pools. ----
         # Lease the first and only bronze address.
-        get_address(mac='08:00:27:b0:c7:01',
-                    expected_lease=addresses['50-7'])
+        leases.append(get_address(mac='08:00:27:b0:c7:01',
+                                  expected_lease=addresses['50-7']))
 
         # No more leases.
         send_message_and_expect_no_more_leases(mac='08:00:27:b0:c7:02')
 
         # Platinum client gets platinum lease.
-        get_address(mac='08:00:27:b0:c8:01',
-                    expected_lease=addresses['70-5'])
+        leases.append(get_address(mac='08:00:27:b0:c8:01',
+                                  expected_lease=addresses['70-5']))
+
+    # Remove None from leases because it doesn't play nice with srv_msg.check_leases().
+    leases = [l for l in leases if l is not None]
+
+    return leases
+
+
+def add_leading_subnet(subnet: str = '192.168.99.0/24',
+                       pool: str = '192.168.99.0 - 192.168.99.255'):
+    '''
+    Add to the first position: a subnet or a shared network with a single subnet,
+    in both cases with a single pool.
+
+    :param subnet: the subnet value
+    :param pool: the pool value
+    '''
+    v = world.proto[1]
+    if f'subnet{v}' in world.dhcp_cfg:
+        world.dhcp_cfg[f'subnet{v}'].insert(0, {
+            'id': int(subnet.split('.')[2]),
+            'interface': world.f_cfg.server_iface,
+            'pools': [
+                {
+                    'pool': pool
+                }
+            ],
+            'subnet': subnet
+        })
+    if 'shared-networks' in world.dhcp_cfg:
+        world.dhcp_cfg['shared-networks'].insert(0,
+            {
+                'name': subnet,
+                f'subnet{v}': [
+                    {
+                        'id': int(subnet.split('.')[2]),
+                        'interface': world.f_cfg.server_iface,
+                        'pools': [
+                            {
+                                'pool': pool
+                            }
+                        ],
+                        'subnet': subnet
+                    }
+                ]
+            }
+        )

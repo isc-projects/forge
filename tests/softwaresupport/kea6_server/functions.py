@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -15,8 +15,10 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=unused-import
+
 from softwaresupport.kea import build_config_files, build_and_send_config_files
-from softwaresupport.kea import clear_all, clear_logs, clear_leases, start_srv
+from softwaresupport.kea import clear_all, clear_logs, clear_leases
 from softwaresupport.kea import start_srv, stop_srv, restart_srv, reconfigure_srv
 from softwaresupport.kea import agent_control_channel, save_logs, save_leases
 from softwaresupport.kea import ha_add_parameter_to_hook, add_hooks, add_parameter_to_hook, add_logger
@@ -30,6 +32,6 @@ from softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_option_s
 from softwaresupport.kea import prepare_cfg_add_option_shared_subnet, config_require_client_classification
 from softwaresupport.kea import kea_otheroptions, config_client_classification, add_option_to_defined_class
 from softwaresupport.kea import host_reservation, host_reservation_extension, config_srv_id, prepare_cfg_prefix
-from softwaresupport.kea import update_ha_hook_parameter, db_setup
+from softwaresupport.kea import update_ha_hook_parameter, db_setup, delete_hooks
 
 # TODO remove this file :) but this is another set of reworks so for another time

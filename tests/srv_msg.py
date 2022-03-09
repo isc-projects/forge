@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -16,7 +16,6 @@
 # Author: Wlodzimierz Wencel
 
 import datetime
-import sys
 import json
 import importlib
 
@@ -763,5 +762,9 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
                         status_code, exchange, duid, iaid, linkaddr, ifaceid)
 
 
-def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):
-    return dhcpmsg.BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr)
+def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
+                                  chaddr: str = 'ff:01:02:03:ff:04',
+                                  client_id: str = None):
+    return dhcpmsg.BOOTP_REQUEST_and_BOOTP_REPLY(address=address,
+                                                 chaddr=chaddr,
+                                                 client_id=client_id)

@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -740,7 +740,7 @@ def set_value(env_name, env_value):
 
 def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address, should_succeed=True):
     if not isinstance(leases_list, list):
-        leases_list =[leases_list]
+        leases_list = [leases_list]
     leases_list_copy = copy.deepcopy(leases_list)
     # TODO: make check_leases() work with the output of leaseX-get-all
 

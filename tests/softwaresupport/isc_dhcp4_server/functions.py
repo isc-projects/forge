@@ -477,7 +477,7 @@ def build_and_send_config_files(cfg, destination_address):
     """
     Build ISC-DHCP config file and send it to remote server
     :param cfg: not used
-    :param destination_address:string with ip address
+    :param destination_address: string with ip address
     """
     if "conf_option" not in world.cfg:
         world.cfg["conf_option"] = ""

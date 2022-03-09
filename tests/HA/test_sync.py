@@ -1,16 +1,26 @@
+# Copyright (C) 2020-2022 Internet Systems Consortium, Inc. ("ISC")
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 """Kea HA syncing"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name,line-too-long,too-many-branches
 
+import itertools
 import pytest
 
 import misc
 import srv_control
 import srv_msg
 
+from cb_model import setup_server_with_radius
 from forge_cfg import world
-from HA.steps import generate_leases, load_hook_libraries, wait_until_ha_state
+from HA.steps import generate_leases, increase_mac, load_hook_libraries, wait_until_ha_state
 from HA.steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
+from softwaresupport import radius
+
 
 # TODO add checking logs in all those tests
 
@@ -108,7 +118,9 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_order):
     misc.test_setup()
+
     srv_control.define_temporary_lease_db_backend(backend)
+
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
@@ -132,8 +144,10 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+
     # HA SERVER 2
     misc.test_setup()
+
     srv_control.define_temporary_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
@@ -149,8 +163,8 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
 
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     load_hook_libraries(dhcp_version, hook_order)
@@ -229,7 +243,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     # let's wait for full synchronization of server2
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
-    # check synced leaases
+    # Check synced leases.
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     srv_msg.check_leases(set_of_leases_2, backend=backend)
 
@@ -539,3 +553,277 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook
     set_of_leases_1 = generate_leases(leases_count=l_count, iaid=1, iapd=0, dhcp_version=dhcp_version)
     assert l_count == len(set_of_leases_1), "Server gave us %d leases, we wanted %d" % (len(set_of_leases_1), l_count)
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2)
+
+
+# The 'subnet' test case is intentionally excluded. Its Kea configuration
+# contains an unclassified pool which makes it difficult to control client
+# access to it.
+RADIUS_TEST_CASE_COMBINATIONS = list(itertools.product(
+    ['network', 'multiple-subnets'],
+    ['client-has-reservation-in-radius', 'client-has-no-reservation-in-radius']
+))
+
+
+def _add_ha_pools():
+    '''
+    Add pools for the usual HA traffic coming from generate_leases().
+    NOTE: Relying on leases being assigned to pools according to the order they
+    are declared in the configuration is discouraged and is considered undefined
+    behavior in Kea. Empirically, the pool order does influence the lease
+    process and we rely on it in this test such that HA traffic gets the traffic
+    from the first pool and the rest is left for RADIUS traffic. So these pools
+    are added to the beginning, starting with 50.11 or 50::11 because lower
+    values are used in RADIUS testing.
+    '''
+    v = world.proto[1]
+    if world.proto == 'v4':
+        if f'subnet{v}' in world.dhcp_cfg:
+            world.dhcp_cfg[f'subnet{v}'][0]['pools'].insert(0, {
+                'pool': '192.168.50.11 - 192.168.50.110'
+            })
+        elif 'shared-networks' in world.dhcp_cfg:
+            world.dhcp_cfg['shared-networks'][0][f'subnet{v}'][0]['pools'].insert(0, {
+                'pool': '192.168.50.11 - 192.168.50.110'
+            })
+    elif world.proto == 'v6':
+        if f'subnet{v}' in world.dhcp_cfg:
+            world.dhcp_cfg[f'subnet{v}'][0]['pools'].insert(0, {
+                'pool': '2001:db8:50::11 - 2001:db8:50::110'
+            })
+        elif 'shared-networks' in world.dhcp_cfg:
+            world.dhcp_cfg['shared-networks'][0][f'subnet{v}'][0]['pools'].insert(0, {
+                'pool': '2001:db8:50::11 - 2001:db8:50::110'
+            })
+
+
+# Disable until the RADIUS subnet selection is solved. See test_radius_giaddr().
+@pytest.mark.disabled
+@pytest.mark.v4
+@pytest.mark.v4_bootp
+@pytest.mark.v6
+@pytest.mark.ha
+@pytest.mark.radius
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('ha_mode', ['hot-standby', 'load-balancing', 'passive-backup'])
+@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
+@pytest.mark.parametrize('radius_test_case', RADIUS_TEST_CASE_COMBINATIONS)
+def test_HA_and_RADIUS(dhcp_version: str,
+                       backend: str,
+                       ha_mode: str,
+                       hook_order: str,
+                       radius_test_case):
+    '''
+    Check that HA and RADIUS can work together.
+
+    :param dhcp_version: the DHCP version being tested
+    :param backend: the lease database backend type
+    :param ha_mdoe: the HA mode: HS, LB or PB
+    :param hook_order: the order in which hooks are loaded: either aplhabetical
+        or reverse alphabetical. This is to test all order combinations for each
+        set of two hook libraries after problems were found in one case where HA
+        and leasequery were loaded in a certain order.
+    :param radius_test_case: list of two elements where the first one is config
+        type and the second represents whether whether the first client coming
+        in with a request has its lease or pool reserved in RADIUS.
+    '''
+
+    # Constants
+    leases_count = 50
+    starting_mac = '01:02:0c:03:0a:00'
+    starting_mac_2 = '02:02:0c:03:0a:00'
+
+    # Start with 10 to avoid RADIUS pools which are below 10.
+    last_octet = 10
+    authorize_content = ''
+    for mac in [starting_mac, starting_mac_2]:
+        for _ in range(leases_count):
+            last_octet = last_octet + 1
+            mac = increase_mac(mac)
+            # Leave {p} unchanged. It is formatted in radius.init_and_start_radius().
+            authorize_content += '''
+{p}:{mac}    Cleartext-password := "{mac}"
+    \tFramed-IP-Address = "192.168.50.{last_octet}",
+    \tFramed-IPv6-Address = "2001:db8:50::{last_octet}"
+'''.format(p='{p}', mac=mac, last_octet=last_octet)
+
+    # ---- HA server1 ----
+    misc.test_setup()
+
+    # Clear data.
+    srv_control.clear_some_data('all')
+
+    if radius_test_case is not None:
+        # Setup the RADIUS server.
+        radius.init_and_start_radius(authorize_content=authorize_content)
+
+        # Some useful variables
+        config_type = radius_test_case[0]
+        has_reservation = radius_test_case[1]
+        addresses, configs = radius.get_test_case_variables()
+
+        # Configure RADIUS in Kea. Server also starts here which is an
+        # unfortunate side effect, but we'll restart after finishing
+        # configuration below.
+        setup_server_with_radius(**configs[config_type])
+
+    # Configure the backend.
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    # Start kea-ctrl-agent and configure the control socket in Kea.
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
+
+    # Load necessary hook libraries.
+    load_hook_libraries(dhcp_version, hook_order)
+
+    # Configure HA.
+    if ha_mode == 'hot-standby':
+        srv_control.update_ha_hook_parameter(HOT_STANDBY)
+    elif ha_mode == 'load-balancing':
+        srv_control.update_ha_hook_parameter(LOAD_BALANCING)
+    elif ha_mode == 'passive-backup':
+        srv_control.update_ha_hook_parameter(PASSIVE_BACKUP)
+    srv_control.update_ha_hook_parameter({'heartbeat-delay': 1000,
+                                          'max-ack-delay': 0,
+                                          'max-response-delay': 1500,
+                                          'max-unacked-clients': 0,
+                                          'sync-page-limit': 10,
+                                          'this-server-name': 'server1'})
+
+    # Add a leading subnet to test subnet reselection in RADIUS.
+    radius.add_leading_subnet()
+
+    # Add pools for the usual HA traffic coming from generate_leases().
+    _add_ha_pools()
+
+    # Start Kea.
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # ---- HA server2 ----
+    misc.test_setup()
+
+    # Clear data.
+    srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+
+    if radius_test_case is not None:
+        # Setup the RADIUS server.
+        radius.init_and_start_radius(authorize_content=authorize_content,
+                                     destination=world.f_cfg.mgmt_address_2)
+
+        # Get the server2-specific variables again.
+        _, configs = radius.get_test_case_variables(interface=world.f_cfg.server2_iface)
+
+        # Configure RADIUS in Kea. Server also starts here which is an
+        # unfortunate side effect, but we'll restart after finishing
+        # configuration below.
+        setup_server_with_radius(destination=world.f_cfg.mgmt_address_2,
+                                 interface=world.f_cfg.server2_iface,
+                                 **configs[config_type])
+
+        # radius.setup_server_with_radius() was used for server2 to generate a
+        # configuration that is identical to server1's config, but the one thing we
+        # don't necessarily need in server2 is RADIUS functionality.
+        srv_control.delete_hooks(['libdhcp_radius.so'])
+
+    # Configure the backend.
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    # Start kea-ctrl-agent and configure the control socket in Kea.
+    srv_control.agent_control_channel(host_address=world.f_cfg.mgmt_address_2)
+    srv_control.open_control_channel()
+
+    # Load necessary hook libraries.
+    load_hook_libraries(dhcp_version, hook_order)
+
+    # Configure HA.
+    if ha_mode == 'hot-standby':
+        srv_control.update_ha_hook_parameter(HOT_STANDBY)
+    elif ha_mode == 'load-balancing':
+        srv_control.update_ha_hook_parameter(LOAD_BALANCING)
+    elif ha_mode == 'passive-backup':
+        srv_control.update_ha_hook_parameter(PASSIVE_BACKUP)
+    srv_control.update_ha_hook_parameter({'heartbeat-delay': 1000,
+                                          'max-ack-delay': 0,
+                                          'max-response-delay': 1500,
+                                          'max-unacked-clients': 0,
+                                          'sync-page-limit': 15,
+                                          'this-server-name': 'server2'})
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
+
+    # Add a leading subnet to test subnet reselection in RADIUS.
+    radius.add_leading_subnet()
+
+    # Add pools for the usual HA traffic coming from generate_leases().
+    _add_ha_pools()
+
+    # Start Kea.
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
+
+    # Settle was the HA state should be for server2 in normal functioning mode.
+    ha_mode_2 = ha_mode
+    if ha_mode == 'passive-backup':
+        ha_mode_2 = 'backup'
+
+    # ---- Start testing. ----
+
+    # Wait for both servers to reach functioning states.
+    wait_until_ha_state(ha_mode, dhcp_version=dhcp_version)
+    wait_until_ha_state(ha_mode_2, dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
+
+    # Exchange some messages and make sure leases are given.
+    set_of_leases = generate_leases(dhcp_version=dhcp_version,
+                                    iaid=1,
+                                    iapd=1,
+                                    leases_count=leases_count,
+                                    mac=starting_mac)
+
+    # Check that both servers have all the leases in the backends.
+    srv_msg.check_leases(set_of_leases, backend=backend, dest=world.f_cfg.mgmt_address)
+    srv_msg.check_leases(set_of_leases, backend=backend, dest=world.f_cfg.mgmt_address_2)
+
+    # Restart server2.
+    srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
+    srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
+
+    # Wait for both servers to reach functioning states.
+    wait_until_ha_state(ha_mode, dhcp_version=dhcp_version)
+    wait_until_ha_state(ha_mode_2, dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
+
+    # Check that both servers have all the leases in the backends.
+    srv_msg.check_leases(set_of_leases, backend=backend, dest=world.f_cfg.mgmt_address)
+    srv_msg.check_leases(set_of_leases, backend=backend, dest=world.f_cfg.mgmt_address_2)
+
+    if ha_mode in ['hot-standby', 'load-balancing']:
+        # Stop server1.
+        srv_control.start_srv('DHCP', 'stopped')
+
+        # Wait until server2 switches status.
+        wait_until_ha_state('partner-down',
+                            dest=world.f_cfg.mgmt_address_2,
+                            dhcp_version=dhcp_version)
+
+    # Exchange some more messages and make sure leases are given.
+    set_of_leases_2 = generate_leases(dhcp_version=dhcp_version,
+                                      iaid=1,
+                                      iapd=1,
+                                      leases_count=leases_count,
+                                      mac=starting_mac_2)
+
+    if ha_mode in ['hot-standby', 'load-balancing']:
+        # Start server1.
+        srv_control.start_srv('DHCP', 'started')
+
+        # Wait for both servers to reach functioning states.
+        wait_until_ha_state(ha_mode, dhcp_version=dhcp_version)
+        wait_until_ha_state(ha_mode_2, dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
+
+    # Exchange some messages and make sure leases are given with clients that
+    # are configured in RADIUS.
+    radius_leases = radius.send_and_receive(config_type, has_reservation, addresses)
+
+    # Check that both servers have all the leases in the backends.
+    for leases in [set_of_leases, set_of_leases_2, radius_leases]:
+        for dest in [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2]:
+            srv_msg.check_leases(leases, backend=backend, dest=dest)

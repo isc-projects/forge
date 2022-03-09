@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -14,10 +14,10 @@
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import os
+import re
 import glob
 import json
 import logging
-import time
 
 import srv_msg
 
@@ -620,14 +620,44 @@ def add_hooks(library_path):
         world.dhcp_cfg["hooks-libraries"].append({"library": library_path})
 
 
-def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
-    if "parameters" not in world.dhcp_cfg["hooks-libraries"][hook_no-1].keys():
-        world.dhcp_cfg["hooks-libraries"][hook_no - 1]["parameters"] = {}
+def delete_hooks(hook_patterns):
+    '''
+    Delete hook whose path matches one of the patterns given as parameters.
+
+    :param hook_patterns: list of patterns used to match library paths
+    '''
+    for hp in hook_patterns:
+        for i, hook_library in enumerate(world.dhcp_cfg['hooks-libraries']):
+            if re.search(hp, hook_library['library']):
+                del world.dhcp_cfg['hooks-libraries'][i]
+
+
+def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_value):
+    '''
+    Determine the hook library with number {hook_number_or_name} if it's an int,
+    or thatcontains pattern {hook_number_or_name} if it's a str.
+    Add to the hook library's parameters: "{parameter_name}": {parameter_value}
+
+    :param hook_number_or_name: hook index starting with 1 or pattern contained in the library name
+    :param parameter_name: the parameter's JSON key
+    :param parameter_value: the parameter's JSON value
+    '''
+
+    # Get the hook number.
+    if isinstance(hook_number_or_name, int):
+        hook_no = hook_number_or_name - 1
+    if isinstance(hook_number_or_name, str):
+        for i, hook_library in enumerate(world.dhcp_cfg['hooks-libraries']):
+            if re.search(hook_number_or_name, hook_library['library']):
+                hook_no = i
+
+    if "parameters" not in world.dhcp_cfg["hooks-libraries"][hook_no].keys():
+        world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"] = {}
     if parameter_value in ["True", "true"]:
         parameter_value = True
     elif parameter_value in ["False", 'false']:
         parameter_value = False
-    world.dhcp_cfg["hooks-libraries"][hook_no-1]["parameters"][parameter_name] = parameter_value
+    world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name] = parameter_value
 
 
 def ha_add_parameter_to_hook(parameter_name, parameter_value):

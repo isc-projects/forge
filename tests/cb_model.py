@@ -1,7 +1,11 @@
+# Copyright (C) 2019-2022 Internet Systems Consortium, Inc. ("ISC")
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import copy
-import json
 import logging
-import pprint
 
 import misc
 import srv_control
@@ -218,12 +222,6 @@ class ConfigModel(ConfigElem):
                            "output_options": [loggers],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
-
-        # some default settings
-        cfg['ddns-replace-client-name'] = 'never'
-        cfg['ddns-generated-prefix'] = 'myhost'
-        cfg['ddns-send-updates'] = True
-        cfg['ddns-use-conflict-resolution'] = True
 
         # combining whole config
         dhcp_key = 'Dhcp' + proto
@@ -677,12 +675,25 @@ def _normalize_keys(kwargs):
     return kwargs2
 
 
-def setup_server(**kwargs):
+def setup_server(destination: str = world.f_cfg.mgmt_address,
+                 interface: str = world.f_cfg.server_iface,
+                 **kwargs):
+    '''
+    Create a basic configuration and send it to the Kea server.
+
+    :param destination: address of server that is being set up
+    :param interface: the client-facing interface on the server
+    :param kwargs: dynamic set of arguments
+    :return: the configuration that was sent to Kea and sometimes as a second
+        variable: the configuration retrieved through "config-get"
+    '''
+
     misc.test_setup()
+
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
 
     config_model_args = {}
-    init_cfg = {"interfaces-config": {"interfaces": ["$(SERVER_IFACE)"]},
+    init_cfg = {"interfaces-config": {"interfaces": [interface]},
                 "lease-database": {"type": "memfile"},
                 "control-socket": {"socket-type": 'unix',
                                    "socket-name": world.f_cfg.run_join('control_socket')}}
@@ -701,7 +712,7 @@ def setup_server(**kwargs):
     cfg = ConfigModel(init_cfg, **config_model_args)
 
     srv_control.agent_control_channel()  # to force enabling ctrl-agent
-    srv_control.build_and_send_config_files(cfg=cfg.get_dict())
+    srv_control.build_and_send_config_files(cfg=cfg.get_dict(), dest=destination)
     srv_control.start_srv('DHCP', 'started')
 
     # check actual configuration if requested
@@ -747,7 +758,18 @@ def setup_server_for_config_backend_cmds(**kwargs):
     return result
 
 
-def setup_server_with_radius(**kwargs):
+def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
+                             interface: str = world.f_cfg.server_iface,
+                             **kwargs):
+    '''
+    Create a RADIUS configuration and send it to the Kea server.
+
+    :param destination: address of server that is being set up
+    :param interface: the client-facing interface on the server
+    :param kwargs: dynamic set of arguments
+    :return: the configuration that was sent to Kea
+    '''
+
     if world.proto == 'v4':
         expression = "hexstring(pkt4.mac, ':')"
     elif world.proto == 'v6':
@@ -791,6 +813,10 @@ def setup_server_with_radius(**kwargs):
 
     kwargs = _normalize_keys(kwargs)
     init_cfg = _merge_configs(default_cfg, kwargs)
-    result = setup_server(**init_cfg)
+    result = setup_server(destination=destination, interface=interface, **init_cfg)
+
+    # Update dhcp_cfg and subnet_cnt in case further changes are done to the config.
+    world.dhcp_cfg = result.get_dict()[f'Dhcp{world.proto[1]}']
+    srv_control.update_subnet_counter()
 
     return result

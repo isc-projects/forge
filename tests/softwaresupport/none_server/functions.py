@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -15,9 +15,11 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=unused-argument,unused-import
+
 import logging
 
-from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
+from forge_cfg import world
 from protosupport.multi_protocol_functions import test_pause
 
 
@@ -160,7 +162,11 @@ def add_hooks(library_path):
     pass
 
 
-def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
+def delete_hooks(hook_patterns: list[str]):
+    pass
+
+
+def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value):
     pass
 
 

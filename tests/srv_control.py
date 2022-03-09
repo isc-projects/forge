@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -15,7 +15,6 @@
 
 # Author: Wlodzimierz Wencel
 
-import sys
 import json
 import logging
 import importlib
@@ -81,6 +80,20 @@ def config_srv_subnet_with_iface(interface, address, subnet, pool):
     """
     interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
     dhcp.prepare_cfg_subnet_specific_interface(interface, address, subnet, pool)
+
+
+def update_subnet_counter():
+    '''
+    When subnets are configured via other functions than the ones in this
+    module, the subnet counter is left behind. This function updates it so that
+    the functions in this module e.g. config_srv_another_subnet() can be used
+    correctly again.
+    '''
+    subnet_key = f'subnet{world.proto[1]}'
+    if subnet_key in world.dhcp_cfg:
+        world.dhcp['subnet_cnt'] = len(world.dhcp_cfg[subnet_key])
+    else:
+        world.dhcp['subnet_cnt'] = 0
 
 
 @step(r'Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
@@ -240,10 +253,14 @@ def add_hooks(library_path):
     dhcp.add_hooks(full_library_path)
 
 
+def delete_hooks(hook_patterns):
+    dhcp.delete_hooks(hook_patterns)
+
+
 @step(r'To hook no. (\d+) add parameter named (\S+) with value: (.+)')
-def add_parameter_to_hook(hook_no, parameter_name, parameter_value):
+def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
-    dhcp.add_parameter_to_hook(int(hook_no), parameter_name, parameter_value)
+    dhcp.add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value)
 
 
 @step(r'Add High-Availability hook library located (\S+).')

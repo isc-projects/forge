@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium.
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -17,6 +17,9 @@
 
 import codecs
 import logging
+import os
+import struct
+
 from random import randint
 
 from scapy.all import get_if_raw_hwaddr, Ether, srp
@@ -28,12 +31,12 @@ from scapy.layers.inet import IP, UDP
 from scapy.packet import fuzz
 from scapy.sendrecv import send, sendp, sniff
 
+import misc
+import srv_msg
+
 from forge_cfg import world
 from protosupport.v6.srv_msg import client_add_saved_option, change_message_field, apply_message_fields_changes
 
-import misc
-import struct
-import os
 
 log = logging.getLogger('forge')
 
@@ -127,7 +130,7 @@ def client_send_msg(msgname, iface=None, addr=None):
 
     elif msgname == "BOOTP_REQUEST":
         world.cfg["values"]["broadcastBit"] = True
-        msg = build_msg(['\x63\x82\x53\x63'] + options)
+        msg = build_msg(options)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -652,11 +655,25 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
     RA(address, options, response_type, chaddr, init_reboot)
 
 
-def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):
+def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
+                                  chaddr: str = 'ff:01:02:03:ff:04',
+                                  client_id: str = None):
+    '''
+    Send a BOOTP request and expect a BOOTP reply.
+
+    :param address: the address expected in the reply
+    :param chaddr: the value of the chaddr field in the BOOTP request packet
+    :param client_id: the value of option 61 client identifier in the BOOTP request packet
+    '''
+
+    # Send request.
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
+    if client_id is not None:
+        srv_msg.client_does_include_with_value('client_id', client_id)
     client_send_msg('BOOTP_REQUEST')
 
+    # Wait for reply.
     misc.pass_criteria()
     send_wait_for_message('MUST', True, 'BOOTP_REPLY')
 
@@ -668,4 +685,5 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address, chaddr='ff:01:02:03:ff:04'):
     response_check_include_option(False, 58)
     response_check_include_option(False, 59)
 
+    # Check received address.
     response_check_content(True, 'yiaddr', address)
