@@ -625,7 +625,7 @@ def test_v6_lease_upload(backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
-    srv_control.start_srv('DHCP', 'restarted')
+    srv_control.start_srv('DHCP', 'started')
 
     # add 5 leases
     for i in range(5):
@@ -767,3 +767,114 @@ def test_v6_lease_upload(backend):
                                      }
                                  },
                                  "valid-lft": 4000}
+
+
+@pytest.mark.v6
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_v6_lease_upload_duplicate(backend):
+    """
+    Test to check validity of "kea-admin lease-upload" command.
+    Test adds leases to Kea memfile, deletes them and adds again to make duplicate entries
+    im memfile (journal like).
+    Kea is restarted with selected backend and tested to confirm 0 leases in the database.
+    Next CSV file is uploaded using kae-admin lease-upload command.
+    Last test checks if leases are restored from memfile to database.
+    :param backend: 2 types of leases backend kea support (without memfile)
+    """
+    misc.test_setup()
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
+    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    expire = int(time.time()) + 7000
+    # add 5 leases
+    for i in range(5):
+        cmd = {"command": "lease6-add",
+               "arguments": {"subnet-id": 1,
+                             "ip-address": f"2001:db8:1::{i+1}",
+                             "duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{i+1:02}",
+                             "iaid": 1230 + i,
+                             "hw-address": f"1a:2b:3c:4d:5e:6f:{i+1:02}",
+                             "preferred-lft": 7777,
+                             "valid-lft": 11111,
+                             "expire": expire,
+                             "fqdn-fwd": True,
+                             "fqdn-rev": True,
+                             "hostname": f"urania.example.org{i+1}"}}
+        srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    # delete 5 leases
+    for i in range(5):
+        cmd = {"command": "lease6-del",
+               "arguments": {"subnet-id": 1,
+                             "identifier": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{i+1:02}",
+                             "identifier-type": "duid",
+                             "iaid": 1230 + i}}
+        srv_msg.send_ctrl_cmd(cmd)
+
+    # add the same 5 leases again to make duplicates in memfile
+    for i in range(5):
+        cmd = {"command": "lease6-add",
+               "arguments": {"subnet-id": 1,
+                             "ip-address": f"2001:db8:1::{i+1}",
+                             "duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{i+1:02}",
+                             "iaid": 1230 + i,
+                             "hw-address": f"1a:2b:3c:4d:5e:6f:{i+1:02}",
+                             "preferred-lft": 7777,
+                             "valid-lft": 11111,
+                             "expire": expire,
+                             "fqdn-fwd": True,
+                             "fqdn-rev": True,
+                             "hostname": f"urania.example.org{i+1}"}}
+        srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    # Restart Kea with selected database
+    misc.test_setup()
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'restarted')
+
+    # Check to see if lease6-get-all will return 0 leases
+    cmd = {"command": "lease6-get-all",
+           "arguments": {"subnets": [1]}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "0 IPv6 lease(s) found."
+
+    # Lease-upload from memfile
+    srv_msg.lease_upload(backend, world.f_cfg.get_leases_path())
+
+    # Check if the pre restart leases are present after uploading
+    cmd = {"command": "lease6-get-all",
+           "arguments": {"subnets": [1]}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    all_leases = resp["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
+
+    for lease in all_leases:
+        lease_nbr = all_leases.index(lease)
+        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
+        assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
+                                         "fqdn-fwd": True,
+                                         "fqdn-rev": True,
+                                         "hostname": f"urania.example.org{lease_nbr+1}",
+                                         "hw-address": f"1a:2b:3c:4d:5e:6f:{lease_nbr+1:02}",
+                                         "iaid": 1230 + lease_nbr,
+                                         "ip-address": f"2001:db8:1::{lease_nbr+1}",
+                                         "preferred-lft": 7777,
+                                         "state": 0,
+                                         "subnet-id": 1,
+                                         "type": "IA_NA",
+                                         "valid-lft": 11111
+                                         }
