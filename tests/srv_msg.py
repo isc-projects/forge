@@ -710,32 +710,12 @@ def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address, 
 def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address,
                out="/tmp/lease_dump.csv"):
-    """
-    Function dumps database to CSV file performing kea-admin lese-dump command on server.
-    :param backend: Select database backend: mysql, pgsql
-    :param db_name: specifies a database name to connect to
-    :param db_user: specifies username when connecting to a database
-    :param db_passwd: specifies a password for the database connection
-    :param destination_address: specifies server address for management
-    :param out: output file path
-    :return: output file path on server
-    """
     return multi_protocol_functions.lease_dump(backend, db_name, db_user, db_passwd,
                                                destination_address, out)
 
 
 def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
-    """
-    Function uploads CSV file to database performing kea-admin lese-upload command on server.
-    :param backend: Select database backend: mysql, pgsql
-    :param leases_file: input file path
-    :param db_name: specifies a database name to connect to
-    :param db_user: specifies username when connecting to a database
-    :param db_passwd: specifies a password for the database connection
-    :param destination_address: specifies server address for management
-    :return: shell operation result
-    """
     return multi_protocol_functions.lease_upload(backend, leases_file, db_name, db_user, db_passwd,
                                                  destination_address)
 

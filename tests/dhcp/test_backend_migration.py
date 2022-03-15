@@ -74,9 +74,7 @@ def test_v4_lease_dump(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
-    print(all_leases)
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         cltt.append(all_leases[lease_nbr]["cltt"])
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
@@ -90,6 +88,8 @@ def test_v4_lease_dump(backend):
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
                                          "user-context": {"value": 1},
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"192.168.50.{lease_nbr+1}"}, backend=backend)
 
     # dump database to CSV file to memfile path
     dump_file_path = srv_msg.lease_dump(backend, out=world.f_cfg.get_leases_path())
@@ -110,6 +110,8 @@ def test_v4_lease_dump(backend):
         cmd = {"command": "lease4-del", "arguments": {"ip-address": f"192.168.50.{i+1}"}}
         resp = srv_msg.send_ctrl_cmd(cmd)
         assert resp["text"] == "IPv4 lease deleted."
+        # Check if lease is absent in database
+        srv_msg.check_leases({"address": f"192.168.50.{i+1}"}, backend=backend, should_succeed=False)
 
     # Check to see if lease4-get-all will return 0 leases
     cmd = {"command": "lease4-get-all",
@@ -135,8 +137,7 @@ def test_v4_lease_dump(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
                                          "ip-address": f"192.168.50.{lease_nbr+1}",
@@ -149,6 +150,8 @@ def test_v4_lease_dump(backend):
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
                                          "user-context": {"value": 1},
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"192.168.50.{lease_nbr + 1}"}, backend='memfile')
 
 
 @pytest.mark.v4
@@ -215,8 +218,7 @@ def test_v4_lease_upload(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
                                          "ip-address": f"192.168.50.{lease_nbr+1}",
@@ -229,6 +231,8 @@ def test_v4_lease_upload(backend):
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
                                          "user-context": {"value": 1},
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"192.168.50.{lease_nbr+1}"}, backend=backend)
 
 
 @pytest.mark.v4
@@ -320,8 +324,7 @@ def test_v4_lease_upload_duplicate(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
                                          "ip-address": f"192.168.50.{lease_nbr+1}",
@@ -334,6 +337,8 @@ def test_v4_lease_upload_duplicate(backend):
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
                                          "user-context": {"value": 1},
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"192.168.50.{lease_nbr+1}"}, backend=backend)
 
 
 @pytest.mark.v6
@@ -384,8 +389,7 @@ def test_v6_lease_dump(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         cltt.append(all_leases[lease_nbr]["cltt"])
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
@@ -401,6 +405,8 @@ def test_v6_lease_dump(backend):
                                          "type": "IA_NA",
                                          "valid-lft": 11111
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend=backend)
 
     # Get lease for subnet 2 with user-context relay info
 
@@ -482,6 +488,8 @@ def test_v6_lease_dump(backend):
                                      }
                                  },
                                  "valid-lft": 4000}
+    # Check if lease is in database
+    srv_msg.check_leases({"address": "2001:db8:2::1"}, backend=backend)
 
     # dump database to CSV file to memfile path
     dump_file_path = srv_msg.lease_dump(backend, out=world.f_cfg.get_leases_path())
@@ -549,8 +557,7 @@ def test_v6_lease_dump(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
                                          "fqdn-fwd": True,
@@ -565,6 +572,8 @@ def test_v6_lease_dump(backend):
                                          "type": "IA_NA",
                                          "valid-lft": 11111
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend='memfile')
 
     # check subnet 2 lease with lease6-get
     cmd = {"command": "lease6-get",
@@ -601,6 +610,8 @@ def test_v6_lease_dump(backend):
                                      }
                                  },
                                  "valid-lft": 4000}
+    # Check if lease is in database
+    srv_msg.check_leases({"address": "2001:db8:2::1"}, backend='memfile')
 
 
 @pytest.mark.v6
@@ -697,7 +708,7 @@ def test_v6_lease_upload(backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     # Check to see if lease6-get-all will return 0 leases
     cmd = {"command": "lease6-get-all"}
@@ -715,8 +726,7 @@ def test_v6_lease_upload(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
                                          "fqdn-fwd": True,
@@ -731,6 +741,8 @@ def test_v6_lease_upload(backend):
                                          "type": "IA_NA",
                                          "valid-lft": 11111
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend=backend)
 
     # get the second lease with lease6-get
     cmd = {"command": "lease6-get",
@@ -767,6 +779,8 @@ def test_v6_lease_upload(backend):
                                      }
                                  },
                                  "valid-lft": 4000}
+    # Check if lease is in database
+    srv_msg.check_leases({"address": "2001:db8:2::1"}, backend=backend)
 
 
 @pytest.mark.v6
@@ -862,8 +876,7 @@ def test_v6_lease_upload_duplicate(backend):
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
-    for lease in all_leases:
-        lease_nbr = all_leases.index(lease)
+    for lease_nbr, _ in enumerate(all_leases):
         del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
                                          "fqdn-fwd": True,
@@ -878,3 +891,5 @@ def test_v6_lease_upload_duplicate(backend):
                                          "type": "IA_NA",
                                          "valid-lft": 11111
                                          }
+        # Check if lease is in database
+        srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend=backend)
