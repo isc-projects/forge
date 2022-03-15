@@ -161,7 +161,7 @@ def test_v4_lease_upload(backend):
     Test to check validity of "kea-admin lease-upload" command.
     Test adds leases to Kea memfile.
     Kea is restarted with selected backend and tested to confirm 0 leases in the database.
-    Next CSV file is uploaded using kae-admin lease-upload command..
+    Next CSV file is uploaded using kea-admin lease-upload command..
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
     """
@@ -243,7 +243,7 @@ def test_v4_lease_upload_duplicate(backend):
     Test adds leases to Kea memfile, deletes them and adds again to make duplicate entries
     im memfile (journal like).
     Kea is restarted with selected backend and tested to confirm 0 leases in the database.
-    Next CSV file is uploaded using kae-admin lease-upload command.
+    Next CSV file is uploaded using kea-admin lease-upload command.
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
     """
@@ -621,7 +621,7 @@ def test_v6_lease_upload(backend):
     Test to check validity of "kea-admin lease-upload" command.
     Test adds leases to Kea memfile.
     Kea is restarted with selected backend and tested to confirm 0 leases in the database
-    Next CSV file is uploaded using kae-admin lease-upload command.
+    Next CSV file is uploaded using kea-admin lease-upload command.
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
     """
@@ -791,7 +791,7 @@ def test_v6_lease_upload_duplicate(backend):
     Test adds leases to Kea memfile, deletes them and adds again to make duplicate entries
     im memfile (journal like).
     Kea is restarted with selected backend and tested to confirm 0 leases in the database.
-    Next CSV file is uploaded using kae-admin lease-upload command.
+    Next CSV file is uploaded using kea-admin lease-upload command.
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
     """

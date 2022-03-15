@@ -742,6 +742,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
     if not isinstance(leases_list, list):
         leases_list =[leases_list]
     leases_list_copy = copy.deepcopy(leases_list)
+    # TODO: make check_leases() work with the output of leaseX-get-all
 
     if backend == 'memfile':
         for lease in leases_list_copy:
