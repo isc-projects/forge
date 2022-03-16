@@ -544,7 +544,17 @@ def setup(args):
             _destroy_lxc_containers(args)
 
         # create and start VMs via Vagrant
-        execute('vagrant up', cwd=vagrant_dir)
+        try:
+            execute('vagrant up', cwd=vagrant_dir)
+        except ExecutionError:
+            # let's retry all but not in parallel
+            execute('vagrant destroy -f', cwd=vagrant_dir)
+            if args.lxc:
+                # in case of LXC to be sure destroys containers explicitly
+                _destroy_lxc_containers(args)
+            # we don't have solution if this fail
+            execute('vagrant up --no-parallel', cwd=vagrant_dir)
+
     elif args.command == 'refresh':
         # reload and reprovision VMs via Vagrant if requested
         reload_ = args.reload
