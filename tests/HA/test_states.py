@@ -13,6 +13,7 @@ from HA.steps import send_command, HOT_STANDBY, LOAD_BALANCING, wait_until_ha_st
 
 WAIT_TIME = 3
 
+
 @pytest.fixture(autouse=True)
 def kill_kea_on_second_system():
     # kill kea and clear data at the beginning and at the end
@@ -554,6 +555,7 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
 
     _send_message(dhcp=dhcp_version)
 
+    srv_msg.forge_sleep(WAIT_TIME, 'seconds')
     # Check status-get output on both servers - hot-standby
     _get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
                    primary_role='primary', secondary_role='standby',
